@@ -90,8 +90,8 @@ public:
 
 template <>
 struct DataTraits<TetraMesh> {
-    static std::string classIdentifier() { return "org.inviwo.tetra.TetraMesh"; }
-    static std::string dataName() { return "TetraMesh"; }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.tetra.TetraMesh"; }
+    static constexpr std::string_view dataName() { return "TetraMesh"; }
     static uvec3 colorCode() { return uvec3{50, 161, 234}; }
 
     static Document info(const TetraMesh& data) {

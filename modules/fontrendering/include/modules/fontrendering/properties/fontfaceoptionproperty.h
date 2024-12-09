@@ -47,8 +47,8 @@ namespace inviwo {
 class IVW_MODULE_FONTRENDERING_API FontFaceOptionProperty
     : public OptionProperty<std::filesystem::path> {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.FontFaceOptionProperty"};
 
     FontFaceOptionProperty(std::string_view identifier, std::string_view displayName, Document help,
                            font::FontType fontType = font::FontType::Default,

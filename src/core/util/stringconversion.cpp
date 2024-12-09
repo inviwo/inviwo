@@ -333,19 +333,28 @@ std::string dotSeperatedToPascalCase(std::string_view s) {
     return ss.str();
 }
 
-std::string camelCaseToHeader(std::string_view s) {
-    if (s.empty()) return {};
-    std::stringstream ss;
+void camelCaseToHeader(std::string_view s, std::string& dest) {
+    if (s.empty()) return;
+
+    const auto first = dest.size();
     char previous = ' ';
     for (auto c : s) {
-        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c)
-            ss << " ";
-        ss << c;
+        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c) {
+            dest.push_back(' ');
+        }
+        dest.push_back(c);
         previous = c;
     }
-    auto str{ss.str()};
-    str[0] = static_cast<char>(std::toupper(str[0]));
-    return str;
+    dest[first] = static_cast<char>(std::toupper(dest[first]));
+}
+
+std::string camelCaseToHeader(std::string_view s) {
+    if (s.empty()) return {};
+
+    std::string res;
+    res.reserve(s.size() + 3);
+    camelCaseToHeader(s, res);
+    return res;
 }
 
 bool iCaseCmp(std::string_view l, std::string_view r) {

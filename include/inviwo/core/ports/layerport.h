@@ -47,15 +47,9 @@ using LayerSequenceOutport = DataOutport<LayerSequence>;
 
 template <>
 struct DataTraits<Layer> {
-    static const std::string& classIdentifier() {
-        static const std::string id{"org.inviwo.Layer"};
-        return id;
-    }
-    static const std::string& dataName() {
-        static const std::string name{"Layer"};
-        return name;
-    }
-    static uvec3 colorCode() { return uvec3(95, 204, 114); }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.Layer"; }
+    static constexpr std::string_view dataName() { return "Layer"; }
+    static constexpr uvec3 colorCode() { return {95, 204, 114}; }
     static Document info(const Layer& layer) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

@@ -34,8 +34,7 @@
 
 namespace inviwo {
 
-const std::string PathLineProperties::classIdentifier = "org.inviwo.PathLineProperties";
-std::string PathLineProperties::getClassIdentifier() const { return classIdentifier; }
+std::string_view PathLineProperties::getClassIdentifier() const { return classIdentifier; }
 
 PathLineProperties::PathLineProperties(std::string_view identifier, std::string_view displayName)
     : IntegralLineProperties(identifier, displayName)

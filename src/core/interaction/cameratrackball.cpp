@@ -32,8 +32,7 @@
 
 namespace inviwo {
 
-const std::string CameraTrackball::classIdentifier = "org.inviwo.CameraTrackball";
-std::string CameraTrackball::getClassIdentifier() const { return classIdentifier; }
+std::string_view CameraTrackball::getClassIdentifier() const { return classIdentifier; }
 
 CameraTrackball::CameraTrackball(CameraProperty* cameraProp) : Trackball(cameraProp) {}
 

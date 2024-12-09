@@ -51,7 +51,7 @@ public:
     ProcessorMetaData& operator=(const ProcessorMetaData& that) = default;
     virtual ~ProcessorMetaData() = default;
 
-    virtual const std::string& getClassIdentifier() const override { return CLASS_IDENTIFIER; }
+    virtual std::string_view getClassIdentifier() const override { return classIdentifier; }
     virtual ProcessorMetaData* clone() const override;
 
     virtual void serialize(Serializer& s) const override;
@@ -65,7 +65,7 @@ public:
     void setSelected(bool selection);
     bool isSelected() const;
 
-    static const std::string CLASS_IDENTIFIER;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ProcessorMetaData"};
 
 private:
     ivec2 position_;

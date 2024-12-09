@@ -83,13 +83,17 @@ protected:
 
 template <typename ReturnType>
 struct DataTraits<SpatialSampler<ReturnType>> {
-    static std::string classIdentifier() {
-        return fmt::format("org.inviwo.SpatialSampler.3D.{}", DataFormat<ReturnType>::str());
-    }
-    static std::string dataName() {
-        return fmt::format("SpatialSampler<{}>", DataFormat<ReturnType>::str());
-    }
-    static uvec3 colorCode() { return uvec3(153, 0, 76); }
+    static constexpr auto cid = []() {
+        constexpr auto tName = DataFormat<ReturnType>::str();
+        return "org.inviwo.SpatialSampler.3D." + StaticString<tName.size()>(tName);
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataFormat<ReturnType>::str();
+        return "SpatialSampler<" + StaticString<tName.size()>(tName) + ">";
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
+    static constexpr uvec3 colorCode() { return {153, 0, 76}; }
     static Document info(const SpatialSampler<ReturnType>&) {
         Document doc;
         doc.append("p", dataName());

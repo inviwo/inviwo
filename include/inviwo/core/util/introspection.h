@@ -34,123 +34,66 @@
 #include <inviwo/core/util/document.h>
 
 #include <inviwo/core/util/detected.h>
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <type_traits>
-#include <iostream>
 #include <string>
+#include <string_view>
 #include <warn/pop>
 
 namespace inviwo::util {
 
-namespace detail {
-
 template <typename T>
-using upperClassIdentifierType = decltype(T::CLASS_IDENTIFIER);
-
-template <typename T>
-using lowerClassIdentifierType = decltype(T::classIdentifier);
-
-template <typename T>
-using dataNameType = decltype(T::dataName);
-
-template <typename T>
-using colorCodeUpperType = decltype(T::COLOR_CODE);
-
-template <typename T>
-using colorCodeLowerType = decltype(T::colorCode);
-
-template <typename T>
-using dataInfoType = decltype(std::declval<T>().getDataInfo());
-
-template <typename T>
-using infoType = decltype(std::declval<T>().getInfo());
-
-}  // namespace detail
-
-template <class T>
-using HasClassIdentifierUpper =
-    is_detected_exact<const std::string, detail::upperClassIdentifierType, T>;
-template <class T>
-using HasClassIdentifierLower =
-    is_detected_exact<const std::string, detail::lowerClassIdentifierType, T>;
-
-template <class T>
-using HasClassIdentifier = std::disjunction<HasClassIdentifierUpper<T>, HasClassIdentifierLower<T>>;
-
-template <typename T>
-const std::string& classIdentifier() {
-    if constexpr (HasClassIdentifierUpper<T>::value) {
-        return T::CLASS_IDENTIFIER;
-    } else if constexpr (HasClassIdentifierLower<T>::value) {
+constexpr std::string_view classIdentifier() {
+    if constexpr (requires {
+                      { T::classIdentifier } -> std::convertible_to<std::string_view>;
+                  }) {
         return T::classIdentifier;
+    } else if constexpr (requires {
+                             { T::CLASS_IDENTIFIER } -> std::convertible_to<std::string_view>;
+                         }) {
+        return T::CLASS_IDENTIFIER;
     } else {
         static_assert(util::alwaysFalse<T>(), "ClassIdentifier is missing for type");
-        static const std::string unknown{"Unknown"};
-        return unknown;
+        return "Unknown";
     }
 }
 
-template <class T>
-using HasDataName = is_detected_exact<const std::string, detail::dataNameType, T>;
-
 template <typename T>
-const std::string& dataName() {
-    if constexpr (HasDataName<T>::value) {
+constexpr std::string_view dataName() {
+    if constexpr (requires {
+                      { T::dataName } -> std::convertible_to<std::string_view>;
+                  }) {
         return T::dataName;
-    } else if constexpr (HasClassIdentifierUpper<T>::value) {
-        return T::CLASS_IDENTIFIER;
-    } else if constexpr (HasClassIdentifierLower<T>::value) {
-        return T::classIdentifier;
     } else {
-        static const std::string unknown{"Unknown"};
-        return unknown;
+        return classIdentifier<T>();
     }
 }
 
-template <class T>
-using HasColorCodeUpper =
-    std::disjunction<is_detected_exact<uvec3, detail::colorCodeUpperType, T>,
-                     is_detected_exact<const uvec3, detail::colorCodeUpperType, T>>;
-template <class T>
-using HasColorCodeLower =
-    std::disjunction<is_detected_exact<uvec3, detail::colorCodeLowerType, T>,
-                     is_detected_exact<const uvec3, detail::colorCodeLowerType, T>>;
-template <class T>
-using HasColorCode = std::disjunction<HasColorCodeUpper<T>, HasColorCodeLower<T>>;
-
 template <typename T>
-uvec3 colorCode() {
-    if constexpr (HasColorCodeUpper<T>::value) {
-        return T::COLOR_CODE;
-    } else if constexpr (HasColorCodeLower<T>::value) {
+constexpr uvec3 colorCode() {
+    if constexpr (requires {
+                      { T::colorCode } -> std::convertible_to<glm::uvec3>;
+                  }) {
         return T::colorCode;
+    } else if constexpr (requires {
+                             { T::COLOR_CODE } -> std::convertible_to<glm::uvec3>;
+                         }) {
+        return T::COLOR_CODE;
     } else {
         return uvec3(0);
     }
 }
 
 template <typename T>
-using HasDataInfo = is_detected_exact<std::string, detail::dataInfoType, T>;
-
-template <typename T>
-using HasInfo = is_detected_exact<Document, detail::infoType, T>;
-
-template <typename T>
-std::string data_info(const T* data) {
-    if constexpr (HasDataInfo<T>::value) {
-        return data->getDataInfo();
-    } else {
-        return {};
-    }
-}
-
-template <typename T>
 Document info(const T& data) {
-    if constexpr (HasInfo<T>::value) {
+    if constexpr (requires(T t) {
+                      { t.getInfo() } -> std::convertible_to<Document>;
+                  }) {
         return data.getInfo();
-    } else if constexpr (HasDataInfo<T>::value) {
+    } else if constexpr (requires(T t) {
+                             { t.getDataInfo() } -> std::convertible_to<std::string>;
+                         }) {
         Document doc;
         doc.append("p", data.getDataInfo());
         return doc;

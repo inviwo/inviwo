@@ -60,9 +60,8 @@ std::shared_ptr<Processor> ProcessorMimeData::get() const { return processor_; }
 
 Processor* ProcessorMimeData::processor() const { return processor_.get(); }
 
-const std::string& ProcessorMimeData::getMimeTag() {
-    static std::string tag{"application/x.vnd.inviwo.processor+txt"};
-    return tag;
+std::string_view ProcessorMimeData::getMimeTag() {
+    return "application/x.vnd.inviwo.processor+txt";
 }
 
 const ProcessorMimeData* ProcessorMimeData::toProcessorMimeData(const QMimeData* data) {

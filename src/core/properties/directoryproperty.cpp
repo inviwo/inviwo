@@ -32,8 +32,7 @@
 
 namespace inviwo {
 
-const std::string DirectoryProperty::classIdentifier = "org.inviwo.DirectoryProperty";
-std::string DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
                                      Document help, std::string_view value,
@@ -57,7 +56,7 @@ DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
 DirectoryProperty* DirectoryProperty::clone() const { return new DirectoryProperty(*this); }
 
 DirectoryProperty::~DirectoryProperty() = default;
-std::string DirectoryProperty::getClassIdentifierForWidget() const {
+std::string_view DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();
 }
 

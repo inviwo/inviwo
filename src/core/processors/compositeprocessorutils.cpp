@@ -49,7 +49,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         std::vector<Processor*> selected;
         util::copy_if(
             network.getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
                 return m->isSelected();
             });
 
@@ -58,7 +58,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
 
         auto app = network.getApplication();
         auto comp = std::make_shared<CompositeProcessor>("composite", "Composite", app);
-        auto meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        auto* meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         auto center = util::getCenterPosition(selected);
         meta->setPosition(center);
 
@@ -91,8 +91,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         for (auto& c : inConnections) {
             auto portId = c.first->getClassIdentifier();
 
-            if (auto source = pf->createShared(portId + ".metasource")) {
-                if (auto metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
+            if (auto source = pf->createShared(fmt::format("{}.metasource", portId))) {
+                if (auto* metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
                     for (auto inport : c.second) {
@@ -140,8 +140,9 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         for (auto& c : outConnections) {
             auto portId = c.first->getClassIdentifier();
 
-            if (auto sink = std::shared_ptr<Processor>(pf->createShared(portId + ".metasink"))) {
-                if (auto metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
+            if (auto sink = std::shared_ptr<Processor>(
+                    pf->createShared(fmt::format("{}.metasink", portId)))) {
+                if (auto* metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
                     subNetwork.addConnection(c.first, metasink->getInports().front());
                     for (auto inport : c.second) {
@@ -254,7 +255,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
             }
         }
         auto meta =
-            composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         util::offsetPosition(subProcessors, meta->getPosition());
         util::setSelected(subProcessors, true);
 

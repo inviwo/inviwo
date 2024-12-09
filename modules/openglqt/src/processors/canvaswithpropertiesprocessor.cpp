@@ -167,7 +167,7 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
         }
     };
 
-    auto wmd = createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER);
+    auto* wmd = createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier);
     wmd->addObserver(pwObserver_.get());
     dimensions_.onChange([this, wmd]() { wmd->setDimensions(dimensions_.get()); });
     position_.onChange([this, wmd]() { wmd->setPosition(position_.get()); });

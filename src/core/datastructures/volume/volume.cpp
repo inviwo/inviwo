@@ -237,10 +237,6 @@ VolumeConfig Volume::config() const {
             .world = getWorldMatrix()};
 }
 
-const uvec3 Volume::colorCode = uvec3(188, 101, 101);
-const std::string Volume::classIdentifier = "org.inviwo.Volume";
-const std::string Volume::dataName = "Volume";
-
 namespace {
 
 auto histCalc(const Volume& v) {

@@ -42,8 +42,7 @@ namespace inviwo {
 
 namespace plot {
 
-const std::string BoxSelectionProperty::classIdentifier = "org.inviwo.BoxSelectionProperty";
-std::string BoxSelectionProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view BoxSelectionProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoxSelectionProperty::BoxSelectionProperty(const std::string& identifier,
                                            const std::string& displayName,

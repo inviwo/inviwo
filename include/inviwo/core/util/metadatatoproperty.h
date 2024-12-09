@@ -31,7 +31,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <unordered_map>
+#include <inviwo/core/util/transparentmaps.h>
+
 #include <functional>
 #include <string>
 
@@ -62,9 +63,8 @@ public:
     void updateProperty(CompositeProperty& parent, const MetaDataMap* metaDataMap);
 
 private:
-    using PropertyMap =
-        std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
-                                                           CompositeProperty&)>>;
+    using PropertyMap = UnorderedStringMap<
+        std::function<void(std::string_view, const MetaData*, CompositeProperty&)>>;
 
     PropertyMap factory_;
 };

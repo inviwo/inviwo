@@ -80,7 +80,7 @@ Processor* ProcessorNetwork::addProcessor(std::shared_ptr<Processor> processor) 
         });
     addPropertyOwnerObservation(processor.get());
 
-    auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     meta->addObserver(this);
 
     if (application_) {

@@ -34,6 +34,6 @@ namespace inviwo {
 
 DialogFactoryObject::DialogFactoryObject(std::string_view className) : className_(className) {}
 
-std::string DialogFactoryObject::getClassIdentifier() const { return className_; }
+std::string_view DialogFactoryObject::getClassIdentifier() const { return className_; }
 
 }  // namespace inviwo

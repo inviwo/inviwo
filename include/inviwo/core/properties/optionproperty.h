@@ -59,7 +59,7 @@ public:
 
     virtual ~BaseOptionProperty();
 
-    virtual std::string getClassIdentifier() const override = 0;
+    virtual std::string_view getClassIdentifier() const override = 0;
 
     virtual BaseOptionProperty& clearOptions() = 0;
 
@@ -168,7 +168,7 @@ struct OptionPropertyState {
  *
  * template <>
  * struct EnumTraits<MyEnum> {
- *     static std::string name() { return "MyEnum"; }
+ *     static std::string_view name() { return "MyEnum"; }
  * };
  *
  * registerProperty<OptionProperty<MyEnum>>();
@@ -178,9 +178,8 @@ struct OptionPropertyState {
  * @code
  * template <>
  * struct PropertyTraits<OptionProperty<MyType>>
- *     static const std::string& classIdentifier() {
- *         static const std::string identifier = "org.inviwo.OptionPropertyMyType";
- *         return identifier;
+ *     static constexpr std::string_view classIdentifier() {
+ *         return "org.inviwo.OptionPropertyMyType";
  *     }
  * };
  * @endcode
@@ -232,7 +231,7 @@ public:
     virtual OptionProperty<T>* clone() const override;
     virtual ~OptionProperty();
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
     /**
      * Implicit conversion operator. The OptionProperty will implicitly be converted to T when
@@ -343,7 +342,7 @@ public:
     virtual OptionProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -378,18 +377,16 @@ bool operator!=(const U& lhs, const OptionProperty<T>& rhs) {
 
 template <typename T>
 struct PropertyTraits<OptionProperty<T>> {
-    static const std::string& classIdentifier() {
-        return OptionPropertyTraits<T>::classIdentifier();
-    }
+    static std::string_view classIdentifier() { return OptionPropertyTraits<T>::classIdentifier(); }
 };
 
 template <typename T>
-std::string OptionProperty<T>::getClassIdentifier() const {
+std::string_view OptionProperty<T>::getClassIdentifier() const {
     return PropertyTraits<OptionProperty<T>>::classIdentifier();
 }
 
 template <typename T>
-std::string OptionProperty<T>::getClassIdentifierForWidget() const {
+std::string_view OptionProperty<T>::getClassIdentifierForWidget() const {
     return PropertyTraits<OptionProperty<std::string>>::classIdentifier();
 }
 

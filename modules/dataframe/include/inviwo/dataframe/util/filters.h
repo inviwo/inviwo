@@ -93,11 +93,11 @@ IVW_MODULE_DATAFRAME_API ItemFilter doubleRange(int column, double min, double m
 
 template <>
 struct EnumTraits<filters::StringComp> {
-    static std::string name() { return "StringComp"; }
+    static constexpr std::string_view name() { return "StringComp"; }
 };
 template <>
 struct EnumTraits<filters::NumberComp> {
-    static std::string name() { return "NumberComp"; }
+    static constexpr std::string_view name() { return "NumberComp"; }
 };
 
 /**

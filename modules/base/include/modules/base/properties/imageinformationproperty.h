@@ -50,8 +50,8 @@ class Image;
  */
 class IVW_MODULE_BASE_API ImageInformationProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ImageInformationProperty"};
 
     ImageInformationProperty(
         std::string_view identifier, std::string_view displayName,

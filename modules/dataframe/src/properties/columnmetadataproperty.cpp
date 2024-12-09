@@ -53,8 +53,7 @@
 
 namespace inviwo {
 
-const std::string ColumnMetaDataProperty::classIdentifier = "org.inviwo.ColumnMetaDataProperty";
-std::string ColumnMetaDataProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view ColumnMetaDataProperty::getClassIdentifier() const { return classIdentifier; }
 
 ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
                                                std::string_view displayName, dvec2 range,

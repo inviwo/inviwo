@@ -114,8 +114,8 @@ private:
  */
 class IVW_CORE_API FileProperty : public Property, public FileBase {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.FileProperty"};
     using value_type = std::filesystem::path;
 
     /**

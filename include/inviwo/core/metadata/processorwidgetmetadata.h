@@ -57,7 +57,7 @@ public:
     ProcessorWidgetMetaData& operator=(const ProcessorWidgetMetaData& that) = default;
     virtual ~ProcessorWidgetMetaData() = default;
 
-    virtual const std::string& getClassIdentifier() const override { return CLASS_IDENTIFIER; }
+    virtual std::string_view getClassIdentifier() const override { return classIdentifier; }
     virtual ProcessorWidgetMetaData* clone() const override;
 
     virtual void serialize(Serializer& s) const override;
@@ -79,7 +79,7 @@ public:
     void setOnTop(bool onTop, const ProcessorWidgetMetaDataObserver* source = nullptr);
     bool isOnTop() const;
 
-    static const std::string CLASS_IDENTIFIER;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ProcessorWidgetMetaData"};
 
 private:
     ivec2 position_;

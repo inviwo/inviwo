@@ -91,9 +91,9 @@ public:
     template <typename T>
     std::vector<glm::tvec3<T, glm::defaultp>> getVectorOfVec3AtPath(const Path& path) const;
 
-    static const uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
+    static constexpr uvec3 colorCode{101, 101, 188};
+    static constexpr std::string_view classIdentifier{"org.inviwo.hdf5.handle"};
+    static constexpr std::string_view dataName{"HDF"};
 
 private:
     double getMin(const DataFormatBase* type) const;

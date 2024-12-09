@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-const std::string StringProperty::classIdentifier = "org.inviwo.StringProperty";
-std::string StringProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view StringProperty::getClassIdentifier() const { return classIdentifier; }
 
 StringProperty::StringProperty(std::string_view identifier, std::string_view displayName,
                                Document help, std::string_view value,

@@ -42,6 +42,7 @@
 
 #include <memory>
 #include <vector>
+#include <fmt/compile.h>
 
 namespace inviwo {
 
@@ -64,7 +65,7 @@ public:
     DataInport(std::string_view identifier, Document help = {});
     virtual ~DataInport() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
@@ -89,23 +90,32 @@ using FlatMultiDataInport = DataInport<T, 0, true>;
 
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
-    static std::string classIdentifier() {
-        auto&& classId = DataTraits<T>::classIdentifier();
-        if (classId.empty()) return {};
+    static constexpr auto cld = []() {
+        constexpr auto tCid = DataTraits<T>::classIdentifier();
+        if constexpr (tCid.empty()) {
+            return StaticString{};
+        }
 
-        StrBuffer name;
-        name.append("{}", classId);
-        if constexpr (Flat) {
-            name.append(".flat");
-        }
-        if constexpr (N == 0) {
-            name.append(".multi");
-        } else if constexpr (N != 1) {
-            name.append(".{}", N);
-        }
-        name.append(".inport");
-        return std::string{name.view()};
-    }
+        constexpr auto flat = []() {
+            if constexpr (Flat) {
+                return StaticString{".flat"};
+            } else {
+                return StaticString{};
+            }
+        }();
+        constexpr auto multi = []() {
+            if constexpr (N == 0) {
+                return StaticString{".multi"};
+            } else if constexpr (N != 1) {
+                return util::toStaticString<N>(FMT_COMPILE("{.}"));
+            } else {
+                return StaticString{};
+            }
+        }();
+
+        return StaticString<tCid.size()>(tCid) + flat + multi + ".inport";
+    }();
+    static constexpr std::string_view classIdentifier() { return cld; }
 };
 
 template <typename T, size_t N, bool Flat>
@@ -113,7 +123,7 @@ DataInport<T, N, Flat>::DataInport(std::string_view identifier, Document help)
     : Inport(identifier, std::move(help)), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
 
 template <typename T, size_t N, bool Flat>
-std::string DataInport<T, N, Flat>::getClassIdentifier() const {
+std::string_view DataInport<T, N, Flat>::getClassIdentifier() const {
     return PortTraits<DataInport<T, N, Flat>>::classIdentifier();
 }
 

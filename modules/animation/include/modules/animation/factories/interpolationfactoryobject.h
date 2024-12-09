@@ -39,11 +39,11 @@ class Interpolation;
 
 class IVW_MODULE_ANIMATION_API InterpolationFactoryObject {
 public:
-    InterpolationFactoryObject(const std::string& classIdentifier);
+    explicit InterpolationFactoryObject(std::string_view classIdentifier);
     virtual ~InterpolationFactoryObject() = default;
 
     virtual std::unique_ptr<Interpolation> create() const = 0;
-    const std::string& getClassIdentifier() const;
+    std::string_view getClassIdentifier() const;
 
 protected:
     const std::string classIdentifier_;
@@ -57,7 +57,7 @@ protected:
 template <typename Keyframe>
 class InterpolationFactoryObjectKeyframe : public InterpolationFactoryObject {
 public:
-    InterpolationFactoryObjectKeyframe(const std::string& classIdentifier)
+    explicit InterpolationFactoryObjectKeyframe(std::string_view classIdentifier)
         : InterpolationFactoryObject(classIdentifier) {}
     virtual ~InterpolationFactoryObjectKeyframe() = default;
 };
@@ -75,7 +75,7 @@ public:
     InterpolationFactoryObjectTemplate()
         : InterpolationFactoryObjectKeyframe<key_type>(InterpTyped::classIdentifier()) {}
 
-    InterpolationFactoryObjectTemplate(const std::string& classIdentifier)
+    explicit InterpolationFactoryObjectTemplate(std::string_view classIdentifier)
         : InterpolationFactoryObjectKeyframe<key_type>(classIdentifier){};
 
     virtual ~InterpolationFactoryObjectTemplate() = default;

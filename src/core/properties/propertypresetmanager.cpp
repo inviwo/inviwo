@@ -266,10 +266,8 @@ void PropertyPresetManager::saveWorkspacePresets(Serializer& s) {
 
 PropertyPresetManager::Preset::Preset() = default;
 
-PropertyPresetManager::Preset::Preset(std::string id, std::string n, std::string d)
+PropertyPresetManager::Preset::Preset(std::string_view id, std::string_view n, std::string_view d)
     : classIdentifier(id), name(n), data(d) {}
-
-PropertyPresetManager::Preset::~Preset() = default;
 
 void PropertyPresetManager::Preset::serialize(Serializer& s) const {
     s.serialize("classIdentifier", classIdentifier);
@@ -297,7 +295,7 @@ std::string_view enumToStr(PropertyPresetType p) {
         case PropertyPresetType::Application:
             return "Application";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid PropertyPresetType enum value '{}'", static_cast<int>(p));
 }
 

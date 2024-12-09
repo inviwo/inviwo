@@ -79,10 +79,7 @@ public:
 
 template <>
 struct inviwo::OptionPropertyTraits<inviwo::ffmpeg::CodecID> {
-    static const std::string& classIdentifier() {
-        static const std::string identifier = "org.inviwo.OptionProperty.ffmpeg.CodecID";
-        return identifier;
-    }
+    static std::string_view classIdentifier() { return "org.inviwo.OptionProperty.ffmpeg.CodecID"; }
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

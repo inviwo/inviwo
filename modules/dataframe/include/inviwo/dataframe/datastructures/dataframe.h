@@ -231,16 +231,9 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(std::string_view header,
 
 template <>
 struct DataTraits<DataFrame> {
-    static const std::string& classIdentifier() {
-        static const std::string id{"org.inviwo.DataFrame"};
-        return id;
-    }
-
-    static const std::string& dataName() {
-        static const std::string name{"DataFrame"};
-        return name;
-    }
-    static uvec3 colorCode() { return uvec3(153, 76, 0); }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.DataFrame"; }
+    static constexpr std::string_view dataName() { return "DataFrame"; }
+    static constexpr uvec3 colorCode() { return {153, 76, 0}; }
     static Document info(const DataFrame& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

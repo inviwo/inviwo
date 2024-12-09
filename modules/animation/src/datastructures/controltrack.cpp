@@ -53,8 +53,8 @@ ControlTrack::~ControlTrack() = default;
 
 ControlTrack* ControlTrack::clone() const { return new ControlTrack(*this); }
 
-std::string ControlTrack::classIdentifier() { return "org.inviwo.animation.ControlTrack"; }
-std::string ControlTrack::getClassIdentifier() const { return classIdentifier(); }
+std::string_view ControlTrack::classIdentifier() { return "org.inviwo.animation.ControlTrack"; }
+std::string_view ControlTrack::getClassIdentifier() const { return classIdentifier(); }
 
 /**
  * Track of sequences

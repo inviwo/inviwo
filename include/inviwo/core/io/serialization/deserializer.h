@@ -416,7 +416,7 @@ template <typename T>
 using classIdentifierType = decltype(std::declval<T>().getClassIdentifier());
 
 template <class T>
-using HasGetClassIdentifier = is_detected_exact<std::string, classIdentifierType, T>;
+using HasGetClassIdentifier = is_detected_exact<std::string_view, classIdentifierType, T>;
 
 /**
  * A helper class for more advanced deserialization. useful when one has to call observer

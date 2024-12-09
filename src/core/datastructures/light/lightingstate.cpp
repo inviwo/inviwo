@@ -59,7 +59,7 @@ std::string_view enumToStr(ShadingMode sm) {
         case ShadingMode::PhongBack:
             return "Phong backside only";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid ShadingMode enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid ShadingMode enum value '{}'",
                     static_cast<int>(sm));
 }
 

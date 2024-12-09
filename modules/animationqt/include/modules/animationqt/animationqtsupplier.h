@@ -60,7 +60,7 @@ public:
     template <typename T>
     void registerTrackWidgetQt();
 
-    void registerTrackToWidgetMap(const std::string& trackId, const std::string& widgetId);
+    void registerTrackToWidgetMap(std::string_view trackId, std::string_view widgetId);
 
     /**
      * Register a Track with the Track Factory
@@ -68,7 +68,7 @@ public:
     template <typename T>
     void registerSequenceEditor();
 
-    void registerTrackToSequenceEditorMap(const std::string& trackId, const std::string& erditorId);
+    void registerTrackToSequenceEditorMap(std::string_view trackId, std::string_view editorId);
 
     void unRegisterAll();
 

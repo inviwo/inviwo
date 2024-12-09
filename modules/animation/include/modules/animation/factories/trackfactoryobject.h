@@ -42,7 +42,7 @@ class Track;
 
 class IVW_MODULE_ANIMATION_API TrackFactoryObject {
 public:
-    TrackFactoryObject(const std::string& classIdentifier);
+    explicit TrackFactoryObject(std::string_view classIdentifier);
     virtual ~TrackFactoryObject() = default;
 
     virtual std::unique_ptr<Track> create(ProcessorNetwork* network) const = 0;
@@ -58,7 +58,7 @@ public:
     // Requires a static classIdentifier() method on T
     TrackFactoryObjectTemplate() : TrackFactoryObject(T::classIdentifier()) {}
 
-    TrackFactoryObjectTemplate(const std::string& classIdentifier)
+    explicit TrackFactoryObjectTemplate(std::string_view classIdentifier)
         : TrackFactoryObject(classIdentifier){};
     virtual ~TrackFactoryObjectTemplate() = default;
 
