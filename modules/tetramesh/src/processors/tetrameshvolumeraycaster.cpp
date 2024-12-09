@@ -31,6 +31,11 @@
 #include <inviwo/tetramesh/datastructures/tetramesh.h>
 #include <inviwo/tetramesh/util/tetrameshutils.h>
 
+#include <inviwo/core/interaction/events/mousebuttons.h>        // for MouseButton, MouseButton::...
+#include <inviwo/core/interaction/events/mouseevent.h>          // for MouseEvent
+#include <inviwo/core/interaction/events/pickingevent.h>        // for PickingEvent
+#include <inviwo/core/interaction/pickingmapper.h>              // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>               // for PickingState, PickingState...
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/exception.h>
@@ -68,7 +73,7 @@ const ProcessorInfo TetraMeshVolumeRaycaster::processorInfo_{
     CodeState::Stable,                      // Code state
     Tags::GL | Tag{"Unstructured"},         // Tags
     R"(
-Creates an OpenGL representation of a tetrahedral grid and renders it using volume rendering. This 
+Creates an OpenGL representation of a tetrahedral grid and renders it using volume rendering. This
 processor requires OpenGL 4.3 since it relies on Shader Storage Buffer Objects.)"_unindentHelp};
 
 const ProcessorInfo& TetraMeshVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
@@ -89,8 +94,23 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     , maxSteps_{"maxSteps", "Max Steps",
                 util::ordinalCount(10000).set(
                     "Upper limit of tetrahedras a ray can traverse."_help)}
-    , shader_{"tetramesh_traversal.vert", "tetramesh_traversal.frag", Shader::Build::No} {
+    , pickingOutput_{"pickingout", "Picking Result", "", InvalidationLevel::Valid, PropertySemantics::Multiline }
+    , shader_{"tetramesh_traversal.vert", "tetramesh_traversal.frag", Shader::Build::No}
+    , picking_(this, 1, [&](PickingEvent* p) { handlePickingEvent(p); })
+    , cutplane_{
+          "cutplane",
+          "Cutplane",
+          "Cuts the tetramesh volume along the x, y, and z axis"_help,
+          vec3(1.0f),
+          {vec3(-1.0f), ConstraintBehavior::Ignore},
+          {vec3(1.0f), ConstraintBehavior::Ignore}}
+    , enableIsoSurface_{"enableIsoSurface", "Enable ISO Surface", false}
+    , isoValue_{"isoValue", "ISO Value", 0.5f, 0.f, 1.f}
+    , prevDataRange_{0.0, 1.0}
+    , isoColor_{"isoColor", "ISO Color", vec4(1.0, 1.0, 0.6, 1.0)}
+    , useIsoTF_{"useIsoTF", "Use ISO Transferfunction", true} {
 
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     addPorts(inport_, imageInport_, outport_);
 
     imageInport_.setOptional(true);
@@ -102,7 +122,7 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     lighting_.shadingMode_.setSelectedValue(ShadingMode::None);
     lighting_.shadingMode_.setCurrentStateAsDefault();
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    isoColor_.setSemantics(PropertySemantics::Color);
 
     if (OpenGLCapabilities::getOpenGLVersion() < 430 &&
         !OpenGLCapabilities::isExtensionSupported("ARB_shader_storage_buffer_object")) {
@@ -112,11 +132,72 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
 
         isReady_.setUpdate([]() { return false; });
     }
+
+    addProperties(enableIsoSurface_, isoValue_, useIsoTF_, isoColor_, cutplane_, pickingOutput_);
+}
+
+void TetraMeshVolumeRaycaster::handlePickingEvent(PickingEvent* p) {
+    if ((p->getState() & PickingState::Updated) && (p->getEvent()->hash() == MouseEvent::chash())) {
+        p->markAsUsed();
+        auto me = p->getEventAs<MouseEvent>();
+        if ((me->buttonState() & MouseButton::Left) &&
+            me->state() & (MouseState::Press | MouseState::Move)) {
+            // Get the normalized screen space coordinates (0,1)
+            const dvec2 pos = p->getPosition();
+            auto img = outport_.getData();
+            const size2_t size = img->getDimensions();
+            // Map screen space coordinate to integer texture coordinates
+            size2_t cords = size2_t(std::lround(pos.x * size.x), std::lround(pos.y * size.y));
+            const dvec4 v = img->readPixel(cords, LayerType::Color, 1);
+
+            dvec3 radarOrigin = dvec3(-143.65316218500305, -1673.6645787018295, 6153.016403143832);
+            dmat4 translation = glm::translate(dmat4(1.0), radarOrigin);
+            dvec4 pointPos = dvec4(v.y, v.z, v.w, 1.0);
+            dvec3 worldPos = dvec3(translation * pointPos);
+
+            double r = std::sqrt(glm::dot(worldPos, worldPos));
+            double theta = std::acos(worldPos.z / r);
+            double phi = std::atan2(worldPos.y, worldPos.x);
+            double earthRadius = 6371;
+            r -= earthRadius;
+            phi = glm::degrees(phi);
+            phi = std::fmod(phi + 360.0, 360);
+            theta = 90.0 - glm::degrees(theta);
+
+            pickingOutput_.set(
+                fmt::format(
+                    "Value:      {:.2f}\n"
+                    "Latitude:   {:.4f}\n"
+                    "Longitude:  {:.4f}\n"
+                    "Height:     {:.2f}\n"
+                    "x: {:.f}\n"
+                    "y: {:.f}\n"
+                    "z: {:.f}",
+                    v.x, theta, phi, r, v.y, v.z, v.w
+            ));
+        }
+    }
+
 }
 
 void TetraMeshVolumeRaycaster::initializeResources() {
     utilgl::addDefines(shader_, camera_, lighting_);
     utilgl::addShaderDefinesBGPort(shader_, imageInport_);
+
+    int layerID = 2;
+    auto frag = shader_.getFragmentShaderObject();
+    frag->addOutDeclaration("out_picking_data", layerID++);
+
+    auto out = outport_.getData();
+    if (out->getNumberOfColorLayers() != (layerID))
+    {
+        // Add extra color layer to output image
+        auto image = std::make_shared<Image>(out->getDimensions(), out->getDataFormat());
+        Layer layer = Layer(out->getDimensions(), DataVec4Float32::get(), LayerType::Color);
+        image->addColorLayer(std::make_shared<Layer>(layer));
+        outport_.setData(image);
+    }
+
     shader_.build();
 }
 
@@ -130,13 +211,22 @@ void TetraMeshVolumeRaycaster::process() {
         buffers_.upload(tetraNodes_, tetraNodeIds_, opposingFaces);
         mesh_ = utiltetra::createBoundaryMesh(tetraMesh, tetraNodes_, tetraNodeIds_,
                                               utiltetra::getBoundaryFaces(opposingFaces));
+
+        // Update the isoValue min/max range to the new data, keeps the slider at the same % as prev
+        const dvec2 dataRange{inport_.getData()->getDataRange()};
+        const float percent = (isoValue_ - prevDataRange_.x) / (prevDataRange_.y - prevDataRange_.x);
+        const float newValue = percent * (dataRange.y - dataRange.x) + dataRange.x;
+
+        isoValue_.set(newValue, dataRange.x, dataRange.y, Defaultvalues<float>::getInc());
+        prevDataRange_ = dataRange;
     }
 
     {
         // pre-multiply the background image while copying it to the current target since the
         // raycasting also blends pre-multiplied background colors.
         utilgl::BlendModeState blendmode{GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ZERO};
-        utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_, ImageType::ColorDepth);
+        utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_,
+                                                   ImageType::ColorDepthPicking);
     }
 
     if (imageInport_.hasData()) {
@@ -151,9 +241,15 @@ void TetraMeshVolumeRaycaster::process() {
     TextureUnitContainer texContainer;
     utilgl::setUniforms(shader_, camera_, lighting_, opacityScaling_, maxSteps_);
     utilgl::setShaderUniforms(shader_, *mesh_, "geometry");
+    utilgl::setShaderUniforms(shader_, cutplane_, "cutplane");
+    utilgl::setShaderUniforms(shader_, enableIsoSurface_, "enableIsoSurface");
+    utilgl::setShaderUniforms(shader_, isoValue_, "isoValue");
+    utilgl::setShaderUniforms(shader_, isoColor_, "isoColor");
+    utilgl::setShaderUniforms(shader_, useIsoTF_, "useIsoTF");
+    shader_.setUniform("pickingID", static_cast<int>(picking_.getPickingId(0)));
     utilgl::bindAndSetUniforms(shader_, texContainer, tf_);
     if (imageInport_.hasData()) {
-        utilgl::bindAndSetUniforms(shader_, texContainer, imageInport_, ImageType::ColorDepth);
+        utilgl::bindAndSetUniforms(shader_, texContainer, imageInport_, ImageType::ColorDepthPicking);
     }
 
     const dvec2 dataRange{inport_.getData()->getDataRange()};
