@@ -33,6 +33,11 @@
 </style>
 </head>
 <body>
+<h2>2024-12-09 string_view class identifiers</h2>
+<p>All base classes that has a <code class="notranslate">virtual std::string getClassIdentifier() const</code> are refactored into<br>
+<code class="notranslate">virtual std::string_view getClassIdentifier() const</code>. This affects all classes derived from <code class="notranslate">Inport</code>, <code class="notranslate">Outport</code>, <code class="notranslate">Property</code>, <code class="notranslate">Metadata</code>, <code class="notranslate">Camera</code>,<code class="notranslate">animation::Track</code>, <code class="notranslate">animation::Interpolation</code>. This is done to avoid string allocations.<br>
+The trait classes <code class="notranslate">DataTraits</code> and <code class="notranslate">PortTraits</code> now uses <code class="notranslate">static constexpr std::string_view classIdentifier()</code> by default.<br>
+Look at <code class="notranslate">inviwo/core/datastructures/data/datatraits.h</code> for more information.</p>
 <h2>2024-11-27 <code class="notranslate">DataMinMaxGL</code> of GL representations with Compute Shaders</h2>
 <p>The class <code class="notranslate">DataMinMaxGL</code>  provides functionality to determine min/max values of Buffers, Layers, and Volumes on the GPU. The implementation utilizes compute shaders directly accessing the corresponding GL representations. Since there is some overhead regarding managing shaders, an instantiation of <code class="notranslate">utilgl::DataMinMaxGL</code> should be kept around for subsequent calls of <code class="notranslate">DataMinMaxGL::minMax()</code>.</p>
 <p>Check with <code class="notranslate">utilgl::DataMinMaxGL::isSuppportedByGPU()</code> whether the graphics hardware and driver support compute shaders and necessary OpenGL extensions. If there is no GPU support available, <code class="notranslate">DataMinMaxGL</code> will fall back on determining min/max values with <code class="notranslate">util::*MinMax()</code> using RAM representations (<code class="notranslate">&lt;modules/base/algorithm/dataminmax.h&gt;</code>).</p>
@@ -137,8 +142,8 @@ Since the extra quotes inserted while formatting will make the path ill formed.<
 <div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-s1">l</span> <span class="pl-c1">=</span> [ [ <span class="pl-c1">0</span>, <span class="pl-c1">1</span>, <span class="pl-c1">2</span> ], [ <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span> ] ]
 <span class="pl-en">print</span>(<span class="pl-s1">l</span>[<span class="pl-c1">0</span>][<span class="pl-c1">2</span>]) <span class="pl-c"># [2] refers to the fastest running index</span>
 
-<span class="pl-s1">n</span> <span class="pl-c1">=</span> <span class="pl-s1">numpy</span>.<span class="pl-en">array</span>(<span class="pl-s1">l</span>)
-<span class="pl-en">print</span>(<span class="pl-s1">n</span>.<span class="pl-en">flatten</span>()) <span class="pl-c"># -&gt; [ 0, 1, 2, 3, 4, 5 ]</span>
+<span class="pl-s1">n</span> <span class="pl-c1">=</span> <span class="pl-s1">numpy</span>.<span class="pl-c1">array</span>(<span class="pl-s1">l</span>)
+<span class="pl-en">print</span>(<span class="pl-s1">n</span>.<span class="pl-c1">flatten</span>()) <span class="pl-c"># -&gt; [ 0, 1, 2, 3, 4, 5 ]</span>
 <span class="pl-en">print</span>(<span class="pl-s1">n</span>[<span class="pl-c1">0</span>, <span class="pl-c1">2</span>])     <span class="pl-c"># -&gt; 2</span></pre></div>
 <h2>2023-03-28 Removed deprecated PythonScript processor</h2>
 <p>The <code class="notranslate">PythonScriptProcessor</code> -- deprecated for more than 4 years -- has been removed entirely. Three Python processors replicating previously existing Python scripts have been added instead.</p>
@@ -191,10 +196,10 @@ The functionality earlier found in <code class="notranslate">InviwoApplcationQt<
 <h2>2022-09-29 Pre-compiled headers overhaul</h2>
 <p>The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.<br>
 A single PCH file is generated for inviwo core including a number of standard includes. In addition, there is a PCH file for the qtwidgets modules with some Qt headers. These PCH files ar reused by all modules by default when depending on qtwidgets or core respectively, and assuming <code class="notranslate">IVW_CFG_PRECOMPILED_HEADERS</code> is checked. Use the <code class="notranslate">NO_PCH</code> option when calling <code class="notranslate">ivw_create_module()</code> to prevent the default PCH from being used in a module.</p>
-<div class="highlight highlight-source-cmake"><pre class="notranslate">ivw_create_module(NO_PCH <span class="pl-smi">${SOURCE_FILES}</span> <span class="pl-smi">${HEADER_FILES}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate">ivw_create_module(NO_PCH <span class="pl-k">${SOURCE_FILES}</span> <span class="pl-k">${HEADER_FILES}</span>)</pre></div>
 <p>It is also possible to instead use a custom PCH by manually calling <code class="notranslate">ivw_compile_optimize_on_target()</code> after <code class="notranslate">ivw_create_module(NO_PCH ...)</code>.</p>
-<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-c1">set</span>(PCH_HEADERS header_1.h header_2.h ...)
-ivw_compile_optimize_on_target(inviwo-mymodule HEADERS <span class="pl-smi">${PCH_HEADERS}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-k">set</span>(PCH_HEADERS header_1.h header_2.h ...)
+ivw_compile_optimize_on_target(inviwo-mymodule HEADERS <span class="pl-k">${PCH_HEADERS}</span>)</pre></div>
 <p>This will include files listed in <code class="notranslate">${PCH_HEADERS}</code> and all headers marked for PCH inclusion of all target dependendencies as listed in the respective <code class="notranslate">IVW_PCH_HEADERS</code> target properties. In contrast,  using<code class="notranslate">target_precompile_headers()</code> instead will only consider the given header files. Note that using <code class="notranslate">PUBLIC</code> or <code class="notranslate">INTERFACE</code> with <code class="notranslate">target_precompile_headers()</code> enforces the usage of PCH ontor all other targets depending on this one.</p>
 <h2>2022-09-14 Include cleanup and refactoring</h2>
 <p>We cleaned up, removed, and broke some include dependencies in inviwo core to reduce the overall compile time.<br>
@@ -589,36 +594,36 @@ Bellow follows an example of a python processor:</p>
 <div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-c"># Name: PythonExample </span>
 <span class="pl-k">import</span> <span class="pl-s1">inviwopy</span> <span class="pl-k">as</span> <span class="pl-s1">ivw</span>
 
-<span class="pl-k">class</span> <span class="pl-v">PythonExample</span>(<span class="pl-s1">ivw</span>.<span class="pl-v">Processor</span>):
+<span class="pl-k">class</span> <span class="pl-v">PythonExample</span>(<span class="pl-s1">ivw</span>.<span class="pl-c1">Processor</span>):
     <span class="pl-k">def</span> <span class="pl-en">__init__</span>(<span class="pl-s1">self</span>, <span class="pl-s1">id</span>, <span class="pl-s1">name</span>):
-        <span class="pl-s1">ivw</span>.<span class="pl-v">Processor</span>.<span class="pl-en">__init__</span>(<span class="pl-s1">self</span>, <span class="pl-s1">id</span>, <span class="pl-s1">name</span>)
-        <span class="pl-s1">self</span>.<span class="pl-s1">inport</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-s1">data</span>.<span class="pl-v">VolumeInport</span>(<span class="pl-s">"inport"</span>)
-        <span class="pl-s1">self</span>.<span class="pl-en">addInport</span>(<span class="pl-s1">self</span>.<span class="pl-s1">inport</span>)
-        <span class="pl-s1">self</span>.<span class="pl-s1">outport</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-s1">data</span>.<span class="pl-v">VolumeOutport</span>(<span class="pl-s">"outport"</span>)
-        <span class="pl-s1">self</span>.<span class="pl-en">addOutport</span>(<span class="pl-s1">self</span>.<span class="pl-s1">outport</span>)
+        <span class="pl-s1">ivw</span>.<span class="pl-c1">Processor</span>.<span class="pl-c1">__init__</span>(<span class="pl-s1">self</span>, <span class="pl-s1">id</span>, <span class="pl-s1">name</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">inport</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">data</span>.<span class="pl-c1">VolumeInport</span>(<span class="pl-s">"inport"</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">addInport</span>(<span class="pl-s1">self</span>.<span class="pl-c1">inport</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">outport</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">data</span>.<span class="pl-c1">VolumeOutport</span>(<span class="pl-s">"outport"</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">addOutport</span>(<span class="pl-s1">self</span>.<span class="pl-c1">outport</span>)
 
-        <span class="pl-s1">self</span>.<span class="pl-s1">slider</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-s1">properties</span>.<span class="pl-v">IntProperty</span>(<span class="pl-s">"slider"</span>, <span class="pl-s">"slider"</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">100</span>, <span class="pl-c1">1</span>)
-        <span class="pl-s1">self</span>.<span class="pl-en">addProperty</span>(<span class="pl-s1">self</span>.<span class="pl-s1">slider</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">slider</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">properties</span>.<span class="pl-c1">IntProperty</span>(<span class="pl-s">"slider"</span>, <span class="pl-s">"slider"</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">100</span>, <span class="pl-c1">1</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">addProperty</span>(<span class="pl-s1">self</span>.<span class="pl-c1">slider</span>)
 
     <span class="pl-en">@<span class="pl-s1">staticmethod</span></span>
     <span class="pl-k">def</span> <span class="pl-en">processorInfo</span>():
-        <span class="pl-k">return</span> <span class="pl-s1">ivw</span>.<span class="pl-v">ProcessorInfo</span>(
+        <span class="pl-k">return</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">ProcessorInfo</span>(
             <span class="pl-s1">classIdentifier</span> <span class="pl-c1">=</span> <span class="pl-s">"org.inviwo.PythonExample"</span>,
             <span class="pl-s1">displayName</span> <span class="pl-c1">=</span> <span class="pl-s">"Python Example"</span>, 
             <span class="pl-s1">category</span> <span class="pl-c1">=</span> <span class="pl-s">"Python"</span>,
-            <span class="pl-s1">codeState</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">CodeState</span>.<span class="pl-v">Stable</span>,
-            <span class="pl-s1">tags</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">Tags</span>.<span class="pl-v">PY</span>
+            <span class="pl-s1">codeState</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">CodeState</span>.<span class="pl-c1">Stable</span>,
+            <span class="pl-s1">tags</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">Tags</span>.<span class="pl-c1">PY</span>
         )
 
     <span class="pl-k">def</span> <span class="pl-en">getProcessorInfo</span>(<span class="pl-s1">self</span>):
-        <span class="pl-k">return</span> <span class="pl-v">PythonExample</span>.<span class="pl-en">processorInfo</span>()
+        <span class="pl-k">return</span> <span class="pl-v">PythonExample</span>.<span class="pl-c1">processorInfo</span>()
 
     <span class="pl-k">def</span> <span class="pl-en">initializeResources</span>(<span class="pl-s1">self</span>):
         <span class="pl-en">print</span>(<span class="pl-s">"init"</span>)
 
     <span class="pl-k">def</span> <span class="pl-en">process</span>(<span class="pl-s1">self</span>):
-        <span class="pl-en">print</span>(<span class="pl-s">"process: "</span>, <span class="pl-s1">self</span>.<span class="pl-s1">slider</span>.<span class="pl-s1">value</span>)
-        <span class="pl-s1">self</span>.<span class="pl-s1">outport</span>.<span class="pl-en">setData</span>(<span class="pl-s1">self</span>.<span class="pl-s1">inport</span>.<span class="pl-en">getData</span>())</pre></div>
+        <span class="pl-en">print</span>(<span class="pl-s">"process: "</span>, <span class="pl-s1">self</span>.<span class="pl-c1">slider</span>.<span class="pl-c1">value</span>)
+        <span class="pl-s1">self</span>.<span class="pl-c1">outport</span>.<span class="pl-c1">setData</span>(<span class="pl-s1">self</span>.<span class="pl-c1">inport</span>.<span class="pl-c1">getData</span>())</pre></div>
 <p>The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.<br>
 To register an Inviwo python processor one can put in in the /python_processor or by adding a <code class="notranslate">PythonProcessorFolderObserver</code> to an Inviwo module and have that observe a folder.</p>
 <h2>2019-04-30 Python Applications</h2>
@@ -629,28 +634,28 @@ An example of running inviwo can be found in <code class="notranslate">apps/invi
 
 <span class="pl-k">if</span> <span class="pl-s1">__name__</span> <span class="pl-c1">==</span> <span class="pl-s">'__main__'</span>:
     <span class="pl-c"># Inviwo requires that a logcentral is created.</span>
-    <span class="pl-s1">lc</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">LogCentral</span>()
+    <span class="pl-s1">lc</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">LogCentral</span>()
     
     <span class="pl-c"># Create and register a console logger</span>
-    <span class="pl-s1">cl</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-v">ConsoleLogger</span>()
-    <span class="pl-s1">lc</span>.<span class="pl-en">registerLogger</span>(<span class="pl-s1">cl</span>)
+    <span class="pl-s1">cl</span> <span class="pl-c1">=</span> <span class="pl-s1">ivw</span>.<span class="pl-c1">ConsoleLogger</span>()
+    <span class="pl-s1">lc</span>.<span class="pl-c1">registerLogger</span>(<span class="pl-s1">cl</span>)
 
     <span class="pl-c"># Create the inviwo application</span>
-    <span class="pl-s1">app</span> <span class="pl-c1">=</span> <span class="pl-s1">qt</span>.<span class="pl-v">InviwoApplicationQt</span>()
-    <span class="pl-s1">app</span>.<span class="pl-en">registerModules</span>()
+    <span class="pl-s1">app</span> <span class="pl-c1">=</span> <span class="pl-s1">qt</span>.<span class="pl-c1">InviwoApplicationQt</span>()
+    <span class="pl-s1">app</span>.<span class="pl-c1">registerModules</span>()
 
     <span class="pl-c"># load a workspace</span>
-    <span class="pl-s1">app</span>.<span class="pl-s1">network</span>.<span class="pl-en">load</span>(<span class="pl-s1">app</span>.<span class="pl-en">getPath</span>(<span class="pl-s1">ivw</span>.<span class="pl-v">PathType</span>.<span class="pl-v">Workspaces</span>) <span class="pl-c1">+</span> <span class="pl-s">"/boron.inv"</span>)
+    <span class="pl-s1">app</span>.<span class="pl-c1">network</span>.<span class="pl-c1">load</span>(<span class="pl-s1">app</span>.<span class="pl-c1">getPath</span>(<span class="pl-s1">ivw</span>.<span class="pl-c1">PathType</span>.<span class="pl-c1">Workspaces</span>) <span class="pl-c1">+</span> <span class="pl-s">"/boron.inv"</span>)
 
     <span class="pl-c"># Make sure the app is ready</span>
-    <span class="pl-s1">app</span>.<span class="pl-en">update</span>()
-    <span class="pl-s1">app</span>.<span class="pl-en">waitForPool</span>()
-    <span class="pl-s1">app</span>.<span class="pl-en">update</span>()
+    <span class="pl-s1">app</span>.<span class="pl-c1">update</span>()
+    <span class="pl-s1">app</span>.<span class="pl-c1">waitForPool</span>()
+    <span class="pl-s1">app</span>.<span class="pl-c1">update</span>()
     <span class="pl-c"># Save a snapshot</span>
-    <span class="pl-s1">app</span>.<span class="pl-s1">network</span>.<span class="pl-v">Canvas</span>.<span class="pl-en">snapshot</span>(<span class="pl-s">"snapshot.png"</span>) 
+    <span class="pl-s1">app</span>.<span class="pl-c1">network</span>.<span class="pl-c1">Canvas</span>.<span class="pl-c1">snapshot</span>(<span class="pl-s">"snapshot.png"</span>) 
 
     <span class="pl-c"># run the app event loop</span>
-    <span class="pl-s1">app</span>.<span class="pl-en">run</span>()</pre></div>
+    <span class="pl-s1">app</span>.<span class="pl-c1">run</span>()</pre></div>
 <h2>2019-04-26 Parallel Coordinate Plot Update: flipped axes</h2>
 <p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code class="notranslate">Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code class="notranslate">Axes Settings</code> → <code class="notranslate">Handles Visible</code>).</p>
 <h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
@@ -1015,16 +1020,16 @@ You will need to edit some path information in it, but otherwise it should be au
 <span class="pl-k">import</span> <span class="pl-s1">sys</span>;
 <span class="pl-c"># Path to the folder with files to convert</span>
 <span class="pl-s1">filePathSrc</span><span class="pl-c1">=</span><span class="pl-s">"C:<span class="pl-cce">\\</span>inviwo<span class="pl-cce">\\</span>vistinct<span class="pl-cce">\\</span>"</span> 
-<span class="pl-k">for</span> <span class="pl-s1">root</span>, <span class="pl-s1">dirs</span>, <span class="pl-s1">files</span> <span class="pl-c1">in</span> <span class="pl-s1">os</span>.<span class="pl-en">walk</span>(<span class="pl-s1">filePathSrc</span>):
+<span class="pl-k">for</span> <span class="pl-s1">root</span>, <span class="pl-s1">dirs</span>, <span class="pl-s1">files</span> <span class="pl-c1">in</span> <span class="pl-s1">os</span>.<span class="pl-c1">walk</span>(<span class="pl-s1">filePathSrc</span>):
     <span class="pl-k">for</span> <span class="pl-s1">fn</span> <span class="pl-c1">in</span> <span class="pl-s1">files</span>:
-        <span class="pl-k">if</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".h"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".cpp"</span>) 
-            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".cl"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".frag"</span>) 
-            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".vert"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".glsl"</span>) 
-            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-en">endswith</span>(<span class="pl-s">".geom"</span>): <span class="pl-c"># Specify type of the files</span>
-            <span class="pl-s1">notepad</span>.<span class="pl-en">open</span>(<span class="pl-s1">root</span> <span class="pl-c1">+</span> <span class="pl-s">"<span class="pl-cce">\\</span>"</span> <span class="pl-c1">+</span> <span class="pl-s1">fn</span>)
-            <span class="pl-s1">notepad</span>.<span class="pl-en">runMenuCommand</span>(<span class="pl-s">"Encoding"</span>, <span class="pl-s">"Convert to UTF-8"</span>)
-            <span class="pl-s1">notepad</span>.<span class="pl-en">save</span>()
-            <span class="pl-s1">notepad</span>.<span class="pl-en">close</span>()</pre></div>
+        <span class="pl-k">if</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".h"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".cpp"</span>) 
+            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".cl"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".frag"</span>) 
+            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".vert"</span>) <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".glsl"</span>) 
+            <span class="pl-c1">or</span> <span class="pl-s1">fn</span>.<span class="pl-c1">endswith</span>(<span class="pl-s">".geom"</span>): <span class="pl-c"># Specify type of the files</span>
+            <span class="pl-s1">notepad</span>.<span class="pl-c1">open</span>(<span class="pl-s1">root</span> <span class="pl-c1">+</span> <span class="pl-s">"<span class="pl-cce">\\</span>"</span> <span class="pl-c1">+</span> <span class="pl-s1">fn</span>)
+            <span class="pl-s1">notepad</span>.<span class="pl-c1">runMenuCommand</span>(<span class="pl-s">"Encoding"</span>, <span class="pl-s">"Convert to UTF-8"</span>)
+            <span class="pl-s1">notepad</span>.<span class="pl-c1">save</span>()
+            <span class="pl-s1">notepad</span>.<span class="pl-c1">close</span>()</pre></div>
 <h2>2015-10-27</h2>
 <p><strong>CodeState</strong> CodeState is now an enum class, i.e. <code class="notranslate">CODE_STATE_STABLE</code> -&gt; <code class="notranslate">CodeState::Stable</code> etc</p>
 <h2>2015-10-07</h2>

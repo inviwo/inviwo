@@ -85,48 +85,48 @@ MetaDataToProperty::MetaDataToProperty() {
                    uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
     util::for_each_type<ordinalMetaTypes>{}(RegisterOrdinalPropertyForMetaData{}, factory_);
 
-    factory_.emplace(
-        MetaDataType<bool>{}.getClassIdentifier(),
-        [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
-            auto m = static_cast<const MetaDataType<bool>*>(meta);
+    factory_.emplace(MetaDataType<bool>{}.getClassIdentifier(),
+                     [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
+                         auto m = static_cast<const MetaDataType<bool>*>(meta);
 
-            if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                if (auto p = dynamic_cast<BoolProperty*>(existingProperty)) {
-                    p->set(m->get());
-                    p->setVisible(true);
-                    return;
-                } else {
-                    delete container.removeProperty(existingProperty);
-                }
-            }
+                         if (auto existingProperty = container.getPropertyByIdentifier(key)) {
+                             if (auto p = dynamic_cast<BoolProperty*>(existingProperty)) {
+                                 p->set(m->get());
+                                 p->setVisible(true);
+                                 return;
+                             } else {
+                                 delete container.removeProperty(existingProperty);
+                             }
+                         }
 
-            auto p = std::make_unique<BoolProperty>(key, key, m->get(), InvalidationLevel::Valid);
-            p->setSerializationMode(PropertySerializationMode::All);
-            p->setCurrentStateAsDefault();
-            p->setReadOnly(true);
-            container.addProperty(p.release(), true);
-        });
+                         auto p = std::make_unique<BoolProperty>(key, key, m->get(),
+                                                                 InvalidationLevel::Valid);
+                         p->setSerializationMode(PropertySerializationMode::All);
+                         p->setCurrentStateAsDefault();
+                         p->setReadOnly(true);
+                         container.addProperty(p.release(), true);
+                     });
 
-    factory_.emplace(
-        MetaDataType<std::string>{}.getClassIdentifier(),
-        [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
-            auto m = static_cast<const MetaDataType<std::string>*>(meta);
+    factory_.emplace(MetaDataType<std::string>{}.getClassIdentifier(),
+                     [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
+                         auto m = static_cast<const MetaDataType<std::string>*>(meta);
 
-            if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                if (auto p = dynamic_cast<StringProperty*>(existingProperty)) {
-                    p->set(m->get());
-                    p->setVisible(true);
-                    return;
-                } else {
-                    delete container.removeProperty(existingProperty);
-                }
-            }
-            auto p = std::make_unique<StringProperty>(key, key, m->get(), InvalidationLevel::Valid);
-            p->setSerializationMode(PropertySerializationMode::All);
-            p->setCurrentStateAsDefault();
-            p->setReadOnly(true);
-            container.addProperty(p.release(), true);
-        });
+                         if (auto existingProperty = container.getPropertyByIdentifier(key)) {
+                             if (auto p = dynamic_cast<StringProperty*>(existingProperty)) {
+                                 p->set(m->get());
+                                 p->setVisible(true);
+                                 return;
+                             } else {
+                                 delete container.removeProperty(existingProperty);
+                             }
+                         }
+                         auto p = std::make_unique<StringProperty>(key, key, m->get(),
+                                                                   InvalidationLevel::Valid);
+                         p->setSerializationMode(PropertySerializationMode::All);
+                         p->setCurrentStateAsDefault();
+                         p->setReadOnly(true);
+                         container.addProperty(p.release(), true);
+                     });
 }
 
 void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDataMap* metaDataMap) {

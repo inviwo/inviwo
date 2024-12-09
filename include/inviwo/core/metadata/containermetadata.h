@@ -79,8 +79,7 @@ public:
 
     virtual std::string_view getClassIdentifier() const override {
         static const auto identifier = "org.inviwo." + Defaultvalues<K>::getName() +
-                                              Defaultvalues<T>::getName() +
-                                              "StdUnorderedMapMetaData";
+                                       Defaultvalues<T>::getName() + "StdUnorderedMapMetaData";
         return identifier;
     }
 

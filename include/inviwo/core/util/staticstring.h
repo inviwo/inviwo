@@ -191,7 +191,7 @@ constexpr auto operator+(const StaticString<N1>& a, const char (&b)[N2]) {
     return StaticString{a, b};
 }
 
-StaticString()->StaticString<0>;
+StaticString() -> StaticString<0>;
 template <typename... Ts>
 StaticString(Ts&&... strs) -> StaticString<(detail::static_size<Ts> + ...)>;
 

@@ -107,12 +107,8 @@ private:
 
 template <>
 struct DataTraits<TransferFunction> {
-    static constexpr std::string_view classIdentifier() {
-        return "org.inviwo.transferfunction";
-    }
-    static constexpr std::string_view dataName() {
-        return "Transfer function";
-    }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.transferfunction"; }
+    static constexpr std::string_view dataName() { return "Transfer function"; }
     static constexpr uvec3 colorCode() { return uvec3{55, 66, 77}; }
     static Document info(const TransferFunction& data) {
         using H = utildoc::TableBuilder::Header;

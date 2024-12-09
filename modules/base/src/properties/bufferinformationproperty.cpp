@@ -50,9 +50,13 @@ namespace inviwo {
 
 std::string_view BufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-std::string_view MeshBufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view MeshBufferInformationProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
 
-std::string_view IndexBufferInformationProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view IndexBufferInformationProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
 
 BufferInformationProperty::BufferInformationProperty(std::string_view identifier,
                                                      std::string_view displayName,

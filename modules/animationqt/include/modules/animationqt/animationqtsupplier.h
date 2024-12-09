@@ -68,7 +68,7 @@ public:
     template <typename T>
     void registerSequenceEditor();
 
-    void registerTrackToSequenceEditorMap(std::string_view trackId, std::string_view erditorId);
+    void registerTrackToSequenceEditorMap(std::string_view trackId, std::string_view editorId);
 
     void unRegisterAll();
 
