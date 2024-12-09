@@ -276,7 +276,7 @@ struct PathPair : Serializable {
 void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<Processor*> selected;
     util::copy_if(network_->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        const auto* m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         return m->isSelected();
     });
 
@@ -337,7 +337,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
         d.deserialize("InPropertyLinks", inLinks, "PropertyLink");
 
         for (auto p : network_->getProcessors()) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+            auto* m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
             m->setSelected(false);
         }
 

@@ -64,10 +64,7 @@ private:
 
 template <>
 struct PortTraits<PythonOutport> {
-    static std::string_view classIdentifier() {
-        static std::string id{"org.inviwo.pythonoutport"};
-        return id;
-    }
+    static std::string_view classIdentifier() { return "org.inviwo.pythonoutport"}; }
 };
 
 inline std::string_view PythonOutport::getClassIdentifier() const {

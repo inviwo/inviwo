@@ -44,7 +44,7 @@ template <>
 struct DataTraits<Eigen::MatrixXf> {
     static constexpr std::string_view classIdentifier() { return "EigenMatrixXf"; }
     static constexpr std::string_view dataName() { return "EigenMatrixXf"; }
-    static constexpr uvec3 colorCode() { return uvec3(141, 211, 199); }
+    static constexpr uvec3 colorCode() { return {141, 211, 199}; }
     static Document info(const Eigen::MatrixXf& data) {
         Document doc;
         std::ostringstream oss;

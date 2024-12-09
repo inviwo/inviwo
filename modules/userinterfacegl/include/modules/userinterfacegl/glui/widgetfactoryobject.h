@@ -44,7 +44,7 @@ class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactoryObject {
 public:
-    WidgetFactoryObject(std::string_view className);
+    explicit WidgetFactoryObject(std::string_view className);
     virtual ~WidgetFactoryObject();
 
     virtual std::unique_ptr<Element> create(Property&, Processor&, Renderer&) = 0;

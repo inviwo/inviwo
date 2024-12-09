@@ -238,7 +238,7 @@ struct DataTraits<DataFrame> {
     static constexpr std::string_view dataName() {
         return "DataFrame";
     }
-    static constexpr uvec3 colorCode() { return uvec3(153, 76, 0); }
+    static constexpr uvec3 colorCode() { return {153, 76, 0}; }
     static Document info(const DataFrame& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

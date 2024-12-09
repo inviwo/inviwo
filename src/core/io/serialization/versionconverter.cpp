@@ -204,7 +204,7 @@ void util::renamePort(Deserializer& d, std::vector<std::pair<const Port*, std::s
             if (auto p1 = dynamic_cast<const Outport*>(rule.first)) {
                 elem = xml::getElement(node, fmt::format("OutPorts/OutPort&type={}&identifier={}",
                                                          p1->getClassIdentifier(), rule.second));
-            } else if (auto p2 = dynamic_cast<const Inport*>(rule.first)) {
+            } else if (const auto* p2 = dynamic_cast<const Inport*>(rule.first)) {
                 elem = xml::getElement(node, fmt::format("InPorts/InPort&type={}&identifier={}",
                                                          p2->getClassIdentifier(), rule.second));
             }

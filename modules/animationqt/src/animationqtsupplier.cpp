@@ -47,7 +47,7 @@ AnimationQtSupplier::AnimationQtSupplier(AnimationQtModule& animationQtModule)
 
 AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
     : animationQtModule_{[&]() -> AnimationQtModule& {
-        if (auto animationModule = util::getModuleByType<AnimationQtModule>(app)) {
+        if (auto* animationModule = util::getModuleByType<AnimationQtModule>(app)) {
             return *animationModule;
         }
         throw Exception("Was not able to find the animation qt module",
