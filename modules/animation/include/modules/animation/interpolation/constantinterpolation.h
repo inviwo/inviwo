@@ -32,6 +32,8 @@
 #include <modules/animation/interpolation/interpolation.h>
 
 #include <inviwo/core/util/defaultvalues.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/deserializer.h>
 
 #include <algorithm>
 
@@ -81,7 +83,7 @@ std::string_view getConstantInterpolationClassIdentifier() {
 }
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 std::string_view getConstantInterpolationClassIdentifier() {
-    using ET = typename std::underlying_type<T>::type;
+    using ET = std::underlying_type_t<T>;
     static const auto cid =
         "org.inviwo.animation.constantinterpolation.enum." + Defaultvalues<ET>::getName();
     return cid;

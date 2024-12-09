@@ -243,7 +243,7 @@ public:
     virtual size_t getMaxNumberOfConnections() const override { return 1; }
 
     virtual std::string_view getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
+    virtual glm::uvec3 getColorCode() const override { return {160, 182, 240}; }
     virtual Document getInfo() const override;
 
 protected:

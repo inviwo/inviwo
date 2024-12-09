@@ -56,10 +56,7 @@ public:
 
 template <>
 struct PortTraits<PythonInport> {
-    static std::string_view classIdentifier() {
-        static std::string id{"org.inviwo.pythoninport"};
-        return id;
-    }
+    static std::string_view classIdentifier() { return "org.inviwo.pythoninport"; }
 };
 
 inline std::string_view PythonInport::getClassIdentifier() const {

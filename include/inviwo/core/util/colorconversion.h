@@ -96,8 +96,8 @@ IVW_CORE_API std::string rgb2hex(const vec3& rgb);
  */
 constexpr vec3 hsv2rgb(const vec3& hsv) {
     double hue = hsv.x;
-    double sat = hsv.y;
-    double val = hsv.z;
+    const double sat = hsv.y;
+    const double val = hsv.z;
     double r = 0.0;
     double g = 0.0;
     double b = 0.0;
@@ -106,16 +106,16 @@ constexpr vec3 hsv2rgb(const vec3& hsv) {
         r = val;
         g = val;
         b = val;
-        return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+        return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
     }
 
     hue *= 360.0;
     // divide hue into six segments, 60 degree each
-    int h_i = static_cast<int>(std::floor(hue / 60.0)) % 6;
-    double f = hue / 60.0 - std::floor(hue / 60.0);
-    double p = val * (1.0 - sat);
-    double q = val * (1.0 - f * sat);
-    double t = val * (1.0 - (1.0 - f) * sat);
+    const int h_i = static_cast<int>(std::floor(hue / 60.0)) % 6;
+    const double f = hue / 60.0 - std::floor(hue / 60.0);
+    const double p = val * (1.0 - sat);
+    const double q = val * (1.0 - f * sat);
+    const double t = val * (1.0 - (1.0 - f) * sat);
 
     switch (h_i) {
         case 0:
@@ -149,7 +149,7 @@ constexpr vec3 hsv2rgb(const vec3& hsv) {
             b = q;
             break;
     }
-    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+    return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
 }
 
 /**
@@ -163,12 +163,12 @@ constexpr vec3 hsv2rgb(const vec3& hsv) {
  * @return HSV color in the [0 1]^3 range
  */
 constexpr vec3 rgb2hsv(const vec3& rgb) {
-    double r = rgb.x;
-    double g = rgb.y;
-    double b = rgb.z;
-    double val = std::max(std::max(r, g), b);
+    const double r = rgb.x;
+    const double g = rgb.y;
+    const double b = rgb.z;
+    const double val = std::max(std::max(r, g), b);
     double sat = std::min(std::min(r, g), b);
-    double range = val - sat;
+    const double range = val - sat;
 
     // set hue to zero for undefined values
     const bool notGray = (val - sat > 1.0e-8 || val - sat < -1.0e-8);
@@ -192,7 +192,7 @@ constexpr vec3 rgb2hsv(const vec3& rgb) {
     } else {
         sat = 0.0;
     }
-    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val));
+    return {static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val)};
 }
 
 /**
@@ -437,7 +437,7 @@ constexpr vec3 lighter(const vec3& rgb, float factor = 1.5f) {
 constexpr vec4 lighter(const vec4& rgba, float factor = 1.5f) {
     vec3 hsv = rgb2hsv(rgba);
     hsv.z = std::min(hsv.z * factor, 1.0f);
-    return vec4(hsv2rgb(hsv), rgba.a);
+    return {hsv2rgb(hsv), rgba.a};
 }
 /**
  * \overload uvec3 lighter(const uvec3&, float)
@@ -470,7 +470,7 @@ constexpr vec3 darker(const vec3& rgb, float factor = 2.0f) {
 constexpr vec4 darker(const vec4& rgba, float factor = 2.0f) {
     vec3 hsv = rgb2hsv(rgba);
     hsv.z = std::min(hsv.z / factor, 1.0f);
-    return vec4(hsv2rgb(hsv), rgba.a);
+    return {hsv2rgb(hsv), rgba.a};
 }
 /**
  * \overload uvec3 darker(const uvec3&, float)

@@ -77,11 +77,11 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     : ProcessorObserver()
     , LabelGraphicsItemObserver()
     , processor_(processor)
-    , processorMeta_(nullptr)
+    , processorMeta_{processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)}
     , animation_{nullptr}
     , progressItem_(nullptr)
-    , statusItem_(nullptr)
-    , linkItem_(nullptr)
+    , statusItem_{new ProcessorStatusGraphicsItem(this, processor_)}
+    , linkItem_{new ProcessorLinkGraphicsItem(this)}
     , highlight_(false)
     , backgroundColor_(
           processor_->getProcessorInfo().codeState == CodeState::Deprecated ? "#562e14" : "#3b3d3d")
@@ -151,11 +151,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     positionLabels();
 
     processor_->ProcessorObservable::addObserver(this);
-
-    processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     processorMeta_->addObserver(this);
-
-    linkItem_ = new ProcessorLinkGraphicsItem(this);
 
     for (auto& inport : processor_->getInports()) {
         addInport(inport);
@@ -164,7 +160,6 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         addOutport(outport);
     }
 
-    statusItem_ = new ProcessorStatusGraphicsItem(this, processor_);
     statusItem_->setPos(rect().topRight() + QPointF(-9.0f, 9.0f));
 
     if (auto progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_)) {

@@ -34,6 +34,7 @@
 #include <algorithm>
 
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/defaultvalues.h>
 
 namespace inviwo {
 
