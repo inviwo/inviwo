@@ -135,26 +135,26 @@ auto SpatialSampler<ReturnType>::sample(const dvec3& pos) const -> ReturnType {
 }
 
 template <typename ReturnType>
-auto SpatialSampler<ReturnType>::sample(const vec3& pos,
-                                        CoordinateSpace space) const -> ReturnType {
+auto SpatialSampler<ReturnType>::sample(const vec3& pos, CoordinateSpace space) const
+    -> ReturnType {
     return sample(static_cast<dvec3>(pos), space);
 }
 
 template <typename ReturnType>
-auto SpatialSampler<ReturnType>::sample(const vec2& pos,
-                                        CoordinateSpace space) const -> ReturnType {
+auto SpatialSampler<ReturnType>::sample(const vec2& pos, CoordinateSpace space) const
+    -> ReturnType {
     return sample(dvec3{pos, 0.0}, space);
 }
 
 template <typename ReturnType>
-auto SpatialSampler<ReturnType>::sample(const dvec2& pos,
-                                        CoordinateSpace space) const -> ReturnType {
+auto SpatialSampler<ReturnType>::sample(const dvec2& pos, CoordinateSpace space) const
+    -> ReturnType {
     return sample(dvec3{pos, 0.0}, space);
 }
 
 template <typename ReturnType>
-auto SpatialSampler<ReturnType>::sample(const dvec3& pos,
-                                        CoordinateSpace space) const -> ReturnType {
+auto SpatialSampler<ReturnType>::sample(const dvec3& pos, CoordinateSpace space) const
+    -> ReturnType {
     if (space != CoordinateSpace::Data) {
         const dmat4 m{
             spatialEntity_.getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data)};

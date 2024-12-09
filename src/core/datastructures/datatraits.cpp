@@ -47,7 +47,7 @@ static_assert(!id1.empty());
 static constexpr auto id2 = DataTraits<std::vector<glm::vec2>>::classIdentifier();
 static_assert(!id2.empty());
 
-static constexpr auto id3= DataTraits<std::vector<glm::mat2>>::classIdentifier();
+static constexpr auto id3 = DataTraits<std::vector<glm::mat2>>::classIdentifier();
 static_assert(!id3.empty());
 
 }  // namespace inviwo

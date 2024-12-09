@@ -363,7 +363,6 @@ IVW_CORE_API std::string dotSeperatedToPascalCase(std::string_view s);
 IVW_CORE_API std::string camelCaseToHeader(std::string_view s);
 IVW_CORE_API void camelCaseToHeader(std::string_view s, std::string& dest);
 
-
 /**
  * \brief Case insensitive equal comparison of two strings.
  * @return true if all the elements in the two containers are the same.
@@ -413,7 +412,7 @@ struct IVW_CORE_API CaseInsensitiveStringHash {
 
     std::size_t operator()(const char* str) const { return hash(str); }
     std::size_t operator()(std::string_view str) const { return hash(str); }
-    std::size_t operator()(std::string const& str) const { return hash(str); }
+    std::size_t operator()(const std::string& str) const { return hash(str); }
 
 private:
     std::size_t hash(std::string_view str) const {

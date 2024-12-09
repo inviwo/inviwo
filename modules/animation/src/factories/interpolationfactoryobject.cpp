@@ -36,9 +36,7 @@ namespace animation {
 InterpolationFactoryObject::InterpolationFactoryObject(std::string_view classIdentifier)
     : classIdentifier_(classIdentifier) {}
 
-std::string_view InterpolationFactoryObject::getClassIdentifier() const {
-    return classIdentifier_;
-}
+std::string_view InterpolationFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
 }  // namespace animation
 

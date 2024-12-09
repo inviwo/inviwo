@@ -176,12 +176,13 @@ constexpr vec3 rgb2hsv(const vec3& rgb) {
 
     // blue hue
     if (notGray) {
-        if (b == val)
+        if (b == val) {
             hue = 2.0 / 3.0 + 1.0 / 6.0 * (r - g) / range;
-        else if (g == val)
+        } else if (g == val) {
             hue = 1.0 / 3.0 + 1.0 / 6.0 * (b - r) / range;
-        else if (r == val)
+        } else if (r == val) {
             hue = 1.0 / 6.0 * (g - b) / range;
+        }
     }
 
     if (hue < 0.0) {

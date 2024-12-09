@@ -1,5 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2024-12-09 string_view class identifiers
+All base classes that has a `virtual std::string getClassIdentifier() const` are refactored into 
+`virtual std::string_view getClassIdentifier() const`. This affects all classes derived from `Inport`, `Outport`, `Property`, `Metadata`, `Camera`,`animation::Track`, `animation::Interpolation`. This is done to avoid string allocations. 
+The trait classes `DataTraits` and `PortTraits` now uses `static constexpr std::string_view classIdentifier()` by default. 
+Look at `inviwo/core/datastructures/data/datatraits.h` for more information.
+
 ## 2024-11-27 `DataMinMaxGL` of GL representations with Compute Shaders
 The class `DataMinMaxGL`  provides functionality to determine min/max values of Buffers, Layers, and Volumes on the GPU. The implementation utilizes compute shaders directly accessing the corresponding GL representations. Since there is some overhead regarding managing shaders, an instantiation of `utilgl::DataMinMaxGL` should be kept around for subsequent calls of `DataMinMaxGL::minMax()`.
 
