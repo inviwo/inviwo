@@ -137,8 +137,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa3a0799104bc03189e912b516ed72936" id="r_aa3a0799104bc03189e912b516ed72936"><td class="memItemLeft" align="right" valign="top"><a id="aa3a0799104bc03189e912b516ed72936" name="aa3a0799104bc03189e912b516ed72936"></a>
 <a class="el" href="classinviwo_1_1MetaDataType.html">MetaDataType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1MetaDataType.html">MetaDataType</a> &amp;&amp;that)=default</td></tr>
 <tr class="separator:aa3a0799104bc03189e912b516ed72936"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0afe249d1627b94d14ccb5642ec4ed2" id="r_ad0afe249d1627b94d14ccb5642ec4ed2"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0afe249d1627b94d14ccb5642ec4ed2">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:ad0afe249d1627b94d14ccb5642ec4ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6262312979585fd89ba9b6a0a2984f70" id="r_a6262312979585fd89ba9b6a0a2984f70"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6262312979585fd89ba9b6a0a2984f70">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a6262312979585fd89ba9b6a0a2984f70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b09897518864cb0ff8d7a84abd2d688" id="r_a5b09897518864cb0ff8d7a84abd2d688"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1MetaDataType.html">MetaDataType</a>&lt; T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b09897518864cb0ff8d7a84abd2d688">clone</a> () const override</td></tr>
 <tr class="separator:a5b09897518864cb0ff8d7a84abd2d688"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02cc02cb6a2186257f99926a1c9e5393" id="r_a02cc02cb6a2186257f99926a1c9e5393"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02cc02cb6a2186257f99926a1c9e5393">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
@@ -273,8 +273,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ad0afe249d1627b94d14ccb5642ec4ed2" name="ad0afe249d1627b94d14ccb5642ec4ed2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0afe249d1627b94d14ccb5642ec4ed2">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a6262312979585fd89ba9b6a0a2984f70" name="a6262312979585fd89ba9b6a0a2984f70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6262312979585fd89ba9b6a0a2984f70">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -285,7 +285,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string &amp; <a class="el" href="classinviwo_1_1MetaDataType.html">inviwo::MetaDataType</a>&lt; T &gt;::getClassIdentifier </td>
+          <td class="memname">std::string_view <a class="el" href="classinviwo_1_1MetaDataType.html">inviwo::MetaDataType</a>&lt; T &gt;::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

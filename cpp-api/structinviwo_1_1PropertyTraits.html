@@ -112,23 +112,24 @@ $(function(){initNavTree('structinviwo_1_1PropertyTraits.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a02fe38954a7f1c4b33c1fd5f0cf3bc1f" id="r_a02fe38954a7f1c4b33c1fd5f0cf3bc1f"><td class="memItemLeft" align="right" valign="top">static const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02fe38954a7f1c4b33c1fd5f0cf3bc1f">classIdentifier</a> ()</td></tr>
-<tr class="separator:a02fe38954a7f1c4b33c1fd5f0cf3bc1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76705101afafdecb428ce700f67dc6de" id="r_a76705101afafdecb428ce700f67dc6de"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76705101afafdecb428ce700f67dc6de">classIdentifier</a> ()</td></tr>
+<tr class="separator:a76705101afafdecb428ce700f67dc6de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
 class inviwo::PropertyTraits&lt; T &gt;</div><p>A traits class for getting the class identifier from a <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a>. This provides a customization point if one wants to generate the class identifier dynamically, by specializing the traits for your kind of <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a>: </p>
 <div class="fragment"><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">struct </span><a class="code hl_class" href="structinviwo_1_1PropertyTraits.html">PropertyTraits</a>&lt;MyProperty&lt;T&gt;&gt; {</div>
-<div class="line">   <span class="keyword">static</span> std::string classIdentifier() {</div>
-<div class="line">      <span class="keywordflow">return</span> generateMyPropertyClassIdentifier&lt;T&gt;();</div>
+<div class="line">   <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view classIdentifier() {</div>
+<div class="line">      <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> cid = generateMyPropertyClassIdentifier&lt;T&gt;();</div>
+<div class="line">      <span class="keywordflow">return</span> cid;</div>
 <div class="line">   }</div>
 <div class="line">};</div>
 <div class="ttc" id="astructinviwo_1_1PropertyTraits_html"><div class="ttname"><a href="structinviwo_1_1PropertyTraits.html">inviwo::PropertyTraits</a></div><div class="ttdoc">A traits class for getting the class identifier from a Property. This provides a customization point ...</div><div class="ttdef"><b>Definition</b> gaussianproperty.h:47</div></div>
 </div><!-- fragment --><p> The default behavior returns the static member "classIdentifier" or "CLASS_IDENTIFIER"; </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a02fe38954a7f1c4b33c1fd5f0cf3bc1f" name="a02fe38954a7f1c4b33c1fd5f0cf3bc1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02fe38954a7f1c4b33c1fd5f0cf3bc1f">&#9670;&#160;</a></span>classIdentifier()</h2>
+<a id="a76705101afafdecb428ce700f67dc6de" name="a76705101afafdecb428ce700f67dc6de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76705101afafdecb428ce700f67dc6de">&#9670;&#160;</a></span>classIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,7 +140,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const std::string &amp; <a class="el" href="structinviwo_1_1PropertyTraits.html">inviwo::PropertyTraits</a>&lt; T &gt;::classIdentifier </td>
+          <td class="memname">static constexpr std::string_view <a class="el" href="structinviwo_1_1PropertyTraits.html">inviwo::PropertyTraits</a>&lt; T &gt;::classIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -147,11 +148,11 @@ template&lt;typename T &gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The Class Identifier has to be globally unique. Use a reverse DNS naming scheme. Example: "org.someorg.mypropertytype" The default implementation will look for a static std::string member "T::classIdentifier" or "T::CLASS_IDENTIFIER". In case it is not found an empty string will be returned. An empty class identifier will be considered an error in various factories. </p>
+<p>The Class Identifier has to be globally unique. Use a reverse DNS naming scheme. Example: "org.someorg.mypropertytype" The default implementation will look for a static std::string_view member "T::classIdentifier" or "T::CLASS_IDENTIFIER". In case it is not found an empty string will be returned. An empty class identifier will be considered an error in various factories. </p>
 
 </div>
 </div>

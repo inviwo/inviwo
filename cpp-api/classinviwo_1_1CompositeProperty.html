@@ -200,8 +200,8 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a15913b0e36e4cdb076d9cf50214f1a31" id="r_a15913b0e36e4cdb076d9cf50214f1a31"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15913b0e36e4cdb076d9cf50214f1a31">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:a15913b0e36e4cdb076d9cf50214f1a31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4bcac2d46790af0543683c415ed662c" id="r_ae4bcac2d46790af0543683c415ed662c"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4bcac2d46790af0543683c415ed662c">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:ae4bcac2d46790af0543683c415ed662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fc3bc225f7f1d9fb7a555ad801495ce" id="r_a9fc3bc225f7f1d9fb7a555ad801495ce"><td class="memItemLeft" align="right" valign="top"><a id="a9fc3bc225f7f1d9fb7a555ad801495ce" name="a9fc3bc225f7f1d9fb7a555ad801495ce"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CompositeProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="separator:a9fc3bc225f7f1d9fb7a555ad801495ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,9 +215,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1dcf19992aecd328eb5234f90e2623f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60ef38a29d4c83dc9c74b21e6973db69" id="r_a60ef38a29d4c83dc9c74b21e6973db69"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60ef38a29d4c83dc9c74b21e6973db69">getIdentifier</a> () const override</td></tr>
 <tr class="separator:a60ef38a29d4c83dc9c74b21e6973db69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8c3ccbb2151ab7a1f8267a8cddba5b0" id="r_ad8c3ccbb2151ab7a1f8267a8cddba5b0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8c3ccbb2151ab7a1f8267a8cddba5b0">getClassIdentifierForWidget</a> () const override</td></tr>
-<tr class="memdesc:ad8c3ccbb2151ab7a1f8267a8cddba5b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
-<tr class="separator:ad8c3ccbb2151ab7a1f8267a8cddba5b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512ed720524a5ad44c4bb7bc517174eb" id="r_a512ed720524a5ad44c4bb7bc517174eb"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a512ed720524a5ad44c4bb7bc517174eb">getClassIdentifierForWidget</a> () const override</td></tr>
+<tr class="memdesc:a512ed720524a5ad44c4bb7bc517174eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
+<tr class="separator:a512ed720524a5ad44c4bb7bc517174eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a91a74f7d60425f2aa64636983a3f91" id="r_a7a91a74f7d60425f2aa64636983a3f91"><td class="memItemLeft" align="right" valign="top"><a id="a7a91a74f7d60425f2aa64636983a3f91" name="a7a91a74f7d60425f2aa64636983a3f91"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isCollapsed</b> () const</td></tr>
 <tr class="separator:a7a91a74f7d60425f2aa64636983a3f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -632,9 +632,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a78994ae865e740a443e758b80fe7f5d5" id="r_a78994ae865e740a443e758b80fe7f5d5"><td class="memItemLeft" align="right" valign="top"><a id="a78994ae865e740a443e758b80fe7f5d5" name="a78994ae865e740a443e758b80fe7f5d5"></a>
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:a78994ae865e740a443e758b80fe7f5d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab61e955c38f41a57607446deeaaec81" id="r_aab61e955c38f41a57607446deeaaec81"><td class="memItemLeft" align="right" valign="top"><a id="aab61e955c38f41a57607446deeaaec81" name="aab61e955c38f41a57607446deeaaec81"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.CompositeProperty&quot;}</td></tr>
+<tr class="separator:aab61e955c38f41a57607446deeaaec81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -814,8 +814,8 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="a15913b0e36e4cdb076d9cf50214f1a31" name="a15913b0e36e4cdb076d9cf50214f1a31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15913b0e36e4cdb076d9cf50214f1a31">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="ae4bcac2d46790af0543683c415ed662c" name="ae4bcac2d46790af0543683c415ed662c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4bcac2d46790af0543683c415ed662c">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -824,7 +824,7 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string inviwo::CompositeProperty::getClassIdentifier </td>
+          <td class="memname">virtual std::string_view inviwo::CompositeProperty::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -841,8 +841,8 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="ad8c3ccbb2151ab7a1f8267a8cddba5b0" name="ad8c3ccbb2151ab7a1f8267a8cddba5b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad8c3ccbb2151ab7a1f8267a8cddba5b0">&#9670;&#160;</a></span>getClassIdentifierForWidget()</h2>
+<a id="a512ed720524a5ad44c4bb7bc517174eb" name="a512ed720524a5ad44c4bb7bc517174eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512ed720524a5ad44c4bb7bc517174eb">&#9670;&#160;</a></span>getClassIdentifierForWidget()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -851,7 +851,7 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string inviwo::CompositeProperty::getClassIdentifierForWidget </td>
+          <td class="memname">virtual std::string_view inviwo::CompositeProperty::getClassIdentifierForWidget </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -866,9 +866,9 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 <p>Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget. </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66">inviwo::Property</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4">inviwo::Property</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1BoolCompositeProperty.html#a8dac0d2e1adb02a86b92ec7c5ab881ed">inviwo::BoolCompositeProperty</a>, <a class="el" href="classinviwo_1_1ColormapProperty.html#a732eb1bb419ecbe6e9a036bfbae25f89">inviwo::ColormapProperty</a>, <a class="el" href="classinviwo_1_1IsoTFProperty.html#a9aa28c4a40997910d21bb709cc5ae192">inviwo::IsoTFProperty</a>, <a class="el" href="classinviwo_1_1ListProperty.html#af44883d0a70c8e6419a892eeecc3baab">inviwo::ListProperty</a>, <a class="el" href="classinviwo_1_1StringsProperty.html#a8514953521fe2f7ea18667fbf8e841ee">inviwo::StringsProperty&lt; N &gt;</a>, <a class="el" href="classinviwo_1_1StringsProperty.html#a8514953521fe2f7ea18667fbf8e841ee">inviwo::StringsProperty&lt; 2 &gt;</a>, and <a class="el" href="classinviwo_1_1StringsProperty.html#a8514953521fe2f7ea18667fbf8e841ee">inviwo::StringsProperty&lt; 3 &gt;</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1BoolCompositeProperty.html#a1a7235ba1866c8d34d9c6c7856b73d66">inviwo::BoolCompositeProperty</a>, <a class="el" href="classinviwo_1_1ColormapProperty.html#a0dcf6e301d4f744939dbda60dda763f1">inviwo::ColormapProperty</a>, <a class="el" href="classinviwo_1_1IsoTFProperty.html#a77395678e37f46f37b42219d6893db6e">inviwo::IsoTFProperty</a>, <a class="el" href="classinviwo_1_1ListProperty.html#ad8e5dd2d52ff89171f35def07c567c17">inviwo::ListProperty</a>, <a class="el" href="classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304">inviwo::StringsProperty&lt; N &gt;</a>, <a class="el" href="classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304">inviwo::StringsProperty&lt; 2 &gt;</a>, and <a class="el" href="classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304">inviwo::StringsProperty&lt; 3 &gt;</a>.</p>
 
 </div>
 </div>

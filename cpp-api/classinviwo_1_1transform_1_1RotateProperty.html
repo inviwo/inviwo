@@ -162,8 +162,8 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afec7580b1a8af973fd9494741f08af1d" id="r_afec7580b1a8af973fd9494741f08af1d"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afec7580b1a8af973fd9494741f08af1d">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:afec7580b1a8af973fd9494741f08af1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedc83829295dda42d1608b01c4fd305e" id="r_aedc83829295dda42d1608b01c4fd305e"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedc83829295dda42d1608b01c4fd305e">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:aedc83829295dda42d1608b01c4fd305e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a062b2c1dce9549f0891445bf32a1ec1a" id="r_a062b2c1dce9549f0891445bf32a1ec1a"><td class="memItemLeft" align="right" valign="top"><a id="a062b2c1dce9549f0891445bf32a1ec1a" name="a062b2c1dce9549f0891445bf32a1ec1a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>RotateProperty</b> (std::string_view identifier, std::string_view displayName, const vec3 &amp;axis=vec3{1.0f, 0.0f, 0.0f}, const float angle=0.0f, const float minAngle=-glm::pi&lt; float &gt;(), const float maxAngle=glm::pi&lt; float &gt;(), const float increment=<a class="el" href="structinviwo_1_1Defaultvalues.html">Defaultvalues</a>&lt; float &gt;::getInc(), AngleMeasure angleMeasure=AngleMeasure::Radians, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="separator:a062b2c1dce9549f0891445bf32a1ec1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,9 +190,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af4ad5b1d2071b2f7060588703fcc71f4 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60ef38a29d4c83dc9c74b21e6973db69 inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_a60ef38a29d4c83dc9c74b21e6973db69"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CompositeProperty.html#a60ef38a29d4c83dc9c74b21e6973db69">getIdentifier</a> () const override</td></tr>
 <tr class="separator:a60ef38a29d4c83dc9c74b21e6973db69 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8c3ccbb2151ab7a1f8267a8cddba5b0 inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_ad8c3ccbb2151ab7a1f8267a8cddba5b0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CompositeProperty.html#ad8c3ccbb2151ab7a1f8267a8cddba5b0">getClassIdentifierForWidget</a> () const override</td></tr>
-<tr class="memdesc:ad8c3ccbb2151ab7a1f8267a8cddba5b0 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
-<tr class="separator:ad8c3ccbb2151ab7a1f8267a8cddba5b0 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512ed720524a5ad44c4bb7bc517174eb inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_a512ed720524a5ad44c4bb7bc517174eb"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CompositeProperty.html#a512ed720524a5ad44c4bb7bc517174eb">getClassIdentifierForWidget</a> () const override</td></tr>
+<tr class="memdesc:a512ed720524a5ad44c4bb7bc517174eb inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
+<tr class="separator:a512ed720524a5ad44c4bb7bc517174eb inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a91a74f7d60425f2aa64636983a3f91 inherit pub_methods_classinviwo_1_1CompositeProperty" id="r_a7a91a74f7d60425f2aa64636983a3f91"><td class="memItemLeft" align="right" valign="top">
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isCollapsed</b> () const</td></tr>
 <tr class="separator:a7a91a74f7d60425f2aa64636983a3f91 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -619,13 +619,13 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a6cef32cdd5fbab0b26e9f8a8269fb608" id="r_a6cef32cdd5fbab0b26e9f8a8269fb608"><td class="memItemLeft" align="right" valign="top"><a id="a6cef32cdd5fbab0b26e9f8a8269fb608" name="a6cef32cdd5fbab0b26e9f8a8269fb608"></a>
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:a6cef32cdd5fbab0b26e9f8a8269fb608"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2f6f07a91f708d8d4a2d4a8e58aa94b" id="r_ae2f6f07a91f708d8d4a2d4a8e58aa94b"><td class="memItemLeft" align="right" valign="top"><a id="ae2f6f07a91f708d8d4a2d4a8e58aa94b" name="ae2f6f07a91f708d8d4a2d4a8e58aa94b"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.trafo.RotateProperty&quot;}</td></tr>
+<tr class="separator:ae2f6f07a91f708d8d4a2d4a8e58aa94b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_classinviwo_1_1CompositeProperty"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_attribs_classinviwo_1_1CompositeProperty')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a></td></tr>
-<tr class="memitem:a78994ae865e740a443e758b80fe7f5d5 inherit pub_static_attribs_classinviwo_1_1CompositeProperty" id="r_a78994ae865e740a443e758b80fe7f5d5"><td class="memItemLeft" align="right" valign="top">
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:a78994ae865e740a443e758b80fe7f5d5 inherit pub_static_attribs_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab61e955c38f41a57607446deeaaec81 inherit pub_static_attribs_classinviwo_1_1CompositeProperty" id="r_aab61e955c38f41a57607446deeaaec81"><td class="memItemLeft" align="right" valign="top">
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.CompositeProperty&quot;}</td></tr>
+<tr class="separator:aab61e955c38f41a57607446deeaaec81 inherit pub_static_attribs_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -745,8 +745,8 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="afec7580b1a8af973fd9494741f08af1d" name="afec7580b1a8af973fd9494741f08af1d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afec7580b1a8af973fd9494741f08af1d">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="aedc83829295dda42d1608b01c4fd305e" name="aedc83829295dda42d1608b01c4fd305e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedc83829295dda42d1608b01c4fd305e">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -755,7 +755,7 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string inviwo::transform::RotateProperty::getClassIdentifier </td>
+          <td class="memname">virtual std::string_view inviwo::transform::RotateProperty::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

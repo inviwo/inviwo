@@ -2,7 +2,7 @@ var classinviwo_1_1OptionProperty =
 [
     [ "addOption", "classinviwo_1_1OptionProperty.html#adc3b42f8f477cb5cd77023ccb871f0f3", null ],
     [ "clone", "classinviwo_1_1OptionProperty.html#a54738802dbd1bbebe07c7cdf97b3dc94", null ],
-    [ "getClassIdentifierForWidget", "classinviwo_1_1OptionProperty.html#a45d0329726e5b50025c93df129b00f99", null ],
+    [ "getClassIdentifierForWidget", "classinviwo_1_1OptionProperty.html#a1762b26ea2989f37ff67d10e84002973", null ],
     [ "getDescription", "classinviwo_1_1OptionProperty.html#a4f3b8126f7acb515d1142114f4b5d036", null ],
     [ "isDefaultState", "classinviwo_1_1OptionProperty.html#aa24843d94a17739f8738b0e70e9443b1", null ],
     [ "operator const T &", "classinviwo_1_1OptionProperty.html#ab0fa9eec844e6027087199bacd633b81", null ],

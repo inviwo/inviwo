@@ -60,7 +60,7 @@ var searchData=
   ['lic3d_57',['LIC3D',['../classinviwo_1_1LIC3D.html',1,'inviwo']]],
   ['licenseinfo_58',['LicenseInfo',['../classinviwo_1_1LicenseInfo.html',1,'inviwo']]],
   ['lightcomponent_59',['LightComponent',['../classinviwo_1_1LightComponent.html',1,'inviwo']]],
-  ['lighter_60',['lighter',['../namespaceinviwo_1_1color.html#a45cd318cca9809d12f6a7ef182e9f9a2',1,'inviwo::color::lighter(const vec3 &amp;rgb, float factor=1.5f)'],['../namespaceinviwo_1_1color.html#a3a0f022b5a7cdb394061b434d4742140',1,'inviwo::color::lighter(const vec4 &amp;rgba, float factor=1.5f)'],['../namespaceinviwo_1_1color.html#a5de390f4a3420196df10458a2fef2413',1,'inviwo::color::lighter(const uvec3 &amp;rgb, float factor=1.5f)']]],
+  ['lighter_60',['lighter',['../namespaceinviwo_1_1color.html#a962986ea23e6cae7d9d4b15ecea69624',1,'inviwo::color::lighter(const vec3 &amp;rgb, float factor=1.5f)'],['../namespaceinviwo_1_1color.html#aaf6dd516ba34489270fd65d4b0bf9111',1,'inviwo::color::lighter(const vec4 &amp;rgba, float factor=1.5f)'],['../namespaceinviwo_1_1color.html#a9214d40a418c8538b178a3a0b82e304c',1,'inviwo::color::lighter(const uvec3 &amp;rgb, float factor=1.5f)']]],
   ['lightingconfig_61',['LightingConfig',['../structinviwo_1_1LightingConfig.html',1,'inviwo']]],
   ['lightingraycaster_62',['LightingRaycaster',['../classinviwo_1_1LightingRaycaster.html',1,'inviwo']]],
   ['lightingstate_63',['LightingState',['../structinviwo_1_1LightingState.html',1,'inviwo']]],

@@ -106,10 +106,10 @@ $(function(){initNavTree('structinviwo_1_1StringHash.html',''); initResizable(tr
 </div><!--header-->
 <div class="contents">
 
-<p>Transparent string hashing for use in unordered containers with string keys.  
+<p>Transparent string hashing for use in unordered containers with string keys for example: std::unordered_map&lt;std::string, V, StringHash, std::equal_to&lt;&gt;&gt;;.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;stringconversion.h&gt;</code></p>
+<p><code>#include &lt;transparentmaps.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -128,14 +128,17 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b>
 <tr class="memitem:a8c4ca97a8b79e64cd14db0d559204f22" id="r_a8c4ca97a8b79e64cd14db0d559204f22"><td class="memItemLeft" align="right" valign="top"><a id="a8c4ca97a8b79e64cd14db0d559204f22" name="a8c4ca97a8b79e64cd14db0d559204f22"></a>
 std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (std::string_view str) const</td></tr>
 <tr class="separator:a8c4ca97a8b79e64cd14db0d559204f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48d8d8e961a72258b85e53b4780055c9" id="r_a48d8d8e961a72258b85e53b4780055c9"><td class="memItemLeft" align="right" valign="top"><a id="a48d8d8e961a72258b85e53b4780055c9" name="a48d8d8e961a72258b85e53b4780055c9"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (std::string const &amp;str) const</td></tr>
-<tr class="separator:a48d8d8e961a72258b85e53b4780055c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add75cdfd479ead7bfbe8e836dabdfa7b" id="r_add75cdfd479ead7bfbe8e836dabdfa7b"><td class="memItemLeft" align="right" valign="top"><a id="add75cdfd479ead7bfbe8e836dabdfa7b" name="add75cdfd479ead7bfbe8e836dabdfa7b"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const std::string &amp;str) const</td></tr>
+<tr class="separator:add75cdfd479ead7bfbe8e836dabdfa7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8851239dc87180f9657c6aa8a92a24bf" id="r_a8851239dc87180f9657c6aa8a92a24bf"><td class="memItemLeft" align="right" valign="top"><a id="a8851239dc87180f9657c6aa8a92a24bf" name="a8851239dc87180f9657c6aa8a92a24bf"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const std::pmr::string &amp;str) const</td></tr>
+<tr class="separator:a8851239dc87180f9657c6aa8a92a24bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Transparent string hashing for use in unordered containers with string keys. </p>
+<div class="textblock"><p>Transparent string hashing for use in unordered containers with string keys for example: std::unordered_map&lt;std::string, V, StringHash, std::equal_to&lt;&gt;&gt;;. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>stringconversion.h</b></li>
+<li><b>transparentmaps.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

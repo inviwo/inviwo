@@ -162,8 +162,8 @@ template&lt;typename U  = T, class  = std::enable_if_t&lt;util::is_stream_insert
 <tr class="separator:a3fbf7e263054a95d9a261f7cdabe8a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54738802dbd1bbebe07c7cdf97b3dc94" id="r_a54738802dbd1bbebe07c7cdf97b3dc94"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54738802dbd1bbebe07c7cdf97b3dc94">clone</a> () const override</td></tr>
 <tr class="separator:a54738802dbd1bbebe07c7cdf97b3dc94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ec001d90e71c3835762306bb12e2132" id="r_a0ec001d90e71c3835762306bb12e2132"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ec001d90e71c3835762306bb12e2132">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:a0ec001d90e71c3835762306bb12e2132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f64d22a19b11f76e4d43c4b7fb900a4" id="r_a8f64d22a19b11f76e4d43c4b7fb900a4"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f64d22a19b11f76e4d43c4b7fb900a4">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a8f64d22a19b11f76e4d43c4b7fb900a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0fa9eec844e6027087199bacd633b81" id="r_ab0fa9eec844e6027087199bacd633b81"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0fa9eec844e6027087199bacd633b81">operator const T &amp;</a> () const</td></tr>
 <tr class="separator:ab0fa9eec844e6027087199bacd633b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7b6aea3b528ba72ab6df5d4fa0b5102" id="r_ab7b6aea3b528ba72ab6df5d4fa0b5102"><td class="memTemplParams" colspan="2"><a id="ab7b6aea3b528ba72ab6df5d4fa0b5102" name="ab7b6aea3b528ba72ab6df5d4fa0b5102"></a>
@@ -285,9 +285,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (const <a cla
 <tr class="separator:ae993cef02e9b3c864b15bef8db63c35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa24843d94a17739f8738b0e70e9443b1" id="r_aa24843d94a17739f8738b0e70e9443b1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa24843d94a17739f8738b0e70e9443b1">isDefaultState</a> () const override</td></tr>
 <tr class="separator:aa24843d94a17739f8738b0e70e9443b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45d0329726e5b50025c93df129b00f99" id="r_a45d0329726e5b50025c93df129b00f99"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45d0329726e5b50025c93df129b00f99">getClassIdentifierForWidget</a> () const override</td></tr>
-<tr class="memdesc:a45d0329726e5b50025c93df129b00f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
-<tr class="separator:a45d0329726e5b50025c93df129b00f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1762b26ea2989f37ff67d10e84002973" id="r_a1762b26ea2989f37ff67d10e84002973"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1762b26ea2989f37ff67d10e84002973">getClassIdentifierForWidget</a> () const override</td></tr>
+<tr class="memdesc:a1762b26ea2989f37ff67d10e84002973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
+<tr class="separator:a1762b26ea2989f37ff67d10e84002973"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b677db58657d02faead9189cd6e3c5c" id="r_a9b677db58657d02faead9189cd6e3c5c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b677db58657d02faead9189cd6e3c5c">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="separator:a9b677db58657d02faead9189cd6e3c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0526a1ee261656b8c5caf08fc434ffc3" id="r_a0526a1ee261656b8c5caf08fc434ffc3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0526a1ee261656b8c5caf08fc434ffc3">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
@@ -605,16 +605,15 @@ class inviwo::OptionProperty&lt; T &gt;</div><p><a class="el" href="classinviwo_
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;&gt;</div>
 <div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="structinviwo_1_1EnumTraits.html">EnumTraits</a>&lt;MyEnum&gt; {</div>
-<div class="line">    <span class="keyword">static</span> std::string name() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;MyEnum&quot;</span>; }</div>
+<div class="line">    <span class="keyword">static</span> std::string_view name() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;MyEnum&quot;</span>; }</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line">registerProperty&lt;OptionProperty&lt;MyEnum&gt;&gt;();</div>
 <div class="ttc" id="astructinviwo_1_1EnumTraits_html"><div class="ttname"><a href="structinviwo_1_1EnumTraits.html">inviwo::EnumTraits</a></div><div class="ttdef"><b>Definition</b> filters.h:43</div></div>
 </div><!-- fragment --><p>For other data types, the class identifier must be provided using <code><a class="el" href="structinviwo_1_1PropertyTraits.html" title="A traits class for getting the class identifier from a Property. This provides a customization point ...">PropertyTraits</a></code>. </p><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;&gt;</div>
 <div class="line"><span class="keyword">struct </span><a class="code hl_class" href="structinviwo_1_1PropertyTraits.html">PropertyTraits</a>&lt;<a class="code hl_class" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt;MyType&gt;&gt;</div>
-<div class="line">    static const <a class="code hl_namespace" href="namespacestd.html">std</a>::string&amp; classIdentifier() {</div>
-<div class="line">        <span class="keyword">static</span> <span class="keyword">const</span> std::string identifier = <span class="stringliteral">&quot;org.inviwo.OptionPropertyMyType&quot;</span>;</div>
-<div class="line">        <span class="keywordflow">return</span> identifier;</div>
+<div class="line">    static constexpr <a class="code hl_namespace" href="namespacestd.html">std</a>::string_view classIdentifier() {</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="stringliteral">&quot;org.inviwo.OptionPropertyMyType&quot;</span>;</div>
 <div class="line">    }</div>
 <div class="line">};</div>
 <div class="ttc" id="aclassinviwo_1_1OptionProperty_html"><div class="ttname"><a href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a></div><div class="ttdef"><b>Definition</b> shaderutils.h:72</div></div>
@@ -749,8 +748,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a0ec001d90e71c3835762306bb12e2132" name="a0ec001d90e71c3835762306bb12e2132"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ec001d90e71c3835762306bb12e2132">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a8f64d22a19b11f76e4d43c4b7fb900a4" name="a8f64d22a19b11f76e4d43c4b7fb900a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f64d22a19b11f76e4d43c4b7fb900a4">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -761,7 +760,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a>&lt; T &gt;::getClassIdentifier </td>
+          <td class="memname">std::string_view <a class="el" href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a>&lt; T &gt;::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -778,8 +777,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a45d0329726e5b50025c93df129b00f99" name="a45d0329726e5b50025c93df129b00f99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45d0329726e5b50025c93df129b00f99">&#9670;&#160;</a></span>getClassIdentifierForWidget()</h2>
+<a id="a1762b26ea2989f37ff67d10e84002973" name="a1762b26ea2989f37ff67d10e84002973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1762b26ea2989f37ff67d10e84002973">&#9670;&#160;</a></span>getClassIdentifierForWidget()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -790,7 +789,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a>&lt; T &gt;::getClassIdentifierForWidget </td>
+          <td class="memname">std::string_view <a class="el" href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a>&lt; T &gt;::getClassIdentifierForWidget </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -805,7 +804,7 @@ template&lt;typename T &gt; </div>
 
 <p>Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget. </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66">inviwo::Property</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4">inviwo::Property</a>.</p>
 
 </div>
 </div>

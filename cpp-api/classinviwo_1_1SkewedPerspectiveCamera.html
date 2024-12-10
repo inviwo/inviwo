@@ -138,8 +138,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6d7a2e0efdb8932e6502aaba0d175b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68dac10299b42f02028eb41e62fed9f1" id="r_a68dac10299b42f02028eb41e62fed9f1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1SkewedPerspectiveCamera.html">SkewedPerspectiveCamera</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68dac10299b42f02028eb41e62fed9f1">clone</a> () const override</td></tr>
 <tr class="separator:a68dac10299b42f02028eb41e62fed9f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1b20d4a3ace0a55d3aaa4c85029c255" id="r_ae1b20d4a3ace0a55d3aaa4c85029c255"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1b20d4a3ace0a55d3aaa4c85029c255">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:ae1b20d4a3ace0a55d3aaa4c85029c255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6de3ebaf8a24319507f921f9b2c86e04" id="r_a6de3ebaf8a24319507f921f9b2c86e04"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6de3ebaf8a24319507f921f9b2c86e04">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a6de3ebaf8a24319507f921f9b2c86e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa870372c2a5ca62683ba2812d38e5569" id="r_aa870372c2a5ca62683ba2812d38e5569"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa870372c2a5ca62683ba2812d38e5569">updateFrom</a> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;source) override</td></tr>
 <tr class="separator:aa870372c2a5ca62683ba2812d38e5569"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abad86ff24dab336f310b4b7802c1bee8" id="r_abad86ff24dab336f310b4b7802c1bee8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abad86ff24dab336f310b4b7802c1bee8">configureProperties</a> (<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;cameraProperty, bool attach) override</td></tr>
@@ -243,9 +243,9 @@ vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getNormalizedDeviceFr
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ad0e08fb15472e7be8800885b181bea92" id="r_ad0e08fb15472e7be8800885b181bea92"><td class="memItemLeft" align="right" valign="top"><a id="ad0e08fb15472e7be8800885b181bea92" name="ad0e08fb15472e7be8800885b181bea92"></a>
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:ad0e08fb15472e7be8800885b181bea92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94d37b9692a32ada2dffcfb745440a93" id="r_a94d37b9692a32ada2dffcfb745440a93"><td class="memItemLeft" align="right" valign="top"><a id="a94d37b9692a32ada2dffcfb745440a93" name="a94d37b9692a32ada2dffcfb745440a93"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;SkewedPerspectiveCamera&quot;}</td></tr>
+<tr class="separator:a94d37b9692a32ada2dffcfb745440a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -493,8 +493,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="ae1b20d4a3ace0a55d3aaa4c85029c255" name="ae1b20d4a3ace0a55d3aaa4c85029c255"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1b20d4a3ace0a55d3aaa4c85029c255">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a6de3ebaf8a24319507f921f9b2c86e04" name="a6de3ebaf8a24319507f921f9b2c86e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6de3ebaf8a24319507f921f9b2c86e04">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -503,7 +503,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string inviwo::SkewedPerspectiveCamera::getClassIdentifier </td>
+          <td class="memname">virtual std::string_view inviwo::SkewedPerspectiveCamera::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

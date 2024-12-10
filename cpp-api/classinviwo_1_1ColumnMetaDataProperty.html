@@ -138,8 +138,8 @@ $(function(){initNavTree('classinviwo_1_1ColumnMetaDataProperty.html',''); initR
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2fdd50d5391338c1cba71df84cdf0514" id="r_a2fdd50d5391338c1cba71df84cdf0514"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fdd50d5391338c1cba71df84cdf0514">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:a2fdd50d5391338c1cba71df84cdf0514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d5e55a6a0c0ff8fc11cf92231e504d9" id="r_a6d5e55a6a0c0ff8fc11cf92231e504d9"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d5e55a6a0c0ff8fc11cf92231e504d9">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a6d5e55a6a0c0ff8fc11cf92231e504d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50fabb3238fdbe5e02ac3acac9b673fc" id="r_a50fabb3238fdbe5e02ac3acac9b673fc"><td class="memItemLeft" align="right" valign="top"><a id="a50fabb3238fdbe5e02ac3acac9b673fc" name="a50fabb3238fdbe5e02ac3acac9b673fc"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ColumnMetaDataProperty</b> (std::string_view identifier, std::string_view displayName, dvec2 range={0.0, 1.0}, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="separator:a50fabb3238fdbe5e02ac3acac9b673fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,9 +182,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateColumn</b> (<a 
 <tr class="memitem:a16645cf974bda4175d7a272441b2399d inherit pub_methods_classinviwo_1_1BoolCompositeProperty" id="r_a16645cf974bda4175d7a272441b2399d"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>BoolCompositeProperty</b> (const <a class="el" href="classinviwo_1_1BoolCompositeProperty.html">BoolCompositeProperty</a> &amp;rhs)</td></tr>
 <tr class="separator:a16645cf974bda4175d7a272441b2399d inherit pub_methods_classinviwo_1_1BoolCompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8dac0d2e1adb02a86b92ec7c5ab881ed inherit pub_methods_classinviwo_1_1BoolCompositeProperty" id="r_a8dac0d2e1adb02a86b92ec7c5ab881ed"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1BoolCompositeProperty.html#a8dac0d2e1adb02a86b92ec7c5ab881ed">getClassIdentifierForWidget</a> () const override</td></tr>
-<tr class="memdesc:a8dac0d2e1adb02a86b92ec7c5ab881ed inherit pub_methods_classinviwo_1_1BoolCompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
-<tr class="separator:a8dac0d2e1adb02a86b92ec7c5ab881ed inherit pub_methods_classinviwo_1_1BoolCompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a7235ba1866c8d34d9c6c7856b73d66 inherit pub_methods_classinviwo_1_1BoolCompositeProperty" id="r_a1a7235ba1866c8d34d9c6c7856b73d66"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1BoolCompositeProperty.html#a1a7235ba1866c8d34d9c6c7856b73d66">getClassIdentifierForWidget</a> () const override</td></tr>
+<tr class="memdesc:a1a7235ba1866c8d34d9c6c7856b73d66 inherit pub_methods_classinviwo_1_1BoolCompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
+<tr class="separator:a1a7235ba1866c8d34d9c6c7856b73d66 inherit pub_methods_classinviwo_1_1BoolCompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbc5e4647aa7226fa48adbb53f182f28 inherit pub_methods_classinviwo_1_1BoolCompositeProperty" id="r_acbc5e4647aa7226fa48adbb53f182f28"><td class="memItemLeft" align="right" valign="top">
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isChecked</b> () const</td></tr>
 <tr class="separator:acbc5e4647aa7226fa48adbb53f182f28 inherit pub_methods_classinviwo_1_1BoolCompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -623,17 +623,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ad37cc37665b9a8671f1b9fd52b3ee2dd" id="r_ad37cc37665b9a8671f1b9fd52b3ee2dd"><td class="memItemLeft" align="right" valign="top"><a id="ad37cc37665b9a8671f1b9fd52b3ee2dd" name="ad37cc37665b9a8671f1b9fd52b3ee2dd"></a>
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:ad37cc37665b9a8671f1b9fd52b3ee2dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3963155ed9a4527bb319ad6f5fc4da5e" id="r_a3963155ed9a4527bb319ad6f5fc4da5e"><td class="memItemLeft" align="right" valign="top"><a id="a3963155ed9a4527bb319ad6f5fc4da5e" name="a3963155ed9a4527bb319ad6f5fc4da5e"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.ColumnMetaDataProperty&quot;}</td></tr>
+<tr class="separator:a3963155ed9a4527bb319ad6f5fc4da5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_classinviwo_1_1BoolCompositeProperty"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_attribs_classinviwo_1_1BoolCompositeProperty')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classinviwo_1_1BoolCompositeProperty.html">inviwo::BoolCompositeProperty</a></td></tr>
-<tr class="memitem:a82f87dcda026e3c793b667017c6538c8 inherit pub_static_attribs_classinviwo_1_1BoolCompositeProperty" id="r_a82f87dcda026e3c793b667017c6538c8"><td class="memItemLeft" align="right" valign="top">
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:a82f87dcda026e3c793b667017c6538c8 inherit pub_static_attribs_classinviwo_1_1BoolCompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e247977864ac7527f7e65c60b27435a inherit pub_static_attribs_classinviwo_1_1BoolCompositeProperty" id="r_a0e247977864ac7527f7e65c60b27435a"><td class="memItemLeft" align="right" valign="top">
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.BoolCompositeProperty&quot;}</td></tr>
+<tr class="separator:a0e247977864ac7527f7e65c60b27435a inherit pub_static_attribs_classinviwo_1_1BoolCompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_classinviwo_1_1CompositeProperty"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_attribs_classinviwo_1_1CompositeProperty')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a></td></tr>
-<tr class="memitem:a78994ae865e740a443e758b80fe7f5d5 inherit pub_static_attribs_classinviwo_1_1CompositeProperty" id="r_a78994ae865e740a443e758b80fe7f5d5"><td class="memItemLeft" align="right" valign="top">
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:a78994ae865e740a443e758b80fe7f5d5 inherit pub_static_attribs_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab61e955c38f41a57607446deeaaec81 inherit pub_static_attribs_classinviwo_1_1CompositeProperty" id="r_aab61e955c38f41a57607446deeaaec81"><td class="memItemLeft" align="right" valign="top">
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.CompositeProperty&quot;}</td></tr>
+<tr class="separator:aab61e955c38f41a57607446deeaaec81 inherit pub_static_attribs_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -791,8 +791,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (
 
 </div>
 </div>
-<a id="a2fdd50d5391338c1cba71df84cdf0514" name="a2fdd50d5391338c1cba71df84cdf0514"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fdd50d5391338c1cba71df84cdf0514">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a6d5e55a6a0c0ff8fc11cf92231e504d9" name="a6d5e55a6a0c0ff8fc11cf92231e504d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d5e55a6a0c0ff8fc11cf92231e504d9">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -801,7 +801,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string inviwo::ColumnMetaDataProperty::getClassIdentifier </td>
+          <td class="memname">virtual std::string_view inviwo::ColumnMetaDataProperty::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

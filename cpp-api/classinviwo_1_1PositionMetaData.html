@@ -124,8 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a23658221354b6df96dfe381052882526" id="r_a23658221354b6df96dfe381052882526"><td class="memItemLeft" align="right" valign="top"><a id="a23658221354b6df96dfe381052882526" name="a23658221354b6df96dfe381052882526"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PositionMetaData</b> (int x, int y)</td></tr>
 <tr class="separator:a23658221354b6df96dfe381052882526"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c0309750d3363307cd3cde2d473a8e3" id="r_a4c0309750d3363307cd3cde2d473a8e3"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c0309750d3363307cd3cde2d473a8e3">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:a4c0309750d3363307cd3cde2d473a8e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35543543e4cd376e473c613df68f765d" id="r_a35543543e4cd376e473c613df68f765d"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35543543e4cd376e473c613df68f765d">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a35543543e4cd376e473c613df68f765d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2982612135eaab094c12ee6e4d9f995c" id="r_a2982612135eaab094c12ee6e4d9f995c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1PositionMetaData.html">PositionMetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2982612135eaab094c12ee6e4d9f995c">clone</a> () const override</td></tr>
 <tr class="separator:a2982612135eaab094c12ee6e4d9f995c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7f7d992caa9fa4a7f70209bfdae3418" id="r_ad7f7d992caa9fa4a7f70209bfdae3418"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7f7d992caa9fa4a7f70209bfdae3418">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
@@ -179,9 +179,9 @@ virtual T&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> () const
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a5d06c768d0263055f1e88fb9049e3743" id="r_a5d06c768d0263055f1e88fb9049e3743"><td class="memItemLeft" align="right" valign="top"><a id="a5d06c768d0263055f1e88fb9049e3743" name="a5d06c768d0263055f1e88fb9049e3743"></a>
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>CLASS_IDENTIFIER</b></td></tr>
-<tr class="separator:a5d06c768d0263055f1e88fb9049e3743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c490c5ea1fe491fe8990f41693b224" id="r_a29c490c5ea1fe491fe8990f41693b224"><td class="memItemLeft" align="right" valign="top"><a id="a29c490c5ea1fe491fe8990f41693b224" name="a29c490c5ea1fe491fe8990f41693b224"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.PositionMetaData&quot;}</td></tr>
+<tr class="separator:a29c490c5ea1fe491fe8990f41693b224"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -258,8 +258,8 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>value_</b></td></tr>
 
 </div>
 </div>
-<a id="a4c0309750d3363307cd3cde2d473a8e3" name="a4c0309750d3363307cd3cde2d473a8e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c0309750d3363307cd3cde2d473a8e3">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a35543543e4cd376e473c613df68f765d" name="a35543543e4cd376e473c613df68f765d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35543543e4cd376e473c613df68f765d">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -268,7 +268,7 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>value_</b></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const std::string &amp; inviwo::PositionMetaData::getClassIdentifier </td>
+          <td class="memname">virtual std::string_view inviwo::PositionMetaData::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

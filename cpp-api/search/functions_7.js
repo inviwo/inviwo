@@ -22,5 +22,5 @@ var searchData=
   ['hidewidget_19',['hideWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#ac3b807a9c7d955c98394fffcf586e75a',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::hideWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a792a4b0ee350abd1a3c94b0d34427698',1,'inviwo::MinMaxPropertySettingsWidgetQt::hideWidget()']]],
   ['highlight_20',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
   ['hsl2rgb_21',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
-  ['hsv2rgb_22',['hsv2rgb',['../namespaceinviwo_1_1color.html#a6a3b611cb8748b20a86f4df1b3bd5e9f',1,'inviwo::color']]]
+  ['hsv2rgb_22',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]]
 ];

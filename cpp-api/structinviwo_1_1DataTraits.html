@@ -112,12 +112,12 @@ $(function(){initNavTree('structinviwo_1_1DataTraits.html',''); initResizable(tr
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a69ad09cb74bc36ec25d91cc8a3966386" id="r_a69ad09cb74bc36ec25d91cc8a3966386"><td class="memItemLeft" align="right" valign="top">static const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69ad09cb74bc36ec25d91cc8a3966386">classIdentifier</a> ()</td></tr>
-<tr class="separator:a69ad09cb74bc36ec25d91cc8a3966386"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95325f12e7d96e9c5397268ba40de40f" id="r_a95325f12e7d96e9c5397268ba40de40f"><td class="memItemLeft" align="right" valign="top">static const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95325f12e7d96e9c5397268ba40de40f">dataName</a> ()</td></tr>
-<tr class="separator:a95325f12e7d96e9c5397268ba40de40f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fb92285d07e80f0b487a62d5d71ed36" id="r_a6fb92285d07e80f0b487a62d5d71ed36"><td class="memItemLeft" align="right" valign="top">static uvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fb92285d07e80f0b487a62d5d71ed36">colorCode</a> ()</td></tr>
-<tr class="separator:a6fb92285d07e80f0b487a62d5d71ed36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67121291748479b6a546eb593e4c574" id="r_ac67121291748479b6a546eb593e4c574"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac67121291748479b6a546eb593e4c574">classIdentifier</a> ()</td></tr>
+<tr class="separator:ac67121291748479b6a546eb593e4c574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70bc89235f2ada970ab0dd76c42eec51" id="r_a70bc89235f2ada970ab0dd76c42eec51"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70bc89235f2ada970ab0dd76c42eec51">dataName</a> ()</td></tr>
+<tr class="separator:a70bc89235f2ada970ab0dd76c42eec51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69bc9d0aa889c626957db0cbcc001ce7" id="r_a69bc9d0aa889c626957db0cbcc001ce7"><td class="memItemLeft" align="right" valign="top">static constexpr uvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69bc9d0aa889c626957db0cbcc001ce7">colorCode</a> ()</td></tr>
+<tr class="separator:a69bc9d0aa889c626957db0cbcc001ce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5415e728f4a6fdb0781445950b8fec23" id="r_a5415e728f4a6fdb0781445950b8fec23"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5415e728f4a6fdb0781445950b8fec23">info</a> (const T &amp;data)</td></tr>
 <tr class="separator:a5415e728f4a6fdb0781445950b8fec23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -126,12 +126,12 @@ Static Public Member Functions</h2></td></tr>
 class inviwo::DataTraits&lt; T, typename &gt;</div><p>A traits class for getting information about a data object. This provides a customization point if one wants to generate the information dynamically, by specializing the traits for your kind of <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a>: </p>
 <pre class="fragment">template &lt;&gt;
 struct DataTraits&lt;MyDataType&gt; {
-    static const std::string&amp; classIdentifier() {
-        static const std::string id{"org.something.mydatatype"};
+    static std::string_view classIdentifier() {
+        static constexpr std::string_view id{"org.something.mydatatype"};
         return id;
     }
-    static const std::string&amp; dataName() {
-        static const std::string name{"MyDataType"};
+    static std::string_view dataName() {
+        static constexpr std::string_view name{"MyDataType"};
         return name;
     }
     static uvec3 colorCode() {
@@ -145,8 +145,8 @@ struct DataTraits&lt;MyDataType&gt; {
 };
 </pre><p>The default behavior uses the static members "classIdentifier", "dataName", "colorCode" and "getInfo()". </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a69ad09cb74bc36ec25d91cc8a3966386" name="a69ad09cb74bc36ec25d91cc8a3966386"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a69ad09cb74bc36ec25d91cc8a3966386">&#9670;&#160;</a></span>classIdentifier()</h2>
+<a id="ac67121291748479b6a546eb593e4c574" name="ac67121291748479b6a546eb593e4c574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac67121291748479b6a546eb593e4c574">&#9670;&#160;</a></span>classIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,7 +157,7 @@ template&lt;typename T , typename  = void&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const std::string &amp; <a class="el" href="structinviwo_1_1DataTraits.html">inviwo::DataTraits</a>&lt; T, typename &gt;::classIdentifier </td>
+          <td class="memname">static constexpr std::string_view <a class="el" href="structinviwo_1_1DataTraits.html">inviwo::DataTraits</a>&lt; T, typename &gt;::classIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -165,16 +165,16 @@ template&lt;typename T , typename  = void&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The Class Identifier has to be globally unique. Use a reverse DNS naming scheme. Example: "org.someorg.mydatatype" The default implementation will look for a static std::string member T::classIdentifier. In case it is not found an empty string will be returned. An empty class identifier will be considered an error in various factories. </p>
+<p>The Class Identifier has to be globally unique. Use a reverse DNS naming scheme. Example: "org.someorg.mydatatype" The default implementation will look for a static std::string / std::string_view member T::classIdentifier. In case it is not found an empty string will be returned. An empty class identifier will be considered an error in various factories. </p>
 
 </div>
 </div>
-<a id="a6fb92285d07e80f0b487a62d5d71ed36" name="a6fb92285d07e80f0b487a62d5d71ed36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6fb92285d07e80f0b487a62d5d71ed36">&#9670;&#160;</a></span>colorCode()</h2>
+<a id="a69bc9d0aa889c626957db0cbcc001ce7" name="a69bc9d0aa889c626957db0cbcc001ce7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69bc9d0aa889c626957db0cbcc001ce7">&#9670;&#160;</a></span>colorCode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -185,7 +185,7 @@ template&lt;typename T , typename  = void&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static uvec3 <a class="el" href="structinviwo_1_1DataTraits.html">inviwo::DataTraits</a>&lt; T, typename &gt;::colorCode </td>
+          <td class="memname">static constexpr uvec3 <a class="el" href="structinviwo_1_1DataTraits.html">inviwo::DataTraits</a>&lt; T, typename &gt;::colorCode </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -193,7 +193,7 @@ template&lt;typename T , typename  = void&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -201,8 +201,8 @@ template&lt;typename T , typename  = void&gt; </div>
 
 </div>
 </div>
-<a id="a95325f12e7d96e9c5397268ba40de40f" name="a95325f12e7d96e9c5397268ba40de40f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95325f12e7d96e9c5397268ba40de40f">&#9670;&#160;</a></span>dataName()</h2>
+<a id="a70bc89235f2ada970ab0dd76c42eec51" name="a70bc89235f2ada970ab0dd76c42eec51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70bc89235f2ada970ab0dd76c42eec51">&#9670;&#160;</a></span>dataName()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -213,7 +213,7 @@ template&lt;typename T , typename  = void&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static const std::string &amp; <a class="el" href="structinviwo_1_1DataTraits.html">inviwo::DataTraits</a>&lt; T, typename &gt;::dataName </td>
+          <td class="memname">static constexpr std::string_view <a class="el" href="structinviwo_1_1DataTraits.html">inviwo::DataTraits</a>&lt; T, typename &gt;::dataName </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -221,11 +221,11 @@ template&lt;typename T , typename  = void&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Should return a user friendly version of the above identifier, "MyDataType" for example. Does not have to be unique, and usually shorter then the class identifier. The default implementation will look for a static std::string member T::dataName. In case it is not found the classIdentifier will be returned. </p>
+<p>Should return a user friendly version of the above identifier, "MyDataType" for example. Does not have to be unique, and usually shorter then the class identifier. The default implementation will look for a static std::string / std::string_view member T::dataName. In case it is not found the classIdentifier will be returned. </p>
 
 </div>
 </div>
@@ -253,7 +253,7 @@ template&lt;typename T , typename  = void&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Should return a document with information describing the data. The default implementation will look for a static function <a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> T::getInfo(const T&amp; data). In case it is not found a <a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> only containing the <a class="el" href="#a95325f12e7d96e9c5397268ba40de40f">dataName()</a> will be returned. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> </dd></dl>
+<p>Should return a document with information describing the data. The default implementation will look for a static function <a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> T::getInfo(const T&amp; data). In case it is not found a <a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> only containing the <a class="el" href="#a70bc89235f2ada970ab0dd76c42eec51">dataName()</a> will be returned. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> </dd></dl>
 
 </div>
 </div>

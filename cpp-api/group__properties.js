@@ -6,7 +6,7 @@ var group__properties =
     ] ],
     [ "inviwo::BoolCompositeProperty", "classinviwo_1_1BoolCompositeProperty.html", [
       [ "clone", "classinviwo_1_1BoolCompositeProperty.html#a7bf54b1bc0e565b71726b0f582a85808", null ],
-      [ "getClassIdentifierForWidget", "classinviwo_1_1BoolCompositeProperty.html#a8dac0d2e1adb02a86b92ec7c5ab881ed", null ]
+      [ "getClassIdentifierForWidget", "classinviwo_1_1BoolCompositeProperty.html#a1a7235ba1866c8d34d9c6c7856b73d66", null ]
     ] ],
     [ "inviwo::BoolProperty", "classinviwo_1_1BoolProperty.html", [
       [ "clone", "classinviwo_1_1BoolProperty.html#a7df201a9a22ad1739c8de24fc17d817c", null ],
@@ -46,7 +46,7 @@ var group__properties =
     [ "inviwo::CompositeProperty", "classinviwo_1_1CompositeProperty.html", [
       [ "accept", "classinviwo_1_1CompositeProperty.html#a2a08ae47c1464cddec0a932ba95da711", null ],
       [ "clone", "classinviwo_1_1CompositeProperty.html#a1dcf19992aecd328eb5234f90e2623f9", null ],
-      [ "getClassIdentifierForWidget", "classinviwo_1_1CompositeProperty.html#ad8c3ccbb2151ab7a1f8267a8cddba5b0", null ],
+      [ "getClassIdentifierForWidget", "classinviwo_1_1CompositeProperty.html#a512ed720524a5ad44c4bb7bc517174eb", null ],
       [ "isDefaultState", "classinviwo_1_1CompositeProperty.html#adf581f06526160b3e6fe54e3421f60b1", null ],
       [ "needsSerialization", "classinviwo_1_1CompositeProperty.html#a969faf3cde079d8ee7d502c40a6385d6", null ],
       [ "resetToDefaultState", "classinviwo_1_1CompositeProperty.html#a4f869f44314c28642de84f96c995db6a", null ],
@@ -56,7 +56,7 @@ var group__properties =
     ] ],
     [ "inviwo::DirectoryProperty", "classinviwo_1_1DirectoryProperty.html", [
       [ "clone", "classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128", null ],
-      [ "getClassIdentifierForWidget", "classinviwo_1_1DirectoryProperty.html#a0910a54c4d3a6ab65a397d7ca2f885fc", null ]
+      [ "getClassIdentifierForWidget", "classinviwo_1_1DirectoryProperty.html#a2eeefb2679cef790d4428855f4008bcf", null ]
     ] ],
     [ "inviwo::EventProperty", "classinviwo_1_1EventProperty.html", [
       [ "EventProperty", "classinviwo_1_1EventProperty.html#a5c9c44064e07055da5a117738d366893", null ],
@@ -166,7 +166,7 @@ var group__properties =
       [ "clearInitiatingWidget", "classinviwo_1_1Property.html#a9b18b9392d85f49d4cc2383732ecbc0e", null ],
       [ "clone", "classinviwo_1_1Property.html#a19eaea363ee6030a64fa200e41632667", null ],
       [ "deregisterWidget", "classinviwo_1_1Property.html#a741aed79f5978f000d84b4c5db77f63b", null ],
-      [ "getClassIdentifierForWidget", "classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66", null ],
+      [ "getClassIdentifierForWidget", "classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4", null ],
       [ "getDescription", "classinviwo_1_1Property.html#a4ddd2029973417d4cdb3dc9406792415", null ],
       [ "getHelp", "classinviwo_1_1Property.html#ac9e9e83e7e33736d73f2401af5ba7c8c", null ],
       [ "getPath", "classinviwo_1_1Property.html#af741958083ecc700a11a3b63c399d5b9", null ],
@@ -275,7 +275,7 @@ var group__properties =
     ] ],
     [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", [
       [ "clone", "classinviwo_1_1IsoTFProperty.html#af4d1eb69c443e143d4eb78b178e7b69c", null ],
-      [ "getClassIdentifierForWidget", "classinviwo_1_1IsoTFProperty.html#a9aa28c4a40997910d21bb709cc5ae192", null ],
+      [ "getClassIdentifierForWidget", "classinviwo_1_1IsoTFProperty.html#a77395678e37f46f37b42219d6893db6e", null ],
       [ "set", "classinviwo_1_1IsoTFProperty.html#a92f5bd0805695656757063f523778ea6", null ],
       [ "set", "classinviwo_1_1IsoTFProperty.html#ac65ddceffb8f945e6ee464da18e821eb", null ],
       [ "set", "classinviwo_1_1IsoTFProperty.html#acf004dc472c8137878e643e2b0801b0c", null ],

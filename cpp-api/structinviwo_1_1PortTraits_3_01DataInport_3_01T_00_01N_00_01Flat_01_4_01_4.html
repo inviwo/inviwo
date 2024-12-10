@@ -100,6 +100,7 @@ $(function(){initNavTree('structinviwo_1_1PortTraits_3_01DataInport_3_01T_00_01N
 <div class="header">
   <div class="summary">
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structinviwo_1_1PortTraits_3_01DataInport_3_01T_00_01N_00_01Flat_01_4_01_4-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::PortTraits&lt; DataInport&lt; T, N, Flat &gt; &gt; Struct Template Reference</div></div>
 </div><!--header-->
@@ -107,10 +108,67 @@ $(function(){initNavTree('structinviwo_1_1PortTraits_3_01DataInport_3_01T_00_01N
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a33435d8889ccdfbe33596278ec7b3794" id="r_a33435d8889ccdfbe33596278ec7b3794"><td class="memItemLeft" align="right" valign="top"><a id="a33435d8889ccdfbe33596278ec7b3794" name="a33435d8889ccdfbe33596278ec7b3794"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
-<tr class="separator:a33435d8889ccdfbe33596278ec7b3794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad39de9ac4de4eb58b742d624fe28f34c" id="r_ad39de9ac4de4eb58b742d624fe28f34c"><td class="memItemLeft" align="right" valign="top"><a id="ad39de9ac4de4eb58b742d624fe28f34c" name="ad39de9ac4de4eb58b742d624fe28f34c"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
+<tr class="separator:ad39de9ac4de4eb58b742d624fe28f34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:aec00ae99785acc31ccf79f2fdfb1ce03" id="r_aec00ae99785acc31ccf79f2fdfb1ce03"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec00ae99785acc31ccf79f2fdfb1ce03">cld</a></td></tr>
+<tr class="separator:aec00ae99785acc31ccf79f2fdfb1ce03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aec00ae99785acc31ccf79f2fdfb1ce03" name="aec00ae99785acc31ccf79f2fdfb1ce03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec00ae99785acc31ccf79f2fdfb1ce03">&#9670;&#160;</a></span>cld</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , size_t N, bool Flat&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="structinviwo_1_1PortTraits.html">inviwo::PortTraits</a>&lt; <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; T, N, Flat &gt; &gt;::cld</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= []() {</div>
+<div class="line">        <span class="keyword">constexpr</span> <span class="keyword">auto</span> tCid = <a class="code hl_function" href="structinviwo_1_1DataTraits.html#ac67121291748479b6a546eb593e4c574">DataTraits&lt;T&gt;::classIdentifier</a>();</div>
+<div class="line">        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (tCid.empty()) {</div>
+<div class="line">            <span class="keywordflow">return</span> StaticString{};</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">constexpr</span> <span class="keyword">auto</span> flat = []() {</div>
+<div class="line">            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Flat) {</div>
+<div class="line">                <span class="keywordflow">return</span> <a class="code hl_struct" href="structinviwo_1_1StaticString.html">StaticString</a>{<span class="stringliteral">&quot;.flat&quot;</span>};</div>
+<div class="line">            } <span class="keywordflow">else</span> {</div>
+<div class="line">                <span class="keywordflow">return</span> StaticString{};</div>
+<div class="line">            }</div>
+<div class="line">        }();</div>
+<div class="line">        <span class="keyword">constexpr</span> <span class="keyword">auto</span> multi = []() {</div>
+<div class="line">            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (N == 0) {</div>
+<div class="line">                <span class="keywordflow">return</span> StaticString{<span class="stringliteral">&quot;.multi&quot;</span>};</div>
+<div class="line">            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (N != 1) {</div>
+<div class="line">                <span class="keywordflow">return</span> util::toStaticString&lt;N&gt;(FMT_COMPILE(<span class="stringliteral">&quot;{.}&quot;</span>));</div>
+<div class="line">            } <span class="keywordflow">else</span> {</div>
+<div class="line">                <span class="keywordflow">return</span> StaticString{};</div>
+<div class="line">            }</div>
+<div class="line">        }();</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">return</span> StaticString&lt;tCid.size()&gt;(tCid) + flat + multi + <span class="stringliteral">&quot;.inport&quot;</span>;</div>
+<div class="line">    }()</div>
+<div class="ttc" id="astructinviwo_1_1DataTraits_html_ac67121291748479b6a546eb593e4c574"><div class="ttname"><a href="structinviwo_1_1DataTraits.html#ac67121291748479b6a546eb593e4c574">inviwo::DataTraits::classIdentifier</a></div><div class="ttdeci">static constexpr std::string_view classIdentifier()</div><div class="ttdef"><b>Definition</b> datatraits.h:83</div></div>
+<div class="ttc" id="astructinviwo_1_1StaticString_html"><div class="ttname"><a href="structinviwo_1_1StaticString.html">inviwo::StaticString</a></div><div class="ttdoc">A compile time string implementation. Supports compile time string concatenation and conversion to st...</div><div class="ttdef"><b>Definition</b> staticstring.h:73</div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li><b>datainport.h</b></li>
 </ul>

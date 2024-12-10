@@ -143,8 +143,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aabc794f4756d0c4ab09618369a72be61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3e0564ab837511d4122fac607fcf50a" id="r_af3e0564ab837511d4122fac607fcf50a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">PropertyTrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3e0564ab837511d4122fac607fcf50a">clone</a> () const override</td></tr>
 <tr class="separator:af3e0564ab837511d4122fac607fcf50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a351db0cd32c436ac6b3496e958e86007" id="r_a351db0cd32c436ac6b3496e958e86007"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a351db0cd32c436ac6b3496e958e86007">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:a351db0cd32c436ac6b3496e958e86007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a914e8f7a61c5c81dff171da6ec263699" id="r_a914e8f7a61c5c81dff171da6ec263699"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a914e8f7a61c5c81dff171da6ec263699">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a914e8f7a61c5c81dff171da6ec263699"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3318e978cb7a3ea0691a9dadd8042f98" id="r_a3318e978cb7a3ea0691a9dadd8042f98"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structinviwo_1_1animation_1_1AnimationTimeState.html">AnimationTimeState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3318e978cb7a3ea0691a9dadd8042f98">operator()</a> (Seconds from, Seconds to, AnimationState state) const override</td></tr>
 <tr class="separator:a3318e978cb7a3ea0691a9dadd8042f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e7700d34c98aee7e4216c505c16a13e" id="r_a6e7700d34c98aee7e4216c505c16a13e"><td class="memItemLeft" align="right" valign="top">virtual const Prop *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e7700d34c98aee7e4216c505c16a13e">getProperty</a> () const override</td></tr>
@@ -297,9 +297,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservations</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:afc942c9c48deb64dc311bd8f1dc4a183" id="r_afc942c9c48deb64dc311bd8f1dc4a183"><td class="memItemLeft" align="right" valign="top"><a id="afc942c9c48deb64dc311bd8f1dc4a183" name="afc942c9c48deb64dc311bd8f1dc4a183"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
-<tr class="separator:afc942c9c48deb64dc311bd8f1dc4a183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbb2df16ea1bc56b88952e23ba766e88" id="r_afbb2df16ea1bc56b88952e23ba766e88"><td class="memItemLeft" align="right" valign="top"><a id="afbb2df16ea1bc56b88952e23ba766e88" name="afbb2df16ea1bc56b88952e23ba766e88"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
+<tr class="separator:afbb2df16ea1bc56b88952e23ba766e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -621,8 +621,8 @@ template&lt;typename Prop , typename Key , typename Seq &gt; </div>
 
 </div>
 </div>
-<a id="a351db0cd32c436ac6b3496e958e86007" name="a351db0cd32c436ac6b3496e958e86007"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a351db0cd32c436ac6b3496e958e86007">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a914e8f7a61c5c81dff171da6ec263699" name="a914e8f7a61c5c81dff171da6ec263699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a914e8f7a61c5c81dff171da6ec263699">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -633,7 +633,7 @@ template&lt;typename Prop , typename Key , typename Seq &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">inviwo::animation::PropertyTrack</a>&lt; Prop, Key, Seq &gt;::getClassIdentifier </td>
+          <td class="memname">std::string_view <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html">inviwo::animation::PropertyTrack</a>&lt; Prop, Key, Seq &gt;::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

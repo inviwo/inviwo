@@ -1,7 +1,7 @@
 var searchData=
 [
   ['d65whitepoint_0',['D65WhitePoint',['../namespaceinviwo_1_1color.html#a66c524fc6204911bdfd138273eef0a51',1,'inviwo::color']]],
-  ['darker_1',['darker',['../namespaceinviwo_1_1color.html#ad16249430aa9aa51263a618066cf97d8',1,'inviwo::color::darker(const vec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#ad69620b3fe019d7bfa21052aa0f28dd6',1,'inviwo::color::darker(const vec4 &amp;rgba, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#a08e2baaa81e1d45af73027892eb84a4f',1,'inviwo::color::darker(const uvec3 &amp;rgb, float factor=2.0f)']]],
+  ['darker_1',['darker',['../namespaceinviwo_1_1color.html#a41efdc0158db68ac7b295cddc49fe624',1,'inviwo::color::darker(const vec3 &amp;rgb, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#a786abe908fe1d6695e75d30836a46471',1,'inviwo::color::darker(const vec4 &amp;rgba, float factor=2.0f)'],['../namespaceinviwo_1_1color.html#a5d32f4e988748b17e5ad40fd245dc6ae',1,'inviwo::color::darker(const uvec3 &amp;rgb, float factor=2.0f)']]],
   ['data_2',['Data',['../classinviwo_1_1Data.html',1,'inviwo']]],
   ['data_20reader_20writers_3',['Data Reader &amp; Writers',['../group__dataio.html',1,'']]],
   ['data_3c_20bufferbase_2c_20bufferrepresentation_20_3e_4',['Data&lt; BufferBase, BufferRepresentation &gt;',['../classinviwo_1_1Data.html',1,'inviwo']]],
@@ -81,7 +81,7 @@ var searchData=
   ['datamapper_78',['DataMapper',['../classinviwo_1_1DataMapper.html',1,'inviwo']]],
   ['dataminmax_79',['dataMinMax',['../namespaceinviwo_1_1util.html#ae49e61ebf3b11c94b3497f88bb454634',1,'inviwo::util']]],
   ['dataminmaxgl_80',['DataMinMaxGL',['../classinviwo_1_1utilgl_1_1DataMinMaxGL.html',1,'inviwo::utilgl']]],
-  ['dataname_81',['dataName',['../structinviwo_1_1DataTraits.html#a95325f12e7d96e9c5397268ba40de40f',1,'inviwo::DataTraits']]],
+  ['dataname_81',['dataName',['../structinviwo_1_1DataTraits.html#a70bc89235f2ada970ab0dd76c42eec51',1,'inviwo::DataTraits']]],
   ['dataoutport_82',['DataOutport',['../classinviwo_1_1DataOutport.html',1,'inviwo']]],
   ['dataoutport_3c_20bufferbase_20_3e_83',['DataOutport&lt; BufferBase &gt;',['../classinviwo_1_1DataOutport.html',1,'inviwo']]],
   ['dataoutport_3c_20dataframe_20_3e_84',['DataOutport&lt; DataFrame &gt;',['../classinviwo_1_1DataOutport.html',1,'inviwo']]],

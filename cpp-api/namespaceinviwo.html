@@ -601,8 +601,6 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1DataTraits_3_01Eigen_1_1MatrixXf_01_4.html">DataTraits&lt; Eigen::MatrixXf &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>DataTraits&lt; glm::mat&lt; C, R, T, Q &gt; &gt;</b></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1DataTraits_3_01IntegralLineSet_01_4.html">DataTraits&lt; IntegralLineSet &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1DataTraits_3_01json_01_4.html">DataTraits&lt; json &gt;</a></td></tr>
@@ -2470,8 +2468,12 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1StreamRibbonsDeprecated.html">StreamRibbonsDeprecated</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1StringComparePMR.html">StringComparePMR</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1StringHash.html">StringHash</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transparent string hashing for use in unordered containers with string keys.  <a href="structinviwo_1_1StringHash.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transparent string hashing for use in unordered containers with string keys for example: std::unordered_map&lt;std::string, V, StringHash, std::equal_to&lt;&gt;&gt;;.  <a href="structinviwo_1_1StringHash.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1StringLessPMR.html">StringLessPMR</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1StringLogger.html">StringLogger</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A logger class that logs to a string.  <a href="classinviwo_1_1StringLogger.html#details">More...</a><br /></td></tr>
@@ -3731,6 +3733,21 @@ template&lt;size_t N = 4&gt; </td></tr>
 template&lt;size_t N = 4&gt; </td></tr>
 <tr class="memitem:a309c00afee375c6d0a842a77aaf2c5fd"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ImageSpatialSampler</b> = <a class="el" href="classinviwo_1_1ImageSampler.html">ImageSampler</a>&lt;glm::vec&lt;4, double&gt;&gt;</td></tr>
 <tr class="separator:a309c00afee375c6d0a842a77aaf2c5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a7a792b2f96cac565bea588555dbc6" id="r_a37a7a792b2f96cac565bea588555dbc6"><td class="memTemplParams" colspan="2"><a id="a37a7a792b2f96cac565bea588555dbc6" name="a37a7a792b2f96cac565bea588555dbc6"></a>
+template&lt;typename V &gt; </td></tr>
+<tr class="memitem:a37a7a792b2f96cac565bea588555dbc6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>StringMap</b> = std::map&lt;std::string, V, <a class="el" href="structinviwo_1_1StringLessPMR.html">StringLessPMR</a>&gt;</td></tr>
+<tr class="separator:a37a7a792b2f96cac565bea588555dbc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f9412adbb14c282a2b41183b2c6e1d4" id="r_a9f9412adbb14c282a2b41183b2c6e1d4"><td class="memTemplParams" colspan="2"><a id="a9f9412adbb14c282a2b41183b2c6e1d4" name="a9f9412adbb14c282a2b41183b2c6e1d4"></a>
+template&lt;typename V &gt; </td></tr>
+<tr class="memitem:a9f9412adbb14c282a2b41183b2c6e1d4"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>StringMapPMR</b> = std::pmr::map&lt;std::pmr::string, V, <a class="el" href="structinviwo_1_1StringLessPMR.html">StringLessPMR</a>&gt;</td></tr>
+<tr class="separator:a9f9412adbb14c282a2b41183b2c6e1d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35a41d14324dbdf830c82c4a72e7b335" id="r_a35a41d14324dbdf830c82c4a72e7b335"><td class="memTemplParams" colspan="2"><a id="a35a41d14324dbdf830c82c4a72e7b335" name="a35a41d14324dbdf830c82c4a72e7b335"></a>
+template&lt;typename V &gt; </td></tr>
+<tr class="memitem:a35a41d14324dbdf830c82c4a72e7b335"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>UnorderedStringMap</b> = std::unordered_map&lt;std::string, V, <a class="el" href="structinviwo_1_1StringHash.html">StringHash</a>, <a class="el" href="structinviwo_1_1StringComparePMR.html">StringComparePMR</a>&gt;</td></tr>
+<tr class="separator:a35a41d14324dbdf830c82c4a72e7b335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a221db979bfea9fdf6999f636da04f971" id="r_a221db979bfea9fdf6999f636da04f971"><td class="memTemplParams" colspan="2">template&lt;typename V &gt; </td></tr>
+<tr class="memitem:a221db979bfea9fdf6999f636da04f971"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a221db979bfea9fdf6999f636da04f971">UnorderedStringMapPMR</a></td></tr>
+<tr class="separator:a221db979bfea9fdf6999f636da04f971"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a66c0266e0ff736a0f32b38ff870aca" id="r_a2a66c0266e0ff736a0f32b38ff870aca"><td class="memTemplParams" colspan="2"><a id="a2a66c0266e0ff736a0f32b38ff870aca" name="a2a66c0266e0ff736a0f32b38ff870aca"></a>
 template&lt;size_t N = 4&gt; </td></tr>
 <tr class="memitem:a2a66c0266e0ff736a0f32b38ff870aca"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>VolumeDoubleSampler</b> = <a class="el" href="classinviwo_1_1VolumeSampler.html">VolumeSampler</a>&lt;util::glmtype_t&lt;double, N&gt;&gt;</td></tr>
@@ -5333,10 +5350,10 @@ template&lt;size_t N1, size_t N2&gt; </td></tr>
 <tr class="memitem:a641559da709af6354db0727106538db7" id="r_a641559da709af6354db0727106538db7"><td class="memItemLeft" align="right" valign="top"><a id="a641559da709af6354db0727106538db7" name="a641559da709af6354db0727106538db7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>StaticString</b> () -&gt; StaticString&lt; 0 &gt;</td></tr>
 <tr class="separator:a641559da709af6354db0727106538db7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ee7a2050950151aa2f0ee86ae576000" id="r_a6ee7a2050950151aa2f0ee86ae576000"><td class="memTemplParams" colspan="2"><a id="a6ee7a2050950151aa2f0ee86ae576000" name="a6ee7a2050950151aa2f0ee86ae576000"></a>
+<tr class="memitem:a83edc3e2c753bbbda39153eea7c68c21" id="r_a83edc3e2c753bbbda39153eea7c68c21"><td class="memTemplParams" colspan="2"><a id="a83edc3e2c753bbbda39153eea7c68c21" name="a83edc3e2c753bbbda39153eea7c68c21"></a>
 template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:a6ee7a2050950151aa2f0ee86ae576000"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>StaticString</b> (Ts &amp;&amp;... strs) -&gt; StaticString&lt;(::inviwo::detail::static_size&lt; Ts &gt;+...)&gt;</td></tr>
-<tr class="separator:a6ee7a2050950151aa2f0ee86ae576000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83edc3e2c753bbbda39153eea7c68c21"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>StaticString</b> (Ts &amp;&amp;... strs) -&gt; StaticString&lt;(detail::static_size&lt; Ts &gt;+...)&gt;</td></tr>
+<tr class="separator:a83edc3e2c753bbbda39153eea7c68c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0e0fb4efba0eb61a7ac05cb8b946657" id="r_ab0e0fb4efba0eb61a7ac05cb8b946657"><td class="memTemplParams" colspan="2"><a id="ab0e0fb4efba0eb61a7ac05cb8b946657" name="ab0e0fb4efba0eb61a7ac05cb8b946657"></a>
 template&lt;size_t N&gt; </td></tr>
 <tr class="memitem:ab0e0fb4efba0eb61a7ac05cb8b946657"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><b>to_string_view</b> (const <a class="el" href="structinviwo_1_1StaticString.html">StaticString</a>&lt; N &gt; &amp;s)</td></tr>
@@ -5396,6 +5413,9 @@ IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <tr class="memitem:a0fc6b6c1a1d5742aa75d97fc37529a7a" id="r_a0fc6b6c1a1d5742aa75d97fc37529a7a"><td class="memItemLeft" align="right" valign="top"><a id="a0fc6b6c1a1d5742aa75d97fc37529a7a" name="a0fc6b6c1a1d5742aa75d97fc37529a7a"></a>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>camelCaseToHeader</b> (std::string_view s)</td></tr>
 <tr class="separator:a0fc6b6c1a1d5742aa75d97fc37529a7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a47582dfc49b5f00f9ae202c26e3677" id="r_a7a47582dfc49b5f00f9ae202c26e3677"><td class="memItemLeft" align="right" valign="top"><a id="a7a47582dfc49b5f00f9ae202c26e3677" name="a7a47582dfc49b5f00f9ae202c26e3677"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>camelCaseToHeader</b> (std::string_view s, std::string &amp;dest)</td></tr>
+<tr class="separator:a7a47582dfc49b5f00f9ae202c26e3677"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5faa497893ca8cf218056f66cb9a5a40" id="r_a5faa497893ca8cf218056f66cb9a5a40"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5faa497893ca8cf218056f66cb9a5a40">iCaseCmp</a> (std::string_view l, std::string_view r)</td></tr>
 <tr class="memdesc:a5faa497893ca8cf218056f66cb9a5a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Case insensitive equal comparison of two strings.  <br /></td></tr>
 <tr class="separator:a5faa497893ca8cf218056f66cb9a5a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5880,6 +5900,24 @@ IVW_OPENGL_PROFILING_IF(time, message), IVW_OPENGL_PROFILING_IF(time, src, messa
 <div class="line">    std::variant&lt;command::Nop, command::AddProcessor, command::RemoveProcessor,</div>
 <div class="line">                 command::AddConnection, command::RemoveConnection, command::AddLink,</div>
 <div class="line">                 command::RemoveLink, command::Update, command::Stats&gt;</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a221db979bfea9fdf6999f636da04f971" name="a221db979bfea9fdf6999f636da04f971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a221db979bfea9fdf6999f636da04f971">&#9670;&#160;</a></span>UnorderedStringMapPMR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename V &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using inviwo::UnorderedStringMapPMR</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line"> </div>
+<div class="line">    std::pmr::unordered_map&lt;std::pmr::string, V, StringHash, StringComparePMR&gt;</div>
 </div><!-- fragment -->
 </div>
 </div>

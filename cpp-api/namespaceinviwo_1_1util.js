@@ -23,7 +23,6 @@ var namespaceinviwo_1_1util =
     [ "glmtype< T, L, 1, P >", "structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html", null ],
     [ "Grid3DPointGeneration", "structinviwo_1_1util_1_1Grid3DPointGeneration.html", null ],
     [ "GridPos", "structinviwo_1_1util_1_1GridPos.html", null ],
-    [ "HasEnumName", "structinviwo_1_1util_1_1HasEnumName.html", null ],
     [ "IdentifiedDeserializer", "classinviwo_1_1util_1_1IdentifiedDeserializer.html", null ],
     [ "identifier", "structinviwo_1_1util_1_1identifier.html", null ],
     [ "identity", "structinviwo_1_1util_1_1identity.html", null ],

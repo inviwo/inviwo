@@ -102,7 +102,6 @@ $(function(){initNavTree('classinviwo_1_1MinMaxProperty.html',''); initResizable
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1MinMaxProperty-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::MinMaxProperty&lt; T &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__properties.html">Properties</a></div></div></div>
@@ -135,8 +134,8 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = glm
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3b068d4253676526ac676f1e5e3616be" id="r_a3b068d4253676526ac676f1e5e3616be"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b068d4253676526ac676f1e5e3616be">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:a3b068d4253676526ac676f1e5e3616be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fb18a316fc39e8c3424fc4bd67b6e70" id="r_a4fb18a316fc39e8c3424fc4bd67b6e70"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fb18a316fc39e8c3424fc4bd67b6e70">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a4fb18a316fc39e8c3424fc4bd67b6e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88a93fa49221f3067a4552ae4545fb49" id="r_a88a93fa49221f3067a4552ae4545fb49"><td class="memItemLeft" align="right" valign="top"><a id="a88a93fa49221f3067a4552ae4545fb49" name="a88a93fa49221f3067a4552ae4545fb49"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MinMaxProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, T valueMin=<a class="el" href="structinviwo_1_1Defaultvalues.html">Defaultvalues</a>&lt; T &gt;::getMin(), T valueMax=<a class="el" href="structinviwo_1_1Defaultvalues.html">Defaultvalues</a>&lt; T &gt;::getMax(), T rangeMin=<a class="el" href="structinviwo_1_1Defaultvalues.html">Defaultvalues</a>&lt; T &gt;::getMin(), T rangeMax=<a class="el" href="structinviwo_1_1Defaultvalues.html">Defaultvalues</a>&lt; T &gt;::getMax(), T increment=<a class="el" href="structinviwo_1_1Defaultvalues.html">Defaultvalues</a>&lt; T &gt;::getInc(), T minSeparation=0, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="separator:a88a93fa49221f3067a4552ae4545fb49"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -276,9 +275,9 @@ virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#16
 <tr class="memitem:ae2a49d7854a6625a991e78ea37f2b91a inherit pub_methods_classinviwo_1_1Property" id="r_ae2a49d7854a6625a991e78ea37f2b91a"><td class="memItemLeft" align="right" valign="top">
 virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getDisplayName</b> () const</td></tr>
 <tr class="separator:ae2a49d7854a6625a991e78ea37f2b91a inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48396c3fa583ffdd46157289b10a6d66 inherit pub_methods_classinviwo_1_1Property" id="r_a48396c3fa583ffdd46157289b10a6d66"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66">getClassIdentifierForWidget</a> () const</td></tr>
-<tr class="memdesc:a48396c3fa583ffdd46157289b10a6d66 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
-<tr class="separator:a48396c3fa583ffdd46157289b10a6d66 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af516e46114d9890ef5460e389688dbe4 inherit pub_methods_classinviwo_1_1Property" id="r_af516e46114d9890ef5460e389688dbe4"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4">getClassIdentifierForWidget</a> () const</td></tr>
+<tr class="memdesc:af516e46114d9890ef5460e389688dbe4 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
+<tr class="separator:af516e46114d9890ef5460e389688dbe4 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41b4436f65f561a71d8aa1325fd57cd1 inherit pub_methods_classinviwo_1_1Property" id="r_a41b4436f65f561a71d8aa1325fd57cd1"><td class="memItemLeft" align="right" valign="top">
 virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>setSemantics</b> (const <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> &amp;semantics)</td></tr>
 <tr class="separator:a41b4436f65f561a71d8aa1325fd57cd1 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -480,12 +479,6 @@ template&lt;typename T , typename U &gt; </td></tr>
 <tr class="memitem:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setStateAsDefault</b> (T &amp;property, const U &amp;state)</td></tr>
 <tr class="separator:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:ac9c3ab684e26b3e77b3aa91b4d6fbc7c" id="r_ac9c3ab684e26b3e77b3aa91b4d6fbc7c"><td class="memItemLeft" align="right" valign="top"><a id="ac9c3ab684e26b3e77b3aa91b4d6fbc7c" name="ac9c3ab684e26b3e77b3aa91b4d6fbc7c"></a>
-static const std::string&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b></td></tr>
-<tr class="separator:ac9c3ab684e26b3e77b3aa91b4d6fbc7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a612b01f60c98b106f68fd57eb40f33c5" id="r_a612b01f60c98b106f68fd57eb40f33c5"><td class="memItemLeft" align="right" valign="top"><a id="a612b01f60c98b106f68fd57eb40f33c5" name="a612b01f60c98b106f68fd57eb40f33c5"></a>
@@ -632,8 +625,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a3b068d4253676526ac676f1e5e3616be" name="a3b068d4253676526ac676f1e5e3616be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b068d4253676526ac676f1e5e3616be">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a4fb18a316fc39e8c3424fc4bd67b6e70" name="a4fb18a316fc39e8c3424fc4bd67b6e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fb18a316fc39e8c3424fc4bd67b6e70">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -644,7 +637,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classinviwo_1_1MinMaxProperty.html">inviwo::MinMaxProperty</a>&lt; T &gt;::getClassIdentifier </td>
+          <td class="memname">std::string_view <a class="el" href="classinviwo_1_1MinMaxProperty.html">inviwo::MinMaxProperty</a>&lt; T &gt;::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

@@ -70,7 +70,7 @@ var NAVTREEINDEX =
 "classinviwo_1_1NoiseGenerator2D.html#ac8775f2a2cee70507367768c9096b64e",
 "classinviwo_1_1PerspectiveCamera.html#ae4e30d6b1ba81170a7b60ed4cde8c37e",
 "classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1",
-"classinviwo_1_1Property.html#a9b18b9392d85f49d4cc2383732ecbc0e",
+"classinviwo_1_1Property.html#a9b2a797af0670c15a136a19ab4000f91",
 "classinviwo_1_1Rasterizer.html#a736905e639988b999f764f0e5bf7b98a",
 "classinviwo_1_1ShaderObject.html#ad3f2012a17e1487a12a84e8648f285f2",
 "classinviwo_1_1SpotLight.html#a35c7c8dc90e2df93e2cad91d65b7f8c0",
@@ -86,7 +86,7 @@ var NAVTREEINDEX =
 "namespaceinviwo_1_1util.html#aae046e2b3232a4ce60452ccc5853efb9",
 "structinviwo_1_1Defaultvalues.html",
 "structinviwo_1_1PropertyTraits_3_01Gaussian1DProperty_01_4.html",
-"structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html",
+"structinviwo_1_1dispatching_1_1filter_1_1Scalars.html",
 "structinviwo_1_1utilgl_1_1ColorMask.html"
 ];
 

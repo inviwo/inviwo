@@ -181,8 +181,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (const T &amp
 <tr class="separator:ae15f9c7a53bc6545cbac8086b26f4b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87a608f6695e33446c0367f8843eaa60" id="r_a87a608f6695e33446c0367f8843eaa60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87a608f6695e33446c0367f8843eaa60">set</a> (component_type val, size_t i, size_t j)</td></tr>
 <tr class="separator:a87a608f6695e33446c0367f8843eaa60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6f9da33d6ae8440ab2c5926aee77cf4" id="r_ac6f9da33d6ae8440ab2c5926aee77cf4"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6f9da33d6ae8440ab2c5926aee77cf4">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:ac6f9da33d6ae8440ab2c5926aee77cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75e40f294c597d575bba8ac520bd217c" id="r_a75e40f294c597d575bba8ac520bd217c"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75e40f294c597d575bba8ac520bd217c">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a75e40f294c597d575bba8ac520bd217c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac74513d938bbff6e02e4ff77f83888a4" id="r_ac74513d938bbff6e02e4ff77f83888a4"><td class="memItemLeft" align="right" valign="top"><a id="ac74513d938bbff6e02e4ff77f83888a4" name="ac74513d938bbff6e02e4ff77f83888a4"></a>
 const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMinValue</b> () const</td></tr>
 <tr class="separator:ac74513d938bbff6e02e4ff77f83888a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -265,9 +265,9 @@ virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#16
 <tr class="memitem:ae2a49d7854a6625a991e78ea37f2b91a inherit pub_methods_classinviwo_1_1Property" id="r_ae2a49d7854a6625a991e78ea37f2b91a"><td class="memItemLeft" align="right" valign="top">
 virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getDisplayName</b> () const</td></tr>
 <tr class="separator:ae2a49d7854a6625a991e78ea37f2b91a inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48396c3fa583ffdd46157289b10a6d66 inherit pub_methods_classinviwo_1_1Property" id="r_a48396c3fa583ffdd46157289b10a6d66"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#a48396c3fa583ffdd46157289b10a6d66">getClassIdentifierForWidget</a> () const</td></tr>
-<tr class="memdesc:a48396c3fa583ffdd46157289b10a6d66 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
-<tr class="separator:a48396c3fa583ffdd46157289b10a6d66 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af516e46114d9890ef5460e389688dbe4 inherit pub_methods_classinviwo_1_1Property" id="r_af516e46114d9890ef5460e389688dbe4"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4">getClassIdentifierForWidget</a> () const</td></tr>
+<tr class="memdesc:af516e46114d9890ef5460e389688dbe4 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget.  <br /></td></tr>
+<tr class="separator:af516e46114d9890ef5460e389688dbe4 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41b4436f65f561a71d8aa1325fd57cd1 inherit pub_methods_classinviwo_1_1Property" id="r_a41b4436f65f561a71d8aa1325fd57cd1"><td class="memItemLeft" align="right" valign="top">
 virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>setSemantics</b> (const <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> &amp;semantics)</td></tr>
 <tr class="separator:a41b4436f65f561a71d8aa1325fd57cd1 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -679,8 +679,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ac6f9da33d6ae8440ab2c5926aee77cf4" name="ac6f9da33d6ae8440ab2c5926aee77cf4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6f9da33d6ae8440ab2c5926aee77cf4">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a75e40f294c597d575bba8ac520bd217c" name="a75e40f294c597d575bba8ac520bd217c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75e40f294c597d575bba8ac520bd217c">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -691,7 +691,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string <a class="el" href="classinviwo_1_1OrdinalProperty.html">inviwo::OrdinalProperty</a>&lt; T &gt;::getClassIdentifier </td>
+          <td class="memname">std::string_view <a class="el" href="classinviwo_1_1OrdinalProperty.html">inviwo::OrdinalProperty</a>&lt; T &gt;::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

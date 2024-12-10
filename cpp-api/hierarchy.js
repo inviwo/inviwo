@@ -1166,9 +1166,6 @@ var hierarchy =
     [ "inviwo::FactoryKeyType< std::string_view >", "structinviwo_1_1FactoryKeyType_3_01std_1_1string__view_01_4.html", null ],
     [ "std::false_type", null, [
       [ "fmt::is_range< inviwo::flags::flags< T >, Char >", "structfmt_1_1is__range_3_01inviwo_1_1flags_1_1flags_3_01T_01_4_00_01Char_01_4.html", null ],
-      [ "inviwo::util::detail::HasEnumName< T, Enable >", "structinviwo_1_1util_1_1detail_1_1HasEnumName.html", [
-        [ "inviwo::util::HasEnumName< T >", "structinviwo_1_1util_1_1HasEnumName.html", null ]
-      ] ],
       [ "inviwo::util::detail::is_string< T, Enable >", "structinviwo_1_1util_1_1detail_1_1is__string.html", [
         [ "inviwo::util::is_string< T >", "structinviwo_1_1util_1_1is__string.html", null ]
       ] ],
@@ -3522,7 +3519,9 @@ var hierarchy =
     [ "std::streambuf", null, [
       [ "inviwo::LogStream", "classinviwo_1_1LogStream.html", null ]
     ] ],
+    [ "inviwo::StringComparePMR", "structinviwo_1_1StringComparePMR.html", null ],
     [ "inviwo::StringHash", "structinviwo_1_1StringHash.html", null ],
+    [ "inviwo::StringLessPMR", "structinviwo_1_1StringLessPMR.html", null ],
     [ "inviwo::utildoc::TableBuilder", "classinviwo_1_1utildoc_1_1TableBuilder.html", null ],
     [ "inviwo::Tag", "classinviwo_1_1Tag.html", null ],
     [ "inviwo::Tags", "classinviwo_1_1Tags.html", null ],
@@ -3580,7 +3579,6 @@ var hierarchy =
     [ "inviwo::util::TransformIterator< Transform, Iter >", "structinviwo_1_1util_1_1TransformIterator.html", null ],
     [ "std::true_type", null, [
       [ "inviwo::dispatching::filter::All< Format >", "structinviwo_1_1dispatching_1_1filter_1_1All.html", null ],
-      [ "inviwo::util::detail::HasEnumName< T, std::void_t< decltype(EnumTraits< T >::name())> >", "structinviwo_1_1util_1_1detail_1_1HasEnumName_3_01T_00_01std_1_1void__t_3_01decltype_07EnumTraitf00450a9e3b0dcbf61e16fb1b1b7952e.html", null ],
       [ "inviwo::util::is_dereferenceable< T, std::void_t< decltype(*std::declval< T >())> >", "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html", null ]
     ] ],
     [ "Ts...", null, [

@@ -166,8 +166,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1GridPos.html">GridPos</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1HasEnumName.html">HasEnumName</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1IdentifiedDeserializer.html">IdentifiedDeserializer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1identifier.html">identifier</a></td></tr>
@@ -276,10 +274,10 @@ Typedefs</h2></td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ab33d69d2eaa56f1ab7286b7794c71770"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>classIdentifierType</b> = decltype(std::declval&lt;T&gt;().getClassIdentifier())</td></tr>
 <tr class="separator:ab33d69d2eaa56f1ab7286b7794c71770"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac037ba47ee8e89eb5e86b66c36e7f3d6" id="r_ac037ba47ee8e89eb5e86b66c36e7f3d6"><td class="memTemplParams" colspan="2"><a id="ac037ba47ee8e89eb5e86b66c36e7f3d6" name="ac037ba47ee8e89eb5e86b66c36e7f3d6"></a>
+<tr class="memitem:a6b76aa99258a2ef18a2b49405a499901" id="r_a6b76aa99258a2ef18a2b49405a499901"><td class="memTemplParams" colspan="2"><a id="a6b76aa99258a2ef18a2b49405a499901" name="a6b76aa99258a2ef18a2b49405a499901"></a>
 template&lt;class T &gt; </td></tr>
-<tr class="memitem:ac037ba47ee8e89eb5e86b66c36e7f3d6"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasGetClassIdentifier</b> = is_detected_exact&lt;std::string, classIdentifierType, T&gt;</td></tr>
-<tr class="separator:ac037ba47ee8e89eb5e86b66c36e7f3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b76aa99258a2ef18a2b49405a499901"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasGetClassIdentifier</b> = is_detected_exact&lt;std::string_view, classIdentifierType, T&gt;</td></tr>
+<tr class="separator:a6b76aa99258a2ef18a2b49405a499901"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a720b22362c67c273e303d812cb5a7911" id="r_a720b22362c67c273e303d812cb5a7911"><td class="memItemLeft" align="right" valign="top"><a id="a720b22362c67c273e303d812cb5a7911" name="a720b22362c67c273e303d812cb5a7911"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>OffsetCallback</b> = std::function&lt;ivec2(std::vector&lt;<a class="el" href="classinviwo_1_1Processor.html">Processor</a>*&gt;)&gt;</td></tr>
 <tr class="separator:a720b22362c67c273e303d812cb5a7911"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -335,38 +333,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>IndexMapper2D</b> = 
 <tr class="memitem:a85756acd1a8f5735b65db27476be8da2" id="r_a85756acd1a8f5735b65db27476be8da2"><td class="memItemLeft" align="right" valign="top"><a id="a85756acd1a8f5735b65db27476be8da2" name="a85756acd1a8f5735b65db27476be8da2"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>IndexMapper3D</b> = <a class="el" href="structinviwo_1_1util_1_1IndexMapper.html">IndexMapper</a>&lt;3, size_t&gt;</td></tr>
 <tr class="separator:a85756acd1a8f5735b65db27476be8da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5433403a98e6a64371dada8fd4b5693" id="r_aa5433403a98e6a64371dada8fd4b5693"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:aa5433403a98e6a64371dada8fd4b5693"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa5433403a98e6a64371dada8fd4b5693">HasClassIdentifierUpper</a></td></tr>
-<tr class="separator:aa5433403a98e6a64371dada8fd4b5693"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2128449f85e6a0683ecfab6f0bf557f" id="r_af2128449f85e6a0683ecfab6f0bf557f"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:af2128449f85e6a0683ecfab6f0bf557f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af2128449f85e6a0683ecfab6f0bf557f">HasClassIdentifierLower</a></td></tr>
-<tr class="separator:af2128449f85e6a0683ecfab6f0bf557f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ab33e010d4cd421e1bdde9008fcb0ca" id="r_a7ab33e010d4cd421e1bdde9008fcb0ca"><td class="memTemplParams" colspan="2"><a id="a7ab33e010d4cd421e1bdde9008fcb0ca" name="a7ab33e010d4cd421e1bdde9008fcb0ca"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:a7ab33e010d4cd421e1bdde9008fcb0ca"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasClassIdentifier</b> = std::disjunction&lt;HasClassIdentifierUpper&lt;T&gt;, HasClassIdentifierLower&lt;T&gt;&gt;</td></tr>
-<tr class="separator:a7ab33e010d4cd421e1bdde9008fcb0ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ba30a4786bb014d0398323f6e602378" id="r_a2ba30a4786bb014d0398323f6e602378"><td class="memTemplParams" colspan="2"><a id="a2ba30a4786bb014d0398323f6e602378" name="a2ba30a4786bb014d0398323f6e602378"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:a2ba30a4786bb014d0398323f6e602378"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasDataName</b> = is_detected_exact&lt;const std::string, detail::dataNameType, T&gt;</td></tr>
-<tr class="separator:a2ba30a4786bb014d0398323f6e602378"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e72a7827ed4af44cfdd53604e14d417" id="r_a2e72a7827ed4af44cfdd53604e14d417"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a2e72a7827ed4af44cfdd53604e14d417"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2e72a7827ed4af44cfdd53604e14d417">HasColorCodeUpper</a></td></tr>
-<tr class="separator:a2e72a7827ed4af44cfdd53604e14d417"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae48603c54e2435829ff923a16fb6f24f" id="r_ae48603c54e2435829ff923a16fb6f24f"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ae48603c54e2435829ff923a16fb6f24f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae48603c54e2435829ff923a16fb6f24f">HasColorCodeLower</a></td></tr>
-<tr class="separator:ae48603c54e2435829ff923a16fb6f24f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07144c582c6d20fd6ac21d58e540a001" id="r_a07144c582c6d20fd6ac21d58e540a001"><td class="memTemplParams" colspan="2"><a id="a07144c582c6d20fd6ac21d58e540a001" name="a07144c582c6d20fd6ac21d58e540a001"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:a07144c582c6d20fd6ac21d58e540a001"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasColorCode</b> = std::disjunction&lt;HasColorCodeUpper&lt;T&gt;, HasColorCodeLower&lt;T&gt;&gt;</td></tr>
-<tr class="separator:a07144c582c6d20fd6ac21d58e540a001"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d5aa2d2841bd2f1126316f3caacf80d" id="r_a9d5aa2d2841bd2f1126316f3caacf80d"><td class="memTemplParams" colspan="2"><a id="a9d5aa2d2841bd2f1126316f3caacf80d" name="a9d5aa2d2841bd2f1126316f3caacf80d"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a9d5aa2d2841bd2f1126316f3caacf80d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasDataInfo</b> = is_detected_exact&lt;std::string, detail::dataInfoType, T&gt;</td></tr>
-<tr class="separator:a9d5aa2d2841bd2f1126316f3caacf80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecdec96c91291ceceeda4e6fcebb9d22" id="r_aecdec96c91291ceceeda4e6fcebb9d22"><td class="memTemplParams" colspan="2"><a id="aecdec96c91291ceceeda4e6fcebb9d22" name="aecdec96c91291ceceeda4e6fcebb9d22"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aecdec96c91291ceceeda4e6fcebb9d22"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasInfo</b> = is_detected_exact&lt;<a class="el" href="classinviwo_1_1Document.html">Document</a>, detail::infoType, T&gt;</td></tr>
-<tr class="separator:aecdec96c91291ceceeda4e6fcebb9d22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -563,9 +529,9 @@ template&lt;typename CamType &gt; </td></tr>
 template&lt;size_t N&gt; </td></tr>
 <tr class="memitem:a2b1f29a2adf6ba7edfe46f0bbf9a1e3c"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>generateTransforms</b> (std::array&lt; <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a>, N &gt; spaces)</td></tr>
 <tr class="separator:a2b1f29a2adf6ba7edfe46f0bbf9a1e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17a4fe15a6ce4e2858ff3d7333515866" id="r_a17a4fe15a6ce4e2858ff3d7333515866"><td class="memItemLeft" align="right" valign="top"><a id="a17a4fe15a6ce4e2858ff3d7333515866" name="a17a4fe15a6ce4e2858ff3d7333515866"></a>
-IVW_CORE_API uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatColor</b> (NumericType t, size_t comp, size_t size)</td></tr>
-<tr class="separator:a17a4fe15a6ce4e2858ff3d7333515866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9d0c8e656daa9cb494efde845d58bb6" id="r_ab9d0c8e656daa9cb494efde845d58bb6"><td class="memItemLeft" align="right" valign="top"><a id="ab9d0c8e656daa9cb494efde845d58bb6" name="ab9d0c8e656daa9cb494efde845d58bb6"></a>
+constexpr uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatColor</b> (NumericType t, size_t comp, size_t size)</td></tr>
+<tr class="separator:ab9d0c8e656daa9cb494efde845d58bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9f205a4666ea62977429eb4a760e87b" id="r_ad9f205a4666ea62977429eb4a760e87b"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9f205a4666ea62977429eb4a760e87b">appendIfNotEmpty</a> (std::string_view a, std::string_view b)</td></tr>
 <tr class="separator:ad9f205a4666ea62977429eb4a760e87b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4da507308ead7dfcf87057ee61d5f7bc" id="r_a4da507308ead7dfcf87057ee61d5f7bc"><td class="memItemLeft" align="right" valign="top"><a id="a4da507308ead7dfcf87057ee61d5f7bc" name="a4da507308ead7dfcf87057ee61d5f7bc"></a>
@@ -832,10 +798,10 @@ template&lt;size_t len&gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a70a685956d19cc067c95ae2abed5c621"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>alwaysFalse</b> ()</td></tr>
 <tr class="separator:a70a685956d19cc067c95ae2abed5c621"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebfd07a246bca8b3fc3f3e243aaea23a" id="r_aebfd07a246bca8b3fc3f3e243aaea23a"><td class="memTemplParams" colspan="2"><a id="aebfd07a246bca8b3fc3f3e243aaea23a" name="aebfd07a246bca8b3fc3f3e243aaea23a"></a>
-template&lt;typename T , typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1HasEnumName.html">HasEnumName</a>&lt; T &gt;::value, std::size_t &gt;::type  = 0&gt; </td></tr>
-<tr class="memitem:aebfd07a246bca8b3fc3f3e243aaea23a"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>enumName</b> ()</td></tr>
-<tr class="separator:aebfd07a246bca8b3fc3f3e243aaea23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e899795167608c2807a39787eee6c5f" id="r_a8e899795167608c2807a39787eee6c5f"><td class="memTemplParams" colspan="2"><a id="a8e899795167608c2807a39787eee6c5f" name="a8e899795167608c2807a39787eee6c5f"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a8e899795167608c2807a39787eee6c5f"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><b>enumName</b> ()</td></tr>
+<tr class="separator:a8e899795167608c2807a39787eee6c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a" id="r_aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplParams" colspan="2">template&lt;typename Iterable , typename Callback &gt; </td></tr>
 <tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aeb6b8dfc1fe3a44825c0a2dbbc2ae65a">forEach</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback)</td></tr>
 <tr class="separator:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1016,22 +982,18 @@ template&lt;size_t N, typename IndexType  = size_t&gt; </td></tr>
 <tr class="memitem:a95a518b92960df1752bebaa80ec50c61" id="r_a95a518b92960df1752bebaa80ec50c61"><td class="memTemplParams" colspan="2">template&lt;bool PropagateConst = true, typename Iter &gt; </td></tr>
 <tr class="memitem:a95a518b92960df1752bebaa80ec50c61"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structinviwo_1_1util_1_1IndirectIterator.html">IndirectIterator</a>&lt; Iter, PropagateConst &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a95a518b92960df1752bebaa80ec50c61">makeIndirectIterator</a> (Iter iter) noexcept(std::is_nothrow_move_constructible_v&lt; Iter &gt;)</td></tr>
 <tr class="separator:a95a518b92960df1752bebaa80ec50c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f14f5355cd5f4226b2ed543111a88a5" id="r_a6f14f5355cd5f4226b2ed543111a88a5"><td class="memTemplParams" colspan="2"><a id="a6f14f5355cd5f4226b2ed543111a88a5" name="a6f14f5355cd5f4226b2ed543111a88a5"></a>
+<tr class="memitem:a1e7ad3053155706c33d60296c48e959e" id="r_a1e7ad3053155706c33d60296c48e959e"><td class="memTemplParams" colspan="2"><a id="a1e7ad3053155706c33d60296c48e959e" name="a1e7ad3053155706c33d60296c48e959e"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a6f14f5355cd5f4226b2ed543111a88a5"><td class="memTemplItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
-<tr class="separator:a6f14f5355cd5f4226b2ed543111a88a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee2d0b4fcb0533981da56e4e1dfdf8db" id="r_aee2d0b4fcb0533981da56e4e1dfdf8db"><td class="memTemplParams" colspan="2"><a id="aee2d0b4fcb0533981da56e4e1dfdf8db" name="aee2d0b4fcb0533981da56e4e1dfdf8db"></a>
+<tr class="memitem:a1e7ad3053155706c33d60296c48e959e"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
+<tr class="separator:a1e7ad3053155706c33d60296c48e959e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25afb29c2423b01fa641a9c80ef5b911" id="r_a25afb29c2423b01fa641a9c80ef5b911"><td class="memTemplParams" colspan="2"><a id="a25afb29c2423b01fa641a9c80ef5b911" name="a25afb29c2423b01fa641a9c80ef5b911"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aee2d0b4fcb0533981da56e4e1dfdf8db"><td class="memTemplItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dataName</b> ()</td></tr>
-<tr class="separator:aee2d0b4fcb0533981da56e4e1dfdf8db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43295d437e6b3ac2ddf5953617696232" id="r_a43295d437e6b3ac2ddf5953617696232"><td class="memTemplParams" colspan="2"><a id="a43295d437e6b3ac2ddf5953617696232" name="a43295d437e6b3ac2ddf5953617696232"></a>
+<tr class="memitem:a25afb29c2423b01fa641a9c80ef5b911"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dataName</b> ()</td></tr>
+<tr class="separator:a25afb29c2423b01fa641a9c80ef5b911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20c0a0c754f69ba77be514cf1c446624" id="r_a20c0a0c754f69ba77be514cf1c446624"><td class="memTemplParams" colspan="2"><a id="a20c0a0c754f69ba77be514cf1c446624" name="a20c0a0c754f69ba77be514cf1c446624"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a43295d437e6b3ac2ddf5953617696232"><td class="memTemplItemLeft" align="right" valign="top">uvec3&#160;</td><td class="memTemplItemRight" valign="bottom"><b>colorCode</b> ()</td></tr>
-<tr class="separator:a43295d437e6b3ac2ddf5953617696232"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef0c8d9edb1b87b683609454a60e7dde" id="r_aef0c8d9edb1b87b683609454a60e7dde"><td class="memTemplParams" colspan="2"><a id="aef0c8d9edb1b87b683609454a60e7dde" name="aef0c8d9edb1b87b683609454a60e7dde"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aef0c8d9edb1b87b683609454a60e7dde"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>data_info</b> (const T *data)</td></tr>
-<tr class="separator:aef0c8d9edb1b87b683609454a60e7dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20c0a0c754f69ba77be514cf1c446624"><td class="memTemplItemLeft" align="right" valign="top">constexpr uvec3&#160;</td><td class="memTemplItemRight" valign="bottom"><b>colorCode</b> ()</td></tr>
+<tr class="separator:a20c0a0c754f69ba77be514cf1c446624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abea670d98ef52707b5b30f1a36b333da" id="r_abea670d98ef52707b5b30f1a36b333da"><td class="memTemplParams" colspan="2"><a id="abea670d98ef52707b5b30f1a36b333da" name="abea670d98ef52707b5b30f1a36b333da"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:abea670d98ef52707b5b30f1a36b333da"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><b>info</b> (const T &amp;data)</td></tr>
@@ -2063,80 +2025,6 @@ template&lt;class T &gt; </td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>util </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="af2128449f85e6a0683ecfab6f0bf557f" name="af2128449f85e6a0683ecfab6f0bf557f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2128449f85e6a0683ecfab6f0bf557f">&#9670;&#160;</a></span>HasClassIdentifierLower</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using inviwo::util::HasClassIdentifierLower</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> </div>
-<div class="line">    is_detected_exact&lt;const std::string, detail::lowerClassIdentifierType, T&gt;</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="aa5433403a98e6a64371dada8fd4b5693" name="aa5433403a98e6a64371dada8fd4b5693"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5433403a98e6a64371dada8fd4b5693">&#9670;&#160;</a></span>HasClassIdentifierUpper</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using inviwo::util::HasClassIdentifierUpper</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> </div>
-<div class="line">    is_detected_exact&lt;const std::string, detail::upperClassIdentifierType, T&gt;</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="ae48603c54e2435829ff923a16fb6f24f" name="ae48603c54e2435829ff923a16fb6f24f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae48603c54e2435829ff923a16fb6f24f">&#9670;&#160;</a></span>HasColorCodeLower</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using inviwo::util::HasColorCodeLower</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> </div>
-<div class="line">    std::disjunction&lt;is_detected_exact&lt;uvec3, detail::colorCodeLowerType, T&gt;,</div>
-<div class="line">                     is_detected_exact&lt;const uvec3, detail::colorCodeLowerType, T&gt;&gt;</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a2e72a7827ed4af44cfdd53604e14d417" name="a2e72a7827ed4af44cfdd53604e14d417"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e72a7827ed4af44cfdd53604e14d417">&#9670;&#160;</a></span>HasColorCodeUpper</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using inviwo::util::HasColorCodeUpper</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> </div>
-<div class="line">    std::disjunction&lt;is_detected_exact&lt;uvec3, detail::colorCodeUpperType, T&gt;,</div>
-<div class="line">                     is_detected_exact&lt;const uvec3, detail::colorCodeUpperType, T&gt;&gt;</div>
-</div><!-- fragment -->
-</div>
-</div>
 <a id="ab1e4eff95e999c0f37072af916d5d93b" name="ab1e4eff95e999c0f37072af916d5d93b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab1e4eff95e999c0f37072af916d5d93b">&#9670;&#160;</a></span>PrecisionType</h2>
 
