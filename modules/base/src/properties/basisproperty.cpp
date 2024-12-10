@@ -58,8 +58,7 @@ namespace inviwo {
 class Deserializer;
 class Serializer;
 
-const std::string BasisProperty::classIdentifier = "org.inviwo.VolumeBasisProperty";
-std::string BasisProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view BasisProperty::getClassIdentifier() const { return classIdentifier; }
 
 BasisProperty::BasisProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)

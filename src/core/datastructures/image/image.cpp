@@ -359,10 +359,6 @@ void Image::updateResource(const ResourceMeta& meta) const {
     forEachLayer([&](const Layer& l) { l.updateResource(meta); });
 }
 
-const uvec3 Image::colorCode = uvec3(90, 127, 183);
-const std::string Image::classIdentifier = "org.inviwo.Image";
-const std::string Image::dataName = "Image";
-
 Document Image::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;

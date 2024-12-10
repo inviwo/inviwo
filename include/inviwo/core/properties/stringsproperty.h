@@ -37,6 +37,7 @@
 #include <array>
 #include <span>
 #include <fmt/format.h>
+#include <fmt/compile.h>
 
 namespace inviwo {
 
@@ -72,27 +73,33 @@ public:
     virtual ~StringsProperty() = default;
 
     virtual Document getDescription() const override;
-    virtual std::string getClassIdentifier() const override;
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
 
     std::array<StringProperty, N> strings;
 };
 
 template <size_t N>
 struct PropertyTraits<StringsProperty<N>> {
-    static const std::string& classIdentifier() {
-        static const std::string identifier = fmt::format("org.inviwo.StringsProperty{}", N);
-        return identifier;
+    static std::string_view classIdentifier() {
+        static constexpr auto cid = []() {
+            constexpr auto format = FMT_COMPILE("org.inviwo.StringsProperty{}");
+            constexpr size_t size = fmt::formatted_size(format, N);
+            StaticString<size> res;
+            fmt::format_to(res.data(), format, N);
+            return res;
+        }();
+        return cid;
     }
 };
 
 template <size_t N>
-std::string StringsProperty<N>::getClassIdentifier() const {
+std::string_view StringsProperty<N>::getClassIdentifier() const {
     return PropertyTraits<StringsProperty<N>>::classIdentifier();
 }
 
 template <size_t N>
-std::string StringsProperty<N>::getClassIdentifierForWidget() const {
+std::string_view StringsProperty<N>::getClassIdentifierForWidget() const {
     return PropertyTraits<StringsProperty<N>>::classIdentifier();
 }
 

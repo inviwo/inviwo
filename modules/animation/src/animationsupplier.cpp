@@ -62,8 +62,8 @@ AnimationSupplier::AnimationSupplier(InviwoApplication* app) : manager_(getAnima
 
 AnimationSupplier::~AnimationSupplier() { unRegisterAll(); }
 
-void AnimationSupplier::registerPropertyTrackConnection(const std::string& propertyClassID,
-                                                        const std::string& trackClassID) {
+void AnimationSupplier::registerPropertyTrackConnection(std::string_view propertyClassID,
+                                                        std::string_view trackClassID) {
     manager_.registerPropertyTrackConnection(propertyClassID, trackClassID);
 }
 

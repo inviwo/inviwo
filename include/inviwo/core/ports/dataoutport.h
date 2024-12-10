@@ -56,7 +56,7 @@ public:
     DataOutport(std::string_view identifier, Document help = {});
     virtual ~DataOutport() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
@@ -97,11 +97,14 @@ protected:
 
 template <typename T>
 struct PortTraits<DataOutport<T>> {
-    static std::string classIdentifier() {
-        auto&& classId = DataTraits<T>::classIdentifier();
-        if (classId.empty()) return {};
-        return fmt::format("{}.outport", classId);
-    }
+    static constexpr auto cid = []() {
+        constexpr auto tCid = DataTraits<T>::classIdentifier();
+        if constexpr (tCid.empty()) {
+            return StaticString{};
+        }
+        return StaticString<tCid.size()>(tCid) + ".outport";
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
 };
 
 template <typename T>
@@ -114,7 +117,7 @@ DataOutport<T>::DataOutport(std::string_view identifier, Document help)
 }
 
 template <typename T>
-std::string DataOutport<T>::getClassIdentifier() const {
+std::string_view DataOutport<T>::getClassIdentifier() const {
     return PortTraits<DataOutport<T>>::classIdentifier();
 }
 

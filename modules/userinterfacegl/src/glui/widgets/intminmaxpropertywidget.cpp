@@ -48,9 +48,7 @@ class Property;
 namespace glui {
 class Renderer;
 
-const std::string IntMinMaxPropertyWidget::classIdentifier =
-    "org.inviwo.glui.IntMinMaxPropertyWidget";
-std::string IntMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+std::string_view IntMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty& property, Processor& processor,
                                                  Renderer& uiRenderer, const ivec2& extent,

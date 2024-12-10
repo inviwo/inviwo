@@ -42,14 +42,14 @@ namespace util {
 
 const ProcessorMetaData* getMetaData(const Processor* processor) {
     if (processor) {
-        return processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        return processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     }
     return nullptr;
 }
 
 ProcessorMetaData* getMetaData(Processor* processor) {
     if (processor) {
-        return processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        return processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     }
     return nullptr;
 }

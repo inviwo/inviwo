@@ -92,97 +92,6 @@ std::string rgb2hex(const vec3& rgb) {
     return fmt::format("#{:02x}{:02x}{:02x}", color.r, color.g, color.b);
 }
 
-vec3 hsv2rgb(const vec3& hsv) {
-    double hue = hsv.x;
-    double sat = hsv.y;
-    double val = hsv.z;
-    double r = 0.0;
-    double g = 0.0;
-    double b = 0.0;
-
-    if (sat < 1.0e-8) {  // only value, no saturation
-        r = val;
-        g = val;
-        b = val;
-        return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
-        ;
-    }
-
-    hue *= 360.0;
-    // divide hue into six segments, 60 degree each
-    int h_i = static_cast<int>(std::floor(hue / 60.0)) % 6;
-    double f = hue / 60.0 - std::floor(hue / 60.0);
-    double p = val * (1.0 - sat);
-    double q = val * (1.0 - f * sat);
-    double t = val * (1.0 - (1.0 - f) * sat);
-
-    switch (h_i) {
-        case 0:
-            r = val;
-            g = t;
-            b = p;
-            break;
-        case 1:
-            r = q;
-            g = val;
-            b = p;
-            break;
-        case 2:
-            r = p;
-            g = val;
-            b = t;
-            break;
-        case 3:
-            r = p;
-            g = q;
-            b = val;
-            break;
-        case 4:
-            r = t;
-            g = p;
-            b = val;
-            break;
-        case 5:
-            r = val;
-            g = p;
-            b = q;
-            break;
-    }
-    return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
-}
-
-vec3 rgb2hsv(const vec3& rgb) {
-    double r = rgb.x;
-    double g = rgb.y;
-    double b = rgb.z;
-    double val = std::max(std::max(r, g), b);
-    double sat = std::min(std::min(r, g), b);
-    double range = val - sat;
-
-    // set hue to zero for undefined values
-    bool notGray = (std::abs(val - sat) > 1.0e-8);
-    double hue = 0.0;
-
-    if (notGray) {
-        if (b == val)
-            hue = 2.0 / 3.0 + 1.0 / 6.0 * (r - g) / range;
-        else if (g == val)
-            hue = 1.0 / 3.0 + 1.0 / 6.0 * (b - r) / range;
-        else if (r == val)
-            hue = 1.0 / 6.0 * (g - b) / range;
-    }
-
-    if (hue < 0.0) {
-        hue += 1.0;
-    }
-    if (notGray) {
-        sat = 1.0 - sat / val;
-    } else {
-        sat = 0.0;
-    }
-    return {static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val)};
-}
-
 vec3 hsl2rgb(const vec3& hsl) {
     const double hue = hsl.x;
     const double sat = hsl.y;
@@ -487,38 +396,6 @@ vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, const vec3& whitePointXYZ) {
     double v = 13.0 * L * (v_prime - v0_prime);
 
     return Luv2XYZ(vec3(L, u, v));
-}
-
-uvec3 lighter(const uvec3& rgb, float factor) {
-    return uvec3{lighter(vec3{rgb} / 255.0f, factor) * 255.0f};
-}
-
-vec3 lighter(const vec3& rgb, float factor) {
-    vec3 hsv = rgb2hsv(rgb);
-    hsv.z = std::min(hsv.z * factor, 1.0f);
-    return hsv2rgb(hsv);
-}
-
-vec4 lighter(const vec4& rgba, float factor) {
-    vec3 hsv = rgb2hsv(rgba);
-    hsv.z = std::min(hsv.z * factor, 1.0f);
-    return vec4(hsv2rgb(hsv), rgba.a);
-}
-
-uvec3 darker(const uvec3& rgb, float factor) {
-    return uvec3{darker(vec3{rgb} / 255.0f, factor) * 255.0f};
-}
-
-vec3 darker(const vec3& rgb, float factor) {
-    vec3 hsv = rgb2hsv(rgb);
-    hsv.z = std::min(hsv.z / factor, 1.0f);
-    return hsv2rgb(hsv);
-}
-
-vec4 darker(const vec4& rgba, float factor) {
-    vec3 hsv = rgb2hsv(rgba);
-    hsv.z = std::min(hsv.z / factor, 1.0f);
-    return vec4(hsv2rgb(hsv), rgba.a);
 }
 
 }  // namespace inviwo::color

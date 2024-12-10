@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/touchstate.h>
-#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/transparentmaps.h>
 
-#include <inviwo/core/util/exception.h>
-#include <ostream>
-
-namespace inviwo {
-
-std::string_view enumToStr(TouchState s) {
-    switch (s) {
-        case TouchState::None:
-            return "None";
-        case TouchState::Started:
-            return "Started";
-        case TouchState::Updated:
-            return "Updated";
-        case TouchState::Stationary:
-            return "Stationary";
-        case TouchState::Finished:
-            return "Finished";
-    }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid TouchState enum value '{}'",
-                    static_cast<int>(s));
-}
-
-std::ostream& operator<<(std::ostream& ss, TouchState s) { return ss << enumToStr(s); }
-
-std::ostream& operator<<(std::ostream& ss, TouchStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -75,7 +75,7 @@ Processor::Processor(std::string_view identifier, std::string_view displayName)
         util::validateIdentifier(identifier_, "Processor", IVW_CONTEXT);
     }
 
-    createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
 }
 
 Processor::~Processor() = default;

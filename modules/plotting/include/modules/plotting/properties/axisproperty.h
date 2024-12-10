@@ -60,8 +60,8 @@ class PlotTextSettings;
 
 class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public BoolCompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.AxisProperty"};
 
     AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                  Orientation orientation = Orientation::Horizontal,

@@ -61,8 +61,9 @@ class Deserializer;
  * \code{.cpp}
  *     template <typename T>
  *     struct PropertyTraits<MyProperty<T>> {
- *        static std::string classIdentifier() {
- *           return generateMyPropertyClassIdentifier<T>();
+ *        static constexpr std::string_view classIdentifier() {
+ *           static constexpr auto cid = generateMyPropertyClassIdentifier<T>();
+ *           return cid;
  *        }
  *     };
  * \endcode
@@ -73,23 +74,14 @@ struct PropertyTraits {
     /**
      * The Class Identifier has to be globally unique. Use a reverse DNS naming scheme.
      * Example: "org.someorg.mypropertytype"
-     * The default implementation will look for a static std::string member "T::classIdentifier" or
-     * "T::CLASS_IDENTIFIER". In case it is not found an empty string will be returned. An empty
-     * class identifier will be considered an error in various factories.
+     * The default implementation will look for a static std::string_view member
+     * "T::classIdentifier" or "T::CLASS_IDENTIFIER". In case it is not found an empty string will
+     * be returned. An empty class identifier will be considered an error in various factories.
      */
-    static const std::string& classIdentifier() { return util::classIdentifier<T>(); }
+    static constexpr std::string_view classIdentifier() { return util::classIdentifier<T>(); }
 };
 
 enum class ReadOnly { No, Yes };
-
-// Deprecated
-#define InviwoPropertyInfo()                                                             \
-    virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
-    static const std::string CLASS_IDENTIFIER
-
-// Deprecated
-#define PropertyClassIdentifier(T, classIdentifier) \
-    const std::string T::CLASS_IDENTIFIER = classIdentifier
 
 /**
  *	\defgroup properties Properties
@@ -130,7 +122,7 @@ class IVW_CORE_API Property : public PropertyObservable,
                               public virtual Serializable,
                               public MetaDataOwner {
 public:
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
 
     explicit Property(std::string_view identifier = "", std::string_view displayName = "",
                       Document help = {},
@@ -180,7 +172,7 @@ public:
      * Defaults to getClassIdentifier(), should only be overridden
      * if a subclass want to reuse another property's widget.
      */
-    virtual std::string getClassIdentifierForWidget() const;
+    virtual std::string_view getClassIdentifierForWidget() const;
 
     virtual Property& setSemantics(const PropertySemantics& semantics);
     virtual PropertySemantics getSemantics() const;

@@ -371,7 +371,7 @@ void ProcessorTreeWidget::addProcessor(QString className) {
     // create processor, add it to processor network, and generate it's widgets
     auto network = app_->getProcessorNetwork();
     if (auto processor = createProcessor(className)) {
-        auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         const auto bb = util::getBoundingBox(network->getProcessors());
         meta->setPosition(ivec2{bb.first.x, bb.second.y} + ivec2(0, 75));
 

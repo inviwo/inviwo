@@ -78,9 +78,9 @@ public:
     virtual void append(const BufferBase&) = 0;
 
     virtual Document getInfo() const = 0;
-    static uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
+    static constexpr uvec3 colorCode{255, 113, 0};
+    static constexpr std::string_view classIdentifier{"org.inviwo.Buffer"};
+    static constexpr std::string_view dataName{"Buffer"};
 
 protected:
     size_t defaultSize_;

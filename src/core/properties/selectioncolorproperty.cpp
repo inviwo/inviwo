@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-const std::string SelectionColorProperty::classIdentifier = "org.inviwo.ColorSelectionProperty";
-std::string SelectionColorProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view SelectionColorProperty::getClassIdentifier() const { return classIdentifier; }
 
 SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                std::string_view displayName, bool checked,

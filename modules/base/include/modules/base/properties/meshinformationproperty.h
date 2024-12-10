@@ -52,8 +52,8 @@ class Mesh;
  */
 class IVW_MODULE_BASE_API MeshInformationProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.MeshInformationProperty"};
 
     MeshInformationProperty(
         std::string_view identifier, std::string_view displayName,

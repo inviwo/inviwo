@@ -43,7 +43,7 @@ public:
     PythonInport(std::string_view identifier, Document help = {});
     virtual ~PythonInport() = default;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
     virtual Document getInfo() const override;
     virtual size_t getMaxNumberOfConnections() const override { return 1; }
@@ -56,13 +56,10 @@ public:
 
 template <>
 struct PortTraits<PythonInport> {
-    static const std::string& classIdentifier() {
-        static std::string id{"org.inviwo.pythoninport"};
-        return id;
-    }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.pythoninport"; }
 };
 
-inline std::string PythonInport::getClassIdentifier() const {
+inline std::string_view PythonInport::getClassIdentifier() const {
     return PortTraits<PythonInport>::classIdentifier();
 }
 

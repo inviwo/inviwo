@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/unindent.h>
+#include <inviwo/core/util/transparentmaps.h>
 
 #include <algorithm>
 #include <string>
@@ -360,6 +361,7 @@ IVW_CORE_API std::string trim(std::string s);
 
 IVW_CORE_API std::string dotSeperatedToPascalCase(std::string_view s);
 IVW_CORE_API std::string camelCaseToHeader(std::string_view s);
+IVW_CORE_API void camelCaseToHeader(std::string_view s, std::string& dest);
 
 /**
  * \brief Case insensitive equal comparison of two strings.
@@ -401,18 +403,6 @@ struct IVW_CORE_API CaseInsensitiveEqual {
 };
 
 /**
- * \brief Transparent string hashing for use in unordered containers with string keys
- */
-struct IVW_CORE_API StringHash {
-    using hash_type = std::hash<std::string_view>;
-    using is_transparent = void;
-
-    std::size_t operator()(const char* str) const { return hash_type{}(str); }
-    std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
-    std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
-};
-
-/**
  * \brief Transparent string case insensitive hashing for use in unordered containers with string
  * keys
  */
@@ -422,7 +412,7 @@ struct IVW_CORE_API CaseInsensitiveStringHash {
 
     std::size_t operator()(const char* str) const { return hash(str); }
     std::size_t operator()(std::string_view str) const { return hash(str); }
-    std::size_t operator()(std::string const& str) const { return hash(str); }
+    std::size_t operator()(const std::string& str) const { return hash(str); }
 
 private:
     std::size_t hash(std::string_view str) const {

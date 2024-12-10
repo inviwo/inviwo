@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace animation {
 
-TrackFactoryObject::TrackFactoryObject(const std::string& classIdentifier)
+TrackFactoryObject::TrackFactoryObject(std::string_view classIdentifier)
     : classIdentifier_(classIdentifier) {}
 
 const std::string& TrackFactoryObject::getClassIdentifier() const { return classIdentifier_; }

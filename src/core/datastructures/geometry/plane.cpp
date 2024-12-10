@@ -34,9 +34,6 @@
 
 namespace inviwo {
 
-inviwo::uvec3 Plane::COLOR_CODE = uvec3(225, 174, 225);
-const std::string Plane::CLASS_IDENTIFIER = "org.inviwo.Plane";
-
 Plane::Plane(vec3 point, vec3 normal) noexcept : point_(point), normal_(glm::normalize(normal)) {}
 
 float Plane::distance(const vec3& p) const { return glm::dot(p - point_, normal_); }

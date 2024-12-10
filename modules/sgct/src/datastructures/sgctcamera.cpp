@@ -48,9 +48,7 @@ SGCTCamera::SGCTCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
 
 SGCTCamera* SGCTCamera::clone() const { return new SGCTCamera(*this); }
 
-std::string SGCTCamera::getClassIdentifier() const { return classIdentifier; }
-
-const std::string SGCTCamera::classIdentifier = "SGCTCamera";
+std::string_view SGCTCamera::getClassIdentifier() const { return classIdentifier; }
 
 void SGCTCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);

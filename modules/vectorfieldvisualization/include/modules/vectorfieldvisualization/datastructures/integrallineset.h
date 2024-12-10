@@ -97,9 +97,9 @@ using IntegralLineSetOutport = DataOutport<IntegralLineSet>;
 
 template <>
 struct DataTraits<IntegralLineSet> {
-    static std::string classIdentifier() { return "org.inviwo.IntegralLineSet"; }
-    static std::string dataName() { return "IntegralLineSet"; }
-    static uvec3 colorCode() { return uvec3(255, 150, 0); }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.IntegralLineSet"; }
+    static constexpr std::string_view dataName() { return "IntegralLineSet"; }
+    static constexpr uvec3 colorCode() { return {255, 150, 0}; }
     static Document info(const IntegralLineSet& data) {
         std::ostringstream oss;
         oss << "Integral Line Set with " << data.size() << " lines";

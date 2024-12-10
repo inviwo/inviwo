@@ -52,9 +52,7 @@
 namespace inviwo {
 class DataFrame;
 
-const std::string DataFrameColormapProperty::classIdentifier =
-    "org.inviwo.DataFrameColormapProperty";
-std::string DataFrameColormapProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view DataFrameColormapProperty::getClassIdentifier() const { return classIdentifier; }
 
 DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
                                                      std::string displayName,

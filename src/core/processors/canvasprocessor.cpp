@@ -169,7 +169,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                           false}
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{
-          createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
+          createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier)} {
     addPort(inport_);
     widgetMetaData_->addObserver(this);
 

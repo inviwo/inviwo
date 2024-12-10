@@ -193,7 +193,7 @@ bool BrushingAndLinkingInport::canConnectTo(const Port* port) const {
     return false;
 }
 
-std::string BrushingAndLinkingInport::getClassIdentifier() const {
+std::string_view BrushingAndLinkingInport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingInport>::classIdentifier();
 }
 
@@ -292,7 +292,7 @@ Document BrushingAndLinkingOutport::getInfo() const {
     return doc;
 }
 
-std::string BrushingAndLinkingOutport::getClassIdentifier() const {
+std::string_view BrushingAndLinkingOutport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingOutport>::classIdentifier();
 }
 

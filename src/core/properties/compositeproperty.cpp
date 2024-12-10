@@ -36,8 +36,7 @@
 
 namespace inviwo {
 
-const std::string CompositeProperty::classIdentifier = "org.inviwo.CompositeProperty";
-std::string CompositeProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view CompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 CompositeProperty::CompositeProperty(std::string_view identifier, std::string_view displayName,
                                      Document help, InvalidationLevel invalidationLevel,
@@ -56,7 +55,7 @@ CompositeProperty* CompositeProperty::clone() const { return new CompositeProper
 
 const std::string& CompositeProperty::getIdentifier() const { return Property::getIdentifier(); }
 
-std::string CompositeProperty::getClassIdentifierForWidget() const {
+std::string_view CompositeProperty::getClassIdentifierForWidget() const {
     return CompositeProperty::classIdentifier;
 }
 

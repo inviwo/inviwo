@@ -41,8 +41,8 @@ namespace inviwo {
  */
 class IVW_CORE_API BoolCompositeProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.BoolCompositeProperty"};
 
     BoolCompositeProperty(std::string_view identifier, std::string_view displayName, Document help,
                           bool checked = false,
@@ -58,7 +58,7 @@ public:
 
     virtual BoolCompositeProperty* clone() const override;
     virtual ~BoolCompositeProperty();
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
 
     virtual bool isChecked() const;
     virtual void setChecked(bool checked);

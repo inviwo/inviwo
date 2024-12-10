@@ -41,8 +41,8 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLineProperties : public IntegralLineProperties {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.PathLineProperties"};
 
     PathLineProperties(std::string_view identifier, std::string_view displayName);
     PathLineProperties(const PathLineProperties& rhs);

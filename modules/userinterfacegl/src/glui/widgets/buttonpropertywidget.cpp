@@ -44,8 +44,7 @@ class Property;
 namespace glui {
 class Renderer;
 
-const std::string ButtonPropertyWidget::classIdentifier = "org.inviwo.glui.ButtonPropertyWidget";
-std::string ButtonPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+std::string_view ButtonPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty& property, Processor& processor,
                                            Renderer& uiRenderer, const ivec2& extent)

@@ -70,6 +70,4 @@ void PositionMetaData::deserialize(Deserializer& d) {
     d.deserialize("position", value_);
 }
 
-const std::string PositionMetaData::CLASS_IDENTIFIER = "org.inviwo.PositionMetaData";
-
 }  // namespace inviwo

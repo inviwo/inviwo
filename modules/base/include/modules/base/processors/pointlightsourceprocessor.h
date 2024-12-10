@@ -62,8 +62,8 @@ class Serializer;
 
 class IVW_MODULE_BASE_API PointLightTrackball : public Trackball {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.PointLightTrackball"};
 
     explicit PointLightTrackball(PointLightInteractionHandler* p);
     virtual ~PointLightTrackball() = default;
@@ -80,7 +80,7 @@ public:
                                  FloatVec2Property*);
     virtual ~PointLightInteractionHandler();
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
     const Camera& getCamera();
 

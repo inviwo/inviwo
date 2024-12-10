@@ -46,8 +46,8 @@ class IVW_MODULE_DATAFRAME_API ColumnOptionProperty : public OptionPropertyInt {
 public:
     enum class AddNoneOption { No, Yes };
 
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.DataFrameColumnProperty"};
 
     /**
      * Constructor, no options will be created unless \p noneOption is set to AddNoneOption::Yes

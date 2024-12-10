@@ -33,8 +33,7 @@
 
 namespace inviwo {
 
-const std::string BoolCompositeProperty::classIdentifier = "org.inviwo.BoolCompositeProperty";
-std::string BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
 
 BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
                                              std::string_view displayName, Document help,
@@ -63,7 +62,7 @@ BoolCompositeProperty* BoolCompositeProperty::clone() const {
 
 BoolCompositeProperty::~BoolCompositeProperty() = default;
 
-std::string BoolCompositeProperty::getClassIdentifierForWidget() const {
+std::string_view BoolCompositeProperty::getClassIdentifierForWidget() const {
     return BoolCompositeProperty::classIdentifier;
 }
 

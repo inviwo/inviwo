@@ -51,8 +51,8 @@ class TrackballObject;
 
 class IVW_CORE_API Trackball : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.Trackball"};
 
     /**
      * Rotates and moves object around a sphere.

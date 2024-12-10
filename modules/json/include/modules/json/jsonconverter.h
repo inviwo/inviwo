@@ -41,7 +41,7 @@ template <typename Base>
 class JSONConverter {
 public:
     virtual ~JSONConverter() = default;
-    virtual std::string getClassIdentifier() const = 0;
+    virtual std::string_view getClassIdentifier() const = 0;
     virtual void toJSON(json& j, const Base& p) const = 0;
     virtual void fromJSON(const json& j, Base& p) const = 0;
 };
@@ -55,7 +55,7 @@ template <typename Base, typename Derived, template <typename...> typename Trait
     requires std::is_base_of_v<Base, Derived>
 class TemplateJSONConverter : public JSONConverter<Base> {
 public:
-    virtual std::string getClassIdentifier() const override {
+    virtual std::string_view getClassIdentifier() const override {
         return Traits<Derived>::classIdentifier();
     }
     /**

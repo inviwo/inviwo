@@ -42,8 +42,8 @@ namespace inviwo {
  */
 class IVW_CORE_API DirectoryProperty : public FileProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.DirectoryProperty"};
 
     DirectoryProperty(std::string_view identifier, std::string_view displayName, Document help,
                       std::string_view value = "", std::string_view contentType = "default",
@@ -60,7 +60,7 @@ public:
 
     virtual ~DirectoryProperty();
 
-    virtual std::string getClassIdentifierForWidget() const override;
+    virtual std::string_view getClassIdentifierForWidget() const override;
 };
 
 }  // namespace inviwo

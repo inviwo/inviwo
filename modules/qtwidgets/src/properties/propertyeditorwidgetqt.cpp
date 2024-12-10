@@ -50,13 +50,6 @@
 
 namespace inviwo {
 
-const std::string PropertyEditorWidgetQt::visibleKey = "PropertyEditorWidgetVisible";
-const std::string PropertyEditorWidgetQt::floatingKey = "PropertyEditorWidgetFloating";
-const std::string PropertyEditorWidgetQt::stickyKey = "PropertyEditorWidgetSticky";
-const std::string PropertyEditorWidgetQt::sizeKey = "PropertyEditorWidgetSize";
-const std::string PropertyEditorWidgetQt::positionKey = "PropertyEditorWidgetPosition";
-const std::string PropertyEditorWidgetQt::dockareaKey = "PropertyEditorWidgetDockStatus";
-
 PropertyEditorWidgetQt::PropertyEditorWidgetQt(Property* property, const std::string& widgetName,
                                                const std::string& objName)
     : InviwoDockWidget(utilqt::toQString(widgetName), utilqt::getApplicationMainWindow(),

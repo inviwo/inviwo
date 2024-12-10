@@ -44,8 +44,8 @@ public:
     StdVectorMetaData() = default;
     virtual ~StdVectorMetaData() = default;
 
-    virtual const std::string& getClassIdentifier() const override {
-        static const std::string identifier =
+    virtual std::string_view getClassIdentifier() const override {
+        static constexpr auto identifier =
             "org.inviwo." + Defaultvalues<T>::getName() + "StdVectorMetaData";
         return identifier;
     }
@@ -77,10 +77,9 @@ public:
     StdUnorderedMapMetaData() = default;
     virtual ~StdUnorderedMapMetaData() = default;
 
-    virtual const std::string& getClassIdentifier() const override {
-        static const std::string identifier = "org.inviwo." + Defaultvalues<K>::getName() +
-                                              Defaultvalues<T>::getName() +
-                                              "StdUnorderedMapMetaData";
+    virtual std::string_view getClassIdentifier() const override {
+        static const auto identifier = "org.inviwo." + Defaultvalues<K>::getName() +
+                                       Defaultvalues<T>::getName() + "StdUnorderedMapMetaData";
         return identifier;
     }
 

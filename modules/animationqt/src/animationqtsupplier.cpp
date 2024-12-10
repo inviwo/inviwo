@@ -47,8 +47,8 @@ AnimationQtSupplier::AnimationQtSupplier(AnimationQtModule& animationQtModule)
 
 AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
     : animationQtModule_{[&]() -> AnimationQtModule& {
-        if (auto animationmodule = util::getModuleByType<AnimationQtModule>(app)) {
-            return *animationmodule;
+        if (auto* animationModule = util::getModuleByType<AnimationQtModule>(app)) {
+            return *animationModule;
         }
         throw Exception("Was not able to find the animation qt module",
                         IVW_CONTEXT_CUSTOM("AnimationQtSupplier"));
@@ -63,14 +63,14 @@ SequenceEditorFactory& AnimationQtSupplier::getSequenceEditorFactory() {
     return animationQtModule_.getSequenceEditorFactory();
 }
 
-void AnimationQtSupplier::registerTrackToWidgetMap(const std::string& trackId,
-                                                   const std::string& widgetId) {
+void AnimationQtSupplier::registerTrackToWidgetMap(std::string_view trackId,
+                                                   std::string_view widgetId) {
     getTrackWidgetQtFactory().registerTrackToWidgetMap(trackId, widgetId);
 }
 
-void AnimationQtSupplier::registerTrackToSequenceEditorMap(const std::string& trackId,
-                                                           const std::string& erditorId) {
-    getSequenceEditorFactory().registerTrackToSequenceEditorMap(trackId, erditorId);
+void AnimationQtSupplier::registerTrackToSequenceEditorMap(std::string_view trackId,
+                                                           std::string_view editorId) {
+    getSequenceEditorFactory().registerTrackToSequenceEditorMap(trackId, editorId);
 }
 
 void AnimationQtSupplier::unRegisterAll() {

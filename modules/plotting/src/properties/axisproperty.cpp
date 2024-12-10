@@ -66,8 +66,7 @@ class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
 
-const std::string AxisProperty::classIdentifier = "org.inviwo.AxisProperty";
-std::string AxisProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view AxisProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                            Orientation orientation, bool includeOrientationProperty,

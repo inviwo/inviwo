@@ -277,9 +277,9 @@ public:
      */
     virtual const Axis* getAxis(size_t index) const override;
 
-    static uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
+    static constexpr uvec3 colorCode{188, 188, 101};
+    static constexpr std::string_view classIdentifier{"org.inviwo.Mesh"};
+    static constexpr std::string_view dataName{"Mesh"};
 
     std::array<Axis, 3> axes;
 

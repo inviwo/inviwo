@@ -32,6 +32,8 @@
 #include <modules/animation/interpolation/interpolation.h>
 
 #include <inviwo/core/util/defaultvalues.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/deserializer.h>
 
 #include <algorithm>
 
@@ -54,8 +56,8 @@ public:
 
     virtual std::string getName() const override;
 
-    static std::string classIdentifier();
-    virtual std::string getClassIdentifier() const override;
+    static std::string_view classIdentifier();
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual bool equal(const Interpolation& other) const override;
 
@@ -74,23 +76,27 @@ ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() 
 
 namespace detail {
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-std::string getConstantInterpolationClassIdentifier() {
-    return "org.inviwo.animation.constantinterpolation." + Defaultvalues<T>::getName();
+std::string_view getConstantInterpolationClassIdentifier() {
+    static const auto cid =
+        "org.inviwo.animation.constantinterpolation." + Defaultvalues<T>::getName();
+    return cid;
 }
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-std::string getConstantInterpolationClassIdentifier() {
-    using ET = typename std::underlying_type<T>::type;
-    return "org.inviwo.animation.constantinterpolation.enum." + Defaultvalues<ET>::getName();
+std::string_view getConstantInterpolationClassIdentifier() {
+    using ET = std::underlying_type_t<T>;
+    static const auto cid =
+        "org.inviwo.animation.constantinterpolation.enum." + Defaultvalues<ET>::getName();
+    return cid;
 }
 }  // namespace detail
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<Key, Result>::classIdentifier() {
+std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
     return detail::getConstantInterpolationClassIdentifier<typename Key::value_type>();
 }
 
 template <typename Key, typename Result>
-std::string ConstantInterpolation<Key, Result>::getClassIdentifier() const {
+std::string_view ConstantInterpolation<Key, Result>::getClassIdentifier() const {
     return classIdentifier();
 }
 
@@ -142,10 +148,11 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, SerializationTarget::Attribute);
     if (className != getClassIdentifier()) {
-        throw SerializationException(
-            "Deserialized interpolation: " + getClassIdentifier() +
-                " from a serialized interpolation with a different class identifier: " + className,
-            IVW_CONTEXT);
+        std::string_view cid = getClassIdentifier();
+        throw SerializationException(IVW_CONTEXT,
+                                     "Deserialized interpolation: {} from a serialized "
+                                     "interpolation with a different class identifier: {}",
+                                     cid, className);
     }
 }
 

@@ -94,8 +94,8 @@ public:
 
     class Properties : public CompositeProperty {
     public:
-        virtual std::string getClassIdentifier() const override;
-        static const std::string classIdentifier;
+        virtual std::string_view getClassIdentifier() const override;
+        static constexpr std::string_view classIdentifier{"org.inviwo.ScatterPlotGL.Properties"};
 
         Properties(std::string_view identifier, std::string_view displayName,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -202,7 +202,9 @@ public:
 
     // InteractionHandler
     virtual void invokeEvent(Event* event) override;
-    virtual std::string getClassIdentifier() const override { return "org.inviwo.scatterplotgl"; };
+    virtual std::string_view getClassIdentifier() const override {
+        return "org.inviwo.scatterplotgl";
+    };
 
     Properties properties_;
     Shader shader_;

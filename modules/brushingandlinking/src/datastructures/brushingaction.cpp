@@ -70,7 +70,7 @@ std::string_view enumToStr(BrushingAction action) {
         case BrushingAction::Highlight:
             return "Highlight";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid BrushingAction enum value '{}'",
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid BrushingAction enum value '{}'",
                     static_cast<int>(action));
 }
 
@@ -83,7 +83,7 @@ std::string_view enumToStr(BrushingModification bm) {
         case BrushingModification::Highlighted:
             return "Highlighted";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"),
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
                     "Found invalid BrushingModification enum value '{}'", static_cast<int>(bm));
 }
 

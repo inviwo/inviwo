@@ -33,12 +33,10 @@ namespace inviwo {
 
 namespace animation {
 
-InterpolationFactoryObject::InterpolationFactoryObject(const std::string& classIdentifier)
+InterpolationFactoryObject::InterpolationFactoryObject(std::string_view classIdentifier)
     : classIdentifier_(classIdentifier) {}
 
-const std::string& InterpolationFactoryObject::getClassIdentifier() const {
-    return classIdentifier_;
-}
+std::string_view InterpolationFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
 }  // namespace animation
 

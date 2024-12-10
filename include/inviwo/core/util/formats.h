@@ -230,10 +230,11 @@ public:
     static constexpr double maxToDouble();
     static constexpr double minToDouble();
     static constexpr double lowestToDouble();
-    static std::string_view str();
+    static constexpr std::string_view str();
     static constexpr auto staticStr();
 
 private:
+    static constexpr auto string = staticStr();
     friend DataFormatBase;
     DataFormat();
 };
@@ -343,8 +344,7 @@ constexpr auto DataFormat<T>::staticStr() {
 }
 
 template <typename T>
-std::string_view DataFormat<T>::str() {
-    static constexpr auto string = staticStr();
+constexpr std::string_view DataFormat<T>::str() {
     return string.view();
 }
 

@@ -53,8 +53,8 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API SplitterProperty : public BoolCompositeProperty,
                                                public SplitterSettings {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.SplitterProperty"};
 
     SplitterProperty(std::string_view identifier, std::string_view displayName, bool checked = true,
                      splitter::Style style = splitter::Style::Divider,

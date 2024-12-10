@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -36,6 +37,7 @@
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/util/imagecache.h>
 #include <inviwo/core/util/fmtutils.h>
+#include <inviwo/core/util/staticstring.h>
 
 #include <unordered_map>
 
@@ -105,7 +107,7 @@ public:
     BaseImageInport(std::string_view identifier, bool outportDeterminesSize);
 
     virtual ~BaseImageInport();
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual std::shared_ptr<const Image> getData() const override;
     virtual std::vector<std::shared_ptr<const Image>> getVectorData() const override;
@@ -139,14 +141,18 @@ using ImageMultiInport = BaseImageInport<0>;
 
 template <>
 struct PortTraits<BaseImageInport<1>> {
-    static std::string classIdentifier() {
-        return DataTraits<Image>::classIdentifier() + ".inport";
+    static std::string_view classIdentifier() {
+        constexpr auto name = DataTraits<Image>::classIdentifier();
+        static constexpr auto cid = StaticString<name.size()>{name} + ".inport";
+        return cid;
     }
 };
 template <>
 struct PortTraits<BaseImageInport<0>> {
-    static std::string classIdentifier() {
-        return DataTraits<Image>::classIdentifier() + ".multi.inport";
+    static std::string_view classIdentifier() {
+        constexpr auto name = DataTraits<Image>::classIdentifier();
+        static const auto cid = StaticString<name.size()>{name} + ".multi.inport";
+        return cid;
     }
 };
 
@@ -215,7 +221,7 @@ public:
     ImageOutport(std::string_view identifier, bool handleResizeEvents);
 
     virtual ~ImageOutport() = default;
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
 
     virtual void setData(std::shared_ptr<const Image>) override;
     virtual void setData(const Image* data) override;  // will assume ownership of data.
@@ -281,8 +287,10 @@ private:
 
 template <>
 struct PortTraits<ImageOutport> {
-    static std::string classIdentifier() {
-        return DataTraits<Image>::classIdentifier() + ".outport";
+    static std::string_view classIdentifier() {
+        constexpr auto name = DataTraits<Image>::classIdentifier();
+        static const auto cid = StaticString<name.size()>{name} + ".outport";
+        return cid;
     }
 };
 
@@ -303,7 +311,7 @@ template <size_t N>
 BaseImageInport<N>::~BaseImageInport() = default;
 
 template <size_t N>
-std::string BaseImageInport<N>::getClassIdentifier() const {
+std::string_view BaseImageInport<N>::getClassIdentifier() const {
     return PortTraits<BaseImageInport<N>>::classIdentifier();
 }
 

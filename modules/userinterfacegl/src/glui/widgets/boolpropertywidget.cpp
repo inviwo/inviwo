@@ -43,8 +43,7 @@ class Property;
 namespace glui {
 class Renderer;
 
-const std::string BoolPropertyWidget::classIdentifier = "org.inviwo.glui.BoolPropertyWidget";
-std::string BoolPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+std::string_view BoolPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 BoolPropertyWidget::BoolPropertyWidget(BoolProperty& property, Processor& processor,
                                        Renderer& uiRenderer, const ivec2& extent)

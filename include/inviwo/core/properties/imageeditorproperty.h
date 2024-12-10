@@ -62,8 +62,8 @@ private:
 
 class IVW_CORE_API ImageEditorProperty : public FileProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.ImageEditorProperty"};
 
     ImageEditorProperty(std::string_view identifier, std::string_view displayName,
                         std::string_view value = "",

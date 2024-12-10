@@ -170,13 +170,27 @@ public:
 };
 template <typename Data>
 struct DataTraits<DataSequence<Data>> {
-    static std::string classIdentifier() {
-        return util::appendIfNotEmpty(DataTraits<Data>::classIdentifier(), ".sequence");
+    static constexpr auto cid = []() {
+        constexpr auto name = DataTraits<Data>::classIdentifier();
+        if constexpr (!name.empty()) {
+            return StaticString<name.size()>(name) + ".sequence";
+        } else {
+            return StaticString<0>{};
+        }
+    }();
+    static constexpr auto name = []() {
+        constexpr auto tName = DataTraits<Data>::dataName();
+        if constexpr (!tName.empty()) {
+            return "DataSequence<" + StaticString<tName.size()>(tName) + ">";
+        } else {
+            return StaticString{"DataSequence<?>"};
+        }
+    }();
+    static constexpr std::string_view classIdentifier() { return cid; }
+    static constexpr std::string_view dataName() { return name; }
+    static constexpr uvec3 colorCode() {
+        return color::lighter(DataTraits<Data>::colorCode(), 1.12f);
     }
-    static std::string dataName() {
-        return fmt::format("DataSequence<{}>", DataTraits<Data>::dataName());
-    }
-    static uvec3 colorCode() { return color::lighter(DataTraits<Data>::colorCode(), 1.12f); }
     static Document info(const DataSequence<Data>& data) {
         return detail::vectorInfo<Data>(data.size(), data.empty() ? nullptr : data.front().get(),
                                         data.empty() ? nullptr : data.back().get());

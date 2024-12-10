@@ -53,8 +53,8 @@ std::string_view enumToStr(LightSourceType lt) {
         case LightSourceType::Directional:
             return "Directional";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumName"), "Found invalid LightSourceType enum value '{}'",
-                    static_cast<int>(lt));
+    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
+                    "Found invalid LightSourceType enum value '{}'", static_cast<int>(lt));
 }
 
 std::ostream& operator<<(std::ostream& ss, LightSourceType lt) { return ss << enumToStr(lt); }
@@ -112,9 +112,5 @@ Document LightSource::getInfo() const {
     tb(H("Radiant Flux [W]"), getPower());
     return doc;
 }
-
-uvec3 LightSource::colorCode = uvec3(128, 64, 196);
-const std::string LightSource::classIdentifier = "org.inviwo.LightSource";
-const std::string LightSource::dataName = "LightSource";
 
 }  // namespace inviwo

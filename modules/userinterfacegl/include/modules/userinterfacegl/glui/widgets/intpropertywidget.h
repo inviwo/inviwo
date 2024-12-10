@@ -55,8 +55,8 @@ class IVW_MODULE_USERINTERFACEGL_API IntPropertyWidget : public Slider,
                                                          public PropertyWidget,
                                                          public PropertyObserver {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.glui.IntPropertyWidget"};
 
     IntPropertyWidget(IntProperty& property, Processor& processor, Renderer& uiRenderer,
                       const ivec2& extent = ivec2(100, 24),
