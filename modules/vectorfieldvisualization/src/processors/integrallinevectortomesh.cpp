@@ -241,7 +241,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
                 {"lineindex", "Use Line Index (seed point index)", BrushBy::LineIndex},
                 {"vectorposition", "Use position in input vector.", BrushBy::VectorPosition}})
 
-    , colorBy_("colorBy", "Color by", {"constant", "constant color"}, 0)
+    , colorBy_("colorBy", "Color by", {{"constant", "constant color"}}, 0)
 
     , stride_("stride", "Vertex stride", 1, 1, 10)
 

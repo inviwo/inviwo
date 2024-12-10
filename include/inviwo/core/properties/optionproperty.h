@@ -224,17 +224,19 @@ public:
     OptionProperty(std::string_view identifier, std::string_view displayName,
                    OptionPropertyState<T> state);
 
+    template <typename U = T>
     OptionProperty(std::string_view identifier, std::string_view displayName,
-                   const std::vector<T>& options, size_t selectedIndex = 0,
+                   const std::vector<U>& options, size_t selectedIndex = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default)
-        requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value);
+        requires(fmt::is_formattable<U>::value || util::is_stream_insertable<U>::value);
 
+    template <typename U = T>
     OptionProperty(std::string_view identifier, std::string_view displayName, Document help,
                    const std::vector<T>& options, size_t selectedIndex = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default)
-        requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value);
+        requires(fmt::is_formattable<U>::value || util::is_stream_insertable<U>::value);
 
     OptionProperty(const OptionProperty<T>& rhs);
 
@@ -595,11 +597,21 @@ OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view 
                      selectedIndex, invalidationLevel, semantics} {}
 
 template <typename T>
+template <typename U>
+OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
+                                  const std::vector<U>& options, size_t selectedIndex,
+                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    requires(fmt::is_formattable<U>::value || util::is_stream_insertable<U>::value)
+    : OptionProperty{identifier,    displayName,       {},       options,
+                     selectedIndex, invalidationLevel, semantics} {}
+
+template <typename T>
+template <typename U>
 OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
                                   Document help, const std::vector<T>& options,
                                   size_t selectedIndex, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics)
-    requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value)
+    requires(fmt::is_formattable<U>::value || util::is_stream_insertable<U>::value)
     : BaseOptionProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
     , selectedIndex_{std::min(selectedIndex, options.size() - 1)}
     , options_{std::nullopt}
@@ -610,14 +622,6 @@ OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view 
         defaultOptions_.emplace_back(option);
     }
 }
-
-template <typename T>
-OptionProperty<T>::OptionProperty(std::string_view identifier, std::string_view displayName,
-                                  const std::vector<T>& options, size_t selectedIndex,
-                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value)
-    : OptionProperty{identifier,    displayName,       {},       options,
-                     selectedIndex, invalidationLevel, semantics} {}
 
 template <typename T>
 OptionProperty<T>::OptionProperty(const OptionProperty<T>& rhs) = default;

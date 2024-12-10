@@ -52,7 +52,7 @@ public:
     Singleton(const Singleton&) = delete;
     void operator=(const Singleton&) = delete;
 
-    static void init() requires std::is_default_constructible_v<T> {
+    static void init() {
         if (T::instance_) {
             throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"),
                                      "{} singleton already initialized", name());

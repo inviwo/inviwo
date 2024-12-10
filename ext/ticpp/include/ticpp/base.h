@@ -84,13 +84,13 @@ struct TICPP_API PMRDeleter {
     void operator()(T* item) {
         alloc.delete_object(item);
     }
-    std::pmr::polymorphic_allocator<> alloc;
+    std::pmr::polymorphic_allocator<std::byte> alloc;
 };
 template <typename T>
 using PMRUnique = std::unique_ptr<T, PMRDeleter>;
 
 template <class T, class... Args>
-PMRUnique<T> pmr_make_unique(std::pmr::polymorphic_allocator<> alloc, Args&&... args) {
+PMRUnique<T> pmr_make_unique(std::pmr::polymorphic_allocator<std::byte> alloc, Args&&... args) {
     return PMRUnique<T>(alloc.new_object<T>(std::forward<Args>(args)...), PMRDeleter{alloc});
 }
 
