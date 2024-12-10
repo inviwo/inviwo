@@ -1,7 +1,6 @@
 #include <ticpp/base.h>
 #include <ticpp/parsingdata.h>
 
-#include <cstring>
 #include <algorithm>
 #include <iterator>
 #include <fmt/format.h>

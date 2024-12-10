@@ -3,12 +3,12 @@
 #include <ticpp/ticppapi.h>
 #include <ticpp/fwd.h>
 
+#include <cstring>
 #include <string>
 #include <string_view>
 #include <array>
 #include <cassert>
 #include <stdexcept>
-#include <array>
 #include <memory>
 #include <algorithm>
 
