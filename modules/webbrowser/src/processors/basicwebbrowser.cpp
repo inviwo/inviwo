@@ -97,16 +97,16 @@ constexpr std::string_view defaultHtml = R"(<!DOCTYPE html>
 constexpr std::string_view defaultJS = R"(// Load the inviwo javascript api
 import * as inviwo from "https://inviwo/webbrowser/data/js/inviwoapiv2.js"
 
-// Put the inviwo module into global scope so that the api can interact with in from c++
+// Put the inviwo module into global scope so that the API can interact with it from C++
 globalThis.inviwo = inviwo
 
-// Register a function for inviwo to call on processor process
+// Register a function for inviwo to call on processor process().
 // The function will be called with an instance of the processor. 
 // The processor has the following properties:
-//  * changedInports: A list of the identifiers for all the port that has changed
-//  * changedProperties A list of the identifiers for all the identifiers that has changed
-//  * self.changedBrushing A list of the modified brushing targets that has changed
-//  * loaded a boolean specifying if the webpage was just loaded
+//  * `changedInports` A list of the identifiers for all the ports that have changed
+//  * `changedProperties` A list of the identifiers for all the identifiers that have changed
+//  * `self.changedBrushing` A list of the modified brushing targets that have changed
+//  * `loaded` A boolean specifying whether the webpage was just loaded
 // Then there are the standard processor functions
 //  * properties()
 //  * property(identifier)
@@ -133,8 +133,8 @@ globalThis.inviwoProcess = async function (self) {
             );
         }
 
-        // properties can be access through self.properties, for example:
-        // const zoom = await self.property("extra").property("color").get(); 
+        // properties can be accessed via `self.properties`, for example:
+        // const color = await self.property("extra").property("color").get(); 
         
     } catch(e) {
         if (e instanceof Error) {
