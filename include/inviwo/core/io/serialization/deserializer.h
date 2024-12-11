@@ -240,12 +240,10 @@ public:
                      std::string_view comparisonAttribute = SerializeConstants::KeyAttribute);
 
     /**
-     * For more advanced deserialization. useful when one has to call observer
-     * notifications for example.
+     * For more advanced deserialization. Useful when one has to call observer notifications.
      * Example usage, serialize as usual
      * ```{.cpp}
      *     s.serialize("TFPrimitives", values_, "point");
-     *
      * ```
      * Then deserialize with notifications:
      * ```{.cpp}
