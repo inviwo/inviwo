@@ -194,9 +194,9 @@ public:
 
         if (*(pU + 0) == BOM_0 && *(pU + 1) == BOM_1 && *(pU + 2) == BOM_2) {
             p += 3;
-        } else if (*(pU + 0) == BOM_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbeU) {
+        } else if (*(pU + 0) == BOM_0 && *(pU + 1) == BOM_2 && *(pU + 2) == 0xbeU) {
             p += 3;
-        } else if (*(pU + 0) == BOM_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbfU) {
+        } else if (*(pU + 0) == BOM_0 && *(pU + 1) == BOM_2 && *(pU + 2) == BOM_2) {
             p += 3;
         }
 

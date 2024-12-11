@@ -341,7 +341,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
                         })) {
                         removeProperty(id);
                     } else {
-                        // The property was not serialized since it was in it's
+                        // The property was not serialized since it was in its
                         // default state. Make sure we reset it to that state again.
                         if (auto* p = getPropertyByIdentifier(id)) {
                             if (p->getSerializationMode() == PropertySerializationMode::Default) {
