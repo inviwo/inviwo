@@ -50,6 +50,7 @@ PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
     , dHandle_{manager.onLoad([this](Deserializer& d) {
         auto des =
             util::MapDeserializer<std::string, std::string>("PythonScripts", "Script", "key")
+                .setIdentifierTransform([](std::string_view id) { return std::string{id}; })
                 .setMakeNew([]() { return std::string{}; })
                 .onNew([&](const std::string& key, std::string& script) { addScript(key, script); })
                 .onRemove([&](const std::string& key) { removeScript(key); });
