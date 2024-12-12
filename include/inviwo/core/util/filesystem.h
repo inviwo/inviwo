@@ -63,8 +63,7 @@ namespace filesystem {
  *
  * \see fopen, _wfopen
  */
-IVW_CORE_API FILE*
-fopen(const std::filesystem::path& filename, const char* mode);
+IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode);
 
 /**
  * Creates and returns a std::fstream for the given file name (utf-8 encoded). The call

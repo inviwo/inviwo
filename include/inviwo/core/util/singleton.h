@@ -57,7 +57,7 @@ public:
             throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"),
                                      "{} singleton already initialized", name());
         }
-        T::instance_ =  new T();
+        T::instance_ = new T();
         if (!T::instance_) {
             throw SingletonException(IVW_CONTEXT_CUSTOM("Singleton"),
                                      "Was not able to initialize {} singleton", name());

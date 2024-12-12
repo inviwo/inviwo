@@ -38,7 +38,6 @@
 #include <ios>
 #include <typeindex>
 
-
 namespace inviwo {
 
 class MetaDataOwner;

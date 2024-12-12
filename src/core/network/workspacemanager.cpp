@@ -208,7 +208,6 @@ void WorkspaceManager::save(std::pmr::string& xml, const std::filesystem::path& 
     Serializer serializer(refPath, &mbr);
     serializer.setWorkspaceSaveMode(mode);
 
-
     if (mode != WorkspaceSaveMode::Undo) {
         const InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
         serializer.serialize("InviwoSetup", info);
@@ -222,7 +221,6 @@ void WorkspaceManager::save(std::pmr::string& xml, const std::filesystem::path& 
         setModified(false);
     }
 }
-
 
 void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
@@ -286,7 +284,6 @@ void WorkspaceManager::load(const std::filesystem::path& path,
         throw AbortException(IVW_CONTEXT, "Could not read workspace file: {}", path);
     }
     load(data, path, exceptionHandler, mode);
-
 }
 
 void WorkspaceManager::registerFactory(FactoryBase* factory) {

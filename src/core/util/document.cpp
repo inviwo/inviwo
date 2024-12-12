@@ -135,8 +135,7 @@ Document::PathComponent::PathComponent(std::string_view name)
                             [&](const auto& e) { return e->isNode() && e->name() == name; });
     }} {}
 
-Document::PathComponent::PathComponent(
-    const UnorderedStringMap<std::string>& attributes)
+Document::PathComponent::PathComponent(const UnorderedStringMap<std::string>& attributes)
     : strrep_("attr"), matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
         return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
@@ -149,8 +148,8 @@ Document::PathComponent::PathComponent(
         });
     }} {}
 
-Document::PathComponent::PathComponent(
-    std::string_view name, const UnorderedStringMap<std::string>& attributes)
+Document::PathComponent::PathComponent(std::string_view name,
+                                       const UnorderedStringMap<std::string>& attributes)
     : strrep_("attr")
     , matcher_{[name = std::string(name),
                 attributes](const ElemVec& elements) -> ElemVec::const_iterator {
@@ -288,15 +287,14 @@ Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
     return handle().get(path);
 }
 
-Document::DocumentHandle Document::insert(
-    PathComponent pos, std::string_view name, std::string_view content,
-    const UnorderedStringMap<std::string>& attributes) {
+Document::DocumentHandle Document::insert(PathComponent pos, std::string_view name,
+                                          std::string_view content,
+                                          const UnorderedStringMap<std::string>& attributes) {
     return handle().insert(pos, name, content, attributes);
 }
 
-Document::DocumentHandle Document::append(
-    std::string_view name, std::string_view content,
-    const UnorderedStringMap<std::string>& attributes) {
+Document::DocumentHandle Document::append(std::string_view name, std::string_view content,
+                                          const UnorderedStringMap<std::string>& attributes) {
     return handle().append(name, content, attributes);
 }
 

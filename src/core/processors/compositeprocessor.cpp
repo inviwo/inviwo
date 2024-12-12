@@ -145,7 +145,8 @@ void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
         subNetwork_->clear();
         auto wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
-        auto d = wm->createWorkspaceDeserializer(ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
+        auto d = wm->createWorkspaceDeserializer(
+            ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
         auto name = getDisplayName();
         d.deserialize("DisplayName", name);
         setDisplayName(name);

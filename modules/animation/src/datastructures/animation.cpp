@@ -314,7 +314,8 @@ void Animation::deserialize(Deserializer& d) {
         "tracks", tracks_, "track",
         deserializer::IndexFunctions{
             .makeNew = []() { return std::unique_ptr<Track>{}; },
-            .onNew = [&](std::unique_ptr<Track>& track, size_t) { trackAddedInternal(track.get()); },
+            .onNew = [&](std::unique_ptr<Track>& track,
+                         size_t) { trackAddedInternal(track.get()); },
             .onRemove = [&](std::unique_ptr<Track>& track) { trackRemovedInternal(track.get()); }});
 }
 
