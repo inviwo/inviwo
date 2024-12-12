@@ -81,7 +81,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , animation_{nullptr}
     , progressItem_(nullptr)
     , statusItem_{new ProcessorStatusGraphicsItem(this, processor_)}
-    , linkItem_{new ProcessorLinkGraphicsItem(this)}
+    , linkItem_{new ProcessorLinkGraphicsItem(this, size_.width() / 2.0 + 1.0)}
     , highlight_(false)
     , backgroundColor_(
           processor_->getProcessorInfo().codeState == CodeState::Deprecated ? "#562e14" : "#3b3d3d")
