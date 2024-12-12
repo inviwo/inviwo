@@ -70,6 +70,9 @@
 
 namespace inviwo {
 
+static_assert(util::is_stream_insertable<DistanceTransformRAM::DataRangeMode>::value,
+              "DataRangeMode must be stream insertable");
+
 const ProcessorInfo DistanceTransformRAM::processorInfo_{
     "org.inviwo.DistanceTransformRAM",  // Class identifier
     "Volume Distance Transform",        // Display name

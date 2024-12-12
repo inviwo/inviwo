@@ -810,6 +810,7 @@ set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
+    tests/unittests/optionproperty-test.cpp
     tests/unittests/ordinalproperty-test.cpp
     tests/unittests/permutations-test.cpp
     tests/unittests/picking-test.cpp

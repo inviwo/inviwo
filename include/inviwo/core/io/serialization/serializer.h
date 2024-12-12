@@ -70,7 +70,7 @@ public:
      * \brief Writes serialized data to the file specified by the currently set file name.
      * @throws SerializationException
      */
-    virtual void writeFile();
+    void writeFile();
 
     /**
      * \brief Writes serialized data to stream.
@@ -79,7 +79,9 @@ public:
      * @param format Format the output, i.e. insert line breaks and tabs.
      * @throws SerializationException
      */
-    virtual void writeFile(std::ostream& stream, bool format = false);
+    void writeFile(std::ostream& stream, bool format = false);
+
+    void write(std::pmr::string& xml, bool format = false);
 
     // std containers
     template <typename T, typename Alloc, typename Pred = util::alwaysTrue,
@@ -186,16 +188,21 @@ public:
             serializeFunction(*this, item);
         }
     }
+
+    std::pmr::string& addAttribute(std::string_view key);
+
     NodeSwitch switchToNewNode(std::string_view key);
+
+    void setWorkspaceSaveMode(WorkspaceSaveMode mode) { workspaceSaveMode_ = mode; }
+    WorkspaceSaveMode getWorkspaceSaveMode() const { return workspaceSaveMode_; }
 
 protected:
     friend class NodeSwitch;
     TiXmlElement* getLastChild() const;
 
-    static void setAttribute(TiXmlElement* node, std::string_view key, std::string_view val);
+    static std::pmr::string& addAttribute(TiXmlElement* node, std::string_view key);
 
-    // Buffer for doing format conversions
-    std::pmr::vector<char> buffer{};
+    WorkspaceSaveMode workspaceSaveMode_ = WorkspaceSaveMode::Disk;
 };
 
 template <typename T, typename Alloc, typename Pred, typename Proj>
@@ -203,7 +210,7 @@ void Serializer::serialize(std::string_view key, const std::vector<T, Alloc>& ve
                            std::string_view itemKey, Pred pred, Proj proj) {
     if (vector.empty()) return;
 
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : vector) {
         if (std::invoke(pred, item)) {
             serialize(itemKey, std::invoke(proj, item));
@@ -216,7 +223,7 @@ void Serializer::serialize(std::string_view key, const std::unordered_set<T>& se
                            std::string_view itemKey) {
     if (set.empty()) return;
 
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : set) {
         serialize(itemKey, item);
     }
@@ -227,7 +234,7 @@ void Serializer::serialize(std::string_view key, const std::list<T>& container,
                            std::string_view itemKey) {
     if (container.empty()) return;
 
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : container) {
         serialize(itemKey, item);
     }
@@ -238,7 +245,7 @@ void Serializer::serialize(std::string_view key, const std::array<T, N>& contain
                            std::string_view itemKey) {
     if (container.empty()) return;
 
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : container) {
         serialize(itemKey, item);
     }
@@ -251,11 +258,11 @@ void Serializer::serialize(std::string_view key, const std::map<K, V, C, A>& map
 
     if (map.empty()) return;
 
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         serialize(itemKey, item.second);
-        setAttribute(getLastChild(), SerializeConstants::KeyAttribute,
-                     detail::toStr(item.first, buffer));
+        auto& attr = addAttribute(getLastChild(), SerializeConstants::KeyAttribute);
+        detail::formatTo(item.first, attr);
     }
 }
 
@@ -267,12 +274,12 @@ void Serializer::serialize(std::string_view key, const std::unordered_map<K, V, 
 
     if (map.empty()) return;
 
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (const auto& item : map) {
         if (std::invoke(pred, item)) {
             serialize(itemKey, std::invoke(vproj, item.second));
-            setAttribute(getLastChild(), SerializeConstants::KeyAttribute,
-                         detail::toStr(std::invoke(kproj, item.first), buffer));
+            auto& attr = addAttribute(getLastChild(), SerializeConstants::KeyAttribute);
+            detail::formatTo(std::invoke(kproj, item.first), attr);
         }
     }
 }
@@ -292,11 +299,12 @@ template <typename T>
     requires(std::is_integral_v<T> || std::is_floating_point_v<T>)
 void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
     if (target == SerializationTarget::Attribute) {
-        setAttribute(rootElement_, key, detail::toStr(data, buffer));
+        auto& attr = addAttribute(key);
+        detail::formatTo(data, attr);
     } else {
-        auto nodeSwitch = switchToNewNode(key);
-        setAttribute(rootElement_, SerializeConstants::ContentAttribute,
-                     detail::toStr(data, buffer));
+        const auto nodeSwitch = switchToNewNode(key);
+        auto& attr = addAttribute(SerializeConstants::ContentAttribute);
+        detail::formatTo(data, attr);
     }
 }
 
@@ -318,17 +326,17 @@ void Serializer::serialize(std::string_view key, const flags::flags<T>& data,
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
 void Serializer::serialize(std::string_view key, const Vec& data) {
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-        setAttribute(rootElement_, SerializeConstants::VectorAttributes[i],
-                     detail::toStr(data[i], buffer));
+        auto& attr = addAttribute(SerializeConstants::VectorAttributes[i]);
+        detail::formatTo(data[i], attr);
     }
 }
 
 // glm matrix types
 template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
 void Serializer::serialize(std::string_view key, const Mat& data) {
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
         serialize(SerializeConstants::MatrixAttributes[i], data[i]);
     }
@@ -336,13 +344,15 @@ void Serializer::serialize(std::string_view key, const Mat& data) {
 
 template <size_t N>
 void Serializer::serialize(std::string_view key, const std::bitset<N>& bits) {
-    serialize(key, detail::toStr(bits, buffer));
+    const auto nodeSwitch = switchToNewNode(key);
+    auto& attr = addAttribute(SerializeConstants::ContentAttribute);
+    detail::formatTo(bits, attr);
 }
 
 // serializable classes
 template <typename T, typename>
 void Serializer::serialize(std::string_view key, const T& sObj) {
-    auto nodeSwitch = switchToNewNode(key);
+    const auto nodeSwitch = switchToNewNode(key);
     sObj.serialize(*this);
 }
 

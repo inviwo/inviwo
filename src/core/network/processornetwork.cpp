@@ -41,6 +41,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/network/networkvisitor.h>
 #include <inviwo/core/network/networkedge.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -148,8 +149,7 @@ std::shared_ptr<Processor> ProcessorNetwork::removeProcessor(Processor* processo
 }
 
 Processor* ProcessorNetwork::getProcessorByIdentifier(std::string_view identifier) const {
-    return util::map_find_or_null(processors_, std::string(identifier),
-                                  [](const auto& p) { return p.get(); });
+    return util::map_find_or_null(processors_, identifier, [](const auto& p) { return p.get(); });
 }
 
 std::vector<Processor*> ProcessorNetwork::getProcessors() const {
@@ -401,21 +401,16 @@ void ProcessorNetwork::serialize(Serializer& s) const {
 
     s.serializeRange("Connections", connectionsVec_,
                      [](Serializer& nested, const PortConnection& connection) {
-                         auto nodeSwitch = nested.switchToNewNode("Connection");
-                         nested.serialize("src", connection.getOutport()->getPath(),
-                                          SerializationTarget::Attribute);
-                         nested.serialize("dst", connection.getInport()->getPath(),
-                                          SerializationTarget::Attribute);
+                         const auto nodeSwitch = nested.switchToNewNode("Connection");
+                         connection.getOutport()->getPath(nested.addAttribute("src"));
+                         connection.getInport()->getPath(nested.addAttribute("dst"));
                      });
 
-    s.serializeRange("PropertyLinks", links_,
-                     [](Serializer& nested, const PropertyLink& link) {
-                         auto nodeSwitch = nested.switchToNewNode("PropertyLink");
-                         nested.serialize("src", link.getSource()->getPath(),
-                                          SerializationTarget::Attribute);
-                         nested.serialize("dst", link.getDestination()->getPath(),
-                                          SerializationTarget::Attribute);
-                     });
+    s.serializeRange("PropertyLinks", links_, [](Serializer& nested, const PropertyLink& link) {
+        const auto nodeSwitch = nested.switchToNewNode("PropertyLink");
+        link.getSource()->getPath(nested.addAttribute("src"));
+        link.getDestination()->getPath(nested.addAttribute("dst"));
+    });
 }
 
 void ProcessorNetwork::addPropertyOwnerObservation(PropertyOwner* po) {
@@ -435,6 +430,71 @@ void ProcessorNetwork::removePropertyOwnerObservation(PropertyOwner* po) {
 int ProcessorNetwork::getVersion() { return processorNetworkVersion_; }
 
 const int ProcessorNetwork::processorNetworkVersion_ = 21;
+
+namespace {
+
+PortConnection retrieveConnection(Deserializer& d, const ProcessorNetwork& net) {
+    const auto src = d.attribute("src");
+    const auto dst = d.attribute("dst");
+
+    if (!src || !dst) {
+        throw SerializationException(IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
+                                     "Missing src or dst attribute in PortConnection");
+    }
+
+    auto* outport = net.getOutport(*src);
+    auto* inport = net.getInport(*dst);
+
+    constexpr std::string_view err =
+        "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
+    if (!outport && !inport) {
+        const auto message = fmt::format(err, *src, *dst, "Outport and Inport not found.");
+        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"), "Connection");
+    } else if (!outport) {
+        const auto message = fmt::format(err, *src, *dst, "Outport not found.");
+        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"), "Connection");
+    } else if (!inport) {
+        const auto message = fmt::format(err, *src, *dst, "Inport not found.");
+        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"), "Connection");
+    }
+
+    return {outport, inport};
+}
+
+PropertyLink retrieveLink(Deserializer& d, const ProcessorNetwork& net) {
+    const auto src = d.attribute("src");
+    const auto dst = d.attribute("dst");
+
+    if (!src || !dst) {
+        throw SerializationException(IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
+                                     "Missing src or dst attribute in PropertyLink");
+    }
+
+    auto* sprop = net.getProperty(*src);
+    auto* dprop = net.getProperty(*dst);
+
+    constexpr std::string_view err =
+        "Could not create Property Link from:\nSource '{}'\nto\nDestination '{}'\n{}";
+    if (!sprop && !dprop) {
+        const auto message =
+            fmt::format(err, *src, *dst, "Source and destination properties not found.");
+        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
+                                     "PropertyLink");
+    } else if (!sprop) {
+        const auto message = fmt::format(err, *src, *dst, "Source property not found.");
+        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
+                                     "PropertyLink");
+
+    } else if (!dprop) {
+        const auto message = fmt::format(err, *src, *dst, "Destination property not found.");
+        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
+                                     "PropertyLink");
+    }
+
+    return {sprop, dprop};
+}
+
+}  // namespace
 
 void ProcessorNetwork::deserialize(Deserializer& d) {
     const NetworkLock lock(this);
@@ -459,19 +519,20 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     try {
         rendercontext::activateDefault();
 
-        auto des = util::MapDeserializer<std::string, std::shared_ptr<Processor>>(
-                       "Processors", "Processor", "identifier")
-                       .setIdentifierTransform(
-                           [](std::string_view id) { return util::stripIdentifier(id); })
-                       .setMakeNew([]() {
-                           rendercontext::activateDefault();
-                           return nullptr;
-                       })
-                       .onNew([&](const std::string& /*id*/, std::shared_ptr<Processor>& p) {
-                           addProcessor(p);
-                       })
-                       .onRemove([&](const std::string& id) { removeProcessor(id); });
-        des(d, processors_);
+        d.deserialize(
+            "Processors", processors_, "Processor",
+            deserializer::MapFunctions{
+                .attributeKey = "identifier",
+                .idTransform = [](std::string_view id) { return util::stripIdentifier(id); },
+                .makeNew =
+                    []() {
+                        rendercontext::activateDefault();
+                        return std::shared_ptr<Processor>{};
+                    },
+                .onNew = [&](const std::string&,
+                             std::shared_ptr<Processor>& p) { addProcessor(p); },
+                .onRemove = [&](const std::string& id) { removeProcessor(id); },
+            });
 
     } catch (const Exception& exception) {
         clear();
@@ -488,88 +549,60 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Connections
     try {
-        std::vector<NetworkEdge> connectionsEdges;
-        d.deserialize("Connections", connectionsEdges, "Connection");
-
-        std::vector<PortConnection> connections;
-        for (const auto& edge : connectionsEdges) {
-            try {
-                connections.emplace_back(edge.toConnection(*this));
-            } catch (...) {
-                d.handleError(IVW_CONTEXT);
-            }
-        }
-
-        // remove any already existing connections.
-        std::unordered_set<PortConnection> save;
-        std::erase_if(connections, [&](const auto& c) {
-            if (connections_.count(c) != 0) {
-                save.insert(c);
-                return true;
-            } else {
-                return false;
-            }
+        std::pmr::unordered_set<PortConnection> toRemove(connections_.begin(), connections_.end(),
+                                                         connections_.bucket_count(),
+                                                         d.getAllocator());
+        std::pmr::vector<PortConnection> toAdd{d.getAllocator()};
+        d.deserializeRange("Connections", "Connection", [&](Deserializer& nested, size_t) {
+            const auto pc = retrieveConnection(nested, *this);
+            toRemove.erase(pc);
+            if (!isConnected(pc)) toAdd.push_back(pc);
         });
 
-        // remove any no longer used connections
-        auto remove = util::copy_if(connections_, [&](auto& c) { return save.count(c) == 0; });
-        for (auto& c : remove) removeConnection(c);
-
-        // Add the new connections
-        for (auto& c : connections) {
+        // remove connections, do this before adding connections
+        for (const auto& c : toRemove) {
+            removeConnection(c);
+        }
+        // add connections
+        for (const auto& c : toAdd) {
             try {
                 addConnection(c);
             } catch (...) {
                 d.handleError(IVW_CONTEXT);
             }
         }
-
     } catch (const Exception& exception) {
         clear();
-        throw IgnoreException("Deserialization error: " + exception.getMessage(),
-                              exception.getContext());
+        throw IgnoreException(exception.getContext(), "Deserialization error: {}",
+                              exception.getMessage());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + std::string(exception.what()),
-                             IVW_CONTEXT);
+        throw AbortException(IVW_CONTEXT, "Deserialization error: {}",
+                             std::string(exception.what()));
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception during deserialization.", IVW_CONTEXT);
+        throw AbortException(IVW_CONTEXT, "Unknown Exception during deserialization.");
     }
 
     // Links
     try {
-        std::vector<NetworkEdge> linkEdges;
-        d.deserialize("PropertyLinks", linkEdges, "PropertyLink");
-
-        std::vector<PropertyLink> links;
-        for (const auto& item : linkEdges) {
-            try {
-                links.emplace_back(item.toLink(*this));
-            } catch (...) {
-                d.handleError(IVW_CONTEXT);
-            }
-        }
-
-        // remove any already existing links.
-        std::unordered_set<PropertyLink> save;
-        std::erase_if(links, [&](const auto& l) {
-            if (links_.count(l) != 0) {
-                save.insert(l);
-                return true;
-            } else {
-                return false;
-            }
+        std::pmr::unordered_set<PropertyLink> toRemove(links_.begin(), links_.end(),
+                                                       links_.bucket_count(), d.getAllocator());
+        std::pmr::vector<PropertyLink> toAdd{d.getAllocator()};
+        d.deserializeRange("PropertyLinks", "PropertyLink", [&](Deserializer& nested, size_t) {
+            const auto pl = retrieveLink(nested, *this);
+            toRemove.erase(pl);
+            if (!isLinked(pl)) toAdd.push_back(pl);
         });
 
-        // remove any no longer used links
-        auto remove = util::copy_if(links_, [&](auto& l) { return save.count(l) == 0; });
-        for (auto& l : remove) removeLink(l);
-
-        // Add the new links
-        for (auto& link : links) {
+        // remove links, do this before adding links
+        for (const auto& l : toRemove) {
+            removeLink(l);
+        }
+        // add links
+        for (const auto& l : toAdd) {
             try {
-                addLink(link);
+                addLink(l);
             } catch (...) {
                 d.handleError(IVW_CONTEXT);
             }
@@ -577,15 +610,14 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     } catch (const Exception& exception) {
         clear();
-        throw IgnoreException("Deserialization error: " + exception.getMessage(),
-                              exception.getContext());
+        throw IgnoreException(exception.getContext(), "Deserialization error: {}",
+                              exception.getMessage());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + std::string(exception.what()),
-                             IVW_CONTEXT);
+        throw AbortException(IVW_CONTEXT, "Deserialization error: {}", exception.what());
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception during deserialization.", IVW_CONTEXT);
+        throw AbortException(IVW_CONTEXT, "Unknown Exception during deserialization.");
     }
 
     notifyObserversProcessorNetworkChanged();

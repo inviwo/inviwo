@@ -88,10 +88,15 @@ struct ValueWrapper {
                      PropertySerializationMode mode = PropertySerializationMode::Default) {
         switch (mode) {
             case PropertySerializationMode::Default: {
-                auto old = value;
-                reset();  // Need to call reset here since we might not deserialize if default.
-                d.deserialize(name, value);
-                return old != value;
+                if (d.hasElement(name)) {
+                    auto old = value;
+                    d.deserialize(name, value);
+                    return old != value;
+                } else {
+                    // Need to call reset here since we might not deserialize if default. I.e. the
+                    // lack of a serialized element means we should set the state to the default.
+                    return reset();
+                }
             }
             case PropertySerializationMode::All: {
                 auto old = value;

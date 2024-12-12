@@ -304,6 +304,8 @@ IVW_CORE_API std::optional<std::filesystem::path> getParentFolderWithChildren(
  */
 IVW_CORE_API const std::filesystem::path& findBasePath();
 
+IVW_CORE_API const std::filesystem::path& getPath(PathType pathType);
+
 /**
  * Get basePath +  pathType + suffix.
  * @see PathType
@@ -312,8 +314,8 @@ IVW_CORE_API const std::filesystem::path& findBasePath();
  * @param createFolder if true, will create the folder on disk if it does not exists.
  * @return basePath +  pathType + suffix
  */
-IVW_CORE_API std::filesystem::path getPath(PathType pathType, const std::string& suffix = "",
-                                           const bool createFolder = false);
+IVW_CORE_API std::filesystem::path getPath(PathType pathType, std::string_view suffix,
+                                           bool createFolder = false);
 
 [[deprecated("use std::filesystem::create_directories")]] IVW_CORE_API void
 createDirectoryRecursively(const std::filesystem::path& path);

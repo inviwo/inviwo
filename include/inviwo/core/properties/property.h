@@ -158,7 +158,8 @@ public:
      * @return string of dot separated identifiers starting with a processor identifier followed
      * by property identifiers.
      */
-    virtual const std::string& getPath() const;
+    const std::string& getPath() const;
+    void getPath(std::pmr::string& out) const;
 
     /**
      * \brief A property's name displayed to the user

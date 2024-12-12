@@ -104,17 +104,17 @@ TEST(SerializerPolymorphicTest, DifferentTypeUniquePtr) {
     std::unique_ptr<Property> prop1 = std::make_unique<FloatProperty>("float1", "float1", 0.123f);
     prop1->setSerializationMode(PropertySerializationMode::All);
 
-    std::stringstream ss;
-    Serializer s("");
+
+    Serializer s({});
 
     s.serialize("prop", prop1);
-    s.writeFile(ss);
+    std::pmr::string xml;
+    s.write(xml, true);
 
     std::unique_ptr<Property> prop2 =
         std::make_unique<DoubleProperty>("double2", "double2", 0.234f);
-    ;
 
-    Deserializer d(ss, "");
+    Deserializer d(xml, {});
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("prop", prop2);
@@ -123,9 +123,9 @@ TEST(SerializerPolymorphicTest, DifferentTypeUniquePtr) {
     EXPECT_EQ(prop1->getIdentifier(), prop2->getIdentifier());
 
     auto fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
-    EXPECT_TRUE(fprop1);
+    ASSERT_TRUE(fprop1);
     auto fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
-    EXPECT_TRUE(fprop2);
+    ASSERT_TRUE(fprop2);
 
     EXPECT_EQ(fprop1->get(), fprop2->get());
 }
@@ -214,17 +214,17 @@ TEST(SerializerPolymorphicTest, DifferentTypeVectorUniquePtr) {
     props1[0]->setSerializationMode(PropertySerializationMode::All);
     props1[1]->setSerializationMode(PropertySerializationMode::All);
 
-    std::stringstream ss;
-    Serializer s("");
+    Serializer s({});
 
     s.serialize("props", props1);
-    s.writeFile(ss);
+    std::pmr::string xml;
+    s.write(xml);
 
     std::vector<std::unique_ptr<Property>> props2;
     props2.emplace_back(std::make_unique<IntProperty>("int1", "int1", 1));
     props2.emplace_back(std::make_unique<IntProperty>("int2", "int2", 2));
 
-    Deserializer d(ss, "");
+    Deserializer d(xml, {});
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("props", props2);
@@ -236,11 +236,11 @@ TEST(SerializerPolymorphicTest, DifferentTypeVectorUniquePtr) {
     EXPECT_EQ(props2[1]->getIdentifier(), "double2");
 
     auto fprop = dynamic_cast<FloatProperty*>(props2[0].get());
-    EXPECT_TRUE(fprop);
+    ASSERT_TRUE(fprop);
     EXPECT_EQ(fprop->get(), 0.123f);
 
     auto dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
-    EXPECT_TRUE(dprop);
+    ASSERT_TRUE(dprop);
     EXPECT_EQ(dprop->get(), 0.234);
 }
 

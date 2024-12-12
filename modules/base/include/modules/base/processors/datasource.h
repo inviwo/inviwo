@@ -41,8 +41,11 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/std.h>
+
+#include <ranges>
 
 namespace inviwo {
 
@@ -66,23 +69,35 @@ inline void updateReaderFromFile(const FileProperty& filePath,
 template <typename... Types>
 void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& filePath,
                            OptionProperty<FileExtension>& optionProperty) {
-    std::vector<FileExtension> extensions;
 
-    util::append(extensions, rf.getExtensionsForType<Types>()...);
+    if (std::ranges::equal(optionProperty.getOptions(), rf.getExtensionsForTypesView<Types...>(),
+                           std::ranges::equal_to{}, &OptionPropertyOption<FileExtension>::value_)) {
+        return;
+    }
 
-    std::sort(extensions.begin(), extensions.end());
-
-    std::vector<OptionPropertyOption<FileExtension>> options;
-    std::transform(extensions.begin(), extensions.end(), std::back_inserter(options), [](auto& fe) {
-        return OptionPropertyOption<FileExtension>{fe.toString(), fe.toString(), fe};
-    });
-
-    options.emplace_back("noreader", "No available reader", FileExtension{});
-
-    filePath.clearNameFilters();
-    filePath.addNameFilter(FileExtension::all());
-    filePath.addNameFilters(extensions);
-    optionProperty.replaceOptions(options);
+    optionProperty.updateOptions(
+        [&](std::vector<OptionPropertyOption<FileExtension>>& opts) -> bool {
+            auto extensions = rf.getExtensionsForTypesView<Types...>();
+            bool modified = false;
+            for (std::pair<OptionPropertyOption<FileExtension>&, const FileExtension&> item :
+                 std::views::zip(opts, extensions)) {
+                auto&& [opt, ext] = item;
+                if (opt.value_ != ext) {
+                    opt = ext;
+                    modified = true;
+                }
+            }
+            const auto size = std::ranges::distance(extensions);
+            if (std::ssize(opts) > size) {
+                opts.erase(opts.begin() + size, opts.end());
+                modified = true;
+            }
+            for (auto&& item : extensions | std::views::drop(opts.size())) {
+                opts.emplace_back(item);
+                modified = true;
+            }
+            return modified;
+        });
 }
 
 }  // namespace util
@@ -228,7 +243,7 @@ void DataSource<DataType, PortType, ReaderType>::load() {
             } else {
                 dataLoaded(data);
             }
-        } catch (DataReaderException const& e) {
+        } catch (const DataReaderException& e) {
             handleError(fmt::format("Could not load: {}.\n{}", filePath.get(), e.getMessage()));
         }
     } else {

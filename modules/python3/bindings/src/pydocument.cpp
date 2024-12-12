@@ -56,10 +56,9 @@ void exposeDocument(pybind11::module& m) {
     py::class_<Document::Element>(doc, "Element")
         .def(py::init<Document::ElementType, std::string_view>(), py::arg("type"),
              py::arg("content"))
-        .def(py::init<std::string_view, std::string_view,
-                      const std::unordered_map<std::string, std::string>&>(),
+        .def(py::init<std::string_view, std::string_view, const UnorderedStringMap<std::string>&>(),
              py::arg("name"), py::arg("content") = std::string_view{""},
-             py::arg("attributes") = std::unordered_map<std::string, std::string>{})
+             py::arg("attributes") = UnorderedStringMap<std::string>{})
         .def_property(
             "name", [](Document::Element& d) { return d.name(); },
             [](Document::Element& d, std::string_view val) { return d.name() = val; })
@@ -76,23 +75,23 @@ void exposeDocument(pybind11::module& m) {
     py::class_<Document::PathComponent>(doc, "PathComponent")
         .def(py::init<int>(), py::arg("index"))
         .def(py::init<std::string_view>(), py::arg("name"))
-        .def(py::init<const std::unordered_map<std::string, std::string>&>(), py::arg("attributes"))
-        .def(py::init<std::string_view, const std::unordered_map<std::string, std::string>&>(),
-             py::arg("name"), py::arg("attributes"))
+        .def(py::init<const UnorderedStringMap<std::string>&>(), py::arg("attributes"))
+        .def(py::init<std::string_view, const UnorderedStringMap<std::string>&>(), py::arg("name"),
+             py::arg("attributes"))
         .def_property_readonly_static("first", &Document::PathComponent::first)
         .def_property_readonly_static("last", &Document::PathComponent::last)
         .def_property_readonly_static("end", &Document::PathComponent::end);
 
     py::class_<Document::DocumentHandle>(doc, "DocumentHandle")
         .def("get", &Document::DocumentHandle::get)
-        .def("insert", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
-                           Document::PathComponent, std::string_view, std::string_view,
-                           const std::unordered_map<std::string, std::string>&)>(
-                           &Document::DocumentHandle::insert))
-        .def("append", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
-                           std::string_view, std::string_view,
-                           const std::unordered_map<std::string, std::string>&)>(
-                           &Document::DocumentHandle::append))
+        .def("insert",
+             static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
+                 Document::PathComponent, std::string_view, std::string_view,
+                 const UnorderedStringMap<std::string>&)>(&Document::DocumentHandle::insert))
+        .def("append",
+             static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
+                 std::string_view, std::string_view, const UnorderedStringMap<std::string>&)>(
+                 &Document::DocumentHandle::append))
         .def("insert", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
                            Document::PathComponent, Document)>(&Document::DocumentHandle::insert))
         .def("insertText", &Document::DocumentHandle::insertText)
@@ -112,10 +111,11 @@ void exposeDocument(pybind11::module& m) {
         .def("get", &Document::get)
         .def("insert", static_cast<Document::DocumentHandle (Document::*)(
                            Document::PathComponent, std::string_view, std::string_view,
-                           const std::unordered_map<std::string, std::string>&)>(&Document::insert))
-        .def("append", static_cast<Document::DocumentHandle (Document::*)(
-                           std::string_view, std::string_view,
-                           const std::unordered_map<std::string, std::string>&)>(&Document::append))
+                           const UnorderedStringMap<std::string>&)>(&Document::insert))
+        .def("append",
+             static_cast<Document::DocumentHandle (Document::*)(
+                 std::string_view, std::string_view, const UnorderedStringMap<std::string>&)>(
+                 &Document::append))
         .def("insert",
              static_cast<Document::DocumentHandle (Document::*)(Document::PathComponent, Document)>(
                  &Document::insert))

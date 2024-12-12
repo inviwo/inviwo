@@ -65,6 +65,9 @@ public:
     TFPrimitive(TFPrimitive&& rhs) noexcept;
     TFPrimitive& operator=(const TFPrimitive& that);
     TFPrimitive& operator=(TFPrimitive&& that) noexcept;
+
+    TFPrimitive& operator=(const TFPrimitiveData& that);
+
     virtual ~TFPrimitive() = default;
 
     void setData(const TFPrimitiveData& data);

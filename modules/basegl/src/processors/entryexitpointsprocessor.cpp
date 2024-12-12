@@ -126,9 +126,4 @@ void EntryExitPoints::process() {
                      addNormals ? algorithm::IncludeNormals::Yes : algorithm::IncludeNormals::No);
 }
 
-void EntryExitPoints::deserialize(Deserializer& d) {
-    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
-    Processor::deserialize(d);
-}
-
 }  // namespace inviwo

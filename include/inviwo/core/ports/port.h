@@ -70,6 +70,8 @@ public:
      */
     std::string getPath() const;
 
+    void getPath(std::pmr::string& out) const;
+
     virtual std::string_view getClassIdentifier() const = 0;
     /**
      * Returns the RGB color code used to colorize all ports of this type. This color code is for

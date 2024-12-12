@@ -66,10 +66,6 @@ public:
     explicit CEFInteractionHandler(CefRefPtr<CefBrowserHost> host = nullptr);
     virtual ~CEFInteractionHandler() = default;
 
-    virtual std::string_view getClassIdentifier() const override {
-        return "org.inviwo.cefinteractionhandler";
-    }
-
     virtual void invokeEvent(Event* event) override;
 
     void handlePickingEvent(PickingEvent* p);

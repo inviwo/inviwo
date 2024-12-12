@@ -60,6 +60,9 @@ public:
 
     virtual void process() override;
 
+    friend IVW_MODULE_BASE_API std::ostream& operator<<(std::ostream& ss,
+                                                        DistanceTransformRAM::DataRangeMode m);
+
 private:
     VolumeInport volumePort_;
     VolumeOutport outport_;
@@ -77,8 +80,5 @@ private:
     OptionProperty<DataRangeMode> dataRangeMode_;
     DoubleMinMaxProperty customDataRange_;
 };
-
-IVW_MODULE_BASE_API std::ostream& operator<<(std::ostream& ss,
-                                             DistanceTransformRAM::DataRangeMode m);
 
 }  // namespace inviwo

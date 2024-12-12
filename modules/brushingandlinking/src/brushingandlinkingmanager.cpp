@@ -446,25 +446,23 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
         if (std::holds_alternative<BitSetTargets>(targetmap)) {
             auto& map = std::get<BitSetTargets>(targetmap);
 
-            auto des = util::MapDeserializer<BrushingTarget, BitSet>(toString(action), "selection")
-                           .setMakeNew([]() { return BitSet(); })
-                           .onNew([&](const BrushingTarget& key, BitSet& b) { map[key] = b; })
-                           .onRemove([&](const BrushingTarget& key) { map.erase(key); })
-                           .setIdentifierTransform(
-                               [](std::string_view id) { return BrushingTarget(id); });
+            d.deserialize(toString(action), map, "selection",
+                          deserializer::MapFunctions{
+                              .idTransform = [](std::string_view id) { return BrushingTarget(id); },
+                              .makeNew = []() { return BitSet(); },
+                              .onNew = [&](const BrushingTarget& key, BitSet& b) { map[key] = b; },
+                              .onRemove = [&](const BrushingTarget& key) { map.erase(key); }});
 
-            des(d, map);
         } else if (std::holds_alternative<IndexListTargets>(targetmap)) {
             auto& map = std::get<IndexListTargets>(targetmap);
 
-            auto des =
-                util::MapDeserializer<BrushingTarget, IndexList>(toString(action), "selection")
-                    .setMakeNew([]() { return IndexList(); })
-                    .onNew([&](const BrushingTarget& key, IndexList& l) { map[key] = l; })
-                    .onRemove([&](const BrushingTarget& key) { map.erase(key); })
-                    .setIdentifierTransform(
-                        [](std::string_view id) { return BrushingTarget(id); });
-            des(d, map);
+            d.deserialize(
+                toString(action), map, "selection",
+                deserializer::MapFunctions{
+                    .idTransform = [](std::string_view id) { return BrushingTarget(id); },
+                    .makeNew = []() { return IndexList(); },
+                    .onNew = [&](const BrushingTarget& key, IndexList& l) { map[key] = l; },
+                    .onRemove = [&](const BrushingTarget& key) { map.erase(key); }});
         }
     }
 }
