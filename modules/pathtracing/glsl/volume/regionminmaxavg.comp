@@ -8,8 +8,8 @@ uniform sampler3D volumeData;
 uniform VolumeParameters volumeDataParameters;
 
 // output volume
-layout(binding = 0, rgba32f) restrict writeonly uniform image3D opacityData;
-uniform VolumeParameters opacityDataParameters;
+layout(binding = 0, rg32f) restrict writeonly uniform image3D regionMinMaxOpacity;
+layout(binding = 1, r32f) restrict writeonly uniform image3D regionAvgOpacity;
 
 uniform ivec3 regionSize;
 uniform sampler2D transferFunction;
@@ -169,5 +169,6 @@ void main() {
     ivec3 storePos = ivec3(gl_GlobalInvocationID.xyz);
     vec4 result = calcMinMaxAvg_OutsideVoxel(storePos);
 
-    imageStore(opacityData, storePos, result);
+    imageStore(regionMinMaxOpacity, storePos, result);
+    imageStore(regionAvgOpacity, storePos, vec4(result.z));
 }

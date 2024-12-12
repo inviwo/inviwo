@@ -3,7 +3,8 @@
 #include "util/rayboxintersection.glsl"
 
 vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam, sampler2D tf,
-                                    sampler3D opacity, VolumeParameters opacityParam, vec3 cellDim,
+                                    sampler3D opacity, VolumeParameters opacityParam,
+                                    sampler3D avgOpacity, vec3 cellDim,
                                     vec3 samplePos, vec3 cameraDir, LightParameters light,
                                     uint hashSeed, int rcChannel, int TRANSMITTANCEMETHOD) {
 
@@ -24,7 +25,7 @@ vec3 estimateDirectLightUniformGrid(sampler3D volume, VolumeParameters volParam,
 
     Tl = partitionedTransmittanceTracking(TRANSMITTANCEMETHOD, samplePos, toLightDir, t0, t1,
                                          hashSeed, volume, volParam, tf,
-                                         opacity, opacityParam, cellDim);
+                                         opacity, opacityParam, avgOpacity, cellDim);
 
     if (Tl == 0.0f) {
         return vec3(0f);

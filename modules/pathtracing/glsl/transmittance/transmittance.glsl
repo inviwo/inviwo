@@ -8,7 +8,8 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
                                        float tEnd, inout uint hashSeed, sampler3D volume,
                                        VolumeParameters volumeParameters,
                                        sampler2D transferFunction, sampler3D opacity,
-                                       VolumeParameters opacityParameters, vec3 cellDim) {
+                                       VolumeParameters opacityParameters,
+                                       sampler3D avgOpacity, vec3 cellDim) {
 
     mat4 volumeTexToIndMat = volumeParameters.textureToIndex;
 
@@ -45,7 +46,7 @@ float partitionedTransmittanceTracking(int METHOD, vec3 raystart, vec3 raydir, f
         float t1 = tStart + dirLen * min(1.f, t);
 
         minMax.y += 1e-6;
-        float avg = minMax.z;
+        float avg = getVoxel(avgOpacity, opacityParameters, raystart + raydir*(t0 + t1)*0.5).x;
         // avg = (minMax.y + minMax.x)*0.5f;
         // avg = 0.5;
         switch (METHOD) {

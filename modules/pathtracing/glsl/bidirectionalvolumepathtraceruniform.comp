@@ -42,6 +42,8 @@ uniform ImageParameters outportParameters;
 // Grid
 uniform sampler3D minMaxOpacity;
 uniform VolumeParameters minMaxOpacityParameters;
+uniform sampler3D avgOpacity;
+uniform VolumeParameters avgOpacityParameters;
 uniform ivec3 cellDim;
 
 // Uniform properties
@@ -105,7 +107,7 @@ vec4 pathtrace(vec3 entryPoint, vec3 exitPoint, float entryDepth, float exitDept
 
         result.rgb = estimateDirectLightUniformGrid(
             volume, volumeParameters, transferFunction,
-            minMaxOpacity, minMaxOpacityParameters, cellDim,
+            minMaxOpacity, minMaxOpacityParameters, avgOpacity, cellDim,
             samplePosition, cameraDir, light, hashSeed, channel, transmittanceMethod);
         result.a = 1f - T;
 

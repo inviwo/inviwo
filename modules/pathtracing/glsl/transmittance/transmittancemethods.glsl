@@ -17,7 +17,7 @@ const int GEOMETRICRESIDUAL = 7;
 
 #define REFSAMPLINGINTERVAL 150.0
 
-#define upperBoundMultiplier 3.0
+#define upperBoundMultiplier 2.0
 
 /*
     Note: The Residual methods fail when using opacity control directly from the uniform grid for a 'high frequency' transmittance function.
