@@ -214,7 +214,7 @@ void main() {
         return;
     }
 
-    vec3 entryPoint = texture(entryColor, texCoord).xyz;
+    vec4 entryPoint = texture(entryColor, texCoord);
     vec3 exitPoint = texture(exitColor, texCoord).xyz;
 
     float entryPointDepth = texture(entryDepth, texCoord).x;
@@ -222,7 +222,7 @@ void main() {
 
     vec4 bgColor = vec4(0.f, 0.f, 0.0f, 0.0f);
 
-    if (entryPoint == exitPoint) {
+    if (entryPoint.w == 0 || entryPoint.xyz == exitPoint) {
         imageStore(outportColor, storePos, bgColor);
         imageStore(outportDepth, storePos, vec4(depth, depth, depth, 255));
         imageStore(outportPicking, storePos, picking);

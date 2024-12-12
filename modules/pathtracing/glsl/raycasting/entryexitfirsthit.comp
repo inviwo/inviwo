@@ -1,0 +1,112 @@
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/sampler3d.glsl"
+
+#include "uniformgrid.glsl"
+
+// input volume
+uniform sampler3D minMaxOpacity;
+uniform VolumeParameters minMaxOpacityParameters;
+
+// entry
+uniform sampler2D entryColor;
+uniform sampler2D entryDepth;
+uniform ImageParameters entryParameters;
+
+// exit
+uniform sampler2D exitColor;
+uniform sampler2D exitDepth;
+uniform ImageParameters exitParameters;
+
+// output
+//layout(binding = 0, rgba32f)  restrict writeonly uniform image2D optimizedEntryCol;
+
+uniform ivec3 cellSize;
+uniform float opacityThreshold = 0;
+uniform mat4 volumeTextureToIndex;
+uniform mat4 volumeIndexToTexture;
+
+
+//layout(local_size_x = 16, local_size_y = 16) in;
+
+/*
+ * Find first grid point hit point calculated in index coordinates [0 dim-1]
+ * using maximum value within each grid cell.
+ *
+ * @param x1 Start point in index coordinates
+ * @param x2 End point in index coordinates
+ * @param cellDim Dimension of a grid cell
+ * @param volume Data containing maximum data value within each grid cell
+ * @param opacityThreshold All cells with opacity below min will be culled
+ * @param tHit Output the distance to the hitpoint along the direction from x1
+ * @return True if a hit is found, false otherwise
+ */
+bool minMaxUniformGridFirstHit(vec3 x1, vec3 x2
+    , vec3 cellDim
+    , sampler3D minMaxOpacity
+    , VolumeParameters minMaxOpacityParameters
+    , float opacityThreshold, out float tHit) {
+    ivec3 cellCoord, cellCoordEnd, di;
+    vec3 dt, deltatx;
+    setupUniformGridTraversal(x1, x2, cellDim, ivec3(minMaxOpacityParameters.dimensions)
+        , cellCoord, cellCoordEnd, di, dt, deltatx);
+    tHit = 0.f;
+    int c = 0;
+    // Visit all cells
+    bool continueTraversal = true;
+    while (continueTraversal) {
+        // Visit cell
+        vec2 gridMinMaxVal = getVoxel(minMaxOpacity, minMaxOpacityParameters, cellCoord).xy;
+        if (gridMinMaxVal.y <= opacityThreshold) {
+            // No overlap
+            continueTraversal = stepToNextCell(deltatx, di, cellCoordEnd, dt, cellCoord, tHit);
+        } else {
+            // Make sure that we did not go beyond the ray
+            tHit = min(tHit, 1.f);
+            return true;
+        }
+        c += 1;
+
+        //if (c > 200) {
+        //    tHit = min(tHit+1, 1.f);
+        //    return true;
+        //}
+    }
+    return false;
+}
+
+void main() {
+    //ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+    //vec2 texCoord = vec2(0.5 + gl_GlobalInvocationID.xy) / entryParameters.dimensions;
+    vec2 texCoord = gl_FragCoord.xy * entryParameters.reciprocalDimensions;
+    vec4 entryPoint = texture(entryColor, texCoord);
+    vec4 exitPoint = texture(exitColor, texCoord);
+    if (entryPoint == exitPoint) {
+        //imageStore(optEntryTexCol, storePos, texture(entryColor, texCoord));
+        FragData0 = entryPoint;
+        return;
+    } 
+
+    // x in [-0.5 dim-0.5]
+    // add 0.5 to convert to [0 dim]
+    vec3 x1 = (volumeTextureToIndex * entryPoint).xyz + 0.5f;
+    vec3 x2 = (volumeTextureToIndex * exitPoint).xyz + 0.5f;
+    vec3 direction = x2-x1;         
+    float t0;
+    bool hit = minMaxUniformGridFirstHit(x1, x2, cellSize, minMaxOpacity, minMaxOpacityParameters, opacityThreshold, t0);
+    if (hit) {     
+        float t1 = 0.f;
+        //x1 += direction*t0;
+        //uniformGridFirstHit(x2, x1, cellSize, volume, volumeDataScaling, minMaxOpacityParameters, opacityThreshold, &t1);
+        
+        // -0.5 in order to convert back to [-0.5 dim-0-5]
+        x1 = (volumeIndexToTexture * vec4(x1 + direction * t0  - 0.5f, 1.0f)).xyz;
+        //x2 = (volumeIndexToTexture * vec4(x2 - direction * t1 - 0.5f, 1.0f)).xyz;
+
+        //imageStore(optEntryTexCol, storePos, vec4(x1, 1.f));
+        FragData0 = vec4(x1, 1.f);
+    } else {  
+        //imageStore(optEntryTexCol, storePos, vec4(0));
+        FragData0 = vec4(0);
+    }
+}

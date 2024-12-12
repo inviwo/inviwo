@@ -71,6 +71,7 @@ VolumePathTracer::VolumePathTracer()
     , entryPort_("entry")
     , exitPort_("exit")
     , outport_("outport", DataVec4Float32::get())
+    , optimizedEntryPort_("optimizedEntry", DataVec4UInt16::get())
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}, Shader::Build::No)
     , shaderUniform_({{ShaderType::Compute, "bidirectionalvolumepathtraceruniform.comp"}},
                      Shader::Build::No)
@@ -80,7 +81,6 @@ VolumePathTracer::VolumePathTracer()
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , positionIndicator_("positionindicator", "Position Indicator")
     , light_("light", "Light", &camera_)
-    
     , transmittanceMethod_(
           "transmittanceMethod", "Transmittance method",
           {
@@ -105,12 +105,15 @@ VolumePathTracer::VolumePathTracer()
     , accelerate_("accelerate", "Accelerate", true, InvalidationLevel::InvalidResources)
     , volumeRegionSize_("region", "Region size", 8, 1, 100)
     , minMaxAvgShader_({{ShaderType::Compute, "volume/regionminmaxavg.comp"}})
+    , optimizeFirstHitShader_({{ShaderType::Fragment, "raycasting/entryexitfirsthit.comp"}})
     , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this)) {
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
+    addPort(optimizedEntryPort_, "ImagePortGroup1");
+    
 
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
@@ -221,6 +224,9 @@ void VolumePathTracer::process() {
     float MSSinceStart_ = FpMilliseconds(timeNow_ - timeStart_).count();
 
     if (iteration_ == 0) {
+        if (accelerate_) {
+            optimizeEntryPoints();
+        }
         // Copy depth and picking
         Image* outImage = outport_.getEditableData().get();
         ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
@@ -369,6 +375,55 @@ void VolumePathTracer::volumeRegionMinMaxAvg(std::shared_ptr<const inviwo::Volum
 
     minMaxAvgShader_.deactivate();
 }
+
+
+void VolumePathTracer::optimizeEntryPoints() {
+    utilgl::activateAndClearTarget(optimizedEntryPort_);
+    optimizeFirstHitShader_.activate();
+
+    optimizeFirstHitShader_.setUniform("cellSize", inviwo::ivec3(volumeRegionSize_));
+
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(optimizeFirstHitShader_, units, entryPort_,
+                               ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(optimizeFirstHitShader_, units, exitPort_, ImageType::ColorDepth);
+
+    utilgl::bindAndSetUniforms(optimizeFirstHitShader_, units, *regionMinMaxVolume_,
+                               "minMaxOpacity");
+
+    optimizeFirstHitShader_.setUniform("volumeTextureToIndex",
+                                       volumePort_.getData()->getIndexMatrix());
+    optimizeFirstHitShader_.setUniform("volumeIndexToTexture",
+                                       volumePort_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
+    //{
+    //    TextureUnit unit1;
+    //    auto image = optimizedEntryPort_.getEditableData();
+    //    auto colorLayerGL = image->getColorLayer()->getEditableRepresentation<LayerGL>();
+    //    colorLayerGL->bindImageTexture(unit1, GL_READ_WRITE);
+    //    //auto depthLayerGL = image->getDepthLayer()->getEditableRepresentation<LayerGL>();
+
+    //    //GLenum texUnit_ = unit2.getEnum();
+    //    //glActiveTexture(texUnit_);
+    //    //glBindImageTexture(unit2.getUnitNumber(), depthLayerGL->getTexture()->getID(), 0, GL_FALSE,
+    //    //                   0, GL_READ_WRITE,
+    //    //                   GL_R32F /*depthLayerGL->getTexture()->getInternalFormat()*/);
+    //    glActiveTexture(GL_TEXTURE0);
+
+
+
+    //    optimizeFirstHitShader_.setUniform("optEntryTexCol", unit1);
+
+    //    units.push_back(std::move(unit1));
+    //}
+    utilgl::setUniforms(optimizeFirstHitShader_, optimizedEntryPort_);
+
+    utilgl::singleDrawImagePlaneRect();
+
+    optimizeFirstHitShader_.deactivate();
+    utilgl::deactivateCurrentTarget();
+}
+
+
 void VolumePathTracer::updateLightSources() {}
 
 // Progressive refinement
