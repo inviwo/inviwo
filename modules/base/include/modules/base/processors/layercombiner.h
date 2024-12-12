@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/layerport.h>
 #include <modules/base/properties/datarangeproperty.h>
 
@@ -54,7 +55,7 @@ private:
     LayerOutport outport_;
 
     std::array<OptionPropertyInt, 4> channel_;
-
+    BoolProperty normalizeChannels_;
     DataRangeProperty dataRange_;
 };
 

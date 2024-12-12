@@ -45,15 +45,30 @@
 #include <ranges>
 #include <vector>
 
-namespace inviwo {
+namespace inviwo::util {
 
-namespace util {
+template <typename T, typename TRAMrep>
+concept hasRAMrepresentation = requires(T data) {
+    typename T::repr;
+    requires std::is_base_of_v<typename T::repr, TRAMrep>;
+    data.template getRepresentation<TRAMrep>();
+};
+
+namespace detail {
+
+enum class ChannelNormalization { No, Yes };
+
+}
 
 /**
- * Combines up to four channels from four inports into a single object of type @p T.
+ * Combines up to four channels from four inports into a single object of type @p T. The data format
+ * of the resulting container is based on the common numeric type and precision of the input
+ * channels.
  *
  * @tparam T        underlying datatype
  * @tparam TRAMrep  RAM representation for @p T
+ * @tparam channelNormalization  normalize each channel using its corresponding data range and then
+ * renormalize it to the common data format
  * @param sources   array of inports for type @p T
  * @param selectedPortChannels  selected channel for each inport
  * @return instance of T with the combined channels of @p sources
@@ -61,16 +76,12 @@ namespace util {
  * Usage:  <tt>combineChannels<Layer, LayerRAM>(...)</tt>
  * @see LayerCombiner, VolumeChannelCombiner
  */
-template <typename T, typename TRAMrep>
+template <typename T, typename TRAMrep,
+          detail::ChannelNormalization normalization = detail::ChannelNormalization::No>
 std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                                    const std::array<int, 4>& selectedPortChannels)
-    requires requires(T data) {
-        typename T::repr;
-        std::is_base_of_v<typename T::repr, TRAMrep>;
-        data.template getRepresentation<TRAMrep>();
-    }
+    requires hasRAMrepresentation<T, TRAMrep>
 {
-
     using PortChannel = std::pair<const DataInport<T>*, int>;
 
     const auto activePorts = [&]() {
@@ -110,36 +121,54 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                             Config{.format = commonFormat,
                                    .swizzleMask = swizzlemasks::defaultData(activePorts.size())});
 
+    [[maybe_unused]] DataMapper destDataMap(commonFormat);
+
 #include <warn/push>
 #include <warn/ignore/conversion>
 #include <warn/ignore/conversion-loss>
 
-    data->template getEditableRepresentation<TRAMrep>()->template dispatch<void>([&](auto ramrep) {
-        using PrecisionType = util::PrecisionValueType<decltype(ramrep)>;
-        using ValueType = util::value_type_t<PrecisionType>;
+    data->template getEditableRepresentation<TRAMrep>()->template dispatch<void>(
+        [&activePorts, destDataMap]<typename DestRAMrep>(DestRAMrep* ramrep) {
+            using PrecisionType = util::PrecisionValueType<DestRAMrep>;
+            using ValueType = util::value_type_t<PrecisionType>;
 
-        const auto dims{ramrep->getDimensions()};
-        auto destData = ramrep->getDataTyped();
+            const auto dims{ramrep->getDimensions()};
+            auto destData = ramrep->getDataTyped();
 
-        for (size_t inputChannel = 0; inputChannel < activePorts.size(); ++inputChannel) {
-            auto&& [port, srcChannel] = activePorts[inputChannel];
-            port->getData()->template getRepresentation<TRAMrep>()->template dispatch<void>(
-                [&](auto srcramrep, int srcChannelArg) {
-                    const auto srcData = srcramrep->getDataTyped();
+            for (size_t inputChannel = 0; inputChannel < activePorts.size(); ++inputChannel) {
+                auto&& [port, srcChannel] = activePorts[inputChannel];
 
-                    for (size_t i = 0; i < glm::compMul(dims); ++i) {
-                        util::glmcomp(destData[i], inputChannel) =
-                            static_cast<ValueType>(util::glmcomp(srcData[i], srcChannelArg));
-                    }
-                },
-                srcChannel);
-        }
-    });
+                if constexpr (normalization == detail::ChannelNormalization::Yes) {
+                    port->getData()->template getRepresentation<TRAMrep>()->template dispatch<void>(
+                        [dims, destData, inputChannel, srcDataMap = port->getData()->dataMap,
+                         destDataMap](auto* srcramrep, int srcChannelArg) {
+                            const auto srcData = srcramrep->getDataTyped();
+
+                            for (size_t i = 0; i < glm::compMul(dims); ++i) {
+                                auto normalizedValue = srcDataMap.mapFromDataToNormalized(
+                                    util::glmcomp(srcData[i], srcChannelArg));
+                                util::glmcomp(destData[i], inputChannel) = static_cast<ValueType>(
+                                    destDataMap.mapFromNormalizedToData(normalizedValue));
+                            }
+                        },
+                        srcChannel);
+                } else {
+                    port->getData()->template getRepresentation<TRAMrep>()->template dispatch<void>(
+                        [dims, destData, inputChannel](auto* srcramrep, int srcChannelArg) {
+                            const auto srcData = srcramrep->getDataTyped();
+
+                            for (size_t i = 0; i < glm::compMul(dims); ++i) {
+                                util::glmcomp(destData[i], inputChannel) = static_cast<ValueType>(
+                                    util::glmcomp(srcData[i], srcChannelArg));
+                            }
+                        },
+                        srcChannel);
+                }
+            }
+        });
 
 #include <warn/pop>
     return data;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util
