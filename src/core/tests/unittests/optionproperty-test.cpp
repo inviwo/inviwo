@@ -345,7 +345,6 @@ TEST(OptionProperty, SerializeOptions3) {
     std::pmr::string xml;
     s.write(xml);
 
-
     prop.addOption(7);
     prop.addOption(8);
     EXPECT_EQ(prop.size(), 8);

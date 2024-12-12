@@ -52,7 +52,7 @@ SerializeBase::~SerializeBase() = default;
 SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
 SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
 
-auto SerializeBase::getAllocator() const -> allocator_type {return doc_->getAllocator();}
+auto SerializeBase::getAllocator() const -> allocator_type { return doc_->getAllocator(); }
 
 NodeSwitch::NodeSwitch(NodeSwitch&& rhs) noexcept
     : serializer_{rhs.serializer_}

@@ -220,7 +220,7 @@ TEST(SerialitionContainerTest, MapFunctions2) {
                                        return val;
                                    },
                                    .makeNew = []() { return std::string{}; },
-                                   .onNew = [&](const int& k, std::string& v ) { map[k] = v; },
+                                   .onNew = [&](const int& k, std::string& v) { map[k] = v; },
                                    .onRemove = [&](const int& k) { map.erase(k); }
 
         });

@@ -76,20 +76,20 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
         size_t mainAnimation = 0;
         d.deserialize("MainAnimationIndex", mainAnimation);
 
-        d.deserialize(
-            "Animations", animations_, "Animation",
-            deserializer::IndexFunctions{
-                .makeNew =
-                    [&]() {
-                        // Must pass AnimationManager to Animation constructor
-                        return std::make_unique<Animation>(&animationManager_);
-                    },
-                .onNew = [&](std::unique_ptr<Animation>&, size_t) { addInternal(--animations_.end()); },
-                .onRemove =
-                    [&](std::unique_ptr<Animation>& anim) {
-                        // Previously last element was removed
-                        onChanged_.invoke(size(), *anim);
-                    }});
+        d.deserialize("Animations", animations_, "Animation",
+                      deserializer::IndexFunctions{
+                          .makeNew =
+                              [&]() {
+                                  // Must pass AnimationManager to Animation constructor
+                                  return std::make_unique<Animation>(&animationManager_);
+                              },
+                          .onNew = [&](std::unique_ptr<Animation>&,
+                                       size_t) { addInternal(--animations_.end()); },
+                          .onRemove =
+                              [&](std::unique_ptr<Animation>& anim) {
+                                  // Previously last element was removed
+                                  onChanged_.invoke(size(), *anim);
+                              }});
 
         // Failsafe in case no animation was found
         if (animations_.empty()) {

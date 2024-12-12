@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API InteractionHandler : public EventListener{
+class IVW_CORE_API InteractionHandler : public EventListener {
 
 public:
     InteractionHandler() = default;
