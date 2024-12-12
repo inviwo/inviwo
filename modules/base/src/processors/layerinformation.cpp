@@ -30,7 +30,10 @@
 #include <modules/base/processors/layerinformation.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/zip.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
@@ -45,49 +48,163 @@ const ProcessorInfo LayerInformation::processorInfo_{
 
 const ProcessorInfo& LayerInformation::getProcessorInfo() const { return processorInfo_; }
 
+namespace {
+
+constexpr auto transforms = util::generateTransforms(std::array{
+    CoordinateSpace::Data, CoordinateSpace::Model, CoordinateSpace::World, CoordinateSpace::Index});
+
+std::array<FloatMat4Property, 12> transformProps() {
+    return util::make_array<12>([](auto index) {
+        auto [from, to] = transforms[index];
+        return FloatMat4Property(fmt::format("{}2{}", from, to), fmt::format("{} To {}", from, to),
+                                 mat4(1.0f),
+                                 util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                                 util::filled<mat4>(std::numeric_limits<float>::max()),
+                                 util::filled<mat4>(0.001f), InvalidationLevel::Valid);
+    });
+}
+
+std::array<DoubleMinMaxProperty, 4> minMaxProps() {
+    return util::make_array<4>([](auto index) {
+        return DoubleMinMaxProperty{fmt::format("minMaxChannel{}", index),
+                                    fmt::format("Min/Max (Channel {})", index),
+                                    0.0,
+                                    255.0,
+                                    -DataFloat64::max(),
+                                    DataFloat64::max(),
+                                    0.001,
+                                    0.0,
+                                    InvalidationLevel::Valid,
+                                    PropertySemantics::Text};
+    });
+}
+
+}  // namespace
+
 LayerInformation::LayerInformation()
     : Processor{}
-    , layer_("layer", "Input layer"_help)
-    , layerInfo_("dataInformation", "Data Information")
-    , transformations_("transformations", "Transformations")
-    , modelTransform_("modelTransform_", "Model Transform", mat4(1.0f),
-                      util::filled<mat3>(std::numeric_limits<float>::lowest()),
-                      util::filled<mat3>(std::numeric_limits<float>::max()),
-                      util::filled<mat3>(0.001f), InvalidationLevel::Valid)
-    , worldTransform_("worldTransform_", "World Transform", mat4(1.0f),
-                      util::filled<mat3>(std::numeric_limits<float>::lowest()),
-                      util::filled<mat3>(std::numeric_limits<float>::max()),
-                      util::filled<mat3>(0.001f), InvalidationLevel::Valid)
-    , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
-             util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
-             InvalidationLevel::Valid)
-    , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
-              vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
-              PropertySemantics::Text) {
+    , layer_{"layer", "Input layer"_help}
+    , layerInfo_{"dataInformation", "Data Information"}
+    , minMax_{minMaxProps()}
+    , basis_{"basis",
+             "Basis",
+             mat3(1.0f),
+             util::filled<mat3>(std::numeric_limits<float>::lowest()),
+             util::filled<mat3>(std::numeric_limits<float>::max()),
+             util::filled<mat3>(0.001f),
+             InvalidationLevel::Valid}
+    , offset_{"offset",
+              "Offset",
+              vec3(0.0f),
+              vec3(std::numeric_limits<float>::lowest()),
+              vec3(std::numeric_limits<float>::max()),
+              vec3(0.001f),
+              InvalidationLevel::Valid,
+              PropertySemantics::Text}
+    , texelSize_{"texelSize",
+                 "Texel size",
+                 dvec2(0),
+                 dvec2(std::numeric_limits<float>::lowest()),
+                 dvec2(std::numeric_limits<float>::max()),
+                 dvec2(0.0001),
+                 InvalidationLevel::Valid,
+                 PropertySemantics::Text}
+    , modelMatrix_{"modelMatrix",
+                   "Model Matrix",
+                   mat4(1.0f),
+                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                   util::filled<mat4>(std::numeric_limits<float>::max()),
+                   util::filled<mat4>(0.001f),
+                   InvalidationLevel::Valid}
+    , worldMatrix_{"worldTransform_",
+                   "World Matrix",
+                   mat4(1.0f),
+                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                   util::filled<mat4>(std::numeric_limits<float>::max()),
+                   util::filled<mat4>(0.001f),
+                   InvalidationLevel::Valid}
+    , indexMatrix_{"indexMatrix",
+                   "Index Matrix",
+                   mat4(1.0f),
+                   util::filled<mat4>(std::numeric_limits<float>::lowest()),
+                   util::filled<mat4>(std::numeric_limits<float>::max()),
+                   util::filled<mat4>(0.001f),
+                   InvalidationLevel::Valid}
+    , spaceTransforms_{transformProps()}
+    , perTexelProperties_{"minmaxValues", "Aggregated per Texel", false}
+    , transformations_{"transformations", "Transformations"} {
 
     addPort(layer_);
 
-    transformations_.addProperties(modelTransform_, worldTransform_, basis_, offset_);
-    transformations_.setCollapsed(true);
-    transformations_.setReadOnly(true);
-
-    addProperties(layerInfo_, transformations_);
-
     layerInfo_.setReadOnly(true);
     layerInfo_.setSerializationMode(PropertySerializationMode::None);
+    addProperties(layerInfo_);
+
+    addProperty(perTexelProperties_);
+    perTexelProperties_.setCollapsed(true);
+    util::for_each_argument(
+        [&](auto& p) {
+            p.setReadOnly(true);
+            p.setSerializationMode(PropertySerializationMode::None);
+            perTexelProperties_.addProperty(p);
+        },
+        minMax_[0], minMax_[1], minMax_[2], minMax_[3]);
+
+    addProperty(transformations_);
+    transformations_.setCollapsed(true);
+    util::for_each_argument(
+        [&](auto& p) {
+            p.setReadOnly(true);
+            p.setSerializationMode(PropertySerializationMode::None);
+            transformations_.addProperty(p);
+        },
+        basis_, offset_, texelSize_, modelMatrix_, worldMatrix_, indexMatrix_);
+
+    for (auto& transform : spaceTransforms_) {
+        transform.setReadOnly(true);
+        transformations_.addProperty(transform);
+    }
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
 void LayerInformation::process() {
+    using enum util::OverwriteState;
+
     auto layer = layer_.getData();
+    layerInfo_.updateForNewLayer(*layer, Yes);
 
-    layerInfo_.updateForNewLayer(*layer, util::OverwriteState::Yes);
+    const auto dim = layer->getDimensions();
 
-    util::updateDefaultState(modelTransform_, layer->getModelMatrix(), util::OverwriteState::Yes);
-    util::updateDefaultState(worldTransform_, layer->getWorldMatrix(), util::OverwriteState::Yes);
-    util::updateDefaultState(basis_, layer->getBasis(), util::OverwriteState::Yes);
-    util::updateDefaultState(offset_, layer->getOffset(), util::OverwriteState::Yes);
+    const auto& trans = layer->getCoordinateTransformer();
+
+    util::updateDefaultState(modelMatrix_, layer->getModelMatrix(), Yes);
+    util::updateDefaultState(worldMatrix_, layer->getWorldMatrix(), Yes);
+    util::updateDefaultState(indexMatrix_, layer->getIndexMatrix(), Yes);
+    util::updateDefaultState(basis_, layer->getBasis(), Yes);
+    util::updateDefaultState(offset_, layer->getOffset(), Yes);
+
+    auto m = trans.getTextureToWorldMatrix();
+    vec4 dx = m * vec4(1.0f / dim.x, 0, 0, 0);
+    vec4 dy = m * vec4(0, 1.0f / dim.y, 0, 0);
+    vec2 ts = {glm::length(dx), glm::length(dy)};
+    texelSize_.set(ts);
+
+    for (auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
+        auto [from, to] = transforms[index];
+        transform.set(trans.getMatrix(from, to));
+    }
+
+    if (perTexelProperties_.isChecked()) {
+        auto layerRAM = layer->getRepresentation<LayerRAM>();
+        const auto channels = layer->getDataFormat()->getComponents();
+
+        auto&& [min, max] = util::layerMinMax(layerRAM);
+        for (size_t i = 0; i < 4; ++i) {
+            minMax_[i].setVisible(channels >= i + 1);
+            minMax_[i].set({min[i], max[i]});
+        }
+    }
 }
 
 }  // namespace inviwo
