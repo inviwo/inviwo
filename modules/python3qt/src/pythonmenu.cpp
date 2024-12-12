@@ -95,32 +95,36 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
     toolbar_->addAction(newPythonProcessor);
 
     QObject::connect(newPythonProcessor, &QAction::triggered, [modulePath]() {
-        InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
-        saveFileDialog.setFileMode(FileMode::AnyFile);
-        saveFileDialog.setAcceptMode(AcceptMode::Save);
-        saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
-        saveFileDialog.addExtension("py", "Python file");
-        const auto dir = filesystem::getPath(PathType::Settings) / "python_processors";
-        std::filesystem::create_directories(dir);
-        saveFileDialog.setCurrentDirectory(dir);
+        try {
+            InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
+            saveFileDialog.setFileMode(FileMode::AnyFile);
+            saveFileDialog.setAcceptMode(AcceptMode::Save);
+            saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
+            saveFileDialog.addExtension("py", "Python file");
+            const auto dir = filesystem::getPath(PathType::Settings) / "python_processors";
+            std::filesystem::create_directories(dir);
+            saveFileDialog.setCurrentDirectory(dir);
 
-        if (saveFileDialog.exec()) {
-            QString qpath = saveFileDialog.selectedFiles().at(0);
-            const auto path = utilqt::toPath(qpath);
+            if (saveFileDialog.exec()) {
+                QString qpath = saveFileDialog.selectedFiles().at(0);
+                const auto path = utilqt::toPath(qpath);
 
-            const auto templatePath = modulePath / "templates/templateprocessor.py";
+                const auto templatePath = modulePath / "templates/templateprocessor.py";
 
-            auto ifs = std::ifstream(templatePath);
-            std::stringstream ss;
-            ss << ifs.rdbuf();
-            const auto script = std::move(ss).str();
+                auto ifs = std::ifstream(templatePath);
+                std::stringstream ss;
+                ss << ifs.rdbuf();
+                const auto script = std::move(ss).str();
 
-            const auto name = path.stem().generic_string();
+                const auto name = path.stem().generic_string();
 
-            auto ofs = std::ofstream(path);
-            fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));
+                auto ofs = std::ofstream(path);
+                fmt::print(ofs, fmt::runtime(script), fmt::arg("name", name));
 
-            QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));
+                QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));
+            }
+        } catch (const std::exception& e) {
+            LogError(e.what());
         }
     });
 

@@ -44,7 +44,7 @@ using ::testing::ElementsAre;
 
 TEST(OptionProperty, ConstructInt) {
 
-    OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
+    const OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
 
     EXPECT_EQ(prop.size(), 5);
     EXPECT_EQ(prop.getSelectedValue(), 2);
@@ -78,7 +78,7 @@ TEST(OptionProperty, ConstructInt) {
 
 TEST(OptionProperty, ConstructString) {
 
-    OptionProperty<std::string> prop{"test", "test", {"a", "b", "c", "d", "e"}, 1};
+    const OptionProperty<std::string> prop{"test", "test", {"a", "b", "c", "d", "e"}, 1};
 
     EXPECT_EQ(prop.size(), 5);
     EXPECT_EQ(prop.getSelectedValue(), "b");

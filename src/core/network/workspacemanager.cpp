@@ -230,7 +230,7 @@ void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& r
 
     auto [deserializer, info] =
         createWorkspaceDeserializerAndInfo(stream, refPath, LogCentral::getPtr(), &mbr);
-    DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
     deserializers_.invoke(deserializer, exceptionHandler, mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
@@ -246,7 +246,7 @@ void WorkspaceManager::load(const std::pmr::string& xml, const std::filesystem::
 
     auto [deserializer, info] =
         createWorkspaceDeserializerAndInfo(xml, refPath, LogCentral::getPtr(), &mbr);
-    DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
     deserializers_.invoke(deserializer, exceptionHandler, mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
@@ -271,7 +271,7 @@ void WorkspaceManager::load(const std::filesystem::path& path,
     if (!file) {
         throw AbortException(IVW_CONTEXT, "Could not open workspace file: {}", path);
     }
-    util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
     const long length = [&]() {
         std::fseek(file, 0, SEEK_END);

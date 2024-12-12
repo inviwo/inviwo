@@ -469,7 +469,7 @@ IVW_CORE_API TiXmlElement* firstChild(TiXmlElement* parent, std::string_view key
 IVW_CORE_API TiXmlElement* nextChild(TiXmlElement* child, std::string_view key);
 
 template <typename F>
-void forEachChild(TiXmlElement* node, std::string_view key, F&& fun) {
+void forEachChild(TiXmlElement* node, std::string_view key, const F& fun) {
     for (TiXmlElement* child = firstChild(node, key); child; child = nextChild(child, key)) {
         fun(*child);
     }
@@ -969,7 +969,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
     detail::forEachChild(rootElement_, itemKey, [&](TiXmlElement& child) {
         // In the next deserialization call do not fetch the "child" since we are looping...
         // hence the "false" as the last arg.
-        NodeSwitch elementNodeSwitch(*this, child, false);
+        const NodeSwitch elementNodeSwitch(*this, child, false);
 
         const auto childKey =
             detail::getChildKey<K, detail::is_transparent<std::unordered_map<K, V, H, C, A>>>(

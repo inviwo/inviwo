@@ -32,7 +32,8 @@ enum class TiXmlStreamPrint { No, Yes };
 */
 class TICPP_API TiXmlPrinter final : public TiXmlVisitor {
 public:
-    TiXmlPrinter(std::pmr::string& aBuffer, TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
+    explicit TiXmlPrinter(std::pmr::string& aBuffer,
+                          TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
         : buffer{aBuffer}
         , depth{0}
         , simpleTextPrint{false}
@@ -84,7 +85,7 @@ private:
 
 class TICPP_API TiXmlFilePrinter final : public TiXmlVisitor {
 public:
-    TiXmlFilePrinter(FILE* _file, TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
+    explicit TiXmlFilePrinter(FILE* _file, TiXmlStreamPrint streamPrint = TiXmlStreamPrint::No)
         : file{_file}
         , depth{0}
         , simpleTextPrint{false}

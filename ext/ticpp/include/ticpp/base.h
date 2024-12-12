@@ -143,8 +143,8 @@ public:
     /** Expands entities in a string. Note this should not contain the tag's '<', '>', etc,
      * or they will be transformed into entities!
      */
-    static void EncodeString(const std::string_view str, std::pmr::string& out);
-    static void EncodeStringSlowPath(const std::string_view str, std::pmr::string& out);
+    static void EncodeString(std::string_view str, std::pmr::string& out);
+    static void EncodeStringSlowPath(std::string_view str, std::pmr::string& out);
 
     // Table that returns, for a given lead byte, the total number of bytes
     // in the UTF-8 sequence.
@@ -190,7 +190,7 @@ public:
         constexpr unsigned char BOM_1 = 0xbbU;
         constexpr unsigned char BOM_2 = 0xbfU;
 
-        const unsigned char* pU = (const unsigned char*)p;
+        const auto* pU = reinterpret_cast<const unsigned char*>(p);
 
         if (*(pU + 0) == BOM_0 && *(pU + 1) == BOM_1 && *(pU + 2) == BOM_2) {
             p += 3;
