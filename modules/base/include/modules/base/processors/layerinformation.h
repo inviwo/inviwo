@@ -35,7 +35,9 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
 
 namespace inviwo {
@@ -54,11 +56,20 @@ private:
 
     LayerInformationProperty layerInfo_;
 
-    CompositeProperty transformations_;
-    FloatMat4Property modelTransform_;
-    FloatMat4Property worldTransform_;
+    std::array<DoubleMinMaxProperty, 4> minMax_;
+
     FloatMat3Property basis_;
     FloatVec3Property offset_;
+    DoubleVec2Property texelSize_;
+
+    FloatMat4Property modelMatrix_;
+    FloatMat4Property worldMatrix_;
+    FloatMat4Property indexMatrix_;
+
+    std::array<FloatMat4Property, 12> spaceTransforms_;
+
+    BoolCompositeProperty perTexelProperties_;
+    CompositeProperty transformations_;
 };
 
 }  // namespace inviwo

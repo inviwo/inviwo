@@ -104,56 +104,96 @@ std::array<FloatMat4Property, 12> transformProps() {
                                  util::filled<mat4>(0.001f), InvalidationLevel::Valid);
     });
 }
+
+std::array<DoubleMinMaxProperty, 4> minMaxProps() {
+    return util::make_array<4>([](auto index) {
+        return DoubleMinMaxProperty{fmt::format("minMaxChannel{}", index),
+                                    fmt::format("Min/Max (Channel {})", index),
+                                    0.0,
+                                    255.0,
+                                    -DataFloat64::max(),
+                                    DataFloat64::max(),
+                                    0.001,
+                                    0.0,
+                                    InvalidationLevel::Valid,
+                                    PropertySemantics::Text};
+    });
+}
+
 }  // namespace
 
 VolumeInformation::VolumeInformation()
-    : Processor()
-    , volume_("volume", "Input volume"_help)
-    , volumeInfo_("dataInformation", "Data Information")
-    , significantVoxels_("significantVoxels", "Significant Voxels", 0, 0,
-                         std::numeric_limits<size_t>::max(), 1, InvalidationLevel::Valid,
-                         PropertySemantics::Text)
-    , significantVoxelsRatio_("significantVoxelsRatio", "Significant Voxels (ratio)", 0.0f, 0.0f,
-                              1.0f, 0.0001f, InvalidationLevel::Valid, PropertySemantics::Text)
-    , minMaxChannel1_("minMaxChannel1_", "Min/Max (Channel 1)", 0.0, 255.0, -DataFloat64::max(),
-                      DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics::Text)
-    , minMaxChannel2_("minMaxChannel2_", "Min/Max (Channel 2)", 0.0, 255.0, -DataFloat64::max(),
-                      DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics::Text)
-    , minMaxChannel3_("minMaxChannel3_", "Min/Max (Channel 3)", 0.0, 255.0, -DataFloat64::max(),
-                      DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics::Text)
-    , minMaxChannel4_("minMaxChannel4_", "Min/Max (Channel 4)", 0.0, 255.0, -DataFloat64::max(),
-                      DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
-                      PropertySemantics::Text)
-    , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
-             util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
-             InvalidationLevel::Valid)
-    , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
-              vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
-              PropertySemantics::Text)
-    , voxelSize_("voxelSize", "Voxel size", dvec3(0), dvec3(std::numeric_limits<float>::lowest()),
-                 dvec3(std::numeric_limits<float>::max()), dvec3(0.0001), InvalidationLevel::Valid,
-                 PropertySemantics::Text)
-    , modelMatrix_("modelMatrix", "Model Matrix", mat4(1.0f),
+    : Processor{}
+    , volume_{"volume", "Input volume"_help}
+    , volumeInfo_{"dataInformation", "Data Information"}
+    , significantVoxels_{"significantVoxels",
+                         "Significant Voxels",
+                         0,
+                         0,
+                         std::numeric_limits<size_t>::max(),
+                         1,
+                         InvalidationLevel::Valid,
+                         PropertySemantics::Text}
+    , significantVoxelsRatio_{"significantVoxelsRatio",
+                              "Significant Voxels (ratio)",
+                              0.0f,
+                              0.0f,
+                              1.0f,
+                              0.0001f,
+                              InvalidationLevel::Valid,
+                              PropertySemantics::Text}
+    , minMax_{minMaxProps()}
+    , basis_{"basis",
+             "Basis",
+             mat3(1.0f),
+             util::filled<mat3>(std::numeric_limits<float>::lowest()),
+             util::filled<mat3>(std::numeric_limits<float>::max()),
+             util::filled<mat3>(0.001f),
+             InvalidationLevel::Valid}
+    , offset_{"offset",
+              "Offset",
+              vec3(0.0f),
+              vec3(std::numeric_limits<float>::lowest()),
+              vec3(std::numeric_limits<float>::max()),
+              vec3(0.001f),
+              InvalidationLevel::Valid,
+              PropertySemantics::Text}
+    , voxelSize_{"voxelSize",
+                 "Voxel size",
+                 dvec3(0),
+                 dvec3(std::numeric_limits<float>::lowest()),
+                 dvec3(std::numeric_limits<float>::max()),
+                 dvec3(0.0001),
+                 InvalidationLevel::Valid,
+                 PropertySemantics::Text}
+    , modelMatrix_{"modelMatrix",
+                   "Model Matrix",
+                   mat4(1.0f),
                    util::filled<mat4>(std::numeric_limits<float>::lowest()),
                    util::filled<mat4>(std::numeric_limits<float>::max()),
-                   util::filled<mat4>(0.001f), InvalidationLevel::Valid)
-    , worldMatrix_("worldTransform_", "World Matrix", mat4(1.0f),
+                   util::filled<mat4>(0.001f),
+                   InvalidationLevel::Valid}
+    , worldMatrix_{"worldTransform",
+                   "World Matrix",
+                   mat4(1.0f),
                    util::filled<mat4>(std::numeric_limits<float>::lowest()),
                    util::filled<mat4>(std::numeric_limits<float>::max()),
-                   util::filled<mat4>(0.001f), InvalidationLevel::Valid)
-    , indexMatrix_("indexMatrix", "Index Matrix", mat4(1.0f),
+                   util::filled<mat4>(0.001f),
+                   InvalidationLevel::Valid}
+    , indexMatrix_{"indexMatrix",
+                   "Index Matrix",
+                   mat4(1.0f),
                    util::filled<mat4>(std::numeric_limits<float>::lowest()),
                    util::filled<mat4>(std::numeric_limits<float>::max()),
-                   util::filled<mat4>(0.001f), InvalidationLevel::Valid)
-    , spaceTransforms_(transformProps())
-    , perVoxelProperties_("minmaxValues", "Aggregated per Voxel", false)
-    , transformations_("transformations", "Transformations")
-    , metaDataProperty_(
+                   util::filled<mat4>(0.001f),
+                   InvalidationLevel::Valid}
+    , spaceTransforms_{transformProps()}
+    , perVoxelProperties_{"minmaxValues", "Aggregated per Voxel", false}
+    , transformations_{"transformations", "Transformations"}
+    , metaDataProperty_{
           "metaData", "Meta Data",
-          "Composite property listing all the metadata stored in the input Image"_help) {
+          "Composite property listing all the metadata stored in the input Image"_help} {
+
     addPort(volume_);
 
     volumeInfo_.setReadOnly(true);
@@ -165,16 +205,18 @@ VolumeInformation::VolumeInformation()
     util::for_each_argument(
         [&](auto& p) {
             p.setReadOnly(true);
+            p.setSerializationMode(PropertySerializationMode::None);
             perVoxelProperties_.addProperty(p);
         },
-        significantVoxels_, significantVoxelsRatio_, minMaxChannel1_, minMaxChannel2_,
-        minMaxChannel3_, minMaxChannel4_);
+        significantVoxels_, significantVoxelsRatio_, minMax_[0], minMax_[1], minMax_[2],
+        minMax_[3]);
 
     addProperty(transformations_);
     transformations_.setCollapsed(true);
     util::for_each_argument(
         [&](auto& p) {
             p.setReadOnly(true);
+            p.setSerializationMode(PropertySerializationMode::None);
             transformations_.addProperty(p);
         },
         basis_, offset_, voxelSize_, modelMatrix_, worldMatrix_, indexMatrix_);
@@ -190,23 +232,22 @@ VolumeInformation::VolumeInformation()
 }
 
 void VolumeInformation::process() {
+    using enum util::OverwriteState;
+
     auto volume = volume_.getData();
 
-    volumeInfo_.updateForNewVolume(*volume, util::OverwriteState::Yes);
-
-    auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+    volumeInfo_.updateForNewVolume(*volume, Yes);
 
     const auto dim = volume->getDimensions();
-    const auto c = volume->getDataFormat()->getComponents();
     const auto numVoxels = dim.x * dim.y * dim.z;
 
     const auto& trans = volume->getCoordinateTransformer();
 
-    modelMatrix_.set(volume->getModelMatrix());
-    worldMatrix_.set(volume->getWorldMatrix());
-    indexMatrix_.set(volume->getIndexMatrix());
-    basis_.set(volume->getBasis());
-    offset_.set(volume->getOffset());
+    util::updateDefaultState(modelMatrix_, volume->getModelMatrix(), Yes);
+    util::updateDefaultState(worldMatrix_, volume->getWorldMatrix(), Yes);
+    util::updateDefaultState(indexMatrix_, volume->getIndexMatrix(), Yes);
+    util::updateDefaultState(basis_, volume->getBasis(), Yes);
+    util::updateDefaultState(offset_, volume->getOffset(), Yes);
 
     auto m = trans.getTextureToWorldMatrix();
     vec4 dx = m * vec4(1.0f / dim.x, 0, 0, 0);
@@ -221,27 +262,19 @@ void VolumeInformation::process() {
     }
 
     if (perVoxelProperties_.isChecked()) {
+        auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+        const auto channels = volume->getDataFormat()->getComponents();
 
         auto sigVoxels = util::volumeSignificantVoxels(volumeRAM, IgnoreSpecialValues::Yes);
         significantVoxels_.set(sigVoxels);
         significantVoxelsRatio_.set(static_cast<double>(sigVoxels) /
                                     static_cast<double>(numVoxels));
 
-        auto minMax = util::volumeMinMax(volumeRAM);
-        dvec2 minMaxA(minMax.first.x, minMax.second.x);
-        dvec2 minMaxB(minMax.first.y, minMax.second.y);
-        dvec2 minMaxC(minMax.first.z, minMax.second.z);
-        dvec2 minMaxD(minMax.first.w, minMax.second.w);
-
-        minMaxChannel1_.setVisible(c >= 1);
-        minMaxChannel2_.setVisible(c >= 2);
-        minMaxChannel3_.setVisible(c >= 3);
-        minMaxChannel4_.setVisible(c >= 4);
-
-        minMaxChannel1_.set(minMaxA);
-        minMaxChannel2_.set(minMaxB);
-        minMaxChannel3_.set(minMaxC);
-        minMaxChannel4_.set(minMaxD);
+        auto&& [min, max] = util::volumeMinMax(volumeRAM);
+        for (size_t i = 0; i < 4; ++i) {
+            minMax_[i].setVisible(channels >= i + 1);
+            minMax_[i].set({min[i], max[i]});
+        }
     }
 
     metaDataProps_.updateProperty(metaDataProperty_, volume->getMetaDataMap());
