@@ -40,11 +40,11 @@
 
 namespace inviwo {
 
-ProcessorLinkGraphicsItem::ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent)
+ProcessorLinkGraphicsItem::ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent, double offset)
     : QGraphicsItem(parent)
     , processor_(parent)
-    , leftItem_(new LinkItem(this, QPointF(parent->rect().left() - 1.0, 0.0), -90.0f))
-    , rightItem_(new LinkItem(this, QPointF(parent->rect().right() + 1.0, 0.0), 90.0f)) {
+    , leftItem_(new LinkItem(this, QPointF(-offset, 0.0), -90.0f))
+    , rightItem_(new LinkItem(this, QPointF(offset, 0.0), 90.0f)) {
     setFlags(ItemSendsScenePositionChanges);
 }
 

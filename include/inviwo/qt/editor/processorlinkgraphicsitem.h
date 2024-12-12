@@ -44,7 +44,7 @@ class LinkConnectionGraphicsItem;
 
 class IVW_QTEDITOR_API ProcessorLinkGraphicsItem : public QGraphicsItem {
 public:
-    ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent);
+    ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent, double offset);
     virtual ~ProcessorLinkGraphicsItem() {}
 
     // override for qgraphicsitem_cast (refer qt documentation)
