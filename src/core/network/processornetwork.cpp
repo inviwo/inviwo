@@ -549,8 +549,9 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Connections
     try {
-        std::pmr::unordered_set<PortConnection> toRemove(
-            std::from_range, connections_, connections_.bucket_count(), d.getAllocator());
+        std::pmr::unordered_set<PortConnection> toRemove(connections_.begin(), connections_.end(),
+                                                         connections_.bucket_count(),
+                                                         d.getAllocator());
         std::pmr::vector<PortConnection> toAdd{d.getAllocator()};
         d.deserializeRange("Connections", "Connection", [&](Deserializer& nested, size_t index) {
             const auto pc = retrieveConnection(nested, *this);
@@ -585,7 +586,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Links
     try {
-        std::pmr::unordered_set<PropertyLink> toRemove(std::from_range, links_,
+        std::pmr::unordered_set<PropertyLink> toRemove(links_.begin(), links_.end(),
                                                        links_.bucket_count(), d.getAllocator());
         std::pmr::vector<PropertyLink> toAdd{d.getAllocator()};
         d.deserializeRange("PropertyLinks", "PropertyLink",
