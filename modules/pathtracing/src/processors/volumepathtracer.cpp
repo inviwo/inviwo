@@ -70,7 +70,6 @@ VolumePathTracer::VolumePathTracer()
     , volumePort_("Volume")
     , entryPort_("entry")
     , exitPort_("exit")
-    , minMaxOpacity_("VolumeMinMaxOpacity")
     , outport_("outport", DataVec4Float32::get())
     , shader_({{ShaderType::Compute, "bidirectionalvolumepathtracer.comp"}}, Shader::Build::No)
     , shaderUniform_({{ShaderType::Compute, "bidirectionalvolumepathtraceruniform.comp"}},
@@ -102,21 +101,20 @@ VolumePathTracer::VolumePathTracer()
           })
     , iterateRender_("iterate", "Iterate render")
     , enableProgressiveRefinement_("enableRefinement", "Enable progressive refinement", false)
-    , invalidateRender_("invalidate", "Invalidate render", [this]() { invalidateProgressiveRendering(); }) 
+    , invalidateRender_("invalidate", "Invalidate render", [this]() { invalidateProgressiveRendering(); })
+    , accelerate_("accelerate", "Accelerate", true, InvalidationLevel::InvalidResources)
     , volumeRegionSize_("region", "Region size", 8, 1, 100)
+    , minMaxAvgShader_({{ShaderType::Compute, "volume/regionminmaxavg.comp"}})
     , progressiveTimer_(Timer::Milliseconds(0), std::bind(&VolumePathTracer::onTimerEvent, this)) {
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
-    addPort(minMaxOpacity_, "OpacityPortGroup");
-    minMaxOpacity_.setOptional(true);
 
     volumePort_.onChange([this]() { invalidateProgressiveRendering(); });
     entryPort_.onChange([this]() { invalidateProgressiveRendering(); });
     exitPort_.onChange([this]() { invalidateProgressiveRendering(); });
-    minMaxOpacity_.onChange([this]() { invalidateProgressiveRendering(); });
 
     channel_.setSerializationMode(PropertySerializationMode::All);
 
@@ -144,19 +142,8 @@ VolumePathTracer::VolumePathTracer()
         }
     });
 
-    // NOTE: This will be set to false, 0, in ctor regardless.
-    partitionedTransmittance_ = minMaxOpacity_.isConnected();
-    minMaxOpacity_.onConnect([this]() {
-        partitionedTransmittance_ = true;
-        invalidateProgressiveRendering();
-        invalidate(InvalidationLevel::InvalidResources);
-    });
+    accelerate_.addProperty(volumeRegionSize_);
 
-    minMaxOpacity_.onDisconnect([this]() {
-        partitionedTransmittance_ = false;
-        invalidateProgressiveRendering();
-        invalidate(InvalidationLevel::InvalidResources);
-    });
 
     raycasting_.gradientComputation_.onChange([this]() {
         if (channel_.size() == 4) {
@@ -182,6 +169,10 @@ VolumePathTracer::VolumePathTracer()
         invalidate(InvalidationLevel::InvalidResources);
         invalidateProgressiveRendering();
     });
+    minMaxAvgShader_.onReload([this]() {
+        invalidate(InvalidationLevel::InvalidResources);
+        invalidateProgressiveRendering();
+    });
 
     transmittanceMethod_.onChange([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
@@ -192,7 +183,7 @@ VolumePathTracer::VolumePathTracer()
     timeStart_ = std::chrono::high_resolution_clock::now();
 
     addProperties(channel_, raycasting_, transferFunction_, camera_, positionIndicator_, light_,
-                  volumeRegionSize_, transmittanceMethod_, iterateRender_,
+                  accelerate_, transmittanceMethod_, iterateRender_,
                   enableProgressiveRefinement_, invalidateRender_);
 
     transferFunction_.onChange([this]() { invalidateProgressiveRendering(); });
@@ -206,7 +197,7 @@ VolumePathTracer::VolumePathTracer()
 void VolumePathTracer::initializeResources() {
     invalidateProgressiveRendering();
 
-    if (partitionedTransmittance_) {
+    if (accelerate_) {
         activeShader_ = &shaderUniform_;
     } else {
         activeShader_ = &shader_;
@@ -219,6 +210,11 @@ void VolumePathTracer::initializeResources() {
 }
 
 void VolumePathTracer::process() {
+    auto inputVolume = volumePort_.getData();
+    if (transferFunction_.isModified() && accelerate_) {
+        
+        volumeRegionMinMaxAvg(inputVolume, volumeRegionSize_.get());
+    }
     // Partial seeding for random values
     timeNow_ = std::chrono::high_resolution_clock::now();
     using FpMilliseconds = std::chrono::duration<float, std::chrono::milliseconds::period>;
@@ -272,11 +268,16 @@ void VolumePathTracer::process() {
     }
 
     utilgl::bindAndSetUniforms(*activeShader_, units, entryPort_, ImageType::ColorDepthPicking);
+
     utilgl::bindAndSetUniforms(*activeShader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(*activeShader_, units, *volumePort_.getData(), "volume");
-    if (partitionedTransmittance_) {
-        utilgl::bindAndSetUniforms(*activeShader_, units, *minMaxOpacity_.getData(),
+    if (accelerate_) {
+        utilgl::bindAndSetUniforms(*activeShader_, units, *optimizedEntryPort_.getData(), "entry",
+                                   ImageType::ColorOnly);
+        utilgl::bindAndSetUniforms(*activeShader_, units, *regionMinMaxVolume_,
                                    "minMaxOpacity");
+        utilgl::bindAndSetUniforms(*activeShader_, units, *regionAvgOpacityVolume_,
+                                   "avgOpacity");
     }
 
     utilgl::bindAndSetUniforms(*activeShader_, units, transferFunction_);
@@ -297,6 +298,77 @@ void VolumePathTracer::process() {
     ++iteration_;
 }
 
+
+void VolumePathTracer::volumeRegionMinMaxAvg(std::shared_ptr<const inviwo::Volume>& inputVolume,
+                                              const int regionSize) {
+    const auto dim = inputVolume->getDimensions();
+    const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(regionSize))};
+    if (!regionMinMaxVolume_ || glm::any(glm::notEqual(outDim, regionMinMaxVolume_->getDimensions()))) {
+        regionMinMaxVolume_ =
+            std::make_shared<Volume>(outDim, DataVec4Float32::get(), swizzlemasks::redGreen,
+                                           InterpolationType::Nearest, inputVolume->getWrapping());
+        // Opacity is defined between [0 1]
+        regionMinMaxVolume_->dataMap.dataRange = dvec2(0, 1);
+        regionMinMaxVolume_->dataMap.valueRange = dvec2(0, 1);
+
+        regionMinMaxVolume_->setModelMatrix(inputVolume->getModelMatrix());
+        regionMinMaxVolume_->setWorldMatrix(inputVolume->getWorldMatrix());
+
+        regionAvgOpacityVolume_ =
+            std::make_shared<Volume>(outDim, DataFloat32::get(), swizzlemasks::luminance,
+                                     InterpolationType::Linear, inputVolume->getWrapping());
+        // Opacity is defined between [0 1]
+        regionAvgOpacityVolume_->dataMap.dataRange = dvec2(0, 1);
+        regionAvgOpacityVolume_->dataMap.valueRange = dvec2(0, 1);
+
+        regionAvgOpacityVolume_->setModelMatrix(inputVolume->getModelMatrix());
+        regionAvgOpacityVolume_->setWorldMatrix(inputVolume->getWorldMatrix());
+    }
+
+    // Compute Shader set up
+    minMaxAvgShader_.activate();
+
+    TextureUnitContainer units;
+
+    minMaxAvgShader_.setUniform("regionSize", inviwo::ivec3(regionSize));
+
+    utilgl::bindAndSetUniforms(minMaxAvgShader_, units, *inputVolume, "volumeData");
+    // I need to write to it, and i dont think bindandset lets me do that
+
+    /*utilgl::bindAndSetUniforms(shader_, units, *stats, "opacityData"); // with write capabilites*/
+    {
+        TextureUnit unit;
+        auto statsGL = regionMinMaxVolume_->getEditableRepresentation<VolumeGL>();
+        statsGL->bindImageTexture(unit.getEnum(), unit.getUnitNumber(), GL_WRITE_ONLY);
+
+        minMaxAvgShader_.setUniform("regionMinMaxOpacity", unit);
+
+        units.push_back(std::move(unit));
+        StrBuffer buff;
+
+        TextureUnit avgOpacityUnit;
+        auto avgOpacityGL = regionAvgOpacityVolume_->getEditableRepresentation<VolumeGL>();
+        avgOpacityGL->bindImageTexture(avgOpacityUnit.getEnum(), avgOpacityUnit.getUnitNumber(),
+                                       GL_WRITE_ONLY);
+
+        minMaxAvgShader_.setUniform("regionAvgOpacity", avgOpacityUnit);
+
+        units.push_back(std::move(avgOpacityUnit));
+
+    }
+
+    utilgl::bindAndSetUniforms(minMaxAvgShader_, units, transferFunction_);
+    minMaxAvgShader_.setUniform("tfSize", static_cast<int>(transferFunction_.getLookUpTableSize()));
+
+    // dispatch size? The workload can be anything from 1 to 150^3
+    // 150/regionsize in all dimensions? We can start with a 'naive' (stupid) implementation and let
+    // the dispatch be for stats.dim. Each compute shader will do the inner 3loops work.
+
+    glDispatchCompute(outDim.x, outDim.y, outDim.z);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    minMaxAvgShader_.deactivate();
+}
 void VolumePathTracer::updateLightSources() {}
 
 // Progressive refinement

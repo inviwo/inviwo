@@ -16,11 +16,11 @@ vec3 transformPoint(mat4 m, vec3 x) {
 void setupUniformGridTraversal(vec3 x1, vec3 x2, vec3 cellDim, ivec3 maxCells, out ivec3 cellCoord,
                                out ivec3 cellCoordEnd, out ivec3 di, out vec3 dt,
                                out vec3 deltatx) {
-    vec3 cellCoordf = clamp(vec3(floor(x1 / cellDim)), vec3(0.f), vec3(maxCells - ivec3(1)));
+    vec3 cellCoordf = vec3(floor(x1 / cellDim));
 
     cellCoord = ivec3(cellCoordf);
 
-    cellCoordEnd = clamp(ivec3(x2 / cellDim), ivec3(0), maxCells - ivec3(1));
+    cellCoordEnd = ivec3(floor(x2 / cellDim));
 
     bvec3 x1LessThanx2 = lessThan(x1, x2);
     bvec3 x1GreaterThanx2 = greaterThan(x1, x2);

@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/timer.h>
 
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/raycastingproperty.h>         // for RaycastingProperty
 #include <inviwo/core/properties/cameraproperty.h>             // for CameraProperty
 #include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyInt
@@ -93,12 +94,13 @@ protected:
     void onTimerEvent();
 
 private:
+    void volumeRegionMinMaxAvg(std::shared_ptr<const inviwo::Volume>& inputVolume,
+                       const int regionSize);
     // Ports
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
 
-    VolumeInport minMaxOpacity_;
 
     ImageOutport outport_;
 
@@ -118,13 +120,16 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> timeNow_;
 
     // Progressive Refinement
-    OptionProperty<TransmittanceMethod> transmittanceMethod_; 
-
+    OptionProperty<TransmittanceMethod> transmittanceMethod_;
     ButtonProperty iterateRender_;
     BoolProperty enableProgressiveRefinement_;
     ButtonProperty invalidateRender_;
 
+    BoolCompositeProperty accelerate_;
     IntProperty volumeRegionSize_;
+    Shader minMaxAvgShader_;
+    std::shared_ptr<Volume> regionMinMaxVolume_;
+    std::shared_ptr<Volume> regionAvgOpacityVolume_;
 
     // Internals
     Timer progressiveTimer_;
