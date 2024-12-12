@@ -33,32 +33,11 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/basegl/algorithm/dataminmaxgl.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeGradientMagnitude, Volume Gradient Magnitude}
- * ![](org.inviwo.VolumeGradientMagnitude.png?classIdentifier=org.inviwo.VolumeGradientMagnitude)
- * Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
- *
- * This processor internally computes the gradients of the given 3D scalar field and only
- * writes the magnitudes of the gradients to the outport. It yields the same results as
- * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
- * intermediate gradient volume is never generated and, thus, this processor is more memory
- * efficient.
- *
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Output volume
- *
- * ### Properties
- *   * __Render Channel__ Selects the channel used for the gradient computation
- */
-
 /**
- * \class VolumeGradientMagnitude
- *
  * \brief Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
  *
  * This processor internally computes the gradients of the given 3D scalar field and only
@@ -82,7 +61,9 @@ private:
     virtual void afterInportChanged() override;
 
     OptionPropertyInt channel_;
-    FloatProperty gradientScaling_;
+    FloatProperty scaling_;
+
+    utilgl::DataMinMaxGL dataMinMaxGL_;
 };
 
 }  // namespace inviwo
