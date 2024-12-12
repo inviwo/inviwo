@@ -57,19 +57,30 @@ const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
     "Volume Operation",                    // Category
     CodeState::Stable,                     // Code state
     Tags::GL,                              // Tags
+    R"(Computes the gradient magnitude of a 3D scalar field and outputs it as float32 volume.
+
+       This processor internally computes the gradients of the given 3D scalar field and only
+       writes the magnitudes of the gradients to the outport. It yields the same results as
+       when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
+       intermediate gradient volume is never generated and, thus, this processor is more memory
+       efficient.
+    )"_unindentHelp,
 };
 const ProcessorInfo& VolumeGradientMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
     : VolumeGLProcessor{"volumegradientmagnitude.frag"}
-    , channel_{"channel", "Channel", util::enumeratedOptions("Channel", 4), 0}
-    , gradientScaling_{"gradientScaling", "Gradient Scaling", util::ordinalScale(1.0f)} {
-    this->dataFormat_ = DataFloat32::get();
+    , channel_{"channel", "Channel",
+               OptionPropertyState<int>{
+                   .options = util::enumeratedOptions("Channel", 4),
+                   .selectedIndex = 0,
+                   .help = "Selects the channel used for the gradient computation"_help}}
+    , scaling_{"gradientScaling", "Scaling",
+               util::ordinalScale(1.0f).set("Scaling factor for the gradient magnitude"_help)} {
 
-    channel_.addOption("Channel 1", "Channel 1", 0);
-    channel_.setCurrentStateAsDefault();
+    dataFormat_ = DataFloat32::get();
 
-    addProperties(channel_, gradientScaling_);
+    addProperties(channel_, scaling_);
 }
 
 VolumeGradientMagnitude::~VolumeGradientMagnitude() {}
@@ -81,16 +92,18 @@ void VolumeGradientMagnitude::preProcess(TextureUnitContainer&) {
                         channel_.getSelectedValue(), volume->getDataFormat()->getComponents());
     }
 
-    shader_.setUniform("channel", static_cast<int>(channel_.getSelectedIndex()));
-    shader_.setUniform("gradientScaling", gradientScaling_);
+    shader_.setUniform("channel", channel_.getSelectedValue());
+    shader_.setUniform("scaling", scaling_);
 }
 
 void VolumeGradientMagnitude::postProcess() {
-    volume_->dataMap.valueAxis.name = "gradient magnitude";
+    volume_->dataMap.valueAxis.name = "Gradient magnitude";
     volume_->dataMap.valueAxis.unit =
         inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit;
-    volume_->dataMap.dataRange = dvec2{0.0, 1.0};
-    volume_->dataMap.valueRange = dvec2{0.0, 1.0};
+
+    const auto [min, max] = dataMinMaxGL_.minMax(*volume_);
+    volume_->dataMap.dataRange = dvec2{min.x, max.x};
+    volume_->dataMap.valueRange = dvec2{min.x, max.x};
 }
 
 void VolumeGradientMagnitude::afterInportChanged() {
