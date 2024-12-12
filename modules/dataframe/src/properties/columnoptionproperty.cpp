@@ -135,7 +135,7 @@ bool ColumnOptionProperty::isNoneSelected() const { return size() && (getSelecte
 
 void ColumnOptionProperty::set(const Property* srcProperty) {
     if (auto src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
-        if ((src->opts().size() == 0) || (opts().size() == 0)) {
+        if ((src->opts().empty()) || (opts().empty())) {
             return;
         }
 

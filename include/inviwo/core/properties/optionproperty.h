@@ -316,7 +316,7 @@ public:
                                            const std::vector<T>& values);
     virtual OptionProperty& replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
-    OptionProperty& replaceOptions(const std::vector<T>& options)
+    OptionProperty& replaceOptions(const std::vector<T>& values)
         requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value);
 
     template <typename Func>

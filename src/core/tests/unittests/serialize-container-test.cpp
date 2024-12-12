@@ -76,7 +76,7 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
         }
 
         std::string id_;
-        int value_;
+        int value_{};
     };
 
     std::stringstream ss;

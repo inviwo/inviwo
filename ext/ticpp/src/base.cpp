@@ -324,7 +324,7 @@ const char* ReadQuote(const char* p, std::pmr::string* dest) {
         }
     }
 
-    if (*p == endTag) {
+    if (p && *p == endTag) {
         return ++p;
     } else {
         return p;

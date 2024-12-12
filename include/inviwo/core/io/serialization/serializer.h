@@ -200,7 +200,7 @@ protected:
     friend class NodeSwitch;
     TiXmlElement* getLastChild() const;
 
-    std::pmr::string& addAttribute(TiXmlElement* node, std::string_view key);
+    static std::pmr::string& addAttribute(TiXmlElement* node, std::string_view key);
 
     WorkspaceSaveMode workspaceSaveMode_ = WorkspaceSaveMode::Disk;
 };

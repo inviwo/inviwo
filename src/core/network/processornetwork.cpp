@@ -553,18 +553,18 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                                                          connections_.bucket_count(),
                                                          d.getAllocator());
         std::pmr::vector<PortConnection> toAdd{d.getAllocator()};
-        d.deserializeRange("Connections", "Connection", [&](Deserializer& nested, size_t index) {
+        d.deserializeRange("Connections", "Connection", [&](Deserializer& nested, size_t) {
             const auto pc = retrieveConnection(nested, *this);
             toRemove.erase(pc);
             if (!isConnected(pc)) toAdd.push_back(pc);
         });
 
         // remove connections, do this before adding connections
-        for (auto& c : toRemove) {
+        for (const auto& c : toRemove) {
             removeConnection(c);
         }
         // add connections
-        for (auto& c : toAdd) {
+        for (const auto& c : toAdd) {
             try {
                 addConnection(c);
             } catch (...) {
@@ -589,19 +589,18 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
         std::pmr::unordered_set<PropertyLink> toRemove(links_.begin(), links_.end(),
                                                        links_.bucket_count(), d.getAllocator());
         std::pmr::vector<PropertyLink> toAdd{d.getAllocator()};
-        d.deserializeRange("PropertyLinks", "PropertyLink",
-                           [&](Deserializer& nested, size_t index) {
-                               const auto pl = retrieveLink(nested, *this);
-                               toRemove.erase(pl);
-                               if (!isLinked(pl)) toAdd.push_back(pl);
-                           });
+        d.deserializeRange("PropertyLinks", "PropertyLink", [&](Deserializer& nested, size_t) {
+            const auto pl = retrieveLink(nested, *this);
+            toRemove.erase(pl);
+            if (!isLinked(pl)) toAdd.push_back(pl);
+        });
 
         // remove links, do this before adding links
-        for (auto& l : toRemove) {
+        for (const auto& l : toRemove) {
             removeLink(l);
         }
         // add links
-        for (auto& l : toAdd) {
+        for (const auto& l : toAdd) {
             try {
                 addLink(l);
             } catch (...) {

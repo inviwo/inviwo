@@ -315,7 +315,7 @@ IVW_CORE_API const std::filesystem::path& getPath(PathType pathType);
  * @return basePath +  pathType + suffix
  */
 IVW_CORE_API std::filesystem::path getPath(PathType pathType, std::string_view suffix,
-                                           const bool createFolder = false);
+                                           bool createFolder = false);
 
 [[deprecated("use std::filesystem::create_directories")]] IVW_CORE_API void
 createDirectoryRecursively(const std::filesystem::path& path);

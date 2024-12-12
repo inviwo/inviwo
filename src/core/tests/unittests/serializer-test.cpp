@@ -55,7 +55,7 @@ T serializationOfType(T inValue) {
     serializer.serialize("serializedValue", inValue);
     serializer.write(xml);
     Deserializer deserializer(xml, refpath);
-    T outValue;
+    T outValue{};
     deserializer.deserialize("serializedValue", outValue);
     return outValue;
 }
@@ -135,7 +135,7 @@ NUMERIC_TESTS(unsignedLongLongSerializationTest, unsigned long long, 99996789)
 
 class MinimumSerializableClass : public Serializable {
 public:
-    MinimumSerializableClass(float v = 0) : value_(v) {}
+    explicit MinimumSerializableClass(float v = 0) : value_(v) {}
 
     virtual void serialize(Serializer& s) const { s.serialize("classVariable", value_); }
 
@@ -143,13 +143,12 @@ public:
 
     bool operator==(const MinimumSerializableClass& v) const { return value_ == v.value_; }
 
-public:
     float value_;
 };
 
 TEST(SerializationTest, IvwSerializableClassTest) {
     MinimumSerializableClass inValue(12), outValue;
-    auto refpath = filesystem::findBasePath();
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
@@ -164,7 +163,7 @@ TEST(SerializationTest, IvwSerializableClassTest) {
 TEST(SerializationTest, IvwSerializableClassAsPointerTest) {
     auto inValue = std::make_unique<MinimumSerializableClass>(12);
     std::unique_ptr<MinimumSerializableClass> outValue;
-    auto refpath = filesystem::findBasePath();
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
@@ -181,7 +180,7 @@ TEST(SerializationTest, floatVectorTest) {
     inVector.push_back(0.1f);
     inVector.push_back(0.2f);
     inVector.push_back(0.3f);
-    auto refpath = filesystem::findBasePath();
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
@@ -194,11 +193,12 @@ TEST(SerializationTest, floatVectorTest) {
 }
 
 TEST(SerializationTest, vectorOfNonPointersTest) {
-    std::vector<MinimumSerializableClass> inVector, outVector;
+    std::vector<MinimumSerializableClass> inVector;
+    std::vector<MinimumSerializableClass> outVector;
     inVector.push_back(MinimumSerializableClass(0.1f));
     inVector.push_back(MinimumSerializableClass(0.2f));
     inVector.push_back(MinimumSerializableClass(0.3f));
-    auto refpath = filesystem::findBasePath();
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
@@ -215,7 +215,7 @@ TEST(SerializationTest, vectorOfPointersTest) {
     inVector.push_back(std::make_unique<MinimumSerializableClass>(0.1f));
     inVector.push_back(std::make_unique<MinimumSerializableClass>(0.2f));
     inVector.push_back(std::make_unique<MinimumSerializableClass>(0.3f));
-    auto refpath = filesystem::findBasePath();
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
