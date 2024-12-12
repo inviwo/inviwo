@@ -70,6 +70,11 @@ LayerCombiner::LayerCombiner()
                OptionPropertyInt{"dest4", "Channel 4 Out",
                                  "Selected channel of the fourth input"_help,
                                  util::enumeratedOptions("Channel", 4)}}
+    , normalizeChannels_{"normalizeChannels", "Normalize Channels",
+                         "If true, the individual channels of the output volume will be normalized "
+                         "using the data ranges of their corresponding input volumes. Otherwise, "
+                         "the Data Range of the first input volume is used."_help,
+                         false}
     , dataRange_{"dataRange", "Data Range", source_[0], true} {
 
     addPorts(source_[0], source_[1], source_[2], source_[3], outport_);
@@ -77,17 +82,21 @@ LayerCombiner::LayerCombiner()
         port.setOptional(true);
     }
 
-    for (auto& prop : channel_) {
-        addProperty(prop);
-    }
-    addProperty(dataRange_);
+    addProperties(channel_[0], channel_[1], channel_[2], channel_[3], normalizeChannels_,
+                  dataRange_);
 }
 
 void LayerCombiner::process() {
-    auto layer = util::combineChannels<Layer, LayerRAM>(
-        source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
-    layer->dataMap.dataRange = dataRange_.getDataRange();
-    layer->dataMap.valueRange = dataRange_.getValueRange();
+    std::shared_ptr<Layer> layer;
+    if (normalizeChannels_) {
+        layer = util::combineChannels<Layer, LayerRAM, util::detail::ChannelNormalization::Yes>(
+            source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
+    } else {
+        layer = util::combineChannels<Layer, LayerRAM>(
+            source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
+        layer->dataMap.dataRange = dataRange_.getDataRange();
+        layer->dataMap.valueRange = dataRange_.getValueRange();
+    }
 
     outport_.setData(layer);
 }
