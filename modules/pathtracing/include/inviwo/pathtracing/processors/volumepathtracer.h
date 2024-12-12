@@ -96,13 +96,14 @@ protected:
 private:
     void volumeRegionMinMaxAvg(std::shared_ptr<const inviwo::Volume>& inputVolume,
                        const int regionSize);
+    void optimizeEntryPoints();
     // Ports
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
 
-
     ImageOutport outport_;
+    ImageOutport optimizedEntryPort_;
 
     // Properties
     Shader shader_;
@@ -131,11 +132,11 @@ private:
     std::shared_ptr<Volume> regionMinMaxVolume_;
     std::shared_ptr<Volume> regionAvgOpacityVolume_;
 
+    Shader optimizeFirstHitShader_;
     // Internals
     Timer progressiveTimer_;
     int iteration_ = 0;
 
-    bool partitionedTransmittance_;
     Shader* activeShader_;
 };
 
