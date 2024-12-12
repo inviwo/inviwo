@@ -103,6 +103,9 @@ const ProcessorInfo VolumeCombiner::processorInfo_{
     "Volume Operation",           // Category
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
+    R"(Combines/fuses volumes into a single volume. Resolution and data type of the
+       result match the first input volume. The input volumes can be scaled individually.
+    )"_unindentHelp,
 };
 const ProcessorInfo& VolumeCombiner::getProcessorInfo() const { return processorInfo_; }
 
@@ -151,35 +154,27 @@ VolumeCombiner::VolumeCombiner()
 
     isReady_.setUpdate([this]() { return allInportsAreReady() && (valid_ || dirty_); });
 
-    addPort(inport_);
-    addPort(outport_);
-    addProperty(description_);
-    addProperty(eqn_);
-    addProperty(normalizationMode_);
-    addProperty(addScale_);
-    addProperty(removeScale_);
-    addProperty(scales_);
-    addProperty(useWorldSpace_);
+    addPorts(inport_, outport_);
+    addProperties(description_, eqn_, normalizationMode_, addScale_, removeScale_, scales_,
+                  useWorldSpace_, dataRange_);
 
     useWorldSpace_.addProperty(borderValue_);
-
-    addProperty(dataRange_);
     dataRange_.addProperties(rangeMode_, outputDataRange_, outputValueRange_, customRange_,
                              customDataRange_, customValueRange_);
 
     outputDataRange_.setReadOnly(true);
     outputValueRange_.setReadOnly(true);
 
-    customRange_.onChange([&]() {
+    customRange_.onChange([this]() {
         customDataRange_.setReadOnly(!customRange_.get());
         customValueRange_.setReadOnly(!customRange_.get());
     });
     customDataRange_.setReadOnly(!customRange_.get());
     customValueRange_.setReadOnly(!customRange_.get());
 
-    normalizationMode_.onChange([&]() { dirty_ = true; });
+    normalizationMode_.onChange([this]() { dirty_ = true; });
 
-    addScale_.onChange([&]() {
+    addScale_.onChange([this]() {
         size_t i = scales_.size();
         auto p = std::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1), 1.0f,
                                                  -2.f, 2.f, 0.01f);
@@ -187,8 +182,8 @@ VolumeCombiner::VolumeCombiner()
         scales_.addProperty(p.release());
     });
 
-    removeScale_.onChange([&]() {
-        if (scales_.size() > 0) {
+    removeScale_.onChange([this]() {
+        if (!scales_.empty()) {
             dirty_ = true;
             delete scales_.removeProperty(scales_.getProperties().back());
             isReady_.update();
