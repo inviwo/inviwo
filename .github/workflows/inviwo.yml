@@ -196,6 +196,8 @@ jobs:
   regression:
     name: "Regression"
     runs-on: [regression, macOS]
+    permissions:
+      pull-requests: write
     timeout-minutes: 320
     steps:
 
