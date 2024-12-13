@@ -627,7 +627,8 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
 
 bool canSplitConnection(Processor& p, const PortConnection& connection) {
     const bool inputMatch = util::any_of(p.getInports(), [&connection](Inport* inport) {
-        return inport->canConnectTo(connection.getOutport());
+        return inport->getNumberOfConnections() < inport->getMaxNumberOfConnections() &&
+               inport->canConnectTo(connection.getOutport());
     });
     const bool outputMatch = util::any_of(p.getOutports(), [&connection](Outport* outport) {
         return connection.getInport()->canConnectTo(outport);

@@ -1,4 +1,3 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -394,10 +393,13 @@ auto NetworkAutomation::drop(QPointF, Qt::KeyboardModifiers modifiers, Processor
     const util::OnScopeExit resetter{[&]() { leave(); }};
 
     auto result = Result::None;
-    if (connectionTarget_) {
+    if (connectionTarget_ &&
+        util::canSplitConnection(processor, connectionTarget_->getPortConnection())) {
         if (util::addProcessorOnConnection(*editor_.getNetwork(), processor,
                                            connectionTarget_->getPortConnection())) {
+            connectionTarget_ = nullptr;
             result = Result::Split;
+
         } else {
             LogError("Unable to add processor on connection");
         }
