@@ -1,0 +1,90 @@
+name: "Build Inviwo"
+
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Enable vcpkg to write to the dependency graph
+
+jobs:
+  regression:
+    name: "Regression"
+    runs-on: [linux]
+    timeout-minutes: 320
+    steps:
+
+
+    - name: "Step 1"
+      id: s1
+      continue-on-error: true
+      shell: bash
+      run: |
+        exit 0
+
+    - name: "Step 2"
+      id: s2
+      continue-on-error: true
+      shell: bash
+      run: |
+        exit 1
+    
+    - name: "Step 3"
+      id: s3
+      continue-on-error: true
+      shell: bash
+      run: |
+        exit 0
+
+
+    - name: Push labels
+      if: "${{ (success() || failure()) && github.ref != 'refs/heads/master' }}"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+
+        S1: ${{ steps.s1.outcome }}
+        S2: ${{ steps.s2.outcome }}
+        S3: ${{ steps.s3.outcome }}
+
+      run: |
+        if [[ $S1 == "failure" ]]
+        then
+          gh pull_request edit "$NUMBER" --add-label "S1ERROR"
+        fi
+        if [[ $S1 == "failure" ]]
+        then
+          gh pull_request edit "$NUMBER" --remove-label "S1ERROR"
+        fi
+
+        if [[ $S2 == "failure" ]]
+        then
+          gh pull_request edit "$NUMBER" --add-label "S2ERROR"
+        fi
+        if [[ $S2 == "failure" ]]
+        then
+          gh pull_request edit "$NUMBER" --remove-label "S2ERROR"
+        fi
+
+        if [[ $S3 == "failure" ]]
+        then
+          gh pull_request edit "$NUMBER" --add-label "S3ERROR"
+        fi
+        if [[ $S3 == "failure" ]]
+        then
+          gh pull_request edit "$NUMBER" --remove-label "S3ERROR"
+        fi
+
+        if [[ $S1 == "success" ]] && [[ $S2 == "success" ]] && [[ $S2 == "success" ]]
+        then
+          exit 0
+        else
+          exit 1
+        fi
+
+  
