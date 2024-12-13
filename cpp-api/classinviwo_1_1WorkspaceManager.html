@@ -156,10 +156,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac5e78843cabc51f309835afc39277fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e22abd4a2ca816d727511981bf6f73e" id="r_a6e22abd4a2ca816d727511981bf6f73e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e22abd4a2ca816d727511981bf6f73e">save</a> (std::ostream &amp;stream, const std::filesystem::path &amp;refPath, const ExceptionHandler &amp;exceptionHandler=<a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>(), WorkspaceSaveMode mode=WorkspaceSaveMode::Disk)</td></tr>
 <tr class="separator:a6e22abd4a2ca816d727511981bf6f73e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58953f3392ecef95419735c7ea47438c" id="r_a58953f3392ecef95419735c7ea47438c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a58953f3392ecef95419735c7ea47438c">save</a> (std::pmr::string &amp;xml, const std::filesystem::path &amp;refPath, const ExceptionHandler &amp;exceptionHandler=<a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>(), WorkspaceSaveMode mode=WorkspaceSaveMode::Disk)</td></tr>
+<tr class="separator:a58953f3392ecef95419735c7ea47438c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ec67fa2a267bbd793fceef50db09f98" id="r_a2ec67fa2a267bbd793fceef50db09f98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ec67fa2a267bbd793fceef50db09f98">save</a> (const std::filesystem::path &amp;path, const ExceptionHandler &amp;exceptionHandler=<a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>(), WorkspaceSaveMode mode=WorkspaceSaveMode::Disk)</td></tr>
 <tr class="separator:a2ec67fa2a267bbd793fceef50db09f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ff18a6a4b41fa838f7698d1583dba30" id="r_a5ff18a6a4b41fa838f7698d1583dba30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ff18a6a4b41fa838f7698d1583dba30">load</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, const ExceptionHandler &amp;exceptionHandler=<a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>(), WorkspaceSaveMode mode=WorkspaceSaveMode::Disk)</td></tr>
 <tr class="separator:a5ff18a6a4b41fa838f7698d1583dba30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877cc2a5c1cbbadca5c4722260ee1233" id="r_a877cc2a5c1cbbadca5c4722260ee1233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a877cc2a5c1cbbadca5c4722260ee1233">load</a> (const std::pmr::string &amp;xml, const std::filesystem::path &amp;refPath, const ExceptionHandler &amp;exceptionHandler=<a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>(), WorkspaceSaveMode mode=WorkspaceSaveMode::Disk)</td></tr>
+<tr class="separator:a877cc2a5c1cbbadca5c4722260ee1233"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa05c15b6ce4fcb39833ba7717344d410" id="r_aa05c15b6ce4fcb39833ba7717344d410"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa05c15b6ce4fcb39833ba7717344d410">load</a> (const std::filesystem::path &amp;path, const ExceptionHandler &amp;exceptionHandler=<a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>(), WorkspaceSaveMode mode=WorkspaceSaveMode::Disk)</td></tr>
 <tr class="separator:aa05c15b6ce4fcb39833ba7717344d410"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a008234b62dad6d13e0aaaa7adf6a8f77" id="r_a008234b62dad6d13e0aaaa7adf6a8f77"><td class="memItemLeft" align="right" valign="top">ClearHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a008234b62dad6d13e0aaaa7adf6a8f77">onClear</a> (const ClearCallback &amp;callback)</td></tr>
@@ -184,6 +188,10 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 <tr class="separator:a37c01880a5705834847dadb6ef7ab545"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf5769acf7abad75b1b931c16f403394" id="r_abf5769acf7abad75b1b931c16f403394"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf5769acf7abad75b1b931c16f403394">createWorkspaceDeserializer</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const</td></tr>
 <tr class="separator:abf5769acf7abad75b1b931c16f403394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2adb05d088c1fd3f407b8bb7a4b5c6c4" id="r_a2adb05d088c1fd3f407b8bb7a4b5c6c4"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>, <a class="el" href="structinviwo_1_1InviwoSetupInfo.html">InviwoSetupInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2adb05d088c1fd3f407b8bb7a4b5c6c4">createWorkspaceDeserializerAndInfo</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const</td></tr>
+<tr class="separator:a2adb05d088c1fd3f407b8bb7a4b5c6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afecd4b311076947b8ae109589fdd6978" id="r_afecd4b311076947b8ae109589fdd6978"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>, <a class="el" href="structinviwo_1_1InviwoSetupInfo.html">InviwoSetupInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afecd4b311076947b8ae109589fdd6978">createWorkspaceDeserializerAndInfo</a> (const std::pmr::string &amp;xml, const std::filesystem::path &amp;refPath, <a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const</td></tr>
+<tr class="separator:afecd4b311076947b8ae109589fdd6978"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classinviwo_1_1WorkspaceManager.html">WorkspaceManager</a> is responsible for clearing, loading, and saving a workspace. Different items such as the processor network can register callbacks for clearing, loading, or saving a workspace. Other object can also register callbacks. It also responsible for keeping a list of factories to use while deserializing. Other module can register factories that should be used while deserializing. The user interface should use the Workspace Manager to clear, load, and save workspaces. instead of calling the <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a> Network directly. The workspace manager is owned by the <a class="el" href="classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules.">InviwoApplication</a>. </p>
@@ -238,8 +246,72 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 
 </div>
 </div>
+<a id="afecd4b311076947b8ae109589fdd6978" name="afecd4b311076947b8ae109589fdd6978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afecd4b311076947b8ae109589fdd6978">&#9670;&#160;</a></span>createWorkspaceDeserializerAndInfo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>, <a class="el" href="structinviwo_1_1InviwoSetupInfo.html">InviwoSetupInfo</a> &gt; inviwo::WorkspaceManager::createWorkspaceDeserializerAndInfo </td>
+          <td>(</td>
+          <td class="paramtype">const std::pmr::string &amp;</td>          <td class="paramname"><span class="paramname"><em>xml</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>refPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Logger.html">Logger</a> *</td>          <td class="paramname"><span class="paramname"><em>logger</em></span><span class="paramdefsep"> = </span><span class="paramdefval">LogCentral::getPtr()</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::pmr::polymorphic_allocator&lt; std::byte &gt;</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a deserializer for a workspace string, and apply all needed version updates. </p>
+
+</div>
+</div>
+<a id="a2adb05d088c1fd3f407b8bb7a4b5c6c4" name="a2adb05d088c1fd3f407b8bb7a4b5c6c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2adb05d088c1fd3f407b8bb7a4b5c6c4">&#9670;&#160;</a></span>createWorkspaceDeserializerAndInfo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>, <a class="el" href="structinviwo_1_1InviwoSetupInfo.html">InviwoSetupInfo</a> &gt; inviwo::WorkspaceManager::createWorkspaceDeserializerAndInfo </td>
+          <td>(</td>
+          <td class="paramtype">std::istream &amp;</td>          <td class="paramname"><span class="paramname"><em>stream</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>refPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Logger.html">Logger</a> *</td>          <td class="paramname"><span class="paramname"><em>logger</em></span><span class="paramdefsep"> = </span><span class="paramdefval">LogCentral::getPtr()</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::pmr::polymorphic_allocator&lt; std::byte &gt;</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a deserializer for a workspace stream, and apply all needed version updates. </p>
+
+</div>
+</div>
 <a id="aa05c15b6ce4fcb39833ba7717344d410" name="aa05c15b6ce4fcb39833ba7717344d410"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa05c15b6ce4fcb39833ba7717344d410">&#9670;&#160;</a></span>load() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa05c15b6ce4fcb39833ba7717344d410">&#9670;&#160;</a></span>load() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,8 +343,47 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 
 </div>
 </div>
+<a id="a877cc2a5c1cbbadca5c4722260ee1233" name="a877cc2a5c1cbbadca5c4722260ee1233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a877cc2a5c1cbbadca5c4722260ee1233">&#9670;&#160;</a></span>load() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::WorkspaceManager::load </td>
+          <td>(</td>
+          <td class="paramtype">const std::pmr::string &amp;</td>          <td class="paramname"><span class="paramname"><em>xml</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>refPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ExceptionHandler &amp;</td>          <td class="paramname"><span class="paramname"><em>exceptionHandler</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>()</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">WorkspaceSaveMode</td>          <td class="paramname"><span class="paramname"><em>mode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">WorkspaceSaveMode::Disk</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Load a workspace from a string </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xml</td><td>the string to read from. </td></tr>
+    <tr><td class="paramname">refPath</td><td>a reference that can be use by the deserializer to calculate relative paths. The same refPath should be given when loading. Most often this should be the path to the saved file. </td></tr>
+    <tr><td class="paramname">exceptionHandler</td><td>A callback for handling errors. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a5ff18a6a4b41fa838f7698d1583dba30" name="a5ff18a6a4b41fa838f7698d1583dba30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ff18a6a4b41fa838f7698d1583dba30">&#9670;&#160;</a></span>load() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ff18a6a4b41fa838f7698d1583dba30">&#9670;&#160;</a></span>load() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -391,7 +502,7 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 </div>
 </div>
 <a id="a2ec67fa2a267bbd793fceef50db09f98" name="a2ec67fa2a267bbd793fceef50db09f98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2ec67fa2a267bbd793fceef50db09f98">&#9670;&#160;</a></span>save() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ec67fa2a267bbd793fceef50db09f98">&#9670;&#160;</a></span>save() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -425,7 +536,7 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 </div>
 </div>
 <a id="a6e22abd4a2ca816d727511981bf6f73e" name="a6e22abd4a2ca816d727511981bf6f73e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e22abd4a2ca816d727511981bf6f73e">&#9670;&#160;</a></span>save() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e22abd4a2ca816d727511981bf6f73e">&#9670;&#160;</a></span>save() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -455,6 +566,46 @@ ModifiedHandle&#160;</td><td class="memItemRight" valign="bottom"><b>onModified<
 <p>Save the current workspace to a stream </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">stream</td><td>the stream to write to. </td></tr>
+    <tr><td class="paramname">refPath</td><td>a reference that can be use by the serializer to store relative paths. The same refPath should be given when loading. Most often this should be the path to the saved file. </td></tr>
+    <tr><td class="paramname">exceptionHandler</td><td>A callback for handling errors. </td></tr>
+    <tr><td class="paramname">mode</td><td>to indicate if we are saving to disk or undo-stack </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a58953f3392ecef95419735c7ea47438c" name="a58953f3392ecef95419735c7ea47438c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58953f3392ecef95419735c7ea47438c">&#9670;&#160;</a></span>save() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::WorkspaceManager::save </td>
+          <td>(</td>
+          <td class="paramtype">std::pmr::string &amp;</td>          <td class="paramname"><span class="paramname"><em>xml</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>refPath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ExceptionHandler &amp;</td>          <td class="paramname"><span class="paramname"><em>exceptionHandler</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="structinviwo_1_1StandardExceptionHandler.html">StandardExceptionHandler</a>()</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">WorkspaceSaveMode</td>          <td class="paramname"><span class="paramname"><em>mode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">WorkspaceSaveMode::Disk</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Save the current workspace to a stream </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xml</td><td>the string to write to. </td></tr>
     <tr><td class="paramname">refPath</td><td>a reference that can be use by the serializer to store relative paths. The same refPath should be given when loading. Most often this should be the path to the saved file. </td></tr>
     <tr><td class="paramname">exceptionHandler</td><td>A callback for handling errors. </td></tr>
     <tr><td class="paramname">mode</td><td>to indicate if we are saving to disk or undo-stack </td></tr>

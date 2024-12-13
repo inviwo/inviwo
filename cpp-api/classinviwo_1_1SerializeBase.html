@@ -144,10 +144,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9e4fbe726d32ac3f3c82682b0ae7158c" id="r_a9e4fbe726d32ac3f3c82682b0ae7158c"><td class="memItemLeft" align="right" valign="top"><a id="a9e4fbe726d32ac3f3c82682b0ae7158c" name="a9e4fbe726d32ac3f3c82682b0ae7158c"></a>
 <a class="el" href="classinviwo_1_1SerializeBase.html">SerializeBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1SerializeBase.html">SerializeBase</a> &amp;&amp;) noexcept</td></tr>
 <tr class="separator:a9e4fbe726d32ac3f3c82682b0ae7158c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a676775db4b1e8c0f0f22e98e9eff0a78" id="r_a676775db4b1e8c0f0f22e98e9eff0a78"><td class="memItemLeft" align="right" valign="top"><a id="a676775db4b1e8c0f0f22e98e9eff0a78" name="a676775db4b1e8c0f0f22e98e9eff0a78"></a>
-virtual const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileName</b> () const</td></tr>
-<tr class="memdesc:a676775db4b1e8c0f0f22e98e9eff0a78"><td class="mdescLeft">&#160;</td><td class="mdescRight">gets the xml file name. <br /></td></tr>
-<tr class="separator:a676775db4b1e8c0f0f22e98e9eff0a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a3ad4e51edec80ec9e3042f2313bd2" id="r_ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="memItemLeft" align="right" valign="top"><a id="ab6a3ad4e51edec80ec9e3042f2313bd2" name="ab6a3ad4e51edec80ec9e3042f2313bd2"></a>
+const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileName</b> () const</td></tr>
+<tr class="memdesc:ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the workspace file name. <br /></td></tr>
+<tr class="separator:ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef0be39d28b2e2c730a2b80b431f12bb" id="r_aef0be39d28b2e2c730a2b80b431f12bb"><td class="memItemLeft" align="right" valign="top"><a id="aef0be39d28b2e2c730a2b80b431f12bb" name="aef0be39d28b2e2c730a2b80b431f12bb"></a>
+const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDir</b> () const</td></tr>
+<tr class="memdesc:aef0be39d28b2e2c730a2b80b431f12bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the workspace file directory. <br /></td></tr>
+<tr class="separator:aef0be39d28b2e2c730a2b80b431f12bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20d6dba48d3232681b851ea22e009be6" id="r_a20d6dba48d3232681b851ea22e009be6"><td class="memItemLeft" align="right" valign="top"><a id="a20d6dba48d3232681b851ea22e009be6" name="a20d6dba48d3232681b851ea22e009be6"></a>
+allocator_type&#160;</td><td class="memItemRight" valign="bottom"><b>getAllocator</b> () const</td></tr>
+<tr class="separator:a20d6dba48d3232681b851ea22e009be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -155,15 +162,15 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a8ee53edcdef92f24be55966f5218994b"><td class="memTemplItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8ee53edcdef92f24be55966f5218994b">isPrimitiveType</a> ()</td></tr>
 <tr class="memdesc:a8ee53edcdef92f24be55966f5218994b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the given type is a primitive type.  <br /></td></tr>
 <tr class="separator:a8ee53edcdef92f24be55966f5218994b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a766910219f6d936d556d762e1b890e51" id="r_a766910219f6d936d556d762e1b890e51"><td class="memItemLeft" align="right" valign="top"><a id="a766910219f6d936d556d762e1b890e51" name="a766910219f6d936d556d762e1b890e51"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>nodeToString</b> (const TiXmlElement &amp;node)</td></tr>
-<tr class="separator:a766910219f6d936d556d762e1b890e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:ad394379046894405947dde748910aade" id="r_ad394379046894405947dde748910aade"><td class="memItemLeft" align="right" valign="top"><a id="ad394379046894405947dde748910aade" name="ad394379046894405947dde748910aade"></a>
 std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileName_</b></td></tr>
 <tr class="separator:ad394379046894405947dde748910aade"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52ae84eabb7644baceddc3ad18d13c07" id="r_a52ae84eabb7644baceddc3ad18d13c07"><td class="memItemLeft" align="right" valign="top"><a id="a52ae84eabb7644baceddc3ad18d13c07" name="a52ae84eabb7644baceddc3ad18d13c07"></a>
+std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileDir_</b></td></tr>
+<tr class="separator:a52ae84eabb7644baceddc3ad18d13c07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d57cd783b62751e43768ba42ba5de9a" id="r_a8d57cd783b62751e43768ba42ba5de9a"><td class="memItemLeft" align="right" valign="top"><a id="a8d57cd783b62751e43768ba42ba5de9a" name="a8d57cd783b62751e43768ba42ba5de9a"></a>
 std::unique_ptr&lt; TiXmlDocument &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>doc_</b></td></tr>
 <tr class="separator:a8d57cd783b62751e43768ba42ba5de9a"><td class="memSeparator" colspan="2">&#160;</td></tr>

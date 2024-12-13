@@ -77,5 +77,6 @@ var searchData=
   ['createuitextures_74',['createUITextures',['../classinviwo_1_1glui_1_1Renderer.html#ac4850b648f6eca7a2a3c9427224a88f2',1,'inviwo::glui::Renderer']]],
   ['createvolumeram_75',['createVolumeRAM',['../namespaceinviwo.html#a99c36e46c239f8db6c4b0b8740ee863e',1,'inviwo']]],
   ['createworkspacedeserializer_76',['createWorkspaceDeserializer',['../classinviwo_1_1WorkspaceManager.html#abf5769acf7abad75b1b931c16f403394',1,'inviwo::WorkspaceManager']]],
-  ['cubeplaneintersectionappend_77',['cubePlaneIntersectionAppend',['../namespaceinviwo_1_1util.html#a125fdc1aa254554458167122ca14c08b',1,'inviwo::util']]]
+  ['createworkspacedeserializerandinfo_77',['createWorkspaceDeserializerAndInfo',['../classinviwo_1_1WorkspaceManager.html#a2adb05d088c1fd3f407b8bb7a4b5c6c4',1,'inviwo::WorkspaceManager::createWorkspaceDeserializerAndInfo(std::istream &amp;stream, const std::filesystem::path &amp;refPath, Logger *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const'],['../classinviwo_1_1WorkspaceManager.html#afecd4b311076947b8ae109589fdd6978',1,'inviwo::WorkspaceManager::createWorkspaceDeserializerAndInfo(const std::pmr::string &amp;xml, const std::filesystem::path &amp;refPath, Logger *logger=LogCentral::getPtr(), std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc={}) const']]],
+  ['cubeplaneintersectionappend_78',['cubePlaneIntersectionAppend',['../namespaceinviwo_1_1util.html#a125fdc1aa254554458167122ca14c08b',1,'inviwo::util']]]
 ];

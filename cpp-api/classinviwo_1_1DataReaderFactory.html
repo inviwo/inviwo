@@ -143,6 +143,14 @@ virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ac7d0ec38542431f0b8e74a785f0b34ef"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getExtensionsForType</b> () const</td></tr>
 <tr class="separator:ac7d0ec38542431f0b8e74a785f0b34ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa79cf6044e00ba8d1a4b7fba9012c76b" id="r_aa79cf6044e00ba8d1a4b7fba9012c76b"><td class="memTemplParams" colspan="2"><a id="aa79cf6044e00ba8d1a4b7fba9012c76b" name="aa79cf6044e00ba8d1a4b7fba9012c76b"></a>
+template&lt;typename... Ts&gt; </td></tr>
+<tr class="memitem:aa79cf6044e00ba8d1a4b7fba9012c76b"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getExtensionsForTypes</b> () const</td></tr>
+<tr class="separator:aa79cf6044e00ba8d1a4b7fba9012c76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44b42ee7bf9cdd9a1d03cc5bf32230b5" id="r_a44b42ee7bf9cdd9a1d03cc5bf32230b5"><td class="memTemplParams" colspan="2"><a id="a44b42ee7bf9cdd9a1d03cc5bf32230b5" name="a44b42ee7bf9cdd9a1d03cc5bf32230b5"></a>
+template&lt;typename... Ts&gt; </td></tr>
+<tr class="memitem:a44b42ee7bf9cdd9a1d03cc5bf32230b5"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getExtensionsForTypesView</b> () const</td></tr>
+<tr class="separator:a44b42ee7bf9cdd9a1d03cc5bf32230b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5eaac382e009abf684e5c1da85641558" id="r_a5eaac382e009abf684e5c1da85641558"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5eaac382e009abf684e5c1da85641558"><td class="memTemplItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5eaac382e009abf684e5c1da85641558">getReaderForTypeAndExtension</a> (const std::filesystem::path &amp;filePathOrExtension) const</td></tr>
 <tr class="memdesc:a5eaac382e009abf684e5c1da85641558"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reader matching the file extension of <a class="el" href="classinviwo_1_1DataReader.html" title="A abstract base class for all file readers.">DataReader</a> of type T. Does case insensitive comparison between the last part of filePathOrExtension and each registered extension. Does not check for "." before the extension, so it is valid to pass for example "png".  <br /></td></tr>

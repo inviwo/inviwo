@@ -148,6 +148,11 @@ var annotated_dup =
       [ "dataframefilters", "namespaceinviwo_1_1dataframefilters.html", [
         [ "Filters", "structinviwo_1_1dataframefilters_1_1Filters.html", null ]
       ] ],
+      [ "deserializer", null, [
+        [ "IdentifierFunctions", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
+        [ "IndexFunctions", "structinviwo_1_1deserializer_1_1IndexFunctions.html", null ],
+        [ "MapFunctions", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ]
+      ] ],
       [ "detail", null, [
         [ "Build", "classinviwo_1_1detail_1_1Build.html", null ],
         [ "ColorConverter", "structinviwo_1_1detail_1_1ColorConverter.html", null ],
@@ -446,10 +451,8 @@ var annotated_dup =
         [ "glmtype< T, L, 1, P >", "structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html", null ],
         [ "Grid3DPointGeneration", "structinviwo_1_1util_1_1Grid3DPointGeneration.html", null ],
         [ "GridPos", "structinviwo_1_1util_1_1GridPos.html", null ],
-        [ "IdentifiedDeserializer", "classinviwo_1_1util_1_1IdentifiedDeserializer.html", null ],
         [ "identifier", "structinviwo_1_1util_1_1identifier.html", null ],
         [ "identity", "structinviwo_1_1util_1_1identity.html", null ],
-        [ "IndexedDeserializer", "classinviwo_1_1util_1_1IndexedDeserializer.html", null ],
         [ "IndexMapper", "structinviwo_1_1util_1_1IndexMapper.html", null ],
         [ "IndexMapper< 2, IndexType >", "structinviwo_1_1util_1_1IndexMapper_3_012_00_01IndexType_01_4.html", null ],
         [ "IndexMapper< 3, IndexType >", "structinviwo_1_1util_1_1IndexMapper_3_013_00_01IndexType_01_4.html", null ],
@@ -465,7 +468,6 @@ var annotated_dup =
         [ "iter_range", "structinviwo_1_1util_1_1iter__range.html", null ],
         [ "IterRangeGenerator", "structinviwo_1_1util_1_1IterRangeGenerator.html", null ],
         [ "KeepTrueWhileInScope", "classinviwo_1_1util_1_1KeepTrueWhileInScope.html", null ],
-        [ "MapDeserializer", "classinviwo_1_1util_1_1MapDeserializer.html", null ],
         [ "MemoryFileHandle", "classinviwo_1_1util_1_1MemoryFileHandle.html", "classinviwo_1_1util_1_1MemoryFileHandle" ],
         [ "MetaDataToProperty", "classinviwo_1_1util_1_1MetaDataToProperty.html", "classinviwo_1_1util_1_1MetaDataToProperty" ],
         [ "nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
@@ -666,8 +668,6 @@ var annotated_dup =
       [ "ConnectionOutportDragGraphicsItem", "classinviwo_1_1ConnectionOutportDragGraphicsItem.html", null ],
       [ "ConsoleLogger", "classinviwo_1_1ConsoleLogger.html", null ],
       [ "ConsoleWidget", "classinviwo_1_1ConsoleWidget.html", null ],
-      [ "ContainerWrapper", "classinviwo_1_1ContainerWrapper.html", null ],
-      [ "ContainerWrapperItem", "structinviwo_1_1ContainerWrapperItem.html", null ],
       [ "ContextHolder", "classinviwo_1_1ContextHolder.html", null ],
       [ "conversion_tester", "structinviwo_1_1conversion__tester.html", null ],
       [ "ConverterException", "classinviwo_1_1ConverterException.html", null ],
@@ -1714,6 +1714,7 @@ var annotated_dup =
       [ "ValueDragger", "classinviwo_1_1ValueDragger.html", "classinviwo_1_1ValueDragger" ],
       [ "ValueDragSpinBox", "classinviwo_1_1ValueDragSpinBox.html", "classinviwo_1_1ValueDragSpinBox" ],
       [ "ValueWrapper", "structinviwo_1_1ValueWrapper.html", "structinviwo_1_1ValueWrapper" ],
+      [ "ValueWrapper< TransferFunction >", "structinviwo_1_1ValueWrapper_3_01TransferFunction_01_4.html", null ],
       [ "Vector2DCurl", "classinviwo_1_1Vector2DCurl.html", null ],
       [ "Vector2DDivergence", "classinviwo_1_1Vector2DDivergence.html", null ],
       [ "Vector2DMagnitude", "classinviwo_1_1Vector2DMagnitude.html", null ],

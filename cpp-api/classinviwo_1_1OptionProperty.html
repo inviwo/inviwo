@@ -101,6 +101,7 @@ $(function(){initNavTree('classinviwo_1_1OptionProperty.html',''); initResizable
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1OptionProperty-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::OptionProperty&lt; T &gt; Class Template Reference</div></div>
@@ -149,14 +150,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa1a0df92b5cc45cb7cdaff828c28ed79" id="r_aa1a0df92b5cc45cb7cdaff828c28ed79"><td class="memItemLeft" align="right" valign="top"><a id="aa1a0df92b5cc45cb7cdaff828c28ed79" name="aa1a0df92b5cc45cb7cdaff828c28ed79"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>OptionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="structinviwo_1_1OptionPropertyState.html">OptionPropertyState</a>&lt; T &gt; state)</td></tr>
 <tr class="separator:aa1a0df92b5cc45cb7cdaff828c28ed79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ed56acfa3ff5eb142583872bf345261" id="r_a8ed56acfa3ff5eb142583872bf345261"><td class="memTemplParams" colspan="2"><a id="a8ed56acfa3ff5eb142583872bf345261" name="a8ed56acfa3ff5eb142583872bf345261"></a>
-template&lt;typename U  = T, class  = std::enable_if_t&lt;util::is_stream_insertable&lt;U&gt;::value, void&gt;&gt; </td></tr>
-<tr class="memitem:a8ed56acfa3ff5eb142583872bf345261"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>OptionProperty</b> (std::string_view identifier, std::string_view displayName, const std::vector&lt; T &gt; &amp;options, size_t selectedIndex=0, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
-<tr class="separator:a8ed56acfa3ff5eb142583872bf345261"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a645835701fdccc7c1ef352c648779f40" id="r_a645835701fdccc7c1ef352c648779f40"><td class="memTemplParams" colspan="2"><a id="a645835701fdccc7c1ef352c648779f40" name="a645835701fdccc7c1ef352c648779f40"></a>
-template&lt;typename U  = T, class  = std::enable_if_t&lt;util::is_stream_insertable&lt;U&gt;::value, void&gt;&gt; </td></tr>
-<tr class="memitem:a645835701fdccc7c1ef352c648779f40"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>OptionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, const std::vector&lt; T &gt; &amp;options, size_t selectedIndex=0, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
-<tr class="separator:a645835701fdccc7c1ef352c648779f40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71f99404ca9a06ec16e2a482bf5ed0d1" id="r_a71f99404ca9a06ec16e2a482bf5ed0d1"><td class="memTemplParams" colspan="2"><a id="a71f99404ca9a06ec16e2a482bf5ed0d1" name="a71f99404ca9a06ec16e2a482bf5ed0d1"></a>
+template&lt;typename U  = T&gt; <br />
+requires (fmt::is_formattable&lt;U&gt;::value || <a class="el" href="classinviwo_1_1util_1_1is__stream__insertable.html">util::is_stream_insertable</a>&lt;U&gt;::value)</td></tr>
+<tr class="memitem:a71f99404ca9a06ec16e2a482bf5ed0d1"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>OptionProperty</b> (std::string_view identifier, std::string_view displayName, const std::vector&lt; U &gt; &amp;options, size_t selectedIndex=0, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
+<tr class="separator:a71f99404ca9a06ec16e2a482bf5ed0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02b5c08aa5319a3e808dd45c6d034470" id="r_a02b5c08aa5319a3e808dd45c6d034470"><td class="memTemplParams" colspan="2"><a id="a02b5c08aa5319a3e808dd45c6d034470" name="a02b5c08aa5319a3e808dd45c6d034470"></a>
+template&lt;typename U  = T&gt; <br />
+requires (fmt::is_formattable&lt;U&gt;::value || <a class="el" href="classinviwo_1_1util_1_1is__stream__insertable.html">util::is_stream_insertable</a>&lt;U&gt;::value)</td></tr>
+<tr class="memitem:a02b5c08aa5319a3e808dd45c6d034470"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>OptionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, const std::vector&lt; T &gt; &amp;options, size_t selectedIndex=0, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
+<tr class="separator:a02b5c08aa5319a3e808dd45c6d034470"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fbf7e263054a95d9a261f7cdabe8a5b" id="r_a3fbf7e263054a95d9a261f7cdabe8a5b"><td class="memItemLeft" align="right" valign="top"><a id="a3fbf7e263054a95d9a261f7cdabe8a5b" name="a3fbf7e263054a95d9a261f7cdabe8a5b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>OptionProperty</b> (const <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; T &gt; &amp;rhs)</td></tr>
 <tr class="separator:a3fbf7e263054a95d9a261f7cdabe8a5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,21 +169,21 @@ template&lt;typename U  = T, class  = std::enable_if_t&lt;util::is_stream_insert
 <tr class="separator:a8f64d22a19b11f76e4d43c4b7fb900a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0fa9eec844e6027087199bacd633b81" id="r_ab0fa9eec844e6027087199bacd633b81"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0fa9eec844e6027087199bacd633b81">operator const T &amp;</a> () const</td></tr>
 <tr class="separator:ab0fa9eec844e6027087199bacd633b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7b6aea3b528ba72ab6df5d4fa0b5102" id="r_ab7b6aea3b528ba72ab6df5d4fa0b5102"><td class="memTemplParams" colspan="2"><a id="ab7b6aea3b528ba72ab6df5d4fa0b5102" name="ab7b6aea3b528ba72ab6df5d4fa0b5102"></a>
-template&lt;typename U  = T, class  = std::enable_if_t&lt;std::is_same_v&lt;U, std::string&gt;, void&gt;&gt; </td></tr>
-<tr class="memitem:ab7b6aea3b528ba72ab6df5d4fa0b5102"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator std::string_view</b> () const</td></tr>
-<tr class="separator:ab7b6aea3b528ba72ab6df5d4fa0b5102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12f8f475e2a6efaeeabbd236aa48d45c" id="r_a12f8f475e2a6efaeeabbd236aa48d45c"><td class="memItemLeft" align="right" valign="top"><a id="a12f8f475e2a6efaeeabbd236aa48d45c" name="a12f8f475e2a6efaeeabbd236aa48d45c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::string_view</b> () const</td></tr>
+<tr class="separator:a12f8f475e2a6efaeeabbd236aa48d45c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc3b42f8f477cb5cd77023ccb871f0f3" id="r_adc3b42f8f477cb5cd77023ccb871f0f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc3b42f8f477cb5cd77023ccb871f0f3">addOption</a> (std::string_view identifier, std::string_view displayName, const T &amp;value)</td></tr>
 <tr class="memdesc:adc3b42f8f477cb5cd77023ccb871f0f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an option to the property.  <br /></td></tr>
 <tr class="separator:adc3b42f8f477cb5cd77023ccb871f0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d9ef007f7916b9d9e6b69268e3e42a5" id="r_a3d9ef007f7916b9d9e6b69268e3e42a5"><td class="memTemplParams" colspan="2"><a id="a3d9ef007f7916b9d9e6b69268e3e42a5" name="a3d9ef007f7916b9d9e6b69268e3e42a5"></a>
-template&lt;typename U  = T, class  = std::enable_if_t&lt;std::is_same_v&lt;U, std::string&gt;, void&gt;&gt; </td></tr>
-<tr class="memitem:a3d9ef007f7916b9d9e6b69268e3e42a5"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>addOption</b> (std::string_view identifier, std::string_view displayName)</td></tr>
-<tr class="separator:a3d9ef007f7916b9d9e6b69268e3e42a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04db8e7d592dcf780ae3427638fa5f34" id="r_a04db8e7d592dcf780ae3427638fa5f34"><td class="memTemplParams" colspan="2"><a id="a04db8e7d592dcf780ae3427638fa5f34" name="a04db8e7d592dcf780ae3427638fa5f34"></a>
-template&lt;typename U  = T, class  = std::enable_if_t&lt;std::is_same_v&lt;U, std::string&gt;, void&gt;&gt; </td></tr>
-<tr class="memitem:a04db8e7d592dcf780ae3427638fa5f34"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>addOption</b> (std::string_view identifier, std::string_view displayName, std::string_view value)</td></tr>
-<tr class="separator:a04db8e7d592dcf780ae3427638fa5f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f4aeae8003a09815ce3c37546760fda" id="r_a8f4aeae8003a09815ce3c37546760fda"><td class="memItemLeft" align="right" valign="top"><a id="a8f4aeae8003a09815ce3c37546760fda" name="a8f4aeae8003a09815ce3c37546760fda"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>addOption</b> (std::string_view identifier, std::string_view displayName)</td></tr>
+<tr class="separator:a8f4aeae8003a09815ce3c37546760fda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62284a7f6e1f9f47852327521b1c93e7" id="r_a62284a7f6e1f9f47852327521b1c93e7"><td class="memItemLeft" align="right" valign="top"><a id="a62284a7f6e1f9f47852327521b1c93e7" name="a62284a7f6e1f9f47852327521b1c93e7"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>addOption</b> (std::string_view identifier, std::string_view displayName, std::string_view value)</td></tr>
+<tr class="separator:a62284a7f6e1f9f47852327521b1c93e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb0d75884ac6d9329cb8d77d93013a7b" id="r_aeb0d75884ac6d9329cb8d77d93013a7b"><td class="memItemLeft" align="right" valign="top"><a id="aeb0d75884ac6d9329cb8d77d93013a7b" name="aeb0d75884ac6d9329cb8d77d93013a7b"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>addOption</b> (T value)</td></tr>
+<tr class="separator:aeb0d75884ac6d9329cb8d77d93013a7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58a5d44f86196b55470d443ea3640153" id="r_a58a5d44f86196b55470d443ea3640153"><td class="memItemLeft" align="right" valign="top"><a id="a58a5d44f86196b55470d443ea3640153" name="a58a5d44f86196b55470d443ea3640153"></a>
 virtual <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>removeOption</b> (std::string_view identifier)</td></tr>
 <tr class="separator:a58a5d44f86196b55470d443ea3640153"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,20 +232,23 @@ const <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionProper
 <tr class="memitem:aa6cc09d47d959ea014eb0df63abc1262" id="r_aa6cc09d47d959ea014eb0df63abc1262"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6cc09d47d959ea014eb0df63abc1262">setSelectedValue</a> (const T &amp;val)</td></tr>
 <tr class="memdesc:aa6cc09d47d959ea014eb0df63abc1262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the selected index to that of the value provided if found in the list of options.  <br /></td></tr>
 <tr class="separator:aa6cc09d47d959ea014eb0df63abc1262"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2853ac77ad917a53691b4a34484dd47" id="r_ad2853ac77ad917a53691b4a34484dd47"><td class="memTemplParams" colspan="2">template&lt;typename U  = T, class  = std::enable_if_t&lt;std::is_same_v&lt;U, std::string&gt;, void&gt;&gt; </td></tr>
-<tr class="memitem:ad2853ac77ad917a53691b4a34484dd47"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ad2853ac77ad917a53691b4a34484dd47">setSelectedValue</a> (std::string_view value)</td></tr>
-<tr class="memdesc:ad2853ac77ad917a53691b4a34484dd47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the selected index to that of the value provided if found in the list of options.  <br /></td></tr>
-<tr class="separator:ad2853ac77ad917a53691b4a34484dd47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a755a05d8943fa450715b0e97e7a3803c" id="r_a755a05d8943fa450715b0e97e7a3803c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a755a05d8943fa450715b0e97e7a3803c">setSelectedValue</a> (std::string_view value)</td></tr>
+<tr class="memdesc:a755a05d8943fa450715b0e97e7a3803c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the selected index to that of the value provided if found in the list of options.  <br /></td></tr>
+<tr class="separator:a755a05d8943fa450715b0e97e7a3803c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96218f3fa2a3689b804f0df299c6f45b" id="r_a96218f3fa2a3689b804f0df299c6f45b"><td class="memItemLeft" align="right" valign="top"><a id="a96218f3fa2a3689b804f0df299c6f45b" name="a96218f3fa2a3689b804f0df299c6f45b"></a>
 virtual <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>replaceOptions</b> (const std::vector&lt; std::string &gt; &amp;ids, const std::vector&lt; std::string &gt; &amp;displayNames, const std::vector&lt; T &gt; &amp;values)</td></tr>
 <tr class="separator:a96218f3fa2a3689b804f0df299c6f45b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20b358fd26896db3bcb8385e5ed86238" id="r_a20b358fd26896db3bcb8385e5ed86238"><td class="memItemLeft" align="right" valign="top"><a id="a20b358fd26896db3bcb8385e5ed86238" name="a20b358fd26896db3bcb8385e5ed86238"></a>
 virtual <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>replaceOptions</b> (std::vector&lt; <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt; T &gt; &gt; options)</td></tr>
 <tr class="separator:a20b358fd26896db3bcb8385e5ed86238"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d531af4e076b621ee01c12ff80d1978" id="r_a4d531af4e076b621ee01c12ff80d1978"><td class="memTemplParams" colspan="2"><a id="a4d531af4e076b621ee01c12ff80d1978" name="a4d531af4e076b621ee01c12ff80d1978"></a>
-template&lt;typename U  = T, class  = std::enable_if_t&lt;util::is_stream_insertable&lt;U&gt;::value, void&gt;&gt; </td></tr>
-<tr class="memitem:a4d531af4e076b621ee01c12ff80d1978"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>replaceOptions</b> (const std::vector&lt; T &gt; &amp;options)</td></tr>
-<tr class="separator:a4d531af4e076b621ee01c12ff80d1978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2689c5c5a8fd398e8c03f2494bda77d1" id="r_a2689c5c5a8fd398e8c03f2494bda77d1"><td class="memItemLeft" align="right" valign="top"><a id="a2689c5c5a8fd398e8c03f2494bda77d1" name="a2689c5c5a8fd398e8c03f2494bda77d1"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>replaceOptions</b> (const std::vector&lt; T &gt; &amp;values)</td></tr>
+<tr class="separator:a2689c5c5a8fd398e8c03f2494bda77d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae7206dc4273e27f89b22b5948f0a460" id="r_aae7206dc4273e27f89b22b5948f0a460"><td class="memTemplParams" colspan="2"><a id="aae7206dc4273e27f89b22b5948f0a460" name="aae7206dc4273e27f89b22b5948f0a460"></a>
+template&lt;typename Func &gt; <br />
+requires (std::is_invocable_r_v&lt;bool, Func, std::vector&lt;<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt;T&gt;&gt;&amp;&gt;)</td></tr>
+<tr class="memitem:aae7206dc4273e27f89b22b5948f0a460"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>updateOptions</b> (Func &amp;&amp;updater)</td></tr>
+<tr class="separator:aae7206dc4273e27f89b22b5948f0a460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a529aa457321a831e153282033911c6c2" id="r_a529aa457321a831e153282033911c6c2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a529aa457321a831e153282033911c6c2">isSelectedIndex</a> (size_t index) const override</td></tr>
 <tr class="separator:a529aa457321a831e153282033911c6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcb9f41ce17a6064d9220489c3b9c295" id="r_afcb9f41ce17a6064d9220489c3b9c295"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afcb9f41ce17a6064d9220489c3b9c295">isSelectedIdentifier</a> (std::string_view identifier) const override</td></tr>
@@ -294,18 +300,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (const <a cla
 <tr class="separator:a0526a1ee261656b8c5caf08fc434ffc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f3b8126f7acb515d1142114f4b5d036" id="r_a4f3b8126f7acb515d1142114f4b5d036"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f3b8126f7acb515d1142114f4b5d036">getDescription</a> () const override</td></tr>
 <tr class="separator:a4f3b8126f7acb515d1142114f4b5d036"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee9fec4bd3d92ab7a098f64ec851a9f6" id="r_aee9fec4bd3d92ab7a098f64ec851a9f6"><td class="memTemplParams" colspan="2"><a id="aee9fec4bd3d92ab7a098f64ec851a9f6" name="aee9fec4bd3d92ab7a098f64ec851a9f6"></a>
-template&lt;typename U , class &gt; </td></tr>
-<tr class="memitem:aee9fec4bd3d92ab7a098f64ec851a9f6"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>addOption</b> (std::string_view identifier, std::string_view displayName)</td></tr>
-<tr class="separator:aee9fec4bd3d92ab7a098f64ec851a9f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2186aa81553c5c7c42d95bf1448aece9" id="r_a2186aa81553c5c7c42d95bf1448aece9"><td class="memTemplParams" colspan="2"><a id="a2186aa81553c5c7c42d95bf1448aece9" name="a2186aa81553c5c7c42d95bf1448aece9"></a>
-template&lt;typename U , class &gt; </td></tr>
-<tr class="memitem:a2186aa81553c5c7c42d95bf1448aece9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>addOption</b> (std::string_view identifier, std::string_view displayName, std::string_view value)</td></tr>
-<tr class="separator:a2186aa81553c5c7c42d95bf1448aece9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9dd32840d7624b1eb1846503479ea7f" id="r_ac9dd32840d7624b1eb1846503479ea7f"><td class="memTemplParams" colspan="2"><a id="ac9dd32840d7624b1eb1846503479ea7f" name="ac9dd32840d7624b1eb1846503479ea7f"></a>
-template&lt;typename U , class &gt; </td></tr>
-<tr class="memitem:ac9dd32840d7624b1eb1846503479ea7f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>replaceOptions</b> (const std::vector&lt; T &gt; &amp;values)</td></tr>
-<tr class="separator:ac9dd32840d7624b1eb1846503479ea7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d4b02a17317af05d0d5cb2c98f1ef75" id="r_a4d4b02a17317af05d0d5cb2c98f1ef75"><td class="memTemplParams" colspan="2"><a id="a4d4b02a17317af05d0d5cb2c98f1ef75" name="a4d4b02a17317af05d0d5cb2c98f1ef75"></a>
+template&lt;typename Func &gt; <br />
+requires (std::is_invocable_r_v&lt;bool, Func, std::vector&lt;<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt;T&gt;&gt;&amp;&gt;)</td></tr>
+<tr class="memitem:a4d4b02a17317af05d0d5cb2c98f1ef75"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; T &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>updateOptions</b> (Func &amp;&amp;updater)</td></tr>
+<tr class="separator:a4d4b02a17317af05d0d5cb2c98f1ef75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1BaseOptionProperty"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1BaseOptionProperty')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1BaseOptionProperty.html">inviwo::BaseOptionProperty</a></td></tr>
 <tr class="memitem:abcc0a11e8574c17b839354f3cc96c5de inherit pub_methods_classinviwo_1_1BaseOptionProperty" id="r_abcc0a11e8574c17b839354f3cc96c5de"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>BaseOptionProperty</b> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1Document.html">Document</a> help, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
@@ -332,9 +331,12 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><b>~Property</b> ()</
 <tr class="memitem:a32fc8f3d4bef1d0c23df58960f23d8bf inherit pub_methods_classinviwo_1_1Property" id="r_a32fc8f3d4bef1d0c23df58960f23d8bf"><td class="memItemLeft" align="right" valign="top">
 virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getIdentifier</b> () const</td></tr>
 <tr class="separator:a32fc8f3d4bef1d0c23df58960f23d8bf inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af741958083ecc700a11a3b63c399d5b9 inherit pub_methods_classinviwo_1_1Property" id="r_af741958083ecc700a11a3b63c399d5b9"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#af741958083ecc700a11a3b63c399d5b9">getPath</a> () const</td></tr>
-<tr class="memdesc:af741958083ecc700a11a3b63c399d5b9 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the property path as string.  <br /></td></tr>
-<tr class="separator:af741958083ecc700a11a3b63c399d5b9 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed8eb71a3cc8c21e2ab3cda6660f2394 inherit pub_methods_classinviwo_1_1Property" id="r_aed8eb71a3cc8c21e2ab3cda6660f2394"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#aed8eb71a3cc8c21e2ab3cda6660f2394">getPath</a> () const</td></tr>
+<tr class="memdesc:aed8eb71a3cc8c21e2ab3cda6660f2394 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the property path as string.  <br /></td></tr>
+<tr class="separator:aed8eb71a3cc8c21e2ab3cda6660f2394 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf575783fd9bb5a8ad89fe8e606f1742 inherit pub_methods_classinviwo_1_1Property" id="r_abf575783fd9bb5a8ad89fe8e606f1742"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>getPath</b> (std::pmr::string &amp;out) const</td></tr>
+<tr class="separator:abf575783fd9bb5a8ad89fe8e606f1742 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ea190fb1fbe1a3cf1fb2208a5f908e0 inherit pub_methods_classinviwo_1_1Property" id="r_a8ea190fb1fbe1a3cf1fb2208a5f908e0"><td class="memItemLeft" align="right" valign="top">
 virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>setDisplayName</b> (std::string_view displayName)</td></tr>
 <tr class="memdesc:a8ea190fb1fbe1a3cf1fb2208a5f908e0 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">A property's name displayed to the user. <br /></td></tr>
@@ -532,33 +534,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a cla
 void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
 <tr class="separator:abb9e1a56048d3d22f0ed91727d292c02 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:ac9dde0fcf5faf01b96231384cb7f5912" id="r_ac9dde0fcf5faf01b96231384cb7f5912"><td class="memItemLeft" align="right" valign="top"><a id="ac9dde0fcf5faf01b96231384cb7f5912" name="ac9dde0fcf5faf01b96231384cb7f5912"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>selectedIndex_</b> {}</td></tr>
-<tr class="separator:ac9dde0fcf5faf01b96231384cb7f5912"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4a51d534995786ff642c27b3fafe9a7" id="r_af4a51d534995786ff642c27b3fafe9a7"><td class="memItemLeft" align="right" valign="top"><a id="af4a51d534995786ff642c27b3fafe9a7" name="af4a51d534995786ff642c27b3fafe9a7"></a>
-std::vector&lt; <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>options_</b></td></tr>
-<tr class="separator:af4a51d534995786ff642c27b3fafe9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
-<tr class="memitem:adb37aa029eae03ea00940d95ae869ca0 inherit pro_attribs_classinviwo_1_1Property" id="r_adb37aa029eae03ea00940d95ae869ca0"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1CallBackList.html">CallBackList</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onChangeCallback_</b></td></tr>
-<tr class="separator:adb37aa029eae03ea00940d95ae869ca0 inherit pro_attribs_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a6a748d969a4d54bbeb86fa507246ca inherit pro_attribs_classinviwo_1_1Property" id="r_a4a6a748d969a4d54bbeb86fa507246ca"><td class="memItemLeft" align="right" valign="top">
-PropertySerializationMode&#160;</td><td class="memItemRight" valign="bottom"><b>serializationMode_</b></td></tr>
-<tr class="separator:a4a6a748d969a4d54bbeb86fa507246ca inherit pro_attribs_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1MetaDataOwner')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
-<tr class="memitem:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner" id="r_a7b331cee0264fea40c3649b9a4ba1815"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a>&#160;</td><td class="memItemRight" valign="bottom"><b>metaData_</b></td></tr>
-<tr class="separator:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_static_methods_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
-<tr class="memitem:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property" id="r_a2b6170c484c3f96a6e488e87d199d0d6"><td class="memTemplParams" colspan="2">
-template&lt;typename T , typename U &gt; </td></tr>
-<tr class="memitem:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setStateAsDefault</b> (T &amp;property, const U &amp;state)</td></tr>
-<tr class="separator:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:aa8052ef788b5df95932cdf0c4a8231ce" id="r_aa8052ef788b5df95932cdf0c4a8231ce"><td class="memItemLeft" align="right" valign="top"><a id="aa8052ef788b5df95932cdf0c4a8231ce" name="aa8052ef788b5df95932cdf0c4a8231ce"></a>
+const std::vector&lt; <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt; T &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>opts</b> () const</td></tr>
+<tr class="separator:aa8052ef788b5df95932cdf0c4a8231ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab5e81c49e89fadaf48f18a094805162" id="r_aab5e81c49e89fadaf48f18a094805162"><td class="memItemLeft" align="right" valign="top"><a id="aab5e81c49e89fadaf48f18a094805162" name="aab5e81c49e89fadaf48f18a094805162"></a>
+const <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>opt</b> (size_t index) const</td></tr>
+<tr class="separator:aab5e81c49e89fadaf48f18a094805162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a533b3a0612318ecaa9fc1709b74b60" id="r_a0a533b3a0612318ecaa9fc1709b74b60"><td class="memItemLeft" align="right" valign="top"><a id="a0a533b3a0612318ecaa9fc1709b74b60" name="a0a533b3a0612318ecaa9fc1709b74b60"></a>
+std::vector&lt; <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>&lt; T &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>optsMut</b> ()</td></tr>
+<tr class="separator:a0a533b3a0612318ecaa9fc1709b74b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affdd7b4f41db87446c71bfb7a4d9a72b" id="r_affdd7b4f41db87446c71bfb7a4d9a72b"><td class="memItemLeft" align="right" valign="top"><a id="affdd7b4f41db87446c71bfb7a4d9a72b" name="affdd7b4f41db87446c71bfb7a4d9a72b"></a>
+std::optional&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findId</b> (std::string_view id)</td></tr>
+<tr class="separator:affdd7b4f41db87446c71bfb7a4d9a72b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
 <tr class="memitem:a7387df70147c540ee4f5f388796bae32 inherit pro_methods_classinviwo_1_1Property" id="r_a7387df70147c540ee4f5f388796bae32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#a7387df70147c540ee4f5f388796bae32">Property</a> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;rhs)</td></tr>
 <tr class="separator:a7387df70147c540ee4f5f388796bae32 inherit pro_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -594,6 +583,31 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addObservationHelper<
 <tr class="memitem:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface" id="r_ac3efb1aaffc402b45b07c2c599b9785e"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *observer)</td></tr>
 <tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:ac9dde0fcf5faf01b96231384cb7f5912" id="r_ac9dde0fcf5faf01b96231384cb7f5912"><td class="memItemLeft" align="right" valign="top"><a id="ac9dde0fcf5faf01b96231384cb7f5912" name="ac9dde0fcf5faf01b96231384cb7f5912"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>selectedIndex_</b> {}</td></tr>
+<tr class="separator:ac9dde0fcf5faf01b96231384cb7f5912"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
+<tr class="memitem:adb37aa029eae03ea00940d95ae869ca0 inherit pro_attribs_classinviwo_1_1Property" id="r_adb37aa029eae03ea00940d95ae869ca0"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1CallBackList.html">CallBackList</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onChangeCallback_</b></td></tr>
+<tr class="separator:adb37aa029eae03ea00940d95ae869ca0 inherit pro_attribs_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a6a748d969a4d54bbeb86fa507246ca inherit pro_attribs_classinviwo_1_1Property" id="r_a4a6a748d969a4d54bbeb86fa507246ca"><td class="memItemLeft" align="right" valign="top">
+PropertySerializationMode&#160;</td><td class="memItemRight" valign="bottom"><b>serializationMode_</b></td></tr>
+<tr class="separator:a4a6a748d969a4d54bbeb86fa507246ca inherit pro_attribs_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1MetaDataOwner')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
+<tr class="memitem:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner" id="r_a7b331cee0264fea40c3649b9a4ba1815"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a>&#160;</td><td class="memItemRight" valign="bottom"><b>metaData_</b></td></tr>
+<tr class="separator:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classinviwo_1_1Property"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
+<tr class="memitem:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property" id="r_a2b6170c484c3f96a6e488e87d199d0d6"><td class="memTemplParams" colspan="2">
+template&lt;typename T , typename U &gt; </td></tr>
+<tr class="memitem:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setStateAsDefault</b> (T &amp;property, const U &amp;state)</td></tr>
+<tr class="separator:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
@@ -1474,15 +1488,14 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ad2853ac77ad917a53691b4a34484dd47" name="ad2853ac77ad917a53691b4a34484dd47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2853ac77ad917a53691b4a34484dd47">&#9670;&#160;</a></span>setSelectedValue() <span class="overload">[2/2]</span></h2>
+<a id="a755a05d8943fa450715b0e97e7a3803c" name="a755a05d8943fa450715b0e97e7a3803c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a755a05d8943fa450715b0e97e7a3803c">&#9670;&#160;</a></span>setSelectedValue() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T &gt; </div>
-<div class="memtemplate">
-template&lt;typename U , class &gt; </div>
+template&lt;typename T &gt; <br />
+requires std::is_same_v&lt;T, std::string&gt;</div>
       <table class="memname">
         <tr>
           <td class="memname">bool <a class="el" href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a>&lt; T &gt;::setSelectedValue </td>

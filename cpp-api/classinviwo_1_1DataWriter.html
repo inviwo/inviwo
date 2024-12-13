@@ -168,6 +168,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setOverwrite</b> (Ove
 <tr class="memitem:a422b42cb09f00ad62a1572f5808e76b0" id="r_a422b42cb09f00ad62a1572f5808e76b0"><td class="memItemLeft" align="right" valign="top">virtual std::any&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a422b42cb09f00ad62a1572f5808e76b0">getOption</a> (std::string_view key) const</td></tr>
 <tr class="memdesc:a422b42cb09f00ad62a1572f5808e76b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the value of a writer specific option.  <br /></td></tr>
 <tr class="separator:a422b42cb09f00ad62a1572f5808e76b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad7b7d67bb4ce4f6794d2ef8572a274" id="r_adad7b7d67bb4ce4f6794d2ef8572a274"><td class="memTemplParams" colspan="2"><a id="adad7b7d67bb4ce4f6794d2ef8572a274" name="adad7b7d67bb4ce4f6794d2ef8572a274"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:adad7b7d67bb4ce4f6794d2ef8572a274"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>writesType</b> () const</td></tr>
+<tr class="separator:adad7b7d67bb4ce4f6794d2ef8572a274"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -178,6 +182,9 @@ Static Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:af933bbb0c4c4fe85cd94e41f332cb8f6" id="r_af933bbb0c4c4fe85cd94e41f332cb8f6"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af933bbb0c4c4fe85cd94e41f332cb8f6">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::out) const</td></tr>
 <tr class="separator:af933bbb0c4c4fe85cd94e41f332cb8f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af20908f2e93a1f7820eec496a47a2ece" id="r_af20908f2e93a1f7820eec496a47a2ece"><td class="memItemLeft" align="right" valign="top"><a id="af20908f2e93a1f7820eec496a47a2ece" name="af20908f2e93a1f7820eec496a47a2ece"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>canWrite</b> (const std::type_index &amp;index) const =0</td></tr>
+<tr class="separator:af20908f2e93a1f7820eec496a47a2ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>

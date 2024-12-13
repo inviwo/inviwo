@@ -4,7 +4,7 @@ var searchData=
   ['majortickdata_1',['MajorTickData',['../classinviwo_1_1plot_1_1MajorTickData.html',1,'inviwo::plot']]],
   ['majortickproperty_2',['MajorTickProperty',['../classinviwo_1_1plot_1_1MajorTickProperty.html',1,'inviwo::plot']]],
   ['majorticksettings_3',['MajorTickSettings',['../classinviwo_1_1plot_1_1MajorTickSettings.html',1,'inviwo::plot']]],
-  ['mapdeserializer_4',['MapDeserializer',['../classinviwo_1_1util_1_1MapDeserializer.html',1,'inviwo::util']]],
+  ['mapfunctions_4',['MapFunctions',['../structinviwo_1_1deserializer_1_1MapFunctions.html',1,'inviwo::deserializer']]],
   ['marchingtetrahedron_5',['MarchingTetrahedron',['../classinviwo_1_1MarchingTetrahedron.html',1,'inviwo']]],
   ['marginproperty_6',['MarginProperty',['../classinviwo_1_1MarginProperty.html',1,'inviwo']]],
   ['memoryfilehandle_7',['MemoryFileHandle',['../classinviwo_1_1util_1_1MemoryFileHandle.html',1,'inviwo::util']]],

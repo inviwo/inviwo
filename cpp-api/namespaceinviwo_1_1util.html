@@ -166,13 +166,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1GridPos.html">GridPos</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1IdentifiedDeserializer.html">IdentifiedDeserializer</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1identifier.html">identifier</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1identity.html">identity</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1IndexedDeserializer.html">IndexedDeserializer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1IndexMapper.html">IndexMapper</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,8 +200,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1KeepTrueWhileInScope.html">KeepTrueWhileInScope</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the given bool variable to true and restores its state when leaving the scope  <a href="classinviwo_1_1util_1_1KeepTrueWhileInScope.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1MapDeserializer.html">MapDeserializer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1MemoryFileHandle.html">MemoryFileHandle</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII class for providing a FILE stream handle to a buffer in memory. This class will open a file handle to /dev/null and use a dedicated buffer for buffering. As long as less bytes than getBufferSize() bytes are written/read, its status is well defined. However, after writing more than buffer size bytes, the buffer contents will be flushed, i.e. are no longer accessible.  <a href="classinviwo_1_1util_1_1MemoryFileHandle.html#details">More...</a><br /></td></tr>
@@ -270,14 +264,6 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ab33d69d2eaa56f1ab7286b7794c71770" id="r_ab33d69d2eaa56f1ab7286b7794c71770"><td class="memTemplParams" colspan="2"><a id="ab33d69d2eaa56f1ab7286b7794c71770" name="ab33d69d2eaa56f1ab7286b7794c71770"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab33d69d2eaa56f1ab7286b7794c71770"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>classIdentifierType</b> = decltype(std::declval&lt;T&gt;().getClassIdentifier())</td></tr>
-<tr class="separator:ab33d69d2eaa56f1ab7286b7794c71770"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b76aa99258a2ef18a2b49405a499901" id="r_a6b76aa99258a2ef18a2b49405a499901"><td class="memTemplParams" colspan="2"><a id="a6b76aa99258a2ef18a2b49405a499901" name="a6b76aa99258a2ef18a2b49405a499901"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:a6b76aa99258a2ef18a2b49405a499901"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>HasGetClassIdentifier</b> = is_detected_exact&lt;std::string_view, classIdentifierType, T&gt;</td></tr>
-<tr class="separator:a6b76aa99258a2ef18a2b49405a499901"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a720b22362c67c273e303d812cb5a7911" id="r_a720b22362c67c273e303d812cb5a7911"><td class="memItemLeft" align="right" valign="top"><a id="a720b22362c67c273e303d812cb5a7911" name="a720b22362c67c273e303d812cb5a7911"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>OffsetCallback</b> = std::function&lt;ivec2(std::vector&lt;<a class="el" href="classinviwo_1_1Processor.html">Processor</a>*&gt;)&gt;</td></tr>
 <tr class="separator:a720b22362c67c273e303d812cb5a7911"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -607,11 +593,6 @@ IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLaye
 <tr class="memitem:adf2a60a6f5a408eb8a05f86cc2ddfef8" id="r_adf2a60a6f5a408eb8a05f86cc2ddfef8"><td class="memItemLeft" align="right" valign="top"><a id="adf2a60a6f5a408eb8a05f86cc2ddfef8" name="adf2a60a6f5a408eb8a05f86cc2ddfef8"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer)</td></tr>
 <tr class="separator:adf2a60a6f5a408eb8a05f86cc2ddfef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6be2dd9f271c18de77f003431e947087" id="r_a6be2dd9f271c18de77f003431e947087"><td class="memTemplParams" colspan="2"><a id="a6be2dd9f271c18de77f003431e947087" name="a6be2dd9f271c18de77f003431e947087"></a>
-template&lt;typename T , typename ValueGetter , typename IdGetter  = decltype(defaultIdGetter)&gt; <br />
-requires std::is_invocable_v&lt;IdGetter, TiXmlElement&amp;&gt; &amp;&amp; std::is_invocable_r_v&lt;<a class="el" href="structinviwo_1_1ContainerWrapperItem.html">ContainerWrapperItem</a>&lt;T&gt;, ValueGetter, std::invoke_result_t&lt;IdGetter, TiXmlElement&amp;&gt;, size_t&gt;</td></tr>
-<tr class="memitem:a6be2dd9f271c18de77f003431e947087"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>makeContainerWrapper</b> (std::string_view key, ValueGetter valueGetter, IdGetter idGetter=defaultIdGetter)</td></tr>
-<tr class="separator:a6be2dd9f271c18de77f003431e947087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81d242ceccd576433a16ba3fb49b9015" id="r_a81d242ceccd576433a16ba3fb49b9015"><td class="memItemLeft" align="right" valign="top"><a id="a81d242ceccd576433a16ba3fb49b9015" name="a81d242ceccd576433a16ba3fb49b9015"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>renamePort</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d, std::vector&lt; std::pair&lt; const <a class="el" href="classinviwo_1_1Port.html">Port</a> *, std::string &gt; &gt; rules)</td></tr>
 <tr class="separator:a81d242ceccd576433a16ba3fb49b9015"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1133,10 +1114,6 @@ template&lt;std::size_t N, typename Index  = size_t, typename Functor &gt; </td>
 template&lt;typename Common , typename... Ts&gt; </td></tr>
 <tr class="memitem:a2e8b12fa242507b1725c301a4ef5714e"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ref</b> (Ts &amp;... args)</td></tr>
 <tr class="separator:a2e8b12fa242507b1725c301a4ef5714e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90888f794252ba3891f368137a67369d" id="r_a90888f794252ba3891f368137a67369d"><td class="memTemplParams" colspan="2"><a id="a90888f794252ba3891f368137a67369d" name="a90888f794252ba3891f368137a67369d"></a>
-template&lt;typename T , typename std::enable_if&lt;!std::is_abstract&lt; T &gt;::value &amp;&amp;std::is_default_constructible&lt; T &gt;::value, int &gt;::type  = 0&gt; </td></tr>
-<tr class="memitem:a90888f794252ba3891f368137a67369d"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>defaultConstructType</b> ()</td></tr>
-<tr class="separator:a90888f794252ba3891f368137a67369d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b52a4904b65ef59d70ebf2b2b0ad7b0" id="r_a8b52a4904b65ef59d70ebf2b2b0ad7b0"><td class="memTemplParams" colspan="2"><a id="a8b52a4904b65ef59d70ebf2b2b0ad7b0" name="a8b52a4904b65ef59d70ebf2b2b0ad7b0"></a>
 template&lt;class... Ts&gt; </td></tr>
 <tr class="memitem:a8b52a4904b65ef59d70ebf2b2b0ad7b0"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>overloaded</b> (Ts...) -&gt; overloaded&lt; Ts... &gt;</td></tr>
@@ -1829,8 +1806,6 @@ constexpr std::array&lt; std::string_view, 4 &gt;&#160;</td><td class="memItemRi
 <tr class="memitem:a56b407ab7fe241ff85c95d78cd2d440d" id="r_a56b407ab7fe241ff85c95d78cd2d440d"><td class="memItemLeft" align="right" valign="top"><a id="a56b407ab7fe241ff85c95d78cd2d440d" name="a56b407ab7fe241ff85c95d78cd2d440d"></a>
 constexpr std::array&lt; Unit, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>defaultAxesUnits</b> = {Unit{}, Unit{}, Unit{}, Unit{}}</td></tr>
 <tr class="separator:a56b407ab7fe241ff85c95d78cd2d440d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75d951ef356d1f9ac02d3028302f9d1c" id="r_a75d951ef356d1f9ac02d3028302f9d1c"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75d951ef356d1f9ac02d3028302f9d1c">defaultIdGetter</a></td></tr>
-<tr class="separator:a75d951ef356d1f9ac02d3028302f9d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bcd5c22b1d7609d0bfa1ac9c2366137" id="r_a5bcd5c22b1d7609d0bfa1ac9c2366137"><td class="memTemplParams" colspan="2"><a id="a5bcd5c22b1d7609d0bfa1ac9c2366137" name="a5bcd5c22b1d7609d0bfa1ac9c2366137"></a>
 template&lt;template&lt; class... &gt; class Op, class... Args&gt; </td></tr>
 <tr class="memitem:a5bcd5c22b1d7609d0bfa1ac9c2366137"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_detected_v</b> = is_detected&lt;Op, Args...&gt;::value</td></tr>
@@ -8084,31 +8059,6 @@ template&lt;typename... T&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="a75d951ef356d1f9ac02d3028302f9d1c" name="a75d951ef356d1f9ac02d3028302f9d1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75d951ef356d1f9ac02d3028302f9d1c">&#9670;&#160;</a></span>defaultIdGetter</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">auto inviwo::util::defaultIdGetter</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= [](TiXmlElement&amp; node) -&gt; std::string_view {</div>
-<div class="line">    <span class="keywordflow">return</span> inviwo::detail::getAttribute(node, <span class="stringliteral">&quot;identifier&quot;</span>);</div>
-<div class="line">}</div>
-</div><!-- fragment -->
-</div>
-</div>
 <a id="a6c6f2c783a1cc78c23c5060fc9e8425e" name="a6c6f2c783a1cc78c23c5060fc9e8425e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c6f2c783a1cc78c23c5060fc9e8425e">&#9670;&#160;</a></span>fmtHelp</h2>
 

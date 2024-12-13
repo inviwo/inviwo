@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['identifieddeserializer_0',['IdentifiedDeserializer',['../classinviwo_1_1util_1_1IdentifiedDeserializer.html',1,'inviwo::util']]],
-  ['identifier_1',['identifier',['../structinviwo_1_1util_1_1identifier.html',1,'inviwo::util']]],
+  ['identifier_0',['identifier',['../structinviwo_1_1util_1_1identifier.html',1,'inviwo::util']]],
+  ['identifierfunctions_1',['IdentifierFunctions',['../structinviwo_1_1deserializer_1_1IdentifierFunctions.html',1,'inviwo::deserializer']]],
   ['identifierreplacement_2',['IdentifierReplacement',['../structinviwo_1_1xml_1_1IdentifierReplacement.html',1,'inviwo::xml']]],
   ['identity_3',['identity',['../structinviwo_1_1util_1_1identity.html',1,'inviwo::util']]],
   ['ignoreexception_4',['IgnoreException',['../classinviwo_1_1IgnoreException.html',1,'inviwo']]],
@@ -72,7 +72,7 @@ var searchData=
   ['indexbuffer_69',['IndexBuffer',['../classinviwo_1_1buffertraits_1_1IndexBuffer.html',1,'inviwo::buffertraits']]],
   ['indexbufferinformationproperty_70',['IndexBufferInformationProperty',['../classinviwo_1_1IndexBufferInformationProperty.html',1,'inviwo']]],
   ['indexcolumn_71',['IndexColumn',['../classinviwo_1_1IndexColumn.html',1,'inviwo']]],
-  ['indexeddeserializer_72',['IndexedDeserializer',['../classinviwo_1_1util_1_1IndexedDeserializer.html',1,'inviwo::util']]],
+  ['indexfunctions_72',['IndexFunctions',['../structinviwo_1_1deserializer_1_1IndexFunctions.html',1,'inviwo::deserializer']]],
   ['indexlist_73',['IndexList',['../classinviwo_1_1IndexList.html',1,'inviwo']]],
   ['indexmapper_74',['IndexMapper',['../structinviwo_1_1util_1_1IndexMapper.html',1,'inviwo::util']]],
   ['indexmapper_3c_202_2c_20indextype_20_3e_75',['IndexMapper&lt; 2, IndexType &gt;',['../structinviwo_1_1util_1_1IndexMapper_3_012_00_01IndexType_01_4.html',1,'inviwo::util']]],

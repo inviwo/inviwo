@@ -160,11 +160,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addExtension</b> (<a 
 <tr class="memitem:af1dd2c460dea514384a877eb0ceb6e88" id="r_af1dd2c460dea514384a877eb0ceb6e88"><td class="memItemLeft" align="right" valign="top">virtual std::any&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1dd2c460dea514384a877eb0ceb6e88">getOption</a> (std::string_view key)</td></tr>
 <tr class="memdesc:af1dd2c460dea514384a877eb0ceb6e88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the value of an reader specific option.  <br /></td></tr>
 <tr class="separator:af1dd2c460dea514384a877eb0ceb6e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a838fd7f65493c80f249818efe71247d6" id="r_a838fd7f65493c80f249818efe71247d6"><td class="memTemplParams" colspan="2"><a id="a838fd7f65493c80f249818efe71247d6" name="a838fd7f65493c80f249818efe71247d6"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a838fd7f65493c80f249818efe71247d6"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>readsType</b> () const</td></tr>
+<tr class="separator:a838fd7f65493c80f249818efe71247d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a2ffa0f2afa77bde51b135da1903822d8" id="r_a2ffa0f2afa77bde51b135da1903822d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ffa0f2afa77bde51b135da1903822d8">checkExists</a> (const std::filesystem::path &amp;path) const</td></tr>
 <tr class="separator:a2ffa0f2afa77bde51b135da1903822d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074b4b85a44053a92da5afd38d85f623" id="r_a074b4b85a44053a92da5afd38d85f623"><td class="memItemLeft" align="right" valign="top"><a id="a074b4b85a44053a92da5afd38d85f623" name="a074b4b85a44053a92da5afd38d85f623"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>canRead</b> (const std::type_index &amp;index) const =0</td></tr>
+<tr class="separator:a074b4b85a44053a92da5afd38d85f623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c1a337b2481488fd247aa64387385b4" id="r_a9c1a337b2481488fd247aa64387385b4"><td class="memItemLeft" align="right" valign="top">std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c1a337b2481488fd247aa64387385b4">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in) const</td></tr>
 <tr class="separator:a9c1a337b2481488fd247aa64387385b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">

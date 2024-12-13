@@ -249,8 +249,6 @@ var hierarchy =
     [ "inviwo::InportIterable< InportType, T, Flat >::const_iterator_base< const_iterator_port >", "classinviwo_1_1InportIterable_1_1const__iterator__base.html", [
       [ "inviwo::InportIterable< InportType, T, Flat >::const_iterator_port", "classinviwo_1_1InportIterable_1_1const__iterator__port.html", null ]
     ] ],
-    [ "inviwo::ContainerWrapper< T, ValueGetter, IdGetter >", "classinviwo_1_1ContainerWrapper.html", null ],
-    [ "inviwo::ContainerWrapperItem< T >", "structinviwo_1_1ContainerWrapperItem.html", null ],
     [ "inviwo::ContextHolder", "classinviwo_1_1ContextHolder.html", [
       [ "inviwo::CanvasContextHolder", "classinviwo_1_1CanvasContextHolder.html", null ]
     ] ],
@@ -1306,8 +1304,8 @@ var hierarchy =
     [ "inviwo::util::detail::Hideer", "structinviwo_1_1util_1_1detail_1_1Hideer.html", null ],
     [ "inviwo::Histogram1D", "structinviwo_1_1Histogram1D.html", null ],
     [ "inviwo::HistogramCache", "classinviwo_1_1HistogramCache.html", null ],
-    [ "inviwo::util::IdentifiedDeserializer< K, T >", "classinviwo_1_1util_1_1IdentifiedDeserializer.html", null ],
     [ "inviwo::util::identifier", "structinviwo_1_1util_1_1identifier.html", null ],
+    [ "inviwo::deserializer::IdentifierFunctions< GetID, MakeNew, Filter, OnNew, OnRemove, OnMove >", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
     [ "inviwo::xml::IdentifierReplacement", "structinviwo_1_1xml_1_1IdentifierReplacement.html", null ],
     [ "inviwo::util::identity", "structinviwo_1_1util_1_1identity.html", null ],
     [ "inviwo::FragmentListRenderer::IllustrationSettings", "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html", null ],
@@ -1327,7 +1325,7 @@ var hierarchy =
     [ "inviwo::ImageReuseCache", "classinviwo_1_1ImageReuseCache.html", null ],
     [ "inviwo::ImgRect", "structinviwo_1_1ImgRect.html", null ],
     [ "inviwo::ShaderObject::InDeclaration", "structinviwo_1_1ShaderObject_1_1InDeclaration.html", null ],
-    [ "inviwo::util::IndexedDeserializer< T >", "classinviwo_1_1util_1_1IndexedDeserializer.html", null ],
+    [ "inviwo::deserializer::IndexFunctions< MakeNew, OnNew, OnRemove >", "structinviwo_1_1deserializer_1_1IndexFunctions.html", null ],
     [ "inviwo::util::IndexMapper< N, IndexType >", "structinviwo_1_1util_1_1IndexMapper.html", null ],
     [ "inviwo::util::IndexMapper< 2, IndexType >", "structinviwo_1_1util_1_1IndexMapper_3_012_00_01IndexType_01_4.html", null ],
     [ "inviwo::util::IndexMapper< 3, IndexType >", "structinviwo_1_1util_1_1IndexMapper_3_013_00_01IndexType_01_4.html", null ],
@@ -1654,7 +1652,7 @@ var hierarchy =
       [ "inviwo::plot::MajorTickProperty", "classinviwo_1_1plot_1_1MajorTickProperty.html", null ],
       [ "inviwo::plot::PCPMajorTickSettings", "classinviwo_1_1plot_1_1PCPMajorTickSettings.html", null ]
     ] ],
-    [ "inviwo::util::MapDeserializer< K, T >", "classinviwo_1_1util_1_1MapDeserializer.html", null ],
+    [ "inviwo::deserializer::MapFunctions< IdTransform, MakeNew, Filter, OnNew, OnRemove >", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
     [ "inviwo::MarchingTetrahedron", "classinviwo_1_1MarchingTetrahedron.html", null ],
     [ "inviwo::util::MemoryFileHandle", "classinviwo_1_1util_1_1MemoryFileHandle.html", null ],
     [ "inviwo::plot::detail::MemPtr< C, T, memptr >", "structinviwo_1_1plot_1_1detail_1_1MemPtr.html", null ],
@@ -3265,7 +3263,6 @@ var hierarchy =
       ] ],
       [ "inviwo::ImageLabel", "classinviwo_1_1ImageLabel.html", null ],
       [ "inviwo::IndexList", "classinviwo_1_1IndexList.html", null ],
-      [ "inviwo::InteractionHandler", "classinviwo_1_1InteractionHandler.html", null ],
       [ "inviwo::MetaData", "classinviwo_1_1MetaData.html", [
         [ "inviwo::MetaDataType< T >", "classinviwo_1_1MetaDataType.html", [
           [ "inviwo::PositionMetaData", "classinviwo_1_1PositionMetaData.html", null ]
@@ -3672,6 +3669,7 @@ var hierarchy =
     [ "inviwo::ValueWrapper< std::filesystem::path >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< std::string >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< std::vector< std::filesystem::path > >", "structinviwo_1_1ValueWrapper.html", null ],
+    [ "inviwo::ValueWrapper< TransferFunction >", "structinviwo_1_1ValueWrapper_3_01TransferFunction_01_4.html", null ],
     [ "inviwo::ValueWrapper< value_type >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< vec2 >", "structinviwo_1_1ValueWrapper.html", null ],
     [ "inviwo::ValueWrapper< vec3 >", "structinviwo_1_1ValueWrapper.html", null ],

@@ -165,8 +165,11 @@ IVW_CORE_API int&#160;</td><td class="memItemRight" valign="bottom"><b>getCurren
 <tr class="separator:ade542fa64d91ae847bb7b4e1f2fd90ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a163d148823eb0fc950a101e914944a20" id="r_a163d148823eb0fc950a101e914944a20"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a163d148823eb0fc950a101e914944a20">findBasePath</a> ()</td></tr>
 <tr class="separator:a163d148823eb0fc950a101e914944a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15abca3eb8493d3c3a772d582483ecee" id="r_a15abca3eb8493d3c3a772d582483ecee"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15abca3eb8493d3c3a772d582483ecee">getPath</a> (PathType pathType, const std::string &amp;suffix=&quot;&quot;, const bool createFolder=false)</td></tr>
-<tr class="separator:a15abca3eb8493d3c3a772d582483ecee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1df339a59c1bbeb0ec21d24d84cfdc" id="r_aba1df339a59c1bbeb0ec21d24d84cfdc"><td class="memItemLeft" align="right" valign="top"><a id="aba1df339a59c1bbeb0ec21d24d84cfdc" name="aba1df339a59c1bbeb0ec21d24d84cfdc"></a>
+IVW_CORE_API const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPath</b> (PathType pathType)</td></tr>
+<tr class="separator:aba1df339a59c1bbeb0ec21d24d84cfdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7dd5380535c7e580e210a0314f22fe4" id="r_ae7dd5380535c7e580e210a0314f22fe4"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7dd5380535c7e580e210a0314f22fe4">getPath</a> (PathType pathType, std::string_view suffix, bool createFolder=false)</td></tr>
+<tr class="separator:ae7dd5380535c7e580e210a0314f22fe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2c1b27f9738ed718bfcaf11b629a277" id="r_af2c1b27f9738ed718bfcaf11b629a277"><td class="memItemLeft" align="right" valign="top"><a id="af2c1b27f9738ed718bfcaf11b629a277" name="af2c1b27f9738ed718bfcaf11b629a277"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>createDirectoryRecursively</b> (const std::filesystem::path &amp;path)</td></tr>
 <tr class="separator:af2c1b27f9738ed718bfcaf11b629a277"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -614,8 +617,8 @@ getFileNameWithExtension </dd></dl>
 
 </div>
 </div>
-<a id="a15abca3eb8493d3c3a772d582483ecee" name="a15abca3eb8493d3c3a772d582483ecee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15abca3eb8493d3c3a772d582483ecee">&#9670;&#160;</a></span>getPath()</h2>
+<a id="ae7dd5380535c7e580e210a0314f22fe4" name="ae7dd5380535c7e580e210a0314f22fe4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7dd5380535c7e580e210a0314f22fe4">&#9670;&#160;</a></span>getPath()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -628,12 +631,12 @@ getFileNameWithExtension </dd></dl>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>suffix</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>, </td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>suffix</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>createFolder</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>createFolder</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

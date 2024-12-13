@@ -10,7 +10,7 @@ var classinviwo_1_1Property =
     [ "getClassIdentifierForWidget", "classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4", null ],
     [ "getDescription", "classinviwo_1_1Property.html#a4ddd2029973417d4cdb3dc9406792415", null ],
     [ "getHelp", "classinviwo_1_1Property.html#ac9e9e83e7e33736d73f2401af5ba7c8c", null ],
-    [ "getPath", "classinviwo_1_1Property.html#af741958083ecc700a11a3b63c399d5b9", null ],
+    [ "getPath", "classinviwo_1_1Property.html#aed8eb71a3cc8c21e2ab3cda6660f2394", null ],
     [ "getWidgets", "classinviwo_1_1Property.html#a4c32384579f41ce9952a79f4bde205ee", null ],
     [ "hasWidgets", "classinviwo_1_1Property.html#a0964c2c0e7dda3dbb4c893333a009986", null ],
     [ "isDefaultState", "classinviwo_1_1Property.html#ac4cf14e1019a789348412abd53130680", null ],
