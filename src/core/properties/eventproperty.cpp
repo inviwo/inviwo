@@ -119,14 +119,12 @@ void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);
     if (this->serializationMode_ == PropertySerializationMode::None) return;
 
-    s.serialize("Event", matcher_.get());
+    s.serialize("Event", matcher_);
 }
 
 void EventProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
-    EventMatcher* e = matcher_.get();
-    d.deserialize("Event", e);  // e has to be a lvalue.
-    if (e != matcher_.get()) matcher_.reset(e);
+    d.deserialize("Event", matcher_);
 }
 
 }  // namespace inviwo

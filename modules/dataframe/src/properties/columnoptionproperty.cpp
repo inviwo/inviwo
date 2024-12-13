@@ -108,8 +108,7 @@ void ColumnOptionProperty::setOptions(const DataFrame& dataframe) {
         options.emplace_back(util::stripIdentifier(header), header, idx);
     }
 
-    const bool wasEmpty =
-        options_.empty() || ((options_.size() == 1) && (options_[0].id_ == "none"));
+    const bool wasEmpty = opts().empty() || ((opts().size() == 1) && (opt(0).id_ == "none"));
     replaceOptions(std::move(options));
     if (wasEmpty) {
         setSelectedValue(defaultColumnIndex_);
@@ -136,7 +135,7 @@ bool ColumnOptionProperty::isNoneSelected() const { return size() && (getSelecte
 
 void ColumnOptionProperty::set(const Property* srcProperty) {
     if (auto src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
-        if ((src->options_.size() == 0) || (options_.size() == 0)) {
+        if ((src->opts().empty()) || (opts().empty())) {
             return;
         }
 

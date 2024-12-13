@@ -45,7 +45,7 @@ public:
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const TransferFunction* data, std::string_view fileExtension) const override;
 
-    static std::string toXML(const TransferFunction& tf);
+    static std::pmr::string toXML(const TransferFunction& tf);
 };
 
 }  // namespace inviwo

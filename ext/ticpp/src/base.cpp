@@ -1,9 +1,8 @@
 #include <ticpp/base.h>
 #include <ticpp/parsingdata.h>
 
-#include <cstring>
 #include <algorithm>
-
+#include <iterator>
 #include <fmt/format.h>
 
 namespace {
@@ -55,62 +54,6 @@ TiXmlError::TiXmlError(TiXmlErrorCode err, const char* errorLocation, TiXmlParsi
     }()} {}
 
 bool TiXmlBase::condenseWhiteSpace = true;
-
-void TiXmlBase::EncodeString(const std::string_view str, std::string* outString) {
-
-    // Fast path where we don't have any thing to encode
-    // avoid c < 32, " = 34, & = 38, ' = 39, < = 60, > = 62,
-    if (std::all_of(str.begin(), str.end(), [](char c) { return c >= 40 && c != 60 && c != 62; })) {
-        outString->append(str);
-        return;
-    }
-
-    size_t i = 0;
-    while (i < str.length()) {
-        const auto c = str[i];
-
-        if (c == '&' && i + 2 < str.length() && str[i + 1] == '#' && str[i + 2] == 'x') {
-            // Hexadecimal character reference.
-            // Pass through unchanged.
-            // &#xA9;	-- copyright symbol, for example.
-            //
-            // The -1 is a bug fix from Rob Laveaux. It keeps
-            // an overflow from happening if there is no ';'.
-            // There are actually 2 ways to exit this loop -
-            // while fails (error case) and break (semicolon found).
-            // However, there is no mechanism (currently) for
-            // this function to return an error.
-            while (i + 1 < str.length()) {
-                outString->push_back(str[i]);
-                ++i;
-                if (str[i] == ';') break;
-            }
-        } else if (c == entity[0].chr) {
-            outString->append(entity[0].str);
-            ++i;
-        } else if (c == entity[1].chr) {
-            outString->append(entity[1].str);
-            ++i;
-        } else if (c == entity[2].chr) {
-            outString->append(entity[2].str);
-            ++i;
-        } else if (c == entity[3].chr) {
-            outString->append(entity[3].str);
-            ++i;
-        } else if (c == entity[4].chr) {
-            outString->append(entity[4].str);
-            ++i;
-        } else if (c < 32) {
-            // Easy pass at non-alpha/numeric/symbol
-            // Below 32 is symbolic.
-            outString->append(fmt::format("&#x{:02X};", c));
-            ++i;
-        } else {
-            outString->push_back(c);
-            ++i;
-        }
-    }
-}
 
 void TiXmlBase::ConvertUTF32ToUTF8(unsigned long input, char* output, int* length) {
     const unsigned long BYTE_MASK = 0xBF;
@@ -171,7 +114,7 @@ bool TiXmlBase::IsAlpha(int anyByte) {
 bool TiXmlBase::IsAlphaNum(int anyByte) {
     // This will only work for low-ascii, everything else is assumed to be a valid
     // letter. I'm not sure this is the best approach, but it is quite tricky trying
-    // to figure out alhabetical vs. not across encoding. So take a very
+    // to figure out alphabetical vs. not across encoding. So take a very
     // conservative approach.
 
     if (anyByte < 127) {
@@ -181,45 +124,10 @@ bool TiXmlBase::IsAlphaNum(int anyByte) {
     }
 }
 
-const char* TiXmlBase::SkipWhiteSpace(const char* p) {
-    if (!p || !*p) {
-        return nullptr;
-    }
-
-    while (*p) {
-        const unsigned char* pU = (const unsigned char*)p;
-
-        // Skip the UTF-8 Byte order marks
-        if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == TIXML_UTF_LEAD_1 &&
-            *(pU + 2) == TIXML_UTF_LEAD_2) {
-            p += 3;
-            continue;
-        } else if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbeU) {
-            p += 3;
-            continue;
-        } else if (*(pU + 0) == TIXML_UTF_LEAD_0 && *(pU + 1) == 0xbfU && *(pU + 2) == 0xbfU) {
-            p += 3;
-            continue;
-        }
-
-        // Still using old rules for white space.
-        if (IsWhiteSpace(*p) || *p == '\n' || *p == '\r') {
-            ++p;
-        } else {
-            break;
-        }
-    }
-
-    return p;
-}
-
 // One of TinyXML's more performance demanding functions. Try to keep the memory overhead down. The
 // "assign" optimization removes over 10% of the execution time.
 const char* TiXmlBase::ReadName(const char* p, std::pmr::string* name) {
-    // Oddly, not supported on some compilers,
-    // name->clear();
-    // So use this:
-    *name = "";
+    name->clear();
     assert(p);
 
     // Names start with letters or underscores.
@@ -232,7 +140,6 @@ const char* TiXmlBase::ReadName(const char* p, std::pmr::string* name) {
     if (p && *p && (IsAlpha(*p) || *p == '_')) {
         const char* start = p;
         while (p && *p && (IsAlphaNum(*p) || *p == '_' || *p == '-' || *p == '.' || *p == ':')) {
-            //(*name) += *p; // expensive
             ++p;
         }
         if (p - start > 0) {
@@ -245,7 +152,6 @@ const char* TiXmlBase::ReadName(const char* p, std::pmr::string* name) {
 
 const char* TiXmlBase::GetEntity(const char* p, char* value, int* length) {
     // Presume an entity, and pull it out.
-    std::string ent;
     *length = 0;
 
     if (*(p + 1) && *(p + 1) == '#' && *(p + 2)) {
@@ -396,7 +302,37 @@ const char* TiXmlBase::ReadText(const char* p, std::pmr::string* text, bool trim
     return p;
 }
 
-const char* TiXmlBase::ReadQuotedText(const char* p, std::pmr::string* text,
+namespace {
+
+template <const char endTag>
+const char* ReadQuote(const char* p, std::pmr::string* dest) {
+    dest->clear();
+
+    while (p && *p && *p != endTag) {
+        const char* start = p;
+        while (p && *p && *p != endTag && *p != '&') {
+            ++p;
+        }
+        if (p - start > 0) {
+            dest->append(start, p - start);
+        }
+        if (*p == '&') {
+            int len{0};
+            std::array<char, 4> buffer{};
+            p = TiXmlBase::GetEntity(p, buffer.data(), &len);
+            dest->append(buffer.data(), len);
+        }
+    }
+
+    if (p && *p == endTag) {
+        return ++p;
+    } else {
+        return p;
+    }
+}
+
+}  // namespace
+const char* TiXmlBase::ReadQuotedText(const char* p, std::pmr::string* dest,
                                       TiXmlParsingData* data) {
 
     constexpr char singleQuote = '\'';
@@ -405,18 +341,14 @@ const char* TiXmlBase::ReadQuotedText(const char* p, std::pmr::string* text,
     const char* pErr = p;
 
     if (*p == singleQuote) {
-        ++p;
-        const char* end = "\'";  // single quote in string
-        p = ReadText(p, text, false, end, false);
+        p = ReadQuote<singleQuote>(++p, dest);  // single quote in string
     } else if (*p == doubleQuote) {
-        ++p;
-        const char* end = "\"";  // double quote in string
-        p = ReadText(p, text, false, end, false);
+        p = ReadQuote<doubleQuote>(++p, dest);  // double quote in string
     } else {
         // All attribute values should be in single or double quotes.
         // But this is such a common error that the parser will try
         // its best, even without them.
-        *text = "";
+        dest->clear();
         while (p && *p                                                      // existence
                && !TiXmlBase::IsWhiteSpace(*p) && *p != '\n' && *p != '\r'  // whitespace
                && *p != '/' && *p != '>')                                   // tag end
@@ -427,7 +359,7 @@ const char* TiXmlBase::ReadQuotedText(const char* p, std::pmr::string* text,
                 // closing one. Give up and throw an error.
                 throw TiXmlError(TiXmlErrorCode::TIXML_ERROR_READING_ATTRIBUTES, p, data);
             }
-            *text += *p;
+            *dest += *p;
             ++p;
         }
     }
@@ -463,4 +395,52 @@ const char* TiXmlBase::ReadNameValue(const char* p, std::pmr::string* name, std:
     p = TiXmlBase::ReadQuotedText(p, value, data);
 
     return p;
+}
+
+void TiXmlBase::EncodeStringSlowPath(const std::string_view str, std::pmr::string& out) {
+    size_t i = 0;
+    while (i < str.length()) {
+        const auto c = str[i];
+
+        if (c == '&' && i + 2 < str.length() && str[i + 1] == '#' && str[i + 2] == 'x') {
+            // Hexadecimal character reference.
+            // Pass through unchanged.
+            // &#xA9;	-- copyright symbol, for example.
+            //
+            // The -1 is a bug fix from Rob Laveaux. It keeps
+            // an overflow from happening if there is no ';'.
+            // There are actually 2 ways to exit this loop -
+            // while fails (error case) and break (semicolon found).
+            // However, there is no mechanism (currently) for
+            // this function to return an error.
+            while (i + 1 < str.length()) {
+                out.push_back(str[i]);
+                ++i;
+                if (str[i] == ';') break;
+            }
+        } else if (c == entity[0].chr) {
+            out.append(entity[0].str);
+            ++i;
+        } else if (c == entity[1].chr) {
+            out.append(entity[1].str);
+            ++i;
+        } else if (c == entity[2].chr) {
+            out.append(entity[2].str);
+            ++i;
+        } else if (c == entity[3].chr) {
+            out.append(entity[3].str);
+            ++i;
+        } else if (c == entity[4].chr) {
+            out.append(entity[4].str);
+            ++i;
+        } else if (c < 32) {
+            // Easy pass at non-alpha/numeric/symbol
+            // Below 32 is symbolic.
+            fmt::format_to(std::back_inserter(out), "&#x{:02X};", c);
+            ++i;
+        } else {
+            out.push_back(c);
+            ++i;
+        }
+    }
 }

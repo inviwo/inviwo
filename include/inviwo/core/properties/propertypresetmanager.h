@@ -92,7 +92,7 @@ private:
     void loadApplicationPresets();
     void saveApplicationPresets();
 
-    static std::map<std::string, std::string>& getPropertyPresets(Property* property);
+    static std::map<std::string, std::string, std::less<>>& getPropertyPresets(Property* property);
 
     struct Preset {
         Preset();

@@ -29,8 +29,8 @@
 
 #include <modules/animation/workspaceanimations.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                // for InviwoApplication
-#include <inviwo/core/io/serialization/deserializer.h>           // for IndexedDeserializer, Con...
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>             // for Serializer
 #include <inviwo/core/network/processornetwork.h>                // for ProcessorNetwork
 #include <inviwo/core/network/workspacemanager.h>                // for WorkspaceManager, Worksp...
@@ -76,16 +76,20 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
         size_t mainAnimation = 0;
         d.deserialize("MainAnimationIndex", mainAnimation);
 
-        util::IndexedDeserializer<std::unique_ptr<Animation>>("Animations", "Animation")
-            .setMakeNew([&]() {
-                // Must pass AnimationManager to Animation constructor
-                return std::make_unique<Animation>(&animationManager_);
-            })
-            .onNew([&](std::unique_ptr<Animation>&) { addInternal(--animations_.end()); })
-            .onRemove([&](std::unique_ptr<Animation>& anim) {
-                // Previously last element was removed
-                onChanged_.invoke(size(), *anim);
-            })(d, animations_);
+        d.deserialize("Animations", animations_, "Animation",
+                      deserializer::IndexFunctions{
+                          .makeNew =
+                              [&]() {
+                                  // Must pass AnimationManager to Animation constructor
+                                  return std::make_unique<Animation>(&animationManager_);
+                              },
+                          .onNew = [&](std::unique_ptr<Animation>&,
+                                       size_t) { addInternal(--animations_.end()); },
+                          .onRemove =
+                              [&](std::unique_ptr<Animation>& anim) {
+                                  // Previously last element was removed
+                                  onChanged_.invoke(size(), *anim);
+                              }});
 
         // Failsafe in case no animation was found
         if (animations_.empty()) {

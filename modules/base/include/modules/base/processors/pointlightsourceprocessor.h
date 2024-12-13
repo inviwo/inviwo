@@ -80,8 +80,6 @@ public:
                                  FloatVec2Property*);
     virtual ~PointLightInteractionHandler();
 
-    virtual std::string_view getClassIdentifier() const override;
-
     const Camera& getCamera();
 
     virtual void invokeEvent(Event* event) override;

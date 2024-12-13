@@ -245,9 +245,6 @@ vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocu
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
 
-std::string_view PointLightInteractionHandler::getClassIdentifier() const {
-    return "org.inviwo.PointLightInteractionHandler";
-}
 
 const Camera& PointLightInteractionHandler::getCamera() { return camera_->get(); }
 

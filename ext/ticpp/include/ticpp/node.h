@@ -35,21 +35,18 @@ public:
      * all the children of that root element.
      */
     friend std::ostream& operator<<(std::ostream& out, const TiXmlNode& base) {
-        TiXmlPrinter printer;
-        printer.SetStreamPrinting();
+        std::pmr::string xml;
+        xml.reserve(4096);
+        TiXmlPrinter printer{xml, TiXmlStreamPrint::Yes};
         base.Accept(&printer);
-        out << printer.Str();
-
+        out << xml;
         return out;
     }
 
     /// Appends the XML node or attribute to a std::string.
-    friend std::string& operator<<(std::string& out, const TiXmlNode& base) {
-        TiXmlPrinter printer;
-        printer.SetStreamPrinting();
+    friend std::pmr::string& operator<<(std::pmr::string& out, const TiXmlNode& base) {
+        TiXmlPrinter printer{out, TiXmlStreamPrint::Yes};
         base.Accept(&printer);
-        out.append(printer.Str());
-
         return out;
     }
 
@@ -340,7 +337,7 @@ protected:
     void CopyTo(TiXmlNode* target) const;
 
     // Figure out what is at *p, and parse it. Returns null if it is not an xml node.
-    std::unique_ptr<TiXmlNode> Identify(const char* start, allocator_type alloc);
+    PMRUnique<TiXmlNode> Identify(const char* start, allocator_type alloc);
 
     std::pmr::string value;
     TiXmlNode* parent;

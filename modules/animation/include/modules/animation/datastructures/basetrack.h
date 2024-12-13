@@ -555,14 +555,18 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
         if (old != priority_) this->notifyPriorityChanged(this);
     }
 
-    using Elem = std::unique_ptr<Seq>;
-    util::IndexedDeserializer<Elem>("sequences", "sequence")
-        .onNew([&](Elem& seq) {
-            this->notifyKeyframeSequenceAdded(this, seq.get());
-            seq->KeyframeSequenceObserverble::addObserver(this);
-        })
-        .onRemove([&](Elem& seq) { this->notifyKeyframeSequenceRemoved(this, seq.get()); })(
-            d, sequences_);
+    d.deserialize(
+        "sequences", sequences_, "sequence",
+        deserializer::IndexFunctions{.makeNew = []() { return std::unique_ptr<Seq>{}; },
+                                     .onNew =
+                                         [&](std::unique_ptr<Seq>& seq, size_t) {
+                                             this->notifyKeyframeSequenceAdded(this, seq.get());
+                                             seq->KeyframeSequenceObserverble::addObserver(this);
+                                         },
+                                     .onRemove =
+                                         [&](std::unique_ptr<Seq>& seq) {
+                                             this->notifyKeyframeSequenceRemoved(this, seq.get());
+                                         }});
 }
 
 #endif

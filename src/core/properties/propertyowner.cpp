@@ -302,9 +302,9 @@ const PropertyOwner* PropertyOwner::getOwner() const { return nullptr; }
 PropertyOwner* PropertyOwner::getOwner() { return nullptr; }
 
 void PropertyOwner::serialize(Serializer& s) const {
-    s.serialize("OwnedPropertyIdentifiers", ownedProperties_, "PropertyIdentifier",
-                util::alwaysTrue{},
-                [](const std::unique_ptr<Property>& p) -> decltype(auto) { return p->getIdentifier(); });
+    s.serialize(
+        "OwnedPropertyIdentifiers", ownedProperties_, "PropertyIdentifier", util::alwaysTrue{},
+        [](const std::unique_ptr<Property>& p) -> decltype(auto) { return p->getIdentifier(); });
 
     s.serialize("Properties", properties_, "Property",
                 [](const Property* p) { return p->needsSerialization(); });
@@ -325,24 +325,32 @@ void PropertyOwner::deserialize(Deserializer& d) {
     std::vector<std::string> ownedIdentifiers;
     d.deserialize("OwnedPropertyIdentifiers", ownedIdentifiers, "PropertyIdentifier");
 
-    auto des =
-        util::IdentifiedDeserializer<std::string, Property*>("Properties", "Property")
-            .setGetId([](Property* const& p) -> const std::string& { return p->getIdentifier(); })
-            .setMakeNew([]() { return nullptr; })
-            .setNewFilter([&](std::string_view id, size_t /*ind*/) {
+    d.deserialize(
+        "Properties", properties_, "Property",
+        deserializer::IdentifierFunctions{
+            .getID = [](Property* const& p) -> std::string_view { return p->getIdentifier(); },
+            .makeNew = []() -> Property* { return nullptr; },
+            .filter = [&](std::string_view id, size_t) -> bool {
                 return util::contains(ownedIdentifiers, id);
-            })
-            .onNewIndexed([&](Property*& p, size_t i) { insertProperty(i, p, true); })
-            .onRemove([&](const std::string& id) {
-                if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
-                        return op->getIdentifier() == id;
-                    })) {
-                    delete removeProperty(id);
-                }
-            })
-            .onMove([&](Property*& p, size_t i) { move(p, i); });
-
-    des(d, properties_);
+            },
+            .onNew = [&](Property*& p, size_t i) { insertProperty(i, p, true); },
+            .onRemove =
+                [&](std::string_view id) {
+                    if (util::contains_if(ownedProperties_, [&](std::unique_ptr<Property>& op) {
+                            return op->getIdentifier() == id;
+                        })) {
+                        removeProperty(id);
+                    } else {
+                        // The property was not serialized since it was in its
+                        // default state. Make sure we reset it to that state again.
+                        if (auto* p = getPropertyByIdentifier(id)) {
+                            if (p->getSerializationMode() == PropertySerializationMode::Default) {
+                                p->resetToDefaultState();
+                            }
+                        }
+                    }
+                },
+            .onMove = [&](Property*& p, size_t i) { move(p, i); }});
 }
 
 void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {

@@ -94,6 +94,11 @@ public:
      */
     virtual std::any getOption([[maybe_unused]] std::string_view key) const { return std::any{}; }
 
+    template <typename T>
+    bool writesType() const {
+        return canWrite(std::type_index(typeid(T)));
+    }
+
 protected:
     /**
      * Open @p path in @p mode for writing. If the overwrite condition is broken or the file can't
@@ -103,6 +108,8 @@ protected:
      */
     std::ofstream open(const std::filesystem::path& path,
                        std::ios_base::openmode mode = std::ios_base::out) const;
+
+    virtual bool canWrite(const std::type_index& index) const = 0;
 
     Overwrite overwrite_;
     std::vector<FileExtension> extensions_;
@@ -133,6 +140,10 @@ public:
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const T* /*data*/, std::string_view /*fileExtension*/) const {
         return nullptr;
+    }
+protected:
+    virtual bool canWrite(const std::type_index& index) const override {
+        return std::type_index(typeid(T)) == index;
     }
 };
 

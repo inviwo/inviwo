@@ -273,8 +273,8 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(A{{{"style", "color:white;"}, {"align", "right"}}, p1->getIdentifier()}, "",
        A{{{"style", "color:white;"}, {"align", "left"}}, p2->getIdentifier()});
 
-    const std::unordered_map<std::string, std::string> right = {{"align", "right"}};
-    const std::unordered_map<std::string, std::string> left = {{"align", "left"}};
+    const UnorderedStringMap<std::string> right = {{"align", "right"}};
+    const UnorderedStringMap<std::string> left = {{"align", "left"}};
     for (const auto& link : network->getLinksBetweenProcessors(p1, p2)) {
         auto src = link.getSource();
         auto dst = link.getDestination();

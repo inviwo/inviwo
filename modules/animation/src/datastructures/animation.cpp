@@ -29,7 +29,7 @@
 
 #include <modules/animation/datastructures/animation.h>
 
-#include <inviwo/core/io/serialization/deserializer.h>           // for IndexedDeserializer, Con...
+#include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>             // for Serializer
 #include <inviwo/core/properties/property.h>                     // for Property
 #include <inviwo/core/properties/propertyowner.h>                // for PropertyOwner
@@ -310,10 +310,13 @@ void Animation::serialize(Serializer& s) const {
 
 void Animation::deserialize(Deserializer& d) {
     d.deserialize("name", name_);
-    util::IndexedDeserializer<std::unique_ptr<Track>>("tracks", "track")
-        .onNew([&](std::unique_ptr<Track>& track) { trackAddedInternal(track.get()); })
-        .onRemove([&](std::unique_ptr<Track>& track) { trackRemovedInternal(track.get()); })(
-            d, tracks_);
+    d.deserialize(
+        "tracks", tracks_, "track",
+        deserializer::IndexFunctions{
+            .makeNew = []() { return std::unique_ptr<Track>{}; },
+            .onNew = [&](std::unique_ptr<Track>& track,
+                         size_t) { trackAddedInternal(track.get()); },
+            .onRemove = [&](std::unique_ptr<Track>& track) { trackRemovedInternal(track.get()); }});
 }
 
 void Animation::onWillRemoveProperty(Property* property, size_t) {

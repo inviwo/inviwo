@@ -48,12 +48,13 @@ PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
           },
           WorkspaceSaveMode::Disk)}
     , dHandle_{manager.onLoad([this](Deserializer& d) {
-        auto des =
-            util::MapDeserializer<std::string, std::string>("PythonScripts", "Script", "key")
-                .setMakeNew([]() { return std::string{}; })
-                .onNew([&](const std::string& key, std::string& script) { addScript(key, script); })
-                .onRemove([&](const std::string& key) { removeScript(key); });
-        des(d, pythonScripts_);
+        d.deserialize("PythonScripts", pythonScripts_, "Script",
+                      deserializer::MapFunctions{
+                          .idTransform = [](std::string_view id) { return std::string{id}; },
+                          .makeNew = []() { return std::string{}; },
+                          .onNew = [&](const std::string& key,
+                                       std::string& script) { addScript(key, script); },
+                          .onRemove = [&](const std::string& key) { removeScript(key); }});
     })}
     , cHandle_{manager.onClear([this]() {
         while (!pythonScripts_.empty()) {

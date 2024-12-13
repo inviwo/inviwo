@@ -32,7 +32,6 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/inviwosetupinfo.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/serialization/serialization.h>
@@ -186,6 +185,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
     std::pmr::monotonic_buffer_resource mbr{1024 * 32};
 
     Serializer serializer(refPath, &mbr);
+    serializer.setWorkspaceSaveMode(mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
         InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
@@ -200,18 +200,53 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
     }
 }
 
+void WorkspaceManager::save(std::pmr::string& xml, const std::filesystem::path& refPath,
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+
+    Serializer serializer(refPath, &mbr);
+    serializer.setWorkspaceSaveMode(mode);
+
+    if (mode != WorkspaceSaveMode::Undo) {
+        const InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
+        serializer.serialize("InviwoSetup", info);
+    }
+
+    serializers_.invoke(serializer, exceptionHandler, mode);
+    const bool indentXml = mode != WorkspaceSaveMode::Undo;
+    serializer.write(xml, indentXml);
+
+    if (mode != WorkspaceSaveMode::Undo) {
+        setModified(false);
+    }
+}
+
 void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& refPath,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
-    std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+    std::pmr::monotonic_buffer_resource mbr{1024 * 128};
 
-    auto deserializer = createWorkspaceDeserializer(stream, refPath, LogCentral::getPtr(), &mbr);
+    auto [deserializer, info] =
+        createWorkspaceDeserializerAndInfo(stream, refPath, LogCentral::getPtr(), &mbr);
+    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+    deserializers_.invoke(deserializer, exceptionHandler, mode);
 
-    InviwoSetupInfo info{&mbr};
-    deserializer.deserialize("InviwoSetup", info);
-    DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+    if (mode != WorkspaceSaveMode::Undo) {
+        setModified(false);
+    }
+}
 
+void WorkspaceManager::load(const std::pmr::string& xml, const std::filesystem::path& refPath,
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 128};
+
+    auto [deserializer, info] =
+        createWorkspaceDeserializerAndInfo(xml, refPath, LogCentral::getPtr(), &mbr);
+    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
     deserializers_.invoke(deserializer, exceptionHandler, mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
@@ -231,12 +266,24 @@ void WorkspaceManager::save(const std::filesystem::path& path,
 
 void WorkspaceManager::load(const std::filesystem::path& path,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
-    auto istream = std::ifstream(path);
-    if (istream.is_open()) {
-        load(istream, path, exceptionHandler, mode);
-    } else {
+
+    FILE* file = filesystem::fopen(path, "rb");
+    if (!file) {
         throw AbortException(IVW_CONTEXT, "Could not open workspace file: {}", path);
     }
+    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+
+    const long length = [&]() {
+        std::fseek(file, 0, SEEK_END);
+        const auto len = std::ftell(file);
+        std::fseek(file, 0, SEEK_SET);
+        return len;
+    }();
+    std::pmr::string data(length, '0');
+    if (std::fread(data.data(), length, 1, file) != 1) {
+        throw AbortException(IVW_CONTEXT, "Could not read workspace file: {}", path);
+    }
+    load(data, path, exceptionHandler, mode);
 }
 
 void WorkspaceManager::registerFactory(FactoryBase* factory) {
@@ -247,7 +294,41 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(
     std::istream& stream, const std::filesystem::path& refPath, Logger* logger,
     std::pmr::polymorphic_allocator<std::byte> alloc) const {
 
-    Deserializer deserializer(stream, refPath, alloc);
+    return createWorkspaceDeserializerAndInfo(stream, refPath, logger, alloc).first;
+}
+
+std::pair<Deserializer, InviwoSetupInfo> WorkspaceManager::createWorkspaceDeserializerAndInfo(
+    std::istream& stream, const std::filesystem::path& refPath, Logger* logger,
+    std::pmr::polymorphic_allocator<std::byte> alloc) const {
+
+    std::pair<Deserializer, InviwoSetupInfo> result{std::piecewise_construct,
+                                                    std::forward_as_tuple(stream, refPath, alloc),
+                                                    std::forward_as_tuple(alloc)};
+    auto& [deserializer, info] = result;
+
+    configureWorkspaceDeserializerAndInfo(deserializer, info, logger);
+
+    return result;
+}
+
+std::pair<Deserializer, InviwoSetupInfo> WorkspaceManager::createWorkspaceDeserializerAndInfo(
+    const std::pmr::string& xml, const std::filesystem::path& refPath, Logger* logger,
+    std::pmr::polymorphic_allocator<std::byte> alloc) const {
+
+    std::pair<Deserializer, InviwoSetupInfo> result{std::piecewise_construct,
+                                                    std::forward_as_tuple(xml, refPath, alloc),
+                                                    std::forward_as_tuple(alloc)};
+    auto& [deserializer, info] = result;
+
+    configureWorkspaceDeserializerAndInfo(deserializer, info, logger);
+
+    return result;
+}
+
+void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deserializer,
+                                                             InviwoSetupInfo& info,
+                                                             Logger* logger) const {
+
     deserializer.setLogger(logger);
     for (const auto& factory : registeredFactories_) {
         deserializer.registerFactory(factory);
@@ -258,7 +339,6 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(
         deserializer.convertVersion(&converter);
     }
 
-    InviwoSetupInfo info{alloc};
     deserializer.deserialize("InviwoSetup", info);
 
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
@@ -275,8 +355,6 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(
             }
         }
     }
-
-    return deserializer;
 }
 
 WorkspaceManager::ClearHandle WorkspaceManager::onClear(const ClearCallback& callback) {

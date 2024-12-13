@@ -91,7 +91,10 @@ DataFrameTable::DataFrameTable()
     addProperties(dimensions_, position_, showIndexColumn_, showCategoryIndices_,
                   showFilteredRowCols_);
 
+    // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
+    position_.setSerializationMode(PropertySerializationMode::None);
+
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
 

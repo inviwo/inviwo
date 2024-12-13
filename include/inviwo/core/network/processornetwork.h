@@ -482,7 +482,7 @@ private:
 
     InviwoApplication* application_;
 
-    std::unordered_map<std::string, std::shared_ptr<Processor>> processors_;
+    UnorderedStringMap<std::shared_ptr<Processor>> processors_;
     std::unordered_set<PortConnection> connections_;
     // This vector is needed to keep the connections in chronological order, since some processors
     // depends on the order of connections, ideally we would get rid of this.

@@ -35,13 +35,9 @@
 
 namespace inviwo {
 
-std::unordered_map<std::string, std::string>& Document::Element::attributes() {
-    return attributes_;
-}
+UnorderedStringMap<std::string>& Document::Element::attributes() { return attributes_; }
 
-const std::unordered_map<std::string, std::string>& Document::Element::attributes() const {
-    return attributes_;
-}
+const UnorderedStringMap<std::string>& Document::Element::attributes() const { return attributes_; }
 
 std::string& Document::Element::content() { return data_; }
 
@@ -85,7 +81,7 @@ Document::Element& Document::Element::operator=(const Element& that) {
 Document::Element::Element(ElementType type, std::string_view content)
     : type_{type}, data_{content} {}
 Document::Element::Element(std::string_view name, std::string_view content,
-                           const std::unordered_map<std::string, std::string>& attributes)
+                           const UnorderedStringMap<std::string>& attributes)
     : type_{ElementType::Node}, data_{name}, attributes_{attributes} {
     if (!content.empty()) {
         children_.push_back(std::make_unique<Element>(ElementType::Text, content));
@@ -139,8 +135,7 @@ Document::PathComponent::PathComponent(std::string_view name)
                             [&](const auto& e) { return e->isNode() && e->name() == name; });
     }} {}
 
-Document::PathComponent::PathComponent(
-    const std::unordered_map<std::string, std::string>& attributes)
+Document::PathComponent::PathComponent(const UnorderedStringMap<std::string>& attributes)
     : strrep_("attr"), matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
         return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
@@ -153,8 +148,8 @@ Document::PathComponent::PathComponent(
         });
     }} {}
 
-Document::PathComponent::PathComponent(
-    std::string_view name, const std::unordered_map<std::string, std::string>& attributes)
+Document::PathComponent::PathComponent(std::string_view name,
+                                       const UnorderedStringMap<std::string>& attributes)
     : strrep_("attr")
     , matcher_{[name = std::string(name),
                 attributes](const ElemVec& elements) -> ElemVec::const_iterator {
@@ -212,7 +207,7 @@ Document::DocumentHandle Document::DocumentHandle::get(const std::vector<PathCom
 
 Document::DocumentHandle Document::DocumentHandle::insert(
     PathComponent pos, std::string_view name, std::string_view content,
-    const std::unordered_map<std::string, std::string>& attributes) {
+    const UnorderedStringMap<std::string>& attributes) {
     auto iter = pos(elem_->children_);
 
     auto it = elem_->children_.insert(iter, std::make_unique<Element>(name, content, attributes));
@@ -222,7 +217,7 @@ Document::DocumentHandle Document::DocumentHandle::insert(
 
 Document::DocumentHandle Document::DocumentHandle::append(
     std::string_view name, std::string_view content,
-    const std::unordered_map<std::string, std::string>& attributes) {
+    const UnorderedStringMap<std::string>& attributes) {
     return insert(PathComponent::end(), name, content, attributes);
 }
 
@@ -292,15 +287,14 @@ Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
     return handle().get(path);
 }
 
-Document::DocumentHandle Document::insert(
-    PathComponent pos, std::string_view name, std::string_view content,
-    const std::unordered_map<std::string, std::string>& attributes) {
+Document::DocumentHandle Document::insert(PathComponent pos, std::string_view name,
+                                          std::string_view content,
+                                          const UnorderedStringMap<std::string>& attributes) {
     return handle().insert(pos, name, content, attributes);
 }
 
-Document::DocumentHandle Document::append(
-    std::string_view name, std::string_view content,
-    const std::unordered_map<std::string, std::string>& attributes) {
+Document::DocumentHandle Document::append(std::string_view name, std::string_view content,
+                                          const UnorderedStringMap<std::string>& attributes) {
     return handle().append(name, content, attributes);
 }
 
@@ -352,7 +346,7 @@ std::ostream& operator<<(std::ostream& ss, const Document& doc) {
 }
 
 utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
-                                    const std::unordered_map<std::string, std::string>& attributes)
+                                    const UnorderedStringMap<std::string>& attributes)
     : table_(handle.insert(pos, "table", "", attributes)) {}
 
 utildoc::TableBuilder::TableBuilder(Document::DocumentHandle table) : table_(table) {}

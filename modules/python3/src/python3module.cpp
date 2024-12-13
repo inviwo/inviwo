@@ -138,7 +138,8 @@ Python3Module::Python3Module(InviwoApplication* app)
     , pythonLogger_{}
     , scripts_{getPath() / "scripts"}
     , pythonFolderObserver_{app, getPath() / "processors", *this}
-    , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true),
+    , settingsFolderObserver_{app,
+                              filesystem::getPath(PathType::Settings, "/python_processors", true),
                               *this}
     , workspaceScripts_{*app->getWorkspaceManager()} {
 

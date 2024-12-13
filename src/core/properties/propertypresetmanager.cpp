@@ -281,7 +281,8 @@ void PropertyPresetManager::Preset::deserialize(Deserializer& d) {
     d.deserialize("data", data);
 }
 
-std::map<std::string, std::string>& PropertyPresetManager::getPropertyPresets(Property* property) {
+std::map<std::string, std::string, std::less<>>& PropertyPresetManager::getPropertyPresets(
+    Property* property) {
     using MT = StdUnorderedMapMetaData<std::string, std::string>;
     return property->createMetaData<MT>("SavedState")->getMap();
 }

@@ -57,6 +57,15 @@ TFPrimitive& TFPrimitive::operator=(const TFPrimitive& rhs) {
     }
     return *this;
 }
+
+TFPrimitive& TFPrimitive::operator=(const TFPrimitiveData& rhs) {
+    if (data_ != rhs) {
+        data_ = rhs;
+        notifyTFPrimitiveObservers();
+    }
+    return *this;
+}
+
 TFPrimitive& TFPrimitive::operator=(TFPrimitive&& rhs) noexcept {
     if ((this != &rhs) && (*this != rhs)) {
         data_ = rhs.data_;

@@ -6,10 +6,6 @@ constexpr int TIXML_MAJOR_VERSION = 3;
 constexpr int TIXML_MINOR_VERSION = 0;
 constexpr int TIXML_PATCH_VERSION = 0;
 
-constexpr unsigned char TIXML_UTF_LEAD_0 = 0xefU;
-constexpr unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
-constexpr unsigned char TIXML_UTF_LEAD_2 = 0xbfU;
-
 class TICPP_API TiXmlDocument;
 class TICPP_API TiXmlElement;
 class TICPP_API TiXmlComment;

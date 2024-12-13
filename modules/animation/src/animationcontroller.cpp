@@ -135,8 +135,8 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                         OptionPropertyState<FileExtension> state;
                         const auto exts = util::getDataWriterFactory(app)->getKeyView();
                         std::transform(exts.begin(), exts.end(), std::back_inserter(state.options),
-                                       [](const auto& ext) -> OptionPropertyOption<FileExtension> {
-                                           return ext;
+                                       [](const auto& ext) {
+                                           return OptionPropertyOption<FileExtension>{ext};
                                        });
                         auto it = std::find_if(exts.begin(), exts.end(),
                                                [&](auto& e) { return e.extension_ == "png"; });

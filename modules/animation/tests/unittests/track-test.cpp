@@ -382,10 +382,9 @@ TEST(AnimationTests, InterpolationSerializationTest) {
     d.setExceptionHandler([](ExceptionContext context) { throw; });
     d.registerFactory(&factory);
 
-    Interpolation* iptr2 = nullptr;
+    std::unique_ptr<Interpolation> iptr2;
     d.deserialize("interpolation", iptr2);
 
-    delete iptr2;
     factory.unRegisterObject(&linearIFO);
 }
 
@@ -498,12 +497,13 @@ TEST(AnimationTests, TrackSerializationTest) {
         d.registerFactory(&processorFactory);
         d.registerFactory(&trackFactory);
 
-        Track* track = nullptr;
+        std::unique_ptr<Track> track;
 
         d.deserialize("Network", net);
         d.deserialize("Track", track);
 
-        auto floatTrack2 = dynamic_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>*>(track);
+        auto floatTrack2 =
+            dynamic_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>*>(track.get());
         EXPECT_NE(nullptr, floatTrack2);
 
         auto& floatProperty = net.getProcessorsByType<TestProcessor>().front()->floatProperty;
@@ -514,7 +514,6 @@ TEST(AnimationTests, TrackSerializationTest) {
         (*floatTrack2)(Seconds{2.0}, Seconds{3.0}, AnimationState::Playing);
         EXPECT_EQ(*floatProperty, 0.0f);
 
-        delete track;
         trackFactory.unRegisterObject(&floatTFO);
     }
     interpolationFactory.unRegisterObject(&linearIFO);
