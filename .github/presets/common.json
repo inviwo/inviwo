@@ -1,0 +1,19 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "inviwo-common",
+      "displayName": "Inviwo GHA",
+      "cacheVariables": {
+        "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
+
+        "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_WEBBROWSER":            { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_TETRAMESH":             { "type": "BOOL", "value": "ON"}
+      }
+    }
+  ]
+}
