@@ -62,7 +62,9 @@ public:
      * @param fileName full path to xml file.
      * @throws SerializationException
      */
-    explicit Serializer(const std::filesystem::path& fileName, allocator_type alloc = {});
+    explicit Serializer(const std::filesystem::path& fileName,
+                        std::string_view rootElement = SerializeConstants::InviwoWorkspace,
+                        allocator_type alloc = {});
 
     virtual ~Serializer();
 

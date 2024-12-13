@@ -69,7 +69,7 @@ concept is_transparent = requires { typename T::key_compare::is_transparent; } |
     typename T::hasher::is_transparent;
     typename T::key_equal::is_transparent;
 };
-}
+}  // namespace detail
 
 namespace deserializer {
 
@@ -124,7 +124,9 @@ public:
      * \brief Deserialize content from a file
      * @param fileName path to file that is to be deserialized.
      */
-    explicit Deserializer(const std::filesystem::path& fileName, allocator_type alloc = {});
+    explicit Deserializer(const std::filesystem::path& fileName,
+                          std::string_view rootElement = SerializeConstants::InviwoWorkspace,
+                          allocator_type alloc = {});
 
     /**
      * \brief Deserialize content from a stream.
@@ -132,6 +134,7 @@ public:
      * @param refPath Used to calculate paths relative to the stream source if any.
      */
     Deserializer(std::istream& stream, const std::filesystem::path& refPath,
+                 std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                  allocator_type alloc = {});
 
     /**
@@ -140,6 +143,7 @@ public:
      * @param refPath Used to calculate paths relative to the stream source if any.
      */
     Deserializer(const std::pmr::string& content, const std::filesystem::path& refPath,
+                 std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                  allocator_type alloc = {});
 
     Deserializer(const Deserializer&) = delete;
@@ -369,7 +373,7 @@ public:
 
     void registerFactory(FactoryBase* factory);
 
-    int getInviwoWorkspaceVersion() const;
+    int getVersion() const;
 
 private:
     /**
@@ -401,7 +405,7 @@ private:
     ExceptionHandler exceptionHandler_;
     std::pmr::vector<FactoryBase*> registeredFactories_;
 
-    int inviwoWorkspaceVersion_ = 0;
+    int version_ = 0;
 };
 
 namespace detail {
@@ -1161,5 +1165,7 @@ void Deserializer::deserialize(std::string_view key, T& sObj)
         sObj.deserialize(*this);
     }
 }
+
+void getVersion();
 
 }  // namespace inviwo

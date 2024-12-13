@@ -1,6 +1,0 @@
-RawFile: testdata.FLOAT16.BigEndian.raw
-Resolution: 13 7 3
-Format: FLOAT16
-ByteOrder:  BigEndian
-DataRange:  0.0 20.0
-ValueRange: 0.0 20.0
