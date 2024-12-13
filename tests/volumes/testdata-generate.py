@@ -38,7 +38,7 @@ ValueRange: {datarangemin} {datarangemax}
 """
 
 ivf = """<?xml version="1.0" ?>
-<InviwoTreeData version="1.0">
+<InviwoVolume version="1">
     <RawFile content="{file}" />
     <Format content="{format}" />
     <Dimension x="{x}" y="{y}" z="{z}" />
@@ -49,11 +49,12 @@ ivf = """<?xml version="1.0" ?>
             <MetaData content="{byteorder}" />
         </MetaDataItem>
     </MetaDataMap>
-</InviwoTreeData>
+</InviwoVolume>
 """
 
 types = [np.dtype(t + str(1)) for t in ('i', 'u')] + \
-    [np.dtype(e + t + str(s)) for e in ('<', '>') for t in ('i', 'u', 'f') for s in (2, 4, 8)]
+    [np.dtype(e + t + str(s)) for e in ('<', '>') for t in ('i', 'u') for s in (2, 4, 8)] + \
+    [np.dtype(e + 'f' + str(s)) for e in ('<', '>') for s in (4, 8)]
 
 # values in each voxel should be:
 # x+y+z
@@ -83,7 +84,7 @@ for t in types:
         elif t.kind == 'i':
             return "INT" + str(t.itemsize * 8)
 
-    filename = "testdata." + toString(t) + order
+    filename = f"testdata.{toString(t)}{order}"
     arr.tofile(filename + ".raw")
 
     with open(filename + ".dat", 'w') as f:

@@ -40,6 +40,7 @@
 #include <cstddef>  // for size_t
 #include <memory>   // for shared_ptr
 #include <vector>   // for vector
+#include <memory_resource>
 
 #include <fmt/core.h>  // for format
 
@@ -69,7 +70,8 @@ std::filesystem::path writeIvfVolumeSequence(const VolumeSequence& volumes, std:
 
     DataWriter::checkOverwrite(ivfsFile, overwrite);
 
-    Serializer serializer(ivfsFile);
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Serializer serializer{ivfsFile, "InviwoVolumeSequence", &mbr};
 
     auto fillLength = static_cast<int>(log10(volumes.size())) + 1;
 

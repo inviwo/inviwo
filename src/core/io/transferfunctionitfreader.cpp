@@ -29,6 +29,8 @@
 
 #include <inviwo/core/io/transferfunctionitfreader.h>
 
+#include <memory_resource>
+
 namespace inviwo {
 
 TransferFunctionITFReader::TransferFunctionITFReader() {
@@ -43,8 +45,10 @@ std::shared_ptr<TransferFunction> TransferFunctionITFReader::readData(
     const std::filesystem::path& filePath) {
     checkExists(filePath);
 
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+
     auto data = std::make_shared<TransferFunction>();
-    Deserializer deserializer(filePath);
+    Deserializer deserializer(filePath, "InviwoTransferFunction", &mbr);
     data->deserialize(deserializer);
 
     return data;

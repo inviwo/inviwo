@@ -29,7 +29,8 @@
 
 #include <inviwo/core/io/isovaluecollectioniivwriter.h>
 
-#include <sstream>
+#include <string>
+#include <memory_resource>
 
 namespace inviwo {
 
@@ -43,7 +44,9 @@ IsoValueCollectionIIVWriter* IsoValueCollectionIIVWriter::clone() const {
 
 void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
                                             const std::filesystem::path& filePath) const {
-    Serializer serializer(filePath);
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Serializer serializer(filePath, "InviwoIsovalues", &mbr);
     data->serialize(serializer);
     serializer.writeFile();
 };
@@ -51,12 +54,12 @@ void IsoValueCollectionIIVWriter::writeData(const IsoValueCollection* data,
 std::unique_ptr<std::vector<unsigned char>> IsoValueCollectionIIVWriter::writeDataToBuffer(
     const IsoValueCollection* data, std::string_view) const {
 
-    Serializer serializer{""};
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Serializer serializer{{}, "InviwoIsovalues", &mbr};
     data->serialize(serializer);
 
-    std::stringstream ss;
-    serializer.writeFile(ss);
-    auto xml = ss.str();
+    std::pmr::string xml{&mbr};
+    serializer.write(xml);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());

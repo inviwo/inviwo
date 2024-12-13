@@ -29,6 +29,8 @@
 
 #include <inviwo/core/io/isovaluecollectioniivreader.h>
 
+#include <memory_resource>
+
 namespace inviwo {
 
 IsoValueCollectionIIVReader::IsoValueCollectionIIVReader() {
@@ -43,8 +45,10 @@ std::shared_ptr<IsoValueCollection> IsoValueCollectionIIVReader::readData(
     const std::filesystem::path& filePath) {
     checkExists(filePath);
 
+    
     auto data = std::make_shared<IsoValueCollection>();
-    Deserializer deserializer(filePath);
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Deserializer deserializer(filePath, "InviwoIsovalues", &mbr);
     data->deserialize(deserializer);
 
     return data;

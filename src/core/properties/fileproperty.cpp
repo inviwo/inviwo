@@ -60,6 +60,7 @@ void FileBase::addNameFilters(const std::vector<FileExtension>& filters) {
 void FileBase::clearNameFilters() { nameFilters_.clear(); }
 
 const std::vector<FileExtension>& FileBase::getNameFilters() const { return nameFilters_; }
+std::vector<FileExtension>& FileBase::getNameFilters() { return nameFilters_; }
 
 bool FileBase::matchesAnyNameFilter(const std::filesystem::path& file) const {
     for (const auto& filter : nameFilters_) {

@@ -54,6 +54,7 @@
 #include <glm/gtx/component_wise.hpp>  // for compMul
 
 #include <fmt/std.h>
+#include <memory_resource>
 
 namespace inviwo {
 
@@ -81,7 +82,9 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
 
     const auto fileName = filePath.stem().string();
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
-    Serializer s(filePath);
+
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Serializer s{filePath, "InviwoVolume", &mbr};
     s.serialize("RawFile", fmt::format("{}.raw", fileName));
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("ByteOffset", 0u);

@@ -62,6 +62,8 @@ public:
     void addNameFilters(const std::vector<FileExtension>& filters);
     void clearNameFilters();
     const std::vector<FileExtension>& getNameFilters() const;
+    std::vector<FileExtension>& getNameFilters();
+
     bool matchesAnyNameFilter(const std::filesystem::path& file) const;
 
     void setAcceptMode(AcceptMode mode);

@@ -30,7 +30,8 @@
 #include <inviwo/core/io/transferfunctionitfwriter.h>
 #include <inviwo/core/io/serialization/serializer.h>
 
-#include <sstream>
+#include <string>
+#include <memory_resource>
 
 namespace inviwo {
 
@@ -44,7 +45,8 @@ TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
 
 void TransferFunctionITFWriter::writeData(const TransferFunction* data,
                                           const std::filesystem::path& filePath) const {
-    Serializer serializer(filePath);
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Serializer serializer(filePath, "InviwoTransferFunction", &mbr);
     data->serialize(serializer);
     serializer.writeFile();
 };
@@ -52,13 +54,13 @@ void TransferFunctionITFWriter::writeData(const TransferFunction* data,
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeDataToBuffer(
     const TransferFunction* data, std::string_view) const {
 
-    Serializer serializer{""};
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Serializer serializer{{}, "InviwoTransferFunction", &mbr};
     data->serialize(serializer);
 
-    std::stringstream ss;
-    serializer.writeFile(ss);
-    auto xml = ss.str();
-
+    std::pmr::string xml{&mbr};
+    serializer.write(xml);
+    
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());
     return buffer;

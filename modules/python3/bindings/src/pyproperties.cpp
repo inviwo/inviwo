@@ -358,7 +358,9 @@ void exposeProperties(py::module& m) {
              static_cast<void (FileProperty::*)(FileExtension)>(&FileProperty::addNameFilter))
         .def("clearNameFilters", &FileProperty::clearNameFilters)
 
-        .def("getNameFilters", &FileProperty::getNameFilters)
+        .def("getNameFilters",
+             static_cast<const std::vector<FileExtension>& (FileProperty::*)() const>(
+                 &FileProperty::getNameFilters))
         .def_property("acceptMode", &FileProperty::getAcceptMode, &FileProperty::setAcceptMode)
         .def_property("fileMode", &FileProperty::getFileMode, &FileProperty::setFileMode)
         .def_property("contentType", &FileProperty::getContentType, &FileProperty::setContentType)

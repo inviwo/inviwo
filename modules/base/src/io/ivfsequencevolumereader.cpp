@@ -39,6 +39,7 @@
 #include <string>       // for string, basic_string<>::value_type
 #include <type_traits>  // for remove_extent_t
 #include <vector>       // for vector
+#include <memory_resource>
 
 namespace inviwo {
 IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
@@ -50,9 +51,9 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(
     checkExists(filePath);
 
     auto dir = filePath.parent_path();
-
-    std::vector<std::string> filenames;
-    Deserializer d(filePath);
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Deserializer d{filePath, "InviwoVolumeSequence", &mbr};
+    std::pmr::vector<std::pmr::string> filenames{&mbr};
     d.deserialize("volumes", filenames, "volume");
     auto volumes = std::make_shared<VolumeSequence>();
     for (auto filename : filenames) {

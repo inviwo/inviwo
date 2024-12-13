@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<InviwoTreeData version="1.0">
+<InviwoVolume version="1">
     <RawFile content="testdata.INT64.BigEndian.raw" />
     <Format content="INT64" />
     <Dimension x="13" y="7" z="3" />
@@ -10,4 +10,4 @@
             <MetaData content="0" />
         </MetaDataItem>
     </MetaDataMap>
-</InviwoTreeData>
+</InviwoVolume>
