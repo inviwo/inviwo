@@ -1,20 +1,18 @@
 {
   "version": 6,
   "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "include" : [
+    ".github/presets/common.json"
+  ],
   "configurePresets": [
     {
       "name": "gha",
       "displayName": "Ninja Developer configuration",
-      "inherits" : ["ninja", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "inherits" : ["inviwo-common", "ninja", "developer", "vcpkg", "vcpkg-cache-write", "build"],
       "cacheVariables": {
         "CMAKE_C_COMPILER_LAUNCHER": "ccache",
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
 
-        "IVW_MODULE_EIGENUTILS": "ON",
-        "IVW_MODULE_HDF5": "ON",
-        "IVW_MODULE_FFMPEG": "OFF",
-        "IVW_MODULE_WEBBROWSER": "OFF",
-        "IVW_MODULE_TETRAMESH": "ON",
         "IVW_TEST_BENCHMARKS": "OFF"
       }
     },
