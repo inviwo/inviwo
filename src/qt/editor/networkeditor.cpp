@@ -115,13 +115,14 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     , backgroundVisible_(true)
     , adjustSceneToChange_(true) {
 
+    setObjectName(name);
+
     mainWindow->getInviwoApplication()->getProcessorNetworkEvaluator()->setExceptionHandler(
         [this](Processor* processor, EvaluationType type, ExceptionContext context) {
             const auto& id = processor->getIdentifier();
             const auto error = [&](std::string error) {
-                processor->setMetaData<StringMetaData>("ProcessError", error);
                 if (auto pgi = getProcessorGraphicsItem(processor)) {
-                    pgi->getStatusItem()->updateState();
+                    pgi->getStatusItem()->setRuntimeError();
                     pgi->setErrorText(error);
                 }
             };
@@ -220,7 +221,10 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
 void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
     // obtain processor graphics item through processor
     auto processorGraphicsItem = getProcessorGraphicsItem(processor);
-
+    if (processorItem_ == processorGraphicsItem) {
+        processorItem_ = nullptr;
+    }
+    automation_.clear(processorGraphicsItem);
     processorDragHelper_->clear(processorGraphicsItem);
 
     removeItem(processorGraphicsItem);
@@ -277,6 +281,9 @@ ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(const PortConne
 void NetworkEditor::removeConnection(ConnectionGraphicsItem* connectionGraphicsItem) {
     Outport* outport = connectionGraphicsItem->getOutport();
     Inport* inport = connectionGraphicsItem->getInport();
+
+    automation_.clear(connectionGraphicsItem);
+    processorDragHelper_->clear(connectionGraphicsItem);
 
     RenderContext::getPtr()->activateDefaultRenderContext();
     network_->removeConnection(outport, inport);

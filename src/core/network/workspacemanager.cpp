@@ -184,7 +184,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 32};
 
-    Serializer serializer(refPath, &mbr);
+    Serializer serializer(refPath, SerializeConstants::InviwoWorkspace, &mbr);
     serializer.setWorkspaceSaveMode(mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
@@ -205,7 +205,7 @@ void WorkspaceManager::save(std::pmr::string& xml, const std::filesystem::path& 
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 32};
 
-    Serializer serializer(refPath, &mbr);
+    Serializer serializer(refPath, SerializeConstants::InviwoWorkspace, &mbr);
     serializer.setWorkspaceSaveMode(mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
@@ -301,9 +301,10 @@ std::pair<Deserializer, InviwoSetupInfo> WorkspaceManager::createWorkspaceDeseri
     std::istream& stream, const std::filesystem::path& refPath, Logger* logger,
     std::pmr::polymorphic_allocator<std::byte> alloc) const {
 
-    std::pair<Deserializer, InviwoSetupInfo> result{std::piecewise_construct,
-                                                    std::forward_as_tuple(stream, refPath, alloc),
-                                                    std::forward_as_tuple(alloc)};
+    std::pair<Deserializer, InviwoSetupInfo> result{
+        std::piecewise_construct,
+        std::forward_as_tuple(stream, refPath, SerializeConstants::InviwoWorkspace, alloc),
+        std::forward_as_tuple(alloc)};
     auto& [deserializer, info] = result;
 
     configureWorkspaceDeserializerAndInfo(deserializer, info, logger);
@@ -315,9 +316,10 @@ std::pair<Deserializer, InviwoSetupInfo> WorkspaceManager::createWorkspaceDeseri
     const std::pmr::string& xml, const std::filesystem::path& refPath, Logger* logger,
     std::pmr::polymorphic_allocator<std::byte> alloc) const {
 
-    std::pair<Deserializer, InviwoSetupInfo> result{std::piecewise_construct,
-                                                    std::forward_as_tuple(xml, refPath, alloc),
-                                                    std::forward_as_tuple(alloc)};
+    std::pair<Deserializer, InviwoSetupInfo> result{
+        std::piecewise_construct,
+        std::forward_as_tuple(xml, refPath, SerializeConstants::InviwoWorkspace, alloc),
+        std::forward_as_tuple(alloc)};
     auto& [deserializer, info] = result;
 
     configureWorkspaceDeserializerAndInfo(deserializer, info, logger);
@@ -334,8 +336,8 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
         deserializer.registerFactory(factory);
     }
 
-    if (SerializeConstants::InviwoWorkspaceVersion != deserializer.getInviwoWorkspaceVersion()) {
-        WorkspaceConverter converter(deserializer.getInviwoWorkspaceVersion());
+    if (SerializeConstants::InviwoWorkspaceVersion != deserializer.getVersion()) {
+        WorkspaceConverter converter(deserializer.getVersion());
         deserializer.convertVersion(&converter);
     }
 

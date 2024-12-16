@@ -175,7 +175,6 @@ private:
 
 #if IVW_PROFILING
     size_t processCount_;
-    LabelGraphicsItem* countLabel_;
     double maxEvalTime_;
     double evalTime_;
     double totEvalTime_;

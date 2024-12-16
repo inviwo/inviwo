@@ -149,6 +149,8 @@ public:
 
     void showLinkDialog(Processor* processor1, Processor* processor2);
 
+    static constexpr std::string_view name{"NetworkEditor"};
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;

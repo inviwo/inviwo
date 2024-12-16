@@ -52,6 +52,8 @@ namespace inviwo {
 namespace util {
 inline void updateReaderFromFile(const FileProperty& filePath,
                                  OptionProperty<FileExtension>& extensions) {
+    if (extensions.empty()) return;
+
     if ((filePath.getSelectedExtension() == FileExtension::all() &&
          !extensions.getSelectedValue().matches(filePath)) ||
         filePath.getSelectedExtension().empty()) {
@@ -98,6 +100,24 @@ void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& filePath,
             }
             return modified;
         });
+
+    auto& nameFilters = filePath.getNameFilters();
+
+    if (nameFilters.empty()) {
+        nameFilters.push_back(FileExtension::all());
+    } else {
+        nameFilters.front() = FileExtension::all();
+    }
+
+    size_t i = 1;
+    for (auto&& ext : rf.getExtensionsForTypesView<Types...>()) {
+        if (i < nameFilters.size()) {
+            nameFilters[i] = ext;
+        } else {
+            nameFilters.push_back(ext);
+        }
+        ++i;
+    }
 }
 
 }  // namespace util

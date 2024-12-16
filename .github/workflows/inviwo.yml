@@ -6,12 +6,6 @@ on:
       - master
   pull_request:
   workflow_dispatch:
-    inputs:
-      debug_enabled:
-        type: boolean
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
-        required: false
-        default: false
 
 permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
@@ -144,7 +138,6 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-${{ matrix.linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         
     - name: "Build"
       timeout-minutes: 360
@@ -186,8 +179,15 @@ jobs:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
-    - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+    - name: "Upload Vcpkg build Logs"
+      if: "${{ failure() }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: vcpkg/buildtrees/**/*.log
+
+    - name: "Setup tmate session"
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -196,6 +196,8 @@ jobs:
   regression:
     name: "Regression"
     runs-on: [regression, macOS]
+    permissions:
+      pull-requests: write
     timeout-minutes: 320
     steps:
 
@@ -244,15 +246,17 @@ jobs:
         echo "::remove-matcher owner=linker::"
 
     - name: "Unit Tests"
+      id: unit_tests
+      continue-on-error: true
       shell: bash
       working-directory: "build"
-      continue-on-error: true
       run: ctest -C RelWithDebInfo --output-on-failure
 
     - name: "Integration Tests"
+      id: integration
+      continue-on-error: true
       shell: bash
       working-directory: "build/bin"
-      continue-on-error: true
       run: ./inviwo-integrationtests
 
     - name: "Clone Regression"
@@ -265,6 +269,7 @@ jobs:
 
     - name: "Regression Tests"
       id: regression
+      continue-on-error: true
       shell: bash
       run: |
         mkdir -p regression/macos/${{ github.ref }}
@@ -277,7 +282,6 @@ jobs:
 
     - name: Push report
       shell: bash
-      if: ${{ success() || steps.regression.conclusion == 'failure' }}
       run: |
         cd regression
         git config --global user.name 'Inviwo-Team'
@@ -286,7 +290,62 @@ jobs:
         git commit -am "Regression report for macos ${{ github.ref }}"
         git push
 
-        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html " >> $GITHUB_STEP_SUMMARY
+        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html \n" >> $GITHUB_STEP_SUMMARY
+
+    - name: Summary
+      if: "${{ github.ref != 'refs/heads/master' }}"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        NUMBER: ${{ github.event.pull_request.number }}
+        UNIT_TESTS: "${{ steps.unit_tests.outcome }}"
+        INTEGRATION: ${{ steps.integration.outcome }}
+        REGRESSION: ${{ steps.regression.outcome }}
+      run: |
+        if [[ ${UNIT_TESTS} == "failure" ]]
+        then
+          gh pr edit "$NUMBER" --add-label "J: Unit Test Failure"
+          echo "### :bug: Unit Test Failure:bangbang:  \n" >> $GITHUB_STEP_SUMMARY
+        fi
+        if [[ ${UNIT_TESTS} == "success" ]]
+        then
+          gh pr edit "$NUMBER" --remove-label "J: Unit Test Failure" || true
+        fi
+
+        if [[ ${INTEGRATION} == "failure" ]]
+        then
+          gh pr edit "$NUMBER" --add-label "J: Integration Test Failure"
+          echo "### :bug: Integration Test Failure:bangbang:  \n" >> $GITHUB_STEP_SUMMARY
+        fi
+        if [[ ${INTEGRATION} == "success" ]]
+        then
+          gh pr edit "$NUMBER" --remove-label "J: Integration Test Failure" || true
+        fi
+
+        if [[ ${REGRESSION} == "failure" ]]
+        then
+          gh pr edit "$NUMBER" --add-label "J: Regression Test Failure"
+          echo "### :beetle: Regression Test Failure:bangbang:  \n" >> $GITHUB_STEP_SUMMARY
+        fi
+        if [[ ${REGRESSION} == "success" ]]
+        then
+          gh pr edit "$NUMBER" --remove-label "J: Regression Test Failure" || true
+        fi
+    
+    - name: Exit
+      shell: bash
+      env:
+        UNIT_TESTS: ${{ steps.unit_tests.outcome }}
+        INTEGRATION: ${{ steps.integration.outcome }}
+        REGRESSION: ${{ steps.regression.outcome }}
+      run: |
+        if [[ ${UNIT_TESTS} == "success" ]] && [[ ${INTEGRATION} == "success" ]] && [[ ${REGRESSION} == "success" ]]
+        then
+          exit 0
+        else
+          exit 1
+        fi
 
   clang-tidy:
     name: "Clang-tidy"
@@ -327,7 +386,6 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-dynamic
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
         -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_WEBBROWSER=ON
@@ -356,8 +414,8 @@ jobs:
         file-annotations: false
         verbosity: debug
         
-    - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+    - name: "Setup tmate session"
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -403,10 +461,11 @@ jobs:
       shell: pwsh
       run: |
         $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
-        Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe --logconsole --quit"
-        if($LASTEXITCODE -ne 0) {
-          Invoke-expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe +sls"
-          Invoke-Expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe"
+        cd C:/'Program Files'/Inviwo/$ver/bin/
+        ./inviwo-cli.exe --logconsole --quit
+        if ($LASTEXITCODE -ne 0) {
+          C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i inviwo-cli.exe +sls
+          C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q inviwo-cli.exe
         }
     
     # Macos
@@ -429,13 +488,12 @@ jobs:
         cd /Applications/Inviwo.app/Contents/MacOS/
         ./inviwo --logconsole --quit
 
-    - name: "Setup tmate session (on failure and debug_enabled)"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+    - name: "Setup tmate session"
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
         limit-access-to-actor: true
- 
  
   create-changelog:
     name: "Create Changelog"
@@ -457,7 +515,7 @@ jobs:
         echo "${{ steps.changelog.outputs.changelog }}"
         echo "-- End --"
     - name: "Upload Changelog"
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: changelog.md
         path: changelog.md

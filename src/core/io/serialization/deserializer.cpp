@@ -39,23 +39,50 @@
 
 namespace inviwo {
 
-Deserializer::Deserializer(const std::filesystem::path& fileName, allocator_type alloc)
+namespace {
+
+int getVersionAttribute(TiXmlElement* elem) {
+    int version{};
+    if (const auto ver = elem->Attribute(SerializeConstants::VersionAttribute)) {
+        detail::fromStr(*ver, version);
+        return version;
+    } else {
+        throw AbortException("Missing version", IVW_CONTEXT_CUSTOM("Deserializer"));
+    }
+}
+
+TiXmlElement* getRootElement(TiXmlDocument& doc, std::string_view rootElement) {
+    auto* root = doc.FirstChildElement(rootElement);
+    if (root) return root;
+
+    root = doc.FirstChildElement();
+    if (root) {
+        LogInfoCustom("Deserializer", "Expected to find root element of type: '"
+                                          << rootElement << "' but found '" << root->Value()
+                                          << "'");
+        return root;
+    }
+
+    throw AbortException(IVW_CONTEXT_CUSTOM("Deserializer"),
+                         "Unable to find a root element, expected a '{}'", rootElement);
+}
+
+}  // namespace
+
+Deserializer::Deserializer(const std::filesystem::path& fileName, std::string_view rootElement,
+                           allocator_type alloc)
     : SerializeBase(fileName, alloc), registeredFactories_{alloc} {
     try {
         doc_->LoadFile();
-        rootElement_ = doc_->FirstChildElement();
-        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
-            detail::fromStr(*ver, inviwoWorkspaceVersion_);
-        } else {
-            throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
-        }
+        rootElement_ = getRootElement(*doc_, rootElement);
+        version_ = getVersionAttribute(rootElement_);
     } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 
 Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& refPath,
-                           allocator_type alloc)
+                           std::string_view rootElement, allocator_type alloc)
     : SerializeBase(refPath, alloc), registeredFactories_{alloc} {
     try {
         std::pmr::string data{alloc};
@@ -65,30 +92,20 @@ Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& re
         data.assign(std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{});
 
         doc_->Parse(data.c_str(), nullptr, alloc);
-        rootElement_ = doc_->FirstChildElement();
-
-        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
-            detail::fromStr(*ver, inviwoWorkspaceVersion_);
-        } else {
-            throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
-        }
+        rootElement_ = getRootElement(*doc_, rootElement);
+        version_ = getVersionAttribute(rootElement_);
     } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 
 Deserializer::Deserializer(const std::pmr::string& content, const std::filesystem::path& refPath,
-                           allocator_type alloc)
+                           std::string_view rootElement, allocator_type alloc)
     : SerializeBase(refPath, alloc), registeredFactories_{alloc} {
     try {
         doc_->Parse(content.c_str(), nullptr, alloc);
-        rootElement_ = doc_->FirstChildElement();
-
-        if (const auto ver = rootElement_->Attribute(SerializeConstants::VersionAttribute)) {
-            detail::fromStr(*ver, inviwoWorkspaceVersion_);
-        } else {
-            throw AbortException("Missing inviwo workspace version", IVW_CONTEXT);
-        }
+        rootElement_ = getRootElement(*doc_, rootElement);
+        version_ = getVersionAttribute(rootElement_);
     } catch (const TiXmlError& e) {
         throw AbortException(e.what(), IVW_CONTEXT);
     }
@@ -172,7 +189,7 @@ void Deserializer::registerFactory(FactoryBase* factory) {
     registeredFactories_.push_back(factory);
 }
 
-int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
+int Deserializer::getVersion() const { return version_; }
 
 std::optional<std::string_view> detail::attribute(const TiXmlElement* node, std::string_view key) {
     return node->Attribute(key);

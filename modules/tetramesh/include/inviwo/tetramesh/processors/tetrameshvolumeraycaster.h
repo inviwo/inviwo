@@ -70,7 +70,7 @@ private:
     IntProperty maxSteps_;
 
     Shader shader_;
-    TetraMeshBuffers buffers_;
+    std::unique_ptr<TetraMeshBuffers> buffers_;
     std::shared_ptr<Mesh> mesh_;
 
     std::vector<vec4> tetraNodes_;

@@ -311,7 +311,7 @@ void PropertyOwner::serialize(Serializer& s) const {
 }
 
 void PropertyOwner::deserialize(Deserializer& d) {
-    if (d.getInviwoWorkspaceVersion() < 3) {
+    if (d.getVersion() < 3) {
         // This is for finding renamed composites, and moving old properties to new composites.
         NodeVersionConverter tvc([this](TxElement* node) {
             std::vector<const CompositeProperty*> props;

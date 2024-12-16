@@ -1,17 +1,15 @@
 {
   "version": 6,
   "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "include" : [
+    ".github/presets/common.json"
+  ],
   "configurePresets": [
     {
       "name": "gha",
-      "inherits" : ["msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "inherits" : ["inviwo-common", "msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"],
       "cacheVariables": {
         "IVW_CFG_USE_CCACHE_MSVC": "ON",
-        "IVW_MODULE_EIGENUTILS": "ON",
-        "IVW_MODULE_HDF5": "ON",
-        "IVW_MODULE_FFMPEG": "ON",
-        "IVW_MODULE_WEBBROWSER": "ON",
-        "IVW_MODULE_TETRAMESH": "ON",
         "IVW_MODULE_SGCT": "ON",
         "IVW_APP_INVIWO_DOME": "ON",
         "VCPKG_MANIFEST_FEATURES": "sgct"

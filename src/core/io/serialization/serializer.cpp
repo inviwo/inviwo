@@ -36,12 +36,13 @@
 
 namespace inviwo {
 
-Serializer::Serializer(const std::filesystem::path& fileName, allocator_type alloc)
+Serializer::Serializer(const std::filesystem::path& fileName, std::string_view rootElement,
+                       allocator_type alloc)
     : SerializeBase(fileName, alloc) {
     try {
         auto decl = alloc.new_object<TiXmlDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
         doc_->LinkEndChild(decl);
-        rootElement_ = alloc.new_object<TiXmlElement>(SerializeConstants::InviwoWorkspace);
+        rootElement_ = alloc.new_object<TiXmlElement>(rootElement);
         auto& attr = rootElement_->AddAttribute(SerializeConstants::VersionAttribute);
         detail::formatTo(SerializeConstants::InviwoWorkspaceVersion, attr);
         doc_->LinkEndChild(rootElement_);

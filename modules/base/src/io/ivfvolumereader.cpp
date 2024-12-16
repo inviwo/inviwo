@@ -54,6 +54,7 @@
 #include <functional>   // for __base
 #include <string>       // for string, basic_string<>:...
 #include <type_traits>  // for remove_extent_t
+#include <memory_resource>
 
 namespace inviwo {
 
@@ -67,7 +68,8 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     checkExists(filePath);
     const auto fileDirectory = filePath.parent_path();
 
-    Deserializer d(filePath);
+    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
+    Deserializer d{filePath, "InviwoVolume", &mbr};
 
     std::filesystem::path rawFile;
     size3_t dimensions{0u};
