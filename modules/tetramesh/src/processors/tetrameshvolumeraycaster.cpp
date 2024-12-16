@@ -89,7 +89,11 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
     , maxSteps_{"maxSteps", "Max Steps",
                 util::ordinalCount(10000).set(
                     "Upper limit of tetrahedras a ray can traverse."_help)}
-    , shader_{"tetramesh_traversal.vert", "tetramesh_traversal.frag", Shader::Build::No} {
+    , shader_{"tetramesh_traversal.vert", "tetramesh_traversal.frag", Shader::Build::No}
+    , buffers_{nullptr}
+    , mesh_{}
+    , tetraNodes_{}
+    , tetraNodeIds_{} {
 
     addPorts(inport_, imageInport_, outport_);
 
@@ -106,11 +110,13 @@ TetraMeshVolumeRaycaster::TetraMeshVolumeRaycaster()
 
     if (OpenGLCapabilities::getOpenGLVersion() < 430 &&
         !OpenGLCapabilities::isExtensionSupported("ARB_shader_storage_buffer_object")) {
-        LogError(
-            "OpenGL v4.3 or Shader Storage Buffer Objects (ARB_shader_storage_buffer_object) "
-            "required by this processor");
-
-        isReady_.setUpdate([]() { return false; });
+        isReady_.setUpdate([]() -> ProcessorStatus {
+            return {ProcessorStatus::Error,
+                    "OpenGL v4.3 or Shader Storage Buffer Objects "
+                    "(ARB_shader_storage_buffer_object) is required."};
+        });
+    } else {
+        buffers_ = std::make_unique<TetraMeshBuffers>();
     }
 }
 
@@ -127,7 +133,7 @@ void TetraMeshVolumeRaycaster::process() {
         tetraMesh.get(tetraNodes_, tetraNodeIds_);
         auto opposingFaces = utiltetra::getOpposingFaces(tetraNodeIds_);
 
-        buffers_.upload(tetraNodes_, tetraNodeIds_, opposingFaces);
+        buffers_->upload(tetraNodes_, tetraNodeIds_, opposingFaces);
         mesh_ = utiltetra::createBoundaryMesh(tetraMesh, tetraNodes_, tetraNodeIds_,
                                               utiltetra::getBoundaryFaces(opposingFaces));
     }
@@ -146,7 +152,7 @@ void TetraMeshVolumeRaycaster::process() {
     }
 
     shader_.activate();
-    buffers_.bind();
+    buffers_->bind();
 
     TextureUnitContainer texContainer;
     utilgl::setUniforms(shader_, camera_, lighting_, opacityScaling_, maxSteps_);
@@ -171,7 +177,7 @@ void TetraMeshVolumeRaycaster::process() {
         drawer.draw();
     }
 
-    buffers_.unbind();
+    buffers_->unbind();
     shader_.deactivate();
 
     if (imageInport_.hasData()) {

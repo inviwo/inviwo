@@ -63,6 +63,7 @@ public:
 
     virtual BaseOptionProperty& clearOptions() = 0;
 
+    bool empty() const;
     virtual size_t size() const = 0;
     virtual size_t getSelectedIndex() const = 0;
     virtual const std::string& getSelectedIdentifier() const = 0;
@@ -377,8 +378,10 @@ protected:
     }
     const OptionPropertyOption<T>& opt(size_t index) const {
         auto& options = opts();
-        IVW_ASSERT(index < options.size(), "Index out of range (number of options: "
-                                               << options.size() << ", index: " << index << ")");
+        if (index >= options.size()) {
+            throw Exception{IVW_CONTEXT, "Index out of range (number of options: {}, index: {})",
+                            options.size(), index};
+        }
         return options[index];
     }
     std::vector<OptionPropertyOption<T>>& optsMut() {

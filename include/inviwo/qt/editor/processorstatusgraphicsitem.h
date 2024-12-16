@@ -49,6 +49,8 @@ public:
     ProcessorStatusGraphicsItem(QGraphicsRectItem* parent, Processor* processor);
     virtual ~ProcessorStatusGraphicsItem() = default;
 
+    void setRuntimeError();
+    void resetState();
     void updateState(bool running = false);
 
     // override for qgraphicsitem_cast (refer qt documentation)
@@ -70,6 +72,8 @@ private:
 
     State state_;
     State current_;
+
+    bool runtimeError_;
 };
 
 }  // namespace inviwo
