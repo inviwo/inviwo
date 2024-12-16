@@ -5093,6 +5093,9 @@ IVW_CORE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="botto
 <tr class="memitem:a538c969cad616678d5a5aef8828d2657" id="r_a538c969cad616678d5a5aef8828d2657"><td class="memItemLeft" align="right" valign="top"><a id="a538c969cad616678d5a5aef8828d2657" name="a538c969cad616678d5a5aef8828d2657"></a>
 IVW_CORE_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, PickingHoverStates s)</td></tr>
 <tr class="separator:a538c969cad616678d5a5aef8828d2657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2536b7769520e0c1a39599dd9bfc3db8" id="r_a2536b7769520e0c1a39599dd9bfc3db8"><td class="memItemLeft" align="right" valign="top"><a id="a2536b7769520e0c1a39599dd9bfc3db8" name="a2536b7769520e0c1a39599dd9bfc3db8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>getVersion</b> ()</td></tr>
+<tr class="separator:a2536b7769520e0c1a39599dd9bfc3db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31264b921f297f287c34d2c32815b66d" id="r_a31264b921f297f287c34d2c32815b66d"><td class="memTemplParams" colspan="2"><a id="a31264b921f297f287c34d2c32815b66d" name="a31264b921f297f287c34d2c32815b66d"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a31264b921f297f287c34d2c32815b66d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classinviwo_1_1MetaDataType.html">MetaDataType</a>&lt; T &gt; &amp;lhs, const <a class="el" href="classinviwo_1_1MetaDataType.html">MetaDataType</a>&lt; T &gt; &amp;rhs)</td></tr>
@@ -6462,7 +6465,7 @@ template&lt;class F , class... Args&gt; </div>
 </div><div class="memdoc">
 <p>Converts a JSON object to an <a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a>. Expects object layout according to the members of <a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a>: {{"value", filePath}, {"selectedExtension", <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a>}, {"acceptMode", AcceptMode}, {"fileMode", FileMode}, {"contentType", ContentType}, {"nameFilters", std::vector&lt;FileExtension&gt;}, {"requestFile", ""}, // Will call requestFile() } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a></dd></dl>
 <p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> p = j.get&lt;<a class="code hl_class" href="classinviwo_1_1FileProperty.html">FileProperty</a>&gt;();</div>
-<div class="ttc" id="aclassinviwo_1_1FileProperty_html"><div class="ttname"><a href="classinviwo_1_1FileProperty.html">inviwo::FileProperty</a></div><div class="ttdef"><b>Definition</b> fileproperty.h:115</div></div>
+<div class="ttc" id="aclassinviwo_1_1FileProperty_html"><div class="ttname"><a href="classinviwo_1_1FileProperty.html">inviwo::FileProperty</a></div><div class="ttdef"><b>Definition</b> fileproperty.h:117</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -7322,7 +7325,7 @@ template&lt;typename T &gt; </div>
 <p>Converts an <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a> to a JSON object. Produces layout according to the members of <a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a>: { {"value": val}, {"id": id}, {"name": name} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a></dd></dl>
 <p>Usage example: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption&lt;double&gt;</a> p;</div>
 <div class="line">json j = p;</div>
-<div class="ttc" id="aclassinviwo_1_1OptionPropertyOption_html"><div class="ttname"><a href="classinviwo_1_1OptionPropertyOption.html">inviwo::OptionPropertyOption</a></div><div class="ttdef"><b>Definition</b> optionproperty.h:88</div></div>
+<div class="ttc" id="aclassinviwo_1_1OptionPropertyOption_html"><div class="ttname"><a href="classinviwo_1_1OptionPropertyOption.html">inviwo::OptionPropertyOption</a></div><div class="ttdef"><b>Definition</b> optionproperty.h:89</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

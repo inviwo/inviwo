@@ -134,9 +134,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac2e513dcb5502e1703736900bcf7ba01" id="r_ac2e513dcb5502e1703736900bcf7ba01"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2e513dcb5502e1703736900bcf7ba01">Serializer</a> (const std::filesystem::path &amp;fileName, allocator_type alloc={})</td></tr>
-<tr class="memdesc:ac2e513dcb5502e1703736900bcf7ba01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes serializer with a file name that will be used to set relative paths to data.  <br /></td></tr>
-<tr class="separator:ac2e513dcb5502e1703736900bcf7ba01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c8e59ec66a0a3d776f5e21a59402edd" id="r_a5c8e59ec66a0a3d776f5e21a59402edd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c8e59ec66a0a3d776f5e21a59402edd">Serializer</a> (const std::filesystem::path &amp;fileName, std::string_view rootElement=SerializeConstants::InviwoWorkspace, allocator_type alloc={})</td></tr>
+<tr class="memdesc:a5c8e59ec66a0a3d776f5e21a59402edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes serializer with a file name that will be used to set relative paths to data.  <br /></td></tr>
+<tr class="separator:a5c8e59ec66a0a3d776f5e21a59402edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d4c6a2bb0202db839c85a819b72d051" id="r_a9d4c6a2bb0202db839c85a819b72d051"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d4c6a2bb0202db839c85a819b72d051">writeFile</a> ()</td></tr>
 <tr class="memdesc:a9d4c6a2bb0202db839c85a819b72d051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes serialized data to the file specified by the currently set file name.  <br /></td></tr>
 <tr class="separator:a9d4c6a2bb0202db839c85a819b72d051"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -324,8 +324,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a8ee53edcdef92f24be55966f5218994b inherit pub_static_methods_classinviwo_1_1SerializeBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac2e513dcb5502e1703736900bcf7ba01" name="ac2e513dcb5502e1703736900bcf7ba01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2e513dcb5502e1703736900bcf7ba01">&#9670;&#160;</a></span>Serializer()</h2>
+<a id="a5c8e59ec66a0a3d776f5e21a59402edd" name="a5c8e59ec66a0a3d776f5e21a59402edd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c8e59ec66a0a3d776f5e21a59402edd">&#9670;&#160;</a></span>Serializer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -337,6 +337,11 @@ Additional Inherited Members</h2></td></tr>
           <td class="memname">inviwo::Serializer::Serializer </td>
           <td>(</td>
           <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>fileName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>rootElement</em></span><span class="paramdefsep"> = </span><span class="paramdefval">SerializeConstants::InviwoWorkspace</span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
