@@ -368,11 +368,12 @@ void AnimationController::tick() {
         }
     }
 
+    // Update possible state change caused by playback mode.
+    // We need to do this before eval since eval must be able to change the state.
+    setState(newState);
+
     // Evaluate animation
     eval(currentTime_, newTime);
-
-    // May be in paused state
-    setState(newState);
 }
 
 void AnimationController::render() {
