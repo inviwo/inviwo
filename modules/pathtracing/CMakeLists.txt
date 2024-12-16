@@ -3,14 +3,12 @@ ivw_module(Pathtracing)
 set(HEADER_FILES
     include/inviwo/pathtracing/pathtracingmodule.h
     include/inviwo/pathtracing/pathtracingmoduledefine.h
-    include/inviwo/pathtracing/processors/uniformgridopacity.h
     include/inviwo/pathtracing/processors/volumepathtracer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/pathtracingmodule.cpp
-    src/processors/uniformgridopacity.cpp
     src/processors/volumepathtracer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
