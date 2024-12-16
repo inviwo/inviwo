@@ -41,7 +41,7 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API ProcessorErrorItem : public QGraphicsRectItem {
 public:
-    ProcessorErrorItem(QGraphicsItem* parent);
+    explicit ProcessorErrorItem(QGraphicsItem* parent);
 
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
