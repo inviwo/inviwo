@@ -89,7 +89,6 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , backgroundJobs_{0}
 #if IVW_PROFILING
     , processCount_(0)
-    , countLabel_(nullptr)
     , maxEvalTime_(0.0)
     , evalTime_(0.0)
     , totEvalTime_(0.0)

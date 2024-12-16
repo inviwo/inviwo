@@ -38,6 +38,7 @@ Checks: >
     -readability-magic-numbers,
     -readability-uppercase-literal-suffix,
     -readability-named-parameter,
+    -readability-implicit-bool-conversion,
 
   -clang-diagnostic-unknown-pragmas,
 
@@ -49,7 +50,6 @@ CheckOptions:
   readability-identifier-length.IgnoredVariableNames: '^(it|id)$'
   readability-identifier-length.MinimumExceptionNameLength: '1'
   readability-identifier-length.MinimumLoopCounterNameLength: '1'
-  readability-implicit-bool-conversion.AllowPointerConditions: true
 
 FormatStyle: file
 WarningsAsErrors: ''
