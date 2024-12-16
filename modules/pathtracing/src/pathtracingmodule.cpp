@@ -29,7 +29,6 @@
 
 #include <inviwo/pathtracing/pathtracingmodule.h>
 
-#include <inviwo/pathtracing/processors/uniformgridopacity.h>
 #include <inviwo/pathtracing/processors/volumepathtracer.h>
 #include <modules/opengl/shader/shadermanager.h>
 
@@ -43,7 +42,6 @@ PathtracingModule::PathtracingModule(InviwoApplication* app) : InviwoModule(app,
 
     // Processors
     registerProcessor<VolumePathTracer>();
-    registerProcessor<UniformGridOpacity>();
 
     // Properties
     // registerProperty<pathtracingProperty>();
