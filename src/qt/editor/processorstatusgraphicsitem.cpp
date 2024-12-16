@@ -42,16 +42,28 @@ namespace inviwo {
 
 ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* parent,
                                                          Processor* processor)
-    : EditorGraphicsItem(parent)
-    , processor_(processor)
-    , state_(processor_->isReady() ? State::Ready : State::Invalid)
-    , current_(processor_->isReady() ? State::Ready : State::Invalid) {
+    : EditorGraphicsItem{parent}
+    , processor_{processor}
+    , state_{processor_->isReady() ? State::Ready : State::Invalid}
+    , current_{processor_->isReady() ? State::Ready : State::Invalid}
+    , runtimeError_{false} {
+
     setRect(-0.5f * size_ - lineWidth_, -0.5f * size_ - lineWidth_, size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
 }
 
+void ProcessorStatusGraphicsItem::setRuntimeError() {
+    runtimeError_ = true;
+    updateState(false);
+}
+
+void ProcessorStatusGraphicsItem::resetState() {
+    runtimeError_ = false;
+    updateState(false);
+}
+
 void ProcessorStatusGraphicsItem::updateState(bool running) {
-    if (processor_->hasMetaData("ProcessError")) {
+    if (runtimeError_) {
         state_ = State::Error;
     } else if (running) {
         state_ = State::Running;

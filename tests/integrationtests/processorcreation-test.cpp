@@ -114,5 +114,12 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
 
 INSTANTIATE_TEST_SUITE_P(
     RegisteredProcessors, ProcessorCreationTests,
-    ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()));
+    ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()),
+    [](const testing::TestParamInfo<std::string>& info) {
+        auto name = fmt::format("{:04}_{}", info.index, info.param);
+        std::replace_if(
+            name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+        return name;
+    });
+
 }  // namespace inviwo

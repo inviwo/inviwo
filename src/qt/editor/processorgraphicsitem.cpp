@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include <inviwo/qt/editor/processorgraphicsitem.h>
+
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
@@ -45,7 +47,6 @@
 #include <inviwo/qt/editor/processorprogressgraphicsitem.h>
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
-#include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -174,20 +175,14 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         activityInd->getActivityIndicator().addObserver(statusItem_);
     }
 
-#if IVW_PROFILING
-    {
-        countLabel_ = new LabelGraphicsItem(this, 100, Qt::AlignRight | Qt::AlignBottom);
-        countLabel_->setPos(rect().bottomRight() + QPointF(-5.0, 0.0));
-        countLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont font("Segoe", labelHeight, QFont::Normal, false);
-        font.setPixelSize(pointSizeToPixelSize(labelHeight));
-        countLabel_->setFont(font);
-    }
-#endif
-
     setVisible(processorMeta_->isVisible());
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
+
+    if (processor_->status() == ProcessorStatus::Error) {
+        setErrorText(processor_->status().reason());
+    }
+    statusItem_->updateState();
 }
 
 void ProcessorGraphicsItem::positionLabels() {
@@ -343,6 +338,15 @@ void ProcessorGraphicsItem::paint(QPainter* p,
 
     p->drawRoundedRect(rect(), roundedCorners, roundedCorners);
 
+#if IVW_PROFILING
+    QFont font("Segoe", 8, QFont::Normal, false);
+    font.setPixelSize(pointSizeToPixelSize(8));
+    p->setFont(font);
+    p->setPen(Qt::lightGray);
+    p->drawText(rect().adjusted(120.0, -40.0, -5.0, 0.0), Qt::AlignRight | Qt::AlignBottom,
+                QString::number(processCount_));
+#endif
+
     p->restore();
 }
 
@@ -373,10 +377,6 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
                 QApplication::mouseButtons() == Qt::MouseButton::NoButton) {
                 processorMeta_->setPosition(ivec2(newPos.x(), newPos.y()));
             }
-            if (errorText_) {
-                errorText_->setPos(mapToScene(rect().topRight()) + ProcessorErrorItem::offset);
-                errorText_->setAnchor(mapToScene(rect().topRight()));
-            }
             if (auto editor = qobject_cast<NetworkEditor*>(scene())) {
                 editor->updateSceneSize();
             }
@@ -402,6 +402,9 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         }
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
+            if (processor_->status() == ProcessorStatus::Error) {
+                setErrorText(processor_->status().reason());
+            }
             break;
         default:
             break;
@@ -474,8 +477,7 @@ std::string ProcessorGraphicsItem::getIdentifier() const { return processor_->ge
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
 void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) {
-    processor_->unsetMetaData<StringMetaData>("ProcessError");
-    statusItem_->updateState();
+    statusItem_->resetState();
 
     if (processor_->status() == ProcessorStatus::Error) {
         setErrorText(processor_->status().reason());
@@ -503,15 +505,12 @@ void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
 void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
 #if IVW_PROFILING
     processCount_++;
-    countLabel_->setText(utilqt::toQString(fmt::to_string(processCount_)));
     clock_.reset();
     clock_.start();
+    update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
 #endif
 
-    if (processor_->hasMetaData("ProcessError")) {
-        processor_->unsetMetaData<StringMetaData>("ProcessError");
-        statusItem_->updateState();
-    }
+    statusItem_->resetState();
     if (errorText_) {
         errorText_->clear();
     }
@@ -529,23 +528,21 @@ void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
 #if IVW_PROFILING
 void ProcessorGraphicsItem::resetTimeMeasurements() {
     processCount_ = 0;
-    countLabel_->setText("0");
     maxEvalTime_ = 0.0;
     evalTime_ = 0.0;
     totEvalTime_ = 0.0;
+    update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
 }
 #endif
 
 ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const { return statusItem_; }
 
 void ProcessorGraphicsItem::setErrorText(std::string_view error) {
-    const auto ref = mapToScene(rect().topRight());
+    // Avoid adding the error text when we use generateProcessorPreview
+    if (!scene() || utilqt::fromQString(scene()->objectName()) != NetworkEditor::name) return;
     if (!errorText_) {
-        errorText_ = std::make_unique<ProcessorErrorItem>(ref);
-        scene()->addItem(errorText_.get());
+        errorText_ = std::make_unique<ProcessorErrorItem>(this);
     }
-    errorText_->setPos(ref + ProcessorErrorItem::offset);
-    errorText_->setAnchor(ref);
     errorText_->setText(error);
     errorText_->setActive(isSelected());
 }

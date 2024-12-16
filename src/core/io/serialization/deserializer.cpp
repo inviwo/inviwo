@@ -52,7 +52,7 @@ int getVersionAttribute(TiXmlElement* elem) {
 }
 
 TiXmlElement* getRootElement(TiXmlDocument& doc, std::string_view rootElement) {
-    auto root = doc.FirstChildElement(rootElement);
+    auto* root = doc.FirstChildElement(rootElement);
     if (root) return root;
 
     root = doc.FirstChildElement();

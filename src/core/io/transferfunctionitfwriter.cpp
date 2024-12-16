@@ -60,7 +60,7 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeData
 
     std::pmr::string xml{&mbr};
     serializer.write(xml);
-    
+
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
     std::copy(xml.begin(), xml.end(), buffer->begin());
     return buffer;

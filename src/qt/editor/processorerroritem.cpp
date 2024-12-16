@@ -30,6 +30,8 @@
 #include <inviwo/qt/editor/processorerroritem.h>
 
 #include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/processorgraphicsitem.h>
+
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <QFontMetricsF>
@@ -39,6 +41,7 @@
 #include <QBrush>
 #include <QPen>
 #include <QPainter>
+#include <QRectF>
 
 namespace inviwo {
 
@@ -67,14 +70,15 @@ struct ErrorLine : QGraphicsLineItem {
 
 }  // namespace
 
-ProcessorErrorItem::ProcessorErrorItem(QPointF anchor)
-    : QGraphicsRectItem()
+ProcessorErrorItem::ProcessorErrorItem(QGraphicsItem* parent)
+    : QGraphicsRectItem(parent)
     , text_{new QGraphicsSimpleTextItem(this)}
     , line_{new ErrorLine(this)}
     , hasError_{false}
     , active_{false}
-    , pressing_{false}
-    , anchorPos_{anchor} {
+    , pressing_{false} {
+
+    setPos(ProcessorErrorItem::offset);
 
     text_->setFont(QFont("Segoe", 12, QFont::Normal, false));
     text_->setBrush(QBrush{Qt::white});
@@ -83,6 +87,12 @@ ProcessorErrorItem::ProcessorErrorItem(QPointF anchor)
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setZValue(depth::processorError);
     line_->setPen(QPen(Qt::black, 0.5, Qt::SolidLine, Qt::RoundCap));
+
+    if (auto* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(parentItem())) {
+        setPos(p->rect().topRight() + ProcessorErrorItem::offset);
+        const auto dest = mapFromParent(p->rect().topRight());
+        line_->setLine(QLineF{QPointF{0.0, 0.0}, dest});
+    }
 }
 
 void ProcessorErrorItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
@@ -110,10 +120,6 @@ void ProcessorErrorItem::clear() {
     hasError_ = false;
     hide();
 }
-void ProcessorErrorItem::setAnchor(QPointF p) {
-    anchorPos_ = p;
-    line_->setLine(QLineF(QPointF(0.0, 0.0), mapFromScene(anchorPos_)));
-}
 void ProcessorErrorItem::setActive(bool active) {
     active_ = active;
     if (!pressing_ && !active && !isSelected()) {
@@ -135,7 +141,10 @@ QVariant ProcessorErrorItem::itemChange(GraphicsItemChange change, const QVarian
             hide();
         }
     } else if (change == QGraphicsItem::ItemPositionHasChanged) {
-        line_->setLine(QLineF(QPointF{0.0, 0.0}, mapFromScene(anchorPos_)));
+        if (auto* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(parentItem())) {
+            const auto dest = mapFromParent(p->rect().topRight());
+            line_->setLine(QLineF{QPointF{0.0, 0.0}, dest});
+        }
     }
     return QGraphicsItem::itemChange(change, value);
 }

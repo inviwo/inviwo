@@ -56,6 +56,8 @@ void BaseOptionProperty::set(const Property* srcProperty) {
     }
 }
 
+bool BaseOptionProperty::empty() const { return size() == 0; }
+
 /// @cond
 template class IVW_CORE_TMPL_INST OptionPropertyOption<unsigned int>;
 template class IVW_CORE_TMPL_INST OptionPropertyOption<int>;

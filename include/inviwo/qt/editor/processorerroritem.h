@@ -41,14 +41,13 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API ProcessorErrorItem : public QGraphicsRectItem {
 public:
-    ProcessorErrorItem(QPointF anchor);
+    ProcessorErrorItem(QGraphicsItem* parent);
 
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;
 
     void setText(std::string_view error);
     void clear();
-    void setAnchor(QPointF p);
     void setActive(bool active);
 
     QString text() const;
@@ -69,7 +68,6 @@ protected:
     bool hasError_;
     bool active_;
     bool pressing_;
-    QPointF anchorPos_;
 };
 
 }  // namespace inviwo
