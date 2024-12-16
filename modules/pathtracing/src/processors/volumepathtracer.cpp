@@ -63,7 +63,7 @@ const ProcessorInfo VolumePathTracer::processorInfo_{
     Tags::GL,                       // Tags
 };
 
-const ProcessorInfo VolumePathTracer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumePathTracer::getProcessorInfo() const { return processorInfo_; }
 
 VolumePathTracer::VolumePathTracer()
     : Processor()
