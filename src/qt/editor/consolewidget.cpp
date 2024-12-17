@@ -183,7 +183,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->verticalHeader()->setResizeContentsPrecision(0);
     tableView_->verticalHeader()->setMinimumSectionSize(1);
     tableView_->verticalHeader()->setDefaultSectionSize(1);
-    tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
     QHBoxLayout* statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
@@ -225,6 +225,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             }
             levelFilter_->setFilterRegularExpression(QString::fromStdString(ss.str()));
         }
+        applyRowHeights(0, tableView_->verticalHeader()->count());
     };
 
     auto levelGroup = new QMenu(this);
@@ -273,9 +274,14 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     connect(filterPattern_, &QLineEdit::textChanged, [this, clearFilter](const QString& text) {
         filter_->setFilterRegularExpression(text);
         clearFilter->setEnabled(!text.isEmpty());
+
+        applyRowHeights(0, tableView_->verticalHeader()->count());
     });
 
-    connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
+    connect(clearFilter, &QAction::triggered, [this]() {
+        filterPattern_->setText("");
+        applyRowHeights(0, tableView_->verticalHeader()->count());
+    });
 
     auto filterAction = new QAction(makeIcon("find"), "&Filter", this);
     filterAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_F);
@@ -481,6 +487,14 @@ void ConsoleWidget::logEntry(LogTableModelEntry e) {
     emit hasNewEntries();
 }
 
+void ConsoleWidget::applyRowHeights(int start, int stop) {
+    for (int i = start; i < stop; ++i) {
+        const auto hd = tableView_->model()->headerData(i, Qt::Vertical, Qt::SizeHintRole);
+        const auto height = hd.toSize().height();
+        tableView_->setRowHeight(i, height);
+    }
+}
+
 void ConsoleWidget::onNewEntries() {
     {
         std::unique_lock lock{entriesMutex_};
@@ -489,8 +503,14 @@ void ConsoleWidget::onNewEntries() {
         for (auto& e : newEntries_) {
             updateIndicators(e.level);
         }
+
+        const auto oldCount = tableView_->verticalHeader()->count();
+
         model_.log(newEntries_);
         newEntries_.clear();
+
+        const auto newCount = tableView_->verticalHeader()->count();
+        applyRowHeights(oldCount, newCount);
     }
 
     emit scrollToBottom();

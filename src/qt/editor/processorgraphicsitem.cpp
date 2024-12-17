@@ -67,18 +67,27 @@
 
 namespace inviwo {
 
-const QSizeF ProcessorGraphicsItem::size_ = {150.0, 50.0};
+namespace {
 
 int pointSizeToPixelSize(const int pointSize) {
     // compute pixel size for fonts by assuming 96 dpi as basis
     return ((pointSize * 4) / 3);
 }
 
+constexpr double labelMargin = 8.0;
+constexpr double tagMargin = 4.0;
+
+}  // namespace
+
 ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     : ProcessorObserver()
-    , LabelGraphicsItemObserver()
     , processor_(processor)
     , processorMeta_{processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)}
+    , nameText_{}
+    , identifierText_{}
+    , identifierSize_{}
+    , tagText_{}
+    , tagSize_{}
     , animation_{nullptr}
     , progressItem_(nullptr)
     , statusItem_{new ProcessorStatusGraphicsItem(this, processor_)}
@@ -95,60 +104,52 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 #endif
     , errorText_{nullptr} {
 
-    static constexpr int labelHeight = 8;
-    auto width = static_cast<int>(size_.width());
-
     setZValue(depth::processor);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
 
-    {
-        displayNameLabel_ =
-            new LabelGraphicsItem(this, width - 2 * labelHeight - 10, Qt::AlignBottom);
-        displayNameLabel_->setDefaultTextColor(Qt::white);
-        QFont nameFont("Segoe", labelHeight, QFont::Black, false);
-        nameFont.setPixelSize(pointSizeToPixelSize(labelHeight));
-        displayNameLabel_->setFont(nameFont);
-        displayNameLabel_->setText(utilqt::toQString(processor_->getDisplayName()));
-        LabelGraphicsItemObserver::addObservation(displayNameLabel_);
+    const auto setLabels = [&]() {
+        nameText_.setTextFormat(Qt::PlainText);
+        identifierText_.setTextFormat(Qt::PlainText);
+        tagText_.setTextFormat(Qt::PlainText);
 
-        nameChange_ =
-            processor->onDisplayNameChange([this](std::string_view newName, std::string_view) {
-                auto newDisplayName = utilqt::toQString(newName);
-                if (newDisplayName != displayNameLabel_->text()) {
-                    displayNameLabel_->setText(newDisplayName);
-                }
-            });
-    }
-    {
-        identifierLabel_ = new LabelGraphicsItem(this, width - 2 * labelHeight, Qt::AlignTop);
-        identifierLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont classFont("Segoe", labelHeight, QFont::Normal, false);
-        classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
-        identifierLabel_->setFont(classFont);
-        identifierLabel_->setText(utilqt::toQString(processor_->getIdentifier()));
-        LabelGraphicsItemObserver::addObservation(identifierLabel_);
+        const auto tags =
+            utilqt::toQString(util::getPlatformTags(processor_->getTags()).getString());
+        tagSize_ = [&]() {
+            QFontMetricsF fm{getFont(FontType::Tag)};
+            return fm.tightBoundingRect(tags).width();
+        }();
 
-        idChange_ =
-            processor_->onIdentifierChange([this](std::string_view newID, std::string_view) {
-                auto newIdentifier = utilqt::toQString(newID);
-                if (newIdentifier != identifierLabel_->text()) {
-                    identifierLabel_->setText(newIdentifier);
-                }
-            });
-    }
-    {
-        tagLabel_ = new LabelGraphicsItem(this, width / 2, Qt::AlignTop);
-        tagLabel_->setDefaultTextColor(Qt::lightGray);
-        QFont classFont("Segoe", labelHeight, QFont::Bold, false);
-        classFont.setPixelSize(pointSizeToPixelSize(labelHeight));
-        tagLabel_->setFont(classFont);
-        tagLabel_->setText(
-            utilqt::toQString(util::getPlatformTags(processor_->getTags()).getString()));
-    }
-    auto tagSize = tagLabel_->usedTextWidth();
-    identifierLabel_->setCrop(width - 2 * labelHeight - (tagSize > 0 ? tagSize + 4 : 0));
-    positionLabels();
+        nameText_.setText(
+            elide(processor_->getDisplayName(), size_.width() - 2.0 * labelMargin, FontType::Name));
+
+        identifierText_.setText(elide(processor_->getIdentifier(),
+                                      size_.width() - 2.0 * labelMargin - tagSize_ - tagMargin,
+                                      FontType::Identifier));
+        identifierSize_ = [&]() {
+            QFontMetricsF fm{getFont(FontType::Identifier)};
+            return fm.tightBoundingRect(identifierText_.text()).width();
+        }();
+
+        tagText_.setText(tags);
+
+        QTextOption opts{Qt::AlignLeft | Qt::AlignBaseline};
+        opts.setWrapMode(QTextOption::NoWrap);
+        nameText_.setTextOption(opts);
+        identifierText_.setTextOption(opts);
+        tagText_.setTextOption(opts);
+    };
+    setLabels();
+    nameChange_ =
+        processor->onDisplayNameChange([this, setLabels](std::string_view, std::string_view) {
+            setLabels();
+            update();
+        });
+    idChange_ =
+        processor_->onIdentifierChange([this, setLabels](std::string_view, std::string_view) {
+            setLabels();
+            update();
+        });
 
     processor_->ProcessorObservable::addObserver(this);
     processorMeta_->addObserver(this);
@@ -182,16 +183,6 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         setErrorText(processor_->status().reason());
     }
     statusItem_->updateState();
-}
-
-void ProcessorGraphicsItem::positionLabels() {
-    static constexpr int labelMargin = 7;
-
-    displayNameLabel_->setPos(QPointF(rect().left() + labelMargin, -2));
-    identifierLabel_->setPos(QPointF(rect().left() + labelMargin, -3));
-
-    auto offset = identifierLabel_->usedTextWidth();
-    tagLabel_->setPos(QPointF(rect().left() + labelMargin + offset + 4, -3));
 }
 
 QPointF ProcessorGraphicsItem::portOffset(PortType type, size_t index) {
@@ -293,28 +284,43 @@ ProcessorGraphicsItem::~ProcessorGraphicsItem() = default;
 
 Processor* ProcessorGraphicsItem::getProcessor() const { return processor_; }
 
-void ProcessorGraphicsItem::editDisplayName() {
-    setFocus();
-    displayNameLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+const QFont& ProcessorGraphicsItem::getFont(FontType type) const {
+    static QFont name = []() {
+        QFont f("Segoe", 10, QFont::ExtraBold, false);
+        f.setPixelSize(pointSizeToPixelSize(8));
+        return f;
+    }();
 
-    QTextCursor cur = displayNameLabel_->textCursor();
-    cur.movePosition(QTextCursor::End);
-    displayNameLabel_->setTextCursor(cur);
-    displayNameLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
-    displayNameLabel_->setFocus();
-    displayNameLabel_->setSelected(true);
+    static QFont identifier = []() {
+        QFont f("Segoe", 8, QFont::Normal, false);
+        f.setPixelSize(pointSizeToPixelSize(8));
+        return f;
+    }();
+
+    static QFont tag = []() {
+        QFont f("Segoe", 8, QFont::Bold, false);
+        f.setPixelSize(pointSizeToPixelSize(8));
+        return f;
+    }();
+
+    using enum ProcessorGraphicsItem::FontType;
+    switch (type) {
+        case Name:
+            return name;
+        case Identifier:
+            return identifier;
+        case Tag:
+            return tag;
+        case Count:
+            return identifier;
+        default:
+            return identifier;
+    }
 }
 
-void ProcessorGraphicsItem::editIdentifier() {
-    setFocus();
-    identifierLabel_->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
-
-    QTextCursor cur = identifierLabel_->textCursor();
-    cur.movePosition(QTextCursor::End);
-    identifierLabel_->setTextCursor(cur);
-    identifierLabel_->setTextInteractionFlags(Qt::TextEditorInteraction);
-    identifierLabel_->setFocus();
-    identifierLabel_->setSelected(true);
+QString ProcessorGraphicsItem::elide(std::string_view text, double width, FontType type) const {
+    QFontMetricsF fm{getFont(type)};
+    return fm.elidedText(utilqt::toQString(text), Qt::ElideMiddle, width);
 }
 
 void ProcessorGraphicsItem::paint(QPainter* p,
@@ -337,20 +343,26 @@ void ProcessorGraphicsItem::paint(QPainter* p,
 
     p->drawRoundedRect(rect(), roundedCorners, roundedCorners);
 
-#if IVW_PROFILING
-    QFont font("Segoe", 8, QFont::Normal, false);
-    font.setPixelSize(pointSizeToPixelSize(8));
-    p->setFont(font);
+    p->setFont(getFont(FontType::Name));
+    p->setPen(Qt::white);
+    p->drawStaticText(QPointF{rect().left() + labelMargin, -14.0}, nameText_);
+
+    p->setFont(getFont(FontType::Identifier));
     p->setPen(Qt::lightGray);
+    p->drawStaticText(QPointF{rect().left() + labelMargin, 2.0}, identifierText_);
+
+    p->setFont(getFont(FontType::Tag));
+    p->drawStaticText(QPointF{rect().left() + labelMargin + identifierSize_ + tagMargin, 2.0},
+                      tagText_);
+
+#if IVW_PROFILING
+
+    p->setFont(getFont(FontType::Count));
     p->drawText(rect().adjusted(120.0, -40.0, -5.0, 0.0), Qt::AlignRight | Qt::AlignBottom,
                 QString::number(processCount_));
 #endif
 
     p->restore();
-}
-
-bool ProcessorGraphicsItem::isEditingProcessorName() {
-    return (displayNameLabel_->textInteractionFlags() == Qt::TextEditorInteraction);
 }
 
 void ProcessorGraphicsItem::snapToGrid() {
@@ -446,32 +458,6 @@ void ProcessorGraphicsItem::updateWidgets() {
         }
     }
 }
-
-void ProcessorGraphicsItem::onLabelGraphicsItemChanged(LabelGraphicsItem* item) {
-    if (item == displayNameLabel_ && displayNameLabel_->isFocusOut()) {
-        auto newName = utilqt::fromQString(displayNameLabel_->text());
-        if (!newName.empty()) {
-            processor_->setDisplayName(newName);
-            displayNameLabel_->setNoFocusOut();
-        }
-    } else if (item == identifierLabel_ && identifierLabel_->isFocusOut()) {
-        auto newId = utilqt::fromQString(identifierLabel_->text());
-        if (!newId.empty()) {
-            try {
-                processor_->setIdentifier(newId);
-                identifierLabel_->setNoFocusOut();
-            } catch (Exception& e) {
-                identifierLabel_->setText(utilqt::toQString(processor_->getIdentifier()));
-                LogWarn(e.getMessage());
-            }
-            positionLabels();
-        }
-    }
-}
-
-void ProcessorGraphicsItem::onLabelGraphicsItemEdited(LabelGraphicsItem*) { positionLabels(); }
-
-std::string ProcessorGraphicsItem::getIdentifier() const { return processor_->getIdentifier(); }
 
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
