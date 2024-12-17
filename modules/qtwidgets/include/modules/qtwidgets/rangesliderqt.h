@@ -79,8 +79,8 @@ protected:
     virtual bool eventFilter(QObject* obj, QEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 
-    void handleGrooveEvent(Groove groove, QEvent* event);
-    void handleCenterWidgetEvent(QEvent* event);
+    bool handleGrooveEvent(Groove groove, QEvent* event);
+    bool handleCenterWidgetEvent(QEvent* event);
 
     void updateStateFromSliders();
     void updateSlidersFromState();

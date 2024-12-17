@@ -183,6 +183,8 @@ protected:
 private:
     void logEntry(LogTableModelEntry);
 
+    void applyRowHeights(int start, int stop);
+
     QModelIndex mapToSource(int row, int col);
     QModelIndex mapFromSource(int row, int col);
     void copy();
