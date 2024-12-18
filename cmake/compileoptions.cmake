@@ -163,6 +163,9 @@ function(ivw_define_standard_properties)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             list(APPEND comp_opts "-Wno-mismatched-tags") # gives lots of warnings about redefinitions of structs as class.
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+            # FMT generatats lots for false negative for this. Should be fixed in next fmt relase, current 11.0.2.
+            list(APPEND comp_opts "-Wno-stringop-overflow")
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
             list(APPEND comp_opts "-fsized-deallocation") # see https://github.com/pybind/pybind11/issues/1604
