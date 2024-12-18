@@ -62,7 +62,7 @@ protected:
 
 template <>
 struct ValueWrapper<TransferFunction> {
-    ValueWrapper<TransferFunction>(std::string_view name, const TransferFunction& transferFunction)
+    ValueWrapper(std::string_view name, const TransferFunction& transferFunction)
         : value{transferFunction}
         , defaultPoints{value.get()}
         , defaultMask{value.getMask()}

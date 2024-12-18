@@ -12,7 +12,7 @@ inputs:
 
   clang-version:
     description: 'Which clang version to use'
-    default: 17
+    default: 19
 
 
 runs:
@@ -68,12 +68,6 @@ runs:
         version: ${{ inputs.clang-version }}
         env: true
 
-    - name: "Install Qt"
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.7.0
-        dir: ${{ github.workspace }}
-
     - name: "Setup Python"
       uses: actions/setup-python@v5
       with:
@@ -85,3 +79,14 @@ runs:
     - name: "Install Python Modules"
       shell: bash
       run: pip3 install -r inviwo/requirements.txt
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '>=6.8.0'
+        dir: ${{ github.workspace }}
+        setup-python: false
+
+
+
+

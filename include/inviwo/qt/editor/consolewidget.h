@@ -61,6 +61,7 @@ namespace inviwo {
 
 class MenuItem;
 class InviwoMainWindow;
+class InviwoEditMenu;
 
 class LogTableModelEntry {
 public:
@@ -183,11 +184,16 @@ protected:
 private:
     void logEntry(LogTableModelEntry);
 
+    void restoreState(QMenu* viewColGroup);
+
     void applyRowHeights(int start, int stop);
+    static std::shared_ptr<MenuItem> setupCopyPaste(InviwoEditMenu* editMenu,
+                                                    QItemSelectionModel* selectionModel,
+                                                    QObject* owner);
+    static void copy(QItemSelectionModel* selectionModel);
 
     QModelIndex mapToSource(int row, int col);
     QModelIndex mapFromSource(int row, int col);
-    void copy();
 
     QTableView* tableView_;
     LogTableModel model_;

@@ -658,7 +658,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 processor->setSelected(true);
 
                 bool ok{false};
-                QString text = QInputDialog::getText(
+                const QString text = QInputDialog::getText(
                     nullptr, "Rename", "Name:", QLineEdit::Normal,
                     utilqt::toQString(processor->getProcessor()->getDisplayName()), &ok,
                     Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
@@ -677,7 +677,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 processor->setSelected(true);
 
                 bool ok{false};
-                QString text = QInputDialog::getText(
+                const QString text = QInputDialog::getText(
                     nullptr, "Rename", "Identifier:", QLineEdit::Normal,
                     utilqt::toQString(processor->getProcessor()->getIdentifier()), &ok,
                     Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
@@ -959,7 +959,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 std::unique_ptr<QMimeData> NetworkEditor::copy() const {
     auto copyError = [](auto&& container) -> std::unique_ptr<QMimeData> {
         if (container.size() == 1) {
-            if (auto error = qgraphicsitem_cast<ProcessorErrorItem*>(container.front())) {
+            if (auto* error = qgraphicsitem_cast<ProcessorErrorItem*>(container.front())) {
                 const auto str = utilqt::fromQString(error->text());
                 QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
                 auto mimeData = std::make_unique<QMimeData>();
@@ -980,7 +980,7 @@ std::unique_ptr<QMimeData> NetworkEditor::copy() const {
     std::stringstream ss;
     std::vector<ProcessorGraphicsItem*> items;
     for (auto& item : clickedOnItems_) {
-        if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+        if (auto* processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             if (!processor->isSelected()) {
                 processor->setSelected(true);
                 items.push_back(processor);
