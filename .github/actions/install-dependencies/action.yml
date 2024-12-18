@@ -81,11 +81,12 @@ runs:
       run: pip3 install -r inviwo/requirements.txt
 
     - name: "Install Qt"
-      uses: jurplel/install-qt-action@v4
+      uses: jurplel/install-qt-action@v4.1.1
       with:
         version: '6.8.*'
         dir: ${{ github.workspace }}
         setup-python: false
+        archives: 'qtbase qtsvg'
 
 
 
