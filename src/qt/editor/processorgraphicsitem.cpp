@@ -317,7 +317,7 @@ const QFont& ProcessorGraphicsItem::getFont(FontType type) {
     return identifier;
 }
 
-QString ProcessorGraphicsItem::elide(std::string_view text, double width, FontType type) const {
+QString ProcessorGraphicsItem::elide(std::string_view text, double width, FontType type) {
     const QFontMetricsF fm{getFont(type)};
     return fm.elidedText(utilqt::toQString(text), Qt::ElideMiddle, width);
 }

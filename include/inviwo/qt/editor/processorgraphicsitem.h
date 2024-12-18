@@ -108,7 +108,7 @@ public:
 protected:
     enum class FontType { Name, Identifier, Tag, Count };
     static const QFont& getFont(FontType type);
-    QString elide(std::string_view text, double width, FontType type) const;
+    static QString elide(std::string_view text, double width, FontType type);
 
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;

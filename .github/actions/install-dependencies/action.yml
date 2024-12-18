@@ -49,7 +49,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
-                         libglew-dev ninja-build nasm
+                         libglew-dev ninja-build nasm libicu-dev
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
@@ -97,7 +97,7 @@ runs:
         version: '6.8.*'
         dir: ${{ github.workspace }}
         setup-python: false
-        archives: 'qtbase qtsvg icu'
+        archives: 'qtbase qtsvg'
 
 
 
