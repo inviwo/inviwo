@@ -82,12 +82,22 @@ runs:
 
     - name: "Install Qt"
       uses: jurplel/install-qt-action@v4.1.1
+      if: runner.os == 'Linux'
+      with:
+        version: '6.8.*'
+        dir: ${{ github.workspace }}
+        setup-python: false
+        arch: linux_gcc_64
+        archives: 'qtbase qtsvg'
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v4.1.1
+      if: runner.os != 'Linux'
       with:
         version: '6.8.*'
         dir: ${{ github.workspace }}
         setup-python: false
         archives: 'qtbase qtsvg'
-
 
 
 
