@@ -51,25 +51,6 @@ namespace inviwo {
 class Property;
 class PropertyOwner;
 
-/** \docpage{org.inviwo.DataFrameJoin, Data Frame Join}
- * ![](org.inviwo.DataFrameJoin.png?classIdentifier=org.inviwo.DataFrameJoin)
- * Merges two DataFrames according to selected join type. This processor supports appending either
- * rows or columns as well as standard database joins, i.e. inner, left outer, right outer, full
- * outer, and cross joins.
- *
- * For row joins, the column count, column headers, and types must match. Similarly, when joining
- * columns the number of rows must match (unless the fill missing rows option is checked).
- *
- * ### Inports
- *   * __left__   DataFrame used as left table in join
- *   * __right__  DataFrame used as right table in join
- *
- * ### Outports
- *   * __outport__  joined DataFrame
- *
- * ### Properties
- *   * __join__   type of join
- */
 class IVW_MODULE_DATAFRAME_API DataFrameJoin : public Processor, public PropertyOwnerObserver {
 public:
     enum class JoinType {
