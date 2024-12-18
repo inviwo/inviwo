@@ -88,7 +88,7 @@ runs:
         dir: ${{ github.workspace }}
         setup-python: false
         arch: linux_gcc_64
-        archives: 'qtbase qtsvg'
+        archives: 'qtbase qtsvg icu'
 
     - name: "Install Qt"
       uses: jurplel/install-qt-action@v4.1.1
