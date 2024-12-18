@@ -947,7 +947,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 
     // Remove Processors. It is important to remove processors last.
     util::erase_remove_if(items, [&](QGraphicsItem* item) {
-        if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+        if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             network_->removeProcessor(pgi->getProcessor());
             return true;
         } else {
