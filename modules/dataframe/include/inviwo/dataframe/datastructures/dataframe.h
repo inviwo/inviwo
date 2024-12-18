@@ -93,7 +93,7 @@ class IVW_MODULE_DATAFRAME_API DataFrame : public MetaDataOwner {
 public:
     using LookupTable = std::unordered_map<glm::u64, std::string>;
 
-    DataFrame(std::uint32_t size = 0);
+    explicit DataFrame(std::uint32_t size = 0);
     DataFrame(const DataFrame& df);
     DataFrame(const DataFrame& df, const std::vector<std::uint32_t>& rowSelection);
     DataFrame& operator=(const DataFrame& df);

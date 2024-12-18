@@ -51,6 +51,7 @@
 #include <inviwo/dataframe/processors/dataframeexporter.h>            // for DataFrameExporter
 #include <inviwo/dataframe/processors/dataframefilter.h>              // for DataFrameFilter
 #include <inviwo/dataframe/processors/dataframefloat32converter.h>    // for DataFrameFloat32Conv...
+#include <inviwo/dataframe/processors/dataframegather.h>
 #include <inviwo/dataframe/processors/dataframejoin.h>                // for DataFrameJoin
 #include <inviwo/dataframe/processors/dataframemetadata.h>            // for DataFrameMetaData
 #include <inviwo/dataframe/processors/dataframesource.h>              // for DataFrameSource
@@ -96,6 +97,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     // Processors
     registerProcessor<CSVSource>();
     registerProcessor<DataFrameFilter>();
+    registerProcessor<DataFrameGather>();
     registerProcessor<DataFrameJoin>();
     registerProcessor<DataFrameSource>();
     registerProcessor<DataFrameExporter>();
