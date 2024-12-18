@@ -154,6 +154,7 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
             case AcceptMode::Open:
                 switch (fileMode_) {
                     case FileMode::ExistingFile:
+                        [[fallthrough]];
                     case FileMode::ExistingFiles: {
                         const bool hasWildcard =
                             (path.string().find_first_of("*?#", 0) != std::string::npos);
@@ -170,6 +171,8 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
                         update(!isDir, "Could not locate directory!");
                         return false;
                     case FileMode::AnyFile:
+                        [[fallthrough]];
+                    default:
                         update(false, "");
                         return true;
                 }
@@ -179,8 +182,12 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
                         update(!isDir, "Could not locate directory!");
                         return false;
                     case FileMode::AnyFile:
+                        [[fallthrough]];
                     case FileMode::ExistingFile:
+                        [[fallthrough]];
                     case FileMode::ExistingFiles:
+                        [[fallthrough]];
+                    default:
                         update(false, "");
                         return true;
                 }

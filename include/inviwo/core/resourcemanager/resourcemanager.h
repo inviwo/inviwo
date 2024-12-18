@@ -108,6 +108,8 @@ public:
                           getGroup(groupIndex));
     }
 
+#include <warn/push>
+#include <warn/ignore/unused-but-set-variable>
     size_t totalByteSize(size_t groupIndex) const {
         static constexpr auto byteSize = [](const auto& elem) { return elem.second.sizeInBytes(); };
         static constexpr auto sum = [](const auto& vec) {
@@ -118,6 +120,7 @@ public:
                                            [](const auto& list) -> size_t { return sum(list); }},
                           getGroup(groupIndex));
     }
+#include <warn/pop>
 
     const Resource* get(size_t groupIndex, size_t index) const {
         return std::visit(

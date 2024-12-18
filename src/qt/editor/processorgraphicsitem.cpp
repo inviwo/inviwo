@@ -116,7 +116,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         const auto tags =
             utilqt::toQString(util::getPlatformTags(processor_->getTags()).getString());
         tagSize_ = [&]() {
-            QFontMetricsF fm{getFont(FontType::Tag)};
+            const QFontMetricsF fm{getFont(FontType::Tag)};
             return fm.tightBoundingRect(tags).width();
         }();
 
@@ -127,7 +127,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
                                       size_.width() - 2.0 * labelMargin - tagSize_ - tagMargin,
                                       FontType::Identifier));
         identifierSize_ = [&]() {
-            QFontMetricsF fm{getFont(FontType::Identifier)};
+            const QFontMetricsF fm{getFont(FontType::Identifier)};
             return fm.tightBoundingRect(identifierText_.text()).width();
         }();
 
@@ -284,20 +284,20 @@ ProcessorGraphicsItem::~ProcessorGraphicsItem() = default;
 
 Processor* ProcessorGraphicsItem::getProcessor() const { return processor_; }
 
-const QFont& ProcessorGraphicsItem::getFont(FontType type) const {
-    static QFont name = []() {
+const QFont& ProcessorGraphicsItem::getFont(FontType type) {
+    static const QFont name = []() {
         QFont f("Segoe", 10, QFont::ExtraBold, false);
         f.setPixelSize(pointSizeToPixelSize(8));
         return f;
     }();
 
-    static QFont identifier = []() {
+    static const QFont identifier = []() {
         QFont f("Segoe", 8, QFont::Normal, false);
         f.setPixelSize(pointSizeToPixelSize(8));
         return f;
     }();
 
-    static QFont tag = []() {
+    static const QFont tag = []() {
         QFont f("Segoe", 8, QFont::Bold, false);
         f.setPixelSize(pointSizeToPixelSize(8));
         return f;
@@ -313,13 +313,12 @@ const QFont& ProcessorGraphicsItem::getFont(FontType type) const {
             return tag;
         case Count:
             return identifier;
-        default:
-            return identifier;
     }
+    return identifier;
 }
 
 QString ProcessorGraphicsItem::elide(std::string_view text, double width, FontType type) const {
-    QFontMetricsF fm{getFont(type)};
+    const QFontMetricsF fm{getFont(type)};
     return fm.elidedText(utilqt::toQString(text), Qt::ElideMiddle, width);
 }
 

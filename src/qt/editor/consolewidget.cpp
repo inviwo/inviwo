@@ -300,7 +300,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     auto copyAction = new QAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"), this);
     copyAction->setEnabled(true);
-    connect(copyAction, &QAction::triggered, this, &ConsoleWidget::copy);
+    connect(copyAction, &QAction::triggered, this,
+            [this]() { copy(tableView_->selectionModel()); });
 
     tableView_->addAction(copyAction);
     tableView_->addAction(createSeparator());
@@ -335,30 +336,34 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(this, &ConsoleWidget::clearSignal, this, &ConsoleWidget::clear);
 
-    // Restore State
+    restoreState(viewColGroup);
+
+    editActionsHandle_ =
+        setupCopyPaste(mainWindow_->getInviwoEditMenu(), tableView_->selectionModel(), this);
+}
+
+ConsoleWidget::~ConsoleWidget() = default;
+
+void ConsoleWidget::restoreState(QMenu* viewColGroup) {
     QSettings settings;
     settings.beginGroup(objectName());
 
-    {
-        auto colVisible = settings.value("columnsVisible", QVariantList()).toList();
-        auto colWidths = settings.value("columnsWidth", QVariantList()).toList();
-        auto count = std::min(colVisible.size(), colWidths.size());
+    auto colVisible = settings.value("columnsVisible", QVariantList()).toList();
+    auto colWidths = settings.value("columnsWidth", QVariantList()).toList();
+    auto count = std::min(colVisible.size(), colWidths.size());
 
-        for (int i = 0; i < count; ++i) {
-            const bool visible = colVisible[i].toBool();
-            viewColGroup->actions()[i]->setChecked(visible);
-            tableView_->horizontalHeader()->setSectionHidden(i, !visible);
-            if (visible) tableView_->horizontalHeader()->resizeSection(i, colWidths[i].toInt());
-        }
+    for (int i = 0; i < count; ++i) {
+        const bool visible = colVisible[i].toBool();
+        viewColGroup->actions()[i]->setChecked(visible);
+        tableView_->horizontalHeader()->setSectionHidden(i, !visible);
+        if (visible) tableView_->horizontalHeader()->resizeSection(i, colWidths[i].toInt());
     }
 
-    {
-        auto levelsActive = settings.value("levelsActive", QVariantList());
-        size_t i = 0;
-        for (const auto& level : levelsActive.toList()) {
-            if (i < levels.size()) {
-                levels[i++].action->setChecked(level.toBool());
-            }
+    auto levelsActive = settings.value("levelsActive", QVariantList());
+    size_t i = 0;
+    for (const auto& level : levelsActive.toList()) {
+        if (i < levels.size()) {
+            levels[i++].action->setChecked(level.toBool());
         }
     }
 
@@ -366,14 +371,17 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     filterPattern_->setText(filterText.toString());
 
     settings.endGroup();
+}
 
-    auto editMenu = mainWindow_->getInviwoEditMenu();
-    editActionsHandle_ = editMenu->registerItem(std::make_shared<MenuItem>(
-        this,
-        [this](MenuItemType t) -> bool {
+std::shared_ptr<MenuItem> ConsoleWidget::setupCopyPaste(InviwoEditMenu* editMenu,
+                                                        QItemSelectionModel* selectionModel,
+                                                        QObject* owner) {
+    return editMenu->registerItem(std::make_shared<MenuItem>(
+        owner,
+        [selectionModel](MenuItemType t) -> bool {
             switch (t) {
                 case MenuItemType::copy:
-                    return tableView_->selectionModel()->hasSelection();
+                    return selectionModel->hasSelection();
                 case MenuItemType::cut:
                 case MenuItemType::paste:
                 case MenuItemType::del:
@@ -382,11 +390,11 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
                     return false;
             }
         },
-        [this](MenuItemType t) -> void {
+        [selectionModel](MenuItemType t) -> void {
             switch (t) {
                 case MenuItemType::copy: {
-                    if (tableView_->selectionModel()->hasSelection()) {
-                        copy();
+                    if (selectionModel->hasSelection()) {
+                        copy(selectionModel);
                     }
                     break;
                 }
@@ -399,8 +407,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
             }
         }));
 }
-
-ConsoleWidget::~ConsoleWidget() = default;
 
 QAction* ConsoleWidget::getClearAction() { return clearAction_; }
 
@@ -534,28 +540,28 @@ QModelIndex ConsoleWidget::mapFromSource(int row, int col) {
     return levelFilter_->mapFromSource(lind);
 }
 
-void ConsoleWidget::copy() {
-    const auto& inds = tableView_->selectionModel()->selectedIndexes();
+void ConsoleWidget::copy(QItemSelectionModel* selectionModel) {
+    const auto& inds = selectionModel->selectedIndexes();
     if (inds.isEmpty()) return;
 
-    int prevrow = inds.first().row();
+    int prevRow = inds.first().row();
     bool first = true;
     QString text;
     for (const auto& ind : inds) {
-        if (!tableView_->isColumnHidden(ind.column())) {
-            if (!first && ind.row() == prevrow) {
-                text.append('\t');
-            } else if (!first) {
-                text.append('\n');
-            }
-            if (auto v = ind.data(detail::Roles::Fulltext); !v.isNull()) {
-                text.append(v.toString());
-            } else {
-                text.append(ind.data(Qt::DisplayRole).toString());
-            }
-            first = false;
+        // if (!tableView_->isColumnHidden(ind.column())) {
+        if (!first && ind.row() == prevRow) {
+            text.append('\t');
+        } else if (!first) {
+            text.append('\n');
         }
-        prevrow = ind.row();
+        if (auto v = ind.data(detail::Roles::Fulltext); !v.isNull()) {
+            text.append(v.toString());
+        } else {
+            text.append(ind.data(Qt::DisplayRole).toString());
+        }
+        first = false;
+        //}
+        prevRow = ind.row();
     }
     auto mimedata = std::make_unique<QMimeData>();
     mimedata->setData(QString("text/plain"), text.toUtf8());
