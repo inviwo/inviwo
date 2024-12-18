@@ -439,6 +439,9 @@ void ParallelCoordinates::createOrUpdateProperties() {
 
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
+    if (enabledAxes_.size() > axes_.size()) {
+        enabledAxes_.resize(axes_.size());
+    }
 
     for (auto& axis : axes_) {
         axis.pcp->update(data);
