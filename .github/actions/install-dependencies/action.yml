@@ -97,7 +97,7 @@ runs:
         version: '6.8.*'
         dir: ${{ github.workspace }}
         setup-python: false
-        archives: 'qtbase qtsvg'
+        archives: 'qtbase qtsvg icu'
 
 
 
