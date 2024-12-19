@@ -40,13 +40,17 @@ function(ivw_private_make_doxyfile)
     )
     cmake_parse_arguments(PARSE_ARGV 0 ARG "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
+    set(example_paths ${IVW_EXTERNAL_MODULES})
+    list(TRANSFORM example_paths PREPEND "\"")
+    list(TRANSFORM example_paths APPEND "\"")
+
     ivw_private_format_doxy_arg(inputs ${ARG_INPUTS})
     ivw_private_format_doxy_arg(image_paths ${ARG_IMAGE_PATHS})
     ivw_private_format_doxy_arg(aliases ${ARG_ALIASES})
     ivw_private_format_doxy_arg(input_tags ${ARG_INPUT_TAGS})
     ivw_private_format_doxy_arg(filter_patterns ${ARG_FILTER_PATTERNS})
     ivw_private_format_doxy_arg(incpaths ${ARG_INCLUDE_PATHS})
-    ivw_private_format_doxy_arg(example_paths ${IVW_EXTERNAL_MODULES})
+    ivw_private_format_doxy_arg(example_paths ${example_paths})
 
     string(REGEX REPLACE ";" "\n" additional_flags "${ARG_ADDITIONAL_FLAGS}")
     string(TOLOWER ${ARG_NAME} name_lower)
@@ -118,7 +122,7 @@ USE_MDFILE_AS_MAINPAGE = ${ARG_DOXY_DIR}/markdown/Index.md
 
 HTML_EXTRA_FILES       = 
 
-EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
+EXAMPLE_PATH           = \"${IVW_ROOT_DIR}\" \\
                          ${example_paths}
 
 HTML_COLORSTYLE_HUE    = 240
