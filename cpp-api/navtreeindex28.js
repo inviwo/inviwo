@@ -1,7 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"namespaceinviwo_1_1util.html#aaba0bfadae887301565e97b98483268b":[2,0,0,18,118],
-"namespaceinviwo_1_1util.html#aae046e2b3232a4ce60452ccc5853efb9":[2,0,0,18,122],
 "namespaceinviwo_1_1util.html#aaebb0173adbe89836698e846ded2bc33":[2,0,0,18,156],
 "namespaceinviwo_1_1util.html#ab09c288eeb600394bd546b3def257fb3":[2,0,0,18,79],
 "namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b":[2,0,0,18,59],
@@ -249,5 +247,7 @@ var NAVTREEINDEX28 =
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,236],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[2,0,0,228],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,235],
-"structinviwo_1_1Defaultvalues.html":[2,0,0,244]
+"structinviwo_1_1Defaultvalues.html":[2,0,0,244],
+"structinviwo_1_1Defaultvalues.html":[4,0,1,251],
+"structinviwo_1_1EnumTraits.html":[2,0,0,283]
 };

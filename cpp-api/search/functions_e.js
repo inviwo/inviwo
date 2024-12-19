@@ -16,7 +16,7 @@ var searchData=
   ['ondisplaynamechange_13',['onDisplayNameChange',['../classinviwo_1_1Processor.html#a844e4563ca31441fa933c2d031a9e5cc',1,'inviwo::Processor']]],
   ['onidentifierchange_14',['onIdentifierChange',['../classinviwo_1_1Processor.html#ae040682770c4afbfcffabfc5dcb871cf',1,'inviwo::Processor']]],
   ['oninvalid_15',['onInvalid',['../classinviwo_1_1Inport.html#a3c51b39d00fbed563de5a30c97a846c5',1,'inviwo::Inport']]],
-  ['onlabelgraphicsitemchanged_16',['onLabelGraphicsItemChanged',['../classinviwo_1_1ProcessorGraphicsItem.html#a1a13e333d30ab210390c198c2f03994c',1,'inviwo::ProcessorGraphicsItem::onLabelGraphicsItemChanged()'],['../classinviwo_1_1LabelGraphicsItemObserver.html#adecc9e3c7c5f7019ee64d3811ed42680',1,'inviwo::LabelGraphicsItemObserver::onLabelGraphicsItemChanged()']]],
+  ['onlabelgraphicsitemchanged_16',['onLabelGraphicsItemChanged',['../classinviwo_1_1LabelGraphicsItemObserver.html#adecc9e3c7c5f7019ee64d3811ed42680',1,'inviwo::LabelGraphicsItemObserver']]],
   ['onload_17',['onLoad',['../classinviwo_1_1WorkspaceManager.html#a315040dfffc86ac9677806c3d75a783d',1,'inviwo::WorkspaceManager']]],
   ['onloadend_18',['OnLoadEnd',['../classinviwo_1_1NetWorkCefSynchronizer.html#aac4226f134284f9d97b0c26a820bd0c6',1,'inviwo::NetWorkCefSynchronizer::OnLoadEnd()'],['../classinviwo_1_1WebBrowserClient.html#a40cce69a26a023a0b9c724969102f5ce',1,'inviwo::WebBrowserClient::OnLoadEnd()']]],
   ['onloadstart_19',['OnLoadStart',['../classinviwo_1_1NetWorkCefSynchronizer.html#a4ce605ede6be0ea0d1ff65b994ace61d',1,'inviwo::NetWorkCefSynchronizer']]],

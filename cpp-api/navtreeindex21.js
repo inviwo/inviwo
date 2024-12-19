@@ -1,7 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"classinviwo_1_1TransferFunctionProperty.html#aacc0d44e59b42492a84d7624ab389c30":[1,4,24,5],
-"classinviwo_1_1TransferFunctionProperty.html#aad039b57388d7b2488f69beca5dca53b":[1,4,24,0],
 "classinviwo_1_1TransferFunctionProperty.html#abc2e3f56a23cd5997c55dbdde70ef059":[1,4,24,2],
 "classinviwo_1_1TransferFunctionXMLReader.html":[2,0,0,1190],
 "classinviwo_1_1TransferFunctionXMLReader.html":[4,0,1,1197],
@@ -249,5 +247,7 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1VolumeGLProcessor.html#a8a8d1d4e9d8e3745938352795695faff":[2,0,0,1253,0],
 "classinviwo_1_1VolumeGLProcessor.html#a8a8d1d4e9d8e3745938352795695faff":[4,0,1,1260,0],
 "classinviwo_1_1VolumeGLProcessor.html#a9050af730db1484aa1d44228e97a8c78":[2,0,0,1253,2],
-"classinviwo_1_1VolumeGLProcessor.html#a9050af730db1484aa1d44228e97a8c78":[4,0,1,1260,2]
+"classinviwo_1_1VolumeGLProcessor.html#a9050af730db1484aa1d44228e97a8c78":[4,0,1,1260,2],
+"classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709":[2,0,0,1253,1],
+"classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709":[4,0,1,1260,1]
 };

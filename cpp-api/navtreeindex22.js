@@ -1,7 +1,5 @@
 var NAVTREEINDEX22 =
 {
-"classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709":[2,0,0,1253,1],
-"classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709":[4,0,1,1260,1],
 "classinviwo_1_1VolumeGradientCPUProcessor.html":[1,3,24],
 "classinviwo_1_1VolumeGradientCPUProcessor.html#ab22f14da2fc5e71130bb884d6c0fd2aa":[1,3,24,0],
 "classinviwo_1_1VolumeGradientMagnitude.html":[1,3,101],
@@ -249,5 +247,7 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1WheelEventMatcher.html":[4,0,1,1321],
 "classinviwo_1_1WildCardArg.html":[2,0,0,1315],
 "classinviwo_1_1WildCardArg.html":[4,0,1,1322],
-"classinviwo_1_1WorkspaceAnnotations.html":[2,0,0,1316]
+"classinviwo_1_1WorkspaceAnnotations.html":[2,0,0,1316],
+"classinviwo_1_1WorkspaceAnnotations.html":[4,0,1,1323],
+"classinviwo_1_1WorkspaceAnnotationsQt.html":[2,0,0,1317]
 };

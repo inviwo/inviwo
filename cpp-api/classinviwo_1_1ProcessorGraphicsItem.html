@@ -103,7 +103,9 @@ $(function(){initNavTree('classinviwo_1_1ProcessorGraphicsItem.html',''); initRe
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#properties">Properties</a> &#124;
 <a href="classinviwo_1_1ProcessorGraphicsItem-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::ProcessorGraphicsItem Class Reference</div></div>
@@ -119,11 +121,9 @@ $(function(){initNavTree('classinviwo_1_1ProcessorGraphicsItem.html',''); initRe
   <map id="inviwo::ProcessorGraphicsItem_map" name="inviwo::ProcessorGraphicsItem_map">
 <area href="classinviwo_1_1EditorGraphicsItem.html" alt="inviwo::EditorGraphicsItem" shape="rect" coords="230,56,450,80"/>
 <area href="classinviwo_1_1ProcessorObserver.html" alt="inviwo::ProcessorObserver" shape="rect" coords="460,56,680,80"/>
-<area href="classinviwo_1_1LabelGraphicsItemObserver.html" alt="inviwo::LabelGraphicsItemObserver" shape="rect" coords="690,56,910,80"/>
-<area href="classinviwo_1_1ProcessorMetaDataObserver.html" alt="inviwo::ProcessorMetaDataObserver" shape="rect" coords="920,56,1140,80"/>
+<area href="classinviwo_1_1ProcessorMetaDataObserver.html" alt="inviwo::ProcessorMetaDataObserver" shape="rect" coords="690,56,910,80"/>
 <area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="460,0,680,24"/>
 <area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="690,0,910,24"/>
-<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="920,0,1140,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -157,9 +157,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5f2544563b953ffac96232163eea285a" id="r_a5f2544563b953ffac96232163eea285a"><td class="memItemLeft" align="right" valign="top"><a id="a5f2544563b953ffac96232163eea285a" name="a5f2544563b953ffac96232163eea285a"></a>
 <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> () const</td></tr>
 <tr class="separator:a5f2544563b953ffac96232163eea285a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4135081ffae17d8c62885a5e3b774b53" id="r_a4135081ffae17d8c62885a5e3b774b53"><td class="memItemLeft" align="right" valign="top"><a id="a4135081ffae17d8c62885a5e3b774b53" name="a4135081ffae17d8c62885a5e3b774b53"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getIdentifier</b> () const</td></tr>
-<tr class="separator:a4135081ffae17d8c62885a5e3b774b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34f7fa25752ce78a14dadd93bca4edc1" id="r_a34f7fa25752ce78a14dadd93bca4edc1"><td class="memItemLeft" align="right" valign="top"><a id="a34f7fa25752ce78a14dadd93bca4edc1" name="a34f7fa25752ce78a14dadd93bca4edc1"></a>
 <a class="el" href="classinviwo_1_1ProcessorInportGraphicsItem.html">ProcessorInportGraphicsItem</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getInportGraphicsItem</b> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *port) const</td></tr>
 <tr class="separator:a34f7fa25752ce78a14dadd93bca4edc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,15 +172,6 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getIdentifier<
 <tr class="memitem:abd82f30df1dbce75c569a2ac51cd32b8" id="r_abd82f30df1dbce75c569a2ac51cd32b8"><td class="memItemLeft" align="right" valign="top"><a id="abd82f30df1dbce75c569a2ac51cd32b8" name="abd82f30df1dbce75c569a2ac51cd32b8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setErrorText</b> (std::string_view)</td></tr>
 <tr class="separator:abd82f30df1dbce75c569a2ac51cd32b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89b437c9920c1226c49d2257fd571958" id="r_a89b437c9920c1226c49d2257fd571958"><td class="memItemLeft" align="right" valign="top"><a id="a89b437c9920c1226c49d2257fd571958" name="a89b437c9920c1226c49d2257fd571958"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>editDisplayName</b> ()</td></tr>
-<tr class="separator:a89b437c9920c1226c49d2257fd571958"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac3ba767356408ac91c89efc89e88734" id="r_aac3ba767356408ac91c89efc89e88734"><td class="memItemLeft" align="right" valign="top"><a id="aac3ba767356408ac91c89efc89e88734" name="aac3ba767356408ac91c89efc89e88734"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>editIdentifier</b> ()</td></tr>
-<tr class="separator:aac3ba767356408ac91c89efc89e88734"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09f8ea083e85a6290eaf6503ab8da8a6" id="r_a09f8ea083e85a6290eaf6503ab8da8a6"><td class="memItemLeft" align="right" valign="top"><a id="a09f8ea083e85a6290eaf6503ab8da8a6" name="a09f8ea083e85a6290eaf6503ab8da8a6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isEditingProcessorName</b> ()</td></tr>
-<tr class="separator:a09f8ea083e85a6290eaf6503ab8da8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50281b46dff51f1629161de02b3e0309" id="r_a50281b46dff51f1629161de02b3e0309"><td class="memItemLeft" align="right" valign="top"><a id="a50281b46dff51f1629161de02b3e0309" name="a50281b46dff51f1629161de02b3e0309"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>snapToGrid</b> ()</td></tr>
 <tr class="separator:a50281b46dff51f1629161de02b3e0309"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -259,7 +247,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorIn
 <tr class="memitem:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer" id="r_a73d692ac9fc055d97af7e7ce6f8f14b1"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservations</b> ()</td></tr>
 <tr class="separator:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1LabelGraphicsItemObserver"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1LabelGraphicsItemObserver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1LabelGraphicsItemObserver.html">inviwo::LabelGraphicsItemObserver</a></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1ProcessorMetaDataObserver"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1ProcessorMetaDataObserver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1ProcessorMetaDataObserver.html">inviwo::ProcessorMetaDataObserver</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
@@ -270,9 +257,18 @@ static QPointF&#160;</td><td class="memItemRight" valign="bottom"><b>portOffset<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a9628bfd5a11166ab595369cf2e46ae71" id="r_a9628bfd5a11166ab595369cf2e46ae71"><td class="memItemLeft" align="right" valign="top"><a id="a9628bfd5a11166ab595369cf2e46ae71" name="a9628bfd5a11166ab595369cf2e46ae71"></a>
-static const QSizeF&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
-<tr class="separator:a9628bfd5a11166ab595369cf2e46ae71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91f040c1c99d245ee096932457f092b6" id="r_a91f040c1c99d245ee096932457f092b6"><td class="memItemLeft" align="right" valign="top"><a id="a91f040c1c99d245ee096932457f092b6" name="a91f040c1c99d245ee096932457f092b6"></a>
+static constexpr QSizeF&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b> {150.0, 50.0}</td></tr>
+<tr class="separator:a91f040c1c99d245ee096932457f092b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-types" name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:a9d9802c429de945b0dd79d6b8f21d039" id="r_a9d9802c429de945b0dd79d6b8f21d039"><td class="memItemLeft" align="right" valign="top"><a id="a9d9802c429de945b0dd79d6b8f21d039" name="a9d9802c429de945b0dd79d6b8f21d039"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>FontType</b> { <b>Name</b>
+, <b>Identifier</b>
+, <b>Tag</b>
+, <b>Count</b>
+ }</td></tr>
+<tr class="separator:a9d9802c429de945b0dd79d6b8f21d039"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -303,10 +299,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeInport</b> (<a 
 <tr class="memitem:a13ee61ec334be71be38af55ddc1cf41a" id="r_a13ee61ec334be71be38af55ddc1cf41a"><td class="memItemLeft" align="right" valign="top"><a id="a13ee61ec334be71be38af55ddc1cf41a" name="a13ee61ec334be71be38af55ddc1cf41a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOutport</b> (<a class="el" href="classinviwo_1_1Outport.html">Outport</a> *port)</td></tr>
 <tr class="separator:a13ee61ec334be71be38af55ddc1cf41a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a13e333d30ab210390c198c2f03994c" id="r_a1a13e333d30ab210390c198c2f03994c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a13e333d30ab210390c198c2f03994c">onLabelGraphicsItemChanged</a> (<a class="el" href="classinviwo_1_1LabelGraphicsItem.html">LabelGraphicsItem</a> *item) override</td></tr>
-<tr class="separator:a1a13e333d30ab210390c198c2f03994c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b7bfa916dbf9fcf2c651ddad5cb46a4" id="r_a7b7bfa916dbf9fcf2c651ddad5cb46a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b7bfa916dbf9fcf2c651ddad5cb46a4">onLabelGraphicsItemEdited</a> (<a class="el" href="classinviwo_1_1LabelGraphicsItem.html">LabelGraphicsItem</a> *item) override</td></tr>
-<tr class="separator:a7b7bfa916dbf9fcf2c651ddad5cb46a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1231d85a8f38e921bf495686dfae7ec" id="r_af1231d85a8f38e921bf495686dfae7ec"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1231d85a8f38e921bf495686dfae7ec">onProcessorReadyChanged</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *) override</td></tr>
 <tr class="separator:af1231d85a8f38e921bf495686dfae7ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8ab3cf035121c9b3d316bdad2b56ebd" id="r_ac8ab3cf035121c9b3d316bdad2b56ebd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8ab3cf035121c9b3d316bdad2b56ebd">onProcessorPortAdded</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, <a class="el" href="classinviwo_1_1Port.html">Port</a> *) override</td></tr>
@@ -340,6 +332,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>showToolTipHelper</b>
 <tr class="memitem:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer" id="r_aa62add49e9cc4b358f61aa9d38aee991"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991">addObservation</a> (<a class="el" href="classinviwo_1_1ObservableInterface.html">ObservableInterface</a> *observable)</td></tr>
 <tr class="separator:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:a604d7e4130920cc9dcd81f79d6cb641c" id="r_a604d7e4130920cc9dcd81f79d6cb641c"><td class="memItemLeft" align="right" valign="top"><a id="a604d7e4130920cc9dcd81f79d6cb641c" name="a604d7e4130920cc9dcd81f79d6cb641c"></a>
+static const QFont &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFont</b> (FontType type)</td></tr>
+<tr class="separator:a604d7e4130920cc9dcd81f79d6cb641c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a439a85ba8cc4ed3c4da339b32164cb45" id="r_a439a85ba8cc4ed3c4da339b32164cb45"><td class="memItemLeft" align="right" valign="top"><a id="a439a85ba8cc4ed3c4da339b32164cb45" name="a439a85ba8cc4ed3c4da339b32164cb45"></a>
+static QString&#160;</td><td class="memItemRight" valign="bottom"><b>elide</b> (std::string_view text, double width, FontType type)</td></tr>
+<tr class="separator:a439a85ba8cc4ed3c4da339b32164cb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
 <tr class="memitem:ab7d3636a17dcabbe38649e66b565b023" id="r_ab7d3636a17dcabbe38649e66b565b023"><td class="memItemLeft" align="right" valign="top"><a id="ab7d3636a17dcabbe38649e66b565b023" name="ab7d3636a17dcabbe38649e66b565b023"></a>
@@ -358,61 +359,6 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
 <tr class="separator:a12f32cb9d3e4742b33c347d5aa955b95 inherit pro_attribs_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1a13e333d30ab210390c198c2f03994c" name="a1a13e333d30ab210390c198c2f03994c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a13e333d30ab210390c198c2f03994c">&#9670;&#160;</a></span>onLabelGraphicsItemChanged()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void inviwo::ProcessorGraphicsItem::onLabelGraphicsItemChanged </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1LabelGraphicsItem.html">LabelGraphicsItem</a> *</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>This method will be called when observed object changes. Override it to add behavior. </p>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1LabelGraphicsItemObserver.html#adecc9e3c7c5f7019ee64d3811ed42680">inviwo::LabelGraphicsItemObserver</a>.</p>
-
-</div>
-</div>
-<a id="a7b7bfa916dbf9fcf2c651ddad5cb46a4" name="a7b7bfa916dbf9fcf2c651ddad5cb46a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b7bfa916dbf9fcf2c651ddad5cb46a4">&#9670;&#160;</a></span>onLabelGraphicsItemEdited()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void inviwo::ProcessorGraphicsItem::onLabelGraphicsItemEdited </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1LabelGraphicsItem.html">LabelGraphicsItem</a> *</td>          <td class="paramname"><span class="paramname"><em>item</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1LabelGraphicsItemObserver.html">inviwo::LabelGraphicsItemObserver</a>.</p>
-
-</div>
-</div>
 <a id="a0937cc165060e4bbeb2ab2d539c722e4" name="a0937cc165060e4bbeb2ab2d539c722e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0937cc165060e4bbeb2ab2d539c722e4">&#9670;&#160;</a></span>onProcessorAboutToProcess()</h2>
 

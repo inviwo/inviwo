@@ -1,7 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1util_1_1KeepTrueWhileInScope.html":[4,0,1,26,43],
-"classinviwo_1_1util_1_1MemoryFileHandle.html":[2,0,0,18,40],
 "classinviwo_1_1util_1_1MemoryFileHandle.html":[4,0,1,26,44],
 "classinviwo_1_1util_1_1MemoryFileHandle.html#acec3db93e77b0a59c91e708ab0f3b163":[2,0,0,18,40,0],
 "classinviwo_1_1util_1_1MemoryFileHandle.html#acec3db93e77b0a59c91e708ab0f3b163":[4,0,1,26,44,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX26 =
 "namespaceinviwo_1_1colorbrewer.html#aa3072fc0a884eb2320fa28e8ca1f35e5":[2,0,0,4,8],
 "namespaceinviwo_1_1colorbrewer.html#ac8a9bdc97c766b69210ce5f8593b7d8d":[2,0,0,4,9],
 "namespaceinviwo_1_1csvfilters.html":[2,0,0,5],
-"namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89":[2,0,0,5,4]
+"namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89":[2,0,0,5,4],
+"namespaceinviwo_1_1csvfilters.html#a397cfebd45c0f6bdd1907df59eed9ed1":[2,0,0,5,2],
+"namespaceinviwo_1_1csvfilters.html#abd4190195b3e63213d342bab837c8325":[2,0,0,5,3]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX23 =
 {
-"classinviwo_1_1WorkspaceAnnotations.html":[4,0,1,1323],
-"classinviwo_1_1WorkspaceAnnotationsQt.html":[2,0,0,1317],
 "classinviwo_1_1WorkspaceAnnotationsQt.html":[4,0,1,1324],
 "classinviwo_1_1WorkspaceGridView.html":[2,0,0,1318],
 "classinviwo_1_1WorkspaceGridView.html":[4,0,1,1325],
@@ -249,5 +247,7 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[4,0,1,1,37],
 "classinviwo_1_1animation_1_1ImageRecorderFactory.html":[2,0,0,0,38],
 "classinviwo_1_1animation_1_1ImageRecorderFactory.html":[4,0,1,1,39],
-"classinviwo_1_1animation_1_1Interpolation.html":[2,0,0,0,39]
+"classinviwo_1_1animation_1_1Interpolation.html":[2,0,0,0,39],
+"classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,1,40],
+"classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX25 =
 {
-"classinviwo_1_1glui_1_1WidgetFactoryObject.html":[4,0,1,13,22],
-"classinviwo_1_1glui_1_1WidgetFactoryObjectTemplate.html":[4,0,1,13,23],
 "classinviwo_1_1glui_1_1WidgetSupplier.html":[4,0,1,13,24],
 "classinviwo_1_1hdf5_1_1Exception.html":[4,0,1,14,0],
 "classinviwo_1_1hdf5_1_1HDF5ToVolume.html":[1,3,73],
@@ -249,5 +247,7 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1util_1_1Combinations.html":[4,0,1,26,9],
 "classinviwo_1_1util_1_1IndexProduct.html":[2,0,0,18,28],
 "classinviwo_1_1util_1_1IndexProduct.html":[4,0,1,26,32],
-"classinviwo_1_1util_1_1KeepTrueWhileInScope.html":[2,0,0,18,39]
+"classinviwo_1_1util_1_1KeepTrueWhileInScope.html":[2,0,0,18,39],
+"classinviwo_1_1util_1_1KeepTrueWhileInScope.html":[4,0,1,26,43],
+"classinviwo_1_1util_1_1MemoryFileHandle.html":[2,0,0,18,40]
 };

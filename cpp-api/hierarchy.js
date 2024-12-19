@@ -2256,9 +2256,7 @@ var hierarchy =
         ] ]
       ] ],
       [ "inviwo::FactoryObserver< T >", "classinviwo_1_1FactoryObserver.html", null ],
-      [ "inviwo::LabelGraphicsItemObserver", "classinviwo_1_1LabelGraphicsItemObserver.html", [
-        [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ]
-      ] ],
+      [ "inviwo::LabelGraphicsItemObserver", "classinviwo_1_1LabelGraphicsItemObserver.html", null ],
       [ "inviwo::NetworkEditorObserver", "classinviwo_1_1NetworkEditorObserver.html", [
         [ "inviwo::NetworkEditorView", "classinviwo_1_1NetworkEditorView.html", null ]
       ] ],

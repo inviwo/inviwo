@@ -1,7 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"classinviwo_1_1TetraMeshVolumeRaycaster.html":[4,0,1,1117],
-"classinviwo_1_1TetraMeshVolumeRaycaster.html#a74ed0cbbbec8ba008619194333c5cee0":[2,0,0,1110,0],
 "classinviwo_1_1TetraMeshVolumeRaycaster.html#a74ed0cbbbec8ba008619194333c5cee0":[4,0,1,1117,0],
 "classinviwo_1_1TetraMeshVolumeRaycaster.html#a7a319a2c221fc7b4d35bcaee718b298c":[2,0,0,1110,1],
 "classinviwo_1_1TetraMeshVolumeRaycaster.html#a7a319a2c221fc7b4d35bcaee718b298c":[4,0,1,1117,1],
@@ -249,5 +247,7 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1TransferFunctionProperty.html":[1,4,24],
 "classinviwo_1_1TransferFunctionProperty.html#a197e1364cdb4450c941ad5528cf97d66":[1,4,24,4],
 "classinviwo_1_1TransferFunctionProperty.html#a6a233c127391c410e55b42b6c485ca32":[1,4,24,3],
-"classinviwo_1_1TransferFunctionProperty.html#aaac430d426603c7b939219c2c37ef390":[1,4,24,1]
+"classinviwo_1_1TransferFunctionProperty.html#aaac430d426603c7b939219c2c37ef390":[1,4,24,1],
+"classinviwo_1_1TransferFunctionProperty.html#aacc0d44e59b42492a84d7624ab389c30":[1,4,24,5],
+"classinviwo_1_1TransferFunctionProperty.html#aad039b57388d7b2488f69beca5dca53b":[1,4,24,0]
 };

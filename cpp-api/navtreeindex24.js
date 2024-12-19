@@ -1,7 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,1,40],
-"classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40],
 "classinviwo_1_1animation_1_1InterpolationFactory.html":[4,0,1,1,41],
 "classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[2,0,0,0,41],
 "classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[4,0,1,1,42],
@@ -249,5 +247,7 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html":[4,0,1,13,19],
 "classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html#aa23242c2dba03aaf374900bc1bcbf8ed":[4,0,1,13,19,0],
 "classinviwo_1_1glui_1_1VBoxLayout.html":[4,0,1,13,20],
-"classinviwo_1_1glui_1_1WidgetFactory.html":[4,0,1,13,21]
+"classinviwo_1_1glui_1_1WidgetFactory.html":[4,0,1,13,21],
+"classinviwo_1_1glui_1_1WidgetFactoryObject.html":[4,0,1,13,22],
+"classinviwo_1_1glui_1_1WidgetFactoryObjectTemplate.html":[4,0,1,13,23]
 };

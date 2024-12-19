@@ -1,7 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[2,0,0,883],
-"structinviwo_1_1PropertyTraits_3_01Gaussian2DProperty_01_4.html":[4,0,1,890],
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[2,0,0,884],
 "structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html":[4,0,1,891],
 "structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html":[2,0,0,885],
@@ -249,5 +247,7 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1dispatching_1_1filter_1_1Floats.html":[4,0,1,10,1,5],
 "structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[2,0,0,8,0,9],
 "structinviwo_1_1dispatching_1_1filter_1_1IntegerScalars.html":[4,0,1,10,1,9],
-"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10]
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[2,0,0,8,0,10],
+"structinviwo_1_1dispatching_1_1filter_1_1IntegerVecs.html":[4,0,1,10,1,10],
+"structinviwo_1_1dispatching_1_1filter_1_1Integers.html":[2,0,0,8,0,8]
 };
