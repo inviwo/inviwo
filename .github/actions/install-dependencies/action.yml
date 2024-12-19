@@ -12,7 +12,7 @@ inputs:
 
   clang-version:
     description: 'Which clang version to use'
-    default: 17
+    default: 19
 
 
 runs:
@@ -49,7 +49,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
-                         libglew-dev ninja-build nasm
+                         libglew-dev ninja-build nasm libicu-dev
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
@@ -68,12 +68,6 @@ runs:
         version: ${{ inputs.clang-version }}
         env: true
 
-    - name: "Install Qt"
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: 6.7.0
-        dir: ${{ github.workspace }}
-
     - name: "Setup Python"
       uses: actions/setup-python@v5
       with:
@@ -85,3 +79,25 @@ runs:
     - name: "Install Python Modules"
       shell: bash
       run: pip3 install -r inviwo/requirements.txt
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v4.1.1
+      if: runner.os == 'Linux'
+      with:
+        version: '6.8.*'
+        dir: ${{ github.workspace }}
+        setup-python: false
+        arch: linux_gcc_64
+        archives: 'qtbase qtsvg icu'
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v4.1.1
+      if: runner.os != 'Linux'
+      with:
+        version: '6.8.*'
+        dir: ${{ github.workspace }}
+        setup-python: false
+        archives: 'qtbase qtsvg'
+
+
+

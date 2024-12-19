@@ -95,6 +95,7 @@
 #include <QMargins>
 #include <QGraphicsView>
 #include <QGraphicsSimpleTextItem>
+#include <QInputDialog>
 
 #include <fmt/std.h>
 
@@ -655,14 +656,38 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(editName, &QAction::triggered, [this, processor]() {
                 clearSelection();
                 processor->setSelected(true);
-                processor->editDisplayName();
+
+                bool ok{false};
+                const QString text = QInputDialog::getText(
+                    nullptr, "Rename", "Name:", QLineEdit::Normal,
+                    utilqt::toQString(processor->getProcessor()->getDisplayName()), &ok,
+                    Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+                if (ok && !text.isEmpty()) {
+                    try {
+                        processor->getProcessor()->setDisplayName(utilqt::fromQString(text));
+                    } catch (const Exception& e) {
+                        LogError(e.getMessage());
+                    }
+                }
             });
 
             auto editIdentifier = menu.addAction(tr("Edit Identifier"));
             connect(editIdentifier, &QAction::triggered, [this, processor]() {
                 clearSelection();
                 processor->setSelected(true);
-                processor->editIdentifier();
+
+                bool ok{false};
+                const QString text = QInputDialog::getText(
+                    nullptr, "Rename", "Identifier:", QLineEdit::Normal,
+                    utilqt::toQString(processor->getProcessor()->getIdentifier()), &ok,
+                    Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+                if (ok && !text.isEmpty()) {
+                    try {
+                        processor->getProcessor()->setIdentifier(utilqt::fromQString(text));
+                    } catch (const Exception& e) {
+                        LogError(e.getMessage());
+                    }
+                }
             });
 
 #if IVW_PROFILING
@@ -922,8 +947,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 
     // Remove Processors. It is important to remove processors last.
     util::erase_remove_if(items, [&](QGraphicsItem* item) {
-        auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item);
-        if (pgi && !pgi->isEditingProcessorName()) {
+        if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             network_->removeProcessor(pgi->getProcessor());
             return true;
         } else {
@@ -935,7 +959,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 std::unique_ptr<QMimeData> NetworkEditor::copy() const {
     auto copyError = [](auto&& container) -> std::unique_ptr<QMimeData> {
         if (container.size() == 1) {
-            if (auto error = qgraphicsitem_cast<ProcessorErrorItem*>(container.front())) {
+            if (auto* error = qgraphicsitem_cast<ProcessorErrorItem*>(container.front())) {
                 const auto str = utilqt::fromQString(error->text());
                 QByteArray byteArray(str.c_str(), static_cast<int>(str.length()));
                 auto mimeData = std::make_unique<QMimeData>();
@@ -956,7 +980,7 @@ std::unique_ptr<QMimeData> NetworkEditor::copy() const {
     std::stringstream ss;
     std::vector<ProcessorGraphicsItem*> items;
     for (auto& item : clickedOnItems_) {
-        if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+        if (auto* processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             if (!processor->isSelected()) {
                 processor->setSelected(true);
                 items.push_back(processor);

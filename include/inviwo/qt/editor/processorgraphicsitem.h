@@ -40,6 +40,8 @@
 #include <warn/ignore/all>
 #include <QEvent>
 #include <QPropertyAnimation>
+#include <QStaticText>
+#include <QFont>
 #include <warn/pop>
 
 class QGraphicsSimpleTextItem;
@@ -60,7 +62,6 @@ class Outport;
 class IVW_QTEDITOR_API ProcessorGraphicsItem : public QObject,
                                                public EditorGraphicsItem,
                                                public ProcessorObserver,
-                                               public LabelGraphicsItemObserver,
                                                public ProcessorMetaDataObserver {
     Q_OBJECT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
@@ -73,18 +74,12 @@ public:
     virtual ~ProcessorGraphicsItem();
 
     Processor* getProcessor() const;
-    std::string getIdentifier() const;
 
     ProcessorInportGraphicsItem* getInportGraphicsItem(Inport* port) const;
     ProcessorOutportGraphicsItem* getOutportGraphicsItem(Outport* port) const;
     ProcessorLinkGraphicsItem* getLinkGraphicsItem() const;
     ProcessorStatusGraphicsItem* getStatusItem() const;
     void setErrorText(std::string_view);
-
-    void editDisplayName();
-    void editIdentifier();
-
-    bool isEditingProcessorName();
 
     void snapToGrid();
 
@@ -100,7 +95,7 @@ public:
 
     void setHighlight(bool val);
 
-    static const QSizeF size_;
+    static constexpr QSizeF size_{150.0, 50.0};
 
     enum class PortType { In, Out };
     static QPointF portOffset(PortType type, size_t index);
@@ -111,6 +106,10 @@ public:
     }
 
 protected:
+    enum class FontType { Name, Identifier, Tag, Count };
+    static const QFont& getFont(FontType type);
+    static QString elide(std::string_view text, double width, FontType type);
+
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
@@ -123,10 +122,6 @@ protected:
     void addOutport(Outport* port);
     void removeInport(Inport* port);
     void removeOutport(Outport* port);
-
-    // LabelGraphicsItem overrides
-    void onLabelGraphicsItemChanged(LabelGraphicsItem* item) override;
-    void onLabelGraphicsItemEdited(LabelGraphicsItem* item) override;
 
     // ProcessorObserver overrides
     virtual void onProcessorReadyChanged(Processor*) override;
@@ -148,13 +143,15 @@ protected:
     virtual void onProcessorMetaDataSelectionChange() override;
 
 private:
-    void positionLabels();
-
     Processor* processor_;
-    LabelGraphicsItem* displayNameLabel_;
-    LabelGraphicsItem* identifierLabel_;
-    LabelGraphicsItem* tagLabel_;
     ProcessorMetaData* processorMeta_;
+
+    QStaticText nameText_;
+    QStaticText identifierText_;
+    double identifierSize_;
+    QStaticText tagText_;
+    double tagSize_;
+
     QPropertyAnimation* animation_;
 
     ProcessorProgressGraphicsItem* progressItem_;

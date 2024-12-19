@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/glmvec.h>            // for ivec2
 #include <inviwo/core/util/stringconversion.h>  // for toString
+#include <inviwo/core/util/logcentral.h>
 
 #include <algorithm>  // for min
 #include <cmath>
@@ -48,6 +49,8 @@
 #include <QToolTip>         // for QToolTip
 #include <QWidget>          // for QWidget
 #include <glm/vec2.hpp>     // for vec<>::(anonymous)
+
+#include <fmt/format.h>
 
 class QHelpEvent;
 class QMouseEvent;
@@ -156,14 +159,12 @@ void RangeSliderQt::setRange(int minR, int maxR) {
 
 void RangeSliderQt::setMinSeparation(int sep) {
     minSeparation_ = sep;
-    const int totalRange = getTotalRange();
+
     const int rangeDelta = range_.y - range_.x;
+    if (rangeDelta <= 0) return;
 
-    if (rangeDelta <= 0) {
-        return;
-    }
-
-    const int minWidth = totalRange * minSeparation_ / rangeDelta - handle(1)->width();
+    const int totalRange = getTotalRange();
+    const int minWidth = totalRange * minSeparation_ / rangeDelta;
 
     if (orientation() == Qt::Horizontal) {
         widget(1)->setMinimumWidth(minWidth);
@@ -206,37 +207,37 @@ void RangeSliderQt::resizeEvent(QResizeEvent* event) {
 
 int RangeSliderQt::getTotalRange() const {
     const QList<int> sizes = QSplitter::sizes();
-    return sizes[0] + sizes[1] + sizes[2] + handle(1)->width();
+    return sizes[0] + sizes[1] + sizes[2];
 }
 
 void RangeSliderQt::updateStateFromSliders() {
-    const int totalRange = getTotalRange();
     const double rangeDelta = range_.y - range_.x;
 
     QList<int> sizes = QSplitter::sizes();
-    if (totalRange <= 0) {
-        // invisible
-        return;
-    }
 
-    value_.x = range_.x + static_cast<int>(std::lround(sizes[0] * rangeDelta / totalRange));
-    value_.y = range_.x + static_cast<int>(std::lround((sizes[0] + sizes[1] + handle(1)->width()) *
-                                                       rangeDelta / totalRange));
+    const double s0 = sizes[0];
+    const double s1 = sizes[1];
+    const double s2 = sizes[2];
+    const double s = s0 + s1 + s2;
+    if (s <= 0) return;  // invisible
+
+    value_.x = range_.x + static_cast<int>(std::lround(s0 * rangeDelta / s));
+    value_.y = range_.y - static_cast<int>(std::lround(s2 * rangeDelta / s));
 }
 
 void RangeSliderQt::updateSlidersFromState() {
-    const int totalRange = getTotalRange();
-
     const double rangeDelta = range_.y - range_.x;
-    if (rangeDelta <= 0.0) {
-        return;
-    }
+    if (rangeDelta <= 0.0) return;
+
+    const double totalRange = getTotalRange();
+    const double r0 = std::lround((totalRange * (value_.x - range_.x)) / rangeDelta);
+    const double r1 = std::lround((totalRange * (value_.y - value_.x)) / rangeDelta);
+    const double r2 = std::lround((totalRange * (range_.y - value_.y)) / rangeDelta);
 
     const QList sizes({
-        static_cast<int>(std::lround((totalRange * (value_.x - range_.x)) / rangeDelta)),
-        static_cast<int>(std::lround((totalRange * (value_.y - value_.x)) / rangeDelta)) -
-            handle(1)->width(),
-        static_cast<int>(std::lround((totalRange * (range_.y - value_.y)) / rangeDelta)),
+        static_cast<int>(r0),
+        static_cast<int>(r1),
+        static_cast<int>(r2),
     });
 
     QSignalBlocker block(this);
@@ -295,17 +296,17 @@ bool RangeSliderQt::eventFilter(QObject* obj, QEvent* event) {
         }
     } else if (isEnabled()) {
         if (obj == widget(0)) {
-            handleGrooveEvent(Groove::Left, event);
+            return handleGrooveEvent(Groove::Left, event);
         } else if (obj == widget(1)) {
-            handleCenterWidgetEvent(event);
+            return handleCenterWidgetEvent(event);
         } else if (obj == widget(2)) {
-            handleGrooveEvent(Groove::Right, event);
+            return handleGrooveEvent(Groove::Right, event);
         }
     }
     return QObject::eventFilter(obj, event);
 }
 
-void RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
+bool RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
     if (event->type() == QEvent::MouseButtonRelease) {
         if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
 
@@ -325,11 +326,13 @@ void RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
             // update internal state
             updateSplitterPosition(0, static_cast<int>(groove));
             event->accept();
+            return true;
         }
     }
+    return false;
 }
 
-void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
+bool RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
     switch (event->type()) {
         case QEvent::MouseButtonPress: {
             if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
@@ -337,6 +340,7 @@ void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
                     static_cast<int>(orientation() == Qt::Horizontal ? me->globalPosition().x()
                                                                      : me->globalPosition().y());
                 event->accept();
+                return true;
             }
             break;
         }
@@ -345,7 +349,7 @@ void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
             // than the property datatype or increment permits
             updateSlidersFromState();
             event->accept();
-            break;
+            return true;
 
         case QEvent::MouseMove: {
             if (const auto* me = static_cast<QMouseEvent*>(event);
@@ -359,16 +363,18 @@ void RangeSliderQt::handleCenterWidgetEvent(QEvent* event) {
                     moveMiddle(delta);
                 }
                 event->accept();
+                return true;
             }
             break;
         }
         default:
             break;
     }
+    return false;
 }
 
-void RangeSliderQt::setTooltipFormat(std::function<std::string(int, int)> formater) {
-    formatTooltip_ = std::move(formater);
+void RangeSliderQt::setTooltipFormat(std::function<std::string(int, int)> formatter) {
+    formatTooltip_ = std::move(formatter);
 }
 
 }  // namespace inviwo
