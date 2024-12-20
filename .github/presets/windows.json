@@ -9,7 +9,7 @@
       "name": "gha",
       "inherits" : ["inviwo-common", "msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"],
       "cacheVariables": {
-        "IVW_CFG_USE_CCACHE_MSVC": "ON",
+        "IVW_CFG_USE_CCACHE_MSVC": "OFF",
         "IVW_MODULE_SGCT": "ON",
         "IVW_APP_INVIWO_DOME": "ON",
         "VCPKG_MANIFEST_FEATURES": "sgct"
