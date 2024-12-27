@@ -119,6 +119,15 @@ get_property(include_paths GLOBAL PROPERTY IVW_DOC_INCLUDE_PATHS)
 ivw_private_clean_path_list(include_paths include_paths)
 list(APPEND incpaths ${include_paths})
 
+list(TRANSFORM all_input PREPEND "\"")
+list(TRANSFORM all_input APPEND "\"")
+
+list(TRANSFORM image_path_list PREPEND "\"")
+list(TRANSFORM image_path_list APPEND "\"")
+
+list(TRANSFORM incpaths PREPEND "\"")
+list(TRANSFORM incpaths APPEND "\"")
+
 # Inviwo
 ivw_private_make_doxyfile(
     NAME "Inviwo"
@@ -132,7 +141,7 @@ ivw_private_make_doxyfile(
     EXCLUDE_PATTERNS ${exclude_patterns}
     IMAGE_PATHS ${image_path_list}
     ALIASES ${aliases_list}
-    TAG_FILE ${output_dir}/inviwo/inviwo.tag
+    TAG_FILE \"${output_dir}/inviwo/inviwo.tag\"
     FILTER_PATTERNS ${filer_patterns_list}
     GENERATE_IMG
 )

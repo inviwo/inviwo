@@ -85,20 +85,6 @@ jobs:
             configuration: Debug
             run: './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
 
-          # extra targets 
-          - system: windows
-            linkage: dynamic
-            configuration: Release
-            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
-          #- system: macos  # Disable mac packaging since it probably runs out of diskspace
-          #  linkage: dynamic
-          #  configuration: Release
-          #  targets: 'all package'
-          - system: linux
-            linkage: dynamic
-            configuration: Release
-            targets: 'all package'
-
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
@@ -144,9 +130,23 @@ jobs:
       shell: bash
       run: |
         echo "::add-matcher::inviwo/.github/matchers/${{ matrix.system }}.json"
-        cmake --build build --config ${{ matrix.configuration }} --parallel --target ${{ matrix.targets }}
+        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
+
+    - name: "Documentation"
+      timeout-minutes: 60
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
+      shell: bash
+      run: |
+        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target DOXY-Inviwo DOXY-Python
+
+    - name: "Package"
+      timeout-minutes: 120
+      if: ( matrix.system == 'windows' || matrix.system == 'linux') &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
+      shell: bash
+      run: |
+        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target package
 
     - name: "Run"
       shell: bash
