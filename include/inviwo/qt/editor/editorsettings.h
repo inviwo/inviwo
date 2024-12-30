@@ -28,7 +28,7 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
 #include <inviwo/core/util/settings/settings.h>
 
@@ -36,10 +36,12 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API EditorSettings : public Settings {
+class IVW_QTEDITOR_API EditorSettings : public Settings {
 public:
     EditorSettings(InviwoApplication* app);
     virtual ~EditorSettings() = default;
@@ -49,6 +51,8 @@ public:
     IntProperty numRestoreFiles;
     IntProperty restoreFrequency;
     ListProperty workspaceDirectories;
+
+    BoolProperty showProcessorEvaluationCounts;
 };
 
 }  // namespace inviwo

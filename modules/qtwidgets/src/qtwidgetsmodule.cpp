@@ -84,7 +84,6 @@
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>                 // for TFPropertyWi...
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>                         // for RawDataReade...
 #include <modules/qtwidgets/tfhelpwindow.h>                                  // for TFMenuHelper
-#include <modules/qtwidgets/editorsettings.h>
 
 #include <array>        // for array
 #include <cstddef>      // for size_t
@@ -296,8 +295,6 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     // Register dialogs
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
     registerDialog<InviwoFileDialog>("FileDialog");
-
-    registerSettings(std::make_unique<EditorSettings>(app));
 }
 
 QtWidgetsModule::~QtWidgetsModule() = default;

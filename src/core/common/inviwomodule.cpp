@@ -127,6 +127,9 @@ InviwoModule::~InviwoModule() {
     for (auto& elem : dataVisualizers_) {
         app_->getDataVisualizerManager()->unRegisterObject(elem.get());
     }
+    for (auto* elem : settings_) {
+        app_->unregisterSettings(elem);
+    }
 
     // Remove any potential ModuleCallbackAction associated with this module
     auto& callbackActions = app_->getCallbackActions();
@@ -305,7 +308,10 @@ void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
     ownedSettings_.push_back(std::move(settings));
 }
 
-void InviwoModule::registerSettings(Settings* settings) { settings_.push_back(settings); }
+void InviwoModule::registerSettings(Settings* settings) {
+    app_->registerSettings(settings);
+    settings_.push_back(settings);
+}
 
 InviwoApplication* InviwoModule::getInviwoApplication() const { return app_; }
 

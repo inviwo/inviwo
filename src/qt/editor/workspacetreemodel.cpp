@@ -38,7 +38,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
-#include <modules/qtwidgets/editorsettings.h>
+#include <inviwo/qt/editor/editorsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

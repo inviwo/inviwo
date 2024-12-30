@@ -143,7 +143,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , workspaceManager_{std::make_unique<WorkspaceManager>(this)}
     , propertyPresetManager_{std::make_unique<PropertyPresetManager>(this)}
     , portInspectorManager_{std::make_unique<PortInspectorManager>(this)}
+    , settingsRegistry_{}
     , layerRamResizer_{nullptr} {
+
+    settingsRegistry_.push_back(systemSettings_.get());
 
     // Keep the pool at size 0 if are quiting directly to make sure that we don't have
     // unfinished results in the worker threads
@@ -289,14 +292,15 @@ std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallba
     return moduleCallbackActions_;
 }
 
-std::vector<Settings*> InviwoApplication::getModuleSettings() {
-    std::vector<Settings*> allModuleSettings;
-    allModuleSettings.push_back(systemSettings_.get());
-    for (auto& inviwoModule : moduleManager_.getInviwoModules()) {
-        const auto& modSettings = inviwoModule.getSettings();
-        allModuleSettings.insert(allModuleSettings.end(), modSettings.begin(), modSettings.end());
-    }
-    return allModuleSettings;
+void InviwoApplication::registerSettings(Settings* settings) {
+    settingsRegistry_.push_back(settings);
+}
+void InviwoApplication::unregisterSettings(Settings* settings) {
+    std::erase(settingsRegistry_, settings);
+}
+
+const std::vector<Settings*>& InviwoApplication::getModuleSettings() {
+    return settingsRegistry_;
 }
 
 SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_; }
