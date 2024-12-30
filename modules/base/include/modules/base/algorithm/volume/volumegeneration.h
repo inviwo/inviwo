@@ -87,17 +87,25 @@ std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& ba
 }
 
 /**
- * Center voxel equal to 1 all other 0
+ * Center voxel equal to value all other 0
  */
 template <typename T = float>
-std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size) {
+std::unique_ptr<Volume> makeSingleVoxelVolume(const size3_t& size,
+                                              const dvec4& value = dvec4{1.0}) {
     const size3_t mid{(size - size3_t{1u}) / size_t{2}};
     return generateVolume(size, mat3(1.0), [&](const size3_t& ind) {
-        if (ind == mid)
-            return glm_convert_normalized<T>(1.0);
-        else
+        if (ind == mid) {
+            return glm_convert_normalized<T>(value);
+        } else {
             return glm_convert_normalized<T>(0.0);
+        }
     });
+}
+
+template <typename T = float>
+std::unique_ptr<Volume> makeUniformVolume(const size3_t& size, const dvec4& value = dvec4{1.0}) {
+    return generateVolume(size, mat3(1.0),
+                          [&](const size3_t&) { return glm_convert_normalized<T>(value); });
 }
 
 /**
