@@ -32,10 +32,10 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
+#include <inviwo/qt/editor/editorsettings.h>
 
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <modules/qtwidgets/editorsettings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

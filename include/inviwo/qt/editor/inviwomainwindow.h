@@ -70,6 +70,7 @@ class ToolsMenu;
 class TextLabelOverlay;
 class MenuKeyboardEventFilter;
 class Processor;
+class EditorSettings;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow {
 public:
@@ -110,6 +111,7 @@ public:
     AnnotationsWidget* getAnnotationsWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
+    EditorSettings* getEditorSettings() const;
 
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
@@ -230,6 +232,7 @@ private:
     void updateWindowTitle();
 
     InviwoApplication* app_;
+    std::unique_ptr<EditorSettings> editorSettings_;
     MenuKeyboardEventFilter* menuEventFilter_;
     InviwoEditMenu* editMenu_ = nullptr;
     ToolsMenu* toolsMenu_ = nullptr;

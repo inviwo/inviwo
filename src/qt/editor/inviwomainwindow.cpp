@@ -43,6 +43,7 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/consolewidget.h>
+#include <inviwo/qt/editor/editorsettings.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/inviwoaboutwindow.h>
 #include <inviwo/qt/editor/toolsmenu.h>
@@ -62,7 +63,6 @@
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/keyboardutils.h>
-#include <modules/qtwidgets/editorsettings.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/network/workspaceutils.h>
@@ -210,6 +210,11 @@ auto getFloatingDockWidgets(InviwoMainWindow* win) {
 InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     : QMainWindow()
     , app_(app)
+    , editorSettings_{[app]() {
+        auto es = std::make_unique<EditorSettings>(app);
+        app->registerSettings(es.get());
+        return es;
+    }()}
     , menuEventFilter_{new MenuKeyboardEventFilter(this)}
     , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
     , toolsMenu_{new ToolsMenu(this)}
@@ -1578,6 +1583,8 @@ TextLabelOverlay& InviwoMainWindow::getNetworkEditorOverlay() const {
 }
 
 InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
+
+EditorSettings* InviwoMainWindow::getEditorSettings() const { return editorSettings_.get(); }
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
 ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }

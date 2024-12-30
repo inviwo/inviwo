@@ -60,6 +60,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <inviwo/qt/editor/editorsettings.h>
 #include <inviwo/qt/editor/linkdialog/linkdialog.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
@@ -171,6 +172,13 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
             }
         }
     });
+
+#if IVW_PROFILING
+    auto& showCounts = mainWindow_->getEditorSettings()->showProcessorEvaluationCounts;
+    ProcessorGraphicsItem::setShowCount(showCounts.get());
+    onShowCounts_ = showCounts.onChangeScoped(
+        [&showCounts]() { ProcessorGraphicsItem::setShowCount(showCounts.get()); });
+#endif
 }
 
 ProcessorNetwork* NetworkEditor::getNetwork() const { return network_; }
