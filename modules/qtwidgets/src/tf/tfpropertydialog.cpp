@@ -251,7 +251,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
     primitiveAlpha_ = new TFLineEdit();
     // only accept values in [0, 1]
-    primitiveAlpha_->setValidRange(dvec2(0.0, 1.0));
+    primitiveAlpha_->setValidRange(dvec2(0.0, 1.0), 0.0001);
     connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetAlpha, primitiveAlpha_,
             &TFLineEdit::setValue);
     connect(primitiveAlpha_, &TFLineEdit::valueChanged, tfSelectionWatcher_.get(),
