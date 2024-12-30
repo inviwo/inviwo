@@ -51,31 +51,12 @@ namespace inviwo {
 class Deserializer;
 class Volume;
 
-/** \docpage{org.inviwo.VolumeCreator, Volume Creator}
- * ![](org.inviwo.VolumeCreator.png?classIdentifier=org.inviwo.VolumeCreator)
- * Procedurally generate volume data on the CPU.
- *
- * ### Outports
- *   * __volume__ The generated volume.
- *
- * ### Properties
- *   * __Type__ Type of volume to generate:
- *       * __Single Voxel__ Center voxel equal to 1 all other 0
- *       * __Sphere__ Spherically symmetric density centered in the volume decaying radially with
- *         the distance from the center
- *       * __Ripple__ A quickly oscillating density between 0 and 1
- *       * __Marching Cube__ A 2x2x2 volume corresponding to a marching cube case
- *   * __Dimensions__ Volume Dimensions
- *   * __Format__ Volume data format
- *   * __Index__ Marching cube case index
- */
-
 class IVW_MODULE_BASE_API VolumeCreator : public Processor {
 public:
     VolumeCreator();
     virtual ~VolumeCreator() = default;
 
-    enum class Type { SingleVoxel, Sphere, Ripple, MarchingCube };
+    enum class Type { SingleVoxel, Sphere, Ripple, MarchingCube, Uniform };
 
     virtual void process() override;
 
@@ -89,6 +70,7 @@ private:
     OptionProperty<Type> type_;
     OptionProperty<DataFormatId> format_;
     IntSize3Property dimensions_;
+    DoubleVec4Property value_;
     IntProperty index_;
 
     VolumeInformationProperty information_;

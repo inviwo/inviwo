@@ -65,18 +65,27 @@ const ProcessorInfo VolumeCreator::processorInfo_{
     "Data Creation",             // Category
     CodeState::Stable,           // Code state
     Tags::CPU,                   // Tags
-};
+    R"(Procedurally generate volume data on the CPU.)"_unindentHelp};
 const ProcessorInfo& VolumeCreator::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCreator::VolumeCreator()
     : Processor()
-    , outport_("volume")
+    , outport_("volume", "The generated volume"_help)
     , type_{"type",
             "Type",
+            R"(
+            Type of volume to generate:
+             * __Single Voxel__ Center voxel equal to 'value' all other 0
+             * __Sphere__ Spherically symmetric density centered in the volume decaying radially with
+                          the distance from the center
+             * __Ripple__ A quickly oscillating density between 0 and 1
+             * __Marching Cube__ A 2x2x2 volume corresponding to a marching cube case
+             * __Uniform Value__ A constant 'value' in the entire volume)"_unindentHelp,
             {{"singleVoxel", "Single Voxel", Type::SingleVoxel},
              {"sphere", "Sphere", Type::Sphere},
              {"ripple", "Ripple", Type::Ripple},
-             {"marchingCube", "Marching Cube", Type::MarchingCube}}}
+             {"marchingCube", "Marching Cube", Type::MarchingCube},
+             {"uniform", "Uniform Value", Type::Uniform}}}
     , format_{"format", "Format",
               OptionPropertyState<DataFormatId>{
                   .options =
@@ -86,15 +95,23 @@ VolumeCreator::VolumeCreator()
                               formats.emplace_back(Format::str(), Format::str(), Format::id());
                           });
                           return formats;
-                      }()}
+                      }(),
+                  .help = "Volume data format"_help}
                   .setSelectedValue(DataFloat32::id())}
-    , dimensions_("dims", "Dimensions", size3_t(10), size3_t(0), size3_t(512))
-    , index_("index", "Index", 5, 0, 255)
+    , dimensions_("dims", "Dimensions",
+                  util::ordinalCount(size3_t(10), size3_t(512)).set("Volume Dimensions"_help))
+    , value_{"value", "Value",
+             util::ordinalSymmetricVector(dvec4{1.0}, dvec4{100.0})
+                 .set("Value for use in some volumes"_help)}
+    , index_("index", "Index",
+             util::ordinalCount(5, 255)
+                 .set("Marching cube case index"_help)
+                 .setMax(ConstraintBehavior::Immutable))
     , information_("Information", "Data information")
     , basis_("Basis", "Basis and offset") {
 
     addPort(outport_);
-    addProperties(type_, format_, dimensions_, index_, information_, basis_);
+    addProperties(type_, format_, dimensions_, value_, index_, information_, basis_);
 
     information_.setChecked(true);
     information_.setCurrentStateAsDefault();
@@ -106,19 +123,23 @@ void VolumeCreator::process() {
         loadedData_ =
             dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
                 format_.get(), [&]<typename T>() {
+                    using enum VolumeCreator::Type;
                     switch (type_.get()) {
-                        case VolumeCreator::Type::SingleVoxel:
+                        case SingleVoxel:
                             return std::shared_ptr<Volume>(
-                                util::makeSingleVoxelVolume<T>(dimensions_.get()));
-                        case VolumeCreator::Type::Sphere:
+                                util::makeSingleVoxelVolume<T>(dimensions_.get(), value_.get()));
+                        case Sphere:
                             return std::shared_ptr<Volume>(
                                 util::makeSphericalVolume<T>(dimensions_.get()));
-                        case VolumeCreator::Type::Ripple:
+                        case Ripple:
                             return std::shared_ptr<Volume>(
                                 util::makeRippleVolume<T>(dimensions_.get()));
-                        case VolumeCreator::Type::MarchingCube:
+                        case MarchingCube:
                             return std::shared_ptr<Volume>(
                                 util::makeMarchingCubeVolume<T>(index_.get()));
+                        case Uniform:
+                            return std::shared_ptr<Volume>(
+                                util::makeUniformVolume<T>(dimensions_.get(), value_.get()));
                         default:
                             return std::shared_ptr<Volume>{};
                     }
