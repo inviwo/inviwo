@@ -38,128 +38,86 @@
 #include <cstring>
 #include <iosfwd>
 #include <iterator>
+#include <source_location>
 
 #include <fmt/format.h>
 
 namespace inviwo {
+
+class IVW_CORE_API Literal : public std::string_view {
+public:
+    constexpr Literal(const Literal&) = default;
+    constexpr Literal(Literal&&) = default;
+    constexpr Literal& operator=(const Literal&) = default;
+    constexpr Literal& operator=(Literal&&) = default;
+
+    constexpr std::string_view view() const { return *this; }
+
+private:
+    constexpr Literal(const char* str, size_t len) : std::string_view{str, len} {}
+    Literal() = delete;
+    friend constexpr Literal operator""_sl(const char* str, size_t len);
+};
+
+constexpr Literal operator""_sl(const char* str, size_t len) { return Literal{str, len}; }
 
 /**
  * Represents a location in source code
  */
 class IVW_CORE_API SourceContext {
 public:
-    /**
-     * Construct a SourceContext, this is usually not done manually, but rather one of the macros
-     * bellow is used to automatically get the right arguments. SourceContext copies its arguments,
-     * for a more lightweight version @see SourceLocation
-     * @param caller usually the class name of *this in the current scope.
-     * @param file filename path of the source file
-     * @param function name of the function in the current scope
-     * @param line line number in the current source file
-     */
-    SourceContext(std::string caller = "", std::string file = "", std::string function = "",
-                  int line = 0)
-        : caller_(std::move(caller))
-        , file_(std::move(file))
-        , function_(std::move(function))
-        , line_(line) {}
+    constexpr SourceContext(const char*) = delete;
+    constexpr SourceContext(std::string_view) = delete;
 
-    /**
-     * Usually the class name of *this in the current scope.
-     */
-    const std::string& getCaller() const { return caller_; };
+    explicit constexpr SourceContext(Literal source, std::string_view file,
+                                     std::string_view function, std::uint32_t line = 0,
+                                     std::uint32_t column = 0)
+        : SourceContext{source.view(), file, function, line, column} {}
 
-    /**
-     * The name and path the the source file
-     */
-    const std::string& getFile() const { return file_; };
+    explicit constexpr SourceContext(
+        Literal source, std::source_location location = std::source_location::current())
+        : SourceContext{source.view(), location.file_name(), location.function_name(),
+                        location.line(), location.column()} {}
 
-    /**
-     * Name of the function in the current scope
-     */
-    const std::string& getFunction() const { return function_; };
+    explicit consteval SourceContext(
+        std::source_location location = std::source_location::current())
+        : SourceContext{extractName(location.function_name()), location.file_name(),
+                        location.function_name(), location.line(), location.column()} {}
 
-    /**
-     * Line number in the current source file
-     */
-    int getLine() const { return line_; };
+    std::string_view source() const { return source_; };
+    std::string_view file() const { return file_; };
+    std::string_view function() const { return function_; };
+    std::uint32_t line() const { return line_; };
+    std::uint32_t column() const { return column_; };
 
 private:
-    std::string caller_;
-    std::string file_;
-    std::string function_;
-    int line_ = 0;
+    static constexpr std::string_view extractName(std::string_view name) noexcept {
+        const std::size_t end = name.find("(");
+        name = name.substr(0, end);
+        name = name.substr(name.rfind(' ') + 1);
+        return name;
+    }
+
+    explicit constexpr SourceContext(std::string_view source, std::string_view file,
+                                     std::string_view function, std::uint32_t line,
+                                     std::uint32_t column)
+        : source_{source}, file_{file}, function_{function}, line_{line}, column_{column} {}
+
+    std::string_view source_;
+    std::string_view file_;
+    std::string_view function_;
+    std::uint32_t line_;
+    std::uint32_t column_;
 };
 
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, const SourceContext& ec);
 
-#define IVW_CONTEXT                                                               \
-    ::inviwo::SourceContext(::inviwo::util::parseTypeIdName(typeid(this).name()), \
-                            std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
-
-#define IVW_CONTEXT_CUSTOM(source) \
-    ::inviwo::SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
-
-// Old deprecated macro, use uppercase
-#define IvwContext                                                                \
-    ::inviwo::SourceContext(::inviwo::util::parseTypeIdName(typeid(this).name()), \
-                            std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
-// Old deprecated macro, use uppercase
-#define IvwContextCustom(source) \
-    ::inviwo::SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
-
-/**
- * Represents a location in source code, similar to SourceContext but much more lightweight.
- * SourceLocation does not take ownership of its given string, and assumes they are in static
- * storage, which is the case for the file and function macros used below. But care has to be taken
- * if one uses this class directly. The reason for this it so allow it to be fast, lightweight and
- * constexpr. And to avoid unnecessary copies of file and function names. For a owning version @see
- * SourceContext
- */
-class IVW_CORE_API SourceLocation {
-public:
-    /**
-     * This function does now take ownership of file and function!
-     * @param file filename path of the source file
-     * @param function name of the function in the current scope
-     * @param line line number in the current source file
-     */
-    constexpr SourceLocation(std::string_view file, std::string_view function, int line)
-        : file_{file}, function_{function}, line_{line} {}
-
-    /**
-     * The name and path of the source file
-     */
-    constexpr std::string_view getFile() const noexcept { return file_; };
-
-    /**
-     * Name of the function in the current scope
-     */
-    constexpr std::string_view getFunction() const noexcept { return function_; };
-
-    /**
-     * Line number in the current source file
-     */
-    constexpr int getLine() const noexcept { return line_; };
-
-    friend constexpr bool operator==(const SourceLocation& a, const SourceLocation& b) noexcept {
-        return a.getLine() == b.getLine() && a.getFile() == b.getFile() &&
-               a.getFunction() == b.getFunction();
-    }
-
-    friend constexpr bool operator!=(const SourceLocation& a, const SourceLocation& b) noexcept {
-        return !(a == b);
-    }
-
-private:
-    std::string_view file_;
-    std::string_view function_;
-    int line_;
-};
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, const SourceLocation& ec);
-
-#define IVW_SOURCE_LOCATION ::inviwo::SourceLocation(__FILE__, __FUNCTION__, __LINE__)
+#define IVW_CONTEXT ::inviwo::SourceContext()
+#define IVW_CONTEXT_CUSTOM(source)                   \
+    []() {                                           \
+        using namespace inviwo;                      \
+        return ::inviwo::SourceContext(source##_sl); \
+    }()
 
 }  // namespace inviwo
 
@@ -169,42 +127,19 @@ struct fmt::formatter<inviwo::SourceContext> : fmt::formatter<fmt::string_view> 
     template <typename FormatContext>
     auto format(const inviwo::SourceContext& sc, FormatContext& ctx) const {
         fmt::memory_buffer buff;
-        fmt::format_to(std::back_inserter(buff), "{} ({}:{})", sc.getCaller(), sc.getFile(),
-                       sc.getLine());
+        fmt::format_to(std::back_inserter(buff), "{} ({}:{})", sc.source(), sc.file(), sc.line());
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
-    }
-};
-
-template <>
-struct fmt::formatter<inviwo::SourceLocation> : fmt::formatter<fmt::string_view> {
-    template <typename FormatContext>
-    auto format(const inviwo::SourceLocation& sl, FormatContext& ctx) const {
-        fmt::memory_buffer buff;
-        fmt::format_to(std::back_inserter(buff), "{} ({}:{})", sl.getFunction(), sl.getFile(),
-                       sl.getLine());
-        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
-    }
-};
-
-template <>
-struct std::hash<::inviwo::SourceLocation> {
-    constexpr size_t operator()(const ::inviwo::SourceLocation& sl) const noexcept {
-        size_t h = 0;
-        ::inviwo::util::hash_combine(h, sl.getFile());
-        ::inviwo::util::hash_combine(h, sl.getFunction());
-        ::inviwo::util::hash_combine(h, sl.getLine());
-        return h;
     }
 };
 
 template <>
 struct std::hash<::inviwo::SourceContext> {
-    size_t operator()(const ::inviwo::SourceContext& sl) const noexcept {
+    size_t operator()(const ::inviwo::SourceContext& context) const noexcept {
         size_t h = 0;
-        ::inviwo::util::hash_combine(h, sl.getCaller());
-        ::inviwo::util::hash_combine(h, sl.getFile());
-        ::inviwo::util::hash_combine(h, sl.getFunction());
-        ::inviwo::util::hash_combine(h, sl.getLine());
+        ::inviwo::util::hash_combine(h, context.source());
+        ::inviwo::util::hash_combine(h, context.file());
+        ::inviwo::util::hash_combine(h, context.function());
+        ::inviwo::util::hash_combine(h, context.line());
         return h;
     }
 };

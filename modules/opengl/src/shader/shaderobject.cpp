@@ -138,17 +138,15 @@ struct Psm {
             auto pathBegin = std::find(c.curr, c.end, '"');
             if (pathBegin == c.end) {
                 throw OpenGLException{
-                    fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(std::string{s.key}, std::string{s.key}, "",
-                                  static_cast<int>(s.lines + 1))};
+                    SourceContext{"ShaderObject"_sl, s.key, "", static_cast<uint32_t>(s.lines + 1)},
+                    "Invalid include found at {}({})", s.key, s.lines + 1};
             }
 
             auto pathEnd = std::find(pathBegin + 1, c.end, '"');
             if (pathEnd == c.end) {
                 throw OpenGLException{
-                    fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(std::string{s.key}, std::string{s.key}, "",
-                                  static_cast<int>(s.lines + 1))};
+                    SourceContext{"ShaderObject"_sl, s.key, "", static_cast<uint32_t>(s.lines + 1)},
+                    "Invalid include found at {}({})", s.key, s.lines + 1};
             }
 
             const auto path =
@@ -164,8 +162,8 @@ struct Psm {
                 }
             } catch (const OpenGLException& e) {
                 throw OpenGLException(e.getMessage(),
-                                      SourceContext(std::string{s.key}, std::string{s.key}, "",
-                                                    static_cast<int>(s.lines + 1)));
+                                      SourceContext{"ShaderObject"_sl, s.key, "",
+                                                    static_cast<uint32_t>(s.lines + 1)});
             }
         };
 

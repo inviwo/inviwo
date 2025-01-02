@@ -50,7 +50,7 @@ TEST(UtilitiesTests, StripIndentifierTest) {
 }
 
 TEST(UtilitiesTests, ValidateIdentifierTest) {
-    auto context = IvwContextCustom("utilities-test");
+    auto context = SourceContext("utilities-test"_sl);
 
     EXPECT_THROW(util::validateIdentifier("", "property", context), Exception);
     EXPECT_THROW(util::validateIdentifier("1foo", "property", context), Exception);
