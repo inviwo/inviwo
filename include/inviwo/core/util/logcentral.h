@@ -204,6 +204,44 @@ private:
     MessageBreakLevel breakLevel_ = MessageBreakLevel::Off;
 };
 
+namespace log {
+
+struct IVW_CORE_API LogFormat {
+    consteval LogFormat(const char* format,
+                        std::source_location location = std::source_location::current())
+        : format(format), context{location} {}
+
+    std::string_view format;
+    SourceContext context;
+};
+
+inline void log(LogLevel level, LogAudience audience, SourceContext context,
+                std::string_view format, fmt::format_args&& args) {
+    LogCentral::getPtr()->log(context.source(), level, audience, context.file(), context.function(),
+                              context.line(), fmt::vformat(format, std::move(args)));
+}
+
+namespace user {
+template <typename... Args>
+void info(const LogFormat& format, Args&&... args) {
+    ::inviwo::log::log(LogLevel::Info, LogAudience::User, format.context, format.format,
+                       fmt::make_format_args(args...));
+}
+
+template <typename... Args>
+void warn(const LogFormat& format, Args&&... args) {
+    ::inviwo::log::log(LogLevel::Info, LogAudience::User, format.context, format.format,
+                       fmt::make_format_args(args...));
+}
+template <typename... Args>
+void error(const LogFormat& format, Args&&... args) {
+    ::inviwo::log::log(LogLevel::Info, LogAudience::User, format.context, format.format,
+                       fmt::make_format_args(args...));
+}
+}  // namespace user
+
+}  // namespace log
+
 namespace util {
 
 IVW_CORE_API void log(ExceptionContext context, std::string_view message,
@@ -217,27 +255,26 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view
 template <typename... Args>
 void log(SourceContext context, LogLevel level, LogAudience audience,
          fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile(),
-                              context.getFunction(), context.getLine(),
-                              fmt::format(format, std::forward<Args>(args)...));
+    LogCentral::getPtr()->log(context.source(), level, audience, context.file(), context.function(),
+                              context.line(), fmt::format(format, std::forward<Args>(args)...));
 }
 
 template <typename... Args>
 void logInfo(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Info, LogAudience::Developer,
-                              context.getFile(), context.getFunction(), context.getLine(),
+    LogCentral::getPtr()->log(context.source(), LogLevel::Info, LogAudience::Developer,
+                              context.file(), context.function(), context.line(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 template <typename... Args>
 void logWarn(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Warn, LogAudience::Developer,
-                              context.getFile(), context.getFunction(), context.getLine(),
+    LogCentral::getPtr()->log(context.source(), LogLevel::Warn, LogAudience::Developer,
+                              context.file(), context.function(), context.line(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 template <typename... Args>
 void logError(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Error, LogAudience::Developer,
-                              context.getFile(), context.getFunction(), context.getLine(),
+    LogCentral::getPtr()->log(context.source(), LogLevel::Error, LogAudience::Developer,
+                              context.file(), context.function(), context.line(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 

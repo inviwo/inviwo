@@ -187,16 +187,16 @@ namespace detail {
 
 void columnCheck(const DataFrame& left, const DataFrame& right,
                  const std::vector<std::pair<std::string, std::string>>& keyColumns,
-                 const std::string& context) {
+                 Literal context) {
     for (const auto& [leftCol, rightCol] : keyColumns) {
         auto indexCol1 = left.getColumn(leftCol);
         auto indexCol2 = right.getColumn(rightCol);
         if (!indexCol1) {
-            throw Exception(IVW_CONTEXT_CUSTOM(context),
+            throw Exception(SourceContext(context),
                             "key column '{}' missing in the left data frame", leftCol);
         }
         if (!indexCol2) {
-            throw Exception(IVW_CONTEXT_CUSTOM(context),
+            throw Exception(SourceContext(context),
                             "key column '{}' missing in the right data frame", rightCol);
         }
 
@@ -205,14 +205,14 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
         // check only for categorical types and do not compare column types directly.
         // This enables combining a regular column with an index column, e.g. for indexing.
         if (catcol1 != catcol2) {
-            throw Exception(IVW_CONTEXT_CUSTOM(context),
+            throw Exception(SourceContext(context),
                             "column type mismatch in key columns '{}' = {}, '{}' = {}", leftCol,
                             indexCol1->getColumnType(), rightCol, indexCol2->getColumnType());
         }
 
         if (indexCol1->getBuffer()->getDataFormat()->getId() !=
             indexCol2->getBuffer()->getDataFormat()->getId()) {
-            throw Exception(IVW_CONTEXT_CUSTOM(context),
+            throw Exception(SourceContext(context),
                             "format mismatch in key columns '{}' = {}, '{}' = {}", leftCol,
                             indexCol1->getBuffer()->getDataFormat()->getString(), rightCol,
                             indexCol2->getBuffer()->getDataFormat()->getString());
@@ -364,7 +364,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
 
 std::shared_ptr<DataFrame> innerJoin(const DataFrame& left, const DataFrame& right,
                                      const std::pair<std::string, std::string>& keyColumn) {
-    detail::columnCheck(left, right, {keyColumn}, "dataframe::innerJoin");
+    detail::columnCheck(left, right, {keyColumn}, "dataframe::innerJoin"_sl);
 
     auto indexCol1 = left.getColumn(keyColumn.first);
     auto indexCol2 = right.getColumn(keyColumn.second);
@@ -398,7 +398,7 @@ std::shared_ptr<DataFrame> innerJoin(
         throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::innerJoin"));
     }
 
-    detail::columnCheck(left, right, keyColumns, "dataframe::innerJoin");
+    detail::columnCheck(left, right, keyColumns, "dataframe::innerJoin"_sl);
 
     std::vector<std::uint32_t> rowsLeft;
     std::vector<std::uint32_t> rowsRight;
@@ -430,7 +430,7 @@ std::shared_ptr<DataFrame> innerJoin(
 
 std::shared_ptr<DataFrame> leftJoin(const DataFrame& left, const DataFrame& right,
                                     const std::pair<std::string, std::string>& keyColumn) {
-    detail::columnCheck(left, right, {keyColumn}, "dataframe::leftJoin");
+    detail::columnCheck(left, right, {keyColumn}, "dataframe::leftJoin"_sl);
 
     auto indexCol1 = left.getColumn(keyColumn.first);
     auto indexCol2 = right.getColumn(keyColumn.second);
@@ -464,7 +464,7 @@ std::shared_ptr<DataFrame> leftJoin(
         throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::leftJoin"));
     }
 
-    detail::columnCheck(left, right, keyColumns, "dataframe::leftJoin");
+    detail::columnCheck(left, right, keyColumns, "dataframe::leftJoin"_sl);
 
     auto rows = util::transform(
         detail::getMatchingRows(left, right, keyColumns),

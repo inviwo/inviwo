@@ -52,14 +52,16 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
                                            ProcessorNetworkEvaluationObserver,
                                            ProcessorObserver {
 
-    void log(const SourceLocation& loc) {
-        LogInfo(fmt::format("{:33}", loc.getFunction().substr(2)));
+    void log(std::source_location location = std::source_location::current()) {
+        LogInfo(fmt::format("{:33}", location.function_name()));
     }
-    void log(const SourceLocation& loc, std::string_view msg) {
-        LogInfo(fmt::format("{:33} {}", loc.getFunction().substr(2), msg));
+    void log(std::string_view msg,
+             std::source_location location = std::source_location::current()) {
+        LogInfo(fmt::format("{:33} {}", location.function_name(), msg));
     }
-    void log(const SourceLocation& loc, std::string_view msg1, std::string_view msg2) {
-        LogInfo(fmt::format("{:33} {} - {}", loc.getFunction().substr(2), msg1, msg2));
+    void log(std::string_view msg1, std::string_view msg2,
+             std::source_location location = std::source_location::current()) {
+        LogInfo(fmt::format("{:33} {} - {}", location.function_name(), msg1, msg2));
     }
 
     // Network
@@ -68,52 +70,48 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
     virtual void onProcessorNetworkUnlocked() override {}
 
     virtual void onProcessorNetworkWillAddProcessor(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     }
     virtual void onProcessorNetworkDidAddProcessor(Processor* p) override {
         p->ProcessorObservable::addObserver(this);
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     }
     virtual void onProcessorNetworkWillRemoveProcessor(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     }
     virtual void onProcessorNetworkDidRemoveProcessor(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     }
 
     virtual void onProcessorNetworkWillAddConnection(const PortConnection& p) override {
-        log(IVW_SOURCE_LOCATION, p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
+        log(p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
     }
     virtual void onProcessorNetworkDidAddConnection(const PortConnection& p) override {
-        log(IVW_SOURCE_LOCATION, p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
+        log(p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
     }
     virtual void onProcessorNetworkWillRemoveConnection(const PortConnection& p) override {
-        log(IVW_SOURCE_LOCATION, p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
+        log(p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
     }
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection& p) override {
-        log(IVW_SOURCE_LOCATION, p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
+        log(p.getInport()->getIdentifier(), p.getOutport()->getIdentifier());
     }
 
     virtual void onProcessorNetworkWillAddLink(const PropertyLink& l) override {
-        log(IVW_SOURCE_LOCATION, l.getSource()->getIdentifier(),
-            l.getDestination()->getIdentifier());
+        log(l.getSource()->getIdentifier(), l.getDestination()->getIdentifier());
     }
     virtual void onProcessorNetworkDidAddLink(const PropertyLink& l) override {
-        log(IVW_SOURCE_LOCATION, l.getSource()->getIdentifier(),
-            l.getDestination()->getIdentifier());
+        log(l.getSource()->getIdentifier(), l.getDestination()->getIdentifier());
     }
     virtual void onProcessorNetworkWillRemoveLink(const PropertyLink& l) override {
-        log(IVW_SOURCE_LOCATION, l.getSource()->getIdentifier(),
-            l.getDestination()->getIdentifier());
+        log(l.getSource()->getIdentifier(), l.getDestination()->getIdentifier());
     }
     virtual void onProcessorNetworkDidRemoveLink(const PropertyLink& l) override {
-        log(IVW_SOURCE_LOCATION, l.getSource()->getIdentifier(),
-            l.getDestination()->getIdentifier());
+        log(l.getSource()->getIdentifier(), l.getDestination()->getIdentifier());
     }
 
     virtual void onProcessorBackgroundJobsChanged(Processor* p, [[maybe_unused]] int diff,
                                                   [[maybe_unused]] int total) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     }
 
     // Evaluator
@@ -125,46 +123,30 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
     };
 
     // Processor
-    virtual void onAboutPropertyChange(Property* p) override {
-        log(IVW_SOURCE_LOCATION, p ? p->getPath() : "null");
-    };
-    virtual void onProcessorInvalidationBegin(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
-    virtual void onProcessorInvalidationEnd(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
+    virtual void onAboutPropertyChange(Property* p) override { log(p ? p->getPath() : "null"); };
+    virtual void onProcessorInvalidationBegin(Processor* p) override { log(p->getIdentifier()); };
+    virtual void onProcessorInvalidationEnd(Processor* p) override { log(p->getIdentifier()); };
     virtual void onProcessorPortAdded(Processor* p, [[maybe_unused]] Port* port) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     };
     virtual void onProcessorPortRemoved(Processor* p, [[maybe_unused]] Port* port) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     };
-    virtual void onProcessorAboutToProcess(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
-    virtual void onProcessorFinishedProcess(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
-    virtual void onProcessorSourceChanged(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
-    virtual void onProcessorSinkChanged(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
-    virtual void onProcessorReadyChanged(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
-    };
+    virtual void onProcessorAboutToProcess(Processor* p) override { log(p->getIdentifier()); };
+    virtual void onProcessorFinishedProcess(Processor* p) override { log(p->getIdentifier()); };
+    virtual void onProcessorSourceChanged(Processor* p) override { log(p->getIdentifier()); };
+    virtual void onProcessorSinkChanged(Processor* p) override { log(p->getIdentifier()); };
+    virtual void onProcessorReadyChanged(Processor* p) override { log(p->getIdentifier()); };
     virtual void onProcessorActiveConnectionsChanged(Processor* p) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     };
     virtual void onProcessorStartBackgroundWork(Processor* p,
                                                 [[maybe_unused]] size_t jobs) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     };
     virtual void onProcessorFinishBackgroundWork(Processor* p,
                                                  [[maybe_unused]] size_t jobs) override {
-        log(IVW_SOURCE_LOCATION, p->getIdentifier());
+        log(p->getIdentifier());
     };
 };
 

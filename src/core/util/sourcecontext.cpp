@@ -33,12 +33,7 @@
 namespace inviwo {
 
 std::ostream& operator<<(std::ostream& ss, const SourceContext& ec) {
-    ss << ec.getCaller() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
-    return ss;
-}
-
-std::ostream& operator<<(std::ostream& ss, const SourceLocation& ec) {
-    ss << ec.getFunction() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
+    ss << ec.source() << " (" << ec.file() << ":" << ec.line() << ")";
     return ss;
 }
 

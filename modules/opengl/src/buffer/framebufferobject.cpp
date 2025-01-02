@@ -52,7 +52,8 @@ namespace inviwo {
 
 using namespace std::literals;
 
-inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLocation loc) {
+inline void checkContext(std::string_view error, Canvas::ContextID org,
+                         std::source_location location = std::source_location::current()) {
     if constexpr (cfg::assertions) {
         auto rc = RenderContext::getPtr();
         Canvas::ContextID curr = rc->activeContext();
@@ -62,7 +63,7 @@ inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLo
                 fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
                             rc->getContextName(curr), curr, rc->getContextName(org), org);
 
-            assertion(loc.getFile(), loc.getFunction(), loc.getLine(), message);
+            assertion(location.file_name(), location.function_name(), location.line(), message);
         }
     }
 }
@@ -99,8 +100,7 @@ FrameBufferObject::FrameBufferObject(FrameBufferObject&& rhs) noexcept
 FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcept {
     if (this != &rhs) {
         if (id_ != 0) {
-            checkContext("FBO deleted in a different context"sv, creationContext_,
-                         IVW_SOURCE_LOCATION);
+            checkContext("FBO deleted in a different context"sv, creationContext_);
             glDeleteFramebuffers(1, &id_);
         }
 
@@ -117,13 +117,13 @@ FrameBufferObject& FrameBufferObject::operator=(FrameBufferObject&& rhs) noexcep
 
 FrameBufferObject::~FrameBufferObject() {
     if (id_ != 0) {
-        checkContext("FBO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+        checkContext("FBO deleted in a different context"sv, creationContext_);
         glDeleteFramebuffers(1, &id_);
     }
 }
 
 void FrameBufferObject::activate() {
-    checkContext("FBO activated in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    checkContext("FBO activated in a different context"sv, creationContext_);
     glBindFramebuffer(GL_FRAMEBUFFER, id_);
 }
 
@@ -132,7 +132,7 @@ void FrameBufferObject::deactivate() { deactivateFBO(); }
 void FrameBufferObject::deactivateFBO() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
 bool FrameBufferObject::isActive() const {
-    checkContext("FBO used in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    checkContext("FBO used in a different context"sv, creationContext_);
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
     return (static_cast<GLint>(id_) == currentFbo);
@@ -329,8 +329,7 @@ bool FrameBufferObject::hasStencilAttachment() const { return attachedStencilId_
 
 void FrameBufferObject::setReadBlit(bool set) const {
     if (set) {  // store currently bound draw FBO
-        checkContext("FBO activated in a different context"sv, creationContext_,
-                     IVW_SOURCE_LOCATION);
+        checkContext("FBO activated in a different context"sv, creationContext_);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
     } else {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -339,8 +338,7 @@ void FrameBufferObject::setReadBlit(bool set) const {
 
 void FrameBufferObject::setDrawBlit(bool set) {
     if (set) {  // store currently bound draw FBO
-        checkContext("FBO activated in a different context"sv, creationContext_,
-                     IVW_SOURCE_LOCATION);
+        checkContext("FBO activated in a different context"sv, creationContext_);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
     } else {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

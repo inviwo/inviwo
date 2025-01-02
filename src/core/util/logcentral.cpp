@@ -199,8 +199,8 @@ void util::log(ExceptionContext context, std::string_view message, LogLevel leve
 
 void util::log(Logger* logger, ExceptionContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
-    logger->log(context.getCaller(), level, audience, context.getFile(), context.getFunction(),
-                context.getLine(), message);
+    logger->log(context.source(), level, audience, context.file(), context.function(),
+                context.line(), message);
 }
 
 std::string_view enumToStr(LogLevel ll) {
