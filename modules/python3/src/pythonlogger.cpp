@@ -35,14 +35,10 @@
 namespace inviwo {
 
 void PythonLogger::onPythonExecutionOutput(const std::string& msg, PythonOutputType outputType) {
-    switch (outputType) {
-        case PythonOutputType::sysstderr:
-            LogError(msg);
-            break;
-        case PythonOutputType::sysstdout:
-        default:
-            LogInfo(msg);
-    }
+    const LogLevel level =
+        PythonOutputType::sysstderr == outputType ? LogLevel::Error : LogLevel::Info;
+
+    log::report(level, LogAudience::User, msg);
 }
 
 }  // namespace inviwo

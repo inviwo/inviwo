@@ -33,10 +33,12 @@
 #include <inviwo/core/util/chronoutils.h>
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/sourcecontext.h>
 
 #include <sstream>
 #include <string>
 #include <chrono>
+#include <fmt/chrono.h>
 
 namespace inviwo {
 
@@ -118,17 +120,14 @@ protected:
  *
  * \see ScopedClockCPU, ScopedClockGL
  */
-template <typename Clock>
+template <typename Clock, typename Callback>
 class ScopedClock : public Clock {
 public:
+    using Duration = Clock::duration;
     ScopedClock() = delete;
 
-    ScopedClock(const std::string& logSource, const std::string& message,
-                typename Clock::duration logIfAtLeast = typename Clock::duration{},
-                LogLevel logLevel = LogLevel::Info);
-
-    ScopedClock(const std::string& logSource, const std::string& message,
-                double logIfAtLeastMilliSec, LogLevel logLevel = LogLevel::Info);
+    ScopedClock(Callback message, Duration logIfAtLeast = {}, LogLevel logLevel = LogLevel::Info,
+                SourceContext context = std::source_location::current());
 
     ~ScopedClock() { print(); }
 
@@ -136,7 +135,7 @@ public:
      * log the accumulated time but only if it is larger than the duration threshold (logIfAtLeast)
      * given in the constructor.
      */
-    void print();
+    void print() const;
 
     /**
      * log the accumulated time but only if it is larger than the duration threshold (logIfAtLeast)
@@ -145,42 +144,49 @@ public:
     void printAndReset();
 
 private:
-    const std::string logSource_;
-    const std::string logMessage_;
+    SourceContext context_;
+    Callback message_;
 
-    const typename Clock::duration logIfAtLeast_;
-    const LogLevel logLevel_ = LogLevel::Info;
+    typename Clock::duration logIfAtLeast_;
+    LogLevel logLevel_ = LogLevel::Info;
 };
 
-template <typename Clock>
-ScopedClock<Clock>::ScopedClock(const std::string& logSource, const std::string& message,
-                                typename Clock::duration logIfAtLeast, LogLevel logLevel)
-    : logSource_{logSource}
-    , logMessage_{message}
-    , logIfAtLeast_{logIfAtLeast}
-    , logLevel_(logLevel) {}
+namespace util {
 
-template <typename Clock>
-ScopedClock<Clock>::ScopedClock(const std::string& logSource, const std::string& message,
-                                double logIfAtLeastMilliSec, LogLevel logLevel)
-    : ScopedClock(logSource, message,
-                  std::chrono::duration_cast<typename Clock::duration>(
-                      std::chrono::duration<double, std::chrono::milliseconds::period>(
-                          logIfAtLeastMilliSec)),
-                  logLevel) {}
+template <typename Clock, typename Callback>
+[[nodiscard]] auto makeScopedClock(Callback callback, typename Clock::duration logIfAtLeast = {},
+                                   LogLevel logLevel = LogLevel::Info,
+                                   SourceContext context = std::source_location::current())
+    -> ScopedClock<Clock, Callback> {
+    return ScopedClock<Clock, Callback>{callback, logIfAtLeast, logLevel, context};
+}
 
-template <typename Clock>
-void ScopedClock<Clock>::print() {
+template <typename Clock = Clock>
+[[nodiscard]] auto makeScopedClock(Literal message, typename Clock::duration logIfAtLeast = {},
+                                   LogLevel logLevel = LogLevel::Info,
+                                   SourceContext context = std::source_location::current()) {
+    const auto callback = [message]() { return message; };
+    return ScopedClock<Clock, decltype(callback)>{callback, logIfAtLeast, logLevel, context};
+}
+
+}  // namespace util
+
+template <typename Clock, typename Callback>
+ScopedClock<Clock, Callback>::ScopedClock(Callback message, Duration logIfAtLeast,
+                                          LogLevel logLevel, SourceContext context)
+    : context_{context}, message_{message}, logIfAtLeast_{logIfAtLeast}, logLevel_(logLevel) {}
+
+template <typename Clock, typename Callback>
+void ScopedClock<Clock, Callback>::print() const {
     if (Clock::getElapsedTime() > logIfAtLeast_) {
-        std::stringstream message;
-        message << logMessage_ << ": " << util::msToString(Clock::getElapsedMilliseconds());
-        LogCentral::getPtr()->log(logSource_, logLevel_, LogAudience::Developer, __FILE__,
-                                  __FUNCTION__, __LINE__, message.str());
+        ::inviwo::log::report(
+            logLevel_, LogAudience::Developer, context_, "{}: {}", message_(),
+            std::chrono::duration_cast<std::chrono::milliseconds>(Clock::getElapsedTime()));
     }
 }
 
-template <typename Clock>
-void ScopedClock<Clock>::printAndReset() {
+template <typename Clock, typename Callback>
+void ScopedClock<Clock, Callback>::printAndReset() {
     print();
     Clock::reset();
     Clock::start();
@@ -189,10 +195,10 @@ void ScopedClock<Clock>::printAndReset() {
 /**
  * scoped clock for CPU time measurements
  *
- * \see IVW_CPU_PROFILING(message), IVW_CPU_PROFILING_CUSTOM(src, message)
- * \see IVW_CPU_PROFILING_IF(time, message), IVW_CPU_PROFILING_IF(time, src, message)
+ * \see IVW_CPU_PROFILING(message), IVW_CPU_PROFILING_IF(time, message)
  */
-using ScopedClockCPU = ScopedClock<Clock>;
+template <typename Callback>
+using ScopedClockCPU = ScopedClock<Clock, Callback>;
 
 #define IVW_ADDLINE_PART1(x, y) x##y
 #define IVW_ADDLINE_PART2(x, y) IVW_ADDLINE_PART1(x, y)
@@ -204,71 +210,36 @@ using ScopedClockCPU = ScopedClock<Clock>;
  *
  * @param message  log message
  */
-
-/**
- * \def IVW_CPU_PROFILING_CUSTOM(src, message)
- * creates a scoped CPU clock with the given source and message.
- * Does nothing unless IVW_PROFILING is defined.
- *
- * @param src      source of the log message
- * @param message  log message
- */
+#if IVW_PROFILING
+#define IVW_CPU_PROFILING(message)                                                  \
+    const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<Clock>([]() { \
+        std::ostringstream ss;                                                      \
+        ss << message;                                                              \
+        return std::move(ss).str();                                                 \
+    })
+#else
+#define IVW_CPU_PROFILING(message)
+#endif
 
 /**
  * \def IVW_CPU_PROFILING_IF(time, message)
  * creates a scoped CPU clock with the given message and minimum duration.
  * Does nothing unless IVW_PROFILING is defined.
  *
- * @param time     either a std::chrono::duration or a double value (milliseconds)
+ * @param time     a double value (milliseconds)
  * @param message  log message
  */
-
-/**
- * \def IVW_CPU_PROFILING_IF_CUSTOM(time, src, message)
- * creates a scoped CPU clock with the given source, message, and minimum duration.
- * Does nothing unless IVW_PROFILING is defined.
- *
- * @param time     either a std::chrono::duration or a double value (milliseconds)
- * @param src      source of the log message
- * @param message  log message
- */
-
 #if IVW_PROFILING
-#define IVW_CPU_PROFILING(message)                                                  \
-    std::ostringstream IVW_ADDLINE(__stream);                                       \
-    IVW_ADDLINE(__stream) << message;                                               \
-    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(typeid(this).name()), \
-                                        IVW_ADDLINE(__stream).str());
-#else
-#define IVW_CPU_PROFILING(message)
-#endif
-
-#if IVW_PROFILING
-#define IVW_CPU_PROFILING_CUSTOM(src, message) \
-    std::ostringstream IVW_ADDLINE(__stream);  \
-    IVW_ADDLINE(__stream) << message;          \
-    ScopedClockCPU IVW_ADDLINE(__clock)(src, IVW_ADDLINE(__stream).str());
-#else
-#define IVW_CPU_PROFILING_CUSTOM(src, message)
-#endif
-
-#if IVW_PROFILING
-#define IVW_CPU_PROFILING_IF(time, message)                                         \
-    std::ostringstream IVW_ADDLINE(__stream);                                       \
-    IVW_ADDLINE(__stream) << message;                                               \
-    ScopedClockCPU IVW_ADDLINE(__clock)(util::parseTypeIdName(typeid(this).name()), \
-                                        IVW_ADDLINE(__stream).str(), time);
+#define IVW_CPU_PROFILING_IF(time, message)                                   \
+    const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<Clock>( \
+        []() {                                                                \
+            std::ostringstream ss;                                            \
+            ss << message;                                                    \
+            return std::move(ss).str();                                       \
+        },                                                                    \
+        std::chrono::milliseconds(time))
 #else
 #define IVW_CPU_PROFILING_IF(time, message)
-#endif
-
-#if IVW_PROFILING
-#define IVW_CPU_PROFILING_IF_CUSTOM(time, src, message) \
-    std::ostringstream IVW_ADDLINE(__stream);           \
-    IVW_ADDLINE(__stream) << message;                   \
-    ScopedClockCPU IVW_ADDLINE(__clock)(src, IVW_ADDLINE(__stream).str(), time);
-#else
-#define IVW_CPU_PROFILING_IF_CUSTOM(time, src, message)
 #endif
 
 }  // namespace inviwo

@@ -168,9 +168,9 @@ T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool re
  * @brief Find the module identifier of a registered processor
  * @param classIdentifier the class identifier of the processor to look for
  * @param app the InviwoApplication needed to get the modules
- * @return the identifer of the module that registered the processor or nullopt if not found
+ * @return the identifier of the module that registered the processor or nullopt if not found
  */
-IVW_CORE_API std::optional<std::string> getProcessorModuleIdentifier(
+IVW_CORE_API std::optional<std::string_view> getProcessorModuleIdentifier(
     std::string_view classIdentifier, InviwoApplication& app);
 
 }  // namespace util
