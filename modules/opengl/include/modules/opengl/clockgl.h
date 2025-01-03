@@ -165,7 +165,8 @@ protected:
  * \see IVW_OPENGL_PROFILING(message), IVW_OPENGL_PROFILING_CUSTOM(src, message)
  * \see IVW_OPENGL_PROFILING_IF(time, message), IVW_OPENGL_PROFILING_IF(time, src, message)
  */
-using ScopedClockGL = ScopedClock<ClockGL>;
+template <typename Callback>
+using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 
 /**
  * \def IVW_OPENGL_PROFILING(message)
@@ -173,71 +174,36 @@ using ScopedClockGL = ScopedClock<ClockGL>;
  *
  * @param message  log message
  */
-
-/**
- * \def IVW_OPENGL_PROFILING_CUSTOM(src, message)
- * creates a scoped ClockGL clock with the given source and message.
- * Does nothing unless IVW_PROFILING is defined.
- *
- * @param src      source of the log message
- * @param message  log message
- */
+#if IVW_PROFILING
+#define IVW_OPENGL_PROFILING(message)                                                 \
+    const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>([]() { \
+        std::ostringstream ss;                                                        \
+        ss << message;                                                                \
+        return std::move(ss).str();                                                   \
+    })
+#else
+#define IVW_OPENGL_PROFILING(message)
+#endif
 
 /**
  * \def IVW_OPENGL_PROFILING_IF(time, message)
  * creates a scoped ClockGL clock with the given message and minimum duration.
  * Does nothing unless IVW_PROFILING is defined.
  *
- * @param time     either a std::chrono::duration or a double value (milliseconds)
+ * @param time     a double value (milliseconds)
  * @param message  log message
  */
-
-/**
- * \def IVW_OPENGL_PROFILING_IF_CUSTOM(time, src, message)
- * creates a scoped ClockGL clock with the given source, message, and minimum duration.
- * Does nothing unless IVW_PROFILING is defined.
- *
- * @param time     either a std::chrono::duration or a double value (milliseconds)
- * @param src      source of the log message
- * @param message  log message
- */
-
 #if IVW_PROFILING
-#define IVW_OPENGL_PROFILING(message)                                              \
-    std::ostringstream IVW_ADDLINE(__stream);                                      \
-    IVW_ADDLINE(__stream) << message;                                              \
-    ScopedClockGL IVW_ADDLINE(__clock)(util::parseTypeIdName(typeid(this).name()), \
-                                       IVW_ADDLINE(__stream).str());
-#else
-#define IVW_OPENGL_PROFILING(message)
-#endif
-
-#if IVW_PROFILING
-#define IVW_OPENGL_PROFILING_CUSTOM(src, message) \
-    std::ostringstream IVW_ADDLINE(__stream);     \
-    IVW_ADDLINE(__stream) << message;             \
-    ScopedClockGL IVW_ADDLINE(__clock)(src, IVW_ADDLINE(__stream).str());
-#else
-#define IVW_OPENGL_PROFILING_CUSTOM(src, message)
-#endif
-
-#if IVW_PROFILING
-#define IVW_OPENGL_PROFILING_IF(time, message)                                     \
-    std::ostringstream IVW_ADDLINE(__stream);                                      \
-    IVW_ADDLINE(__stream) << message;                                              \
-    ScopedClockGL IVW_ADDLINE(__clock)(util::parseTypeIdName(typeid(this).name()), \
-                                       IVW_ADDLINE(__stream).str(), time);
+#define IVW_OPENGL_PROFILING_IF(time, message)                                  \
+    const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>( \
+        []() {                                                                  \
+            std::ostringstream ss;                                              \
+            ss << message;                                                      \
+            return std::move(ss).str();                                         \
+        },                                                                      \
+        std::chrono::milliseconds(time))
 #else
 #define IVW_OPENGL_PROFILING_IF(time, message)
-#endif
-
-#if IVW_PROFILING
-#define IVW_OPENGL_PROFILING_IF_CUSTOM(time, src, message) \
-    std::ostringstream IVW_ADDLINE(__stream);              \
-    IVW_ADDLINE(__stream) << message;                      \
-    ScopedClockGL IVW_ADDLINE(__clock)(src, IVW_ADDLINE(__stream).str(), time);
-#else
-#define IVW_OPENGL_PROFILING_IF_CUSTOM(time, src, message)
 #endif
 
 }  // namespace inviwo

@@ -68,8 +68,8 @@ CImgModule::CImgModule(InviwoApplication* app)
         app_->setLayerRamResizer(resizer_.get());
     }
 
-    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
-    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());
+    log::info("Using LibJPG Version {}", cimgutil::getLibJPGVersion());
+    log::info("Using OpenEXR Version {}", cimgutil::getOpenEXRVersion());
 }
 
 CImgModule::~CImgModule() {

@@ -79,7 +79,7 @@ public:
         : SourceContext{source.view(), location.file_name(), location.function_name(),
                         location.line(), location.column()} {}
 
-    explicit consteval SourceContext(
+    consteval SourceContext(
         std::source_location location = std::source_location::current())
         : SourceContext{extractName(location.function_name()), location.file_name(),
                         location.function_name(), location.line(), location.column()} {}

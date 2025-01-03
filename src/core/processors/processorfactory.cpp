@@ -42,33 +42,33 @@ ProcessorFactory::ProcessorFactory(InviwoApplication* app) : app_{app} {}
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     auto moduleId = [&]() {
         auto optId = util::getProcessorModuleIdentifier(processor->getClassIdentifier(), *app_);
-        return optId ? *optId : std::string("Unknown");
+        return optId.value_or(std::string_view("Unknown"));
     };
 
     if (!Register::registerObject(processor)) {
-        LogWarn(fmt::format(
+        log::warn(
             "Processor with class name: '{}' is already registered by module '{}'. This "
             "processor will be ignored",
-            processor->getClassIdentifier(), moduleId()));
+            processor->getClassIdentifier(), moduleId());
         return false;
     }
 
     if (util::splitStringView(processor->getClassIdentifier(), '.').size() < 3) {
-        LogWarn(
-            fmt::format("All processor classIdentifiers should be named using reverse DNS "
-                        "(org.inviwo.processor) not like: '{}' in module {}",
-                        processor->getClassIdentifier(), moduleId()));
+        log::warn(
+            "All processor classIdentifiers should be named using reverse DNS "
+            "(org.inviwo.processor) not like: '{}' in module {}",
+            processor->getClassIdentifier(), moduleId());
     }
     if (processor->getCategory().empty()) {
-        LogWarn(fmt::format("Processor '{}' in module '{}' has no category",
-                            processor->getClassIdentifier(), moduleId()));
+        log::warn("Processor '{}' in module '{}' has no category", processor->getClassIdentifier(),
+                  moduleId());
     } else if (processor->getCategory() == "Undefined") {
-        LogWarn(fmt::format("Processor '{}' in module '{}' has category \"Undefined\"",
-                            processor->getClassIdentifier(), moduleId()));
+        log::warn("Processor '{}' in module '{}' has category \"Undefined\"",
+                  processor->getClassIdentifier(), moduleId());
     }
     if (processor->getDisplayName().empty()) {
-        LogWarn(fmt::format("Processor '{}' in module '{}' has no display name",
-                            processor->getClassIdentifier(), moduleId()));
+        log::warn("Processor '{}' in module '{}' has no display name",
+                  processor->getClassIdentifier(), moduleId());
     }
 
     return true;

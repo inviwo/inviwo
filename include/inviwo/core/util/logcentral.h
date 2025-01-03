@@ -206,38 +206,106 @@ private:
 
 namespace log {
 
-struct IVW_CORE_API LogFormat {
-    consteval LogFormat(const char* format,
-                        std::source_location location = std::source_location::current())
-        : format(format), context{location} {}
-
-    std::string_view format;
-    SourceContext context;
-};
-
-inline void log(LogLevel level, LogAudience audience, SourceContext context,
-                std::string_view format, fmt::format_args&& args) {
+inline void report(LogLevel level, LogAudience audience, SourceContext context,
+                   std::string_view message) {
     LogCentral::getPtr()->log(context.source(), level, audience, context.file(), context.function(),
-                              context.line(), fmt::vformat(format, std::move(args)));
+                              context.line(), message);
 }
+inline void report(LogLevel level, LogAudience audience, std::string_view message,
+                   SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(level, audience, context, message);
+}
+inline void implementation(LogLevel level, LogAudience audience, SourceContext context,
+                           fmt::string_view format, fmt::format_args&& args) {
+    ::inviwo::log::report(level, audience, context, fmt::vformat(format, std::move(args)));
+}
+
+template <typename... Args>
+inline void report(LogLevel level, LogAudience audience, SourceContext context,
+                   fmt::format_string<Args...> format, Args&&... args) {
+    ::inviwo::log::implementation(level, audience, context, format, fmt::make_format_args(args...));
+}
+
+template <typename... Args>
+struct message {
+    message(LogLevel level, LogAudience audience, fmt::format_string<Args...> format,
+            Args&&... args, SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(level, audience, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+message(LogLevel level, LogAudience audience, fmt::format_string<Args...>, Args&&...)
+    -> message<Args...>;
+
+template <typename... Args>
+struct info {
+    info(fmt::format_string<Args...> format, Args&&... args,
+         SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(LogLevel::Info, LogAudience::Developer, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+info(fmt::format_string<Args...>, Args&&...) -> info<Args...>;
+
+template <typename... Args>
+struct warn {
+    warn(fmt::format_string<Args...> format, Args&&... args,
+         SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(LogLevel::Warn, LogAudience::Developer, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+warn(fmt::format_string<Args...>, Args&&...) -> warn<Args...>;
+
+template <typename... Args>
+struct error {
+    error(fmt::format_string<Args...> format, Args&&... args,
+          SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(LogLevel::Error, LogAudience::Developer, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+error(fmt::format_string<Args...>, Args&&...) -> error<Args...>;
 
 namespace user {
-template <typename... Args>
-void info(const LogFormat& format, Args&&... args) {
-    ::inviwo::log::log(LogLevel::Info, LogAudience::User, format.context, format.format,
-                       fmt::make_format_args(args...));
-}
 
 template <typename... Args>
-void warn(const LogFormat& format, Args&&... args) {
-    ::inviwo::log::log(LogLevel::Info, LogAudience::User, format.context, format.format,
-                       fmt::make_format_args(args...));
-}
+struct info {
+    info(fmt::format_string<Args...> format, Args&&... args,
+         SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(LogLevel::Info, LogAudience::User, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
 template <typename... Args>
-void error(const LogFormat& format, Args&&... args) {
-    ::inviwo::log::log(LogLevel::Info, LogAudience::User, format.context, format.format,
-                       fmt::make_format_args(args...));
-}
+info(fmt::format_string<Args...>, Args&&...) -> info<Args...>;
+
+template <typename... Args>
+struct warn {
+    warn(fmt::format_string<Args...> format, Args&&... args,
+         SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(LogLevel::Warn, LogAudience::User, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+warn(fmt::format_string<Args...>, Args&&...) -> warn<Args...>;
+
+template <typename... Args>
+struct error {
+    error(fmt::format_string<Args...> format, Args&&... args,
+          SourceContext context = std::source_location::current()) {
+        ::inviwo::log::implementation(LogLevel::Error, LogAudience::User, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+error(fmt::format_string<Args...>, Args&&...) -> error<Args...>;
+
 }  // namespace user
 
 }  // namespace log
