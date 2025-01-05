@@ -168,7 +168,7 @@ void main(void) {
     sphere.radius = inSphere[0].radius;
     sphere.index = inSphere[0].index;
 
-
+    // TODO handle orthographic cam...
     Cam cam;
     vec3 camDir = normalize((camera.viewToWorld[2]).xyz);
     vec3 camPosWorld = camera.viewToWorld[3].xyz;
