@@ -217,6 +217,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                   imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
                   fullScreenEvent_, saveLayerEvent_, allowContextMenu_, evaluateWhenHidden_);
 
+    // TODO do we need this onchange?
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
         colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
