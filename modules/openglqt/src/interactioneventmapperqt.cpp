@@ -227,7 +227,7 @@ bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
 }
 
 bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
-    if (e->source() != Qt::MouseEventNotSynthesized) return true;
+    // if (e->source() != Qt::MouseEventNotSynthesized) return true;
     rendercontext::activateDefault();
     const QPoint numPixels = e->pixelDelta();
     const QPoint numDegrees = e->angleDelta() / 8 / 15;
