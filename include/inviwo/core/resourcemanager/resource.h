@@ -39,6 +39,7 @@
 
 namespace inviwo {
 
+// TODO DO we really need a string? 
 struct IVW_CORE_API ResourceMeta {
     std::string source;
     auto operator<=>(const ResourceMeta&) const = default;
