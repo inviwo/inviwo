@@ -237,6 +237,7 @@ void utilqt::configureInviwoQtApp() {
     QSurfaceFormat defaultFormat;
     defaultFormat.setMajorVersion(10);
     defaultFormat.setProfile(QSurfaceFormat::CoreProfile);
+    defaultFormat.setSwapInterval(0);
     QSurfaceFormat::setDefaultFormat(defaultFormat);
 
 #ifdef WIN32
