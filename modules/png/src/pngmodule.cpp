@@ -45,7 +45,7 @@ class InviwoApplication;
 
 pngModule::pngModule(InviwoApplication* app) : InviwoModule(app, "png") {
 
-    log::user::info("Using LibPNG Version {}", pngutil::getLibPNGVesrion());
+    log::info("Using LibPNG Version {}", pngutil::getLibPNGVesrion());
 
     registerDataReader(std::make_unique<PNGLayerReader>());
     registerDataWriter(std::make_unique<PNGLayerWriter>());

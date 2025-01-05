@@ -53,15 +53,15 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
                                            ProcessorObserver {
 
     void log(std::source_location location = std::source_location::current()) {
-        log::user::info("{:33}", location.function_name());
+        log::info("{:33}", location.function_name());
     }
     void log(std::string_view msg,
              std::source_location location = std::source_location::current()) {
-        log::user::info("{:33} {}", location.function_name(), msg);
+        log::info("{:33} {}", location.function_name(), msg);
     }
     void log(std::string_view msg1, std::string_view msg2,
              std::source_location location = std::source_location::current()) {
-        log::user::info("{:33} {} - {}", location.function_name(), msg1, msg2);
+        log::info("{:33} {} - {}", location.function_name(), msg1, msg2);
     }
 
     // Network

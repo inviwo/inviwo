@@ -101,8 +101,8 @@ VolumeLowPass::VolumeLowPass()
         int kernelSize95 = static_cast<int>(sigma_.get() * 2 * 1.960f);
         int kernelSize99 = static_cast<int>(sigma_.get() * 2 * 2.576f);
         // https://de.wikipedia.org/wiki/Normalverteilung
-        log::user::info("Optimal kernelSize for sigma {} is:\n\t90%: {}\n\t95%: {}\n\t99%: {}",
-                        sigma_.get(), kernelSize95, kernelSize90, kernelSize99);
+        log::info("Optimal kernelSize for sigma {} is:\n\t90%: {}\n\t95%: {}\n\t99%: {}",
+                  sigma_.get(), kernelSize95, kernelSize90, kernelSize99);
     });
 
     setAllPropertiesCurrentStateAsDefault();

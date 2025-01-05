@@ -129,9 +129,9 @@ struct ErrorHandle {
 
     ~ErrorHandle() {
         if (!messages.empty()) {
-            log::user::error("There were errors while loading workspace: {}", filename_);
+            log::error("There were errors while loading workspace: {}", filename_);
             for (auto& message : messages) {
-                log::user::report(LogLevel::Error, message);
+                log::report(LogLevel::Error, message);
             }
         }
     }

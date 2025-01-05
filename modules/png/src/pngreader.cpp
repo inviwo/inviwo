@@ -95,7 +95,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
             throw DataReaderException(IVW_CONTEXT_CUSTOM("PNGLayerReader::readData"),
                                       "Error reading PNG: {}", message);
         },
-        [](png_structp, png_const_charp message) { log::user::report(LogLevel::Warn, message); });
+        [](png_structp, png_const_charp message) { log::report(LogLevel::Warn, message); });
 
     auto info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {

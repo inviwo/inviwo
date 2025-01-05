@@ -59,7 +59,7 @@ CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiR
                    const ivec2& extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
-    action_ = [&]() { log::user::info("UI checkbox {} toggled: {}", getLabel(), getValue()); };
+    action_ = [&]() { log::info("UI checkbox {} toggled: {}", getLabel(), getValue()); };
 
     std::vector<std::filesystem::path> textureFiles = {
         "checkbox-fill.png", "checkbox-unchecked.png", "checkbox-checked.png",

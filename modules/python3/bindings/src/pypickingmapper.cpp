@@ -129,7 +129,7 @@ void exposePickingMapper(pybind11::module& m) {
                 try {
                     callback(py::cast(e));
                 } catch (const py::error_already_set& e) {
-                    log::user::exception(e);
+                    log::exception(e);
                 }
             });
         }))

@@ -72,7 +72,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
     if (!Py_IsInitialized()) {
 
-        log::user::info("Python version: {}", Py_GetVersion());
+        log::info("Python version: {}", Py_GetVersion());
 
         try {
             py::initialize_interpreter(false);

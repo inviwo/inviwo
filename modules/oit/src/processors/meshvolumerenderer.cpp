@@ -84,7 +84,7 @@ MeshVolumeRenderer::MeshVolumeRenderer()
     }()} {
 
     if (!VolumeFragmentListRenderer::supportsFragmentLists()) {
-        log::user::warn(
+        log::warn(
             "Fragment lists are not supported by the hardware -> volume rasterization disabled, "
             "regular meshes rendered without sorting.");
     }

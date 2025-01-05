@@ -316,10 +316,10 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
             return pos;
         }
     } catch (const Exception& e) {
-        log::user::exception(e);
+        log::exception(e);
         return pos;
     } catch (...) {
-        log::user::exception("MovePointOntoDestop unknown exception");
+        log::exception("MovePointOntoDestop unknown exception");
         return pos;
     }
 }

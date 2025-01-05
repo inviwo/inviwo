@@ -155,7 +155,7 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
         try {
             return writer->writeDataToBuffer(this, fileExtension);
         } catch (const DataWriterException& e) {
-            log::user::exception(e);
+            log::exception(e);
         }
     } else {
         log::error("Could not find a writer for the specified file extension (\"{}\")",

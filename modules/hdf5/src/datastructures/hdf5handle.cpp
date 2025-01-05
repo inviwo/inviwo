@@ -181,9 +181,9 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
     hsize_t selectionSize = memorySpace.getSelectNpoints();
 
-    log::user::info("Data rank: {} dims {} size {} selection {} memory size {} memory dim {}", rank,
-                    joinString(dataDimensions, " x "), dataSize, dataSpace.getSelectNpoints(),
-                    memorySpace.getSelectNpoints(), volumeDimensions);
+    log::info("Data rank: {} dims {} size {} selection {} memory size {} memory dim {}", rank,
+              joinString(dataDimensions, " x "), dataSize, dataSpace.getSelectNpoints(),
+              memorySpace.getSelectNpoints(), volumeDimensions);
 
     const DataFormatBase* format = type ? type : util::getDataFormatFromDataSet(dataset);
 
@@ -205,9 +205,8 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
             auto res = ::inviwo::util::dataMinMax(data, selectionSize);
 
-            log::user::info("Read HDF volume type: {} data range: {}, {} file: {}",
-                            DataFormat<ValueType>::str(), res.first, res.second,
-                            dataset.getFileName());
+            log::info("Read HDF volume type: {} data range: {}, {} file: {}",
+                      DataFormat<ValueType>::str(), res.first, res.second, dataset.getFileName());
 
             return res;
         });

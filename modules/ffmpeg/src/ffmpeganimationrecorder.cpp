@@ -49,9 +49,9 @@ public:
         : recorder{std::make_unique<ffmpeg::Recorder>(filename, format,
                                                       ffmpeg::Recorder::Mode::Evaluation, opts)} {
 
-        log::user::info("Recording to: {}", filename);
-        log::user::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
-        log::user::info("  - Codec:    {}", recorder->getStream().codec.codecID());
+        log::info("Recording to: {}", filename);
+        log::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
+        log::info("  - Codec:    {}", recorder->getStream().codec.codecID());
     }
     virtual ~FFmpegRecorder() = default;
 
@@ -66,13 +66,13 @@ void FFmpegRecorder::record(const Layer& layer) {
         try {
             recorder->queueFrame(*layer.getRepresentation<LayerRAM>());
         } catch (const Exception& e) {
-            log::user::exception(e);
+            log::exception(e);
             recorder.reset();
         } catch (const std::exception& e) {
-            log::user::exception(e);
+            log::exception(e);
             recorder.reset();
         } catch (...) {
-            log::user::exception();
+            log::exception();
             recorder.reset();
         }
     }

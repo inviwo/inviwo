@@ -151,8 +151,8 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
         automator_.drop(e->scenePos(), e->modifiers(), *addedProcessor);
 
     } catch (Exception& exception) {
-        log::user::exception(exception, "Unable to create processor {} due to {}",
-                             utilqt::fromQString(mime->text()), exception.getMessage());
+        log::exception(exception, "Unable to create processor {} due to {}",
+                       utilqt::fromQString(mime->text()), exception.getMessage());
     }
 
     return true;

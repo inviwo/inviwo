@@ -131,16 +131,16 @@ std::string PoolProcessor::handleError() {
         throw;
     } catch (const Exception& e) {
         message = e.getMessage();
-        log::user::exception(e);
+        log::exception(e);
     } catch (const fmt::format_error& e) {
         message = fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view());
-        log::user::report(LogLevel::Error, message);
+        log::report(LogLevel::Error, message);
     } catch (const std::exception& e) {
         message = e.what();
-        log::user::exception(e);
+        log::exception(e);
     } catch (...) {
         message = "Unknown error";
-        log::user::exception();
+        log::exception();
     }
     for (auto port : getOutports()) {
         port->clear();

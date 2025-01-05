@@ -52,11 +52,11 @@ class ExceptionPropagator {
             try {
                 throwOnError();
             } catch (const Exception& e) {
-                log::user::exception(e);
+                log::exception(e);
             } catch (const std::exception& e) {
-                log::user::exception(e);
+                log::exception(e);
             } catch (...) {
-                log::user::exception();
+                log::exception();
             }
         }
         void setException() {

@@ -169,7 +169,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     for (const auto& inds : data->getIndexBuffers()) {
         if (inds.first.dt != DrawType::Triangles) {
-            log::user::warn("Draw type: {} not supported", inds.first.dt);
+            log::warn("Draw type: {} not supported", inds.first.dt);
             continue;
         }
 

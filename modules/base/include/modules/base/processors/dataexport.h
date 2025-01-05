@@ -135,7 +135,7 @@ void DataExport<DataType, PortType>::exportData() {
 
     writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
     writer->writeData(data, file_.get());
-    log::user::info("Data exported to disk: {}", file_.get().string());
+    log::info("Data exported to disk: {}", file_.get().string());
 
     // update widgets as the file might now exist
     file_.clearInitiatingWidget();

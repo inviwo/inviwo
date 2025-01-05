@@ -120,7 +120,7 @@ void Recorder::queueFrame(const LayerRAM& layer) {
             frame.emplace(stream.codec.ctx->pix_fmt, stream.codec.ctx->width,
                           stream.codec.ctx->height);
         } else {
-            log::user::info("Queue saturated");
+            log::info("Queue saturated");
         }
     }
 
@@ -243,8 +243,8 @@ void Recorder::run() {
 
         const auto end = clock::now();
         const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-        log::user::info("Exported frames: {} time: {}ms, fps: {}", frameCount, ms.count(),
-                        static_cast<double>(frameCount) / ms.count() * 1000);
+        log::info("Exported frames: {} time: {}ms, fps: {}", frameCount, ms.count(),
+                  static_cast<double>(frameCount) / ms.count() * 1000);
 
     } catch (...) {
         std::unique_lock<std::mutex> lock(mutex_);

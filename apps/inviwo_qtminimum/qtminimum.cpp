@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
 
     inviwoApp.printApplicationInfo();
-    inviwo::log::user::info("Qt Version {}", QT_VERSION_STR);
+    inviwo::log::info("Qt Version {}", QT_VERSION_STR);
 
     inviwoApp.setProgressCallback([&logger](std::string_view m) {
         logger.log("InviwoApplication", inviwo::LogLevel::Info, inviwo::LogAudience::User, "", "",

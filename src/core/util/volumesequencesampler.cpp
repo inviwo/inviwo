@@ -62,13 +62,13 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     }
 
     if (!(infsTime == 0 || infsTime == size)) {
-        log::user::warn("Failed to create VolumeSequenceSampler due to missing data");
-        log::user::info("{} volumes of {} is missing a timestamp", infsTime, size);
+        log::warn("Failed to create VolumeSequenceSampler due to missing data");
+        log::info("{} volumes of {} is missing a timestamp", infsTime, size);
         return;
     }
     if (!(infsDuration == 0 || infsDuration == size)) {
-        log::user::warn("Failed to create VolumeSequenceSampler due to missing data");
-        log::user::info("{} volumes of {} has unknown duration ", infsDuration, size);
+        log::warn("Failed to create VolumeSequenceSampler due to missing data");
+        log::info("{} volumes of {} has unknown duration ", infsDuration, size);
         return;
     }
 

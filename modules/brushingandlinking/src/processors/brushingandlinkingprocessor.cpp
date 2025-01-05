@@ -119,9 +119,8 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
                       std::next(indices.begin(), std::min(indices.size(), maxIndices)), ", "),
             indices.size() > maxIndices ? "..." : "");
 
-        log::user::info("{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})",
-                        getDisplayName(), action, target.getString(), source, str,
-                        indices.cardinality());
+        log::info("{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})",
+                  getDisplayName(), action, target.getString(), source, str, indices.cardinality());
     });
 }
 

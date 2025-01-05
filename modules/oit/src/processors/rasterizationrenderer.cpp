@@ -107,12 +107,12 @@ RasterizationRenderer::RasterizationRenderer()
     }()} {
 
     if (!FragmentListRenderer::supportsFragmentLists()) {
-        log::user::warn(
+        log::warn(
             "Fragment lists are not supported by the hardware -> use blending without sorting, "
             "may lead to errors");
     }
     if (!FragmentListRenderer::supportsIllustration()) {
-        log::user::warn(
+        log::warn(
             "Illustration Buffer not supported by the hardware, screen-space silhouettes not "
             "available");
     }

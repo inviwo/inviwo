@@ -151,7 +151,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
         for (auto vol : volumeSequence) {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
             if (vol->getDataFormat()->getComponents() != 1)
-                log::user::warn("This volume is omitted because it has more than one channel.");
+                log::warn("This volume is omitted because it has more than one channel.");
             volumeData.push_back(
                 static_cast<const glm::f32*>(vol->getRepresentation<VolumeRAM>()->getData()));
         }

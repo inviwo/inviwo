@@ -462,7 +462,7 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
         }
     }
     if (sampledRows != sampleRows) {
-        log::user::warn(
+        log::warn(
             "Could not find any data for some columns, sampled more rows to determine column "
             "types {}",
             sampledRows);

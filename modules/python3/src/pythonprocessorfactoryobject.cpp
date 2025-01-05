@@ -90,14 +90,14 @@ void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
     try {
         auto data = load(file_);
         name_ = data.name;
-        log::user::info("Reloaded python processor: '{}' file: {}", name_, file_);
+        log::info("Reloaded python processor: '{}' file: {}", name_, file_);
         if (getProcessorInfo() != data.info) {
-            log::user::error("ProcessorInfo changes in '{}' will not be reflected", name_);
+            log::error("ProcessorInfo changes in '{}' will not be reflected", name_);
         }
         reloadProcessors();
 
     } catch (const std::exception& e) {
-        log::user::error("Error reloading file: '{}' Message:\n{}", file_, e.what());
+        log::error("Error reloading file: '{}' Message:\n{}", file_, e.what());
     }
 }
 
@@ -107,8 +107,7 @@ void PythonProcessorFactoryObject::reloadProcessors() {
                                              // modifying the list below by replacing them
     for (auto p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
-            log::user::info("Updating python processor: \"{}\" id: \"{}\"", name_,
-                            p->getIdentifier());
+            log::info("Updating python processor: \"{}\" id: \"{}\"", name_, p->getIdentifier());
             if (auto replacement = std::shared_ptr<Processor>(create(app_))) {
                 util::replaceProcessor(net, replacement, p);
             }

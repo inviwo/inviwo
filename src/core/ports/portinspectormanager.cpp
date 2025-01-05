@@ -153,7 +153,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
 
             auto processorWidget = canvasProcessor->getProcessorWidget();
             if (!processorWidget) {
-                log::user::error("Problem using port inspector");
+                log::error("Problem using port inspector");
                 return nullptr;
             }
 
@@ -167,9 +167,9 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             return processorWidget;
         }
     } catch (Exception& exception) {
-        log::user::exception(exception);
+        log::exception(exception);
     } catch (...) {
-        log::user::error("Problem using port inspector");
+        log::error("Problem using port inspector");
     }
     return nullptr;
 }

@@ -170,22 +170,22 @@ void MovieExport::process() {
 
         notifyObserversStartBackgroundWork(this, 1);
 
-        log::user::info("Recording to: {}", file_.get());
-        log::user::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
-        log::user::info("  - Codec:    {}", recorder->getStream().codec.codecID());
+        log::info("Recording to: {}", file_.get());
+        log::info("  - Format:   {}", recorder->getFormat().outputFormat().desc());
+        log::info("  - Codec:    {}", recorder->getStream().codec.codecID());
     }
 
     if (recorder) {
         try {
             recorder->queueFrame(*img->getColorLayer()->getRepresentation<LayerRAM>());
         } catch (const Exception& e) {
-            log::user::exception(e);
+            log::exception(e);
             recorder.reset();
         } catch (const std::exception& e) {
-            log::user::exception(e);
+            log::exception(e);
             recorder.reset();
         } catch (...) {
-            log::user::exception();
+            log::exception();
             recorder.reset();
         }
     }

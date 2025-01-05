@@ -611,7 +611,7 @@ void ShaderObject::compile() {
 
     const auto log = utilgl::getShaderInfoLog(id_);
     if (!log.empty()) {
-        log::user::info("{} {}", resource_->key(), resolveLog(log));
+        log::info("{} {}", resource_->key(), resolveLog(log));
     }
 }
 

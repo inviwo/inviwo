@@ -404,8 +404,8 @@ GLint Shader::findUniformLocation(std::string_view name) const {
             throw OpenGLException(IVW_CONTEXT, "Unable to set uniform {} in shader id: {}, {}",
                                   name, program_.id, shaderNames());
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
-            log::user::warn("Unable to set uniform {} in shader id {}, {}: ", name, program_.id,
-                            shaderNames());
+            log::warn("Unable to set uniform {} in shader id {}, {}: ", name, program_.id,
+                      shaderNames());
         }
 
         return location;
