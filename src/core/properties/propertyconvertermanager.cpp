@@ -41,8 +41,7 @@ bool PropertyConverterManager::registerObject(PropertyConverter* converter) {
     std::string src = converter->getSourcePropertyClassIdenetifier();
     std::string dst = converter->getDestinationPropertyClassIdenetifier();
     if (canConvert(src, dst)) {
-        LogWarn("Property Converter from type " << src << " to type " << dst
-                                                << " already registered");
+        log::warn("Property Converter from type {} to type {} already registered", src, dst);
         return false;
     }
     converters_.insert(std::make_pair(std::make_pair(src, dst), converter));

@@ -230,9 +230,9 @@ void PropertyPresetManager::loadApplicationPresets() {
             Deserializer d(filename);
             d.deserialize("PropertyPresets", appPresets_, "Preset");
         } catch (AbortException& e) {
-            LogError(e.getMessage());
+            log::user::exception(e);
         } catch (std::exception& e) {
-            LogError(e.what());
+            log::user::exception(e);
         }
     }
 }
@@ -243,7 +243,7 @@ void PropertyPresetManager::saveApplicationPresets() {
         s.serialize("PropertyPresets", appPresets_, "Preset");
         s.writeFile();
     } catch (const std::exception& e) {
-        LogWarn("Could not write application presets: " << e.what());
+        log::warn("Could not write application presets: {}", e.what());
     }
 }
 

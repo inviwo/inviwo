@@ -38,7 +38,7 @@
 #include <inviwo/core/processors/processortags.h>    // for Tags, Tags::None
 #include <inviwo/core/properties/ordinalproperty.h>  // for DoubleProperty
 #include <inviwo/core/properties/valuewrapper.h>     // for PropertySerializationMode, PropertyS...
-#include <inviwo/core/util/logcentral.h>             // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>             // for LogCentral
 #include <inviwo/core/util/spatialsampler.h>         // for SpatialSampler
 #include <inviwo/core/util/volumesequenceutils.h>    // for getTimestamp, hasTimestamp, getTimes...
 
@@ -110,7 +110,8 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
         if (!sampler_.hasData()) return;
         auto seq = volumeSequence_.getData();
         if (!util::hasTimestamps(*seq, false)) {
-            LogWarn("Input volume Sequence does not have timestamps, behavior is undefined");
+            log::user::warn(
+                "Input volume Sequence does not have timestamps, behavior is undefined");
         }
 
         auto newRange = util::getTimestampRange(*seq);

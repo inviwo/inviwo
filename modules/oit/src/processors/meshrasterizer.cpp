@@ -456,7 +456,7 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
-        LogWarn("Both sides are disabled, not rendering anything.");
+        log::warn("Both sides are disabled, not rendering anything.");
         return;  // everything is culled
     }
 

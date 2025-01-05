@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>        // for ModulePath, ModulePath::Images
 #include <inviwo/core/interaction/pickingmapper.h>  // for PickingMapper
 #include <inviwo/core/util/glmvec.h>                // for ivec2, vec2, size2_t
-#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>            // for LogCentral
 #include <inviwo/core/util/moduleutils.h>           // for getModulePath
 #include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerGL
 #include <modules/opengl/shader/shader.h>           // for Shader
@@ -59,7 +59,7 @@ CheckBox::CheckBox(const std::string& label, Processor& processor, Renderer& uiR
                    const ivec2& extent)
     : Element(label, processor, uiRenderer) {
     widgetExtent_ = extent;
-    action_ = [&]() { LogInfo("UI checkbox " << getLabel() << " toggled: " << getValue()); };
+    action_ = [&]() { log::user::info("UI checkbox {} toggled: {}", getLabel(), getValue()); };
 
     std::vector<std::filesystem::path> textureFiles = {
         "checkbox-fill.png", "checkbox-unchecked.png", "checkbox-checked.png",

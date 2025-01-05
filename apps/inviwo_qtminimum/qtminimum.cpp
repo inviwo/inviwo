@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
 
     inviwoApp.printApplicationInfo();
-    LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
+    inviwo::log::user::info("Qt Version {}", QT_VERSION_STR);
 
     inviwoApp.setProgressCallback([&logger](std::string_view m) {
         logger.log("InviwoApplication", inviwo::LogLevel::Info, inviwo::LogAudience::User, "", "",
@@ -215,19 +215,18 @@ int main(int argc, char** argv) {
                 try {
                     throw;
                 } catch (const inviwo::IgnoreException& e) {
-                    inviwo::util::logError(e.getContext(),
-                                           "Incomplete network loading {} due to {}", workspace,
-                                           e.getMessage());
+                    inviwo::log::error("Incomplete network loading {} due to:", workspace);
+                    inviwo::log::exception(e);
                 }
             });
         }
-    } catch (const inviwo::AbortException& exception) {
-        inviwo::util::logError(exception.getContext(), "Unable to load network {} due to {}",
-                               workspace, exception.getMessage());
+    } catch (const inviwo::AbortException& e) {
+        inviwo::log::error("Unable to load network {} due to:", workspace);
+        inviwo::log::exception(e);
         return 1;
-    } catch (const inviwo::IgnoreException& exception) {
-        inviwo::util::logError(exception.getContext(), "Incomplete network loading {} due to {}",
-                               workspace, exception.getMessage());
+    } catch (const inviwo::IgnoreException& e) {
+        inviwo::log::error("Incomplete network loading {} due to:", workspace);
+        inviwo::log::exception(e);
         return 1;
     }
 

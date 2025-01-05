@@ -274,7 +274,7 @@ std::unique_ptr<std::vector<unsigned char>> Image::getLayerAsCodedBuffer(
     if (auto layer = this->getLayer(layerType, idx)) {
         return layer->getAsCodedBuffer(fileExtension);
     } else {
-        LogError("Requested layer does not exist");
+        log::error("Requested layer does not exist");
     }
     return nullptr;
 }
@@ -316,7 +316,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
                 if (sourceRepr->copyRepresentationsTo(targetRepr)) {
                     return;
                 } else {
-                    LogError("Copy representation failed!")
+                    log::error("Copy representation failed!");
                 }
             }
         }

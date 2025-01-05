@@ -75,9 +75,9 @@ void Settings::load() {
             d.registerFactory(app_->getMetaDataFactory());
             deserialize(d);
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            log::user::exception(e);
         } catch (const std::exception& e) {
-            LogError(e.what());
+            log::user::exception(e);
         }
     }
 }
@@ -89,9 +89,9 @@ void Settings::save() {
         serialize(s);
         s.writeFile();
     } catch (const Exception& e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        log::user::exception(e);
     } catch (const std::exception& e) {
-        LogWarn(e.what());
+        log::user::exception(e);
     }
 }
 

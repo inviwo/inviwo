@@ -121,9 +121,15 @@ void exposeLogging(pybind11::module& m) {
         py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
         py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
-    m.def("logInfo", [](const std::string& msg) { LogInfoCustom("inviwopy", msg); });
-    m.def("logWarn", [](const std::string& msg) { LogWarnCustom("inviwopy", msg); });
-    m.def("logError", [](const std::string& msg) { LogErrorCustom("inviwopy", msg); });
+    m.def("logInfo", [](const std::string& msg) {
+        log::user::report(LogLevel::Info, SourceContext{"inviwopy"_sl}, msg);
+    });
+    m.def("logWarn", [](const std::string& msg) {
+        log::user::report(LogLevel::Warn, SourceContext{"inviwopy"_sl}, msg);
+    });
+    m.def("logError", [](const std::string& msg) {
+        log::user::report(LogLevel::Error, SourceContext{"inviwopy"_sl}, msg);
+    });
 }
 
 }  // namespace inviwo

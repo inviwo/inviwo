@@ -34,7 +34,7 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>            // for PropertyWidgetFactory
 #include <inviwo/core/util/filedialogstate.h>                        // for FileMode, FileMode::...
 #include <inviwo/core/util/filesystem.h>                             // for cleanupPath, fileExists
-#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral
 #include <inviwo/core/util/pathtype.h>                               // for PathType, PathType::...
 #include <inviwo/core/util/raiiutils.h>                              // for KeepTrueWhileInScope
 #include <modules/animation/animationcontroller.h>                   // for AnimationController
@@ -438,7 +438,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
         const QString path = openFileDialog.selectedFiles().at(0);
         const std::filesystem::path fileName{utilqt::toPath(path)};
         if (!std::filesystem::is_regular_file(fileName)) {
-            LogError("Could not find file: " << fileName);
+            log::error("Could not find file: {}", fileName);
             return;
         }
         try {
@@ -452,7 +452,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
                 animations_.add(std::move(animation));
             }
         } catch (const std::exception& ex) {
-            LogError(ex.what());
+            log::exception(ex);
         }
     }
 }

@@ -39,7 +39,7 @@
 #include <inviwo/core/datastructures/tfprimitiveset.h>    // for TFPrimitiveSet
 #include <inviwo/core/datastructures/transferfunction.h>  // for TransferFunction
 #include <inviwo/core/datastructures/isovaluecollection.h>
-#include <inviwo/core/io/datareaderexception.h>           // for DataReaderException
+#include <inviwo/core/io/datareaderexception.h>  // for DataReaderException
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriterfactory.h>
@@ -199,8 +199,7 @@ void exportIsoValueCollectionDialog(const IsoValueCollection& iso, QWidget* pare
                     factory->getWriterForTypeAndExtension<IsoValueCollection>(fileExt, filename)) {
                 writer->writeData(&iso, filename);
 
-                util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"),
-                          "Data exported to disk: " + filename, LogLevel::Info, LogAudience::User);
+                log::user::info("Data exported to disk: {}", filename);
             } else {
                 throw DataWriterException(IVW_CONTEXT_CUSTOM("exportTransferFunctionDialog"),
                                           "Unable to find a Iso Value Collection writer for {}",

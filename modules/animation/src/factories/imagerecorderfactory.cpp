@@ -52,11 +52,11 @@ class ExceptionPropagator {
             try {
                 throwOnError();
             } catch (const Exception& e) {
-                util::log(e.getContext(), e.getMessage());
+                log::user::exception(e);
             } catch (const std::exception& e) {
-                util::log(IVW_CONTEXT, e.what());
+                log::user::exception(e);
             } catch (...) {
-                util::log(IVW_CONTEXT, "unknown error");
+                log::user::exception();
             }
         }
         void setException() {

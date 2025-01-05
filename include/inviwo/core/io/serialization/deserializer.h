@@ -65,10 +65,11 @@ class InviwoApplication;
 
 namespace detail {
 template <typename T>
-concept is_transparent = requires { typename T::key_compare::is_transparent; } || requires {
-    typename T::hasher::is_transparent;
-    typename T::key_equal::is_transparent;
-};
+concept is_transparent = requires { typename T::key_compare::is_transparent; } ||
+                         requires {
+                             typename T::hasher::is_transparent;
+                             typename T::key_equal::is_transparent;
+                         };
 }  // namespace detail
 
 namespace deserializer {
@@ -263,23 +264,23 @@ public:
     template <typename C, typename T = typename C::value_type, typename... Funcs>
         requires requires(T& t, size_t i, std::string_view s,
                           deserializer::IndexFunctions<Funcs...> f) {
-            { std::invoke(f.makeNew) } -> std::same_as<T>;
-            { std::invoke(f.onNew, t, i) };
-            { std::invoke(f.onRemove, t) };
-        }
+                     { std::invoke(f.makeNew) } -> std::same_as<T>;
+                     { std::invoke(f.onNew, t, i) };
+                     { std::invoke(f.onRemove, t) };
+                 }
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IndexFunctions<Funcs...> f);
 
     template <typename C, typename T = typename C::value_type, typename... Funcs>
         requires requires(T& t, size_t i, std::string_view s,
                           deserializer::IdentifierFunctions<Funcs...> f) {
-            { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-            { std::invoke(f.makeNew) } -> std::same_as<T>;
-            { std::invoke(f.filter, s, i) } -> std::same_as<bool>;
-            { std::invoke(f.onNew, t, i) };
-            { std::invoke(f.onRemove, s) };
-            { std::invoke(f.onMove, t, i) };
-        }
+                     { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+                     { std::invoke(f.makeNew) } -> std::same_as<T>;
+                     { std::invoke(f.filter, s, i) } -> std::same_as<bool>;
+                     { std::invoke(f.onNew, t, i) };
+                     { std::invoke(f.onRemove, s) };
+                     { std::invoke(f.onMove, t, i) };
+                 }
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IdentifierFunctions<Funcs...> f);
 
@@ -287,12 +288,12 @@ public:
               typename... Funcs>
         requires requires(const K& k, T& t, size_t i, std::string_view s,
                           deserializer::MapFunctions<Funcs...> f) {
-            { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-            { std::invoke(f.makeNew) } -> std::same_as<T>;
-            { std::invoke(f.filter, k) } -> std::same_as<bool>;
-            { std::invoke(f.onNew, k, t) };
-            { std::invoke(f.onRemove, k) };
-        }
+                     { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+                     { std::invoke(f.makeNew) } -> std::same_as<T>;
+                     { std::invoke(f.filter, k) } -> std::same_as<bool>;
+                     { std::invoke(f.onNew, k, t) };
+                     { std::invoke(f.onRemove, k) };
+                 }
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::MapFunctions<Funcs...> f);
 
@@ -356,8 +357,8 @@ public:
     template <class T>
     void deserialize(std::string_view key, T& sObj)
         requires requires(T& t, Deserializer& d) {
-            { t.deserialize(d) };
-        };
+                     { t.deserialize(d) };
+                 };
 
     std::optional<std::string_view> attribute(std::string_view key) const;
     std::optional<std::string_view> attribute(std::string_view child, std::string_view key) const;
@@ -719,13 +720,13 @@ void reorder(Functions& f, C& list, const std::pmr::vector<std::string_view>& or
 template <typename C, typename T, typename... Funcs>
     requires requires(T& t, size_t i, std::string_view s,
                       deserializer::IdentifierFunctions<Funcs...> f) {
-        { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-        { std::invoke(f.makeNew) } -> std::same_as<T>;
-        { std::invoke(f.filter, s, i) } -> std::same_as<bool>;
-        { std::invoke(f.onNew, t, i) };
-        { std::invoke(f.onRemove, s) };
-        { std::invoke(f.onMove, t, i) };
-    }
+                 { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+                 { std::invoke(f.makeNew) } -> std::same_as<T>;
+                 { std::invoke(f.filter, s, i) } -> std::same_as<bool>;
+                 { std::invoke(f.onNew, t, i) };
+                 { std::invoke(f.onRemove, s) };
+                 { std::invoke(f.onMove, t, i) };
+             }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::IdentifierFunctions<Funcs...> f) {
 
@@ -771,10 +772,10 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 template <typename C, typename T, typename... Funcs>
     requires requires(T& t, size_t i, std::string_view s,
                       deserializer::IndexFunctions<Funcs...> f) {
-        { std::invoke(f.makeNew) } -> std::same_as<T>;
-        { std::invoke(f.onNew, t, i) };
-        { std::invoke(f.onRemove, t) };
-    }
+                 { std::invoke(f.makeNew) } -> std::same_as<T>;
+                 { std::invoke(f.onNew, t, i) };
+                 { std::invoke(f.onRemove, t) };
+             }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::IndexFunctions<Funcs...> f) {
 
@@ -812,12 +813,12 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 template <typename C, typename K, typename T, typename... Funcs>
     requires requires(const K& k, T& t, size_t i, std::string_view s,
                       deserializer::MapFunctions<Funcs...> f) {
-        { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-        { std::invoke(f.makeNew) } -> std::same_as<T>;
-        { std::invoke(f.filter, k) } -> std::same_as<bool>;
-        { std::invoke(f.onNew, k, t) };
-        { std::invoke(f.onRemove, k) };
-    }
+                 { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+                 { std::invoke(f.makeNew) } -> std::same_as<T>;
+                 { std::invoke(f.filter, k) } -> std::same_as<bool>;
+                 { std::invoke(f.onNew, k, t) };
+                 { std::invoke(f.onRemove, k) };
+             }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::MapFunctions<Funcs...> f) {
 
@@ -1048,9 +1049,8 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
                 // with the correct type
                 data.reset();
             } else {
-                LogWarn("Object with class Id: '" << data->getClassIdentifier()
-                                                  << "'  deserialized using type '" << *typeAttr
-                                                  << "'");
+                log::warn("Object with class Id: '{}' deserialized using type '{}'",
+                          data->getClassIdentifier(), *typeAttr);
             }
         }
     }
@@ -1158,8 +1158,8 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
 template <typename T>
 void Deserializer::deserialize(std::string_view key, T& sObj)
     requires requires(T& t, Deserializer& d) {
-        { t.deserialize(d) };
-    }
+                 { t.deserialize(d) };
+             }
 {
     if (const NodeSwitch nodeSwitch{*this, key}) {
         sObj.deserialize(*this);

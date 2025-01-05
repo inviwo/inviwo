@@ -238,8 +238,8 @@ bool FactoryRegister<M, Key, K>::registerObject(M* obj) {
         this->notifyObserversOnRegister(obj);
         return true;
     } else {
-        LogWarn("Failed to register object \"" << detail::filter(obj->getClassIdentifier())
-                                               << "\", already registered");
+        log::warn("Failed to register object \"{}\", already registered",
+                  detail::filter(obj->getClassIdentifier()));
         return false;
     }
 }

@@ -401,7 +401,7 @@ auto NetworkAutomation::drop(QPointF, Qt::KeyboardModifiers modifiers, Processor
             result = Result::Split;
 
         } else {
-            LogError("Unable to add processor on connection");
+            log::error("Unable to add processor on connection");
         }
     } else if (processorTarget_) {
         util::replaceProcessor(editor_.getNetwork(), processor, processorTarget_->getProcessor());

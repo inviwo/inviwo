@@ -114,11 +114,11 @@ void StandardExceptionHandler::operator()(ExceptionContext context) {
     try {
         throw;
     } catch (Exception& e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        log::user::exception(e);
     } catch (std::exception& e) {
-        util::log(context, e.what(), LogLevel::Error);
+        log::user::exception(e);
     } catch (...) {
-        util::log(context, "Unknown error", LogLevel::Error);
+        log::user::exception();
     }
 }
 

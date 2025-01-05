@@ -102,8 +102,7 @@ void LayerSeriesSource::process() {
     // sanity check for valid index
     const auto index = currentIndex_.get() - 1;
     if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
-        LogError("Invalid image index. Exceeded number of files.");
-        return;
+        throw Exception("Invalid image index. Exceeded number of files.");
     }
 
     const auto fileName = fileList_[index];
@@ -119,7 +118,7 @@ void LayerSeriesSource::process() {
         auto layer = reader->readData(fileName);
         outport_.setData(layer);
     } catch (const DataReaderException& e) {
-        LogError(e.getMessage());
+        log::user::exception(e);
     }
 }
 
@@ -128,12 +127,12 @@ void LayerSeriesSource::onFindFiles() {
     fileList_ = filePattern_.getFileList();
     if (fileList_.empty() && !filePattern_.getFilePattern().empty()) {
         if (filePattern_.hasOutOfRangeMatches()) {
-            LogError("All matching files are outside the specified range (\""
-                     << filePattern_.getFilePattern() << "\", " << filePattern_.getMinRange()
-                     << " - " << filePattern_.getMaxRange() << ").");
+            log::error("All matching files are outside the specified range (\"{}\", {} - {}).",
+                       filePattern_.getFilePattern(), filePattern_.getMinRange(),
+                       filePattern_.getMaxRange());
         } else {
-            LogError("No images found matching \"" << filePattern_.getFilePattern() << "\" in "
-                                                   << filePattern_.getFilePatternPath() << ".");
+            log::error("No images found matching \"{}\n in {}", filePattern_.getFilePattern(),
+                       filePattern_.getFilePatternPath());
         }
     }
     updateProperties();

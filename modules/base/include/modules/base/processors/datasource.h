@@ -231,7 +231,7 @@ void DataSource<DataType, PortType, ReaderType>::handleError(std::string_view er
     error_ = error;
     port_.clear();
     isReady_.update();
-    LogProcessorError(error_);
+    log::user::report(LogLevel::Error, error_);
 }
 
 template <typename DataType, typename PortType, typename ReaderType>

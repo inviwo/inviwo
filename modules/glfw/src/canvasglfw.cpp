@@ -37,7 +37,7 @@
 #include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas
 #include <inviwo/core/util/exception.h>                      // for Exception
 #include <inviwo/core/util/glmvec.h>                         // for ivec2, uvec2, size2_t, dvec2
-#include <inviwo/core/util/logcentral.h>                     // for LogCentral, LogErrorCustom
+#include <inviwo/core/util/logcentral.h>                     // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                  // for CanvasContextHolder, RenderC...
 #include <inviwo/core/util/sourcecontext.h>                  // for IVW_CONTEXT_CUSTOM
 #include <modules/glfw/glfwexception.h>                      // for GLFWException
@@ -316,10 +316,10 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
             return pos;
         }
     } catch (const Exception& e) {
-        LogErrorCustom("CanvasGLFW", e.getMessage());
+        log::user::exception(e);
         return pos;
     } catch (...) {
-        LogErrorCustom("CanvasGLFW", "MovePointOntoDestop unknown exception");
+        log::user::exception("MovePointOntoDestop unknown exception");
         return pos;
     }
 }

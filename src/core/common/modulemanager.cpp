@@ -197,15 +197,15 @@ void ModuleManager::reloadModules() {
     // 5. Load module libraries and register them
     // 6. De-serialize network
 
-    LogInfo("Reloading modules");
+    log::user::info("Reloading modules");
 
     // Serialize network
     std::stringstream stream;
     try {
         app_->getWorkspaceManager()->save(stream, app_->getBasePath());
     } catch (SerializationException& exception) {
-        util::log(exception.getContext(), "Unable to save network due to " + exception.getMessage(),
-                  LogLevel::Error);
+        log::report(LogLevel::Error, LogAudience::User, exception.getContext(),
+                    "Unable to save network due to {}", exception.getMessage());
         return;
     }
 
@@ -242,14 +242,14 @@ void ModuleManager::reloadModules() {
                 const auto err = dereg.empty() ? ""
                                                : fmt::format("\nUnregistered dependent modules: {}",
                                                              fmt::join(dereg, ", "));
-                util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n {}{}",
-                               cont.name(), e.getMessage(), err);
+                log::user::exception(e, "Failed to register module: {}. Reason:\n {}{}",
+                                     cont.name(), e.getMessage(), err);
             } catch (const Exception& e) {
-                util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n{}",
-                               cont.name(), e.getMessage());
+                log::user::exception(e, "Failed to register module: {}. Reason:\n{}", cont.name(),
+                                     e.getMessage());
             } catch (const std::exception& e) {
-                util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n{}",
-                               cont.name(), e.what());
+                log::user::error("Failed to register module: {}. Reason:\n{}", cont.name(),
+                                 e.what());
             }
         }
     }
@@ -274,8 +274,7 @@ void ModuleManager::reloadModules() {
         // Lock the network that so no evaluations are triggered during the de-serialization
         app_->getWorkspaceManager()->load(stream, app_->getBasePath());
     } catch (SerializationException& e) {
-        util::log(e.getContext(), "Unable to load network due to " + e.getMessage(),
-                  LogLevel::Error);
+        log::user::exception(e, "Unable to load network due to {}", e.getMessage());
         return;
     }
 }
@@ -320,8 +319,8 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
             try {
                 modules.emplace_back(file, runtimeReloading);
             } catch (const Exception& e) {
-                util::logWarn(IVW_CONTEXT, "Could not load library: {}", file.path());
-                util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+                log::user::warn("Could not load library: {}", file.path());
+                log::user::exception(e);
             }
         }
     }
@@ -426,7 +425,7 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
         }
     }
     if (!err.empty()) {
-        util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason: {}", obj.name, err);
+        log::error("Failed to register module: {}. Reason: {}", obj.name, err);
         return false;
     } else {
         return true;

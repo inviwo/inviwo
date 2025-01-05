@@ -45,10 +45,13 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
     static int print_prefix = 1;
     std::string_view message;
 
+    using namespace inviwo;
+
     if (auto needSize = av_log_format_line2(ptr, level, fmt, vl, line.data(),
                                             static_cast<int>(line.size()), &print_prefix);
         needSize < 0) {
-        LogErrorCustom("ffmpeg", "Error formatting logmessage");
+        log::user::report(LogLevel::Error, SourceContext{"ffmpeg"_sl},
+                          "Error formatting log message");
     } else if (needSize >= static_cast<int>(line.size())) {
         dynamicLine.resize(needSize + 1);
         if (av_log_format_line2(ptr, level, fmt, vl, dynamicLine.data(),
@@ -62,13 +65,17 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
 
     if (message.empty()) return;
 
-    if (level >= 32) {
-        LogInfoCustom("ffmpeg", message);
-    } else if (level >= 24) {
-        LogWarnCustom("ffmpeg", message);
-    } else if (level >= 0) {
-        LogErrorCustom("ffmpeg", message);
-    }
+    const auto logLevel = [&]() {
+        if (level >= 32) {
+            return LogLevel::Info;
+        } else if (level >= 24) {
+            return LogLevel::Warn;
+        } else {
+            return LogLevel::Error;
+        }
+    }();
+
+    log::user::report(logLevel, SourceContext{"ffmpeg"_sl}, message);
 }
 
 }  // namespace

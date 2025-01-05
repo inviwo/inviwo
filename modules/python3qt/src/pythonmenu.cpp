@@ -124,7 +124,7 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
                 QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));
             }
         } catch (const std::exception& e) {
-            LogError(e.what());
+            log::user::exception(e);
         }
     });
 

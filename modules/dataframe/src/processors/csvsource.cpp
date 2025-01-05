@@ -188,7 +188,7 @@ void CSVSource::process() {
         error_ = e.getMessage();
         data_.clear();
         isReady_.update();
-        LogProcessorError(error_);
+        log::user::report(LogLevel::Error, error_);
     }
 }
 

@@ -1017,9 +1017,11 @@ OptionProperty<T>& OptionProperty<T>::resetToDefaultState() {
     }
 
     if (defaultOptions_.empty()) {
-        LogWarn("Resetting option property: " + this->getIdentifier() +
-                " to an empty option list. Probably the default values have never been set, " +
-                "Remember to call setCurrentStateAsDefault() after adding all the options.")
+        log::warn(
+            "Resetting option property: {} to an empty option list. Probably the default values "
+            "have never been set, Remember to call setCurrentStateAsDefault() after adding all the "
+            "options.",
+            this->getIdentifier());
     }
 
     if (modified) this->propertyModified();

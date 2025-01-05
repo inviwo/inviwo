@@ -614,7 +614,7 @@ void InviwoMainWindow::addActions() {
                         utilqt::toPath(saveFileDialog.selectedFiles().at(0));
                     networkEditorView_->exportViewToFile(path, entireScene,
                                                          backgroundVisibleAction->isChecked());
-                    LogInfo("Exported network to " << path);
+                    log::user::info("Exported network to '{}'", path);
                 }
             };
         };
@@ -1242,7 +1242,7 @@ bool InviwoMainWindow::appendWorkspace() {
 bool InviwoMainWindow::openWorkspace(const std::filesystem::path& fileName, bool isExample) {
 
     if (!std::filesystem::is_regular_file(fileName)) {
-        LogError("Could not find workspace file: " << fileName);
+        log::error("Could not find workspace file: {}", fileName);
         return false;
     }
 
@@ -1303,7 +1303,7 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
             }
         });
         updateWindowTitle();
-        LogInfo(fmt::format("Workspace saved to: {}", fileName));
+        log::user::info("Workspace saved to: {}", fileName);
         return true;
     } catch (const Exception& e) {
         util::logError(e.getContext(), "Unable to save network {} due to {}", fileName,
@@ -1649,10 +1649,10 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                 undoManager_.pushStateIfDirty();
             };
             app_->dispatchFrontAndForget(action);
-        } catch (Exception& e) {
-            util::logError(e.getContext(), "Exception during Drag & Drop: {}", e.getMessage());
-        } catch (std::exception& e) {
-            util::logError(IVW_CONTEXT, "Exception during Drag & Drop: {}", e.what());
+        } catch (const Exception& e) {
+            log::user::exception(e, "Exception during Drag & Drop: {}", e.getMessage());
+        } catch (const std::exception& e) {
+            log::user::error("Exception during Drag & Drop: {}", e.what());
         }
 
         event->accept();

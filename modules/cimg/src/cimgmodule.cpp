@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>  // for LayerRamResizer
 #include <inviwo/core/io/datareader.h>                  // for DataReader
 #include <inviwo/core/io/datawriter.h>                  // for DataWriter
-#include <inviwo/core/util/logcentral.h>                // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>                // for LogCentral
 #include <modules/cimg/cimglayerreader.h>               // for CImgLayerReader
 #include <modules/cimg/cimglayerwriter.h>               // for CImgLayerWriter
 #include <modules/cimg/cimgutils.h>                     // for getLibJPGVersion, getOpenEXRVersion

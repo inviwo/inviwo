@@ -208,8 +208,7 @@ void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
             QImageWriter writer(imgname);
             writer.write(img);
         } else {
-            LogWarnCustom("saveProcessorPreviews",
-                          "No preview generated for: \"" << classIdentifier << "\"");
+            log::warn("No preview generated for: \"{}\"", classIdentifier);
         }
     };
 

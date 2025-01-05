@@ -30,7 +30,7 @@
 #include <modules/glfw/filewatcher.h>
 
 #include <inviwo/core/util/assertion.h>      // for IVW_ASSERT
-#include <inviwo/core/util/logcentral.h>     // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>     // for LogCentral
 #include <inviwo/core/util/stdextensions.h>  // for erase_remove
 
 #include <algorithm>  // for find
@@ -102,7 +102,7 @@ private:
             const auto handle = FindFirstChangeNotification(path.c_str(), TRUE, filter);
 
             if (handle == INVALID_HANDLE_VALUE || handle == nullptr) {
-                LogError("FindFirstChangeNotification function failed.");
+                log::error("FindFirstChangeNotification function failed.");
                 continue;
             }
 
@@ -269,7 +269,7 @@ void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {
     if (it == observed_.end()) {
         observed_[dir].insert(fileName);
         if (!watcher_->addObservation(dir)) {
-            LogError("Can't watch more files");
+            log::error("Can't watch more files");
         }
     } else {
         it->second.insert(fileName);
@@ -305,7 +305,7 @@ public:
 
 FileWatcher::FileWatcher(InviwoApplication* app) : app_{app} {
     (void)app_;
-    LogWarn("FileObserver are currently not supported using GLFW on this platform");
+    log::warn("FileObserver are currently not supported using GLFW on this platform");
 }
 
 FileWatcher::~FileWatcher() = default;

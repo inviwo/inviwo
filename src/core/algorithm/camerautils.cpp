@@ -139,8 +139,7 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
             *skewedPerspectiveCamera, boundingBox, inViewDir, inLookUp, fitRatio);
         cam.setLook(lookFrom, lookTo, lookUp);
     } else {
-        LogWarnCustom("camerautil::setCameraView",
-                      "setCameraView does not support " << cam.get().getClassIdentifier());
+        log::warn("setCameraView does not support {}", cam.get().getClassIdentifier());
     }
 }
 

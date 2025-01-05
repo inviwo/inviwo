@@ -264,14 +264,12 @@ void FilePatternProperty::updateFileList() {
                 }
             }
         } catch (FileException& e) {
-            LogError("Error (file exception): " << e.what());
+            log::error("Error (file exception): {}", e.what());
         }
     }
 
     // sort file names
     sort();
-
-    // LogInfo("Files matching the pattern:" << getFormattedFileList());
 }
 
 std::string FilePatternProperty::getFormattedFileList() const {
@@ -289,7 +287,7 @@ void FilePatternProperty::sort() {
 }
 
 std::string FilePatternProperty::guessFilePattern() const {
-    LogError("not implemented yet");
+    log::error("not implemented yet");
     return "";
 }
 

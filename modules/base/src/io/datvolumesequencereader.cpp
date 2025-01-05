@@ -46,7 +46,7 @@
 #include <inviwo/core/util/formats.h>                 // for DataFormatBase, DataFormat
 #include <inviwo/core/util/glmmat.h>                  // for mat3
 #include <inviwo/core/util/glmvec.h>                  // for dvec2, vec3, size3_t
-#include <inviwo/core/util/logcentral.h>              // for LogCentral, LogInfo, LogWarn
+#include <inviwo/core/util/logcentral.h>              // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>           // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>        // for toLower, trim, splitByFirst
 #include <modules/base/algorithm/algorithmoptions.h>  // for IgnoreSpecialValues, IgnoreSpe...
@@ -242,7 +242,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         {"axis1name", [](State& state, std::stringstream& ss) { ss >> state.axes[0].name; }},
         {"axis2name", [](State& state, std::stringstream& ss) { ss >> state.axes[1].name; }},
         {"axis3name", [](State& state, std::stringstream& ss) { ss >> state.axes[2].name; }},
-        
+
         {"axisunits",
          [](State& state, std::stringstream& ss) {
              std::string unit;
@@ -318,8 +318,8 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
         if (enableLogOutput_) {
-            LogInfo("Loaded multiple volumes: " << filePath
-                                                << " volumes: " << state.datFiles.size());
+            log::user::info("Loaded multiple volumes: {} volumes: ", filePath,
+                            state.datFiles.size());
         }
 
     } else {
@@ -432,7 +432,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                 }
                 // Performance warning for larger volumes (rougly > 2MB)
                 if (bytes < 128 * 128 * 128 || state.sequences > 1) {
-                    LogWarn(
+                    log::user::warn(
                         "Performance warning: Using min/max of data since DataRange was not "
                         "specified. Data range refer to the range of the data type, i.e. [0 4095] "
                         "for 12-bit unsigned integer data. It is important that the data range is "
@@ -441,13 +441,12 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                         "example performing color mapping, i.e. applying a transfer function. "
                         "\nValue range refer to the physical meaning of the value, i.e. Hounsfield "
                         "value range is from [-1000 3000]. Improve volume read performance by "
-                        "adding for example: \n"
-                        << "DataRange: " << computedRange[0] << " " << computedRange[1]
-                        << "\nValueRange: " << computedRange[0] << " " << computedRange[1]
-                        << "\nin file: " << filePath);
+                        "adding for example: \nDataRange: {} {}\nValueRange: {} {}\nin file: ",
+                        computedRange[0], computedRange[1], computedRange[0], computedRange[1],
+                        filePath);
                 }
                 if (state.sequences > 1) {
-                    LogWarn(
+                    log::user::warn(
                         "Multiple volumes in file but we only computed DataRange of the first "
                         "volume sequence due to performance consideration. \nWe strongly recommend "
                         "setting the DataRange, for example to min(Volume sequence), max(Volume "
@@ -458,7 +457,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
 
         if (enableLogOutput_) {
             const auto size = util::formatBytesToString(bytes * state.sequences);
-            LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
+            log::user::info("Loaded volume sequence: {} size: {}", filePath, size);
         }
     }
     return volumes;

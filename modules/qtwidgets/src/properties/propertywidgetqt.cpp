@@ -199,11 +199,11 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                     }
                 } catch (const AbortException&) {
                 } catch (const Exception& e) {
-                    util::log(e.getContext(), e.getMessage());
+                    log::user::exception(e);
                 } catch (const std::exception& e) {
-                    util::log(IVW_CONTEXT, e.what());
+                    log::user::exception(e);
                 } catch (...) {
-                    util::log(IVW_CONTEXT, "unknown error");
+                    log::user::exception();
                 }
             });
 
@@ -453,7 +453,7 @@ bool PropertyWidgetQt::event(QEvent* event) {
         try {
             html.append("body").append(property_->getDescription());
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getFullMessage());
+           log::user::exception(e);
         }
 
         QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(desc));

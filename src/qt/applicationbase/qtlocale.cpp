@@ -56,15 +56,14 @@ std::locale utilqt::getCurrentStdLocale() {
         for (auto&& [i, name] : util::enumerate(localeNames)) {
             try {
                 if (i != 0) {
-                    LogWarnCustom("getStdLocale", fmt::format("Falling back to locale '{}'", name));
+                    log::warn("Falling back to locale '{}'", name);
                 }
                 return std::locale(name);
             } catch (std::exception& e) {
-                LogWarnCustom("getStdLocale",
-                              fmt::format("Locale could not be set to '{}', {}", name, e.what()));
+                log::warn("Locale could not be set to '{}', {}", name, e.what());
             }
         }
-        LogWarnCustom("getStdLocale", "Using the default locale");
+        log::warn("Using the default locale");
         return std::locale{};
     }();
 

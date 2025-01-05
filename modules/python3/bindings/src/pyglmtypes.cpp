@@ -249,7 +249,7 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
             PYBIND11_NUMPY_DTYPE(Vec, x, y, z, w);
         }
     } catch (const std::exception& e) {
-        util::log(IVW_CONTEXT_CUSTOM("pyglmtypes"), e.what());
+        log::user::exception(e);
     }
 
     switch (Dim) {

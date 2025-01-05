@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/image/layerram.h>  // for LayerRAM (ptr only), createLayerRAM
 #include <inviwo/core/util/formats.h>                   // for DataFormatBase
-#include <inviwo/core/util/logcentral.h>                // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                // for LogCentral
 #include <modules/opengl/image/layergl.h>               // for LayerGL
 #include <modules/opengl/texture/texture2d.h>           // IWYU pragma: keep
 

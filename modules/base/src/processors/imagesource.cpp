@@ -48,7 +48,7 @@
 #include <inviwo/core/util/filesystem.h>               // for fileExists
 #include <inviwo/core/util/formats.h>                  // for DataFormat, DataVec4UInt8
 #include <inviwo/core/util/glmvec.h>                   // for size2_t
-#include <inviwo/core/util/logcentral.h>               // for log, LogCentral, LogError, LogLevel
+#include <inviwo/core/util/logcentral.h>               // for log, LogCentral
 #include <inviwo/core/util/statecoordinator.h>         // for StateCoordinator
 #include <modules/base/processors/datasource.h>        // for updateFilenameFilters, updateReade...
 

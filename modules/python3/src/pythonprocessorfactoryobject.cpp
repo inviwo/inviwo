@@ -47,7 +47,7 @@
 #include <inviwo/core/util/exception.h>                     // for Exception
 #include <inviwo/core/util/fileobserver.h>                  // for FileObserver
 #include <inviwo/core/util/filesystem.h>                    // for getFileNameWithoutExtension
-#include <inviwo/core/util/logcentral.h>                    // for LogCentral, LogError, LogInfo
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>                 // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>              // for trim
 #include <inviwo/core/util/utilities.h>                     // for stripIdentifier
@@ -90,14 +90,14 @@ void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
     try {
         auto data = load(file_);
         name_ = data.name;
-        LogInfo("Reloaded python processor: \"" << name_ << "\" file: " << file_);
+        log::user::info("Reloaded python processor: '{}' file: {}", name_, file_);
         if (getProcessorInfo() != data.info) {
-            LogError("ProcessorInfo changes in \"" + name_ + "\" will not be reflected");
+            log::user::error("ProcessorInfo changes in '{}' will not be reflected", name_);
         }
         reloadProcessors();
 
     } catch (const std::exception& e) {
-        LogError("Error reloading file: " << file_ << " Message:\n" << e.what());
+        log::user::error("Error reloading file: '{}' Message:\n{}", file_, e.what());
     }
 }
 
@@ -107,8 +107,8 @@ void PythonProcessorFactoryObject::reloadProcessors() {
                                              // modifying the list below by replacing them
     for (auto p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
-            LogInfo("Updating python processor: \"" << name_ << "\" id: \"" << p->getIdentifier()
-                                                    << "\"");
+            log::user::info("Updating python processor: \"{}\" id: \"{}\"", name_,
+                            p->getIdentifier());
             if (auto replacement = std::shared_ptr<Processor>(create(app_))) {
                 util::replaceProcessor(net, replacement, p);
             }

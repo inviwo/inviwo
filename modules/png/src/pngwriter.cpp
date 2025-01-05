@@ -120,7 +120,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
             throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"), "Error writing PNG: {}",
                                       message);
         },
-        [](png_structp, png_const_charp message) { LogWarnCustom("PNGWriter", message); });
+        [](png_structp, png_const_charp message) { log::user::report(LogLevel::Warn, message); });
 
     auto info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {

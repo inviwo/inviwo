@@ -240,10 +240,10 @@ void Property::serialize(Serializer& s) const {
 
 void Property::deserialize(Deserializer& d) {
     if (auto className = d.attribute("type"); !className || *className != getClassIdentifier()) {
-        LogWarn("Deserialized property: "
-                << getPath() << " with class identifier: " << getClassIdentifier()
-                << " from a serialized property with a different class identifier: "
-                << className.value_or("<missing>"));
+        log::warn(
+            "Deserialized {} with class identifier: {} from a serialized property with a different "
+            "class identifier: {}",
+            getPath(), getClassIdentifier(), className.value_or("<missing>"));
     }
 
     if (auto id = d.attribute("identifier"); id && *id != identifier_) {
