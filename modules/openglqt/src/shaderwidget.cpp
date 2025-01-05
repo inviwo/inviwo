@@ -224,7 +224,7 @@ void ShaderWidget::save() {
         resource->setSource(utilqt::fromQString(shadercode_->toPlainText()));
         shadercode_->document()->setModified(false);
     } else {
-        log::user::warn(
+        log::warn(
             "Could not save. The ShaderResource \"{}\" was not found in the ShaderManager. It "
             "needs to be registered with the ShaderManager for saving to work.",
             obj_->getResource()->key());

@@ -129,7 +129,7 @@ void DataFrameExporter::exportData() {
         exportAsCSV();
     } else {
         // use CSV format as fallback
-        log::user::warn(
+        log::warn(
             "Could not determine export format from file {}, exporting as comma-separated values "
             "(csv).",
             exportFile_.get());
@@ -151,7 +151,7 @@ void DataFrameExporter::exportAsCSV() {
 
     writer.writeData(dataFrame_.getData().get(), exportFile_.get());
 
-    log::user::info("CSV file exported to {}", exportFile_.get());
+    log::info("CSV file exported to {}", exportFile_.get());
 }
 
 void DataFrameExporter::exportAsXML() {
@@ -160,7 +160,7 @@ void DataFrameExporter::exportAsXML() {
     writer.exportIndexCol = exportIndexCol_.get();
 
     writer.writeData(dataFrame_.getData().get(), exportFile_.get());
-    log::user::info("XML file exported to {}", exportFile_.get());
+    log::info("XML file exported to {}", exportFile_.get());
 }
 
 }  // namespace inviwo

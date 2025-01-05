@@ -51,19 +51,18 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
     const auto rc = RenderContext::getPtr();
     switch (mode) {
         case debug::Mode::Off:
-            log::user::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
-                              "Debugging off for context: {} ({})", rc->getContextName(context),
-                              context);
+            log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                        "Debugging off for context: {} ({})", rc->getContextName(context), context);
             break;
         case debug::Mode::Debug:
-            log::user::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
-                              "Debugging active for context: {} ({}) at level: {}",
-                              rc->getContextName(context), context, severity);
+            log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                        "Debugging active for context: {} ({}) at level: {}",
+                        rc->getContextName(context), context, severity);
             break;
         case debug::Mode::DebugSynchronous:
-            log::user::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
-                              "Synchronous debugging active for context: {} ({}) at level: {}",
-                              rc->getContextName(context), context, severity);
+            log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                        "Synchronous debugging active for context: {} ({}) at level: {}",
+                        rc->getContextName(context), context, severity);
             break;
     }
 }
@@ -115,8 +114,8 @@ void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
                     if (setOpenGLDebugMode(mode, severity)) {
                         logDebugMode(mode, severity, id);
                     } else {
-                        log::user::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
-                                          "Debug messages not supported");
+                        log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                                    "Debug messages not supported");
                     }
                 }
             });
@@ -161,12 +160,12 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
                     const auto rc = RenderContext::getPtr();
                     canvas->activate();
                     if (configureOpenGLDebugMessages(severity)) {
-                        log::user::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
-                                          "Debug messages for level: {} for context: {} ({})",
-                                          severity, rc->getContextName(id), id);
+                        log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                                    "Debug messages for level: {} for context: {} ({})", severity,
+                                    rc->getContextName(id), id);
                     } else {
-                        log::user::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
-                                          "Debug messages not supported");
+                        log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                                    "Debug messages not supported");
                     }
                 }
             });

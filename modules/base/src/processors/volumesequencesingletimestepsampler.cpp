@@ -110,8 +110,7 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
         if (!sampler_.hasData()) return;
         auto seq = volumeSequence_.getData();
         if (!util::hasTimestamps(*seq, false)) {
-            log::user::warn(
-                "Input volume Sequence does not have timestamps, behavior is undefined");
+            log::warn("Input volume Sequence does not have timestamps, behavior is undefined");
         }
 
         auto newRange = util::getTimestampRange(*seq);

@@ -354,8 +354,8 @@ std::shared_ptr<Processor> ProcessorTreeWidget::createProcessor(QString cid) {
             return p;
         }
     } catch (Exception& exception) {
-        log::user::exception(exception, "Unable to create processor '{}' due to:\n{}", className,
-                             exception.getMessage());
+        log::exception(exception, "Unable to create processor '{}' due to:\n{}", className,
+                       exception.getMessage());
     }
     return nullptr;
 }

@@ -81,9 +81,9 @@ bool PythonProcessorFolderObserver::registerFile(const std::filesystem::path& fi
             registeredFiles_.push_back(filename);
             return true;
         } catch (const Exception& e) {
-            log::user::exception(e);
+            log::exception(e);
         } catch (const std::exception& e) {
-            log::user::exception(e);
+            log::exception(e);
         }
     }
     return false;
@@ -98,7 +98,7 @@ void PythonProcessorFolderObserver::fileChanged(const std::filesystem::path& cha
                 if (file.extension() != ".py") continue;
 
                 if (registerFile(directory_ / file)) {
-                    log::user::info("Loaded python processor: {}", directory_ / file);
+                    log::info("Loaded python processor: {}", directory_ / file);
                     stopFileObservation(directory_ / file);
                 } else {
                     startFileObservation(directory_ / file);
@@ -108,7 +108,7 @@ void PythonProcessorFolderObserver::fileChanged(const std::filesystem::path& cha
     } else {
         if (changed.extension() == ".py") {
             if (registerFile(changed)) {
-                log::user::info("Loaded python processor: {}", changed);
+                log::info("Loaded python processor: {}", changed);
                 stopFileObservation(changed);
             }
         }

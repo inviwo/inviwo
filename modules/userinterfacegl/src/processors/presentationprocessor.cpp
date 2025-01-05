@@ -216,7 +216,7 @@ void PresentationProcessor::updateSlideImage() {
 
         currentSlide_ = std::make_shared<Image>(layer);
     } catch (const DataReaderException& e) {
-        log::user::exception(e.getMessage());
+        log::exception(e.getMessage());
     }
 }
 

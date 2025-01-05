@@ -180,7 +180,7 @@ template <typename Clock, typename Callback>
 void ScopedClock<Clock, Callback>::print() const {
     if (Clock::getElapsedTime() > logIfAtLeast_) {
         ::inviwo::log::report(
-            logLevel_, LogAudience::Developer, context_, "{}: {}", message_(),
+            logLevel_, context_, "{}: {}", message_(),
             std::chrono::duration_cast<std::chrono::milliseconds>(Clock::getElapsedTime()));
     }
 }

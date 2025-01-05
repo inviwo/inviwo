@@ -151,7 +151,7 @@ DepthOfField::DepthOfField()
     approximate_.onChange([this]() {
         if (approximate_ && !useComputeShaders_) {
             // Using CPU version of approximative algorithm.
-            log::user::warn(
+            log::warn(
                 "Compute shaders are not supported. Approximative depth of field "
                 "post-processing may be slow.");
         }

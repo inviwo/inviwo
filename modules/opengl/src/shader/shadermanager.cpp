@@ -176,7 +176,7 @@ void ShaderManager::rebuildAllShaders() {
     for (auto& shader : shaders_) {
         shader->build();
     }
-    log::user::info("Rebuild of all shaders completed");
+    log::info("Rebuild of all shaders completed");
 }
 
 bool ShaderManager::addShaderSearchPathImpl(const std::filesystem::path& shaderSearchPath) {

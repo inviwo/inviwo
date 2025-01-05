@@ -212,7 +212,7 @@ void StreamParticles::update() {
             invalidate(InvalidationLevel::InvalidOutput);
         }
     } catch (const Exception& e) {
-        log::user::exception(e);
+        log::exception(e);
     }
 }
 

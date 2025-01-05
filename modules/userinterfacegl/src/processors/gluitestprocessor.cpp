@@ -157,7 +157,7 @@ GLUITestProcessor::GLUITestProcessor()
     uiSettings_.addProperty(layoutMargins_);
 
     // regular properties
-    buttonProperty_.onChange([&]() { log::user::info("Property button pressed"); });
+    buttonProperty_.onChange([&]() { log::info("Property button pressed"); });
 
     addProperty(boolProperty_);
     addProperty(intProperty_);
@@ -201,18 +201,17 @@ GLUITestProcessor::GLUITestProcessor()
     // create a slider
     auto slider =
         std::make_unique<glui::Slider>("slider", 0, 0, 100, *this, uiRenderer_, ivec2(100, 24));
-    slider->setAction(
-        [&, p = slider.get()]() { log::user::info("UI slider changed: {}", p->get()); });
+    slider->setAction([&, p = slider.get()]() { log::info("UI slider changed: {}", p->get()); });
     widgets_.emplace_back(std::move(slider));
     // create a range slider
     auto rangeslider = std::make_unique<glui::RangeSlider>("rangeslider", ivec2(10, 70), 0, 100, 40,
                                                            *this, uiRenderer_, ivec2(100, 24));
     rangeslider->setAction(
-        [&, p = rangeslider.get()]() { log::user::info("UI range slider changed: {}", p->get()); });
+        [&, p = rangeslider.get()]() { log::info("UI range slider changed: {}", p->get()); });
     widgets_.emplace_back(std::move(rangeslider));
     // create a wide button
     auto button = std::make_unique<glui::Button>("button 1", *this, uiRenderer_, ivec2(100, 28));
-    button->setAction([&]() { log::user::info("UI button pressed"); });
+    button->setAction([&]() { log::info("UI button pressed"); });
     widgets_.emplace_back(std::move(button));
     // create a large button
     widgets_.emplace_back(

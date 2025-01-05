@@ -132,7 +132,7 @@ void ConvexHull2DProcessor::process() {
     std::vector<vec2> hull;
     hull = util::convexHull(points);
     if (!util::isConvex(hull)) {
-        log::user::warn("Hull returned by Monotone Chain algorithm (convexHull) is _not_ convex");
+        log::warn("Hull returned by Monotone Chain algorithm (convexHull) is _not_ convex");
     }
 
     // convert hull into a line strip mesh

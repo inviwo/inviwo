@@ -75,9 +75,9 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
                 if (p->getIdentifier() == *id &&
                     (p->getClassIdentifier() == *type ||
                      p->getClassIdentifier() == util::splitByLast(*type, '.').second)) {
-                    log::user::report(LogLevel::Info, SourceContext("VersionConverter"_sl),
-                                      "    Match for sub property: {} found in type: {}  id: {}",
-                                      p->getPath(), *type, *id);
+                    log::report(LogLevel::Info, SourceContext("VersionConverter"_sl),
+                                "    Match for sub property: {} found in type: {}  id: {}",
+                                p->getPath(), *type, *id);
 
                     list.LinkEndChild(child->Clone());
                     toBeDeleted.push_back(child);
@@ -186,8 +186,8 @@ bool xml::copyMatchingCompositeProperty(TxElement* node, const CompositeProperty
 
         if ((type == "CompositeProperty" || type == "org.inviwo.CompositeProperty") &&
             prop.getIdentifier() == id) {
-            log::user::report(LogLevel::Info, SourceContext("VersionConverter"_sl),
-                              "    Found Composite with same identifier");
+            log::report(LogLevel::Info, SourceContext("VersionConverter"_sl),
+                        "    Found Composite with same identifier");
 
             TxElement* newChild = node->InsertEndChild(*child)->ToElement();
             newChild->SetAttribute("type", prop.getClassIdentifier());
@@ -427,7 +427,7 @@ void xml::logNode(TxElement* node) {
     xml.reserve(4096);
     TiXmlPrinter printer{xml, TiXmlStreamPrint::No};
     node->Accept(&printer);
-    log::user::report(LogLevel::Info, xml);
+    log::report(LogLevel::Info, xml);
 }
 
 bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassId,

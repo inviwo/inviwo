@@ -122,13 +122,13 @@ void exposeLogging(pybind11::module& m) {
         py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
     m.def("logInfo", [](const std::string& msg) {
-        log::user::report(LogLevel::Info, SourceContext{"inviwopy"_sl}, msg);
+        log::report(LogLevel::Info, SourceContext{"inviwopy"_sl}, msg);
     });
     m.def("logWarn", [](const std::string& msg) {
-        log::user::report(LogLevel::Warn, SourceContext{"inviwopy"_sl}, msg);
+        log::report(LogLevel::Warn, SourceContext{"inviwopy"_sl}, msg);
     });
     m.def("logError", [](const std::string& msg) {
-        log::user::report(LogLevel::Error, SourceContext{"inviwopy"_sl}, msg);
+        log::report(LogLevel::Error, SourceContext{"inviwopy"_sl}, msg);
     });
 }
 

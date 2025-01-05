@@ -318,8 +318,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
         if (enableLogOutput_) {
-            log::user::info("Loaded multiple volumes: {} volumes: ", filePath,
-                            state.datFiles.size());
+            log::info("Loaded multiple volumes: {} volumes: ", filePath, state.datFiles.size());
         }
 
     } else {
@@ -432,7 +431,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                 }
                 // Performance warning for larger volumes (rougly > 2MB)
                 if (bytes < 128 * 128 * 128 || state.sequences > 1) {
-                    log::user::warn(
+                    log::warn(
                         "Performance warning: Using min/max of data since DataRange was not "
                         "specified. Data range refer to the range of the data type, i.e. [0 4095] "
                         "for 12-bit unsigned integer data. It is important that the data range is "
@@ -446,7 +445,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                         filePath);
                 }
                 if (state.sequences > 1) {
-                    log::user::warn(
+                    log::warn(
                         "Multiple volumes in file but we only computed DataRange of the first "
                         "volume sequence due to performance consideration. \nWe strongly recommend "
                         "setting the DataRange, for example to min(Volume sequence), max(Volume "
@@ -457,7 +456,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
 
         if (enableLogOutput_) {
             const auto size = util::formatBytesToString(bytes * state.sequences);
-            log::user::info("Loaded volume sequence: {} size: {}", filePath, size);
+            log::info("Loaded volume sequence: {} size: {}", filePath, size);
         }
     }
     return volumes;

@@ -50,8 +50,7 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
     if (auto needSize = av_log_format_line2(ptr, level, fmt, vl, line.data(),
                                             static_cast<int>(line.size()), &print_prefix);
         needSize < 0) {
-        log::user::report(LogLevel::Error, SourceContext{"ffmpeg"_sl},
-                          "Error formatting log message");
+        log::report(LogLevel::Error, SourceContext{"ffmpeg"_sl}, "Error formatting log message");
     } else if (needSize >= static_cast<int>(line.size())) {
         dynamicLine.resize(needSize + 1);
         if (av_log_format_line2(ptr, level, fmt, vl, dynamicLine.data(),
@@ -75,7 +74,7 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
         }
     }();
 
-    log::user::report(logLevel, SourceContext{"ffmpeg"_sl}, message);
+    log::report(logLevel, SourceContext{"ffmpeg"_sl}, message);
 }
 
 }  // namespace

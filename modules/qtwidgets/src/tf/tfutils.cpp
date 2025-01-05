@@ -199,7 +199,7 @@ void exportIsoValueCollectionDialog(const IsoValueCollection& iso, QWidget* pare
                     factory->getWriterForTypeAndExtension<IsoValueCollection>(fileExt, filename)) {
                 writer->writeData(&iso, filename);
 
-                log::user::info("Data exported to disk: {}", filename);
+                log::info("Data exported to disk: {}", filename);
             } else {
                 throw DataWriterException(IVW_CONTEXT_CUSTOM("exportTransferFunctionDialog"),
                                           "Unable to find a Iso Value Collection writer for {}",

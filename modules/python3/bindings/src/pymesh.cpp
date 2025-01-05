@@ -126,7 +126,7 @@ void exposeMesh(pybind11::module& m) {
                               std::shared_ptr<IndexBuffer> ind) { m->addIndices(info, ind); })
         .def("addIndicies",
              [](Mesh* m, Mesh::MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
-                 log::user::info("Mesh::addIndicies is deprecated, use addIndices");
+                 log::info("Mesh::addIndicies is deprecated, use addIndices");
                  m->addIndices(info, ind);
              })
         .def("removeIndexBuffer", [](Mesh* m, size_t idx) { m->removeIndexBuffer(idx); })

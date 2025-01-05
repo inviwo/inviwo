@@ -614,7 +614,7 @@ void InviwoMainWindow::addActions() {
                         utilqt::toPath(saveFileDialog.selectedFiles().at(0));
                     networkEditorView_->exportViewToFile(path, entireScene,
                                                          backgroundVisibleAction->isChecked());
-                    log::user::info("Exported network to '{}'", path);
+                    log::info("Exported network to '{}'", path);
                 }
             };
         };
@@ -1303,7 +1303,7 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
             }
         });
         updateWindowTitle();
-        log::user::info("Workspace saved to: {}", fileName);
+        log::info("Workspace saved to: {}", fileName);
         return true;
     } catch (const Exception& e) {
         util::logError(e.getContext(), "Unable to save network {} due to {}", fileName,
@@ -1650,9 +1650,9 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
             };
             app_->dispatchFrontAndForget(action);
         } catch (const Exception& e) {
-            log::user::exception(e, "Exception during Drag & Drop: {}", e.getMessage());
+            log::exception(e, "Exception during Drag & Drop: {}", e.getMessage());
         } catch (const std::exception& e) {
-            log::user::error("Exception during Drag & Drop: {}", e.what());
+            log::error("Exception during Drag & Drop: {}", e.what());
         }
 
         event->accept();

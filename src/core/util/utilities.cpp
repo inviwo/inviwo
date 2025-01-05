@@ -48,7 +48,7 @@ void saveNetwork(ProcessorNetwork* network, std::string_view filename) {
         network->serialize(xmlSerializer);
         xmlSerializer.writeFile();
     } catch (SerializationException& e) {
-        log::user::exception(e, "Unable to save network {} due to {}", filename, e.getMessage());
+        log::exception(e, "Unable to save network {} due to {}", filename, e.getMessage());
     }
 }
 
@@ -72,7 +72,7 @@ void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir
     for (auto cp : allConsideredCanvases) {
         if (!cp->isValid() || !cp->isReady()) {
             std::ostringstream msg;
-            log::user::error(
+            log::error(
                 "Canvas is not ready or not valid, no image saved\n"
                 "    Display Name: {}\n"
                 "    Identifier: {}",
@@ -100,7 +100,7 @@ void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir
 
             auto path = dir / filepath.view();
 
-            log::user::info("Saving canvas to: {}", path);
+            log::info("Saving canvas to: {}", path);
             cp->saveImageLayer(path);
         }
         i++;

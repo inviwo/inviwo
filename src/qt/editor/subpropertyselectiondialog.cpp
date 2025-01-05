@@ -555,7 +555,7 @@ public:
                 return false;
             }
         } catch (const Exception& e) {
-            log::user::exception(e);
+            log::exception(e);
             return false;
         }
     }

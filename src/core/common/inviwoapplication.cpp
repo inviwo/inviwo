@@ -258,18 +258,18 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
 CommandLineParser& InviwoApplication::getCommandLineParser() { return *commandLineParser_; }
 
 void InviwoApplication::printApplicationInfo() {
-    log::user::info("Inviwo Version: {}", build::version);
+    log::info("Inviwo Version: {}", build::version);
     if (auto buildInfo = util::getBuildInfo()) {
-        log::user::info("Build Date: {}", buildInfo->getDate());
+        log::info("Build Date: {}", buildInfo->getDate());
         for (auto [name, hash] : buildInfo->githashes) {
-            log::user::info("Git {}  hash: {}", name, hash);
+            log::info("Git {}  hash: {}", name, hash);
         }
     }
-    log::user::info("Base Path: {}", getBasePath());
-    log::user::info("ThreadPool Worker Threads: {}", pool_.getSize());
+    log::info("Base Path: {}", getBasePath());
+    log::info("ThreadPool Worker Threads: {}", pool_.getSize());
 
-    log::user::info("Config: {} [{}] {} ({})", build::generator, build::configuration,
-                    build::compiler, build::compilerVersion);
+    log::info("Config: {} [{}] {} ({})", build::generator, build::configuration, build::compiler,
+              build::compilerVersion);
 }
 
 void InviwoApplication::postProgress(std::string_view progress) const {
@@ -353,8 +353,7 @@ void InviwoApplication::resizePool(size_t newSize) {
     while (size != newSize) {
         if (timeout()) {
             const auto left = size - newSize;
-            log::user::info("Waiting for {} background thread{} to finish", left,
-                            (left > 1 ? "s" : ""));
+            log::info("Waiting for {} background thread{} to finish", left, (left > 1 ? "s" : ""));
             timeLimit += std::chrono::milliseconds(1000);
         }
 

@@ -409,7 +409,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
         }
 
     } catch (Exception& e) {
-        log::user::exception(e);
+        log::exception(e);
     }
 }
 

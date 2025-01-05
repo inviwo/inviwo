@@ -230,9 +230,9 @@ void PropertyPresetManager::loadApplicationPresets() {
             Deserializer d(filename);
             d.deserialize("PropertyPresets", appPresets_, "Preset");
         } catch (AbortException& e) {
-            log::user::exception(e);
+            log::exception(e);
         } catch (std::exception& e) {
-            log::user::exception(e);
+            log::exception(e);
         }
     }
 }

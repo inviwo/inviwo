@@ -79,7 +79,7 @@ void CompositeProperty::set(const CompositeProperty* src) {
         }
         propertyModified();
     } else {
-        log::user::warn(
+        log::warn(
             "Unable to link CompositeProperties:\n{} to {}\n The number of sub "
             "properties differ ({} vs {})",
             src->getPath(), getPath(), subProperties.size(), properties_.size());

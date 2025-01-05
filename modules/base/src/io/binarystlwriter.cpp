@@ -167,7 +167,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     for (const auto& inds : data->getIndexBuffers()) {
         if (inds.first.dt != DrawType::Triangles) {
-            log::user::error("Draw type: {} not supported", inds.first.dt);
+            log::error("Draw type: {} not supported", inds.first.dt);
             continue;
         }
 

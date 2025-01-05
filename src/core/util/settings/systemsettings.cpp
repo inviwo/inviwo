@@ -94,7 +94,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 
     runtimeModuleReloading_.onChange([this]() {
         if (isDeserializing_) return;
-        log::user::info(
+        log::info(
             "Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
     });
 
@@ -103,7 +103,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 
     enableResourceTracking_.onChange([this]() {
         if (enableResourceTracking_) {
-            log::user::warn("Resource tracking is enabled, this might slow down Inviwo");
+            log::warn("Resource tracking is enabled, this might slow down Inviwo");
         }
 
         if (!enableResourceTracking_) {
@@ -114,7 +114,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     redirectCout_.onChange([this]() {
         if (redirectCout_ && !cout_) {
             if (app_->getCommandLineParser().getLogToConsole()) {
-                log::user::warn(
+                log::warn(
                     "Cannot redirect std::cout to LogCentral when console logging is enabled");
                 redirectCout_.set(false);
                 return;
@@ -132,7 +132,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     redirectCerr_.onChange([&]() {
         if (redirectCerr_ && !cerr_) {
             if (app_->getCommandLineParser().getLogToConsole()) {
-                log::user::warn(
+                log::warn(
                     "Cannot redirect std::cerr to LogCentral when console logging is enabled");
                 redirectCerr_.set(false);
                 return;

@@ -88,11 +88,11 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
                 } else if (auto property = processor->getPropertyByPath(propertyPath)) {
                     property->propertyModified();
                 } else {
-                    log::user::warn("Unable to find property '{}' of processor '{}'", propertyPath,
-                                    processorId);
+                    log::warn("Unable to find property '{}' of processor '{}'", propertyPath,
+                              processorId);
                 }
             } else {
-                log::user::warn("Unable to find processor '{}'", processorId);
+                log::warn("Unable to find processor '{}'", processorId);
             }
         }
     }

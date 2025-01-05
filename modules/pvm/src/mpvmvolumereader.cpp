@@ -99,7 +99,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
         if (newVol) {
             volumes.push_back(newVol);
         } else {
-            log::user::warn("Could not load {}", fileDirectory / files[i]);
+            log::warn("Could not load {}", fileDirectory / files[i]);
         }
     }
 
@@ -117,7 +117,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     size3_t mdim = volumes[0]->getDimensions();
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
-            log::user::warn(
+            log::warn(
                 "PVM volumes did not have the same format or dimensions, using first volume.");
             printPVMMeta(*volumes[0], fileDirectory / files[0]);
             return volumes[0];
@@ -178,7 +178,7 @@ void MPVMVolumeReader::printPVMMeta(const Volume& volume,
     size3_t dim = volume.getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
     std::string size = util::formatBytesToString(bytes);
-    log::user::info("Loaded volume: '{}' size: {}", fileName, size);
+    log::info("Loaded volume: '{}' size: {}", fileName, size);
     printMetaInfo(volume, "description");
     printMetaInfo(volume, "courtesy");
     printMetaInfo(volume, "parameter");
@@ -190,7 +190,7 @@ void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        log::user::info("{}: {}", key, metaStr);
+        log::info("{}: {}", key, metaStr);
     }
 }
 

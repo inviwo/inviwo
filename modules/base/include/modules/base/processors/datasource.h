@@ -158,9 +158,9 @@ protected:
     virtual std::shared_ptr<DataType> transform(std::shared_ptr<ReaderType> data);
 
     // Called when we load new data.
-    virtual void dataLoaded(std::shared_ptr<DataType> data){};
+    virtual void dataLoaded(std::shared_ptr<DataType> data) {};
     // Called when we deserialized old data.
-    virtual void dataDeserialized(std::shared_ptr<DataType> data){};
+    virtual void dataDeserialized(std::shared_ptr<DataType> data) {};
 
     DataReaderFactory* rf_;
     PortType port_;
@@ -231,7 +231,7 @@ void DataSource<DataType, PortType, ReaderType>::handleError(std::string_view er
     error_ = error;
     port_.clear();
     isReady_.update();
-    log::user::report(LogLevel::Error, error_);
+    log::report(LogLevel::Error, error_);
 }
 
 template <typename DataType, typename PortType, typename ReaderType>

@@ -38,7 +38,7 @@ void PythonLogger::onPythonExecutionOutput(const std::string& msg, PythonOutputT
     const LogLevel level =
         PythonOutputType::sysstderr == outputType ? LogLevel::Error : LogLevel::Info;
 
-    log::report(level, LogAudience::User, msg);
+    log::report(level, msg);
 }
 
 }  // namespace inviwo

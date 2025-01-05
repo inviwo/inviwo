@@ -97,9 +97,9 @@ void WorkspaceAnnotations::serialize(Serializer& s) const {
             s.serialize("Canvases", canvases_, "CanvasImage");
         }
     } catch (const Exception& e) {
-        log::user::exception(e);
+        log::exception(e);
     } catch (const std::exception& e) {
-        log::user::exception(e);
+        log::exception(e);
     }
 }
 
@@ -110,9 +110,9 @@ void WorkspaceAnnotations::deserialize(Deserializer& d) {
         PropertyOwner::deserialize(d);
         d.deserialize("Canvases", canvases_, "CanvasImage");
     } catch (const Exception& e) {
-        log::user::exception(e);
+        log::exception(e);
     } catch (const std::exception& e) {
-        log::user::exception(e);
+        log::exception(e);
     }
 }
 

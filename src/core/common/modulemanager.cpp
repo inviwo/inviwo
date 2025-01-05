@@ -197,15 +197,14 @@ void ModuleManager::reloadModules() {
     // 5. Load module libraries and register them
     // 6. De-serialize network
 
-    log::user::info("Reloading modules");
+    log::info("Reloading modules");
 
     // Serialize network
     std::stringstream stream;
     try {
         app_->getWorkspaceManager()->save(stream, app_->getBasePath());
-    } catch (SerializationException& exception) {
-        log::report(LogLevel::Error, LogAudience::User, exception.getContext(),
-                    "Unable to save network due to {}", exception.getMessage());
+    } catch (SerializationException& e) {
+        log::exception(e, "Unable to save network due to {}", e.getMessage());
         return;
     }
 
@@ -242,14 +241,13 @@ void ModuleManager::reloadModules() {
                 const auto err = dereg.empty() ? ""
                                                : fmt::format("\nUnregistered dependent modules: {}",
                                                              fmt::join(dereg, ", "));
-                log::user::exception(e, "Failed to register module: {}. Reason:\n {}{}",
-                                     cont.name(), e.getMessage(), err);
+                log::exception(e, "Failed to register module: {}. Reason:\n {}{}", cont.name(),
+                               e.getMessage(), err);
             } catch (const Exception& e) {
-                log::user::exception(e, "Failed to register module: {}. Reason:\n{}", cont.name(),
-                                     e.getMessage());
+                log::exception(e, "Failed to register module: {}. Reason:\n{}", cont.name(),
+                               e.getMessage());
             } catch (const std::exception& e) {
-                log::user::error("Failed to register module: {}. Reason:\n{}", cont.name(),
-                                 e.what());
+                log::error("Failed to register module: {}. Reason:\n{}", cont.name(), e.what());
             }
         }
     }
@@ -274,7 +272,7 @@ void ModuleManager::reloadModules() {
         // Lock the network that so no evaluations are triggered during the de-serialization
         app_->getWorkspaceManager()->load(stream, app_->getBasePath());
     } catch (SerializationException& e) {
-        log::user::exception(e, "Unable to load network due to {}", e.getMessage());
+        log::exception(e, "Unable to load network due to {}", e.getMessage());
         return;
     }
 }
@@ -319,8 +317,8 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
             try {
                 modules.emplace_back(file, runtimeReloading);
             } catch (const Exception& e) {
-                log::user::warn("Could not load library: {}", file.path());
-                log::user::exception(e);
+                log::warn("Could not load library: {}", file.path());
+                log::exception(e);
             }
         }
     }

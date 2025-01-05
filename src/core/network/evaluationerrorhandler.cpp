@@ -41,14 +41,14 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
     try {
         throw;
     } catch (Exception& e) {
-        log::user::exception(e, "{} Error in {} : {}", id, type, e.getFullMessage());
+        log::exception(e, "{} Error in {} : {}", id, type, e.getFullMessage());
     } catch (fmt::format_error& e) {
-        log::user::report(LogLevel::Error, context, "{} Error in {} using fmt formatting: {}\n{}",
-                          id, type, e.what(), util::fmtHelp.view());
+        log::report(LogLevel::Error, context, "{} Error in {} using fmt formatting: {}\n{}", id,
+                    type, e.what(), util::fmtHelp.view());
     } catch (std::exception& e) {
-        log::user::report(LogLevel::Error, context, "{} Error in {} : {}", id, type, e.what());
+        log::report(LogLevel::Error, context, "{} Error in {} : {}", id, type, e.what());
     } catch (...) {
-        log::user::report(LogLevel::Error, context, "{} Error in {} : Unknown error", id, type);
+        log::report(LogLevel::Error, context, "{} Error in {} : Unknown error", id, type);
     }
 }
 

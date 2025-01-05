@@ -481,18 +481,18 @@ void AnimationController::render() {
                            std::chrono::high_resolution_clock::now() - start)
                            .count();
 
-        log::user::info("Rendered {} frames in {:.3f} seconds, {:.3f} per frame", numFrames,
-                        seconds, seconds / numFrames);
+        log::info("Rendered {} frames in {:.3f} seconds, {:.3f} per frame", numFrames, seconds,
+                  seconds / numFrames);
 
     } catch (const Exception& e) {
-        log::user::report(LogLevel::Error, "Rendering aborted");
-        log::user::exception(e);
+        log::report(LogLevel::Error, "Rendering aborted");
+        log::exception(e);
     } catch (const std::exception& e) {
-        log::user::report(LogLevel::Error, "Rendering aborted");
-        log::user::exception(e);
+        log::report(LogLevel::Error, "Rendering aborted");
+        log::exception(e);
     } catch (...) {
-        log::user::report(LogLevel::Error, "Rendering aborted");
-        log::user::exception();
+        log::report(LogLevel::Error, "Rendering aborted");
+        log::exception();
     }
 }
 

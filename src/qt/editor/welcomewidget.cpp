@@ -701,9 +701,9 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
             model_->updateExampleEntries();
             model_->updateRegressionTestEntries();
         } catch (const Exception& e) {
-            log::user::exception(e);
+            log::exception(e);
         } catch (const std::exception& e) {
-            log::user::exception(e);
+            log::exception(e);
         }
         expandTreeView();
     }

@@ -71,7 +71,7 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        log::user::info("{}: {}", key, metaStr);
+        log::info("{}: {}", key, metaStr);
     }
 }
 

@@ -72,7 +72,7 @@ void InviwoModuleLibraryObserver::fileChanged(const std::filesystem::path& dir) 
             if (time > it->second) {
                 it->second = time;
                 reload = true;
-                log::user::info("Detected change in: {}", file);
+                log::info("Detected change in: {}", file);
             }
         }
     }

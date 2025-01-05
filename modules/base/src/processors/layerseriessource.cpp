@@ -118,7 +118,7 @@ void LayerSeriesSource::process() {
         auto layer = reader->readData(fileName);
         outport_.setData(layer);
     } catch (const DataReaderException& e) {
-        log::user::exception(e);
+        log::exception(e);
     }
 }
 

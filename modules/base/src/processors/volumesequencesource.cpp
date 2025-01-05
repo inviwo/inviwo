@@ -181,13 +181,13 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
         try {
             volumes_ = reader->readData(file_.get(), this);
         } catch (const DataReaderException& e) {
-            log::user::exception(e);
+            log::exception(e);
             volumes_.reset();
             loadingFailed_ = true;
             isReady_.update();
         }
     } else {
-        log::user::error("Could not find a data reader for file: {}", file_.get());
+        log::error("Could not find a data reader for file: {}", file_.get());
         volumes_.reset();
         loadingFailed_ = true;
         isReady_.update();
@@ -222,13 +222,13 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
                         volumes_->push_back(volume);
                     }
                 } else {
-                    log::user::error("Could not find a data reader for file: {}", file);
+                    log::error("Could not find a data reader for file: {}", file);
                     volumes_.reset();
                     loadingFailed_ = true;
                     isReady_.update();
                 }
             } catch (const DataReaderException& e) {
-                log::user::exception(e);
+                log::exception(e);
                 volumes_.reset();
                 loadingFailed_ = true;
                 isReady_.update();
