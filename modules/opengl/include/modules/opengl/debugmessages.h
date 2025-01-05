@@ -34,6 +34,7 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/logcentral.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <inviwo/core/util/fmtutils.h>
 
 #include <iosfwd>
 
@@ -97,10 +98,6 @@ inline LogLevel toLogLevel(Severity s) {
     }
 }
 
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Mode m);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, BreakLevel b);
-
 namespace detail {
 
 inline int toInt(Severity s) {
@@ -160,6 +157,14 @@ inline bool operator<=(const BreakLevel& b, const Severity& s) { return s >= b; 
 inline bool operator>(const BreakLevel& b, const Severity& s) { return s < b; }
 inline bool operator>=(const BreakLevel& b, const Severity& s) { return s <= b; }
 
+IVW_MODULE_OPENGL_API std::string_view enumToStr(Mode s);
+IVW_MODULE_OPENGL_API std::string_view enumToStr(BreakLevel t);
+IVW_MODULE_OPENGL_API std::string_view enumToStr(Source s);
+IVW_MODULE_OPENGL_API std::string_view enumToStr(Type t);
+IVW_MODULE_OPENGL_API std::string_view enumToStr(Severity s);
+
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Mode m);
+IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, BreakLevel b);
 IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Source s);
 
 IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Type t);
@@ -176,3 +181,23 @@ IVW_MODULE_OPENGL_API bool configureOpenGLDebugMessages(utilgl::debug::Severity 
 }  // namespace utilgl
 
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <>
+struct fmt::formatter<inviwo::utilgl::debug::Mode>
+    : inviwo::FlagFormatter<inviwo::utilgl::debug::Mode> {};
+template <>
+struct fmt::formatter<inviwo::utilgl::debug::BreakLevel>
+    : inviwo::FlagFormatter<inviwo::utilgl::debug::BreakLevel> {};
+
+template <>
+struct fmt::formatter<inviwo::utilgl::debug::Source>
+    : inviwo::FlagFormatter<inviwo::utilgl::debug::Source> {};
+template <>
+struct fmt::formatter<inviwo::utilgl::debug::Type>
+    : inviwo::FlagFormatter<inviwo::utilgl::debug::Type> {};
+
+template <>
+struct fmt::formatter<inviwo::utilgl::debug::Severity>
+    : inviwo::FlagFormatter<inviwo::utilgl::debug::Severity> {};
+#endif

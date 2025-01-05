@@ -505,7 +505,7 @@ void CropWidget::updateBoundingCube() {
 void CropWidget::objectPicked(PickingEvent* e) {
     const auto axisID = e->getPickedId() / static_cast<size_t>(numInteractionWidgets);
     if (axisID >= cropAxes_.size()) {
-        LogWarn("invalid picking ID");
+        log::warn("invalid picking ID");
         return;
     }
     if (e->getPressState() != PickingPressState::None) {

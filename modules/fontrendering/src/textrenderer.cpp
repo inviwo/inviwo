@@ -33,7 +33,7 @@
 #include <inviwo/core/datastructures/camera/camera.h>  // for mat4
 #include <inviwo/core/util/exception.h>                // for Exception, FileException
 #include <inviwo/core/util/glmvec.h>                   // for ivec2, vec2, size2_t
-#include <inviwo/core/util/logcentral.h>               // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>               // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>            // for hash
 #include <inviwo/core/util/zip.h>                      // for get, zip, zipIterator
@@ -155,8 +155,8 @@ std::string_view::const_iterator TextRenderer::validateString(std::string_view s
     // check input string for invalid utf8 encoding, process only valid part
     auto end = utf8::find_invalid(str.begin(), str.end());
     if (end != str.end()) {
-        LogWarn("Invalid UTF-8 encoding detected. This part is fine: " << std::string(str.begin(),
-                                                                                      end));
+        log::warn("Invalid UTF-8 encoding detected. This part is fine: {}",
+                  std::string(str.begin(), end));
     }
     return end;
 }
@@ -487,8 +487,7 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::requestGlyph(FontCache& 
 std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache& fc,
                                                                  unsigned int glyph) {
     if (FT_Load_Char(fontface_, glyph, FT_LOAD_RENDER)) {
-        LogWarn("FreeType: could not load char: '" << static_cast<char>(glyph) << "' (0x"
-                                                   << std::hex << glyph << ")");
+        log::warn("FreeType: could not load char: '{}' ({:#X})", static_cast<char>(glyph), glyph);
         return std::make_pair(false, GlyphEntry());
     }
 
@@ -522,8 +521,8 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache& fc,
     // check remaining vertical space inside atlas texture
     if (line == fc.lineLengths.size()) {
         if (fc.lineHeights.back() + glyphExtent.y > texDims.y) {
-            LogWarn("Could not cache char '" << static_cast<char>(glyph) << "' (0x" << std::hex
-                                             << glyph << ") (max size for texture atlas exceeded)");
+            log::warn("Could not cache char '{}' ({:#X}) (max size for texture atlas exceeded)",
+                      static_cast<char>(glyph), glyph);
             return std::make_pair(false, glyphEntry);
         }
         // create a new, empty line in the texture and store the glyph there
@@ -583,8 +582,7 @@ void TextRenderer::createDefaultGlyphAtlas() {
     // create glyphs for all ascii characters between 32 and 128
     for (unsigned int c = 32u; c < 128u; ++c) {
         if (FT_Load_Char(fontface_, c, FT_LOAD_RENDER)) {
-            LogWarn("FreeType: could not load char: '" << static_cast<char>(c) << "' (0x"
-                                                       << std::hex << c << ")");
+            log::warn("FreeType: could not load char: '{}' ({:#X})", static_cast<char>(c), c);
             continue;
         }
 

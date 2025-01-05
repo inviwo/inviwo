@@ -206,15 +206,53 @@ private:
 
 namespace log {
 
+/**
+ * All log function either take a explicit SourceContext argument,
+ * or automatically extracts one from the call site.
+ * All functions that takes a fmt::format_string does compile time format checks
+ *
+ * ## Generic
+ * report(LogLevel, LogAudience, SourceContext, fmt::format_string, Args&&...)
+ * report(LogLevel, LogAudience, SourceContext, std::string_view)
+ * report(LogLevel, LogAudience, std::string_view)
+ * message(LogLevel level, LogAudience audience, fmt::format_string<Args...>, Args&&...)
+
+ * ## LogAudience Developer
+ * report(LogLevel, SourceContext, fmt::format_string, Args&&...)
+ * report(LogLevel, SourceContext, std::string_view)
+ * report(LogLevel, std::string_view)
+ * exception(const Exception&)
+ * info(fmt::format_string<Args...>, Args&&...)
+ * warn(fmt::format_string<Args...>, Args&&...)
+ * error(fmt::format_string<Args...>, Args&&...)
+ *
+ * ## LogAudience User
+ * user::report(LogLevel, LogAudience, SourceContext, fmt::format_string, Args&&...)
+ * user::report(LogLevel, SourceContext, std::string_view)
+ * user::report(LogLevel, std::string_view)
+ * user::exception(const Exception&)
+ * user::info(fmt::format_string<Args...>, Args&&...)
+ * user::warn(fmt::format_string<Args...>, Args&&...)
+ * user::error(fmt::format_string<Args...>, Args&&...)
+ *
+ */
+
+// Generic
 inline void report(LogLevel level, LogAudience audience, SourceContext context,
                    std::string_view message) {
-    LogCentral::getPtr()->log(context.source(), level, audience, context.file(), context.function(),
-                              context.line(), message);
+    if (LogCentral::isInitialized()) {
+        LogCentral::getPtr()->log(context.source(), level, audience, context.file(),
+                                  context.function(), context.line(), message);
+    } else {
+        // TODO log directly to std::cout here?
+    }
 }
+
 inline void report(LogLevel level, LogAudience audience, std::string_view message,
                    SourceContext context = std::source_location::current()) {
     ::inviwo::log::report(level, audience, context, message);
 }
+
 inline void implementation(LogLevel level, LogAudience audience, SourceContext context,
                            fmt::string_view format, fmt::format_args&& args) {
     ::inviwo::log::report(level, audience, context, fmt::vformat(format, std::move(args)));
@@ -237,6 +275,39 @@ struct message {
 template <typename... Args>
 message(LogLevel level, LogAudience audience, fmt::format_string<Args...>, Args&&...)
     -> message<Args...>;
+
+// LogAudience Developer
+template <typename... Args>
+inline void report(LogLevel level, SourceContext context, fmt::format_string<Args...> format,
+                   Args&&... args) {
+    ::inviwo::log::implementation(level, LogAudience::Developer, context, format,
+                                  fmt::make_format_args(args...));
+}
+inline void report(LogLevel level, SourceContext context, std::string_view message) {
+    ::inviwo::log::report(level, LogAudience::Developer, context, message);
+}
+inline void report(LogLevel level, std::string_view message,
+                   SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(level, LogAudience::Developer, context, message);
+}
+
+inline void exception(const Exception& e) {
+    ::inviwo::log::report(LogLevel::Error, LogAudience::Developer, e.getContext(),
+                          e.getFullMessage());
+}
+template <typename... Args>
+inline void exception(const Exception& e, fmt::format_string<Args...> format, Args&&... args) {
+    ::inviwo::log::implementation(LogLevel::Warn, LogAudience::Developer, e.getContext(), format,
+                                  fmt::make_format_args(args...));
+}
+inline void exception(const std::exception& e,
+                      SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, LogAudience::Developer, context, e.what());
+}
+inline void exception(std::string_view message = "Unknown Exception",
+                      SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, LogAudience::Developer, context, message);
+}
 
 template <typename... Args>
 struct info {
@@ -272,6 +343,38 @@ template <typename... Args>
 error(fmt::format_string<Args...>, Args&&...) -> error<Args...>;
 
 namespace user {
+// LogAudience User
+
+template <typename... Args>
+inline void report(LogLevel level, SourceContext context, fmt::format_string<Args...> format,
+                   Args&&... args) {
+    ::inviwo::log::implementation(level, LogAudience::User, context, format,
+                                  fmt::make_format_args(args...));
+}
+inline void report(LogLevel level, SourceContext context, std::string_view message) {
+    ::inviwo::log::report(level, LogAudience::User, context, message);
+}
+inline void report(LogLevel level, std::string_view message,
+                   SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(level, LogAudience::User, context, message);
+}
+
+inline void exception(const Exception& e) {
+    ::inviwo::log::report(LogLevel::Error, LogAudience::User, e.getContext(), e.getFullMessage());
+}
+template <typename... Args>
+inline void exception(const Exception& e, fmt::format_string<Args...> format, Args&&... args) {
+    ::inviwo::log::implementation(LogLevel::Warn, LogAudience::User, e.getContext(), format,
+                                  fmt::make_format_args(args...));
+}
+inline void exception(const std::exception& e,
+                      SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, LogAudience::User, context, e.what());
+}
+inline void exception(std::string_view message = "Unknown Exception",
+                      SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, LogAudience::User, context, message);
+}
 
 template <typename... Args>
 struct info {

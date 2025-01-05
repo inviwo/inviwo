@@ -153,7 +153,7 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
         case GL_TIMEOUT_EXPIRED:  // Handled above
             break;
         case GL_WAIT_FAILED:
-            LogError("Error syncing with opengl 'GL_WAIT_FAILED'");
+            log::error("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
         case GL_CONDITION_SATISFIED:  // Queue done.
             break;

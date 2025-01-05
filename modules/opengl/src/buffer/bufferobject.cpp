@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>  // for BufferTarget, BufferUsage
 #include <inviwo/core/util/formats.h>                          // for DataFormatBase, NumericType
-#include <inviwo/core/util/logcentral.h>                       // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                       // for LogCentral
 #include <inviwo/core/util/observer.h>                         // for Observable
 #include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
 #include <modules/opengl/buffer/bufferobjectobserver.h>        // for BufferObjectObserver
@@ -297,7 +297,7 @@ void BufferObject::download(void* data) const {
         // Unmap buffer after using it
         glUnmapBufferARB(target_);
     } else {
-        LogError("Unable to map data");
+        log::error("Unable to map data");
     }
 }
 

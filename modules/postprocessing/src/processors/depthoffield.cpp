@@ -61,7 +61,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
 #include <inviwo/core/util/formats.h>                                   // for DataFormat
 #include <inviwo/core/util/glmvec.h>                                    // for vec2, size2_t, vec3
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <modules/base/algorithm/randomutils.h>                         // for haltonSequence
 #include <modules/opengl/image/imagegl.h>                               // for ImageGL
 #include <modules/opengl/inviwoopengl.h>                                // for GLuint, GL_FALSE
@@ -151,8 +151,9 @@ DepthOfField::DepthOfField()
     approximate_.onChange([this]() {
         if (approximate_ && !useComputeShaders_) {
             // Using CPU version of approximative algorithm.
-            LogWarn("Compute shaders are not supported. Approximative depth of field "
-                    << "post-processing may be slow.");
+            log::user::warn(
+                "Compute shaders are not supported. Approximative depth of field "
+                "post-processing may be slow.");
         }
     });
 
@@ -244,7 +245,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
                                   std::shared_ptr<const Image> img) {
     ogCamera_.reset(camera_.get().clone());
     if (camera_.get().getClassIdentifier() != PerspectiveCamera::classIdentifier) {
-        LogWarn("Intended for use with Perspective Camera. Unexpected behavior may follow.");
+        log::warn("Intended for use with Perspective Camera. Unexpected behavior may follow.");
     }
 
     if (approximate_) {

@@ -44,7 +44,7 @@
 #include <inviwo/core/util/filedialogstate.h>         // for AcceptMode, AcceptMode::Save
 #include <inviwo/core/util/fileextension.h>           // for FileExtension, operator==
 #include <inviwo/core/util/glmvec.h>                  // for uvec3
-#include <inviwo/core/util/logcentral.h>              // for LogCentral, LogInfo, LogWarn
+#include <inviwo/core/util/logcentral.h>              // for LogCentral
 #include <inviwo/dataframe/datastructures/dataframe.h>  // IWYU pragma: keep
 #include <inviwo/dataframe/io/csvwriter.h>              // for CSVWriter
 #include <inviwo/dataframe/io/xmlwriter.h>              // for XMLWriter
@@ -129,8 +129,10 @@ void DataFrameExporter::exportData() {
         exportAsCSV();
     } else {
         // use CSV format as fallback
-        LogWarn("Could not determine export format from file "
-                << exportFile_ << ", exporting as comma-separated values (csv).");
+        log::user::warn(
+            "Could not determine export format from file {}, exporting as comma-separated values "
+            "(csv).",
+            exportFile_.get());
         exportAsCSV();
     }
 
@@ -149,7 +151,7 @@ void DataFrameExporter::exportAsCSV() {
 
     writer.writeData(dataFrame_.getData().get(), exportFile_.get());
 
-    LogInfo("CSV file exported to " << exportFile_);
+    log::user::info("CSV file exported to {}", exportFile_.get());
 }
 
 void DataFrameExporter::exportAsXML() {
@@ -158,7 +160,7 @@ void DataFrameExporter::exportAsXML() {
     writer.exportIndexCol = exportIndexCol_.get();
 
     writer.writeData(dataFrame_.getData().get(), exportFile_.get());
-    LogInfo("XML file exported to " << exportFile_);
+    log::user::info("XML file exported to {}", exportFile_.get());
 }
 
 }  // namespace inviwo

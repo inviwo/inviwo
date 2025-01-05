@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 #include <inviwo/core/io/datareader.h>        // for DataReader
 #include <inviwo/core/io/datawriter.h>        // for DataWriter
-#include <inviwo/core/util/logcentral.h>      // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>      // for LogCentral
 #include <inviwo/png/pngreader.h>             // for PNGLayerReader
 #include <inviwo/png/pngutils.h>              // for getLibPNGVesrion
 #include <inviwo/png/pngwriter.h>             // for PNGLayerWriter

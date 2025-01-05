@@ -140,8 +140,8 @@ public:
 
         // first register the type ID of our server
         if (!SetHkcrUserRegKey(dId, utilqt::toQString(fileTypeName))) {
-            LogError("Failed to register file type: " << fileTypeName << " for document type "
-                                                      << documentId);
+            log::error("Failed to register file type: {} for document type {}", fileTypeName,
+                       documentId);
             return;
         }
 
@@ -287,14 +287,13 @@ private:
 
             if (::RegCloseKey(hKey) == ERROR_SUCCESS && lResult == ERROR_SUCCESS) return true;
 
-            LogError("Error in setting Registry value: '"
-                     << utilqt::fromQString(value) << "' for key '" << utilqt::fromQString(key)
-                     << "'.");
+            log::error("Error in setting Registry value: '{}' for key '{}'",
+                       utilqt::fromQString(value), utilqt::fromQString(key));
         } else {
             wchar_t buffer[4096];
             ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, 0, lRetVal, 0, buffer, 4096, 0);
             QString szText = QString::fromUtf16((const char16_t*)buffer);
-            LogError("Error in setting Registry value: " << utilqt::fromQString(szText));
+            log::error("Error in setting Registry value: {}", utilqt::fromQString(szText));
         }
         return false;
     }

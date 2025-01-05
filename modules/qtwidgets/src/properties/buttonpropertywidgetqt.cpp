@@ -60,7 +60,7 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
             try {
                 property_->pressButton();
             } catch (const Exception& e) {
-                util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+                log::user::exception(e);
             }
         }
     });

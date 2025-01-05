@@ -75,7 +75,7 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
                 try {
                     property_->pressButton(i);
                 } catch (const Exception& e) {
-                    util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+                    log::user::exception(e);
                 }
             }
         });

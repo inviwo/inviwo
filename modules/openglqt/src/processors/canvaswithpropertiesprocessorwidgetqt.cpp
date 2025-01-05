@@ -37,7 +37,7 @@
 #include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
 #include <inviwo/core/processors/processor.h>              // for Processor
 #include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
-#include <inviwo/core/util/logcentral.h>                   // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                   // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                // for RenderContext
 #include <inviwo/core/util/stringconversion.h>             // for forEachStringPart, splitByFirst
 #include <modules/openglqt/canvasqopenglwidget.h>          // for CanvasQOpenGLWidget
@@ -176,10 +176,10 @@ void CanvasWithPropertiesProcessorWidgetQt::setProperties(std::string_view paths
                     frame_->add(property);
                     addedPaths_.emplace_back(path);
                 } else {
-                    LogWarn("Property: " << prop << " not found in processor " << proc);
+                    log::warn("Property: {} not found in processor ", prop, proc);
                 }
             } else {
-                LogWarn("Processor: " << proc << " not found");
+                log::warn("Processor: {} not found", proc);
             }
         });
     }

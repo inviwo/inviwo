@@ -65,8 +65,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
     }
 
     auto update = [&](const std::filesystem::path& fileName) mutable {
-        util::logInfo(IVW_CONTEXT_CUSTOM("util::updateWorkspaces"), "Updating workspace {}/{}: {}",
-                      ++current, total, fileName);
+        log::user::info("Updating workspace {}/{}: {}", ++current, total, fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
 
@@ -106,15 +105,13 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
                     try {
                         throw;
                     } catch (const IgnoreException& e) {
-                        util::log(e.getContext(), e.getMessage(), LogLevel::Info);
+                        log::user::report(LogLevel::Info, e.getContext(), e.getMessage());
                     }
                 });
             }
         } catch (const Exception& e) {
-            util::log(
-                e.getContext(),
-                fmt::format("Unable to convert network {} due to {}", fileName, e.getMessage()),
-                LogLevel::Error);
+            log::user::exception(e, "Unable to convert network {} due to {}", fileName,
+                                 e.getMessage());
             NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
             updateGui();

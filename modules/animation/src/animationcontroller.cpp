@@ -448,8 +448,7 @@ void AnimationController::render() {
         });
 
         if (recordingFunctors.empty()) {
-            util::log(IVW_CONTEXT, "No applicable exporters selected for rendering",
-                      LogLevel::Warn);
+            log::warn("No applicable exporters selected for rendering");
             return;
         }
 
@@ -482,17 +481,18 @@ void AnimationController::render() {
                            std::chrono::high_resolution_clock::now() - start)
                            .count();
 
-        util::logInfo(IVW_CONTEXT, "Rendered {} frames in {:.3f} seconds, {:.3f} per frame",
-                      numFrames, seconds, seconds / numFrames);
+        log::user::info("Rendered {} frames in {:.3f} seconds, {:.3f} per frame", numFrames,
+                        seconds, seconds / numFrames);
 
     } catch (const Exception& e) {
-        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        log::user::report(LogLevel::Error, "Rendering aborted");
+        log::user::exception(e);
     } catch (const std::exception& e) {
-        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
-        util::log(IVW_CONTEXT, e.what(), LogLevel::Error);
+        log::user::report(LogLevel::Error, "Rendering aborted");
+        log::user::exception(e);
     } catch (...) {
-        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
+        log::user::report(LogLevel::Error, "Rendering aborted");
+        log::user::exception();
     }
 }
 

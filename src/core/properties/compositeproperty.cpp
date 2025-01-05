@@ -79,10 +79,10 @@ void CompositeProperty::set(const CompositeProperty* src) {
         }
         propertyModified();
     } else {
-        util::logWarn(IVW_CONTEXT,
-                      "Unable to link CompositeProperties:\n{} to {}\n The number of sub "
-                      "properties differ ({} vs {})",
-                      src->getPath(), getPath(), subProperties.size(), properties_.size());
+        log::user::warn(
+            "Unable to link CompositeProperties:\n{} to {}\n The number of sub "
+            "properties differ ({} vs {})",
+            src->getPath(), getPath(), subProperties.size(), properties_.size());
     }
 }
 

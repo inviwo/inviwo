@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/propertyownerobserver.h>        // for PropertyOwnerObserver
 #include <inviwo/core/util/exception.h>                          // for Exception
 #include <inviwo/core/util/indirectiterator.h>                   // for makeIndirectIterator
-#include <inviwo/core/util/logcentral.h>                         // for LogCentral, LogWarn, Log...
+#include <inviwo/core/util/logcentral.h>                         // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>                      // for erase_remove
 #include <inviwo/core/util/typetraits.h>                         // for alwaysTrue, identity
@@ -134,10 +134,10 @@ Keyframe* Animation::addKeyframe(Property* property, Seconds time) {
         } else if (auto basePropertyTrack = add(property)) {
             return basePropertyTrack->addKeyFrameUsingPropertyValue(time);
         } else {
-            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
+            log::warn("No matching Track found for property \"{}\"", property->getIdentifier());
         }
-    } catch (const Exception& ex) {
-        LogError(ex.getMessage());
+    } catch (const Exception& e) {
+        log::exception(e);
     }
     return nullptr;
 }
@@ -152,10 +152,10 @@ KeyframeSequence* Animation::addKeyframeSequence(Property* property, Seconds tim
             basePropertyTrack->addKeyFrameUsingPropertyValue(time);
             return &basePropertyTrack->toTrack()->getFirst();
         } else {
-            LogWarn("No matching Track found for property \"" << property->getIdentifier() << "\"");
+            log::warn("No matching Track found for property \"{}\"", property->getIdentifier());
         }
     } catch (const Exception& ex) {
-        LogError(ex.getMessage());
+        log::exception(ex);
     }
     return nullptr;
 }
@@ -180,7 +180,7 @@ BasePropertyTrack* Animation::add(Property* property) {
                 try {
                     basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {
-                    LogWarn(e.getMessage() << " Invalid property class identified?");
+                    log::warn("{} Invalid property class identified?", e.getMessage());
                     return nullptr;
                 }
                 add(std::move(track));

@@ -44,7 +44,7 @@
 #include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
 #include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
 #include <inviwo/core/util/glmvec.h>                                  // for vec2, ivec2, vec4
-#include <inviwo/core/util/logcentral.h>                              // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                              // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                           // for RenderContext
 #include <inviwo/core/util/stdextensions.h>                           // for any_of
 #include <inviwo/core/util/zip.h>                                     // for zip, zipIterator
@@ -200,10 +200,10 @@ void TextOverlayGL::updateCache() {
             try {
                 text = fmt::vformat(tp->text.get(), store);
             } catch (const fmt::format_error&) {
-                LogWarn(
-                    fmt::format("Invalid formatting string {}:'{}'\nFormat uses fmt syntax, args "
-                                "can be named by index {{0}} or by name {{arg0}}",
-                                tp->getPath(), tp->text.get()));
+                log::warn(
+                    "Invalid formatting string {}:'{}'\nFormat uses fmt syntax, args "
+                    "can be named by index {{0}} or by name {{arg0}}",
+                    tp->getPath(), tp->text.get());
                 text = "<Invalid Format!>";
             }
             tex = util::createTextTextureObject(textRenderer_, text, color_.get(), tex.texture);

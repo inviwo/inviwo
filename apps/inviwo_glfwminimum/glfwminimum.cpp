@@ -151,18 +151,17 @@ int main(int argc, char** argv) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
-                    util::logError(e.getContext(), "Incomplete network loading {} due to {}",
-                                   workspace, e.getMessage());
+                    log::user::exception(e, "Incomplete network loading {} due to {}", workspace,
+                                         e.getMessage());
                 }
             });
         }
-    } catch (const AbortException& exception) {
-        util::logError(exception.getContext(), "Unable to load network {} due to {}", workspace,
-                       exception.getMessage());
+    } catch (const AbortException& e) {
+        log::user::exception(e, "Unable to load network {} due to {}", workspace, e.getMessage());
         return 1;
-    } catch (const IgnoreException& exception) {
-        util::logError(exception.getContext(), "Incomplete network loading {} due to {}", workspace,
-                       exception.getMessage(), LogLevel::Error);
+    } catch (const IgnoreException& e) {
+        log::user::exception(e, "Incomplete network loading {} due to {}", workspace,
+                             e.getMessage(), LogLevel::Error);
         return 1;
     }
 

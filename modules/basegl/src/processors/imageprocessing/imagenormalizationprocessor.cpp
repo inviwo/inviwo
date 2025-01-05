@@ -42,7 +42,7 @@
 #include <inviwo/core/properties/stringproperty.h>                       // for StringProperty
 #include <inviwo/core/util/formats.h>                                    // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                     // for dvec3, dvec4, vec4
-#include <inviwo/core/util/logcentral.h>                                 // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                 // for LogCentral
 #include <modules/base/algorithm/algorithmoptions.h>                     // for IgnoreSpecialValues
 #include <modules/base/algorithm/dataminmax.h>                           // for layerMinMax
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>  // for ImageGLProcessor

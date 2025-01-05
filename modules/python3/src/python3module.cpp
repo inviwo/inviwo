@@ -43,7 +43,7 @@
 #include <inviwo/core/util/commandlineparser.h>  // for CommandLineParser
 #include <inviwo/core/util/exception.h>          // for ModuleInitException
 #include <inviwo/core/util/filesystem.h>         // for fileExists
-#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>         // for LogCentral
 #include <inviwo/core/util/pathtype.h>           // for PathType, PathType::...
 #include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT
 #include <modules/python3/pythonscript.h>
@@ -111,7 +111,7 @@ Python3Module::Python3Module(InviwoApplication* app)
                        [this]() {
                            auto filename = std::filesystem::path{scriptArg_.getValue()};
                            if (!std::filesystem::is_regular_file(filename)) {
-                               LogWarn("Could not run script, file does not exist: " << filename);
+                               log::warn("Could not run script, file does not exist: {}", filename);
                                return;
                            }
                            auto code = PythonScript::fromFile(filename);
@@ -131,8 +131,7 @@ Python3Module::Python3Module(InviwoApplication* app)
                                         auto code = PythonScript(*script, key);
                                         runScript(code, app_);
                                     } else {
-                                        LogError("Python workspace script: '" << key
-                                                                              << "' not found");
+                                        log::error("Python workspace script: '{}' not found", key);
                                     }
                                 }}
     , pythonLogger_{}

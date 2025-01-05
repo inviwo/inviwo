@@ -155,11 +155,11 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
         try {
             return writer->writeDataToBuffer(this, fileExtension);
         } catch (const DataWriterException& e) {
-            LogError(e.getMessage());
+            log::user::exception(e);
         }
     } else {
-        LogError("Could not find a writer for the specified file extension (\"" << fileExtension
-                                                                                << "\")");
+        log::error("Could not find a writer for the specified file extension (\"{}\")",
+                   fileExtension);
     }
 
     return {};

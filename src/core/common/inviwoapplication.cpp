@@ -258,18 +258,18 @@ const CommandLineParser& InviwoApplication::getCommandLineParser() const {
 CommandLineParser& InviwoApplication::getCommandLineParser() { return *commandLineParser_; }
 
 void InviwoApplication::printApplicationInfo() {
-    LogInfoCustom("InviwoInfo", "Inviwo Version: " << build::version);
+    log::user::info("Inviwo Version: {}", build::version);
     if (auto buildInfo = util::getBuildInfo()) {
-        LogInfoCustom("InviwoInfo", "Build Date: " << buildInfo->getDate());
+        log::user::info("Build Date: {}", buildInfo->getDate());
         for (auto [name, hash] : buildInfo->githashes) {
-            LogInfoCustom("InviwoInfo", "Git " << name << " hash: " << hash);
+            log::user::info("Git {}  hash: {}", name, hash);
         }
     }
-    LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
-    LogInfoCustom("InviwoInfo", "ThreadPool Worker Threads: " << pool_.getSize());
+    log::user::info("Base Path: {}", getBasePath());
+    log::user::info("ThreadPool Worker Threads: {}", pool_.getSize());
 
-    util::logInfo(IVW_CONTEXT_CUSTOM("InviwoInfo"), "Config: {} [{}] {} ({})", build::generator,
-                  build::configuration, build::compiler, build::compilerVersion);
+    log::user::info("Config: {} [{}] {} ({})", build::generator, build::configuration,
+                    build::compiler, build::compilerVersion);
 }
 
 void InviwoApplication::postProgress(std::string_view progress) const {
@@ -352,9 +352,9 @@ void InviwoApplication::resizePool(size_t newSize) {
 
     while (size != newSize) {
         if (timeout()) {
-            auto left = size - newSize;
-            LogInfo("Waiting for " << left << " background thread" << (left > 1 ? "s" : "")
-                                   << " to finish");
+            const auto left = size - newSize;
+            log::user::info("Waiting for {} background thread{} to finish", left,
+                            (left > 1 ? "s" : ""));
             timeLimit += std::chrono::milliseconds(1000);
         }
 

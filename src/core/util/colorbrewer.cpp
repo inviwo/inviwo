@@ -118,8 +118,7 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category& category,
         try {
             v.emplace(family, getColormap(family, numberOfColors));
         } catch (UnsupportedNumberOfColorsException& e) {
-            LogWarnCustom("colorbrewer", "Family " << family << " omitted, reason: \n"
-                                                   << e.getMessage(););
+            log::warn("Family {} omitted, reason: {}", family, e.getMessage());
         }
     }
 

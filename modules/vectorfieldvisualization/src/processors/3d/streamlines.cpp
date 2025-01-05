@@ -141,7 +141,7 @@ StreamLinesDeprecated::StreamLinesDeprecated()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    LogWarn(
+    log::warn(
         "This Stream Lines Processor is Deprecated, use the new Stream Lines processor together "
         "with the IntegralLineToMesh processor.");
 }

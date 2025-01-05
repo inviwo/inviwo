@@ -52,7 +52,7 @@
 #include <inviwo/core/util/formatdispatching.h>                         // for Float3s
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <inviwo/core/util/stdextensions.h>                             // for find_if
 #include <modules/base/algorithm/mesh/meshclipping.h>                   // for clipMeshAgainstPlane
 
@@ -203,7 +203,7 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
         return buf.first.type == BufferType::PositionAttrib;
     });
     if (it == geom->getBuffers().end()) {
-        LogError("Unsupported mesh, no buffers with the Position Attribute found");
+        log::error("Unsupported mesh, no buffers with the Position Attribute found");
         return;
     }
 
@@ -250,7 +250,7 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
         });
 
     } else {
-        LogError("Unsupported mesh, only 3D meshes supported");
+        log::error("Unsupported mesh, only 3D meshes supported");
     }
 }
 

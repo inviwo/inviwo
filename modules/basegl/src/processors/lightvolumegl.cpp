@@ -51,7 +51,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, vec4
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
 #include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
 #include <modules/opengl/image/layergl.h>                               // for LayerGL

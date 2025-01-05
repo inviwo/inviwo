@@ -134,7 +134,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                          try {
                              py::exec("lambda x: 1");
                          } catch (...) {
-                             LogInfoCustom("InviwoPyApp", "Aborted Qt event loop");
+                             log::user::info("Aborted Qt event loop");
                              qApp->quit();
                          }
                      });

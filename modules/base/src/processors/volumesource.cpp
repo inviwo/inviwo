@@ -155,13 +155,13 @@ void VolumeSource::load(bool deserialize) {
             volumes_.reset();
             error_ = fmt::format("Could not find a data reader for file: {}", file_.get());
             isReady_.update();
-            LogProcessorError(error_);
+            log::user::report(LogLevel::Error, error_);
         }
     } catch (const DataReaderException& e) {
         volumes_.reset();
         error_ = e.getMessage();
         isReady_.update();
-        LogProcessorError(e.getMessage());
+        log::user::report(LogLevel::Error, error_);
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {

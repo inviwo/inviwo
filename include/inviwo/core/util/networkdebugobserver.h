@@ -53,15 +53,15 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
                                            ProcessorObserver {
 
     void log(std::source_location location = std::source_location::current()) {
-        LogInfo(fmt::format("{:33}", location.function_name()));
+        log::user::info("{:33}", location.function_name());
     }
     void log(std::string_view msg,
              std::source_location location = std::source_location::current()) {
-        LogInfo(fmt::format("{:33} {}", location.function_name(), msg));
+        log::user::info("{:33} {}", location.function_name(), msg);
     }
     void log(std::string_view msg1, std::string_view msg2,
              std::source_location location = std::source_location::current()) {
-        LogInfo(fmt::format("{:33} {} - {}", location.function_name(), msg1, msg2));
+        log::user::info("{:33} {} - {}", location.function_name(), msg1, msg2);
     }
 
     // Network
@@ -116,10 +116,10 @@ struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
 
     // Evaluator
     virtual void onProcessorNetworkEvaluationBegin() override {
-        LogWarn("ProcessorNetworkEvaluationBegin");
+        log::warn("ProcessorNetworkEvaluationBegin");
     };
     virtual void onProcessorNetworkEvaluationEnd() override {
-        LogWarn("ProcessorNetworkEvaluationEnd");
+        log::warn("ProcessorNetworkEvaluationEnd");
     };
 
     // Processor

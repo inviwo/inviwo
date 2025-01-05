@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/optionproperty.h>                  // for OptionPropertyInt
 #include <inviwo/core/properties/ordinalproperty.h>                 // for FloatVec3Property
 #include <inviwo/core/util/glmvec.h>                                // for vec3, vec2
-#include <inviwo/core/util/logcentral.h>                            // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                            // for LogCentral
 #include <modules/base/algorithm/randomutils.h>                     // for randomNumber
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>  // for SeedPoints3DOutport
 
@@ -149,7 +149,7 @@ void SeedPointGenerator::process() {
             spherePoints();
             break;
         default:
-            LogWarn("No points generated since given type is not yet implemented");
+            log::warn("No points generated since given type is not yet implemented");
             break;
     }
 }

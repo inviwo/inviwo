@@ -323,8 +323,7 @@ void ProcessorNetworkConverter::updateCameraToComposite(TxElement* node) {
             // insert new node
             node->InsertEndChild(newNode);
 
-            LogNetworkWarn(
-                "Camera property updated to composite property. Workspace requires resave")
+            log::warn("Camera property updated to composite property. Workspace requires resave");
         }
     }
 }
@@ -707,8 +706,8 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                         // breaks a lot of stuff
                         if (name == "aspectRatio") {
                             if (auto* max = subNode->FirstChildElement("maxvalue")) {
-                                max->SetAttribute("content",
-                                                  fmt::to_string(std::numeric_limits<float>::max()));
+                                max->SetAttribute(
+                                    "content", fmt::to_string(std::numeric_limits<float>::max()));
                             }
                             if (auto* min = subNode->FirstChildElement("minvalue")) {
                                 min->SetAttribute("content", fmt::to_string(0.0f));

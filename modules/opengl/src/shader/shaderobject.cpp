@@ -303,8 +303,8 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     // Help developer to spot errors
     auto resourceType = ShaderType::typeFromString(resource_->key());
     if (resourceType != shaderType_) {
-        LogWarn("File extension does not match shader type: "
-                << resource_->key() << "\n    expected extension: " << shaderType_.extension());
+        log::warn("File extension does not match shader type: {}\n    expected extension: {}",
+                  resource_->key(), shaderType_.extension());
     }
 
     if (shaderType_ == ShaderType::Fragment) {
@@ -611,8 +611,7 @@ void ShaderObject::compile() {
 
     const auto log = utilgl::getShaderInfoLog(id_);
     if (!log.empty()) {
-        util::log(IVW_CONTEXT, resource_->key() + " " + resolveLog(log), LogLevel::Info,
-                  LogAudience::User);
+        log::user::info("{} {}", resource_->key(), resolveLog(log));
     }
 }
 

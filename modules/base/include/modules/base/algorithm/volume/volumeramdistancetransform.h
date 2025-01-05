@@ -37,7 +37,7 @@
 #include <inviwo/core/util/glmutils.h>           // for Vector, Matrix
 #include <inviwo/core/util/glmvec.h>             // for i64vec3, size3_t
 #include <inviwo/core/util/indexmapper.h>        // for IndexMapper
-#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogWarnCustom
+#include <inviwo/core/util/logcentral.h>         // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>   // for toString
 
@@ -153,8 +153,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
             }
         }
         if (!orthogonal) {
-            LogWarnCustom(
-                "volumeRAMDistanceTransform",
+            log::warn(
                 "Calculating the distance transform on a non-orthogonal volume will not give "
                 "correct values");
         }

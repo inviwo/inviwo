@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/volume/volumeram.h>  // for VolumeRAM (ptr only), createVol...
 #include <inviwo/core/util/formats.h>                     // for DataFormatBase
-#include <inviwo/core/util/logcentral.h>                  // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                  // for LogCentral
 #include <modules/opengl/volume/volumegl.h>               // for VolumeGL
 #include <modules/opengl/texture/texture3d.h>             // IWYU pragma: keep
 

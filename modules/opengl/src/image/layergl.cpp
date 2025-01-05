@@ -112,7 +112,7 @@ bool LayerGL::copyRepresentationsTo(LayerRepresentation* /*targetLayerGL*/) cons
     LayerGL* target = dynamic_cast<LayerGL*>(targetLayerGL);
     if(!target){
         return false;
-        LogError("Target representation missing.");
+        log::error("Target representation missing.");
     }
 
     const Texture2D* sTex = source->getTexture().get();

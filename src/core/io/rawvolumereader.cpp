@@ -187,7 +187,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
         volume->dataMap = dataMapper_;
         std::string size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
                                                      (format_->getSizeInBytes()));
-        LogInfo("Loaded volume: " << filePath << " size: " << size);
+        log::user::info("Loaded volume: {}  size: {}", filePath, size);
         return volume;
     } else {
         throw DataReaderException("Raw data import could not determine format", IVW_CONTEXT);

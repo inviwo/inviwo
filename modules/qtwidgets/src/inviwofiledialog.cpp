@@ -32,7 +32,7 @@
 #include <inviwo/core/util/filedialogstate.h>  // for FileMode, AcceptMode, AcceptMode::Open
 #include <inviwo/core/util/fileextension.h>    // for FileExtension
 #include <inviwo/core/util/filesystem.h>       // for fileExists, directoryExists, findBasePath
-#include <inviwo/core/util/logcentral.h>       // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>       // for LogCentral
 #include <inviwo/core/util/pathtype.h>         // for PathType
 #include <modules/qtwidgets/inviwoqtutils.h>   // for toQString, fromQString
 
@@ -225,7 +225,7 @@ void InviwoFileDialog::addExtension(const FileExtension& fileExt) {
     if (retval.second) {  // insert successful
         extensions_ << utilqt::toQString(str);
     } else {
-        LogError("Extension already registered: " << str);
+        log::error("Extension already registered: {}", str);
     }
 }
 

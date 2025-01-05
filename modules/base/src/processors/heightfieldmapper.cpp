@@ -46,7 +46,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for size2_t, dvec2
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 
 #include <algorithm>      // for copy, max, max_el...
 #include <cmath>          // for abs
@@ -125,7 +125,7 @@ void HeightFieldMapper::process() {
 
     auto srcImg = inport_.getData();
     if (!srcImg) {
-        LogWarn("No valid input image given");
+        log::warn("No valid input image given");
         return;
     }
 

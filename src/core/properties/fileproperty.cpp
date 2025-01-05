@@ -183,7 +183,7 @@ bool FileBase::deserialize(Deserializer& d, PropertySerializationMode mode) {
         modified |= fileMode_.deserialize(d, mode);
         modified |= contentType_.deserialize(d, mode);
     } catch (SerializationException& e) {
-        LogInfo("Problem deserializing file Property: " << e.getMessage());
+        log::warn("Problem deserializing file Property: {}", e.getMessage());
     }
     return modified;
 }

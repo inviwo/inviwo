@@ -128,7 +128,7 @@ public:
 
                         clearOldSaves(path_ / "autosaves", numRestoreFiles());
                     } catch (const std::exception& e) {
-                        LogInfo("Error saving auto save: " << e.what());
+                        log::error("Error saving auto save: {}", e.what());
                     }
                 }
             }

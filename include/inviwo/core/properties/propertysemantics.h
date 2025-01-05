@@ -87,4 +87,6 @@ private:
     std::string semantic_;
 };
 
+inline const auto& format_as(const PropertySemantics& semantics) { return semantics.getString(); }
+
 }  // namespace inviwo

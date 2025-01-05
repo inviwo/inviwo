@@ -355,25 +355,24 @@ Property* CompositeProcessor::PropertyHandler::findSubProperty(Property* superPr
         } else {
             auto* superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
             if (!superOwner) {
-                util::logError(IVW_CONTEXT, "Could not find composite owner of property {}",
-                               superProp->getPath());
+                log::error("Could not find composite owner of property {}", superProp->getPath());
                 return nullptr;
             }
             auto* subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
             if (!subOwner) {
-                util::logError(IVW_CONTEXT, "Could not find sub Owner {}", superOwner->getPath());
+                log::error("Could not find sub Owner {}", superOwner->getPath());
                 return nullptr;
             }
             auto it = superOwner->find(superProp);
             if (it == superOwner->cend()) {
-                util::logError(IVW_CONTEXT, "Could not find superProp {} in  {}",
-                               superProp->getPath(), superOwner->getPath());
+                log::error("Could not find superProp {} in  {}", superProp->getPath(),
+                           superOwner->getPath());
                 return nullptr;
             }
             auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
             if (static_cast<size_t>(pos) >= subOwner->size()) {
-                util::logError(IVW_CONTEXT, "Size missmatch {} {} less than {}",
-                               subOwner->getPath(), subOwner->size(), pos);
+                log::error("Size missmatch {} {} less than {}", subOwner->getPath(),
+                           subOwner->size(), pos);
                 return nullptr;
             }
 

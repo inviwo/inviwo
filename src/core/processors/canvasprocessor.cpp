@@ -136,7 +136,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                                  if (auto layer = getVisibleLayer()) {
                                      util::saveLayer(*layer);
                                  } else {
-                                     LogError("Could not find visible layer");
+                                     log::error("Could not find visible layer");
                                  }
                              },
                              InvalidationLevel::Valid}
@@ -319,7 +319,7 @@ void CanvasProcessor::saveImageLayer(const std::filesystem::path& snapshotPath,
     if (auto layer = getVisibleLayer()) {
         util::saveLayer(*layer, snapshotPath, extension);
     } else {
-        LogError("Could not find visible layer");
+        log::error("Could not find visible layer");
     }
 }
 

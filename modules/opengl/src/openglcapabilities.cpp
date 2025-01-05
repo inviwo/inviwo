@@ -32,7 +32,7 @@
 #include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
 #include <inviwo/core/util/exception.h>             // for Exception
 #include <inviwo/core/util/formatconversion.h>      // for formatBytesToString, kilobytes_to_bytes
-#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogWarn, LogError
+#include <inviwo/core/util/logcentral.h>            // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/staticstring.h>          // for StaticString
 #include <inviwo/core/util/stringconversion.h>      // for stringTo, splitStringView, toString
@@ -303,7 +303,7 @@ size_t OpenGLCapabilities::getCurrentAvailableTextureMem() {
         currentAvailableTexMeminBytes =
             util::kilobytes_to_bytes(static_cast<size_t>(nCurAvailMemoryInKB[0]));
     } catch (const Exception& e) {
-        LogWarn("Failed to fetch current available texture memory: " << e.what());
+        log::warn("Failed to fetch current available texture memory: {}", e.what());
     }
 
     return currentAvailableTexMeminBytes;
@@ -342,7 +342,7 @@ size_t OpenGLCapabilities::getTotalAvailableTextureMem() {
 #endif
         }
     } catch (const Exception& e) {
-        LogWarn("Failed to fetch total available texture memory: " << e.what());
+        log::warn("Failed to fetch total available texture memory: {}", e.what());
     }
 
     return totalAvailableTexMemInBytes;
@@ -386,8 +386,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
             glRenderStr:  {}
             contextMask:  {}
         )");
-        LogError(
-            fmt::format(err, glVersionStr_, glVersion_, glVendorStr_, glRenderStr_, contextMask));
+        log::error(err, glVersionStr_, glVersion_, glVendorStr_, glRenderStr_, contextMask);
         glProfileStr_ = "core";
     }
     // GLSL

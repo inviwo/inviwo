@@ -102,7 +102,7 @@ void curvature(IntegralLine& line, dmat4 toWorld) {
             auto l2 = glm::length(t2);
             if (l1 == 0 || l2 == 0) {
                 K.emplace_back(0);
-                LogWarnCustom("util::curvature", "Got zero offset");
+                log::warn("Got zero offset");
                 continue;
             }
             const auto nt1 = t1 / l1;  // normalize t1

@@ -154,7 +154,7 @@ PathLinesDeprecated::PathLinesDeprecated()
     addProperty(maxVelocity_);
     addProperty(allowLooping_);
 
-    LogWarn(
+    log::warn(
         "This Path Lines Processor is Deprecated, use the new Path Lines processor together "
         "with the IntegralLineToMesh processor.");
 }
@@ -230,7 +230,7 @@ void PathLinesDeprecated::process() {
             if (line.getIndex() >= colors_.getData()->size()) {
                 if (warnOnce2) {
                     warnOnce2 = false;
-                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                    log::warn("The vector of colors is smaller then the vector of seed points");
                 }
             } else {
                 c = colors_.getData()->at(line.getIndex());
@@ -256,7 +256,7 @@ void PathLinesDeprecated::process() {
                     } else {
                         if (warnOnce) {
                             warnOnce = false;
-                            LogWarn(
+                            log::warn(
                                 "No colors in the color port, using velocity for coloring "
                                 "instead ");
                         }

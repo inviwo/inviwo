@@ -34,7 +34,7 @@
 #include <inviwo/core/util/exception.h>                     // for Exception
 #include <inviwo/core/util/fileobserver.h>                  // for FileObserver
 #include <inviwo/core/util/filesystem.h>                    // for getFileExtension, directoryEx...
-#include <inviwo/core/util/logcentral.h>                    // for LogCentral, log, LogInfo, Log...
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral
 #include <modules/python3/pythonprocessorfactoryobject.h>   // for PythonProcessorFactoryObject
 
 #include <algorithm>  // for count
@@ -81,9 +81,9 @@ bool PythonProcessorFolderObserver::registerFile(const std::filesystem::path& fi
             registeredFiles_.push_back(filename);
             return true;
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+            log::user::exception(e);
         } catch (const std::exception& e) {
-            LogWarn(e.what());
+            log::user::exception(e);
         }
     }
     return false;
@@ -98,7 +98,7 @@ void PythonProcessorFolderObserver::fileChanged(const std::filesystem::path& cha
                 if (file.extension() != ".py") continue;
 
                 if (registerFile(directory_ / file)) {
-                    LogInfo("Loaded python processor: " << directory_ / file);
+                    log::user::info("Loaded python processor: {}", directory_ / file);
                     stopFileObservation(directory_ / file);
                 } else {
                     startFileObservation(directory_ / file);
@@ -108,7 +108,7 @@ void PythonProcessorFolderObserver::fileChanged(const std::filesystem::path& cha
     } else {
         if (changed.extension() == ".py") {
             if (registerFile(changed)) {
-                LogInfo("Loaded python processor: " << changed);
+                log::user::info("Loaded python processor: {}", changed);
                 stopFileObservation(changed);
             }
         }

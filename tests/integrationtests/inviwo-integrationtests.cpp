@@ -109,22 +109,18 @@ int main(int argc, char** argv) {
         ret = RUN_ALL_TESTS();
 
         if (ret) {
-            LogErrorCustom("IntegrationTests::runAllTests",
-                           "Some unit tests did not pass, see console output for details");
+            log::error("Some unit tests did not pass, see console output for details");
         }
 
         size_t warnCountAfter = logCounter->getWarnCount();
         size_t errCountAfter = logCounter->getErrorCount();
 
         if (warnCount != warnCountAfter) {
-            LogWarnCustom("IntegrationTests::runAllTest", "The integration test runs generated "
-                                                              << (warnCountAfter - warnCount)
-                                                              << " warnings");
+            log::warn("The integration test runs generated {} warnings",
+                      warnCountAfter - warnCount);
         }
         if (errCount != errCountAfter) {
-            LogWarnCustom("IntegrationTests::runAllTest", "The integration test runs generated "
-                                                              << (errCountAfter - errCount)
-                                                              << " errors");
+            log::warn("The integration test runs generated {} errors", errCountAfter - errCount);
         }
     }
 

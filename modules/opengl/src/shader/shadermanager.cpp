@@ -33,7 +33,7 @@
 #include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
 #include <inviwo/core/util/dispatcher.h>            // for Dispatcher
 #include <inviwo/core/util/filesystem.h>            // for fileExists, directoryExists
-#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogInfo, LogWarn
+#include <inviwo/core/util/logcentral.h>            // for LogCentral
 #include <inviwo/core/util/stdextensions.h>         // for erase_remove, find_if
 #include <inviwo/core/util/stringconversion.h>      // for replaceInString
 #include <inviwo/core/util/vectoroperations.h>      // for getTypeFromVector
@@ -100,7 +100,7 @@ const std::vector<std::filesystem::path>& ShaderManager::getShaderSearchPaths() 
 
 void ShaderManager::addShaderSearchPath(const std::filesystem::path& shaderSearchPath) {
     if (!addShaderSearchPathImpl(shaderSearchPath)) {
-        LogWarn("Failed to add shader search path: " << shaderSearchPath);
+        log::warn("Failed to add shader search path: {}", shaderSearchPath);
     }
 }
 
@@ -176,7 +176,7 @@ void ShaderManager::rebuildAllShaders() {
     for (auto& shader : shaders_) {
         shader->build();
     }
-    LogInfo("Rebuild of all shaders completed");
+    log::user::info("Rebuild of all shaders completed");
 }
 
 bool ShaderManager::addShaderSearchPathImpl(const std::filesystem::path& shaderSearchPath) {

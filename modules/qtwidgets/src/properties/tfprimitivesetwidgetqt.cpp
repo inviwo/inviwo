@@ -218,7 +218,7 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
         }
     }
     if (!errorMsg.empty()) {
-        LogError("Parse error(s):" << errorMsg);
+        log::user::error("Parse error(s): {}", errorMsg);
     }
     return primitives;
 }

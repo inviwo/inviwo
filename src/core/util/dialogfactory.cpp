@@ -33,7 +33,7 @@ namespace inviwo {
 
 bool DialogFactory::registerObject(DialogFactoryObject* dialog) {
     if (!StandardFactory<Dialog, DialogFactoryObject>::registerObject(dialog)) {
-        LogWarn("Dialog already registered: " << dialog->getClassIdentifier());
+        log::warn("Dialog already registered: {}", dialog->getClassIdentifier());
         return false;
     }
     return true;

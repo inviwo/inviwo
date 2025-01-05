@@ -44,7 +44,7 @@
 #include <inviwo/core/properties/propertypresetmanager.h>   // for PropertyPresetManager
 #include <inviwo/core/properties/propertywidgetfactory.h>   // for PropertyWidgetFactory
 #include <inviwo/core/util/exception.h>                     // for Exception
-#include <inviwo/core/util/logcentral.h>                    // for LogCentral, LogWarn, LogError
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral
 #include <inviwo/core/util/raiiutils.h>                     // for OnScopeExit, OnScopeExit::Exi...
 #include <inviwo/core/util/rendercontext.h>                 // for RenderContext
 #include <inviwo/core/util/settings/settings.h>             // for Settings
@@ -287,7 +287,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
                     }
                 }
             } catch (Exception& e) {
-                LogError(e.getMessage());
+                log::exception(e);
             }
         });
 
@@ -532,7 +532,7 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
                 setTabOrder((*(it - 1)), (*it));
             }
         } else {
-            LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
+            log::warn("Could not change semantic for property: {}", prop->getClassIdentifier());
         }
     }
 }
@@ -703,7 +703,7 @@ void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
             setTabOrder(*(wit - 1), *wit);
         }
     } else {
-        LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
+        log::warn("Could not find a widget for property: {}", prop->getClassIdentifier());
 
         // insert empty element to keep property widget vector in sync with property vector
         propertyWidgets_.insert(widgetInsertPoint, nullptr);

@@ -222,9 +222,9 @@ std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& e
                     edges.erase(it);
                 }
             } else {
-                LogWarnCustom("MeshClipping",
-                              "Found edge that is not connected to any other edge. This could mean "
-                              "the clipped mesh was not a manifold.");
+                log::warn(
+                    "Found edge that is not connected to any other edge. This could mean "
+                    "the clipped mesh was not a manifold.");
                 break;
             }
         }

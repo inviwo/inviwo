@@ -149,7 +149,7 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
     addProperty(maxVelocity_);
     addProperty(maxVorticity_);
 
-    LogWarn(
+    log::warn(
         "This Stream Ribbons Processor is Deprecated, use the new Stream Lines processor together "
         "with the IntegralLineToMesh processor.");
 }
@@ -204,7 +204,7 @@ void StreamRibbonsDeprecated::process() {
             vec4 c{0};
             if (hasColors) {
                 if (lineId >= colors_.getData()->size()) {
-                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                    log::warn("The vector of colors is smaller then the vector of seed points");
                 } else {
                     c = colors_.getData()->at(lineId);
                 }
@@ -236,7 +236,7 @@ void StreamRibbonsDeprecated::process() {
                         if (hasColors) {
                             break;
                         } else {
-                            LogWarn(
+                            log::warn(
                                 "No colors in the color port, using velocity for coloring "
                                 "instead ");
                             [[fallthrough]];

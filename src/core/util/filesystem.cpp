@@ -298,8 +298,7 @@ fs::path getInviwoUserSettingsPath() {
     }
 
 #else
-    LogWarnCustom("filesystem::getInviwoApplicationPath",
-                  "Get User Setting Path is not implemented for current system");
+    log::warn("Get User Setting Path is not implemented for current system");
 #endif
     return ss.str();
 }
@@ -596,8 +595,7 @@ const fs::path& findBasePath() {
         }
 #endif
 
-        LogErrorCustom(
-            "filesystem::findBasePath",
+        log::error(
             "Could not locate Inviwo base path meaning that application data might not be found.");
         return getExecutablePath();
     }();
