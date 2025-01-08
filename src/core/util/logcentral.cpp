@@ -69,22 +69,6 @@ bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(rhs < l
 
 bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(lhs < rhs); }
 
-void Logger::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                          std::string_view msg, std::string_view file, std::string_view function,
-                          int line) {
-    log("Processor " + processor->getIdentifier(), level, audience, file, function, line, msg);
-}
-
-void Logger::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                        std::string_view file, std::string_view function, int line) {
-    log("ProcessorNetwork", level, audience, file, function, line, msg);
-}
-
-void Logger::logAssertion(std::string_view file, std::string_view function, int line,
-                          std::string_view msg) {
-    log("Assertion failed", LogLevel::Error, LogAudience::Developer, file, function, line, msg);
-}
-
 LogCentral::LogCentral() : logVerbosity_(LogVerbosity::Info), logStacktrace_(false) {}
 
 void LogCentral::setVerbosity(LogVerbosity verbosity) { logVerbosity_ = verbosity; }
@@ -138,49 +122,6 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
         default:
             break;
     }
-}
-
-void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string_view msg, std::string_view file,
-                              std::string_view function, int line) {
-    if (level >= logVerbosity_) {
-        // use remove if here to remove expired weak pointers while calling the loggers.
-        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-            if (auto l = logger.lock()) {
-                l->logProcessor(processor, level, audience, msg, file, function, line);
-                return false;
-            } else {
-                return true;
-            }
-        });
-    }
-}
-
-void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                            std::string_view file, std::string_view function, int line) {
-    if (level >= logVerbosity_) {
-        // use remove if here to remove expired weak pointers while calling the loggers.
-        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-            if (auto l = logger.lock()) {
-                l->logNetwork(level, audience, msg, file, function, line);
-                return false;
-            } else {
-                return true;
-            }
-        });
-    }
-}
-
-void LogCentral::logAssertion(std::string_view file, std::string_view function, int line,
-                              std::string_view msg) {
-    std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-        if (auto l = logger.lock()) {
-            l->logAssertion(file, function, line, msg);
-            return false;
-        } else {
-            return true;
-        }
-    });
 }
 
 void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }

@@ -30,13 +30,14 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/sourcecontext.h>
 #include <sstream>
 #include <string_view>
 
 namespace inviwo {
 
-IVW_CORE_API void assertion(std::string_view fileName, std::string_view functionName,
-                            int lineNumber, std::string_view message);
+IVW_CORE_API void assertion(std::string_view message,
+                            SourceContext context = std::source_location::current());
 
 namespace util {
 
@@ -52,13 +53,13 @@ namespace inviwo::cfg {
 constexpr bool assertions = true;
 }
 
-#define IVW_ASSERT(condition, message)                                               \
-    {                                                                                \
-        if (!(bool(condition))) {                                                    \
-            std::ostringstream stream__;                                             \
-            stream__ << message;                                                     \
-            ::inviwo::assertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str())); \
-        }                                                                            \
+#define IVW_ASSERT(condition, message)                    \
+    {                                                     \
+        if (!(bool(condition))) {                         \
+            std::ostringstream stream;                    \
+            stream << message;                            \
+            ::inviwo::assertion(std::move(stream).str()); \
+        }                                                 \
     }
 
 // Deprecated

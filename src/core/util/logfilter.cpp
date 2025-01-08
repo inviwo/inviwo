@@ -52,19 +52,4 @@ void LogFilter::log(std::string_view logSource, LogLevel level, LogAudience audi
     }
 }
 
-void LogFilter::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                             std::string_view msg, std::string_view file, std::string_view function,
-                             int line) {
-    if (level >= logVerbosity_) {
-        logger_->logProcessor(processor, level, audience, std::move(msg), file, function, line);
-    }
-}
-
-void LogFilter::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                           std::string_view file, std::string_view function, int line) {
-    if (level >= logVerbosity_) {
-        logger_->logNetwork(level, audience, std::move(msg), file, function, line);
-    }
-}
-
 }  // namespace inviwo

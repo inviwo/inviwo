@@ -36,7 +36,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
 #include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
-#include <inviwo/core/util/assertion.h>                       // for ivwAssert
+#include <inviwo/core/util/assertion.h>                       // for IVW_ASSERT
 #include <inviwo/core/util/callback.h>                        // for CallBackList, BaseCallBack
 #include <inviwo/core/util/fileobserver.h>                    // for FileObserver
 #include <inviwo/core/util/filesystem.h>                      // for ifstream

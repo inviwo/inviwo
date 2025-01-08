@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/properties/colorlineedit.h>
 
-#include <inviwo/core/util/assertion.h>        // for ivwAssert
+#include <inviwo/core/util/assertion.h>        // for IVW_ASSERT
 #include <inviwo/core/util/colorconversion.h>  // for hex2rgba, rgb2hex, rgba2hex
 #include <inviwo/core/util/glmconvert.h>       // for glm_convert
 #include <inviwo/core/util/glmvec.h>           // for ivec4, dvec4, ivec3, dvec3, vec3, vec4
@@ -210,9 +210,9 @@ void ColorLineEdit::updateText() {
 void ColorLineEdit::updateColor() {
     QStringList tokens = text().trimmed().split(QRegularExpression("\\s+"));
 
-    ivwAssert((tokens.size() == 1) || (tokens.size() == 3) || (tokens.size() == 4),
+    IVW_ASSERT((tokens.size() == 1) || (tokens.size() == 3) || (tokens.size() == 4),
               "Invalid number of color components");
-    ivwAssert((tokens.size() > 1) || ((tokens.size() == 1) && tokens.front().startsWith("#")),
+    IVW_ASSERT((tokens.size() > 1) || ((tokens.size() == 1) && tokens.front().startsWith("#")),
               "Invalid single component (expected hex color code starting with '#')");
 
     if (tokens.size() == 1) {

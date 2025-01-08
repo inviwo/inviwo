@@ -31,7 +31,7 @@
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>     // for MeshRepresentation
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/assertion.h>                                 // for ivwAssert
+#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
 #include <inviwo/core/util/stdextensions.h>                             // for all_of
 #include <modules/opengl/buffer/buffergl.h>                             // for BufferGL
 #include <modules/opengl/buffer/bufferobjectarray.h>                    // for BufferObjectArray
@@ -72,19 +72,19 @@ size_t MeshGL::size() const { return bufferGLs_.size(); }
 bool MeshGL::empty() const { return bufferGLs_.empty(); }
 
 const BufferGL* MeshGL::getBufferGL(size_t idx) const {
-    ivwAssert(idx < bufferGLs_.size(), "MeshGL::getBufferGL(): index out of bounds");
+    IVW_ASSERT(idx < bufferGLs_.size(), "MeshGL::getBufferGL(): index out of bounds");
     return bufferGLs_[idx];
 }
 
 const Mesh::MeshInfo& MeshGL::getMeshInfoForIndexBuffer(size_t idx) const {
-    ivwAssert(idx < indexBuffers_.size(),
+    IVW_ASSERT(idx < indexBuffers_.size(),
               "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
     return indexBuffers_[idx].first;
 }
 const Mesh::MeshInfo& MeshGL::getDefaultMeshInfo() const { return defaultMeshInfo_; }
 
 const BufferGL* MeshGL::getIndexBuffer(size_t idx) const {
-    ivwAssert(idx < indexBuffers_.size(), "MeshGL::getIndexBuffer(): index out of bounds");
+    IVW_ASSERT(idx < indexBuffers_.size(), "MeshGL::getIndexBuffer(): index out of bounds");
     return indexBuffers_[idx].second;
 }
 

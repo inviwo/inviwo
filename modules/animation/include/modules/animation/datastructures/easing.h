@@ -286,7 +286,7 @@ inline double inOutBounce(const double t) {
 /// Some functions overshoot, which means you get also values outside of [0,1].
 /// Most interpolations should be fine with that. Linear Interpolation is fine with that.
 inline double ease(const double t, easing::EasingType howToEase) {
-    ivwAssert(t >= 0 && t <= 1, "Normalized time required as easing input.");
+    IVW_ASSERT(t >= 0 && t <= 1, "Normalized time required as easing input.");
 
     switch (howToEase) {
         default:

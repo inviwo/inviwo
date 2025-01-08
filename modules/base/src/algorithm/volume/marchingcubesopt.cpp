@@ -37,7 +37,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/util/assertion.h>                                 // for ivwAssert
+#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
 #include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
 #include <inviwo/core/util/glmconvert.h>                                // for glm_convert
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, vec4
@@ -586,7 +586,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
             });
     }
 
-    ivwAssert(positions.size() == normals.size(), "positions and normals must be equal size");
+    IVW_ASSERT(positions.size() == normals.size(), "positions and normals must be equal size");
 
     std::transform(normals.begin(), normals.end(), normals.begin(),
                    [](const vec3& n) { return glm::normalize(n); });

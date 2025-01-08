@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
     inviwo::utilqt::configureInviwoDefaultNames();
     inviwo::utilqt::configureFileSystemObserver(inviwoApp);
     inviwo::utilqt::configurePostEnqueueFront(inviwoApp);
+    inviwo::utilqt::configureAssertionHandler(inviwoApp);
     inviwo::utilqt::setStyleSheetFile(":/stylesheets/inviwo.qss");
     inviwo::utilqt::configurePalette();
     inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());

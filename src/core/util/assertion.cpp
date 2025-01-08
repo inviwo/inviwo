@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <fmt/format.h>
 
@@ -55,22 +56,25 @@ namespace inviwo {
 
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 
-void assertion(std::string_view fileName, std::string_view functionName, int lineNumber,
-               std::string_view error) {
+void assertion(std::string_view message, SourceContext context) {
+    log::report(LogLevel::Error, context, "Assertion failed in ({}:{}, {}): {}", context.file(),
+                context.line(), context.function(), message);
 
-    const auto message = fmt::format("Assertion failed in ({}:{}, {}): {}", fileName, lineNumber,
-                                     functionName, error);
-    if (LogCentral::isInitialized()) {
-        LogCentral::getPtr()->logAssertion(fileName, functionName, lineNumber, message);
+    if (InviwoApplication::isInitialized()) {
+        auto& assertionHandler = InviwoApplication::getPtr()->getAssertionHandler();
+        if (assertionHandler) {
+            assertionHandler(message, context);
+        }
     }
 
     util::debugBreak();
+
     exit(-1);
 }
 
 #else
 
-void assertion(std::string_view, std::string_view, long, std::string_view) {}
+void assertion(std::string_view, SourceContext) {}
 
 #endif  // _DEBUG
 
