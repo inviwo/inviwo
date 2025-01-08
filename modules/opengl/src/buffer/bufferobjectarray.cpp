@@ -47,16 +47,16 @@ namespace inviwo {
 using namespace std::literals;
 
 inline void checkContext(std::string_view error, Canvas::ContextID org,
-                         std::source_location location = std::source_location::current()) {
+                         SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
-        auto rc = RenderContext::getPtr();
-        Canvas::ContextID curr = rc->activeContext();
+        auto* rc = RenderContext::getPtr();
+        const auto curr = rc->activeContext();
         if (org != curr) {
             const auto message =
                 fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
                             rc->getContextName(curr), curr, rc->getContextName(org), org);
 
-            assertion(location.file_name(), location.function_name(), location.line(), message);
+            assertion(message, context);
         }
     }
 }

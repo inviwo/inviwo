@@ -190,9 +190,9 @@ Buffer<T, Target>* Buffer<T, Target>::clone() const {
 template <typename T, BufferTarget Target>
 const BufferRAMPrecision<T, Target>* Buffer<T, Target>::getRAMRepresentation() const {
     auto bufferRAM = getRepresentation<BufferRAM>();
-    ivwAssert(bufferRAM->getDataFormat() == DataFormat<T>::get(),
+    IVW_ASSERT(bufferRAM->getDataFormat() == DataFormat<T>::get(),
               "Invalid format for buffer representation");
-    ivwAssert(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
+    IVW_ASSERT(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
 
     return static_cast<const BufferRAMPrecision<T, Target>*>(bufferRAM);
 }
@@ -200,9 +200,9 @@ const BufferRAMPrecision<T, Target>* Buffer<T, Target>::getRAMRepresentation() c
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>* Buffer<T, Target>::getEditableRAMRepresentation() {
     auto bufferRAM = getEditableRepresentation<BufferRAM>();
-    ivwAssert(bufferRAM->getDataFormat() == DataFormat<T>::get(),
+    IVW_ASSERT(bufferRAM->getDataFormat() == DataFormat<T>::get(),
               "Invalid format for buffer representation");
-    ivwAssert(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
+    IVW_ASSERT(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
 
     return static_cast<BufferRAMPrecision<T, Target>*>(bufferRAM);
 }

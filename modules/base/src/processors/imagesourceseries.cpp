@@ -43,7 +43,7 @@
 #include <inviwo/core/properties/filepatternproperty.h>  // for FilePatternProperty
 #include <inviwo/core/properties/ordinalproperty.h>      // for IntProperty
 #include <inviwo/core/properties/stringproperty.h>       // for StringProperty
-#include <inviwo/core/util/assertion.h>                  // for ivwAssert
+#include <inviwo/core/util/assertion.h>                  // for IVW_ASSERT
 #include <inviwo/core/util/fileextension.h>              // for FileExtension
 #include <inviwo/core/util/filesystem.h>                 // for getPath
 #include <inviwo/core/util/formats.h>                    // for DataFormat, DataVec4UInt8

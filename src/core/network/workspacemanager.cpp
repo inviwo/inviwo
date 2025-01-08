@@ -348,12 +348,11 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
             if (moduleInfo->version < inviwoModule.getVersion()) {
                 auto converter = inviwoModule.getConverter(moduleInfo->version);
                 deserializer.convertVersion(converter.get());
-                LogNetworkSpecial(
-                    (&deserializer), LogLevel::Warn,
-                    fmt::format(
-                        "Loading old workspace ({}) Module version: {}. Updating to version: {}.",
-                        deserializer.getFileName(), inviwoModule.getIdentifier(),
-                        moduleInfo->version, inviwoModule.getVersion()));
+                log::message(
+                    deserializer, LogLevel::Warn,
+                    "Loading old workspace ({}) Module version: {}. Updating to version: {}.",
+                    deserializer.getFileName(), inviwoModule.getIdentifier(), moduleInfo->version,
+                    inviwoModule.getVersion());
             }
         }
     }

@@ -30,16 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string_view>
-#include <string>
-#include <cstring>
 #include <iosfwd>
-#include <iterator>
 #include <source_location>
-
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -79,8 +74,7 @@ public:
         : SourceContext{source.view(), location.file_name(), location.function_name(),
                         location.line(), location.column()} {}
 
-    consteval SourceContext(
-        std::source_location location = std::source_location::current())
+    consteval SourceContext(std::source_location location = std::source_location::current())
         : SourceContext{extractName(location.function_name()), location.file_name(),
                         location.function_name(), location.line(), location.column()} {}
 

@@ -438,53 +438,6 @@ void ConsoleWidget::log(std::string_view source, LogLevel level, LogAudience aud
     logEntry(std::move(e));
 }
 
-void ConsoleWidget::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                                 std::string_view msg, std::string_view file,
-                                 std::string_view function, int line) {
-    LogTableModelEntry e{std::chrono::system_clock::now(),
-                         processor->getIdentifier(),
-                         level,
-                         audience,
-                         file,
-                         line,
-                         function,
-                         msg};
-    logEntry(std::move(e));
-}
-
-void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                               std::string_view file, std::string_view function, int line) {
-    LogTableModelEntry e{std::chrono::system_clock::now(),
-                         "ProcessorNetwork",
-                         level,
-                         audience,
-                         file,
-                         line,
-                         function,
-                         msg};
-    logEntry(std::move(e));
-}
-
-void ConsoleWidget::logAssertion(std::string_view file, std::string_view function, int line,
-                                 std::string_view msg) {
-    LogTableModelEntry e{std::chrono::system_clock::now(),
-                         "Assertion",
-                         LogLevel::Error,
-                         LogAudience::Developer,
-                         file,
-                         line,
-                         function,
-                         msg};
-    logEntry(std::move(e));
-
-    auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
-                     .arg(file.data())
-                     .arg(line)
-                     .arg(function.data())
-                     .arg(utilqt::toQString(msg));
-    QMessageBox::critical(nullptr, "Assertion Failed", error);
-}
-
 void ConsoleWidget::logEntry(LogTableModelEntry e) {
     {
         std::unique_lock lock{entriesMutex_};

@@ -56,7 +56,6 @@
 #include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics, Prop...
 #include <inviwo/core/properties/stringproperty.h>      // for StringProperty
 #include <inviwo/core/properties/valuewrapper.h>        // for PropertySerializationMode
-#include <inviwo/core/util/assertion.h>                 // for ivwAssert
 #include <inviwo/core/util/fileextension.h>             // for FileExtension, operator<<
 #include <inviwo/core/util/glmvec.h>                    // for ivec2, dvec2
 #include <inviwo/core/util/staticstring.h>              // for operator+

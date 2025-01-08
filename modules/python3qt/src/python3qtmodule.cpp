@@ -125,6 +125,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                  })
             .def("configureFileSystemObserver", &utilqt::configureFileSystemObserver)
             .def("configurePostEnqueueFront", &utilqt::configurePostEnqueueFront)
+            .def("configureAssertionHandler", &utilqt::configureAssertionHandler)
             .def("configurePoolResizeWait", &utilqt::configurePoolResizeWait)
             .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
             .def("execWithTimer",

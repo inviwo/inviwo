@@ -79,6 +79,12 @@ IVW_QTAPPLICATIONBASE_API void configureFileSystemObserver(InviwoApplication& ap
 IVW_QTAPPLICATIONBASE_API void configurePostEnqueueFront(InviwoApplication& app);
 
 /**
+ * Set a AssertionHandler to display a Qt dialog when asserts happen.
+ */
+IVW_QTAPPLICATIONBASE_API void configureAssertionHandler(InviwoApplication& app);
+
+
+/**
  * Configure the inviwo pool resize to work with the qt event system
  */
 IVW_QTAPPLICATIONBASE_API void configurePoolResizeWait(InviwoApplication& app, QWidget* window);

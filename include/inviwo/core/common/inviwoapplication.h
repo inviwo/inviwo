@@ -443,6 +443,12 @@ public:
      */
     void setLayerRamResizer(LayerRamResizer* obj);
 
+    void setAssertionHandler(
+        std::function<void(std::string_view message, SourceContext context)> assertionHandler);
+
+    const std::function<void(std::string_view message, SourceContext context)>&
+    getAssertionHandler() const;
+
 protected:
     struct Queue {
         // Task queue
@@ -507,6 +513,7 @@ protected:
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
     LayerRamResizer* layerRamResizer_;
+    std::function<void(std::string_view message, SourceContext context)> assertionHandler_;
 
 private:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

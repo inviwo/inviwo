@@ -368,6 +368,16 @@ void InviwoApplication::resizePool(size_t newSize) {
 LayerRamResizer* InviwoApplication::getLayerRamResizer() const { return layerRamResizer_; }
 void InviwoApplication::setLayerRamResizer(LayerRamResizer* obj) { layerRamResizer_ = obj; }
 
+void InviwoApplication::setAssertionHandler(
+    std::function<void(std::string_view message, SourceContext context)> assertionHandler) {
+    assertionHandler_ = assertionHandler;
+}
+
+const std::function<void(std::string_view message, SourceContext context)>&
+InviwoApplication::getAssertionHandler() const {
+    return assertionHandler_;
+}
+
 std::locale InviwoApplication::getUILocale() const { return uiLocale_; }
 void InviwoApplication::setUILocale(const std::locale& locale) { uiLocale_ = locale; }
 
@@ -407,7 +417,8 @@ ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;
-    while (processFront());
+    while (processFront())
+        ;
     resizePool(old_size);
 }
 

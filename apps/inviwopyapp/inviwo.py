@@ -119,6 +119,7 @@ class Inviwo:
         configureQtNames(self.qtApp)
         inviwopy.qt.configureFileSystemObserver(self.inviwoApp)
         inviwopy.qt.configurePostEnqueueFront(self.inviwoApp)
+        inviwopy.qo.onfigureAssertionHandler(self.inviwoApp);
         inviwopy.qt.setStyleSheetFile(pathlib.Path(":/stylesheets/inviwo.qss"))
 
         self.propertyListWidget = inviwopy.qt.PropertyListWidget(self.inviwoApp)

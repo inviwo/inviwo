@@ -154,16 +154,6 @@ public:
                      std::string_view file, std::string_view function, int line,
                      std::string_view) override;
 
-    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string_view msg, std::string_view file,
-                              std::string_view function, int line) override;
-
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                            std::string_view file, std::string_view function, int line) override;
-
-    virtual void logAssertion(std::string_view file, std::string_view function, int line,
-                              std::string_view msg) override;
-
     QAction* getClearAction();
     QTableView* view() { return tableView_; }
 
