@@ -80,7 +80,7 @@ constexpr double tagMargin = 4.0;
 }  // namespace
 
 #if IVW_PROFILING
-bool ProcessorGraphicsItem::showCount_{true};
+bool ProcessorGraphicsItem::showCount_{true};  // NOLINT
 #endif
 
 ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
