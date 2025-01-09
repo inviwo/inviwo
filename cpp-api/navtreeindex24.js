@@ -1,5 +1,7 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,1,40],
+"classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40],
 "classinviwo_1_1animation_1_1InterpolationFactory.html":[4,0,1,1,41],
 "classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[2,0,0,0,41],
 "classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[4,0,1,1,42],
@@ -173,9 +175,10 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[4,0,1,4,1],
 "classinviwo_1_1detail_1_1Build.html":[4,0,1,9,0],
 "classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,13],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html":[4,0,1,9,17],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,9,14],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,9,15],
+"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,14],
+"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,15],
+"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,16],
+"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,17],
 "classinviwo_1_1detail_1_1hasProcessorInfo.html":[4,0,1,9,10],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[2,0,0,8,1],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[4,0,1,10,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1glui_1_1ToolButton.html":[4,0,1,13,18],
 "classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html":[4,0,1,13,19],
 "classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html#aa23242c2dba03aaf374900bc1bcbf8ed":[4,0,1,13,19,0],
-"classinviwo_1_1glui_1_1VBoxLayout.html":[4,0,1,13,20],
-"classinviwo_1_1glui_1_1WidgetFactory.html":[4,0,1,13,21],
-"classinviwo_1_1glui_1_1WidgetFactoryObject.html":[4,0,1,13,22],
-"classinviwo_1_1glui_1_1WidgetFactoryObjectTemplate.html":[4,0,1,13,23]
+"classinviwo_1_1glui_1_1VBoxLayout.html":[4,0,1,13,20]
 };

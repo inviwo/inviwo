@@ -83,9 +83,6 @@ var group__processors =
     [ "inviwo::VolumeBoundaryPlanes", "classinviwo_1_1VolumeBoundaryPlanes.html", [
       [ "process", "classinviwo_1_1VolumeBoundaryPlanes.html#a4a055413a92fa801ca8b254cc123036d", null ]
     ] ],
-    [ "inviwo::VolumeCreator", "classinviwo_1_1VolumeCreator.html", [
-      [ "process", "classinviwo_1_1VolumeCreator.html#a91d87afab69efc8f35dd646ae6efad0f", null ]
-    ] ],
     [ "inviwo::VolumeCurlCPUProcessor", "classinviwo_1_1VolumeCurlCPUProcessor.html", [
       [ "process", "classinviwo_1_1VolumeCurlCPUProcessor.html#ab2387aaac506d22a3c11d7db86d448c6", null ]
     ] ],

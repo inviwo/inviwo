@@ -77,18 +77,18 @@ var NAVTREEINDEX =
 "classinviwo_1_1StructuredCoordinateTransformer.html#a4bb6c38493682453e5a94985d654da52",
 "classinviwo_1_1TetraMeshVolumeRaycaster.html#a74ed0cbbbec8ba008619194333c5cee0",
 "classinviwo_1_1TransferFunctionProperty.html#abc2e3f56a23cd5997c55dbdde70ef059",
-"classinviwo_1_1VolumeGradientCPUProcessor.html",
-"classinviwo_1_1WorkspaceAnnotationsQt.html",
-"classinviwo_1_1animation_1_1InterpolationFactory.html",
-"classinviwo_1_1glui_1_1WidgetSupplier.html",
-"classinviwo_1_1util_1_1MemoryFileHandle.html",
-"namespaceinviwo_1_1dataframe.html",
-"namespaceinviwo_1_1util.html#aaebb0173adbe89836698e846ded2bc33",
-"structinviwo_1_1EnumTraits.html",
-"structinviwo_1_1PropertyTraits_3_01Gaussian3DProperty_01_4.html",
-"structinviwo_1_1dispatching_1_1filter_1_1Integers.html",
-"structinviwo_1_1utilgl_1_1ClearDepth.html"
+"classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709",
+"classinviwo_1_1WorkspaceAnnotations.html",
+"classinviwo_1_1animation_1_1Interpolation.html",
+"classinviwo_1_1glui_1_1WidgetFactory.html",
+"classinviwo_1_1util_1_1KeepTrueWhileInScope.html",
+"namespaceinviwo_1_1csvfilters.html",
+"namespaceinviwo_1_1util.html#aa58b65316e88fa13b51e3f2a3093b066",
+"structinviwo_1_1DataTraits.html",
+"structinviwo_1_1ProcessorTraits.html",
+"structinviwo_1_1detail_1_1static__size__t.html",
+"structinviwo_1_1util_1_1is__dereferenceable.html"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
+var SYNCONMSG = 'click to disable panel synchronization';
+var SYNCOFFMSG = 'click to enable panel synchronization';
