@@ -39,7 +39,6 @@ set(HEADER_FILES
     ${MOC_FILES}
     include/modules/qtwidgets/codeedit.h
     include/modules/qtwidgets/editorfileobserver.h
-    include/modules/qtwidgets/editorsettings.h
     include/modules/qtwidgets/eventconverterqt.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
@@ -105,7 +104,6 @@ set(SOURCE_FILES
     src/customdoublespinboxqt.cpp
     src/editablelabelqt.cpp
     src/editorfileobserver.cpp
-    src/editorsettings.cpp
     src/eventconverterqt.cpp
     src/filepathlineeditqt.cpp
     src/inviwodockwidget.cpp

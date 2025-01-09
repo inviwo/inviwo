@@ -198,8 +198,12 @@ public:
      * @see Settings
      * @see InviwoModule
      */
-    std::vector<Settings*> getModuleSettings();
+    const std::vector<Settings*>& getModuleSettings();
     SystemSettings& getSystemSettings();
+
+    void registerSettings(Settings* settings);
+    void unregisterSettings(Settings* settings);
+
     template <class T>
     T* getSettingsByType();
 
@@ -493,6 +497,7 @@ protected:
     std::unique_ptr<WorkspaceManager> workspaceManager_;
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
     std::unique_ptr<PortInspectorManager> portInspectorManager_;
+    std::vector<Settings*> settingsRegistry_;
     WorkspaceManager::ClearHandle networkClearHandle_;
     WorkspaceManager::SerializationHandle networkSerializationHandle_;
     WorkspaceManager::DeserializationHandle networkDeserializationHandle_;

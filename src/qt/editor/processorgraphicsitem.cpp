@@ -79,6 +79,10 @@ constexpr double tagMargin = 4.0;
 
 }  // namespace
 
+#if IVW_PROFILING
+bool ProcessorGraphicsItem::showCount_{true};  // NOLINT
+#endif
+
 ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     : ProcessorObserver()
     , processor_(processor)
@@ -355,10 +359,11 @@ void ProcessorGraphicsItem::paint(QPainter* p,
                       tagText_);
 
 #if IVW_PROFILING
-
-    p->setFont(getFont(FontType::Count));
-    p->drawText(rect().adjusted(120.0, -40.0, -5.0, 0.0), Qt::AlignRight | Qt::AlignBottom,
-                QString::number(processCount_));
+    if (showCount_) {
+        p->setFont(getFont(FontType::Count));
+        p->drawText(rect().adjusted(120.0, -40.0, -5.0, 0.0), Qt::AlignRight | Qt::AlignBottom,
+                    QString::number(processCount_));
+    }
 #endif
 
     p->restore();
@@ -491,7 +496,9 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     processCount_++;
     clock_.reset();
     clock_.start();
-    update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
+    if (showCount_) {
+        update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
+    }
 #endif
 
     statusItem_->resetState();
@@ -518,6 +525,8 @@ void ProcessorGraphicsItem::resetTimeMeasurements() {
     update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
 }
 #endif
+
+void ProcessorGraphicsItem::setShowCount(bool show) { showCount_ = show; }
 
 ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const { return statusItem_; }
 

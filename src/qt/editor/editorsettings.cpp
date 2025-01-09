@@ -27,29 +27,46 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/editorsettings.h>
+#include <inviwo/qt/editor/editorsettings.h>
 
 namespace inviwo {
 
 EditorSettings::EditorSettings(InviwoApplication* app)
     : Settings("Editor Settings", app)
-    , workspaceAuthor("workspaceAuthor", "Default Workspace Author", "")
-    , numRecentFiles("numRecentFiles", "Number of Recent Files", 12,
-                     {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
-    , numRestoreFiles(
-          "numRestoreFiles", "Number of Restore Files",
-          "The maximum number of backup files to keep, the oldest will be removed first"_help, 24,
-          {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
-    , restoreFrequency("restoreFrequency", "Restore Frequency",
-                       "Minutes between new backup files"_help, 10,
-                       {1, ConstraintBehavior::Immutable}, {100, ConstraintBehavior::Ignore})
-    , workspaceDirectories(
-          "workspaceDirectories", "Workspace Directories",
-          std::make_unique<FileProperty>("directory", "Directory", "Workspace directory"_help, "",
-                                         AcceptMode::Open, FileMode::Directory)) {
+    , workspaceAuthor{"workspaceAuthor", "Default Workspace Author", ""}
+    , numRecentFiles{"numRecentFiles",
+                     "Number of Recent Files",
+                     12,
+                     {1, ConstraintBehavior::Immutable},
+                     {100, ConstraintBehavior::Ignore}}
+    , numRestoreFiles{"numRestoreFiles",
+                      "Number of Restore Files",
+                      "The maximum number of backup files to keep, the oldest will be removed first"_help,
+                      24,
+                      {1, ConstraintBehavior::Immutable},
+                      {100, ConstraintBehavior::Ignore}}
+    , restoreFrequency{"restoreFrequency",
+                       "Restore Frequency",
+                       "Minutes between new backup files"_help,
+                       10,
+                       {1, ConstraintBehavior::Immutable},
+                       {100, ConstraintBehavior::Ignore}}
+    , workspaceDirectories{"workspaceDirectories", "Workspace Directories",
+                           std::make_unique<FileProperty>("directory", "Directory",
+                                                          "Workspace directory"_help, "",
+                                                          AcceptMode::Open, FileMode::Directory)}
+    , showProcessorEvaluationCounts{"showProcessorEvaluationCounts",
+                                    "Show Processor Evaluation Counts", true} {
 
     addProperties(workspaceAuthor, numRecentFiles, numRestoreFiles, restoreFrequency,
-                  workspaceDirectories);
+                  workspaceDirectories, showProcessorEvaluationCounts);
+
+#ifndef IVW_PROFILING
+    showProcessorEvaluationCounts.set(false);
+    showProcessorEvaluationCounts.setReadOnly(true);
+    showProcessorEvaluationCounts.setHelp("Enable 'IVW_PROFILING' in cmake to show counts"_help);
+    showProcessorEvaluationCounts.setCurrentStateAsDefault();
+#endif
 
     workspaceDirectories.setHelp(
         "Additional workspace directories listed on the Get Started screen."_help);

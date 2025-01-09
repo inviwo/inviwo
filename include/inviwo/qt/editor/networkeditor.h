@@ -254,6 +254,8 @@ private:
     bool backgroundVisible_;
 
     bool adjustSceneToChange_;
+
+    std::shared_ptr<std::function<void()>> onShowCounts_;
 };
 
 template <typename T>
