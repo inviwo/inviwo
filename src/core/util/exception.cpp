@@ -116,9 +116,9 @@ void StandardExceptionHandler::operator()(ExceptionContext context) {
     } catch (Exception& e) {
         log::exception(e);
     } catch (std::exception& e) {
-        log::exception(e);
+        log::exception(e, context);
     } catch (...) {
-        log::exception();
+        log::exception(context);
     }
 }
 

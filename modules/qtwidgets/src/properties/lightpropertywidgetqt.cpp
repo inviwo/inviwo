@@ -131,10 +131,12 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
 
     // Assuming that minimum value is negative and maximum value is positive
     if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {
-        log::warn("Minimum value is assumed to be negative. Widget may produce values out of range.");
+        log::warn(
+            "Minimum value is assumed to be negative. Widget may produce values out of range.");
     }
     if (glm::any(glm::lessThan(property_->getMaxValue(), vec3(0.0f)))) {
-        log::warn("Maximum value is assumed to be positive. Widget may produce values out of range.");
+        log::warn(
+            "Maximum value is assumed to be positive. Widget may produce values out of range.");
     }
 
     radius_->setMinValue(0, ConstraintBehavior::Immutable);

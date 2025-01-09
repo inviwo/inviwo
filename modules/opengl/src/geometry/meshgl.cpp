@@ -78,7 +78,7 @@ const BufferGL* MeshGL::getBufferGL(size_t idx) const {
 
 const Mesh::MeshInfo& MeshGL::getMeshInfoForIndexBuffer(size_t idx) const {
     IVW_ASSERT(idx < indexBuffers_.size(),
-              "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
+               "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
     return indexBuffers_[idx].first;
 }
 const Mesh::MeshInfo& MeshGL::getDefaultMeshInfo() const { return defaultMeshInfo_; }

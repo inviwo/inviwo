@@ -176,7 +176,7 @@ using ScopedClockGL = ScopedClock<ClockGL, Callback>;
  */
 #if IVW_PROFILING
 #define IVW_OPENGL_PROFILING(message)                                                 \
-    const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>([]() { \
+    const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>([&]() { \
         std::ostringstream ss;                                                        \
         ss << message;                                                                \
         return std::move(ss).str();                                                   \
@@ -196,7 +196,7 @@ using ScopedClockGL = ScopedClock<ClockGL, Callback>;
 #if IVW_PROFILING
 #define IVW_OPENGL_PROFILING_IF(time, message)                                  \
     const auto IVW_ADDLINE(inviwoScopedClock) = util::makeScopedClock<ClockGL>( \
-        []() {                                                                  \
+        [&]() {                                                                  \
             std::ostringstream ss;                                              \
             ss << message;                                                      \
             return std::move(ss).str();                                         \

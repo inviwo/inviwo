@@ -136,7 +136,7 @@ struct ErrorHandle {
         }
     }
 
-    void operator()(ExceptionContext c) {
+    void operator()(ExceptionContext) {
         try {
             throw;
         } catch (SerializationException& error) {
