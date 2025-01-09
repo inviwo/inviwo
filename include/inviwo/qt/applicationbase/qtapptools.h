@@ -83,7 +83,6 @@ IVW_QTAPPLICATIONBASE_API void configurePostEnqueueFront(InviwoApplication& app)
  */
 IVW_QTAPPLICATIONBASE_API void configureAssertionHandler(InviwoApplication& app);
 
-
 /**
  * Configure the inviwo pool resize to work with the qt event system
  */

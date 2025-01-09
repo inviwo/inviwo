@@ -211,9 +211,9 @@ void ColorLineEdit::updateColor() {
     QStringList tokens = text().trimmed().split(QRegularExpression("\\s+"));
 
     IVW_ASSERT((tokens.size() == 1) || (tokens.size() == 3) || (tokens.size() == 4),
-              "Invalid number of color components");
+               "Invalid number of color components");
     IVW_ASSERT((tokens.size() > 1) || ((tokens.size() == 1) && tokens.front().startsWith("#")),
-              "Invalid single component (expected hex color code starting with '#')");
+               "Invalid single component (expected hex color code starting with '#')");
 
     if (tokens.size() == 1) {
         // it is a hex color code

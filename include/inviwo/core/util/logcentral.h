@@ -91,19 +91,17 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
                     __LINE__, stream__.str());                                                \
     }
 
-#define LogInfo(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
-#define LogWarn(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message) }
+#define LogInfo(message) {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message)}
+#define LogWarn(message) {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message)}
 #define LogError(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message) }
+    {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message)}
 
 #define LogInfoCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message) }
+    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message)}
 #define LogWarnCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message) }
+    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message)}
 #define LogErrorCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message) }
+    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message)}
 
 class IVW_CORE_API Logger {
 public:
@@ -170,7 +168,6 @@ namespace log {
  * * `info(fmt::format_string<Args...>, Args&&...)`
  * * `warn(fmt::format_string<Args...>, Args&&...)`
  * * `error(fmt::format_string<Args...>, Args&&...)`
- *
  */
 
 inline void report(Logger& logger, LogLevel level, SourceContext context,
@@ -200,6 +197,10 @@ inline void implementation(LogLevel level, SourceContext context, fmt::string_vi
                            fmt::format_args&& args) {
     ::inviwo::log::report(level, context, fmt::vformat(format, std::move(args)));
 }
+inline void implementation(Logger& logger, LogLevel level, SourceContext context,
+                           fmt::string_view format, fmt::format_args&& args) {
+    ::inviwo::log::report(logger, level, context, fmt::vformat(format, std::move(args)));
+}
 
 template <typename... Args>
 inline void report(LogLevel level, SourceContext context, fmt::format_string<Args...> format,
@@ -219,9 +220,12 @@ inline void exception(const std::exception& e,
                       SourceContext context = std::source_location::current()) {
     ::inviwo::log::report(LogLevel::Error, context, e.what());
 }
-inline void exception(std::string_view message = "Unknown Exception",
+inline void exception(std::string_view message,
                       SourceContext context = std::source_location::current()) {
     ::inviwo::log::report(LogLevel::Error, context, message);
+}
+inline void exception(SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, context, "Unknown Exception");
 }
 
 template <typename... Args>
@@ -232,7 +236,8 @@ struct message {
     }
     message(Logger& logger, LogLevel level, fmt::format_string<Args...> format, Args&&... args,
             SourceContext context = std::source_location::current()) {
-        ::inviwo::log::implementation(level, context, format, fmt::make_format_args(args...));
+        ::inviwo::log::implementation(logger, level, context, format,
+                                      fmt::make_format_args(args...));
     }
 };
 template <typename... Args>

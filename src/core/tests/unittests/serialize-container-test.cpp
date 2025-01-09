@@ -152,7 +152,7 @@ TEST(SerialitionContainerTest, IndexFunctions) {
     deserializer.deserialize("Vector", vector, "Item",
                              deserializer::IndexFunctions{
                                  .makeNew = []() { return 0; },
-                                 .onNew = [&](int& i, size_t) {},
+                                 .onNew = [&](int&, size_t) {},
                                  .onRemove = [](int&) {},
                              });
 

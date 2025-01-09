@@ -35,6 +35,7 @@
 #include <string_view>
 #include <iosfwd>
 #include <source_location>
+#include <iterator>
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -61,8 +62,8 @@ constexpr Literal operator""_sl(const char* str, size_t len) { return Literal{st
  */
 class IVW_CORE_API SourceContext {
 public:
-    constexpr SourceContext(const char*) = delete;
-    constexpr SourceContext(std::string_view) = delete;
+    explicit constexpr SourceContext(const char*) = delete;
+    explicit constexpr SourceContext(std::string_view) = delete;
 
     explicit constexpr SourceContext(Literal source, std::string_view file,
                                      std::string_view function, std::uint32_t line = 0,
@@ -74,7 +75,7 @@ public:
         : SourceContext{source.view(), location.file_name(), location.function_name(),
                         location.line(), location.column()} {}
 
-    consteval SourceContext(std::source_location location = std::source_location::current())
+    constexpr SourceContext(std::source_location location = std::source_location::current())
         : SourceContext{extractName(location.function_name()), location.file_name(),
                         location.function_name(), location.line(), location.column()} {}
 
