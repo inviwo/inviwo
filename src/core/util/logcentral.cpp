@@ -35,6 +35,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
 
+#include <chrono>
+
 namespace inviwo {
 
 bool operator==(const LogLevel& lhs, const LogVerbosity& rhs) {
@@ -186,5 +188,12 @@ std::string_view enumToStr(MessageBreakLevel ll) {
 std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << enumToStr(ll); }
 std::ostream& operator<<(std::ostream& ss, LogAudience la) { return ss << enumToStr(la); }
 std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll) { return ss << enumToStr(ll); }
+
+void log::detail::logDirectly(LogLevel level, SourceContext context, std::string_view message) {
+    auto& os = level == LogLevel::Error ? std::cerr : std::cout;
+    const auto time = std::chrono::system_clock::now();
+    fmt::print(os, "{:%H:%M:06.3%S} {:5} {:35} {}:{}\n{}", time, level, context.source(),
+               context.file(), context.line(), message);
+}
 
 }  // namespace inviwo
