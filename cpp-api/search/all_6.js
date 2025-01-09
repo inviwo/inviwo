@@ -169,7 +169,7 @@ var searchData=
   ['getmodifiedtargets_166',['getModifiedTargets',['../classinviwo_1_1BrushingAndLinkingManager.html#a28e0a6add2b92fc4c825894de13291c3',1,'inviwo::BrushingAndLinkingManager']]],
   ['getmodulecapabilities_167',['getModuleCapabilities',['../classinviwo_1_1InviwoApplication.html#a2c44a0d4445b12da14a0a356c8ebdb5b',1,'inviwo::InviwoApplication']]],
   ['getmodulepath_168',['getModulePath',['../namespaceinviwo_1_1util.html#a03965ae6be1bd4270e8d4eaba85eb02b',1,'inviwo::util::getModulePath(std::string_view identifier, ModulePath pathType)'],['../namespaceinviwo_1_1util.html#a721fe3b2ce0d411ffcffee6e563357bd',1,'inviwo::util::getModulePath(ModulePath pathType)']]],
-  ['getmodulesettings_169',['getModuleSettings',['../classinviwo_1_1InviwoApplication.html#a9634c3f33a39dd33dfcfb20d31304466',1,'inviwo::InviwoApplication']]],
+  ['getmodulesettings_169',['getModuleSettings',['../classinviwo_1_1InviwoApplication.html#a4b9783573dc47595c388d5cb4cad7bcd',1,'inviwo::InviwoApplication']]],
   ['getmodulestoderegister_170',['getModulesToDeregister',['../classinviwo_1_1ModuleInitException.html#a0feda25dca7ef49f141b3148f868b11e',1,'inviwo::ModuleInitException']]],
   ['getmonospacefonts_171',['getMonoSpaceFonts',['../namespaceinviwo_1_1utilqt.html#a311b90073105033955d885663fc6c37d',1,'inviwo::utilqt']]],
   ['getmousebuttoncausingevent_172',['getMouseButtonCausingEvent',['../namespaceinviwo_1_1utilqt.html#a75fff05adc3230c287f783f1339e5d38',1,'inviwo::utilqt']]],

@@ -214,11 +214,17 @@ const <a class="el" href="classinviwo_1_1CommandLineParser.html">CommandLinePars
 <tr class="memitem:af7eaebb7087bb6630b36d8a93a24383f" id="r_af7eaebb7087bb6630b36d8a93a24383f"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1ModuleCallbackAction.html">ModuleCallbackAction</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7eaebb7087bb6630b36d8a93a24383f">getCallbackActions</a> ()</td></tr>
 <tr class="memdesc:af7eaebb7087bb6630b36d8a93a24383f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of <a class="el" href="classinviwo_1_1ModuleCallbackAction.html">ModuleCallbackAction</a> shown in for example property widget context menu. Do not keep references to elements in the list around since you cannot be notified when they will be removed.  <br /></td></tr>
 <tr class="separator:af7eaebb7087bb6630b36d8a93a24383f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9634c3f33a39dd33dfcfb20d31304466" id="r_a9634c3f33a39dd33dfcfb20d31304466"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1Settings.html">Settings</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9634c3f33a39dd33dfcfb20d31304466">getModuleSettings</a> ()</td></tr>
-<tr class="separator:a9634c3f33a39dd33dfcfb20d31304466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b9783573dc47595c388d5cb4cad7bcd" id="r_a4b9783573dc47595c388d5cb4cad7bcd"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classinviwo_1_1Settings.html">Settings</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b9783573dc47595c388d5cb4cad7bcd">getModuleSettings</a> ()</td></tr>
+<tr class="separator:a4b9783573dc47595c388d5cb4cad7bcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfa6bca06cc56a36de1db3f9470cffe9" id="r_abfa6bca06cc56a36de1db3f9470cffe9"><td class="memItemLeft" align="right" valign="top"><a id="abfa6bca06cc56a36de1db3f9470cffe9" name="abfa6bca06cc56a36de1db3f9470cffe9"></a>
 <a class="el" href="classinviwo_1_1SystemSettings.html">SystemSettings</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getSystemSettings</b> ()</td></tr>
 <tr class="separator:abfa6bca06cc56a36de1db3f9470cffe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72b9adf496de23ef3fbfe8f891c770c9" id="r_a72b9adf496de23ef3fbfe8f891c770c9"><td class="memItemLeft" align="right" valign="top"><a id="a72b9adf496de23ef3fbfe8f891c770c9" name="a72b9adf496de23ef3fbfe8f891c770c9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>registerSettings</b> (<a class="el" href="classinviwo_1_1Settings.html">Settings</a> *settings)</td></tr>
+<tr class="separator:a72b9adf496de23ef3fbfe8f891c770c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac957b3402b4344a1a15a0883a0badd87" id="r_ac957b3402b4344a1a15a0883a0badd87"><td class="memItemLeft" align="right" valign="top"><a id="ac957b3402b4344a1a15a0883a0badd87" name="ac957b3402b4344a1a15a0883a0badd87"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>unregisterSettings</b> (<a class="el" href="classinviwo_1_1Settings.html">Settings</a> *settings)</td></tr>
+<tr class="separator:ac957b3402b4344a1a15a0883a0badd87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33cee900c212a4f85dd4d91d5c85d4d4" id="r_a33cee900c212a4f85dd4d91d5c85d4d4"><td class="memTemplParams" colspan="2"><a id="a33cee900c212a4f85dd4d91d5c85d4d4" name="a33cee900c212a4f85dd4d91d5c85d4d4"></a>
 template&lt;class T&gt; </td></tr>
 <tr class="memitem:a33cee900c212a4f85dd4d91d5c85d4d4"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getSettingsByType</b> ()</td></tr>
@@ -419,6 +425,9 @@ std::unique_ptr&lt; <a class="el" href="classinviwo_1_1PropertyPresetManager.htm
 <tr class="memitem:ac1f09ee58fb08bffb1389589e006c74c" id="r_ac1f09ee58fb08bffb1389589e006c74c"><td class="memItemLeft" align="right" valign="top"><a id="ac1f09ee58fb08bffb1389589e006c74c" name="ac1f09ee58fb08bffb1389589e006c74c"></a>
 std::unique_ptr&lt; <a class="el" href="classinviwo_1_1PortInspectorManager.html">PortInspectorManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>portInspectorManager_</b></td></tr>
 <tr class="separator:ac1f09ee58fb08bffb1389589e006c74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa17281529bfc99e7119335e60ea0892a" id="r_aa17281529bfc99e7119335e60ea0892a"><td class="memItemLeft" align="right" valign="top"><a id="aa17281529bfc99e7119335e60ea0892a" name="aa17281529bfc99e7119335e60ea0892a"></a>
+std::vector&lt; <a class="el" href="classinviwo_1_1Settings.html">Settings</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>settingsRegistry_</b></td></tr>
+<tr class="separator:aa17281529bfc99e7119335e60ea0892a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a2bba08623789cae3a0390016bd1f03" id="r_a0a2bba08623789cae3a0390016bd1f03"><td class="memItemLeft" align="right" valign="top"><a id="a0a2bba08623789cae3a0390016bd1f03" name="a0a2bba08623789cae3a0390016bd1f03"></a>
 WorkspaceManager::ClearHandle&#160;</td><td class="memItemRight" valign="bottom"><b>networkClearHandle_</b></td></tr>
 <tr class="separator:a0a2bba08623789cae3a0390016bd1f03"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -859,14 +868,14 @@ template&lt;class F, class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a9634c3f33a39dd33dfcfb20d31304466" name="a9634c3f33a39dd33dfcfb20d31304466"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9634c3f33a39dd33dfcfb20d31304466">&#9670;&#160;</a></span>getModuleSettings()</h2>
+<a id="a4b9783573dc47595c388d5cb4cad7bcd" name="a4b9783573dc47595c388d5cb4cad7bcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b9783573dc47595c388d5cb4cad7bcd">&#9670;&#160;</a></span>getModuleSettings()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classinviwo_1_1Settings.html">Settings</a> * &gt; inviwo::InviwoApplication::getModuleSettings </td>
+          <td class="memname">const std::vector&lt; <a class="el" href="classinviwo_1_1Settings.html">Settings</a> * &gt; &amp; inviwo::InviwoApplication::getModuleSettings </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>

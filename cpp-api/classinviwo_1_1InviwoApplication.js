@@ -15,7 +15,7 @@ var classinviwo_1_1InviwoApplication =
     [ "getMeshDrawerFactory", "classinviwo_1_1InviwoApplication.html#a0c90014282b50cdc97e15982d6e99bd3", null ],
     [ "getMetaDataFactory", "classinviwo_1_1InviwoApplication.html#aa524c7e0bce88761087122d5d1b5e42d", null ],
     [ "getModuleCapabilities", "classinviwo_1_1InviwoApplication.html#a2c44a0d4445b12da14a0a356c8ebdb5b", null ],
-    [ "getModuleSettings", "classinviwo_1_1InviwoApplication.html#a9634c3f33a39dd33dfcfb20d31304466", null ],
+    [ "getModuleSettings", "classinviwo_1_1InviwoApplication.html#a4b9783573dc47595c388d5cb4cad7bcd", null ],
     [ "getOutportFactory", "classinviwo_1_1InviwoApplication.html#a011c74f9883be9a96b14a0fdf3dd3cd5", null ],
     [ "getPath", "classinviwo_1_1InviwoApplication.html#a98966a6e1f09b53a282679c70062772c", null ],
     [ "getPoolSize", "classinviwo_1_1InviwoApplication.html#a0ff96dc0843f202b26b603a1aef5e8d7", null ],
