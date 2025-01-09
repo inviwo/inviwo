@@ -195,11 +195,11 @@ inline void report(LogLevel level, std::string_view message,
 
 inline void implementation(LogLevel level, SourceContext context, fmt::string_view format,
                            fmt::format_args&& args) {
-    ::inviwo::log::report(level, context, fmt::vformat(format, std::move(args)));
+    ::inviwo::log::report(level, context, fmt::vformat(format, args));
 }
 inline void implementation(Logger& logger, LogLevel level, SourceContext context,
                            fmt::string_view format, fmt::format_args&& args) {
-    ::inviwo::log::report(logger, level, context, fmt::vformat(format, std::move(args)));
+    ::inviwo::log::report(logger, level, context, fmt::vformat(format, args));
 }
 
 template <typename... Args>
@@ -247,8 +247,8 @@ message(Logger& logger, LogLevel level, fmt::format_string<Args...>, Args&&...) 
 
 template <typename... Args>
 struct info {
-    info(fmt::format_string<Args...> format, Args&&... args,
-         SourceContext context = std::source_location::current()) {
+    explicit info(fmt::format_string<Args...> format, Args&&... args,
+                  SourceContext context = std::source_location::current()) {
         ::inviwo::log::implementation(LogLevel::Info, context, format,
                                       fmt::make_format_args(args...));
     }
@@ -258,8 +258,8 @@ info(fmt::format_string<Args...>, Args&&...) -> info<Args...>;
 
 template <typename... Args>
 struct warn {
-    warn(fmt::format_string<Args...> format, Args&&... args,
-         SourceContext context = std::source_location::current()) {
+    explicit warn(fmt::format_string<Args...> format, Args&&... args,
+                  SourceContext context = std::source_location::current()) {
         ::inviwo::log::implementation(LogLevel::Warn, context, format,
                                       fmt::make_format_args(args...));
     }
@@ -269,8 +269,8 @@ warn(fmt::format_string<Args...>, Args&&...) -> warn<Args...>;
 
 template <typename... Args>
 struct error {
-    error(fmt::format_string<Args...> format, Args&&... args,
-          SourceContext context = std::source_location::current()) {
+    explicit error(fmt::format_string<Args...> format, Args&&... args,
+                   SourceContext context = std::source_location::current()) {
         ::inviwo::log::implementation(LogLevel::Error, context, format,
                                       fmt::make_format_args(args...));
     }

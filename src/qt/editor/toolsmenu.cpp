@@ -163,7 +163,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                     const auto lname = toLower(utilqt::fromQString(name));
 
                     log::info("Creating regression test {}", lname);
-                    if (auto module = app->getModuleByIdentifier(modulename)) {
+                    if (auto* module = app->getModuleByIdentifier(modulename)) {
                         const auto regressiondir = module->getPath(ModulePath::RegressionTests);
                         const auto testdir = regressiondir / lname;
                         if (std::filesystem::is_directory(testdir)) {

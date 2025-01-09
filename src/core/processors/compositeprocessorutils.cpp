@@ -254,7 +254,8 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
                 network.addProcessor(subNetwork.removeProcessor(p));
             }
         }
-        auto meta = composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        auto* meta =
+            composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         util::offsetPosition(subProcessors, meta->getPosition());
         util::setSelected(subProcessors, true);
 

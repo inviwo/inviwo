@@ -126,9 +126,13 @@ public:
     using Duration = Clock::duration;
     ScopedClock() = delete;
 
-    ScopedClock(Callback message, Duration logIfAtLeast = {}, LogLevel logLevel = LogLevel::Info,
-                SourceContext context = std::source_location::current());
-
+    explicit ScopedClock(Callback message, Duration logIfAtLeast = {},
+                         LogLevel logLevel = LogLevel::Info,
+                         SourceContext context = std::source_location::current());
+    ScopedClock(const ScopedClock&) = delete;
+    ScopedClock(ScopedClock&&) = delete;
+    ScopedClock& operator=(const ScopedClock&) = delete;
+    ScopedClock& operator=(ScopedClock&&) = delete;
     ~ScopedClock() { print(); }
 
     /**

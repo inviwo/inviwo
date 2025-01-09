@@ -61,7 +61,7 @@ void assertion(std::string_view message, SourceContext context) {
                 context.line(), context.function(), message);
 
     if (InviwoApplication::isInitialized()) {
-        auto& assertionHandler = InviwoApplication::getPtr()->getAssertionHandler();
+        const auto& assertionHandler = InviwoApplication::getPtr()->getAssertionHandler();
         if (assertionHandler) {
             assertionHandler(message, context);
         }
