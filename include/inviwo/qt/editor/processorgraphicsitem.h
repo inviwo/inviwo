@@ -177,7 +177,7 @@ private:
     double evalTime_;
     double totEvalTime_;
     Clock clock_;
-    static bool showCount_;
+    static bool showCount_;  // NOLINT
 #endif
 
     std::unique_ptr<ProcessorErrorItem> errorText_;

@@ -38,12 +38,15 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-
 namespace inviwo {
 
 class IVW_QTEDITOR_API EditorSettings : public Settings {
 public:
     EditorSettings(InviwoApplication* app);
+    EditorSettings(const EditorSettings&) = delete;
+    EditorSettings& operator=(const EditorSettings&) = delete;
+    EditorSettings(EditorSettings&&) = delete;
+    EditorSettings& operator=(EditorSettings&&) = delete;
     virtual ~EditorSettings() = default;
 
     StringProperty workspaceAuthor;

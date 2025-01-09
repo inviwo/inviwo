@@ -299,9 +299,7 @@ void InviwoApplication::unregisterSettings(Settings* settings) {
     std::erase(settingsRegistry_, settings);
 }
 
-const std::vector<Settings*>& InviwoApplication::getModuleSettings() {
-    return settingsRegistry_;
-}
+const std::vector<Settings*>& InviwoApplication::getModuleSettings() { return settingsRegistry_; }
 
 SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_; }
 
@@ -410,8 +408,7 @@ ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;
-    while (processFront())
-        ;
+    while (processFront());
     resizePool(old_size);
 }
 
