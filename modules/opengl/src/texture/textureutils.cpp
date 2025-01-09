@@ -122,7 +122,7 @@ void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceIn
     if (auto inImage = sourceInport.getData()) {
         inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     } else {
-        log::warn("Trying to copy empty image inport: \"{}\" in processor: \"{}\"",
+        log::warn(R"(Trying to copy empty image inport: "{}" in processor: "{}")",
                   sourceInport.getIdentifier(), sourceInport.getProcessor()->getIdentifier());
     }
     outImageGL->activateBuffer(type);

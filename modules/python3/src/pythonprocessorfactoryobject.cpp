@@ -107,8 +107,8 @@ void PythonProcessorFactoryObject::reloadProcessors() {
                                              // modifying the list below by replacing them
     for (auto p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
-            log::info("Updating python processor: \"{}\" id: \"{}\"", name_, p->getIdentifier());
-            if (auto replacement = std::shared_ptr<Processor>(create(app_))) {
+            log::info(R"(Updating python processor: "{}" id: "{}")", name_, p->getIdentifier());
+            if (auto replacement = static_cast<std::shared_ptr<Processor>>(create(app_))) {
                 util::replaceProcessor(net, replacement, p);
             }
         }

@@ -370,7 +370,7 @@ void InviwoApplication::setLayerRamResizer(LayerRamResizer* obj) { layerRamResiz
 
 void InviwoApplication::setAssertionHandler(
     std::function<void(std::string_view message, SourceContext context)> assertionHandler) {
-    assertionHandler_ = assertionHandler;
+    assertionHandler_ = std::move(assertionHandler);
 }
 
 const std::function<void(std::string_view message, SourceContext context)>&
@@ -417,8 +417,7 @@ ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;
-    while (processFront())
-        ;
+    while (processFront()) {}
     resizePool(old_size);
 }
 

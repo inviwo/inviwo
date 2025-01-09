@@ -111,7 +111,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
             }
         } catch (const Exception& e) {
             log::exception(e, "Unable to convert network {} due to {}", fileName, e.getMessage());
-            NetworkLock lock(app->getProcessorNetwork());
+            const NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
             updateGui();
         }

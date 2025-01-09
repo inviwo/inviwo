@@ -65,8 +65,8 @@ std::shared_ptr<Mesh> MarchingTetrahedron::apply(
     std::function<void(float)> progressCallback,
     std::function<bool(const size3_t&)> maskingCallback) {
     log::warn("Deprecated: Use util::marchingtetrahedron(...) instead");
-    return util::marchingtetrahedron(volume, iso, color, invert, enclose, progressCallback,
-                                     maskingCallback);
+    return util::marchingtetrahedron(std::move(volume), iso, color, invert, enclose,
+                                     std::move(progressCallback), maskingCallback);
 }
 
 namespace marchingtetrahedron {

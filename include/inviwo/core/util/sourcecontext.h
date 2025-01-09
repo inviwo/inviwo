@@ -75,7 +75,7 @@ public:
         : SourceContext{source.view(), location.file_name(), location.function_name(),
                         location.line(), location.column()} {}
 
-    constexpr SourceContext(std::source_location location = std::source_location::current())
+    explicit(false) constexpr SourceContext(std::source_location location = std::source_location::current())
         : SourceContext{extractName(location.function_name()), location.file_name(),
                         location.function_name(), location.line(), location.column()} {}
 
@@ -87,7 +87,7 @@ public:
 
 private:
     static constexpr std::string_view extractName(std::string_view name) noexcept {
-        const std::size_t end = name.find("(");
+        const std::size_t end = name.find('(');
         name = name.substr(0, end);
         name = name.substr(name.rfind(' ') + 1);
         return name;

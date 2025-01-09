@@ -56,7 +56,7 @@ inline void checkContext(std::string_view error, Canvas::ContextID org,
                          SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
         auto* rc = RenderContext::getPtr();
-        const auto curr = rc->activeContext();
+        const auto* const curr = rc->activeContext();
         if (org != curr) {
             const auto message =
                 fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
