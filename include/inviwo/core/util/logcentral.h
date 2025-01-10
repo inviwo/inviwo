@@ -156,20 +156,32 @@ private:
 namespace log {
 
 /**
- * All log function either take a explicit SourceContext argument,
- * or automatically extracts one from the call site.
- * All functions that takes a fmt::format_string does compile time format checks
+ * All log functions either take an explicit SourceContext argument,
+ * or automatically extract one from the call site.
+ * All functions that take a fmt::format_string do compile time format checks.
  *
- * * `report(LogLevel, SourceContext, fmt::format_string, Args&&...)`
- * * `report(LogLevel, SourceContext, std::string_view)`
- * * `report(LogLevel, std::string_view)`
- * * `exception(const Exception&)`
- * * `exception(const std::exception&)`
- * * `exception()`
- * * `message(LogLevel level, fmt::format_string<Args...>, Args&&...)`
+ * # Basic logging
  * * `info(fmt::format_string<Args...>, Args&&...)`
  * * `warn(fmt::format_string<Args...>, Args&&...)`
  * * `error(fmt::format_string<Args...>, Args&&...)`
+ *
+ * # Runtime Log Level
+ * * `report(LogLevel, SourceContext, fmt::format_string, Args&&...)`
+ * * `report(LogLevel, SourceContext, std::string_view)`
+ * * `report(LogLevel, std::string_view)`
+ * * `message(LogLevel level, fmt::format_string<Args...>, Args&&...)`
+
+ * # Log Exceptions
+ * * `exception(const Exception&)`
+ * * `exception(const std::exception&)`
+ * * `exception(std::string_view)`
+ * * `exception()`
+ *
+ * # Log to a custom logger
+ * * `report(Logger&, LogLevel, SourceContext, fmt::format_string, Args&&...)`
+ * * `report(Logger&, LogLevel, SourceContext, std::string_view)
+ * * `report(Logger&, LogLevel, std::string_view)`
+ * * `message(Logger&, LogLevel level, fmt::format_string<Args...>, Args&&...)`
  */
 
 namespace detail {
@@ -210,6 +222,11 @@ inline void report(Logger& logger, LogLevel level, SourceContext context, fmt::s
 }
 }  // namespace detail
 
+template <typename... Args>
+inline void report(Logger& logger, LogLevel level, SourceContext context,
+                   fmt::format_string<Args...> format, Args&&... args) {
+    ::inviwo::log::detail::report(logger, level, context, format, fmt::make_format_args(args...));
+}
 template <typename... Args>
 inline void report(LogLevel level, SourceContext context, fmt::format_string<Args...> format,
                    Args&&... args) {

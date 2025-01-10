@@ -137,24 +137,6 @@ protected:
     static int parseAndRetrieveVersion(std::string);
 
 private:
-    template <typename T, typename... Ts>
-    void printHelper(std::stringstream& ss, T& message, const Ts&... messages) const {
-        ss << message;
-        printHelper(ss, messages...);
-    }
-    template <typename T>
-    void printHelper(std::stringstream& ss, const T& message) const {
-        ss << message;
-    }
-
-    template <typename... Ts>
-    void print(const Ts&... messages) const {
-        std::stringstream ss;
-        printHelper(ss, messages...);
-        LogCentral::getPtr()->log("OpenGLInfo", LogLevel::Info, LogAudience::User, "", "", 0,
-                                  ss.str());
-    }
-
     static bool glewInitialized_;
     static int glVersion_;
     static std::string glVersionStr_;

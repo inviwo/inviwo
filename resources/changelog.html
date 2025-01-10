@@ -33,6 +33,67 @@
 </style>
 </head>
 <body>
+<h2>2025-01-19 New Logging functions</h2>
+<p>The existing macro based logging functions <code class="notranslate">LogInfo</code>, <code class="notranslate">LogWarn</code>, <code class="notranslate">LogError</code> and there <code class="notranslate">_Custom</code> versions are superseded a new<br>
+API that takes advantage of <code class="notranslate">std::source_location</code>, meaning, we no longer need any macros.</p>
+<p>The new log functions all live in the <code class="notranslate">inviwo::log</code> namespace. They either take an explicit <code class="notranslate">SourceContext</code> argument, or automatically extract one from the call site. All functions that take a <code class="notranslate">fmt::format_string</code> do compile time format checks.</p>
+<h4>Basic logging</h4>
+<ul>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::info</span>(fmt::format_string&lt;Args...&gt;, Args&amp;&amp;...)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::warn</span>(fmt::format_string&lt;Args...&gt;, Args&amp;&amp;...)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::error</span>(fmt::format_string&lt;Args...&gt;, Args&amp;&amp;...)</pre></div>
+</li>
+</ul>
+<h4>Runtime Log Level</h4>
+<ul>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::report</span>(LogLevel, SourceContext, fmt::format_string, Args&amp;&amp;...)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::report</span>(LogLevel, SourceContext, std::string_view)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::report</span>(LogLevel, std::string_view)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::message</span>(LogLevel level, fmt::format_string&lt;Args...&gt;, Args&amp;&amp;...)</pre></div>
+</li>
+</ul>
+<h4>Log Exceptions</h4>
+<ul>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(<span class="pl-k">const</span> Exception&amp;)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(<span class="pl-k">const</span> std::<span class="pl-c1">exception</span>&amp;)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(std::string_view)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>()</pre></div>
+</li>
+</ul>
+<h4>Log to a custom logger</h4>
+<ul>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::report</span>(Logger&amp;, LogLevel, SourceContext, fmt::format_string, Args&amp;&amp;...)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::report</span>(Logger&amp;, LogLevel, SourceContext, std::string_view)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::report</span>(Logger&amp;, LogLevel, std::string_view)</pre></div>
+</li>
+<li>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::message</span>(Logger&amp;, LogLevel level, fmt::format_string&lt;Args...&gt;, Args&amp;&amp;...)</pre></div>
+</li>
+</ul>
 <h2>2024-12-09 <strong>Breaking</strong> change: string_view class identifiers</h2>
 <p>All base classes that have a <code class="notranslate">virtual std::string getClassIdentifier() const</code> were refactored into <code class="notranslate">virtual std::string_view getClassIdentifier() const</code>. This is done to avoid string allocations.<br>
 If you have a class that derives from <code class="notranslate">Inport</code>, <code class="notranslate">Outport</code>, <code class="notranslate">Property</code>, <code class="notranslate">Metadata</code>, <code class="notranslate">Camera</code>, <code class="notranslate">animation::Track</code> or <code class="notranslate">animation::Interpolation</code> and with a override of</p>
@@ -151,7 +212,7 @@ Since the extra quotes inserted while formatting will make the path ill formed.<
 <p>This change potentially breaks existing Python processors handling either image layers and/or volumes. To fix these, ensure that the shape of Numpy arrays is in the form of <code class="notranslate">(z, y, x)</code> or <code class="notranslate">(z, y, x, c)</code> for volumes and <code class="notranslate">(y, x)</code>/<code class="notranslate">(y, x, c)</code> for layers, respectively. Reordering of axes should no longer be necessary.</p>
 <p><em>Note:</em> Numpy arrays must be C-contiguous in order to be used by Inviwo. If they are not, the conversion from Numpy to Inviwo will fail and throw an exception (<code class="notranslate">Buffer</code>, <code class="notranslate">LayerPy</code>, <code class="notranslate">VolumePy</code>, etc.). Bear in mind that in Python the right-most index is the fastest.</p>
 <div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-s1">l</span> <span class="pl-c1">=</span> [ [ <span class="pl-c1">0</span>, <span class="pl-c1">1</span>, <span class="pl-c1">2</span> ], [ <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span> ] ]
-<span class="pl-en">print</span>(<span class="pl-s1">l</span>[<span class="pl-c1">0</span>][<span class="pl-c1">2</span>]) <span class="pl-c"># [2] refers to the fastest running index</span>
+<span class="pl-s1">const</span> <span class="pl-v">ProcessorInfo</span><span class="pl-c1">&amp;</span> ::<span class="pl-en">getProcessorInfo</span>() <span class="pl-s1">const</span> { <span class="pl-s1">return</span> <span class="pl-s1">processorInfo_</span>; }<span class="pl-s1">l</span>[<span class="pl-c1">0</span>][<span class="pl-c1">2</span>]) <span class="pl-c"># [2] refers to the fastest running index</span>
 
 <span class="pl-s1">n</span> <span class="pl-c1">=</span> <span class="pl-s1">numpy</span>.<span class="pl-c1">array</span>(<span class="pl-s1">l</span>)
 <span class="pl-en">print</span>(<span class="pl-s1">n</span>.<span class="pl-c1">flatten</span>()) <span class="pl-c"># -&gt; [ 0, 1, 2, 3, 4, 5 ]</span>
