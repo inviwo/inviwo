@@ -66,7 +66,7 @@
 #include <inviwo/core/util/glmmat.h>                                    // for mat4, mat3
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, vec2
 #include <inviwo/core/util/logcentral.h>                                // for LogVerbosity, Log...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                          // for toString
 #include <inviwo/core/util/volumeutils.h>                               // for getVolumeDimensions
 #include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
@@ -309,12 +309,12 @@ void CropWidget::initMesh() {
         auto app = getNetwork()->getApplication();
         auto module = app->getModuleByIdentifier("UserInterfaceGL");
         if (!module) {
-            throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
+            throw Exception("Could not locate module 'UserInterfaceGL'");
         }
 
         auto reader = app->getDataReaderFactory()->getReaderForTypeAndExtension<Mesh>("fbx");
         if (!reader) {
-            throw Exception("Could not fbx mesh reader", IVW_CONTEXT);
+            throw Exception("Could not fbx mesh reader");
         }
         reader->setOption("FixInvalidData", false);
         reader->setOption("LogLevel", LogVerbosity::Error);

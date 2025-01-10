@@ -41,7 +41,6 @@
 #include <inviwo/core/processors/processortags.h>              // for Tags, Tags::CPU
 #include <inviwo/core/properties/optionproperty.h>             // for OptionPropertyOption, Opti...
 #include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
 #include <inviwo/core/util/staticstring.h>                     // for operator+
 
 #include <memory>       // for const_pointer_cast, shared...
@@ -119,29 +118,28 @@ void BufferToMeshProcessor::process() {
                     std::const_pointer_cast<BufferBase>(vertices_.getData()));
     if (textureCoordinates_.isConnected()) {
         if (textureCoordinates_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of texture coordinates does not match number of vertices",
-                            IVW_CONTEXT);
+            throw Exception("Number of texture coordinates does not match number of vertices");
         }
         mesh->addBuffer(BufferType::TexCoordAttrib,
                         std::const_pointer_cast<BufferBase>(textureCoordinates_.getData()));
     }
     if (vertexColors_.isConnected()) {
         if (vertexColors_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of colors does not match number of vertices", IVW_CONTEXT);
+            throw Exception("Number of colors does not match number of vertices");
         }
         mesh->addBuffer(BufferType::ColorAttrib,
                         std::const_pointer_cast<BufferBase>(vertexColors_.getData()));
     }
     if (normals_.isConnected()) {
         if (normals_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of normals does not match number of vertices", IVW_CONTEXT);
+            throw Exception("Number of normals does not match number of vertices");
         }
         mesh->addBuffer(BufferType::NormalAttrib,
                         std::const_pointer_cast<BufferBase>(normals_.getData()));
     }
     if (curvature_.isConnected()) {
         if (curvature_.getData()->getSize() != vertices_.getData()->getSize()) {
-            throw Exception("Number of curvatures does not match number of vertices", IVW_CONTEXT);
+            throw Exception("Number of curvatures does not match number of vertices");
         }
         mesh->addBuffer(BufferType::CurvatureAttrib,
                         std::const_pointer_cast<BufferBase>(curvature_.getData()));
@@ -152,8 +150,7 @@ void BufferToMeshProcessor::process() {
         if (!indexBuffer) {
             throw Exception(
                 "Index buffer must be of IndexBuffer type (Buffer<std::uint32_t, "
-                "BufferTarget::Index>)",
-                IVW_CONTEXT);
+                "BufferTarget::Index>)");
         }
         mesh->addIndices(Mesh::MeshInfo(drawType_.get(), connectivity_.get()),
                          std::const_pointer_cast<IndexBuffer>(indexBuffer));

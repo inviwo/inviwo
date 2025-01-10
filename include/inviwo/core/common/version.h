@@ -197,8 +197,8 @@ constexpr Version::Version(std::string_view version) {
         if (auto val = toNumber(num)) {
             *e = *val;
         } else {
-            throw Exception(IVW_CONTEXT, "Invalid number found: '{}' in version string '{}'", num,
-                            version);
+            throw Exception(SourceContext{}, "Invalid number found: '{}' in version string '{}'",
+                            num, version);
         }
         if (end == std::string_view::npos) break;
         begin = end + 1;
@@ -214,8 +214,9 @@ constexpr Version::Version(std::string_view version) {
         const auto preRelease =
             version.substr(preReleaseBegin + 1, preReleaseEnd - preReleaseBegin - 1);
         if (preRelease.size() > preReleaseBuffer.size() - 1) {
-            throw Exception(IVW_CONTEXT, "Pre-release version string too long: len('{}') >= {} ",
-                            preRelease, preReleaseBuffer.size());
+            throw Exception(SourceContext{},
+                            "Pre-release version string too long: len('{}') >= {} ", preRelease,
+                            preReleaseBuffer.size());
         }
         std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
     }
@@ -224,8 +225,8 @@ constexpr Version::Version(std::string_view version) {
     if (buildBegin != std::string_view::npos) {
         const auto build = version.substr(buildBegin + 1);
         if (build.size() > buildBuffer.size() - 1) {
-            throw Exception(IVW_CONTEXT, "Build version string too long: len('{}') >= {} ", build,
-                            buildBuffer.size());
+            throw Exception(SourceContext{}, "Build version string too long: len('{}') >= {} ",
+                            build, buildBuffer.size());
         }
         std::copy(build.begin(), build.end(), buildBuffer.begin());
     }
@@ -236,11 +237,11 @@ constexpr Version::Version(unsigned int major, unsigned int minor, unsigned int 
     : major{major}, minor{minor}, patch{patch} {
 
     if (preRelease.size() > preReleaseBuffer.size() - 1) {
-        throw Exception(IVW_CONTEXT, "Pre-release version string too long: len('{}') >= {} ",
+        throw Exception(SourceContext{}, "Pre-release version string too long: len('{}') >= {} ",
                         preRelease, preReleaseBuffer.size());
     }
     if (build.size() > buildBuffer.size() - 1) {
-        throw Exception(IVW_CONTEXT, "Build version string too long: len('{}') >= {} ", build,
+        throw Exception(SourceContext{}, "Build version string too long: len('{}') >= {} ", build,
                         buildBuffer.size());
     }
     std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());

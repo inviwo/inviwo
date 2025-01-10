@@ -338,7 +338,7 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeReprConfig& config)
                          config.wrapping.value_or(VolumeConfig::defaultWrapping)} {
 
     if (config.format && config.format != getDataFormat()) {
-        throw Exception(IVW_CONTEXT, "Creating representation with unmatched type and format");
+        throw Exception("Creating representation with unmatched type and format");
     }
 }
 

@@ -33,7 +33,7 @@
 #include <inviwo/core/processors/processor.h>                 // for Processor
 #include <inviwo/core/properties/invalidationlevel.h>         // for InvalidationLevel, Invalida...
 #include <inviwo/core/util/exception.h>                       // for Exception
-#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                   // for SourceContext
 #include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent, ShaderComp...
 #include <modules/opengl/shader/shader.h>                     // for Shader, Shader::Build
 #include <modules/opengl/shader/shaderobject.h>               // for ShaderObject
@@ -139,13 +139,12 @@ void ShaderComponentProcessorBase::handleError(std::string_view action,
                         e.getContext()};
 
     } catch (fmt::format_error& e) {
-        throw Exception{fmt::format("Error while {} in shader component: {}, fmt::format_error: {}",
-                                    action, componentName, e.what()),
-                        IVW_CONTEXT};
+        throw Exception{SourceContext{},
+                        "Error while {} in shader component: {}, fmt::format_error: {}", action,
+                        componentName, e.what()};
     } catch (std::exception& e) {
-        throw Exception{fmt::format("Error while {} in shader component: {}, message: {}", action,
-                                    componentName, e.what()),
-                        IVW_CONTEXT};
+        throw Exception{SourceContext{}, "Error while {} in shader component: {}, message: {}",
+                        action, componentName, e.what()};
     }
 }
 

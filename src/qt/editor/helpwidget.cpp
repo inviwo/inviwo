@@ -350,8 +350,8 @@ InviwoModule& findModule(InviwoApplication& app, std::string_view processorClass
             }
         }
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("findModule"),
-                    "ProcessorClassIdentifier {} is not registered", processorClassIdentifier);
+    throw Exception(SourceContext{}, "ProcessorClassIdentifier {} is not registered",
+                    processorClassIdentifier);
 }
 
 std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, InviwoApplication* app) {

@@ -49,7 +49,7 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
 
     if (util::find_not_equal(layers.begin(), layers.end(),
                              [](const auto& a) { return a->getDimensions(); }) != layers.end()) {
-        throw Exception("All layers has to have the same dimensions", IVW_CONTEXT);
+        throw Exception("All layers has to have the same dimensions");
     }
 
     const auto dims = layers.empty() ? size2_t{8, 8} : layers.front()->getDimensions();
@@ -80,7 +80,7 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
             std::find_if(layers.begin(), layers.end(),
                          [](auto& layer) { return layer->getLayerType() != LayerType::Color; });
         it != layers.end()) {
-        throw Exception(IVW_CONTEXT, "Multiple layers of type {} found", (*it)->getLayerType());
+        throw Exception(SourceContext{}, "Multiple layers of type {} found", (*it)->getLayerType());
     }
 
     if (layers.empty()) {
@@ -325,7 +325,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
     // Fallback. If no representation exist, create ImageRAM one
     const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
     if (!imageRAM->copyRepresentationsTo(targetImage->getEditableRepresentation<ImageRAM>())) {
-        throw Exception("Failed to copy Image Representation", IVW_CONTEXT);
+        throw Exception("Failed to copy Image Representation");
     }
 }
 

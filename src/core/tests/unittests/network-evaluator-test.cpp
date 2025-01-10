@@ -208,7 +208,7 @@ TEST(NetworkEvaluator, Error) {
         func(p);
         static_cast<DataOutport<int>*>(p.getOutports()[0])->setData(std::make_shared<int>(0));
         if (shouldThrow) {
-            throw Exception("Error", IVW_CONTEXT_CUSTOM("TestProcessor"));
+            throw Exception(SourceContext{}, "Error");
         }
     };
 
@@ -246,7 +246,7 @@ TEST(NetworkEvaluator, Error) {
         SCOPED_TRACE("Invalid output with throw");
         unsigned int throwCount = 0;
         evaluator.setExceptionHandler(
-            [&throwCount](Processor*, EvaluationType, ExceptionContext) { ++throwCount; });
+            [&throwCount](Processor*, EvaluationType, SourceContext) { ++throwCount; });
 
         shouldThrow = true;
         a->invalidate(InvalidationLevel::InvalidOutput);

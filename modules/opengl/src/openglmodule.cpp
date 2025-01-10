@@ -40,7 +40,6 @@
 #include <inviwo/core/util/capabilities.h>                           // for Capabilities
 #include <inviwo/core/util/exception.h>                              // for Exception
 #include <inviwo/core/util/settings/settings.h>                      // for Settings
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
 #include <modules/opengl/buffer/buffergl.h>                          // for BufferGL
 #include <modules/opengl/buffer/bufferglconverter.h>                 // for BufferGL2RAMConverter
 #include <modules/opengl/canvasprocessorgl.h>                        // for CanvasProcessorGL
@@ -160,7 +159,7 @@ OpenGLCapabilities& OpenGLModule::getOpenGLCapabilities() {
             return *casted;
         }
     }
-    throw Exception("No OpenGLCapabilities has been registered", IVW_CONTEXT);
+    throw Exception("No OpenGLCapabilities has been registered");
 }
 
 }  // namespace inviwo

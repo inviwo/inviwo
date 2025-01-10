@@ -34,7 +34,7 @@
 #include <inviwo/core/util/exception.h>      // for Exception
 #include <inviwo/core/util/glm.h>            // for isnan
 #include <inviwo/core/util/glmutils.h>       // for is_floating_point
-#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
 
 #include <algorithm>    // for max, sort, partition
 #include <cmath>        // for ceil
@@ -88,8 +88,7 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
     auto nElements = data.size();
     for (auto percentile : percentiles) {
         if (percentile < 0.f || percentile > 1.f) {
-            throw Exception("Percentile must be between 0 and 1",
-                            IVW_CONTEXT_CUSTOM("statsutil::percentiles"));
+            throw Exception("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
         result.push_back(

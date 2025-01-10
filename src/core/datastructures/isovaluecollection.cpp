@@ -48,16 +48,14 @@ IsoValueCollection IsoValueCollection::load(std::string_view path) {
     if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
         return *tf;
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to load IsoValueCollection from {}", path);
+        throw Exception(SourceContext{}, "Unable to load IsoValueCollection from {}", path);
     }
 }
 void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
     auto factory = util::getDataWriterFactory();
 
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {
-        throw Exception(IVW_CONTEXT_CUSTOM("IsoValueCollection"),
-                        "Unable to save IsoValueCollection to {}", path);
+        throw Exception(SourceContext{}, "Unable to save IsoValueCollection to {}", path);
     }
 }
 

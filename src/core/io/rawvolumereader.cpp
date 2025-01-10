@@ -104,7 +104,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
         auto readerDialog = util::dynamic_unique_ptr_cast<VolumeDataReaderDialog>(
             InviwoApplication::getPtr()->getDialogFactory()->create("RawVolumeReader"));
         if (!readerDialog) {
-            throw DataReaderException("No data reader dialog found.", IVW_CONTEXT);
+            throw DataReaderException("No data reader dialog found.");
         }
         readerDialog->setFile(rawFile_);
 
@@ -160,7 +160,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
             }
 
         } else {
-            throw DataReaderException("Raw data import terminated by user", IVW_CONTEXT);
+            throw DataReaderException("Raw data import terminated by user");
         }
     }
 
@@ -190,7 +190,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
         log::info("Loaded volume: {}  size: {}", filePath, size);
         return volume;
     } else {
-        throw DataReaderException("Raw data import could not determine format", IVW_CONTEXT);
+        throw DataReaderException("Raw data import could not determine format");
     }
 }
 

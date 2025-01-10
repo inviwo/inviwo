@@ -389,11 +389,14 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
     }
 
     if (!validRange(minValue_, maxValue_) || get_() != clamp(get_())) {
-        throw Exception{
-            fmt::format("Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
-                        minValue_.value, get_(), maxValue_.value, this->getDisplayName(),
-                        Defaultvalues<T>::getName(), this->getPath()),
-            IVW_CONTEXT};
+        throw Exception{SourceContext{},
+                        "Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
+                        minValue_.value,
+                        get_(),
+                        maxValue_.value,
+                        this->getDisplayName(),
+                        Defaultvalues<T>::getName(),
+                        this->getPath()};
     }
 }
 
@@ -529,10 +532,8 @@ void OrdinalRefProperty<T>::set(const T& value, const T& minVal, const T& maxVal
     IVW_ASSERT(get_, "The getter has to be valid");
     IVW_ASSERT(set_, "The setter has to be valid");
     if (!validRange(minVal, maxVal)) {
-        throw Exception{
-            fmt::format("Invalid range given for \"{}\" ({}Property, {})", this->getDisplayName(),
-                        Defaultvalues<T>::getName(), this->getPath()),
-            IVW_CONTEXT};
+        throw Exception{SourceContext{}, "Invalid range given for \"{}\" ({}Property, {})",
+                        this->getDisplayName(), Defaultvalues<T>::getName(), this->getPath()};
     }
 
     bool modified = false;

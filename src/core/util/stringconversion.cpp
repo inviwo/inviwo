@@ -75,7 +75,7 @@ std::wstring toWstring(std::string_view str) {
         len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
         if (len == static_cast<std::size_t>(-1)) {
             if (loc) std::setlocale(LC_CTYPE, loc);
-            throw Exception("Invalid unicode sequence", IVW_CONTEXT_CUSTOM("String Conversion"));
+            throw Exception("Invalid unicode sequence");
         }
     }
     std::wstring result(len, 0);
@@ -94,16 +94,14 @@ std::string fromWstring(std::wstring_view str) {
 
     int length = WideCharToMultiByte(CP_UTF8, 0, str.data(), s_size, nullptr, 0, nullptr, nullptr);
     if (length == 0) {
-        throw Exception(IVW_CONTEXT_CUSTOM("String Conversion"),
-                        "Invalid string conversion Error:{}", GetLastError());
+        throw Exception(SourceContext{}, "Invalid string conversion Error:{}", GetLastError());
     }
 
     std::string result(length, 0);
     length = WideCharToMultiByte(CP_UTF8, 0, str.data(), s_size, result.data(), length, nullptr,
                                  nullptr);
     if (length == 0) {
-        throw Exception(IVW_CONTEXT_CUSTOM("String Conversion"),
-                        "Invalid string conversion Error:{}", GetLastError());
+        throw Exception(SourceContext{}, "Invalid string conversion Error:{}", GetLastError());
     }
     return result;
 #else
@@ -118,7 +116,7 @@ std::string fromWstring(std::wstring_view str) {
         len = std::wcsrtombs(nullptr, &sptr, 0, &state);
         if (len == static_cast<std::size_t>(-1)) {
             if (loc) std::setlocale(LC_CTYPE, loc);
-            throw Exception("Invalid unicode sequence", IVW_CONTEXT_CUSTOM("String Conversion"));
+            throw Exception("Invalid unicode sequence");
         }
     }
     std::string result(len, 0);

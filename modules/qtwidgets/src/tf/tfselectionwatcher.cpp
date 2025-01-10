@@ -35,7 +35,6 @@
 #include <inviwo/core/util/exception.h>                 // for Exception
 #include <inviwo/core/util/glmvec.h>                    // for vec3
 #include <inviwo/core/util/raiiutils.h>                 // for KeepTrueWhileInScope
-#include <inviwo/core/util/sourcecontext.h>             // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>             // for contains
 #include <modules/qtwidgets/inviwoqtutils.h>            // for toQColor, tovec3
 
@@ -94,7 +93,7 @@ void TFSelectionWatcher::onTFPrimitiveChange(const TFPrimitive& p) {
     if (updateInProgress_) return;
 
     if (selectedPrimitives_.empty() || !util::contains(selectedPrimitives_, &p)) {
-        throw Exception("TF primitive callback detected on non-selected primitive", IVW_CONTEXT);
+        throw Exception("TF primitive callback detected on non-selected primitive");
     }
 
     informWidgets();

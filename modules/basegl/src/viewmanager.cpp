@@ -41,7 +41,7 @@
 #include <inviwo/core/interaction/events/wheelevent.h>        // for WheelEvent
 #include <inviwo/core/util/exception.h>                       // for Exception
 #include <inviwo/core/util/glmvec.h>                          // for dvec2, uvec2, ivec2, dvec3
-#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                   // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                   // for erase_remove_if, contains
 
 #include <cstddef>      // for size_t
@@ -266,7 +266,7 @@ void ViewManager::replace(ViewId ind, View view) {
     if (ind < views_.size()) {
         views_[ind] = view;
     } else {
-        throw Exception("Out of range", IVW_CONTEXT);
+        throw Exception("Out of range");
     }
 }
 

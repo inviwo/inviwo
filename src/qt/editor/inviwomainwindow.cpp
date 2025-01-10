@@ -1250,7 +1250,7 @@ bool InviwoMainWindow::openWorkspace(const std::filesystem::path& fileName, bool
         NetworkLock lock(app_->getProcessorNetwork());
         app_->getWorkspaceManager()->clear();
         try {
-            app_->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
+            app_->getWorkspaceManager()->load(fileName, [&](SourceContext ec) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
@@ -1294,7 +1294,7 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
     }
 
     try {
-        app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
+        app_->getWorkspaceManager()->save(fileName, [&](SourceContext ec) {
             try {
                 throw;
             } catch (const IgnoreException& e) {

@@ -170,10 +170,9 @@ std::vector<T> convexHull(const std::vector<T>& points) {
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value != 2,
                                            int>::type = 0>
 std::vector<T> convexHull(const std::vector<T>& /*points*/) {
-    std::ostringstream message;
-    message << "util::complexHull() not implemented for nD points with n = "
-            << util::extent<T>::value;
-    throw Exception(message.str(), IVW_CONTEXT_CUSTOM("util::complexHull"));
+    throw Exception(SourceContext{},
+                    "util::complexHull() not implemented for nD points with n = {}",
+                    util::extent<T>::value);
 }
 
 }  // namespace util

@@ -86,7 +86,7 @@ void LightVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
     using namespace fmt::literals;
 
     if (auto type = lightSource_.getData()->getLightSourceType(); type != LightSourceType::Point) {
-        throw Exception(IVW_CONTEXT, "unsupported light source '{}', expected '{}'", type,
+        throw Exception(SourceContext{}, "unsupported light source '{}', expected '{}'", type,
                         LightSourceType::Point);
     }
 

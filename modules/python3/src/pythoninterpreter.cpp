@@ -44,7 +44,7 @@
 #include <inviwo/core/util/exception.h>         // for ModuleInitException
 #include <inviwo/core/util/filesystem.h>        // for getExecutablePath, getFileDirectory
 #include <inviwo/core/util/logcentral.h>        // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>     // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>     // for SourceContext
 #include <inviwo/core/util/stringconversion.h>  // for toString
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/util/filesystem.h>
@@ -61,7 +61,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     namespace py = pybind11;
 
     if (isInit_) {
-        throw ModuleInitException("Python already initialized", IVW_CONTEXT);
+        throw ModuleInitException("Python already initialized");
     }
 
 #ifdef WIN32
@@ -77,14 +77,14 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         try {
             py::initialize_interpreter(false);
         } catch (const std::exception& e) {
-            throw ModuleInitException(e.what(), IVW_CONTEXT);
+            throw ModuleInitException(e.what());
         }
 
         isInit_ = true;
         embedded_ = true;
 
         if (!Py_IsInitialized()) {
-            throw ModuleInitException("Python is not Initialized", IVW_CONTEXT);
+            throw ModuleInitException("Python is not Initialized");
         }
 
         auto binDir = filesystem::getExecutablePath().parent_path();
@@ -155,7 +155,7 @@ sys.stderr = OutputRedirector(1)
                      py::globals());
         } catch (const py::error_already_set& e) {
             throw ModuleInitException(
-                IVW_CONTEXT, "Error while initializing the Python Interpreter\n{}", e.what());
+                SourceContext{}, "Error while initializing the Python Interpreter\n{}", e.what());
         }
     }
 }

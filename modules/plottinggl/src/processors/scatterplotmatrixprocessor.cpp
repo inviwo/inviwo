@@ -55,7 +55,7 @@
 #include <inviwo/core/util/colorbrewer.h>                              // for getTransferFunction
 #include <inviwo/core/util/exception.h>                                // for Exception
 #include <inviwo/core/util/glmvec.h>                                   // for vec2, size2_t, ivec2
-#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
 #include <inviwo/core/util/utilities.h>                                // for stripIdentifier
 #include <inviwo/core/util/zip.h>                                      // for enumerate, zipIter...
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrame, DataFra...
@@ -385,7 +385,7 @@ bool ScatterPlotMatrixProcessor::isIncluded(std::shared_ptr<Column> col) {
             bp->setSerializationMode(PropertySerializationMode::All);
             return bp->get();
         }
-        throw inviwo::Exception("Not a bool property", IVW_CONTEXT);
+        throw inviwo::Exception("Not a bool property");
     } else {
         auto newProp = new BoolProperty(identifier, displayName, true);
         newProp->setSerializationMode(PropertySerializationMode::All);

@@ -52,14 +52,14 @@ constexpr std::string_view enumToStr(EvaluationType type) {
         case EvaluationType::NotReady:
             return "DoIfNotReady";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid EvaluationType enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid EvaluationType enum value '{}'",
                     static_cast<int>(type));
 }
 
-using EvaluationErrorHandler = std::function<void(Processor*, EvaluationType, ExceptionContext)>;
+using EvaluationErrorHandler = std::function<void(Processor*, EvaluationType, SourceContext)>;
 
 struct IVW_CORE_API StandardEvaluationErrorHandler {
-    void operator()(Processor*, EvaluationType, ExceptionContext);
+    void operator()(Processor*, EvaluationType, SourceContext);
 };
 
 }  // namespace inviwo

@@ -91,19 +91,17 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
                     __LINE__, stream__.str());                                                \
     }
 
-#define LogInfo(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
-#define LogWarn(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message) }
+#define LogInfo(message) {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message)}
+#define LogWarn(message) {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message)}
 #define LogError(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message) }
+    {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message)}
 
 #define LogInfoCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message) }
+    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message)}
 #define LogWarnCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message) }
+    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message)}
 #define LogErrorCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message) }
+    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message)}
 
 class IVW_CORE_API Logger {
 public:
@@ -307,11 +305,11 @@ error(fmt::format_string<Args...>, Args&&...) -> error<Args...>;
 
 namespace util {
 
-IVW_CORE_API void log(ExceptionContext context, std::string_view message,
+IVW_CORE_API void log(SourceContext context, std::string_view message,
                       LogLevel level = LogLevel::Info,
                       LogAudience audience = LogAudience::Developer);
 
-IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view message,
+IVW_CORE_API void log(Logger* logger, SourceContext context, std::string_view message,
                       LogLevel level = LogLevel::Info,
                       LogAudience audience = LogAudience::Developer);
 

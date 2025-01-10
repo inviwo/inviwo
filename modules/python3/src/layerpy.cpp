@@ -54,8 +54,7 @@ namespace {
 const DataFormatBase* format(pybind11::array data) {
     const auto ndim = data.ndim();
     if (!(ndim == 2 || ndim == 3)) {
-        throw Exception("Ndims must be either 2 or 3, with 1 <= size[2] <= 4",
-                        IVW_CONTEXT_CUSTOM("LayerPy"));
+        throw Exception("Ndims must be either 2 or 3, with 1 <= size[2] <= 4");
     }
     return pyutil::getDataFormat(ndim == 2 ? 1 : data.shape(2), data);
 }
@@ -141,8 +140,7 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
             std::memcpy(data.mutable_data(0), lr->getData(), data.nbytes());
         } else {
             throw Exception(
-                "Unable to convert from LayerRM to LayerPy: numpy array is not C-contiguous.",
-                IVW_CONTEXT_CUSTOM("LayerRAM2PyConverter"));
+                "Unable to convert from LayerRM to LayerPy: numpy array is not C-contiguous.");
         }
 
         return data;
@@ -166,8 +164,7 @@ void LayerRAM2PyConverter::update(std::shared_ptr<const LayerRAM> source,
                     destination->data().nbytes());
     } else {
         throw Exception(
-            "Unable to convert from LayerRAM to LayerPy: numpy array is not C-contiguous.",
-            IVW_CONTEXT);
+            "Unable to convert from LayerRAM to LayerPy: numpy array is not C-contiguous.");
     }
 }
 
@@ -186,8 +183,7 @@ std::shared_ptr<LayerRAM> LayerPy2RAMConverter::createFrom(
         std::memcpy(dst, src, size);
     } else {
         throw Exception(
-            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.",
-            IVW_CONTEXT);
+            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.");
     }
 
     return destination;
@@ -208,8 +204,7 @@ void LayerPy2RAMConverter::update(std::shared_ptr<const LayerPy> source,
         std::memcpy(dst, src, size);
     } else {
         throw Exception(
-            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.",
-            IVW_CONTEXT);
+            "Unable to convert from LayerPy to LayerRAM: numpy array is not C-contiguous.");
     }
 }
 

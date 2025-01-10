@@ -29,13 +29,4 @@
 
 #include <modules/hdf5/hdf5exception.h>
 
-namespace inviwo {
-
-namespace hdf5 {
-
-Exception::Exception(const std::string& message, ExceptionContext context)
-    : ::inviwo::Exception(message, context) {}
-
-}  // namespace hdf5
-
-}  // namespace inviwo
+namespace inviwo::hdf5 {}  // namespace inviwo::hdf5

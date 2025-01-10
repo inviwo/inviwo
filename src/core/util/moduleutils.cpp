@@ -66,8 +66,7 @@ std::filesystem::path getModulePath(InviwoApplication* app, std::string_view ide
     if (auto m = getModuleByIdentifier(app, identifier)) {
         return m->getPath();
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("module::getModulePath"),
-                        "Could not locate module \"{}\"", identifier);
+        throw Exception(SourceContext{}, R"(Could not locate module "{}")", identifier);
     }
 }
 
@@ -82,13 +81,12 @@ std::filesystem::path getModulePath(InviwoApplication* app, std::string_view ide
         if (path.empty() || path == m->getPath()) {
             // if the result of getPath(pathType) is identical with getPath(),
             // i.e. the module path, the specific path does not exist.
-            throw Exception(IVW_CONTEXT_CUSTOM("module::getModulePath"),
-                            "Could not locate module path for specified path type (module \"{}\")",
+            throw Exception(SourceContext{},
+                            R"(Could not locate module path for specified path type (module "{}"))",
                             identifier);
         }
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("module::getModulePath"),
-                        "Could not locate module \"{}\"", identifier);
+        throw Exception(SourceContext{}, R"(Could not locate module "{}")", identifier);
     }
     return path;
 }

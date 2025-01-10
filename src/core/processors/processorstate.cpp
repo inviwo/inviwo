@@ -44,7 +44,7 @@ std::string_view enumToStr(CodeState cs) {
         case CodeState::Deprecated:
             return "Deprecated";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid CodeState enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid CodeState enum value '{}'",
                     static_cast<int>(cs));
 }
 

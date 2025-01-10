@@ -39,7 +39,7 @@ namespace inviwo::ffmpeg {
 
 Codec::Codec(const AVCodec* codec) : ctx{avcodec_alloc_context3(codec)} {
     if (!ctx) {
-        throw Exception(IVW_CONTEXT, "Could not alloc an encoding context");
+        throw Exception(SourceContext{}, "Could not alloc an encoding context");
     }
 }
 
@@ -56,13 +56,13 @@ void Codec::open(AVDictionary* opt_arg) {
 
     av_dict_free(&opt);
     if (ret < 0) {
-        throw Exception(IVW_CONTEXT, "Could not open video codec: {}", Error{ret});
+        throw Exception(SourceContext{}, "Could not open video codec: {}", Error{ret});
     }
 }
 
 void Codec::sendFrame(const Frame& frame) {
     if (auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
-        throw Exception(IVW_CONTEXT, "Error sending a frame to the encoder: {}", Error(ret));
+        throw Exception(SourceContext{}, "Error sending a frame to the encoder: {}", Error(ret));
     }
 }
 
@@ -71,7 +71,7 @@ int Codec::receivePacket(Packet& pkt) {
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
 
     if (ret < 0) {
-        throw Exception(IVW_CONTEXT, "Error encoding a frame: {}", Error(ret));
+        throw Exception(SourceContext{}, "Error encoding a frame: {}", Error(ret));
     }
     return ret;
 }
@@ -80,8 +80,7 @@ CodecID Codec::codecID() const { return ctx->codec_id; }
 const AVCodec* Codec::findEncoder(CodecID codecId) {
     auto codec = avcodec_find_encoder(codecId.id);
     if (!codec) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Codec"), "Could not find encoder for '{}'",
-                        codecId.name());
+        throw Exception(SourceContext{}, "Could not find encoder for '{}'", codecId.name());
     }
     return codec;
 }

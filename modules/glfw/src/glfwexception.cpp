@@ -29,14 +29,14 @@
 
 #include <modules/glfw/glfwexception.h>
 
-#include <inviwo/core/util/exception.h>  // for ExceptionContext, Exception, ModuleInitException
+#include <inviwo/core/util/exception.h>  // for SourceContext, Exception, ModuleInitException
 
 namespace inviwo {
 
-GLFWException::GLFWException(const std::string& message, ExceptionContext context)
+GLFWException::GLFWException(const std::string& message, SourceContext context)
     : Exception(message, context) {}
 
-GLFWInitException::GLFWInitException(const std::string& message, ExceptionContext context)
+GLFWInitException::GLFWInitException(const std::string& message, SourceContext context)
     : ModuleInitException(message, context, {"opengl"}) {}
 
 }  // namespace inviwo

@@ -33,7 +33,7 @@
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/util/exception.h>                                 // for ExceptionContext
+#include <inviwo/core/util/exception.h>                                 // for SourceContext
 #include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/stringconversion.h>                          // for toString
@@ -58,8 +58,7 @@
 
 namespace inviwo {
 
-JSONConversionException::JSONConversionException(const std::string& message,
-                                                 ExceptionContext context)
+JSONConversionException::JSONConversionException(const std::string& message, SourceContext context)
     : DataReaderException("JSONConversion: " + message, context) {}
 
 namespace detail {
@@ -248,8 +247,7 @@ void to_json(json& j, const DataFrameInport& port) {
     }
 }
 void from_json(const json&, DataFrameInport&) {
-    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
-                    "It is not possible to assign a json object to an Inport");
+    throw Exception("It is not possible to assign a json object to an Inport");
 }
 
 }  // namespace inviwo

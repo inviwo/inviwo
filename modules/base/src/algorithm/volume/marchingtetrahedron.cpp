@@ -41,7 +41,6 @@
 #include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
 #include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3, vec4
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
 #include <modules/base/algorithm/volume/surfaceextraction.h>            // for interpolate, addT...
 #include <modules/base/datastructures/kdtree.h>                         // for K3DTree
 
@@ -191,8 +190,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
         if (progressCallback) progressCallback(0.0f);
 
         if (!maskingCallback) {
-            throw Exception("Masking callback not set",
-                            IVW_CONTEXT_CUSTOM("util::marchingtetrahedron"));
+            throw Exception("Masking callback not set");
         }
 
         K3DTree<size_t, float> vertexTree;

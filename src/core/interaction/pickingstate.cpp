@@ -48,7 +48,7 @@ std::string_view enumToStr(PickingState s) {
         case PickingState::Finished:
             return "Finished";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid PickingState enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid PickingState enum value '{}'",
                     static_cast<int>(s));
 }
 std::string_view enumToStr(PickingPressItem s) {
@@ -62,8 +62,8 @@ std::string_view enumToStr(PickingPressItem s) {
         case PickingPressItem::Tertiary:
             return "Tertiary";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid PickingPressItem enum value '{}'", static_cast<int>(s));
+    throw Exception(SourceContext{}, "Found invalid PickingPressItem enum value '{}'",
+                    static_cast<int>(s));
 }
 std::string_view enumToStr(PickingPressState s) {
     switch (s) {
@@ -78,8 +78,8 @@ std::string_view enumToStr(PickingPressState s) {
         case PickingPressState::DoubleClick:
             return "DoubleClick";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid PickingPressState enum value '{}'", static_cast<int>(s));
+    throw Exception(SourceContext{}, "Found invalid PickingPressState enum value '{}'",
+                    static_cast<int>(s));
 }
 std::string_view enumToStr(PickingHoverState s) {
     switch (s) {
@@ -92,8 +92,8 @@ std::string_view enumToStr(PickingHoverState s) {
         case PickingHoverState::Exit:
             return "Exit";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid PickingHoverState enum value '{}'", static_cast<int>(s));
+    throw Exception(SourceContext{}, "Found invalid PickingHoverState enum value '{}'",
+                    static_cast<int>(s));
 }
 
 std::ostream& operator<<(std::ostream& ss, PickingState s) { return ss << enumToStr(s); }

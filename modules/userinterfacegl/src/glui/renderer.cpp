@@ -43,7 +43,7 @@
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for vec2, vec4, size2_t
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                          // for joinString
 #include <inviwo/core/util/zip.h>                                       // for enumerate, zipIte...
 #include <modules/fontrendering/textrenderer.h>                         // for TextRenderer
@@ -236,20 +236,20 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
             textureLayers.push_back(layer);
         }
     } else {
-        throw Exception("Could not find a data reader for texture data (png).", IVW_CONTEXT);
+        throw Exception("Could not find a data reader for texture data (png).");
     }
 
     // Check that all textures has the same dimensions
     const size2_t texDim = textureLayers.front()->getDimensions();
     if (!std::all_of(textureLayers.begin(), textureLayers.end(),
                      [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
-        throw Exception(IVW_CONTEXT, "Textures have inconsistent sizes: {} at {}",
+        throw Exception(SourceContext{}, "Textures have inconsistent sizes: {} at {}",
                         joinString(textureFiles, ", "), sourcePath);
     }
     const DataFormatBase* const dataformat = textureLayers.front()->getDataFormat();
     if (!std::all_of(textureLayers.begin(), textureLayers.end(),
                      [&](const auto& layer) { return layer->getDataFormat() == dataformat; })) {
-        throw Exception(IVW_CONTEXT, "Textures have inconsistent formats: {} at {}",
+        throw Exception(SourceContext{}, "Textures have inconsistent formats: {} at {}",
                         joinString(textureFiles, ", "), sourcePath);
     }
 

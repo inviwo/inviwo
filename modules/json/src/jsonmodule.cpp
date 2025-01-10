@@ -86,8 +86,7 @@ void to_json(json& j, const DataInport<T>& port) {
 }
 template <typename T>
 void from_json(const json&, DataInport<T>&) {
-    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
-                    "It is not possible to assign a json object to an Inport");
+    throw Exception("It is not possible to assign a json object to an Inport");
 }
 
 template <typename T>

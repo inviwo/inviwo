@@ -51,9 +51,9 @@ const std::vector<dvec4>& getColormap(const Family& family, glm::uint8 numberOfC
     const auto maxColors = getMaxNumberOfColorsForFamily(family);
     if (numberOfColors < minColors || numberOfColors > maxColors) {
         throw UnsupportedNumberOfColorsException(
-            fmt::format("The colormap '{}' support between {} and {} colors. Requested {} colors",
-                        family, minColors, maxColors, numberOfColors),
-            IVW_CONTEXT_CUSTOM("inviwo::colorbrewer::getColormap"));
+            SourceContext{},
+            "The colormap '{}' support between {} and {} colors. Requested {} colors", family,
+            minColors, maxColors, numberOfColors);
     }
 
     // Calculate offset into the std::vector<dvec4> enum class
@@ -123,8 +123,7 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category& category,
     }
 
     if (v.empty()) {
-        throw ColorBrewerException("Requested colormap is not available.",
-                                   IVW_CONTEXT_CUSTOM("inviwo::colorbrewer::getColormaps"));
+        throw ColorBrewerException("Requested colormap is not available.");
     }
 
     return v;

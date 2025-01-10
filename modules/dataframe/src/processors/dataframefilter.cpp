@@ -43,7 +43,7 @@
 #include <inviwo/core/properties/propertyowner.h>                      // for PropertyOwner
 #include <inviwo/core/properties/stringproperty.h>                     // for StringProperty
 #include <inviwo/core/util/exception.h>                                // for Exception
-#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
 #include <inviwo/core/util/statecoordinator.h>                         // for StateCoordinator
 #include <inviwo/core/util/staticstring.h>                             // for operator+
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrame, DataFra...
@@ -155,8 +155,7 @@ decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_v
     if (auto p = dynamic_cast<T*>(parent->getPropertyByIdentifier(identifier))) {
         return p->get();
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("DataFrameFilter::createFilters"),
-                        "Invalid filter property '{}', missing sub-property '{}'",
+        throw Exception(SourceContext{}, "Invalid filter property '{}', missing sub-property '{}'",
                         parent->getIdentifier(), identifier);
     }
 }

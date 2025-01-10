@@ -86,7 +86,7 @@ WorkspaceAnnotations::WorkspaceAnnotations(const std::filesystem::path& path,
         auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(f, path, &logger);
         d.deserialize("WorkspaceAnnotations", *this);
     } else {
-        throw Exception(IVW_CONTEXT, "Unable to open file {}", path);
+        throw Exception(SourceContext{}, "Unable to open file {}", path);
     }
 }
 

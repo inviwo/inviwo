@@ -216,7 +216,7 @@ std::string_view glslDataType(DataFormatId id) {
     }};
 
     if (glslType[static_cast<size_t>(id)].empty()) {
-        throw OpenGLException(IVW_CONTEXT_CUSTOM("GLFormat"),
+        throw OpenGLException(SourceContext{},
                               "Error no GLSL data type found for selected data format: {}",
                               DataFormatBase::get(id)->getString());
     }
@@ -255,8 +255,7 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const Volume& volume) {
 
 std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const VolumeGL& volumeGL) {
     if (!gpuSupport_) {
-        throw Exception(IVW_CONTEXT,
-                        "Cannot compute min/max values of GL representation. Missing GPU support.");
+        throw Exception("Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
     const auto& glFormat = GLFormats::get(volumeGL.getDataFormatId());
@@ -278,8 +277,7 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const Layer& layer) {
 
 std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const LayerGL& layerGL) {
     if (!gpuSupport_) {
-        throw Exception(IVW_CONTEXT,
-                        "Cannot compute min/max values of GL representation. Missing GPU support.");
+        throw Exception("Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
     const auto& glFormat = GLFormats::get(layerGL.getDataFormatId());
@@ -300,8 +298,7 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferBase& buffer) {
 
 std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const BufferGL& bufferGL) {
     if (!gpuSupport_) {
-        throw Exception(IVW_CONTEXT,
-                        "Cannot compute min/max values of GL representation. Missing GPU support.");
+        throw Exception("Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
     Shader& bufferMinMax = getBufferMinMaxShader(bufferGL.getDataFormat());

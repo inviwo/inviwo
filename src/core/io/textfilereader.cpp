@@ -49,7 +49,7 @@ std::string TextFileReader::read() {
 
     auto file = std::ifstream(filePath_);
     if (!file.is_open()) {
-        throw FileException(IVW_CONTEXT, "Could not open file: {}", filePath_);
+        throw FileException(SourceContext{}, "Could not open file: {}", filePath_);
     }
     filesystem::skipByteOrderMark(file);
 

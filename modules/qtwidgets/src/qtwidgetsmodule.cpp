@@ -54,7 +54,6 @@
 #include <inviwo/core/util/foreacharg.h>                                     // for for_each_type
 #include <inviwo/core/util/glmmat.h>                                         // for dmat2, dmat3
 #include <inviwo/core/util/glmvec.h>                                         // for dvec3, vec3
-#include <inviwo/core/util/sourcecontext.h>                                  // for IVW_CONTEXT
 #include <inviwo/core/util/staticstring.h>                                   // for operator+
 #include <inviwo/core/util/zip.h>                                            // for zipper
 #include <modules/qtwidgets/inviwofiledialog.h>                              // for InviwoFileDi...
@@ -173,8 +172,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     , resources_{std::make_unique<InitQtResources>()}
     , tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
     if (!qApp) {
-        throw ModuleInitException("QApplication must be constructed before QtWidgetsModule",
-                                  IVW_CONTEXT);
+        throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
     }
 
     // Register bool property widgets

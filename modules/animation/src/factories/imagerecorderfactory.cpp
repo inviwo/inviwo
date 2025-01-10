@@ -171,7 +171,7 @@ std::unique_ptr<Recorder> ImageRecorderFactory::create(const RecorderOptions& op
     auto writerFactory = util::getDataWriterFactory(app_);
     auto writer = writerFactory->getWriterForTypeAndExtension<Layer>(writer_.getSelectedValue());
     if (!writer) {
-        throw Exception(IVW_CONTEXT, "No writer found for extension {}",
+        throw Exception(SourceContext{}, "No writer found for extension {}",
                         writer_.getSelectedValue());
     }
 

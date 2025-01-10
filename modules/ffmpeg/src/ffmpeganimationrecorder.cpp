@@ -166,7 +166,7 @@ std::unique_ptr<animation::Recorder> FFmpegRecorderFactory::create(
     file.replace_filename(name);
 
     if (!overwrite_ && std::filesystem::is_regular_file(file)) {
-        throw Exception(IVW_CONTEXT, "File already exists: {}", file);
+        throw Exception(SourceContext{}, "File already exists: {}", file);
     }
 
     return std::make_unique<FFmpegRecorder>(

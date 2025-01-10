@@ -48,7 +48,7 @@ std::shared_ptr<LayerGL> LayerPy2GLConverter::createFrom(
         auto src = source->data().data(0);
         destination->getTexture()->initialize(src);
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerGL", IVW_CONTEXT);
+        throw Exception("Unable to convert from LayerPy to LayerGL");
     }
 
     return destination;
@@ -70,7 +70,7 @@ void LayerPy2GLConverter::update(std::shared_ptr<const LayerPy> source,
         auto src = source->data().data(0);
         destination->getTexture()->upload(src);
     } else {
-        throw Exception("Unable to convert from LayerPy to LayerGL", IVW_CONTEXT);
+        throw Exception("Unable to convert from LayerPy to LayerGL");
     }
 }
 
@@ -89,7 +89,7 @@ std::shared_ptr<LayerPy> LayerGL2PyConverter::createFrom(
         auto dst = destination->data().mutable_data(0);
         source->getTexture()->download(dst);
     } else {
-        throw Exception("Unable to convert from LayerGL to LayerPy", IVW_CONTEXT);
+        throw Exception("Unable to convert from LayerGL to LayerPy");
     }
 
     return destination;
@@ -111,7 +111,7 @@ void LayerGL2PyConverter::update(std::shared_ptr<const LayerGL> source,
         auto dst = destination->data().mutable_data(0);
         source->getTexture()->download(dst);
     } else {
-        throw Exception("Unable to convert from LayerGL to LayerPy", IVW_CONTEXT);
+        throw Exception("Unable to convert from LayerGL to LayerPy");
     }
 }
 

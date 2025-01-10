@@ -42,8 +42,8 @@ std::string_view enumToStr(OutportDeterminesSize ods) {
         case OutportDeterminesSize::No:
             return "No";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid HandleResizeEvents enum value '{}'", static_cast<int>(ods));
+    throw Exception(SourceContext{}, "Found invalid HandleResizeEvents enum value '{}'",
+                    static_cast<int>(ods));
 }
 
 std::string_view enumToStr(HandleResizeEvents hre) {
@@ -53,8 +53,8 @@ std::string_view enumToStr(HandleResizeEvents hre) {
         case HandleResizeEvents::No:
             return "No";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid HandleResizeEvents enum value '{}'", static_cast<int>(hre));
+    throw Exception(SourceContext{}, "Found invalid HandleResizeEvents enum value '{}'",
+                    static_cast<int>(hre));
 }
 
 std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize ods) {

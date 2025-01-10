@@ -34,7 +34,6 @@
 #include <inviwo/core/io/serialization/serializer.h>                // for Serializer
 #include <inviwo/core/util/exception.h>                             // for Exception
 #include <inviwo/core/util/observer.h>                              // for Observable, Observer
-#include <inviwo/core/util/sourcecontext.h>                         // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>                         // for dynamic_unique_ptr_cast
 #include <modules/animation/datastructures/animationtime.h>         // for Seconds
 #include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
@@ -100,8 +99,8 @@ class ValueKeyframeSequence;
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserver : public Observer {
 public:
-    virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence*){};
-    virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence*){};
+    virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence*) {};
+    virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence*) {};
 };
 
 class IVW_MODULE_ANIMATION_API ValueKeyframeSequenceObserverble
@@ -276,7 +275,7 @@ void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<Interpolation>
             util::dynamic_unique_ptr_cast<InterpolationTyped<Key>>(std::move(interpolation))) {
         setInterpolation(std::move(inter));
     } else {
-        throw Exception("Interpolation type does not match key", IVW_CONTEXT);
+        throw Exception("Interpolation type does not match key");
     }
 }
 

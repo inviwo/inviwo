@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/propertywidget.h>                 // for PropertyWidget
 #include <inviwo/core/util/exception.h>                            // for Exception
 #include <inviwo/core/util/indirectiterator.h>                     // for IndirectIterator
-#include <inviwo/core/util/sourcecontext.h>                        // for IVW_CONTEXT
 #include <inviwo/core/util/zip.h>                                  // for enumerate, zipIterator
 #include <modules/animation/animationcontroller.h>                 // for AnimationController
 #include <modules/animation/animationcontrollerobserver.h>         // for AnimationControllerObs...
@@ -134,7 +133,7 @@ void AnimationEditorQt::onTrackAdded(Track* track) {
         tracks_[track] = std::move(trackWidget);
         updateSceneRect();
     } else {
-        throw Exception(IVW_CONTEXT, "Not able to create widget for track: {} of type: {}",
+        throw Exception(SourceContext{}, "Not able to create widget for track: {} of type: {}",
                         track->getName(), track->getClassIdentifier());
     }
 }

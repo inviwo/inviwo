@@ -73,7 +73,7 @@ VolumeTetraMesh* VolumeTetraMesh::clone() const { return new VolumeTetraMesh{*th
 
 void VolumeTetraMesh::setData(const std::shared_ptr<const Volume>& volume, int channel) {
     if (volume && glm::any(glm::lessThanEqual(volume->getDimensions(), size3_t{1}))) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Volumes with one or more dimensions equal to 1 cannot be converted to a "
                         "TetraMesh ({})",
                         volume->getDimensions());

@@ -37,7 +37,7 @@
 #include <inviwo/core/util/formats.h>                                // for DataFormatBase
 #include <inviwo/core/util/glmutils.h>                               // for extent, value_type
 #include <inviwo/core/util/glmvec.h>                                 // for size3_t
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT, IVW_CON...
+#include <inviwo/core/util/sourcecontext.h>                          // for SourceContext
 #include <modules/python3/pybindutils.h>                             // for toNumPyFormat, getDa...
 
 #include <inviwo/core/resourcemanager/resource.h>
@@ -63,11 +63,10 @@ namespace {
 const DataFormatBase* format(pybind11::array data) {
     const auto ndim = data.ndim();
     if (!(ndim == 3 || ndim == 4)) {
-        throw Exception("Ndims must be either 3 or 4, with 1 <= size[3] <= 4",
-                        IVW_CONTEXT_CUSTOM("VolumePy"));
+        throw Exception("Ndims must be either 3 or 4, with 1 <= size[3] <= 4");
     }
     if ((data.flags() & pybind11::array::c_style) == 0) {
-        throw Exception("Numpy array must be C-contiguous.", IVW_CONTEXT_CUSTOM("VolumePy"));
+        throw Exception("Numpy array must be C-contiguous.");
     }
 
     return pyutil::getDataFormat(ndim == 3 ? 1 : data.shape(3), data);
@@ -167,8 +166,7 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
             std::memcpy(data.mutable_data(0), vr->getData(), data.nbytes());
         } else {
             throw Exception(
-                "Unable to convert from VolumeRAM to VolumePy: numpy array is not C-contiguous.",
-                IVW_CONTEXT_CUSTOM("VolumeRAM2PyConverter"));
+                "Unable to convert from VolumeRAM to VolumePy: numpy array is not C-contiguous.");
         }
 
         return data;
@@ -191,8 +189,7 @@ void VolumeRAM2PyConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
                     volumeDst->data().nbytes());
     } else {
         throw Exception(
-            "Unable to convert from VolumeRAM to VolumePy: numpy array is not C-contiguous.",
-            IVW_CONTEXT);
+            "Unable to convert from VolumeRAM to VolumePy: numpy array is not C-contiguous.");
     }
 }
 
@@ -211,8 +208,7 @@ std::shared_ptr<VolumeRAM> VolumePy2RAMConverter::createFrom(
         std::memcpy(dst, src, size);
     } else {
         throw Exception(
-            "Unable to convert from VolumePy to VolumeRAM: numpy array is not C-contiguous.",
-            IVW_CONTEXT);
+            "Unable to convert from VolumePy to VolumeRAM: numpy array is not C-contiguous.");
     }
 
     return volumeDst;
@@ -233,8 +229,7 @@ void VolumePy2RAMConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
         std::memcpy(dst, src, size);
     } else {
         throw Exception(
-            "Unable to convert from VolumePy to VolumeRAM: numpy array is not C-contiguous.",
-            IVW_CONTEXT);
+            "Unable to convert from VolumePy to VolumeRAM: numpy array is not C-contiguous.");
     }
 }
 

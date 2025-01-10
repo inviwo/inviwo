@@ -107,8 +107,7 @@ const DataFormatBase* DataFormatBase::get() { return get(DataFormatId::NotSpecia
 
 const DataFormatBase* DataFormatBase::get(DataFormatId id) {
     if (id < DataFormatId::NotSpecialized || id >= DataFormatId::NumberOfFormats) {
-        throw DataFormatException(IVW_CONTEXT_CUSTOM("DataFormat"), "Invalid format id {}",
-                                  static_cast<int>(id));
+        throw DataFormatException(SourceContext{}, "Invalid format id {}", static_cast<int>(id));
     }
 
     static_assert(static_cast<size_t>(DataFormatId::NumberOfFormats) ==
@@ -155,8 +154,7 @@ const DataFormatBase* DataFormatBase::get(std::string_view name) {
     if (it != nameMap.end()) {
         return it->second;
     } else {
-        throw DataFormatException(IVW_CONTEXT_CUSTOM("DataFormat"), "Invalid format string: '{}'",
-                                  name);
+        throw DataFormatException(SourceContext{}, "Invalid format string: '{}'", name);
     }
 }
 

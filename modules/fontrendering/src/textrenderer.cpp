@@ -34,7 +34,7 @@
 #include <inviwo/core/util/exception.h>                // for Exception, FileException
 #include <inviwo/core/util/glmvec.h>                   // for ivec2, vec2, size2_t
 #include <inviwo/core/util/logcentral.h>               // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>            // for SourceContext
 #include <inviwo/core/util/stdextensions.h>            // for hash
 #include <inviwo/core/util/zip.h>                      // for get, zip, zipIterator
 #include <inviwo/core/util/safecstr.h>
@@ -83,7 +83,7 @@ TextRenderer::TextRenderer(const std::filesystem::path& fontPath)
     : fontface_(nullptr), fontSize_(10), lineSpacing_(0.2), shader_{getShader()} {
 
     if (FT_Init_FreeType(&fontlib_)) {
-        throw Exception("Could not initialize FreeType library", IVW_CONTEXT);
+        throw Exception("Could not initialize FreeType library");
     }
 
     setFont(fontPath);
@@ -142,9 +142,9 @@ void TextRenderer::setFont(const std::filesystem::path& fontPath) {
 
     int error = FT_New_Face(fontlib_, fontPath.string().c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
-        throw Exception(IVW_CONTEXT, "Unsupported font format: {}", fontPath);
+        throw Exception(SourceContext{}, "Unsupported font format: {}", fontPath);
     } else if (error) {
-        throw FileException(IVW_CONTEXT, "Could not open font file: {}", fontPath);
+        throw FileException(SourceContext{}, "Could not open font file: {}", fontPath);
     }
 
     FT_Select_Charmap(fontface_, ft_encoding_unicode);
@@ -565,7 +565,7 @@ TextRenderer::FontCache& TextRenderer::getFontCache() {
         createDefaultGlyphAtlas();
         fontCacheIt = glyphAtlas_.find(font);
         if (fontCacheIt == glyphAtlas_.end()) {
-            throw Exception("Could not create font atlas", IVW_CONTEXT);
+            throw Exception("Could not create font atlas");
         }
     }
     return fontCacheIt->second;
@@ -680,7 +680,7 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache& fc) {
     while (texSize.y > width) {
         width *= 2;
         if (width > maxTexSize) {
-            throw Exception("Font size too large (max size for font atlas exceeded)", IVW_CONTEXT);
+            throw Exception("Font size too large (max size for font atlas exceeded)");
         }
 
         texSize = calcTexLayout(width, glyphMargin_);

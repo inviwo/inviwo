@@ -53,8 +53,8 @@ std::string_view enumToStr(LightSourceType lt) {
         case LightSourceType::Directional:
             return "Directional";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid LightSourceType enum value '{}'", static_cast<int>(lt));
+    throw Exception(SourceContext{}, "Found invalid LightSourceType enum value '{}'",
+                    static_cast<int>(lt));
 }
 
 std::ostream& operator<<(std::ostream& ss, LightSourceType lt) { return ss << enumToStr(lt); }

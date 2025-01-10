@@ -47,7 +47,7 @@
 #include <inviwo/core/util/glmvec.h>                                    // for size3_t, dvec2, vec4
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
 #include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <modules/base/algorithm/dataminmax.h>                          // for volumeMinMax
 
 #include <warn/push>
@@ -193,8 +193,8 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.string().c_str(), 0),
                                             nifti_image_free);
     if (!niftiImage) {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),
-                                  "Error: failed to read NIfTI image in file: {}", filePath);
+        throw DataReaderException(SourceContext{}, "Error: failed to read NIfTI image in file: {}",
+                                  filePath);
     }
 
     const DataFormatBase* format = nullptr;
@@ -204,8 +204,8 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     // 5, 6, 7 for anything else needed.
     size3_t dim(niftiImage->dim[1], niftiImage->dim[2], niftiImage->dim[3]);
     if (glm::any(glm::equal(dim, size3_t(0)))) {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),
-                                  "Unsupported dimension '{}' in nifti file: {}", dim, filePath);
+        throw DataReaderException(SourceContext{}, "Unsupported dimension '{}' in nifti file: {}",
+                                  dim, filePath);
     }
     glm::mat4 basisAndOffset(2.0f);
     const glm::vec3 spacing(niftiImage->pixdim[1], niftiImage->pixdim[2], niftiImage->pixdim[3]);
@@ -213,8 +213,8 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     format = niftiDataTypeToInviwoDataFormat(niftiImage.get());
     if (format == nullptr) {
         std::string datatype(nifti_datatype_string(niftiImage->datatype));
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("NiftiReader"),
-                                  "Unsupported format '{}' in nifti file: {}", datatype, filePath);
+        throw DataReaderException(SourceContext{}, "Unsupported format '{}' in nifti file: {}",
+                                  datatype, filePath);
     }
 
     auto volume = std::make_shared<Volume>(dim, format);
@@ -458,7 +458,7 @@ std::shared_ptr<VolumeRepresentation> NiftiVolumeRAMLoader::createRepresentation
     flip(data.get(), voxelSize, dim, flipAxis);
 
     if (readBytes < 0) {
-        throw DataReaderException(IVW_CONTEXT, "Error: Could not read data from file: {}",
+        throw DataReaderException(SourceContext{}, "Error: Could not read data from file: {}",
                                   nim->fname);
     }
 
@@ -475,7 +475,7 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (size3_t{region_size[0], region_size[1], region_size[2]} != volumeDst->getDimensions()) {
-        throw DataReaderException("Mismatching volume dimensions, can't update", IVW_CONTEXT);
+        throw DataReaderException("Mismatching volume dimensions, can't update");
     }
     auto data = volumeDst->getData();
 
@@ -483,7 +483,7 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     auto region = region_size;
     auto readBytes = nifti_read_subregion_image(nim.get(), start.data(), region.data(), &data);
     if (readBytes < 0) {
-        throw DataReaderException(IVW_CONTEXT, "Error: Could not read data from file: {}",
+        throw DataReaderException(SourceContext{}, "Error: Could not read data from file: {}",
                                   nim->fname);
     }
 

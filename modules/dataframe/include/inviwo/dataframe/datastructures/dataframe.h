@@ -37,7 +37,7 @@
 #include <inviwo/core/ports/datainport.h>            // for DataInport
 #include <inviwo/core/ports/dataoutport.h>           // for DataOutport
 #include <inviwo/core/util/document.h>               // for TableBuilder, Document, TableBuilder...
-#include <inviwo/core/util/exception.h>              // for Exception, ExceptionContext
+#include <inviwo/core/util/exception.h>              // for Exception, SourceContext
 #include <inviwo/core/util/formats.h>                // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                 // for dvec2, uvec3
 #include <inviwo/core/util/stringconversion.h>       // for toString
@@ -66,19 +66,19 @@ class BufferBase;
 
 class IVW_MODULE_DATAFRAME_API InvalidColCount : public Exception {
 public:
-    InvalidColCount(const std::string& message = "", ExceptionContext context = ExceptionContext())
+    InvalidColCount(const std::string& message = "", SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~InvalidColCount() noexcept {}
 };
 class IVW_MODULE_DATAFRAME_API NoColumns : public Exception {
 public:
-    NoColumns(const std::string& message = "", ExceptionContext context = ExceptionContext())
+    NoColumns(const std::string& message = "", SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~NoColumns() noexcept {}
 };
 class IVW_MODULE_DATAFRAME_API DataTypeMismatch : public Exception {
 public:
-    DataTypeMismatch(const std::string& message = "", ExceptionContext context = ExceptionContext())
+    DataTypeMismatch(const std::string& message = "", SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~DataTypeMismatch() noexcept {}
 };

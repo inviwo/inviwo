@@ -42,7 +42,7 @@
 #include <inviwo/core/util/glmutils.h>                                  // for same_extent, valu...
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
 #include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 
 #include <algorithm>      // for min, transform
 #include <functional>     // for __base
@@ -109,7 +109,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     // TODO better exception messages
     auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
-        throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"),
+        throw DataWriterException(SourceContext{},
                                   "Internal PNG Error: Failed to create write struct");
     }
     util::OnScopeExit cleanup([&]() { png_destroy_write_struct(&png_ptr, nullptr); });
@@ -117,14 +117,13 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     png_set_error_fn(
         png_ptr, nullptr,
         [](png_structp, png_const_charp message) {
-            throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"), "Error writing PNG: {}",
-                                      message);
+            throw DataWriterException(SourceContext{}, "Error writing PNG: {}", message);
         },
         [](png_structp, png_const_charp message) { log::report(LogLevel::Warn, message); });
 
     auto info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        throw DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"),
+        throw DataWriterException(SourceContext{},
                                   "Internal PNG Error: Failed to create info struct");
     }
     util::OnScopeExit cleanup2 = std::move(cleanup);
@@ -145,8 +144,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
                 return PNG_COLOR_TYPE_RGBA;
             default:
                 // Should not ever reach this
-                throw new DataWriterException(IVW_CONTEXT_CUSTOM("PNGLayerWriter"),
-                                              "Unsupported number of channels");
+                throw new DataWriterException(SourceContext{}, "Unsupported number of channels");
         }
     }();
 
@@ -215,7 +213,7 @@ void PNGLayerWriter::writeData(const Layer* data, const std::filesystem::path& f
     checkOverwrite(filePath);
     FILE* fp = filesystem::fopen(filePath, "wb");
     if (!fp)
-        throw DataWriterException(IVW_CONTEXT, "Failed to open file for writing, {}", filePath);
+        throw DataWriterException(SourceContext{}, "Failed to open file for writing, {}", filePath);
     util::OnScopeExit closeFile([&fp]() { fclose(fp); });
 
     writeData(data, fp);

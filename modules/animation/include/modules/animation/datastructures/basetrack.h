@@ -33,7 +33,6 @@
 #include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/indirectiterator.h>                          // for makeIndirectIterator
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>                             // for dynamic_unique_pt...
 #include <modules/animation/datastructures/animationtime.h>             // for Seconds
 #include <modules/animation/datastructures/keyframesequenceobserver.h>  // for KeyframeSequenceO...
@@ -440,7 +439,7 @@ Seq* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     if (auto s = util::dynamic_unique_ptr_cast<Seq>(std::move(sequence))) {
         return add(std::move(s));
     } else {
-        throw Exception("Invalid sequence type", IVW_CONTEXT);
+        throw Exception("Invalid sequence type");
     }
     return nullptr;
 }
@@ -452,11 +451,11 @@ Seq* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
 
     if (it != sequences_.begin()) {
         if ((*std::prev(it))->getLastTime() > sequence->getFirstTime()) {
-            throw Exception("Overlapping Sequence", IVW_CONTEXT);
+            throw Exception("Overlapping Sequence");
         }
     }
     if (it != sequences_.end() && (*it)->getFirstTime() < sequence->getFirstTime()) {
-        throw Exception("Overlapping Sequence", IVW_CONTEXT);
+        throw Exception("Overlapping Sequence");
     }
 
     auto inserted = sequences_.insert(it, std::move(sequence));

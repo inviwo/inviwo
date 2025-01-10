@@ -87,7 +87,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
             std::ranges::adjacent_find(activePorts, std::not_equal_to<>{},
                                        [](auto& p) { return p.first->getData()->getDimensions(); });
         it != activePorts.end()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("util::combineChannels"),
+        throw Exception(SourceContext{},
                         "Dimensions of all inports need to be identical, found {} and {}",
                         it->first->getData()->getDimensions(),
                         std::next(it)->first->getData()->getDimensions());

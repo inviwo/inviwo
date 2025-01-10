@@ -65,12 +65,12 @@ bool breakOnException() {
 
 }  // namespace
 
-Exception::Exception(std::string_view message, ExceptionContext context)
+Exception::Exception(std::string_view message, SourceContext context)
     : std::runtime_error(SafeCStr{message}), context_(std::move(context)), stack_{stackTrace()} {
     if (breakOnException()) util::debugBreak();
 }
 
-Exception::Exception(std::string_view format, fmt::format_args&& args, ExceptionContext context)
+Exception::Exception(std::string_view format, fmt::format_args&& args, SourceContext context)
     : std::runtime_error{fmt::vformat(format, std::move(args))}, context_{std::move(context)} {
     if (breakOnException()) util::debugBreak();
 }
@@ -97,11 +97,11 @@ std::string Exception::getFullMessage(size_t maxFrames) const {
     }
 }
 
-const ExceptionContext& Exception::getContext() const { return context_; }
+const SourceContext& Exception::getContext() const { return context_; }
 
 const std::vector<std::string>& Exception::getStack() const { return stack_; }
 
-ModuleInitException::ModuleInitException(std::string_view message, ExceptionContext context,
+ModuleInitException::ModuleInitException(std::string_view message, SourceContext context,
                                          std::vector<std::string> modulesToDeregister)
     : Exception(message, std::move(context))
     , modulesToDeregister_(std::move(modulesToDeregister)) {}
@@ -110,7 +110,7 @@ const std::vector<std::string>& ModuleInitException::getModulesToDeregister() co
     return modulesToDeregister_;
 }
 
-void StandardExceptionHandler::operator()(ExceptionContext context) {
+void StandardExceptionHandler::operator()(SourceContext context) {
     try {
         throw;
     } catch (Exception& e) {

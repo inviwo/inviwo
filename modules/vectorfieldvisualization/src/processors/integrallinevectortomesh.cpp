@@ -63,7 +63,7 @@
 #include <inviwo/core/util/glmvec.h>                                          // for vec4, dvec3
 #include <inviwo/core/util/logcentral.h>                                      // for LogCentral
 #include <inviwo/core/util/raiiutils.h>                                       // for OnScopeExit
-#include <inviwo/core/util/sourcecontext.h>                                   // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                                   // for SourceContext
 #include <inviwo/core/util/staticstring.h>                                    // for operator+
 #include <inviwo/core/util/zip.h>                                             // for zipper, get
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>         // for BrushingAnd...
@@ -364,7 +364,7 @@ void IntegralLineVectorToMesh::process() {
         if (!mdProp) {  // Fallback
             auto props = getPropertiesByType<ColorByProperty>();
             if (props.size() == 0) {
-                throw Exception(IVW_CONTEXT, "Couldn't get ColorByProperty for meta data {}",
+                throw Exception(SourceContext{}, "Couldn't get ColorByProperty for meta data {}",
                                 metaDataKey);
             }
             mdProp = props.front();
@@ -398,7 +398,7 @@ void IntegralLineVectorToMesh::process() {
                 ib->getDataContainer().reserve(size * 2);
                 return ib;
             }
-            throw Exception("Unsupported output type", IVW_CONTEXT);
+            throw Exception("Unsupported output type");
         }();
 
         auto coloring = [&, this](auto sample, uint32_t lineIndex, uint32_t lineNumber) -> vec4 {

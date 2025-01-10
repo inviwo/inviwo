@@ -64,8 +64,7 @@ const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
         if (f) {
             info_ = f().cast<ProcessorInfo>();
         } else {
-            throw Exception(IVW_CONTEXT,
-                            "Missing getProcessorInfo member function in python processor");
+            throw Exception("Missing getProcessorInfo member function in python processor");
         }
     }
     return info_.value();

@@ -31,7 +31,6 @@
 
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/moduleutils.h>                               // for getModuleByType
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
 #include <modules/animationqt/animationqtmodule.h>                      // for AnimationQtModule
 #include <modules/animationqt/factories/sequenceeditorfactory.h>        // for SequenceEditorFac...
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>  // for SequenceEditorFac...
@@ -50,8 +49,7 @@ AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
         if (auto* animationModule = util::getModuleByType<AnimationQtModule>(app)) {
             return *animationModule;
         }
-        throw Exception("Was not able to find the animation qt module",
-                        IVW_CONTEXT_CUSTOM("AnimationQtSupplier"));
+        throw Exception("Was not able to find the animation qt module");
     }()} {}
 
 AnimationQtSupplier::~AnimationQtSupplier() { unRegisterAll(); }

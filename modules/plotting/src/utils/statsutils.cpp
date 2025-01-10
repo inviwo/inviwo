@@ -37,7 +37,7 @@
 #include <inviwo/core/util/formatdispatching.h>                         // for Scalars
 #include <inviwo/core/util/glmmat.h>                                    // for dmat2
 #include <inviwo/core/util/glmvec.h>                                    // for dvec2
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/zip.h>                                       // for zipper, get, zip
 
 #include <stdlib.h>       // for abs
@@ -56,8 +56,7 @@ template <typename Tx, typename Ty>
 RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
     RegresionResult res;
     if (X.getSize() != Y.getSize()) {
-        throw Exception("Buffers are not of equal length",
-                        IVW_CONTEXT_CUSTOM("statsutil::detail::linearRegresion"));
+        throw Exception("Buffers are not of equal length");
     }
     auto& xvec = X.getDataContainer();
     auto& yvec = Y.getDataContainer();

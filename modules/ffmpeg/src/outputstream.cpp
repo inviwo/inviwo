@@ -89,7 +89,7 @@ void OutputStream::openVideo(AVDictionary* opt_arg) {
 
     /* copy the stream parameters to the muxer */
     if (auto ret = avcodec_parameters_from_context(stream->codecpar, codec.ctx); ret < 0) {
-        throw Exception(IVW_CONTEXT, "Could not copy the stream parameters: {}", Error{ret});
+        throw Exception(SourceContext{}, "Could not copy the stream parameters: {}", Error{ret});
     }
 }
 

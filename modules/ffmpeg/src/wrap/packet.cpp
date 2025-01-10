@@ -39,7 +39,7 @@ namespace inviwo::ffmpeg {
 
 Packet::Packet() : pkt{av_packet_alloc()} {
     if (!pkt) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not allocate AVPacket");
+        throw inviwo::Exception("Could not allocate AVPacket");
     }
 }
 Packet::~Packet() { av_packet_free(&pkt); }

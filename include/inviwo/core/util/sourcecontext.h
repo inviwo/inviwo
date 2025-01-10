@@ -62,9 +62,6 @@ constexpr Literal operator""_sl(const char* str, size_t len) { return Literal{st
  */
 class IVW_CORE_API SourceContext {
 public:
-    explicit constexpr SourceContext(const char*) = delete;
-    explicit constexpr SourceContext(std::string_view) = delete;
-
     explicit constexpr SourceContext(Literal source, std::string_view file,
                                      std::string_view function, std::uint32_t line = 0,
                                      std::uint32_t column = 0)
@@ -79,6 +76,9 @@ public:
         std::source_location location = std::source_location::current())
         : SourceContext{extractName(location.function_name()), location.file_name(),
                         location.function_name(), location.line(), location.column()} {}
+
+    explicit constexpr SourceContext(const char*) = delete;
+    explicit constexpr SourceContext(std::string_view) = delete;
 
     std::string_view source() const { return source_; };
     std::string_view file() const { return file_; };

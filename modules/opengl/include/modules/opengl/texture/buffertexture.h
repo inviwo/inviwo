@@ -60,14 +60,14 @@ public:
         storage.bind();
         void* data = glMapBuffer(storage.getTarget(), access);
         if (!data) {
-            throw Exception(IVW_CONTEXT, "Unable to map OpenGL buffer '{}'", storage.getId());
+            throw Exception(SourceContext{}, "Unable to map OpenGL buffer '{}'", storage.getId());
         }
         return std::span<T>{reinterpret_cast<T*>(data), getSize()};
     }
 
     void unmap() {
         if (!glUnmapBuffer(storage.getTarget())) {
-            throw Exception(IVW_CONTEXT, "Unable to unmap OpenGL buffer '{}'", storage.getId());
+            throw Exception(SourceContext{}, "Unable to unmap OpenGL buffer '{}'", storage.getId());
         }
         storage.unbind();
     }
