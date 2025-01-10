@@ -41,7 +41,7 @@ DataFramePythonModule::DataFramePythonModule(InviwoApplication* app)
     try {
         pybind11::module::import("ivwdataframe");
     } catch (const std::exception& e) {
-        throw ModuleInitException(e.what(), IVW_CONTEXT);
+        throw ModuleInitException(e.what());
     }
 }
 

@@ -45,7 +45,7 @@
 #include <inviwo/core/util/filesystem.h>         // for fileExists
 #include <inviwo/core/util/logcentral.h>         // for LogCentral
 #include <inviwo/core/util/pathtype.h>           // for PathType, PathType::...
-#include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>      // for SourceContext
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pythoninterpreter.h>  // for PythonInterpreter
 #include <modules/python3/pythonlogger.h>       // for PythonLogger
@@ -161,7 +161,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     try {
         pybind11::module::import("inviwopy");
     } catch (const std::exception& e) {
-        throw ModuleInitException(e.what(), IVW_CONTEXT);
+        throw ModuleInitException(e.what());
     }
 }
 

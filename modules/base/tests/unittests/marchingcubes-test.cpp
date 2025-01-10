@@ -55,7 +55,7 @@ std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
             }
         }
     }
-    throw Exception("Unable to get data container from mesh", IVW_CONTEXT_CUSTOM("getBufferData"));
+    throw Exception("Unable to get data container from mesh");
 }
 
 std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
@@ -64,8 +64,7 @@ std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
             return ram->getDataContainer();
         }
     }
-    throw Exception("Unable to get index data container from mesh",
-                    IVW_CONTEXT_CUSTOM("getBufferIndexData"));
+    throw Exception("Unable to get index data container from mesh");
 }
 
 TEST(Marchingcubes, empty) {

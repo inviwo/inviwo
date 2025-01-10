@@ -43,14 +43,14 @@ Format::Format(OutputFormat outputFormat, const std::filesystem::path& aFilename
     : filename{aFilename} {
     avformat_alloc_output_context2(&ctx, outputFormat.of, nullptr, filename.string().c_str());
     if (!ctx) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not deduce output format from file extension");
+        throw inviwo::Exception("Could not deduce output format from file extension");
     }
 }
 
 Format::Format(const std::filesystem::path& aFilename) : filename{aFilename} {
     avformat_alloc_output_context2(&ctx, nullptr, nullptr, filename.string().c_str());
     if (!ctx) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not deduce output format from file extension");
+        throw inviwo::Exception("Could not deduce output format from file extension");
     }
 }
 
@@ -66,7 +66,8 @@ void Format::open() {
     if (!(ctx->oformat->flags & AVFMT_NOFILE)) {
         int ret = avio_open(&ctx->pb, filename.string().c_str(), AVIO_FLAG_WRITE);
         if (ret < 0) {
-            throw inviwo::Exception(IVW_CONTEXT, "Could not open '{}': {}", filename, Error{ret});
+            throw inviwo::Exception(SourceContext{}, "Could not open '{}': {}", filename,
+                                    Error{ret});
         }
     }
 }
@@ -74,14 +75,14 @@ void Format::open() {
 void Format::writeHeader(AVDictionary** options) {
     /* Write the stream header, if any. */
     if (auto ret = avformat_write_header(ctx, options); ret < 0) {
-        throw inviwo::Exception(IVW_CONTEXT, "Error occurred when writing header, file: {}",
+        throw inviwo::Exception(SourceContext{}, "Error occurred when writing header, file: {}",
                                 Error{ret});
     }
 }
 
 void Format::writeTrailer() {
     if (auto ret = av_write_trailer(ctx); ret < 0) {
-        throw inviwo::Exception(IVW_CONTEXT, "Error occurred when writing trailer, file: {}",
+        throw inviwo::Exception(SourceContext{}, "Error occurred when writing trailer, file: {}",
                                 Error{ret});
     }
 }
@@ -91,14 +92,15 @@ void Format::writeFrame(const Packet& pkt) {
      * its contents and resets pkt), so that no unreferencing is necessary.
      * This would be different if one used av_write_frame(). */
     if (auto ret = av_interleaved_write_frame(ctx, pkt.pkt); ret < 0) {
-        throw inviwo::Exception(IVW_CONTEXT, "Error while writing output packet: {}", Error(ret));
+        throw inviwo::Exception(SourceContext{}, "Error while writing output packet: {}",
+                                Error(ret));
     }
 }
 
 AVStream* Format::newStream() {
     AVStream* stream = avformat_new_stream(ctx, nullptr);
     if (!stream) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not allocate AVStream");
+        throw inviwo::Exception("Could not allocate AVStream");
     }
     return stream;
 }

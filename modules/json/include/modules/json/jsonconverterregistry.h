@@ -57,7 +57,7 @@ void JSONConverterRegistry<Base>::toJSON(json& j, const Base& p) const {
     if (auto* converter = this->getFactoryObject(p.getClassIdentifier())) {
         converter->toJSON(j, p);
     } else {
-        throw Exception(IVW_CONTEXT, "No json converter found for type: {}",
+        throw Exception(SourceContext{}, "No json converter found for type: {}",
                         p.getClassIdentifier());
     }
 }
@@ -72,7 +72,7 @@ void JSONConverterRegistry<Base>::fromJSON(const json& j, Base& p) const {
     if (auto* converter = this->getFactoryObject(p.getClassIdentifier())) {
         converter->fromJSON(j, p);
     } else {
-        throw Exception(IVW_CONTEXT, "No json converter found for type: {}",
+        throw Exception(SourceContext{}, "No json converter found for type: {}",
                         p.getClassIdentifier());
     }
 }

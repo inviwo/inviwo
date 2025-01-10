@@ -104,13 +104,13 @@ void DiskRepresentation<Repr, Self>::setLoader(DiskRepresentationLoader<Repr>* l
 
 template <typename Repr, typename Self>
 std::shared_ptr<Repr> DiskRepresentation<Repr, Self>::createRepresentation() const {
-    if (!loader_) throw Exception("No loader available to create representation", IVW_CONTEXT);
+    if (!loader_) throw Exception("No loader available to create representation");
     return loader_->createRepresentation(*static_cast<const Self*>(this));
 }
 
 template <typename Repr, typename Self>
 void DiskRepresentation<Repr, Self>::updateRepresentation(std::shared_ptr<Repr> dest) const {
-    if (!loader_) throw Exception("No loader available to update representation", IVW_CONTEXT);
+    if (!loader_) throw Exception("No loader available to update representation");
     loader_->updateRepresentation(dest, *static_cast<const Self*>(this));
 }
 
@@ -129,8 +129,7 @@ public:
                    std::filesystem::is_regular_file(newPath)) {
             return newPath;
         } else {
-            throw DataReaderException(IVW_CONTEXT_CUSTOM("DiskRepresentationLoader"),
-                                      "Error could not find input file: {}", path);
+            throw DataReaderException(SourceContext{}, "Error could not find input file: {}", path);
         }
     }
 };

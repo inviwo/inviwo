@@ -120,7 +120,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     setObjectName(name);
 
     mainWindow->getInviwoApplication()->getProcessorNetworkEvaluator()->setExceptionHandler(
-        [this](Processor* processor, EvaluationType type, ExceptionContext context) {
+        [this](Processor* processor, EvaluationType type, SourceContext context) {
             const auto& id = processor->getIdentifier();
             const auto error = [&](std::string error) {
                 if (auto pgi = getProcessorGraphicsItem(processor)) {

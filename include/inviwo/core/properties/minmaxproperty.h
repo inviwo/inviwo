@@ -476,7 +476,7 @@ T MinMaxProperty<T>::limitSeparation(T sep) const {
     const auto& min = range_.value.x;
     const auto& max = range_.value.y;
     if (min > max) {
-        throw Exception(IVW_CONTEXT, "Invalid value range, min > max [{}, {}]", min, max);
+        throw Exception(SourceContext{}, "Invalid value range, min > max [{}, {}]", min, max);
     }
 
     // ensure that min separation is not larger than the entire range

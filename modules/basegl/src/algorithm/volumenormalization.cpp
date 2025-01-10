@@ -67,7 +67,7 @@ VolumeNormalization::VolumeNormalization()
 
 void VolumeNormalization::setNormalizeChannel(const size_t channel, const bool normalize) {
     if (channel >= 4) {
-        throw RangeException(IVW_CONTEXT, "channel out of bounds ({})", channel);
+        throw RangeException(SourceContext{}, "channel out of bounds ({})", channel);
     }
     normalizeChannel_[channel] = normalize;
 }

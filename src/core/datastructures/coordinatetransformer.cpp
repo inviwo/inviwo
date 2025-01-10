@@ -54,8 +54,8 @@ std::string_view enumToStr(CoordinateSpace s) {
         case CoordinateSpace::View:
             return "View";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid CoordinateSpace enum value '{}'", static_cast<int>(s));
+    throw Exception(SourceContext{}, "Found invalid CoordinateSpace enum value '{}'",
+                    static_cast<int>(s));
 }
 
 std::ostream& operator<<(std::ostream& ss, CoordinateSpace s) { return ss << enumToStr(s); }
@@ -92,7 +92,7 @@ glm::mat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordina
                 case CoordinateSpace::World:
                     return getDataToWorldMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Data, to);
             }
@@ -105,7 +105,7 @@ glm::mat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordina
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Model, to);
             }
@@ -118,12 +118,12 @@ glm::mat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, Coordina
                 case CoordinateSpace::World:
                     return glm::mat4(1.0f);
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::World, to);
             }
         default:
-            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}",
+            throw Exception(SourceContext{}, "getMatrix is not available for the given space: {}",
                             from);
     }
 }
@@ -142,7 +142,7 @@ glm::mat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::World:
                     return getIndexToWorldMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Index, to);
             }
@@ -157,7 +157,7 @@ glm::mat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::World:
                     return getDataToWorldMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Data, to);
             }
@@ -172,7 +172,7 @@ glm::mat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::World:
                     return getModelToWorldMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Model, to);
             }
@@ -187,12 +187,12 @@ glm::mat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::World:
                     return glm::mat4(1.0f);
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::World, to);
             }
         default:
-            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}",
+            throw Exception(SourceContext{}, "getMatrix is not available for the given space: {}",
                             from);
     }
 }
@@ -213,7 +213,7 @@ glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getDataToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Data, to);
             }
@@ -230,7 +230,7 @@ glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getModelToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Model, to);
             }
@@ -247,7 +247,7 @@ glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getWorldToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::World, to);
             }
@@ -264,7 +264,7 @@ glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::View, to);
             }
@@ -281,12 +281,12 @@ glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return glm::mat4(1.0f);
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Clip, to);
             }
         default:
-            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}",
+            throw Exception(SourceContext{}, "getMatrix is not available for the given space: {}",
                             from);
     }
 }
@@ -309,7 +309,7 @@ glm::mat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getIndexToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Index, to);
             }
@@ -328,7 +328,7 @@ glm::mat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getDataToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Data, to);
             }
@@ -347,7 +347,7 @@ glm::mat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getModelToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Model, to);
             }
@@ -366,7 +366,7 @@ glm::mat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getWorldToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::World, to);
             }
@@ -385,7 +385,7 @@ glm::mat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return getViewToClipMatrix();
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::View, to);
             }
@@ -404,12 +404,12 @@ glm::mat4 StructuredCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                 case CoordinateSpace::Clip:
                     return glm::mat4(1.0f);
                 default:
-                    throw Exception(IVW_CONTEXT,
+                    throw Exception(SourceContext{},
                                     "getMatrix is not available for the given spaces: {} to {}",
                                     CoordinateSpace::Clip, to);
             }
         default:
-            throw Exception(IVW_CONTEXT, "getMatrix is not available for the given space: {}",
+            throw Exception(SourceContext{}, "getMatrix is not available for the given space: {}",
                             from);
     }
 }

@@ -47,7 +47,7 @@
 #include <inviwo/core/util/exception.h>                              // for Exception
 #include <inviwo/core/util/filesystem.h>                             // for fileExists
 #include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogProce...
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                          // for SourceContext
 #include <inviwo/core/util/statecoordinator.h>                       // for StateCoordinator
 #include <inviwo/core/util/staticstring.h>                           // for operator+
 #include <inviwo/core/util/stdextensions.h>                          // for ref, any_of
@@ -204,8 +204,7 @@ decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_v
     if (auto p = dynamic_cast<T*>(parent->getPropertyByIdentifier(identifier))) {
         return p->get();
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("CSVSource::createFilters"),
-                        "Invalid filter property '{}', missing sub-property '{}'",
+        throw Exception(SourceContext{}, "Invalid filter property '{}', missing sub-property '{}'",
                         parent->getIdentifier(), identifier);
     }
 }

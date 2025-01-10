@@ -149,7 +149,7 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
     d.deserialize("type", className, SerializationTarget::Attribute);
     if (className != getClassIdentifier()) {
         std::string_view cid = getClassIdentifier();
-        throw SerializationException(IVW_CONTEXT,
+        throw SerializationException(SourceContext{},
                                      "Deserialized interpolation: {} from a serialized "
                                      "interpolation with a different class identifier: {}",
                                      cid, className);

@@ -43,14 +43,14 @@ void remap(Volume& volume, const std::vector<int>& src, const std::vector<int>& 
            int missingValue, bool useMissingValue) {
 
     if (src.size() == 0 || src.size() != dst.size()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Remap"), "Invalid dataframe size (src = {}, dst = {})",
-                        src.size(), dst.size());
+        throw Exception(SourceContext{}, "Invalid dataframe size (src = {}, dst = {})", src.size(),
+                        dst.size());
     }
 
     // Create sorted copy of src and check if it contains duplicates
     std::unordered_set<int> set(src.begin(), src.end());
     if (src.size() != set.size()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Remap"),
+        throw Exception(SourceContext{},
                         "Duplicate elements in source row (numberOfDuplicates = {})",
                         src.size() - set.size());
     }

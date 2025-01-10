@@ -35,7 +35,7 @@
 #include <pybind11/pytypes.h>        // for list, str_attr_accessor, object_api
 
 #include <inviwo/core/util/exception.h>         // for Exception
-#include <inviwo/core/util/sourcecontext.h>     // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>     // for SourceContext
 #include <inviwo/core/util/stringconversion.h>  // for replaceInString
 
 #include <array>        // for array
@@ -50,7 +50,7 @@ void addModulePath(const std::filesystem::path& path) {
     namespace py = pybind11;
 
     if (!Py_IsInitialized()) {
-        throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
+        throw Exception("addModulePath(): Python is not initialized");
     }
 
     std::string pathConv{path.generic_string()};
@@ -61,8 +61,7 @@ void removeModulePath(const std::filesystem::path& path) {
     namespace py = pybind11;
 
     if (!Py_IsInitialized()) {
-        throw Exception("removeModulePath(): Python is not initialized",
-                        IVW_CONTEXT_CUSTOM("pyutil"));
+        throw Exception("removeModulePath(): Python is not initialized");
     }
 
     std::string pathConv{path.generic_string()};

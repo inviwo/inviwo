@@ -233,8 +233,7 @@ CanvasProcessor::~CanvasProcessor() {
 
 void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
     if (processorWidget && !dynamic_cast<CanvasProcessorWidget*>(processorWidget.get())) {
-        throw Exception("Expected CanvasProcessorWidget in CanvasProcessor::setProcessorWidget",
-                        IVW_CONTEXT);
+        throw Exception("Expected CanvasProcessorWidget in CanvasProcessor::setProcessorWidget");
     }
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
@@ -329,7 +328,7 @@ std::optional<std::filesystem::path> CanvasProcessor::exportFile(
     if (auto layer = getVisibleLayer()) {
         return util::saveData(*layer, path, name, candidateExtensions, overwrite);
     } else {
-        throw Exception("Could not find visible layer", IVW_CONTEXT);
+        throw Exception("Could not find visible layer");
     }
 }
 

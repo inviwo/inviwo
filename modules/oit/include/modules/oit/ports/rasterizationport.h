@@ -47,8 +47,7 @@ public:
 
     virtual void connectTo(Outport* port) override {
         if (!port->getConnectedInports().empty()) {
-            throw Exception(IVW_CONTEXT,
-                            "A RasterizationOutport can only be connected to one inport");
+            throw Exception("A RasterizationOutport can only be connected to one inport");
         }
         Super::connectTo(port);
     }

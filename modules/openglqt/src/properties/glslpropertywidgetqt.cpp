@@ -44,7 +44,7 @@ GLSLPropertyWidgetQt::GLSLPropertyWidgetQt(StringProperty* property)
     : StringPropertyWidgetQt(property) {
 
     if (property->getSemantics() != PropertySemantics::ShaderEditor) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Invalid semantics for HtmlPropertyWidgetQt, expected ShaderEditor, got {}",
                         property->getSemantics().getString());
     }

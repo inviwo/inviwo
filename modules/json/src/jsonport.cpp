@@ -40,8 +40,7 @@ void to_json(json& j, const JSONInport& port) {
     }
 }
 void from_json(const json&, JSONInport&) {
-    throw Exception(IVW_CONTEXT_CUSTOM("from_json"),
-                    "It is not possible to assign a json object to an Inport");
+    throw Exception("It is not possible to assign a json object to an Inport");
 }
 
 void to_json(json& j, const JSONOutport& port) {

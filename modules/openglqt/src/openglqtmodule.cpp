@@ -40,7 +40,6 @@
 #include <inviwo/core/util/logcentral.h>                                        // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                                     // for RenderCon...
 #include <inviwo/core/util/settings/settings.h>                                 // for Settings
-#include <inviwo/core/util/sourcecontext.h>                                     // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>                                     // for make_unique
 #include <modules/opengl/canvasgl.h>                                            // for CanvasGL
 #include <modules/opengl/canvasprocessorgl.h>                                   // for CanvasPro...
@@ -76,21 +75,19 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     , sharedCanvas_{"DefaultContext"} {
 
     if (!qApp) {
-        throw ModuleInitException("QApplication must be constructed before OpenGLQtModule",
-                                  IVW_CONTEXT);
+        throw ModuleInitException("QApplication must be constructed before OpenGLQtModule");
     }
     if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
         throw ModuleInitException(
             "OpenGLQt could not be initialized because another OpenGLSupplier is already used for "
-            "OpenGL context.",
-            IVW_CONTEXT);
+            "OpenGL context.");
     }
 
     // Create GL Context
     sharedCanvas_.initializeGL();
 
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
-        throw OpenGLInitException("Unable to initiate OpenGL", IVW_CONTEXT);
+        throw OpenGLInitException("Unable to initiate OpenGL");
     }
 
     CanvasGL::defaultGLState();

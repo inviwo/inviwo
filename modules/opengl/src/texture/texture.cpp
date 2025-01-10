@@ -32,7 +32,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask, InterpolationType
 #include <inviwo/core/util/formats.h>                     // for DataFormatBase
 #include <inviwo/core/util/observer.h>                    // for Observable
-#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
 #include <inviwo/core/util/zip.h>                         // for enumerate, zipIterator, zipper
 #include <modules/opengl/glformats.h>                     // for GLFormat, GLFormats
 #include <modules/opengl/inviwoopengl.h>                  // for GLenum, glBindTexture, glTexPar...
@@ -460,7 +460,7 @@ GLuint Texture::channels(GLenum format) {
         case GL_BGRA_INTEGER:
             return 4;
         default:
-            throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
+            throw OpenGLException(SourceContext{}, "Invalid format specified {}", format);
     }
 }
 
@@ -481,7 +481,7 @@ size_t Texture::dataTypeSize(GLenum dataType) {
             return 4;
 
         default:
-            throw OpenGLException("Invalid format specified", IVW_CONTEXT_CUSTOM("Texture"));
+            throw OpenGLException(SourceContext{}, "Invalid format specified {}", dataType);
     }
 }
 

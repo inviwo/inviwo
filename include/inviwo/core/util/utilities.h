@@ -73,7 +73,7 @@ IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::filesyst
  * @see stripIdentifier
  */
 IVW_CORE_API void validateIdentifier(std::string_view identifier, std::string_view type,
-                                     ExceptionContext context);
+                                     SourceContext context = std::source_location::current());
 
 /**
  * Utility to augment an identifier with a number to make it unique. Will add an increasing number

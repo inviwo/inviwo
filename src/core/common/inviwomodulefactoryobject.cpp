@@ -49,7 +49,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     , inviwoCoreVersion(aInviwoCoreVersion)
     , dependencies([&]() {
         if (someDependencies.size() != someDependenciesVersion.size()) {
-            throw Exception("Each module dependency must have a version", IVW_CONTEXT);
+            throw Exception(SourceContext{}, "Each module dependency must have a version");
         }
         std::vector<std::pair<std::string, Version>> deps;
         for (auto&& item : util::zip(someDependencies, someDependenciesVersion)) {
@@ -86,7 +86,7 @@ void recursiveTopologicalModuleFactoryObjectSort(
 
     if (visited.find(lname) != visited.end()) return;  // Already visited;
     if (tmpVisited.find(lname) != tmpVisited.end()) {
-        throw Exception("Dependency graph not a DAG", IVW_CONTEXT_CUSTOM("TopologicalModuleSort"));
+        throw Exception(SourceContext{}, "Dependency graph not a DAG");
     }
 
     tmpVisited.insert(lname);

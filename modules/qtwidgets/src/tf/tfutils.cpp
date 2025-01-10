@@ -54,7 +54,6 @@
 #include <inviwo/core/util/fileextension.h>                   // for FileExtension
 #include <inviwo/core/util/filesystem.h>                      // for directoryExists, getDirecto...
 #include <inviwo/core/util/logcentral.h>                      // for log, LogAudience, LogAudien...
-#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>                // for toString
 #include <modules/qtwidgets/inviwofiledialog.h>               // for InviwoFileDialog
 #include <modules/qtwidgets/inviwoqtutils.h>                  // for toQString, emToPx, toQPixmap
@@ -108,9 +107,8 @@ std::shared_ptr<TransferFunction> importTransferFunctionDialog(QWidget* parent) 
 
                 return reader->readData(filename);
             } else {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("importTransferFunctionDialog"),
-                                          "Unable to find a Transfer function reader for {}",
-                                          filename);
+                throw DataReaderException(
+                    SourceContext{}, "Unable to find a Transfer function reader for {}", filename);
             }
         } catch (DataReaderException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
@@ -137,7 +135,7 @@ std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(QWidget* pare
 
                 return reader->readData(filename);
             } else {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("importIsoValueCollectionDialog"),
+                throw DataReaderException(SourceContext{},
                                           "Unable to find a Iso Value Collection reader for {}",
                                           filename);
             }
@@ -167,12 +165,11 @@ void exportTransferFunctionDialog(const TransferFunction& tf, QWidget* parent) {
                     factory->getWriterForTypeAndExtension<TransferFunction>(fileExt, filename)) {
                 writer->writeData(&tf, filename);
 
-                util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"),
-                          "Data exported to disk: " + filename, LogLevel::Info, LogAudience::User);
+                util::log(SourceContext{}, "Data exported to disk: " + filename, LogLevel::Info,
+                          LogAudience::User);
             } else {
-                throw DataWriterException(IVW_CONTEXT_CUSTOM("exportTransferFunctionDialog"),
-                                          "Unable to find a Transfer Function writer for {}",
-                                          filename);
+                throw DataWriterException(
+                    SourceContext{}, "Unable to find a Transfer Function writer for {}", filename);
             }
         } catch (DataWriterException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
@@ -201,7 +198,7 @@ void exportIsoValueCollectionDialog(const IsoValueCollection& iso, QWidget* pare
 
                 log::info("Data exported to disk: {}", filename);
             } else {
-                throw DataWriterException(IVW_CONTEXT_CUSTOM("exportTransferFunctionDialog"),
+                throw DataWriterException(SourceContext{},
                                           "Unable to find a Iso Value Collection writer for {}",
                                           filename);
             }

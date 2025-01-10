@@ -32,7 +32,6 @@
 #include <inviwo/core/io/serialization/serializer.h>            // for Serializer
 #include <inviwo/core/util/exception.h>                         // for Exception
 #include <inviwo/core/util/indirectiterator.h>                  // for makeIndirectIterator, Ind...
-#include <inviwo/core/util/sourcecontext.h>                     // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>                     // for dynamic_unique_ptr_cast
 #include <modules/animation/datastructures/animationtime.h>     // for Seconds
 #include <modules/animation/datastructures/keyframeobserver.h>  // for KeyframeObserver
@@ -188,7 +187,7 @@ Key* BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     if (auto k = util::dynamic_unique_ptr_cast<Key>(std::move(key))) {
         return add(std::move(k));
     } else {
-        throw Exception("Invalid key type", IVW_CONTEXT);
+        throw Exception("Invalid key type");
     }
     return nullptr;
 }

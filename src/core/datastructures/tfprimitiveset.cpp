@@ -300,9 +300,8 @@ bool TFPrimitiveSet::remove(const TFPrimitive& primitive) {
 TFPrimitive& TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
     if ((type_ == TFPrimitiveSetType::Relative) &&
         ((primitive->getPosition() < 0.0f) || (primitive->getPosition() > 1.0f))) {
-        throw RangeException("Adding TFPrimitive at " + std::to_string(primitive->getPosition()) +
-                                 " outside of range [0,1]",
-                             IVW_CONTEXT);
+        throw RangeException(SourceContext{}, "Adding TFPrimitive at {}  outside of range [0,1]",
+                             primitive->getPosition());
     }
 
     primitive->addObserver(this);

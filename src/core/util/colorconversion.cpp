@@ -61,7 +61,7 @@ vec4 hex2rgba(std::string_view str) {
         const auto* const end = str.data() + str.size();
         if (auto [p, ec] = std::from_chars(str.data(), str.data() + str.size(), v, 16);
             ec != std::errc() || p != end) {
-            throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
+            throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);
         }
 
         const auto* c = reinterpret_cast<const unsigned char*>(&v);
@@ -73,11 +73,10 @@ vec4 hex2rgba(std::string_view str) {
                 result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
                 break;
             default:
-                throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".",
-                                str);
+                throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);
         }
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("color::hex2rgba"), "Invalid hex code \"{}\".", str);
+        throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);
     }
     return result;
 }

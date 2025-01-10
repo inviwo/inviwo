@@ -29,13 +29,13 @@
 
 #include <modules/opengl/openglexception.h>
 
-#include <inviwo/core/util/exception.h>  // for ExceptionContext, ModuleInitException
+#include <inviwo/core/util/exception.h>  // for SourceContext, ModuleInitException
 
 #include <utility>  // for move
 
 namespace inviwo {
 
-OpenGLInitException::OpenGLInitException(const std::string& message, ExceptionContext context)
+OpenGLInitException::OpenGLInitException(std::string_view message, SourceContext context)
     : ModuleInitException(message, std::move(context), {"opengl"}) {}
 
 }  // namespace inviwo

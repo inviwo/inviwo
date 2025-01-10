@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-MissingRepresentation::MissingRepresentation(const std::string& message, ExceptionContext context)
+MissingRepresentation::MissingRepresentation(const std::string& message, SourceContext context)
     : Exception(message, context) {}
 
 }  // namespace inviwo

@@ -32,8 +32,8 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>         // for createBufferRAM
 #include <inviwo/core/datastructures/representationconverter.h>  // for ConverterException
 #include <inviwo/core/util/formats.h>                            // for DataFormatBase
-#include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
-#include <modules/opengl/buffer/buffergl.h>                      // for BufferGL
+#include <inviwo/core/util/sourcecontext.h>
+#include <modules/opengl/buffer/buffergl.h>  // for BufferGL
 
 #include <string>       // for operator+, string
 #include <type_traits>  // for remove_extent_t
@@ -46,7 +46,7 @@ std::shared_ptr<BufferGL> BufferRAM2GLConverter::createFrom(
                                           src->getBufferUsage(), src->getBufferTarget());
 
     if (!dst) {
-        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from RAM to GL",
+        throw ConverterException(SourceContext{}, "Cannot convert format '{}' from RAM to GL",
                                  *src->getDataFormat());
     }
 
@@ -66,7 +66,7 @@ std::shared_ptr<BufferRAM> BufferGL2RAMConverter::createFrom(
                                src->getBufferTarget());
 
     if (!dst) {
-        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from GL to RAM",
+        throw ConverterException(SourceContext{}, "Cannot convert format '{}' from GL to RAM",
                                  *src->getDataFormat());
     }
     src->download(dst->getData());

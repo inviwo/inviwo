@@ -57,7 +57,7 @@
 #include <inviwo/core/properties/volumeindicatorproperty.h>             // for VolumeIndicatorPr...
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                          // for toString
 #include <modules/opengl/image/layergl.h>                               // for LayerGL
 #include <modules/opengl/inviwoopengl.h>                                // for glFinish
@@ -198,7 +198,7 @@ void VolumeRaycaster::process() {
 
 void VolumeRaycaster::raycast(const Volume& volume) {
     if (!volume.getRep<kind::GL>()) {
-        throw Exception("Could not find VolumeGL representation", IVW_CONTEXT);
+        throw Exception("Could not find VolumeGL representation");
     }
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();

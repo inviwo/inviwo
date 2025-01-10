@@ -33,7 +33,7 @@
 #include <inviwo/core/util/exception.h>      // for Exception
 #include <inviwo/core/util/glmvec.h>         // for dvec3
 #include <inviwo/core/util/interpolation.h>  // for Interpolation
-#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
 
 #include <algorithm>  // for reverse
 
@@ -48,7 +48,7 @@ std::vector<dvec3>& IntegralLine::getPositions() { return positions_; }
 std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IVW_CONTEXT);
+        throw Exception(SourceContext{}, "No meta data with name: {}" + name);
     }
     return it->second;
 }
@@ -56,7 +56,7 @@ std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::str
 std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IVW_CONTEXT);
+        throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
     return it->second;
 }
@@ -64,7 +64,7 @@ std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string& n
 void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<BufferBase> buffer) {
     auto it = metaData_.find(name);
     if (it != metaData_.end()) {
-        throw Exception("Meta data with name already exists: " + name, IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Meta data with name already exists: {}", name);
     }
     metaData_[name] = buffer;
 }

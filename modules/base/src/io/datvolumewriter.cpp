@@ -42,7 +42,6 @@
 #include <inviwo/core/metadata/metadatamap.h>                           // for MetaDataMap
 #include <inviwo/core/util/fileextension.h>                             // for FileExtension
 #include <inviwo/core/util/filesystem.h>                                // for ofstream, getFile...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stdextensions.h>                             // for overloaded
 
 #include <array>          // for array
@@ -149,15 +148,13 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     if (auto f = std::ofstream(filePath)) {
         f << ss.str();
     } else {
-        throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),
-                                  "Could not write to dat file: {}", filePath);
+        throw DataWriterException(SourceContext{}, "Could not write to dat file: {}", filePath);
     }
 
     if (auto f = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write(static_cast<const char*>(vr->getData()), vr->getNumberOfBytes());
     } else {
-        throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeDatVolume"),
-                                  "Could not write to raw file: {}", rawPath);
+        throw DataWriterException(SourceContext{}, "Could not write to raw file: {}", rawPath);
     }
 }
 }  // namespace util

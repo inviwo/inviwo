@@ -40,7 +40,7 @@
 #include <inviwo/core/util/formatdispatching.h>                         // for Floats
 #include <inviwo/core/util/glmconvert.h>                                // for glm_convert
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, dvec3
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <modules/base/algorithm/meshutils.h>                           // for forEachTriangle
 
 #include <algorithm>      // for transform
@@ -70,8 +70,7 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
     auto positions = mesh.getBuffer(BufferType::PositionAttrib);
 
     if (!positions) {
-        throw Exception("Input mesh has no position buffer",
-                        IVW_CONTEXT_CUSTOM("meshutil::calculateMeshNormals"));
+        throw Exception("Input mesh has no position buffer");
     }
 
     while (auto normals = mesh.getBuffer(BufferType::NormalAttrib)) {

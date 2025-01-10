@@ -167,10 +167,10 @@ void DataInport<T, N, Flat>::connectTo(Outport* port) {
         Flat ? dynamic_cast<const OutportIterable<T>*>(port) : nullptr;
 
     if (dataPort == nullptr && flatPort == nullptr)
-        throw Exception("Trying to connect incompatible ports.", IVW_CONTEXT);
+        throw Exception("Trying to connect incompatible ports.");
 
     if (getNumberOfConnections() + 1 > getMaxNumberOfConnections())
-        throw Exception("Trying to connect to a full port.", IVW_CONTEXT);
+        throw Exception("Trying to connect to a full port.");
 
     Inport::connectTo(port);
 }

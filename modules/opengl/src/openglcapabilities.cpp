@@ -33,7 +33,6 @@
 #include <inviwo/core/util/exception.h>             // for Exception
 #include <inviwo/core/util/formatconversion.h>      // for formatBytesToString, kilobytes_to_bytes
 #include <inviwo/core/util/logcentral.h>            // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/staticstring.h>          // for StaticString
 #include <inviwo/core/util/stringconversion.h>      // for stringTo, splitStringView, toString
 #include <inviwo/core/util/unindent.h>              // for length, unindent, IVW_UNINDENT
@@ -210,18 +209,17 @@ void OpenGLCapabilities::initializeGLEW() {
             if (glversion == 0) {
                 // There was an error retrieving the version. Executing further OpenGl calls may
                 // crash the application
-                std::stringstream ss;
-                ss << "Initialized GLEW but failed to retrieve OpenGL Version, glError"
-                   << getGLErrorString(glGetError());
-                throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
+                throw OpenGLInitException(fmt::format(
+                    "Initialized GLEW but failed to retrieve OpenGL Version, glError {}",
+                    getGLErrorString(glGetError())));
             }
             glVersionStr_ = std::string(
                 (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
             glVersion_ = parseAndRetrieveVersion(glVersionStr_);
         } else {
-            std::stringstream ss;
-            ss << "Failed to initialize GLEW: " << glewGetErrorString(glewError);
-            throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
+            throw OpenGLInitException(
+                fmt::format("Failed to initialize GLEW: {}",
+                            reinterpret_cast<const char*>(glewGetErrorString(glewError))));
         }
         LGL_ERROR;
         glewInitialized_ = true;

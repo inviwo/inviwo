@@ -90,7 +90,7 @@ struct Filter<Predicate, std::tuple<Args...>> {
 
 template <typename Index, typename Functor, Index... Is>
 constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
-    return std::array{func.template operator()<Is>()...};
+    return std::array { func.template operator()<Is>()... };
 }
 
 template <std::size_t N, typename Index = size_t, typename Functor>
@@ -148,12 +148,12 @@ auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Resu
         });
 
     if (format == DataFormatId::NotSpecialized) {
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+        throw DispatchException("Format not specialized");
     } else if (auto fun = table[static_cast<int>(format) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
         const auto expected = detail::predicateName<Predicate>();
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+        throw DispatchException(SourceContext{},
                                 "Format {} not supported, expected type matching {}", format,
                                 expected);
     }
@@ -187,8 +187,8 @@ auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Resu
  */
 template <typename Result, template <class> class Predicate1, template <class> class Predicate2,
           typename Callable, typename... Args>
-auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, Args&&... args)
-    -> Result {
+auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj,
+                    Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
     constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args&&...);
@@ -211,13 +211,13 @@ auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, 
 
     using enum DataFormatId;
     if (format1 == NotSpecialized || format2 == NotSpecialized) {
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+        throw DispatchException("Format not specialized");
     } else if (auto fun =
                    table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
-                                "Format combination {}, {}, not supported", format1, format2);
+        throw DispatchException(SourceContext{}, "Format combination {}, {}, not supported",
+                                format1, format2);
     }
 }
 
@@ -283,14 +283,13 @@ auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId for
 
     using enum DataFormatId;
     if (format1 == NotSpecialized || format2 == NotSpecialized || format3 == NotSpecialized) {
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+        throw DispatchException("Format not specialized");
     } else if (auto fun = table[static_cast<size_t>(format1) - 1][static_cast<size_t>(format2) - 1]
                                [static_cast<size_t>(format3) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
-                                "Format combination {}, {}, {} not supported", format1, format2,
-                                format3);
+        throw DispatchException(SourceContext{}, "Format combination {}, {}, {} not supported",
+                                format1, format2, format3);
     }
 }
 
@@ -319,12 +318,12 @@ template <typename Result, template <class> class Predicate, typename Callable, 
             }
         });
     if (format == DataFormatId::NotSpecialized) {
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"), "Format not specialized");
+        throw DispatchException("Format not specialized");
     } else if (auto fun = table[static_cast<int>(format) - 1]) {
         return fun(std::forward<Callable>(obj), std::forward<Args>(args)...);
     } else {
         const auto expected = detail::predicateName<Predicate>();
-        throw DispatchException(IVW_CONTEXT_CUSTOM("Dispatching"),
+        throw DispatchException(SourceContext{},
                                 "Format {} not supported, expected type matching {}", format,
                                 expected);
     }

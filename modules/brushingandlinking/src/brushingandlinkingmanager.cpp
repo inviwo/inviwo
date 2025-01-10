@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/invalidationlevel.h>                  // for InvalidationLevel
 #include <inviwo/core/util/assertion.h>                                // for IVW_ASSERT
 #include <inviwo/core/util/exception.h>                                // for Exception
-#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT, IVW_C...
+#include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                            // for has_key, transform
 #include <inviwo/core/util/stringconversion.h>                         // for toString
 #include <inviwo/core/util/typetraits.h>                               // for alwaysTrue, identity
@@ -78,7 +78,7 @@ BrushingAndLinkingManager::~BrushingAndLinkingManager() = default;
 void BrushingAndLinkingManager::brush(BrushingAction action, BrushingTarget target,
                                       const BitSet& indices, std::string_view source) {
     if ((action == BrushingAction::Filter) && source.empty()) {
-        throw Exception("BrushingAction::Filter requires a source", IVW_CONTEXT);
+        throw Exception("BrushingAction::Filter requires a source");
     }
 
     const int actionIdx = getActionIndex(action);
@@ -176,7 +176,8 @@ const BitSet& BrushingAndLinkingManager::getIndices(BrushingAction action,
 
 void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarget target) {
     if (action == BrushingAction::Filter) {
-        throw Exception(IVW_CONTEXT, "Clearing indices for action '{}' is not supported", action);
+        throw Exception(SourceContext{}, "Clearing indices for action '{}' is not supported",
+                        action);
     }
 
     auto clearMap = [target, index = getActionIndex(action)](auto& selections) {
@@ -291,7 +292,7 @@ void BrushingAndLinkingManager::highlight(const BitSet& indices, BrushingTarget 
 }
 
 void BrushingAndLinkingManager::clearFiltered() {
-    throw Exception("clearing filtered indices is no longer supported", IVW_CONTEXT);
+    throw Exception("clearing filtered indices is no longer supported");
 }
 
 void BrushingAndLinkingManager::clearSelected(BrushingTarget target) {

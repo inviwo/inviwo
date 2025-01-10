@@ -162,17 +162,15 @@ void ProcessorNetwork::addConnection(const PortConnection& connection) {
 void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
     if (!isPortInNetwork(src)) {
         throw Exception(
-            fmt::format(
-                "Unable to create connection, Outport '{}' of Processor '{}' not found in network",
-                src->getClassIdentifier(), src->getProcessor()->getIdentifier()),
-            IVW_CONTEXT);
+            SourceContext{},
+            "Unable to create connection, Outport '{}' of Processor '{}' not found in network",
+            src->getClassIdentifier(), src->getProcessor()->getIdentifier());
     }
     if (!isPortInNetwork(dst)) {
         throw Exception(
-            fmt::format(
-                "Unable to create connection, Inport '{}' of Processor '{}' not found in network",
-                src->getClassIdentifier(), src->getProcessor()->getIdentifier()),
-            IVW_CONTEXT);
+            SourceContext{},
+            "Unable to create connection, Inport '{}' of Processor '{}' not found in network",
+            src->getClassIdentifier(), src->getProcessor()->getIdentifier());
     }
 
     if (canConnect(src, dst) && !isConnected(src, dst)) {
@@ -237,17 +235,17 @@ void ProcessorNetwork::addLink(const PropertyLink& link) {
 }
 void ProcessorNetwork::addLink(Property* src, Property* dst) {
     if (!src) {
-        throw Exception("Source property is a nullptr", IVW_CONTEXT);
+        throw Exception("Source property is a nullptr");
     }
     if (!dst) {
-        throw Exception("Destination property is a nullptr", IVW_CONTEXT);
+        throw Exception("Destination property is a nullptr");
     }
 
     if (!isPropertyInNetwork(src)) {
-        throw Exception("Source property not found in network", IVW_CONTEXT);
+        throw Exception("Source property not found in network");
     }
     if (!isPropertyInNetwork(dst)) {
-        throw Exception("Destination property not found in network", IVW_CONTEXT);
+        throw Exception("Destination property not found in network");
     }
 
     if (!isLinked(src, dst) && canLink(src, dst)) {
@@ -438,8 +436,7 @@ PortConnection retrieveConnection(Deserializer& d, const ProcessorNetwork& net) 
     const auto dst = d.attribute("dst");
 
     if (!src || !dst) {
-        throw SerializationException(IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
-                                     "Missing src or dst attribute in PortConnection");
+        throw SerializationException("Missing src or dst attribute in PortConnection");
     }
 
     auto* outport = net.getOutport(*src);
@@ -449,13 +446,13 @@ PortConnection retrieveConnection(Deserializer& d, const ProcessorNetwork& net) 
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
     if (!outport && !inport) {
         const auto message = fmt::format(err, *src, *dst, "Outport and Inport not found.");
-        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"), "Connection");
+        throw SerializationException(message, SourceContext{}, "Connection");
     } else if (!outport) {
         const auto message = fmt::format(err, *src, *dst, "Outport not found.");
-        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"), "Connection");
+        throw SerializationException(message, SourceContext{}, "Connection");
     } else if (!inport) {
         const auto message = fmt::format(err, *src, *dst, "Inport not found.");
-        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"), "Connection");
+        throw SerializationException(message, SourceContext{}, "Connection");
     }
 
     return {outport, inport};
@@ -466,8 +463,7 @@ PropertyLink retrieveLink(Deserializer& d, const ProcessorNetwork& net) {
     const auto dst = d.attribute("dst");
 
     if (!src || !dst) {
-        throw SerializationException(IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
-                                     "Missing src or dst attribute in PropertyLink");
+        throw SerializationException("Missing src or dst attribute in PropertyLink");
     }
 
     auto* sprop = net.getProperty(*src);
@@ -478,17 +474,14 @@ PropertyLink retrieveLink(Deserializer& d, const ProcessorNetwork& net) {
     if (!sprop && !dprop) {
         const auto message =
             fmt::format(err, *src, *dst, "Source and destination properties not found.");
-        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
-                                     "PropertyLink");
+        throw SerializationException(message, SourceContext{}, "PropertyLink");
     } else if (!sprop) {
         const auto message = fmt::format(err, *src, *dst, "Source property not found.");
-        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
-                                     "PropertyLink");
+        throw SerializationException(message, SourceContext{}, "PropertyLink");
 
     } else if (!dprop) {
         const auto message = fmt::format(err, *src, *dst, "Destination property not found.");
-        throw SerializationException(message, IVW_CONTEXT_CUSTOM("ProcessorNetwork"),
-                                     "PropertyLink");
+        throw SerializationException(message, SourceContext{}, "PropertyLink");
     }
 
     return {sprop, dprop};
@@ -536,15 +529,14 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     } catch (const Exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + exception.getMessage(),
-                             exception.getContext());
+        throw AbortException(exception.getContext(), "Deserialization error: {}",
+                             exception.getMessage());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + std::string(exception.what()),
-                             IVW_CONTEXT);
+        throw AbortException(SourceContext{}, "Deserialization error: {}", exception.what());
     } catch (...) {
         clear();
-        throw AbortException("Unknown Exception during deserialization.", IVW_CONTEXT);
+        throw AbortException("Unknown Exception during deserialization.");
     }
 
     // Connections
@@ -568,7 +560,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
             try {
                 addConnection(c);
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
     } catch (const Exception& exception) {
@@ -577,11 +569,10 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                               exception.getMessage());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException(IVW_CONTEXT, "Deserialization error: {}",
-                             std::string(exception.what()));
+        throw AbortException(SourceContext{}, "Deserialization error: {}", exception.what());
     } catch (...) {
         clear();
-        throw AbortException(IVW_CONTEXT, "Unknown Exception during deserialization.");
+        throw AbortException("Unknown Exception during deserialization.");
     }
 
     // Links
@@ -604,7 +595,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
             try {
                 addLink(l);
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
 
@@ -614,10 +605,10 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                               exception.getMessage());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException(IVW_CONTEXT, "Deserialization error: {}", exception.what());
+        throw AbortException(SourceContext{}, "Deserialization error: {}", exception.what());
     } catch (...) {
         clear();
-        throw AbortException(IVW_CONTEXT, "Unknown Exception during deserialization.");
+        throw AbortException("Unknown Exception during deserialization.");
     }
 
     notifyObserversProcessorNetworkChanged();

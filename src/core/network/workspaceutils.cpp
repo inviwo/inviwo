@@ -79,7 +79,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
         try {
             {
                 NetworkLock lock(app->getProcessorNetwork());
-                app->getWorkspaceManager()->load(fileName, [&](ExceptionContext) {
+                app->getWorkspaceManager()->load(fileName, [&](SourceContext) {
                     try {
                         throw;
                     } catch (const IgnoreException& e) {
@@ -88,8 +88,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
                 });
 
                 if (errorCounter->getErrorCount() > 0) {
-                    throw Exception("Error messages found!",
-                                    IVW_CONTEXT_CUSTOM("util::updateWorkspaces"));
+                    throw Exception("Error messages found!");
                 }
             }
 
@@ -101,7 +100,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
             updateGui();
 
             if (dryRun == DryRun::No) {
-                app->getWorkspaceManager()->save(fileName, [&](ExceptionContext) {
+                app->getWorkspaceManager()->save(fileName, [&](SourceContext) {
                     try {
                         throw;
                     } catch (const IgnoreException& e) {

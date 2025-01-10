@@ -175,7 +175,7 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
             handlers_[orgProp] = std::make_unique<PropertyHandler>(*this, orgProp);
             return handlers_[orgProp]->superProperty.get();
         } else {
-            throw Exception("Could not find property " + orgProp->getPath(), IVW_CONTEXT);
+            throw Exception(SourceContext{}, "Could not find property {}", orgProp->getPath());
         }
     }
 }

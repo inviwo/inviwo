@@ -37,7 +37,7 @@
 #include <inviwo/core/util/iterrange.h>                // for as_range, iter_range
 #include <inviwo/core/util/logcentral.h>               // for log, LogAudience, LogAudience::User
 #include <inviwo/core/util/safecstr.h>                 // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>            // for SourceContext
 #include <inviwo/core/util/stdextensions.h>            // for all_of
 #include <inviwo/core/util/stringconversion.h>         // for toString, toLower
 #include <inviwo/core/util/transformiterator.h>        // for TransformIterator, makeTransformIt...
@@ -237,24 +237,20 @@ void Shader::linkShader(bool notifyRebuild) {
     bindAttributes();
 
     if (!util::all_of(shaderObjects_, [](const auto& elem) { return elem.isReady(); })) {
-        util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " objects not ready when linking.",
-                  LogLevel::Error, LogAudience::User);
+        log::error("Id: {} objects not ready when linking.", program_.id);
         return;
     }
 
     glLinkProgram(program_.id);
 
     if (!checkLinkStatus()) {
-        throw OpenGLException("Id: " + toString(program_.id) + " " +
-                                  processLog(utilgl::getProgramInfoLog(program_.id)),
-                              IVW_CONTEXT);
+        throw OpenGLException(SourceContext{}, "Id: {} {}", program_.id,
+                              processLog(utilgl::getProgramInfoLog(program_.id)));
     }
 
     auto log = utilgl::getProgramInfoLog(program_.id);
     if (!log.empty()) {
-        util::log(IVW_CONTEXT,
-                  "Id: " + toString(program_.id) + " (" + shaderNames() + ") " + processLog(log),
-                  LogLevel::Info, LogAudience::User);
+        log::info("Id: {} ({}) {}", program_.id, shaderNames(), processLog(log));
     }
 
     LGL_ERROR_CLASS;
@@ -291,19 +287,15 @@ void Shader::rebuildShader(ShaderObject* obj) {
 
         onReloadCallback_.invokeAll();
 
-        util::log(IVW_CONTEXT,
-                  "Id: " + toString(program_.id) + ", resource: " + obj->getFileName() +
-                      " successfully reloaded",
-                  LogLevel::Info, LogAudience::User);
+        log::info("Id: {}, resource: {} successfully reloaded", program_.id, obj->getFileName());
 
         auto log = utilgl::getProgramInfoLog(program_.id);
         if (!log.empty()) {
-            util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " " + processLog(log),
-                      LogLevel::Info, LogAudience::User);
+            log::info("Id: {} {}", program_.id, processLog(log));
         }
 
     } catch (OpenGLException& e) {
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+        log::exception(e);
     }
 }
 
@@ -361,9 +353,10 @@ bool Shader::isReady() const { return ready_; }
 void Shader::invalidate() { ready_ = false; }
 
 void Shader::activate() {
-    if (!ready_)
-        throw OpenGLException(
-            "Shader Id: " + toString(program_.id) + " not ready: " + shaderNames(), IVW_CONTEXT);
+    if (!ready_) {
+        throw OpenGLException(SourceContext{}, "Shader Id: {} not ready {}", program_.id,
+                              shaderNames());
+    }
     glUseProgram(program_.id);
     LGL_ERROR;
 }
@@ -401,7 +394,7 @@ GLint Shader::findUniformLocation(std::string_view name) const {
         uniformLookup_.try_emplace(std::string{name}, location);
 
         if (warningLevel_ == UniformWarning::Throw && location == -1) {
-            throw OpenGLException(IVW_CONTEXT, "Unable to set uniform {} in shader id: {}, {}",
+            throw OpenGLException(SourceContext{}, "Unable to set uniform {} in shader id: {}, {}",
                                   name, program_.id, shaderNames());
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
             log::warn("Unable to set uniform {} in shader id {}, {}: ", name, program_.id,

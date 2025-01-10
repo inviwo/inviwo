@@ -135,12 +135,12 @@ MessageBreakLevel LogCentral::getMessageBreakLevel() const { return breakLevel_;
 
 LogCentral* LogCentral::instance_ = nullptr;
 
-void util::log(ExceptionContext context, std::string_view message, LogLevel level,
+void util::log(SourceContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
     util::log(LogCentral::getPtr(), context, message, level, audience);
 }
 
-void util::log(Logger* logger, ExceptionContext context, std::string_view message, LogLevel level,
+void util::log(Logger* logger, SourceContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
     logger->log(context.source(), level, audience, context.file(), context.function(),
                 context.line(), message);
@@ -155,7 +155,7 @@ std::string_view enumToStr(LogLevel ll) {
         case LogLevel::Error:
             return "Error";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid LogLevel enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid LogLevel enum value '{}'",
                     static_cast<int>(ll));
 }
 
@@ -166,7 +166,7 @@ std::string_view enumToStr(LogAudience la) {
         case LogAudience::Developer:
             return "Developer";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid LogAudience enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid LogAudience enum value '{}'",
                     static_cast<int>(la));
 }
 
@@ -181,8 +181,8 @@ std::string_view enumToStr(MessageBreakLevel ll) {
         case MessageBreakLevel::Off:
             return "Off";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid MessageBreakLevel enum value '{}'", static_cast<int>(ll));
+    throw Exception(SourceContext{}, "Found invalid MessageBreakLevel enum value '{}'",
+                    static_cast<int>(ll));
 }
 
 std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << enumToStr(ll); }

@@ -51,7 +51,7 @@
 #include <inviwo/core/util/glmvec.h>                                    // for vec2, size3_t, uvec3
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
 #include <inviwo/dataframe/datastructures/column.h>                     // for TemplateColumn
 #include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
@@ -224,7 +224,7 @@ void VolumeSequenceToDataFrame::process() {
         std::vector<std::vector<float>*> channelBuffer_;
         auto volumeRAM = volume->getRepresentation<VolumeRAM>();
         if (volumeRAM->getDimensions() != dims) {
-            throw Exception("All volume dims has to be equal", IVW_CONTEXT);
+            throw Exception("All volume dims has to be equal");
         }
         const auto numCh = volume->getDataFormat()->getComponents();
         for (size_t c = 0; c < numCh; c++) {

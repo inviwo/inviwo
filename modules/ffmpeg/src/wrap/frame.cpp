@@ -43,7 +43,7 @@ Frame::Frame() : frame{nullptr} {}
 Frame::Frame(enum AVPixelFormat pix_fmt, int width, int height) : frame{av_frame_alloc()} {
 
     if (!frame) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not allocate frame data.");
+        throw inviwo::Exception("Could not allocate frame data.");
     }
 
     frame->format = pix_fmt;
@@ -52,7 +52,7 @@ Frame::Frame(enum AVPixelFormat pix_fmt, int width, int height) : frame{av_frame
 
     /* allocate the buffers for the frame data */
     if (av_frame_get_buffer(frame, 0) < 0) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not allocate frame data.");
+        throw inviwo::Exception("Could not allocate frame data.");
     }
 }
 
@@ -69,7 +69,8 @@ Frame::operator bool() const { return frame != nullptr; }
 
 void Frame::makeWritable() {
     if (auto ret = av_frame_make_writable(frame); ret < 0) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not make video frame writable {}", Error{ret});
+        throw inviwo::Exception(SourceContext{}, "Could not make video frame writable {}",
+                                Error{ret});
     }
 }
 

@@ -43,7 +43,6 @@
 #include <inviwo/core/properties/optionproperty.h>                      // for OptionPropertyOption
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
 #include <inviwo/core/util/staticstring.h>                              // for operator+
 
 #include <algorithm>      // for transform
@@ -116,7 +115,7 @@ void MeshColorFromNormals::process() {
 
         mesh->addBuffer(Mesh::BufferInfo{BufferType::ColorAttrib}, newBuf);
     } else {
-        throw Exception("Input mesh has no normals", IVW_CONTEXT);
+        throw Exception("Input mesh has no normals");
     }
 
     outport_.setData(mesh);

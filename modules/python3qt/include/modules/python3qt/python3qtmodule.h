@@ -32,7 +32,7 @@
 #include <modules/python3qt/python3qtmoduledefine.h>  // for IVW_MODULE_PYTHON3QT_API
 
 #include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
-#include <inviwo/core/util/exception.h>       // for ExceptionContext, Exception
+#include <inviwo/core/util/exception.h>       // for SourceContext, Exception
 
 #include <atomic>  // for atomic
 #include <memory>  // for unique_ptr
@@ -43,8 +43,7 @@ class InviwoApplication;
 
 class IVW_MODULE_PYTHON3QT_API PythonAbortException : public Exception {
 public:
-    PythonAbortException(const std::string& message = "",
-                         ExceptionContext context = ExceptionContext());
+    PythonAbortException(const std::string& message = "", SourceContext context = SourceContext());
     virtual ~PythonAbortException() noexcept = default;
 };
 

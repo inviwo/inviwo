@@ -36,7 +36,6 @@
 #include <inviwo/core/properties/property.h>                         // for Property, PropertyTr...
 #include <inviwo/core/util/assertion.h>                              // for IVW_ASSERT
 #include <inviwo/core/util/exception.h>                              // for Exception
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
 #include <modules/animation/datastructures/animationstate.h>         // for AnimationState, Anim...
 #include <modules/animation/datastructures/animationtime.h>          // for Seconds
 #include <modules/animation/datastructures/basetrack.h>              // for BaseTrack
@@ -339,7 +338,7 @@ inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequenc
             // No interpolation specified, use default
             return std::make_unique<Seq>(std::move(keys));
         } else {
-            throw Exception(IVW_CONTEXT,
+            throw Exception(SourceContext{},
                             "Invalid interpolation {} for {} . @Developer: Please follow "
                             "interpolation registration examples in animationmodule.cpp",
                             interpolation->getClassIdentifier(), getClassIdentifier());
@@ -396,7 +395,7 @@ void PropertyTrack<Prop, Key, Seq>::setProperty(Property* property) {
         property_ = prop;
         this->setName(property_->getDisplayName());
     } else {
-        throw Exception("Invalid property set to track", IVW_CONTEXT);
+        throw Exception("Invalid property set to track");
     }
 }
 
@@ -443,7 +442,7 @@ Key* PropertyTrack<Prop, Key, Seq>::addKeyFrameUsingPropertyValue(
     const Property* property, Seconds time, std::unique_ptr<Interpolation> interpolation) {
     auto prop = dynamic_cast<const Prop*>(property);
     if (!prop) {
-        throw Exception(IVW_CONTEXT, "Cannot add key frame from property type '{}' for '{}'.",
+        throw Exception(SourceContext{}, "Cannot add key frame from property type '{}' for '{}'.",
                         (property ? property->getClassIdentifier() : "null"),
                         property_->getClassIdentifier());
     }
@@ -479,7 +478,7 @@ Seq* PropertyTrack<Prop, Key, Seq>::addSequenceUsingPropertyValue(
 template <typename Prop, typename Key, typename Seq>
 void PropertyTrack<Prop, Key, Seq>::serialize(Serializer& s) const {
     if (!property_) {
-        throw SerializationException("No property set for the PropertyTrack", IVW_CONTEXT);
+        throw SerializationException("No property set for the PropertyTrack");
     }
     BaseTrack<Seq>::serialize(s);
     s.serialize("property", property_->getPath());
@@ -495,7 +494,7 @@ void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
     IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
     property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
     if (!property_) {
-        throw SerializationException("Could not find property " + propertyId, IVW_CONTEXT);
+        throw SerializationException(SourceContext{}, "Could not find property {}");
     }
 }
 

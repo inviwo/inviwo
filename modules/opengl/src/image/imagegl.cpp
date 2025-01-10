@@ -37,7 +37,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/util/formats.h>                                   // for DataFormat, DataF...
 #include <inviwo/core/util/glmvec.h>                                    // for ivec2, size2_t
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                             // for all_of
 #include <inviwo/core/util/stringconversion.h>                          // for toString
 #include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
@@ -404,7 +404,7 @@ void ImageGL::reAttachAllLayers() {
     }
 
     if (auto status = frameBufferObject_.status(); status != GL_FRAMEBUFFER_COMPLETE) {
-        throw OpenGLException(IVW_CONTEXT, "Framebuffer ({}) incomplete: {}",
+        throw OpenGLException(SourceContext{}, "Framebuffer ({}) incomplete: {}",
                               frameBufferObject_.getID(),
                               utilgl::framebufferStatusToString(status));
     }

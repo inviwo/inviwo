@@ -243,7 +243,7 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
         auto factory = RepresentationFactoryManager::getRepresentationFactory<Repr>();
         auto repr = std::shared_ptr<Repr>{factory->createOrDefault(requestedType, &data)};
         if (!repr) {
-            throw Exception("Failed to create default representation", IVW_CONTEXT_CUSTOM("Data"));
+            throw Exception("Failed to create default representation");
         }
         data.lastValidRepresentation_ = data.addRepresentationInternal(repr);
     }
@@ -267,8 +267,7 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
                 } else {  // No representation found, create it
                     dstRepr = converter->createFrom(srcRepr);
                     if (!dstRepr) {
-                        throw ConverterException("Converter failed to create",
-                                                 IVW_CONTEXT_CUSTOM("Data"));
+                        throw ConverterException("Converter failed to create");
                     }
                     data.lastValidRepresentation_ = data.addRepresentationInternal(dstRepr);
                 }
@@ -283,7 +282,7 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
                     util::demangle(converterId.second.name()), converterId.second.hash_code());
             }
             throw ConverterException(
-                IVW_CONTEXT_CUSTOM("Data"),
+                SourceContext{},
                 "Found no converters, Source {}({}),  Destination {}({})\nConverters:\n{}",
                 util::demangle(data.lastValidRepresentation_->getTypeIndex().name()),
                 data.lastValidRepresentation_->getTypeIndex().hash_code(),
@@ -340,7 +339,9 @@ void Data<Self, Repr>::invalidateAllOtherInternal(const Repr* repr) {
             lastValidRepresentation_ = elem.second;
         }
     }
-    if (!found) throw Exception("Called with representation not in representations.", IVW_CONTEXT);
+    if (!found) {
+        throw Exception("Called with representation not in representations.");
+    }
 }
 
 template <typename Self, typename Repr>

@@ -37,7 +37,7 @@
 #include <inviwo/core/util/demangle.h>              // for parseTypeIdName
 #include <inviwo/core/util/exception.h>             // for Exception
 #include <inviwo/core/util/iterrange.h>             // for iter_range
-#include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>         // for SourceContext
 #include <inviwo/core/util/stringconversion.h>      // for StrBuffer
 
 #include <modules/python3/polymorphictypehooks.h>
@@ -131,11 +131,10 @@ pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::stri
 template <typename T>
 void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
     if (DataTraits<T>::classIdentifier().empty()) {
-        throw Exception(
-            fmt::format("exposing standard DataPorts to python for '{0}' failed due to missing "
+        throw Exception(SourceContext{},
+                        "exposing standard DataPorts to python for '{0}' failed due to missing "
                         "class identifier. Have you provided a DataTraits<{0}> specialization?",
-                        util::parseTypeIdName(typeid(T).name())),
-            IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
+                        util::parseTypeIdName(typeid(T).name()));
     }
 
     exposeInport<DataInport<T>>(m, name);

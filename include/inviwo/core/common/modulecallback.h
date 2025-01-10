@@ -54,7 +54,7 @@ public:
 
     void invoke(U* argument) const {
         if (!argument) {
-            throw Exception("Callback function argument does not match", IVW_CONTEXT);
+            throw Exception("Callback function argument does not match");
         }
 
         if (functionPtr_) {

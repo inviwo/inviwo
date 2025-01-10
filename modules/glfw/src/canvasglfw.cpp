@@ -39,7 +39,7 @@
 #include <inviwo/core/util/glmvec.h>                         // for ivec2, uvec2, size2_t, dvec2
 #include <inviwo/core/util/logcentral.h>                     // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                  // for CanvasContextHolder, RenderC...
-#include <inviwo/core/util/sourcecontext.h>                  // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                  // for SourceContext
 #include <modules/glfw/glfwexception.h>                      // for GLFWException
 #include <modules/glfw/glfwuserdata.h>                       // for GLFWUserData, GLFWUserDataId
 #include <modules/opengl/canvasgl.h>                         // for CanvasGL
@@ -82,7 +82,7 @@ void GLFWWindowHandler::provideExternalContext(GLFWwindow* sharedContext) {
     if (!sharedContext_) {
         sharedContext_ = sharedContext;
     } else {
-        throw Exception("Shared context can only be set once!", IVW_CONTEXT_CUSTOM("GLFW"));
+        throw Exception("Shared context can only be set once!");
     }
 }
 
@@ -103,8 +103,7 @@ GLFWwindow* GLFWWindowHandler::createWindow(const std::string& title, uvec2 dime
     auto win = glfwCreateWindow(static_cast<int>(dimensions.x), static_cast<int>(dimensions.y),
                                 title.c_str(), nullptr, sharedContext_);
     if (!win) {
-        throw GLFWException("Could not create GLFW window.",
-                            IVW_CONTEXT_CUSTOM("GLFWContextHandler"));
+        throw GLFWException("Could not create GLFW window.");
     }
     return win;
 }
@@ -272,8 +271,7 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
         const char* description;
         int code = glfwGetError(&description);
         if (description) {
-            throw Exception(IVW_CONTEXT_CUSTOM("CanvasGLFW"), "GLFW Error: {} {}", code,
-                            description);
+            throw Exception(SourceContext{}, "GLFW Error: {} {}", code, description);
         }
     };
 

@@ -36,7 +36,7 @@
 namespace inviwo {
 
 void StandardEvaluationErrorHandler::operator()(Processor* processor, EvaluationType type,
-                                                ExceptionContext context) {
+                                                SourceContext context) {
     const auto& id = processor->getIdentifier();
     try {
         throw;

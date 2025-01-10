@@ -363,9 +363,9 @@ public:
     std::optional<std::string_view> attribute(std::string_view child, std::string_view key) const;
     bool hasElement(std::string_view key) const;
 
-    using ExceptionHandler = std::function<void(ExceptionContext)>;
+    using ExceptionHandler = std::function<void(SourceContext)>;
     void setExceptionHandler(ExceptionHandler handler);
-    void handleError(const ExceptionContext& context);
+    void handleError(const SourceContext& context = std::source_location::current());
 
     void convertVersion(VersionConverter* converter);
 
@@ -444,7 +444,7 @@ template <typename K, bool Transparent>
 auto getChildKey(const TiXmlElement& child, std::string_view comparisonAttribute) {
     const auto childKeyStr = detail::attribute(&child, comparisonAttribute);
     if (!childKeyStr) {
-        throw SerializationException(IVW_CONTEXT_CUSTOM("Deserializer"), "Missing childKeyStr");
+        throw SerializationException("Missing childKeyStr");
     }
     if constexpr (std::is_same_v<K, std::string> && Transparent) {
         return *childKeyStr;
@@ -498,7 +498,7 @@ template <typename T>
 template <typename... Args>
 DeserializationErrorHandle<T>::DeserializationErrorHandle(Deserializer& d, Args&&... args)
     : handler_(std::forward<Args>(args)...), d_(d) {
-    d_.setExceptionHandler([this](ExceptionContext c) { handler_(c); });
+    d_.setExceptionHandler([this](SourceContext c) { handler_(c); });
 }
 
 template <typename T>
@@ -526,7 +526,7 @@ void Deserializer::deserialize(std::string_view key, T& data, const Serializatio
             detail::getNodeAttribute(rootElement_, SerializeConstants::ContentAttribute, data);
         }
     } catch (...) {
-        handleError(IVW_CONTEXT);
+        handleError();
     }
 }
 
@@ -558,7 +558,7 @@ void Deserializer::deserialize(std::string_view key, Vec& data) {
                 detail::getNodeAttribute(rootElement_, SerializeConstants::VectorAttributes[i],
                                          data[i]);
             } catch (...) {
-                handleError(IVW_CONTEXT);
+                handleError();
             }
         }
     }
@@ -607,13 +607,13 @@ void Deserializer::deserialize(std::string_view key, std::vector<T, A>& vector,
                 deserialize(itemKey, vector.back());
             } catch (...) {
                 vector.pop_back();
-                handleError(IVW_CONTEXT);
+                handleError();
             }
         } else {
             try {
                 deserialize(itemKey, vector[i]);
             } catch (...) {
-                handleError(IVW_CONTEXT);
+                handleError();
             }
         }
 
@@ -648,7 +648,7 @@ Deserializer::Result Deserializer::deserializeTrackChanges(std::string_view key,
                 deserialize(itemKey, vector.back());
             } catch (...) {
                 vector.pop_back();
-                handleError(IVW_CONTEXT);
+                handleError();
             }
         } else {
             try {
@@ -656,7 +656,7 @@ Deserializer::Result Deserializer::deserializeTrackChanges(std::string_view key,
                 deserialize(itemKey, vector[i]);
                 if (old != vector[i]) result = Modified;
             } catch (...) {
-                handleError(IVW_CONTEXT);
+                handleError();
             }
         }
 
@@ -685,7 +685,7 @@ void Deserializer::deserializeRange(std::string_view key, std::string_view itemK
         try {
             deserializeFunction(*this, i);
         } catch (...) {
-            handleError(IVW_CONTEXT);
+            handleError();
         }
         i++;
     });
@@ -868,7 +868,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_set<T, H, P,
             deserialize(itemKey, item);
             set.insert(std::move(item));
         } catch (...) {
-            handleError(IVW_CONTEXT);
+            handleError();
         }
     });
 }
@@ -895,7 +895,7 @@ void Deserializer::deserialize(std::string_view key, std::list<T>& container,
                                      deserialize(itemKey, *std::next(container.begin(), i));
                                  }
                              } catch (...) {
-                                 handleError(IVW_CONTEXT);
+                                 handleError();
                              }
                              i++;
                          });
@@ -920,10 +920,11 @@ void Deserializer::deserialize(std::string_view key, std::array<T, N>& cont,
                                      deserialize(itemKey, cont[i]);
                                  } else {
                                      throw SerializationException(
-                                         "To many elements found for std::array", IVW_CONTEXT, key);
+                                         "To many elements found for std::array", SourceContext{},
+                                         key);
                                  }
                              } catch (...) {
-                                 handleError(IVW_CONTEXT);
+                                 handleError();
                              }
                              i++;
                          });
@@ -953,7 +954,7 @@ void Deserializer::deserialize(std::string_view key, std::map<K, V, C, A>& map,
             deserialize(itemKey, it->second);
         } catch (...) {
             if (inserted) map.erase(it);
-            handleError(IVW_CONTEXT);
+            handleError();
         }
     });
 }
@@ -984,7 +985,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
             deserialize(itemKey, it->second);
         } catch (...) {
             if (inserted) map.erase(it);
-            handleError(IVW_CONTEXT);
+            handleError();
         }
     });
 }
@@ -1067,7 +1068,8 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
             NodeDebugger error(keyNode);
             throw SerializationException("Could not create " + error.toString(0) + ". Reason: \"" +
                                              std::string{*typeAttr} + "\" Not found in factory.",
-                                         IVW_CONTEXT, key, *typeAttr, error[0].identifier, keyNode);
+                                         SourceContext{}, key, *typeAttr, error[0].identifier,
+                                         keyNode);
         }
     } else if (!data) {
         try {
@@ -1082,7 +1084,7 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
             NodeDebugger error(keyNode);
             throw SerializationException(
                 "Could not create " + error.toString(0) + ". Reason: No default constructor found.",
-                IVW_CONTEXT, key, "", error[0].identifier, keyNode);
+                SourceContext{}, key, "", error[0].identifier, keyNode);
         }
     }
 
@@ -1129,8 +1131,8 @@ void Deserializer::deserializeAs(std::string_view key, T*& data) {
             data = typeptr;
         } else {
             delete ptr;
-            throw SerializationException(
-                fmt::format("Could not deserialize \"{}\" types does not match", key), IVW_CONTEXT);
+            throw SerializationException(SourceContext{},
+                                         "Could not deserialize \"{}\" types does not match", key);
         }
     }
 }
@@ -1148,8 +1150,8 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
             data.reset(typeptr);
         } else {
             delete ptr;
-            throw SerializationException(
-                fmt::format("Could not deserialize \"{}\" types does not match", key), IVW_CONTEXT);
+            throw SerializationException(SourceContext{},
+                                         "Could not deserialize \"{}\" types does not match", key);
         }
     }
 }

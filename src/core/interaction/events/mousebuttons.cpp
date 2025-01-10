@@ -46,7 +46,7 @@ std::string_view enumToStr(MouseButton b) {
         case MouseButton::Right:
             return "Right";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid MouseButton enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid MouseButton enum value '{}'",
                     static_cast<int>(b));
 }
 
@@ -61,7 +61,7 @@ std::string_view enumToStr(MouseState s) {
         case MouseState::DoubleClick:
             return "DoubleClick";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid MouseState enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid MouseState enum value '{}'",
                     static_cast<int>(s));
 }
 

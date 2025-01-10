@@ -133,7 +133,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
     const H5::DataSpace dataSpace = dataset.getSpace();
     const size_t rank = dataSpace.getSimpleExtentNdims();
     if (selection.size() != rank) {
-        throw Exception("Selection not of the same rank as the data", IVW_CONTEXT);
+        throw Exception("Selection not of the same rank as the data");
     }
 
     std::vector<hsize_t> dataDimensions(rank);
@@ -167,7 +167,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
         stride[i] = selection[i].stride;
 
         if (count[i] > 1) {
-            if (resRank > 2) throw Exception("Invalid selection, resulting rank > 3", IVW_CONTEXT);
+            if (resRank > 2) throw Exception("Invalid selection, resulting rank > 3");
             memoryDimensions[resRank] = count[i];
             volumeDimensions[resRank] = count[i];
             resRank++;
@@ -200,7 +200,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
             try {
                 dataset.read(data, TypeMap<ValueType>::getType(), memorySpace, dataSpace);
             } catch (H5::DataSetIException& e) {
-                throw Exception("HDF: unable to read data: " + e.getDetailMsg(), IVW_CONTEXT);
+                throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
             }
 
             auto res = ::inviwo::util::dataMinMax(data, selectionSize);

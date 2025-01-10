@@ -137,14 +137,12 @@ fs::path getWorkingDirectory() {
     std::wstring buff(bufferSize, 0);
 
     if (!GetCurrentDirectoryW(static_cast<DWORD>(buff.size()), buff.data()))
-        throw Exception("Error querying current directory",
-                        IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
+        throw Exception("Error querying current directory");
     return fs::path{buff};
 #else
     std::array<char, FILENAME_MAX> workingDir;
     if (!getcwd(workingDir.data(), workingDir.size()))
-        throw Exception("Error querying current directory",
-                        IVW_CONTEXT_CUSTOM("filesystem::getWorkingDirectory"));
+        throw Exception("Error querying current directory");
     return fs::path(workingDir.data());
 #endif
 }
@@ -154,8 +152,7 @@ void setWorkingDirectory(const fs::path& path) {
     SetCurrentDirectoryW(path.c_str());
 #else
     if (chdir(path.c_str()) != 0) {
-        throw Exception(IVW_CONTEXT_CUSTOM("filesystem::setWorkingDirectory"),
-                        "Error setting working directory path: (}", path);
+        throw Exception(SourceContext{}, "Error setting working directory path: (}", path);
     }
 #endif
 }
@@ -167,21 +164,18 @@ fs::path getModuleFileName(HMODULE handle, std::string_view name) {
 
     auto size = GetModuleFileNameW(handle, buffer.data(), static_cast<DWORD>(buffer.size()));
     if (size == 0) {
-        throw Exception(IVW_CONTEXT_CUSTOM("filesystem::getModuleFileName"),
-                        "Error retrieving {} path", name);
+        throw Exception(SourceContext{}, "Error retrieving {} path", name);
     }
     while (size == buffer.size()) {
         // buffer is too small, enlarge
         auto newSize = buffer.size() * 2;
         if (newSize > maxBufSize) {
-            throw Exception(IVW_CONTEXT_CUSTOM("filesystem::getModuleFileName"),
-                            "Insufficient buffer size");
+            throw Exception("Insufficient buffer size");
         }
         buffer.resize(newSize, 0);
         size = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
         if (size == 0) {
-            throw Exception(IVW_CONTEXT_CUSTOM("filesystem::getModuleFileName"),
-                            "Error retrieving {} path", name);
+            throw Exception(SourceContext{}, "Error retrieving {} path", name);
         }
     }
     buffer.resize(size);
@@ -201,8 +195,7 @@ fs::path getExecutablePath() {
     auto pid = getpid();
     if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
         // Error retrieving path
-        throw Exception("Error retrieving executable path",
-                        IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
+        throw Exception("Error retrieving executable path");
     }
     return std::string(executablePath.data());
 
@@ -214,8 +207,7 @@ fs::path getExecutablePath() {
         executablePath[size] = '\0';
     } else {
         // Error retrieving path
-        throw Exception("Error retrieving executable path",
-                        IVW_CONTEXT_CUSTOM("filesystem::getExecutablePath"));
+        throw Exception("Error retrieving executable path");
     }
     return std::string(executablePath.data());
 #endif
@@ -230,8 +222,7 @@ fs::path getInviwoBinDir() {
     }
 
     if (!handle) {
-        throw Exception("Error retrieving inviwo-core path",
-                        IVW_CONTEXT_CUSTOM("filesystem::getInviwoBinDir"));
+        throw Exception("Error retrieving inviwo-core path");
     }
 
     // nullptr will lookup the exe module.
@@ -246,8 +237,7 @@ fs::path getInviwoBinDir() {
     if (it != allLibs.end()) {
         return it->parent_path();
     } else {
-        throw Exception("Error retrieving inviwo-core path",
-                        IVW_CONTEXT_CUSTOM("filesystem::getInviwoBinDir"));
+        throw Exception("Error retrieving inviwo-core path");
     }
 #endif
 }
@@ -263,8 +253,7 @@ std::string expandTilde(const char* str) {
         globfree(&globbuf);
         return result;
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("filesystem"), "Unable to expand tilde in string '{}'",
-                        str);
+        throw Exception(SourceContext{}, "Unable to expand tilde in string '{}'", str);
     }
 }
 
@@ -280,7 +269,7 @@ fs::path getInviwoUserSettingsPath() {
         CoTaskMemFree(path);
         ss << util::fromWstring(wpath) << "/Inviwo";
     } else {
-        throw Exception("Failed to get settings folder", IVW_CONTEXT_CUSTOM("filesystem"));
+        throw Exception("Failed to get settings folder");
     }
 
 #elif defined(__unix__)
@@ -294,7 +283,7 @@ fs::path getInviwoUserSettingsPath() {
     if ((state = sysdir_get_next_search_path_enumeration(state, path))) {
         ss << expandTilde(path) << "/org.inviwo.network-editor";
     } else {
-        throw Exception("Failed to get settings folder", IVW_CONTEXT_CUSTOM("filesystem"));
+        throw Exception("Failed to get settings folder");
     }
 
 #else

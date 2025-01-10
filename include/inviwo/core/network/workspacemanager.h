@@ -60,7 +60,7 @@ class NetworkModified;
  */
 class IVW_CORE_API WorkspaceManager {
 public:
-    using ExceptionHandler = std::function<void(ExceptionContext)>;
+    using ExceptionHandler = std::function<void(SourceContext)>;
 
 private:
     using ClearDispatcher = Dispatcher<void()>;

@@ -31,7 +31,7 @@
 #include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
 #include <inviwo/core/io/datareaderexception.h>         // for DataReaderException
-#include <inviwo/core/util/exception.h>                 // for ExceptionContext
+#include <inviwo/core/util/exception.h>                 // for SourceContext
 #include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
 
 #include <string>  // for string
@@ -52,7 +52,7 @@ using json = nlohmann::json;
 class IVW_MODULE_DATAFRAME_API JSONConversionException : public DataReaderException {
 public:
     JSONConversionException(const std::string& message = "",
-                            ExceptionContext context = ExceptionContext());
+                            SourceContext context = SourceContext());
 };
 
 /**
@@ -89,7 +89,6 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
  * \endcode
  */
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
-
 
 IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrameInport& port);
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrameInport& port);

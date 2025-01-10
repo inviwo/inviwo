@@ -43,7 +43,7 @@
 #include <inviwo/core/util/logcentral.h>                  // for LogCentral
 #include <inviwo/core/util/raiiutils.h>                   // for OnScopeExit, OnScopeExit::ExitA...
 #include <inviwo/core/util/safecstr.h>                    // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
 #include <inviwo/core/util/stringconversion.h>            // for toString, replaceInString
 
 #include <cstdlib>      // for free, size_t
@@ -111,11 +111,11 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     util::OnScopeExit release([&]() { free(pvmdata); });
 
     if (!pvmdata) {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("PVMVolumeReader"),
-                                  "Error: Could not read data in PVM file: {}", filePath);
+        throw DataReaderException(SourceContext{}, "Error: Could not read data in PVM file: {}",
+                                  filePath);
     }
     if (udim == uvec3{0}) {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("PVMVolumeReader"),
+        throw DataReaderException(SourceContext{},
                                   "Error: Unable to find dimensions in .pvm file: {}", filePath);
     }
     const size_t volsize = glm::compMul(udim) * bytesPerVoxel;
@@ -138,8 +138,8 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
                 return DataVec3UInt8::get();
             default:
                 throw DataReaderException(
-                    IVW_CONTEXT_CUSTOM("PVMVolumeReader"),
-                    "Error: Unsupported format (bytes per voxel) in .pvm file: {}", filePath);
+                    SourceContext{}, "Error: Unsupported format (bytes per voxel) in .pvm file: {}",
+                    filePath);
         }
     }();
 

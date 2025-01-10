@@ -32,16 +32,11 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <inviwo/core/util/exception.h>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 class IVW_MODULE_HDF5_API Exception : public ::inviwo::Exception {
 public:
-    Exception(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~Exception() = default;
+    using ::inviwo::Exception::Exception;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

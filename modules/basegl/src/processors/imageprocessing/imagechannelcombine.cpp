@@ -41,7 +41,7 @@
 #include <inviwo/core/util/exception.h>                   // for Exception
 #include <inviwo/core/util/formats.h>                     // for DataFormatBase, NumericType
 #include <inviwo/core/util/glmvec.h>                      // for size2_t
-#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
 #include <modules/opengl/shader/shader.h>                 // for Shader
 #include <modules/opengl/shader/shaderutils.h>            // for setUniforms
 #include <modules/opengl/texture/textureunit.h>           // for TextureUnitContainer
@@ -113,7 +113,7 @@ void ImageChannelCombine::process() {
             }
             return p.getData()->getDimensions() != dims;
         })) {
-        throw Exception("Image dimensions of all inports need to be identical", IVW_CONTEXT);
+        throw Exception("Image dimensions of all inports need to be identical");
     }
 
     auto&& [type, precision] = [&]() {

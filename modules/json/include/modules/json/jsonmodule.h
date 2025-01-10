@@ -77,7 +77,7 @@ public:
         } else if constexpr (std::is_base_of_v<Outport, Base>) {
             return outportConverter_;
         } else {
-            throw Exception("Invalid type for JSONModule::getRegistry", IVW_CONTEXT);
+            throw Exception("Invalid type for JSONModule::getRegistry");
         }
     }
 

@@ -33,7 +33,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
 #include <inviwo/core/util/exception.h>                        // for Exception
 #include <inviwo/core/util/iterrange.h>                        // for iter_range
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                 // for toString, toUpper
 #include <inviwo/core/util/zip.h>                              // for zip, zipIterator, zipper
 #include <modules/opengl/shader/shader.h>                      // for Shader, Shader::Build
@@ -51,8 +51,7 @@ MeshShaderCache::Requirement::Requirement(BufferType bufferType, RequireBuffer r
         if (res.first) {
             return res.second;
         } else if (required == Mandatory) {
-            throw Exception("Unsupported mesh type, a " + toString(bufferType) + " is needed",
-                            IVW_CONTEXT_CUSTOM("MeshShaderCache"));
+            throw Exception(SourceContext{}, "Unsupported mesh type, a {} is needed", bufferType);
         } else {
             return -1;
         }

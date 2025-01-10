@@ -40,7 +40,6 @@
 #include <inviwo/core/util/filesystem.h>                             // for fileExists, addBasePath
 #include <inviwo/core/util/formats.h>                                // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                 // for vec3, dvec2, size3_t
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
 #include <modules/cimg/cimgutils.h>                                  // for TIFFHeader, loadTIFF...
 
 #include <type_traits>  // for remove_extent_t

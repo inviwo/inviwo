@@ -136,7 +136,7 @@ struct ErrorHandle {
         }
     }
 
-    void operator()(ExceptionContext) {
+    void operator()(SourceContext) {
         try {
             throw;
         } catch (SerializationException& error) {
@@ -260,7 +260,7 @@ void WorkspaceManager::save(const std::filesystem::path& path,
     if (ostream.is_open()) {
         save(ostream, path, exceptionHandler, mode);
     } else {
-        throw AbortException(IVW_CONTEXT, "Could not open workspace file: {}", path);
+        throw AbortException(SourceContext{}, "Could not open workspace file: {}", path);
     }
 }
 
@@ -269,7 +269,7 @@ void WorkspaceManager::load(const std::filesystem::path& path,
 
     FILE* file = filesystem::fopen(path, "rb");
     if (!file) {
-        throw AbortException(IVW_CONTEXT, "Could not open workspace file: {}", path);
+        throw AbortException(SourceContext{}, "Could not open workspace file: {}", path);
     }
     const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
@@ -281,7 +281,7 @@ void WorkspaceManager::load(const std::filesystem::path& path,
     }();
     std::pmr::string data(length, '0');
     if (std::fread(data.data(), length, 1, file) != 1) {
-        throw AbortException(IVW_CONTEXT, "Could not read workspace file: {}", path);
+        throw AbortException(SourceContext{}, "Could not read workspace file: {}", path);
     }
     load(data, path, exceptionHandler, mode);
 }
@@ -373,7 +373,7 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
             } catch (Exception& e) {
                 exceptionHandler(e.getContext());
             } catch (...) {
-                exceptionHandler(IVW_CONTEXT_CUSTOM("WorkspaceManager"));
+                exceptionHandler(SourceContext{});
             }
         }
     });
@@ -390,7 +390,7 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
             } catch (Exception& e) {
                 exceptionHandler(e.getContext());
             } catch (...) {
-                exceptionHandler(IVW_CONTEXT_CUSTOM("WorkspaceManager"));
+                exceptionHandler(SourceContext{});
             }
         }
     });

@@ -43,7 +43,6 @@
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
 #include <inviwo/core/util/glmfmt.h>
 #include <inviwo/core/util/glmutils.h>         // for Matrix
-#include <inviwo/core/util/sourcecontext.h>    // for IVW_CONTEXT
 #include <modules/base/algorithm/meshutils.h>  // for forEachTriangle
 
 #include <cstdint>        // for uint32_t
@@ -146,15 +145,14 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
     {
         auto [buffer, loc] = data->findBuffer(BufferType::PositionAttrib);
         if (!buffer) {
-            throw DataWriterException("Error: could not find a position buffer", IVW_CONTEXT);
+            throw DataWriterException("Error: could not find a position buffer");
         }
         const auto posRam = buffer->getRepresentation<BufferRAM>();
         if (!posRam) {
-            throw DataWriterException("Error: could not find a position buffer ram", IVW_CONTEXT);
+            throw DataWriterException("Error: could not find a position buffer ram");
         }
         if (posRam->getDataFormat()->getComponents() != 3) {
-            throw DataWriterException("Error: Only 3 dimensional meshes are supported",
-                                      IVW_CONTEXT);
+            throw DataWriterException("Error: Only 3 dimensional meshes are supported");
         }
 
         fmt::print(f, "# List of vertex coordinates ({})\n", posRam->getSize());

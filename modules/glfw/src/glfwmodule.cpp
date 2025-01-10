@@ -38,7 +38,7 @@
 #include <inviwo/core/util/glmvec.h>                        // for uvec2
 #include <inviwo/core/util/logcentral.h>                    // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                 // for RenderContext, ContextHolder
-#include <inviwo/core/util/sourcecontext.h>                 // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                 // for SourceContext
 #include <modules/glfw/canvasglfw.h>                        // for CanvasGLFW
 #include <modules/glfw/canvasprocessorwidgetglfw.h>         // for CanvasProcessorWidgetGLFW
 #include <modules/glfw/glfwexception.h>                     // for GLFWInitException
@@ -83,10 +83,9 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     if (!app->getModuleManager().getModulesByAlias("OpenGLSupplier").empty()) {
         throw ModuleInitException(
             "GLFW could not be initialized because an other OpenGLSupplier is already used for "
-            "OpenGL context.",
-            IVW_CONTEXT);
+            "OpenGL context.");
     }
-    if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.", IVW_CONTEXT);
+    if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
     if (auto shared = CanvasGLFW::sharedContext()) {
         holder_ = RenderContext::getPtr()->setDefaultRenderContext(
@@ -99,7 +98,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     }
     OpenGLCapabilities::initializeGLEW();
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
-        throw GLFWInitException("Unable to initiate OpenGL", IVW_CONTEXT);
+        throw GLFWInitException("Unable to initiate OpenGL");
     }
     CanvasGL::defaultGLState();
 

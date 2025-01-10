@@ -40,7 +40,6 @@
 #include <inviwo/core/util/fileextension.h>                             // for FileExtension
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
 #include <inviwo/core/util/logcentral.h>                                // for LogVerbosity, Log...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>                          // for splitStringView
 
 #include <warn/push>
@@ -198,12 +197,12 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& filePa
     }
 
     if (!scene) {
-        throw DataReaderException(importer.GetErrorString(), IVW_CONTEXT);
+        throw DataReaderException(importer.GetErrorString());
     }
 
     // at least one mesh
     if (0 == scene->mNumMeshes) {
-        throw DataReaderException(IVW_CONTEXT, "no meshes found ({})", filePath);
+        throw DataReaderException(SourceContext{}, "no meshes found ({})", filePath);
     }
 
     // because we use aiProcess_PreTransformVertices we can safely ignore the scenegraph,

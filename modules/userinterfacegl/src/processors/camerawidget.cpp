@@ -62,7 +62,7 @@
 #include <inviwo/core/util/glmmat.h>                              // for mat4, mat3
 #include <inviwo/core/util/glmvec.h>                              // for vec3, vec2, dvec2, vec4
 #include <inviwo/core/util/logcentral.h>                          // for LogVerbosity, LogVerbos...
-#include <inviwo/core/util/sourcecontext.h>                       // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                       // for SourceContext
 #include <modules/base/algorithm/meshutils.h>                     // for cube
 #include <modules/opengl/image/imagegl.h>                         // for ImageGL
 #include <modules/opengl/image/layergl.h>                         // for LayerGL
@@ -481,12 +481,12 @@ void CameraWidget::loadMesh() {
         auto app = getInviwoApplication();
         auto module = app->getModuleByIdentifier("UserInterfaceGL");
         if (!module) {
-            throw Exception("Could not locate module 'UserInterfaceGL'", IVW_CONTEXT);
+            throw Exception("Could not locate module 'UserInterfaceGL'");
         }
 
         auto reader = app->getDataReaderFactory()->getReaderForTypeAndExtension<Mesh>("fbx");
         if (!reader) {
-            throw Exception("Could not fbx mesh reader", IVW_CONTEXT);
+            throw Exception("Could not fbx mesh reader");
         }
         reader->setOption("FixInvalidData", false);
         reader->setOption("LogLevel", LogVerbosity::Error);

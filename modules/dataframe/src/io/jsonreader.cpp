@@ -32,7 +32,7 @@
 #include <inviwo/core/io/datareader.h>                  // for DataReaderType
 #include <inviwo/core/util/exception.h>                 // for FileException
 #include <inviwo/core/util/fileextension.h>             // for FileExtension
-#include <inviwo/core/util/sourcecontext.h>             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>             // for SourceContext
 #include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
 #include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
 
@@ -59,7 +59,7 @@ std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::filesystem::
     file.seekg(0, std::ios::beg);
 
     if (len == std::streampos(0)) {
-        throw FileException("Empty file, no data", IVW_CONTEXT);
+        throw FileException("Empty file, no data");
     }
 
     return readData(file);

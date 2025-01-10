@@ -52,7 +52,7 @@
 #include <inviwo/core/util/canvas.h>                                            // for Canvas
 #include <inviwo/core/util/exception.h>                                         // for Exception
 #include <inviwo/core/util/glmvec.h>                                            // for ivec2
-#include <inviwo/core/util/sourcecontext.h>                                     // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                                     // for SourceCon...
 #include <inviwo/core/util/statecoordinator.h>                                  // for StateCoor...
 #include <inviwo/core/util/staticstring.h>                                      // for operator+
 #include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>  // for CanvasWit...
@@ -253,7 +253,7 @@ std::optional<std::filesystem::path> CanvasWithPropertiesProcessor::exportFile(
         }
     }
 
-    throw Exception("Could not find visible layer", IVW_CONTEXT);
+    throw Exception("Could not find visible layer");
 }
 
 std::shared_ptr<const Image> CanvasWithPropertiesProcessor::getImage() const {

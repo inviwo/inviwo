@@ -128,7 +128,7 @@ void ImageSourceSeries::process() {
     // sanity check for valid index
     const auto index = currentImageIndex_.get() - 1;
     if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
-        throw Exception(IVW_CONTEXT, "Invalid image index. Exceeded number of files.");
+        throw Exception("Invalid image index. Exceeded number of files.");
     }
 
     const auto currentFileName = fileList_[index];

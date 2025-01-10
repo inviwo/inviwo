@@ -85,7 +85,7 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     }
 
     if (auto* existing = getPropertyByIdentifier(property->getIdentifier()); existing != nullptr) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Cannot add Property: [id: '{}', class id: '{}'] to PropertyOwner '{}'"
                         ", the identifier is already used by [id: '{}', class id: '{}']",
                         property->getIdentifier(), property->getClassIdentifier(), getIdentifier(),
@@ -93,7 +93,7 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     }
     if (auto parent = dynamic_cast<Property*>(this)) {
         if (parent == property) {
-            throw Exception(IVW_CONTEXT,
+            throw Exception(SourceContext{},
                             "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
                             property->getIdentifier(), property->getClassIdentifier());
         }
@@ -136,7 +136,7 @@ Property* PropertyOwner::removeProperty(Property& property) { return removePrope
 
 Property* PropertyOwner::removeProperty(size_t index) {
     if (index >= size()) {
-        throw RangeException(IVW_CONTEXT,
+        throw RangeException(SourceContext{},
                              "Index '{}' out of range while removing property, ({} elements)",
                              index, size());
     }

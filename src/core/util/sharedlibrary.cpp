@@ -96,7 +96,7 @@ SharedLibrary::SharedLibrary(const std::filesystem::path& filePath) : filePath_(
             LocalFree(errorText);  // release memory allocated by FormatMessage()
         }
 
-        throw Exception(IVW_CONTEXT, "Failed to load library: {}\n Error ({}): {}", filePath_,
+        throw Exception(SourceContext{}, "Failed to load library: {}\n Error ({}): {}", filePath_,
                         error, util::fromWstring(errorStr));
     }
 #else
@@ -105,7 +105,7 @@ SharedLibrary::SharedLibrary(const std::filesystem::path& filePath) : filePath_(
     // explicitly load its dependent libraries as well.
     handle_ = dlopen(filePath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!handle_) {
-        throw Exception(IVW_CONTEXT, "Failed to load library: {}", filePath);
+        throw Exception(SourceContext{}, "Failed to load library: {}", filePath);
     }
 #endif
 }

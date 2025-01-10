@@ -39,8 +39,7 @@ struct ResourceMeta;
 
 class IVW_CORE_API MissingRepresentation : public Exception {
 public:
-    MissingRepresentation(const std::string& message = "",
-                          ExceptionContext context = ExceptionContext());
+    MissingRepresentation(const std::string& message = "", SourceContext context = SourceContext());
 };
 
 /**

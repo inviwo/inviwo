@@ -47,7 +47,7 @@ std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
                                          src->getInterpolation(), src->getWrapping());
 
     if (!dst) {
-        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from RAM to GL",
+        throw ConverterException(SourceContext{}, "Cannot convert format '{}' from RAM to GL",
                                  *src->getDataFormat());
     }
 
@@ -71,7 +71,7 @@ std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
                               src->getSwizzleMask(), src->getInterpolation(), src->getWrapping());
 
     if (!dst) {
-        throw ConverterException(IVW_CONTEXT, "Cannot convert format '{}' from GL to RAM",
+        throw ConverterException(SourceContext{}, "Cannot convert format '{}' from GL to RAM",
                                  *src->getDataFormat());
     }
 

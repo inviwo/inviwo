@@ -32,7 +32,7 @@
 #include <inviwo/core/util/exception.h>         // for Exception
 #include <inviwo/core/util/memoryfilehandle.h>  // for MemoryFileHandle
 #include <inviwo/core/util/safecstr.h>          // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>     // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>     // for SourceContext
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -129,8 +129,7 @@ void saveCImgToBuffer(const cimg_library::CImg<T>& img, std::string_view ext,
         saveCImgToFileStream(memfile.getHandle(), img, ext);
 
         if (memfile.checkForOverflow()) {
-            throw Exception("Failed not save image to buffer, exceeding buffer size.",
-                            IVW_CONTEXT_CUSTOM("cimgutil::saveCImgToBuffer"));
+            throw Exception("Failed not save image to buffer, exceeding buffer size.");
         }
     }
 

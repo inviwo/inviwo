@@ -72,7 +72,7 @@ Processor::Processor(std::string_view identifier, std::string_view displayName)
     , network_(nullptr) {
 
     if (!identifier_.empty()) {
-        util::validateIdentifier(identifier_, "Processor", IVW_CONTEXT);
+        util::validateIdentifier(identifier_, "Processor");
     }
 
     createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
@@ -82,14 +82,14 @@ Processor::~Processor() = default;
 
 void Processor::addPortInternal(Inport* port, std::string_view portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
-        throw Exception("Processor \"" + getIdentifier() + "\" Can't add inport, identifier \"" +
-                            port->getIdentifier() + "\" already exist.",
-                        IVW_CONTEXT);
+        throw Exception(SourceContext{},
+                        R"(Processor "{}" Can't add inport, identifier "{}" already exist.)",
+                        getIdentifier(), port->getIdentifier());
     }
     if (port->getIdentifier().empty()) {
-        throw Exception("Adding port with empty identifier", IVW_CONTEXT);
+        throw Exception("Adding port with empty identifier");
     }
-    util::validateIdentifier(port->getIdentifier(), "Port", IVW_CONTEXT);
+    util::validateIdentifier(port->getIdentifier(), "Port");
 
     port->setProcessor(this);
     inports_.push_back(port);
@@ -104,14 +104,14 @@ void Processor::addPortInternal(Inport* port, std::string_view portGroup) {
 
 void Processor::addPortInternal(Outport* port, std::string_view portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
-        throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
-                            port->getIdentifier() + "\" already exist.",
-                        IVW_CONTEXT);
+        throw Exception(SourceContext{},
+                        R"(Processor "{}" Can't add outport, identifier "{}" already exist.)",
+                        getIdentifier(), port->getIdentifier());
     }
     if (port->getIdentifier().empty()) {
-        throw Exception("Adding port with empty identifier", IVW_CONTEXT);
+        throw Exception("Adding port with empty identifier");
     }
-    util::validateIdentifier(port->getIdentifier(), "Port", IVW_CONTEXT);
+    util::validateIdentifier(port->getIdentifier(), "Port");
 
     port->setProcessor(this);
     outports_.push_back(port);
@@ -207,9 +207,10 @@ const Tags& Processor::getTags() const { return getProcessorInfo().tags; }
 
 void Processor::setIdentifier(std::string_view identifier) {
     if (identifier != identifier_) {
-        util::validateIdentifier(identifier, "Processor", IVW_CONTEXT);
+        util::validateIdentifier(identifier, "Processor");
         if (network_ && network_->getProcessorByIdentifier(identifier) != nullptr) {
-            throw Exception(IVW_CONTEXT, "Processor identifier \"{}\" already in use.", identifier);
+            throw Exception(SourceContext{}, R"(Processor identifier "{}" already in use.)",
+                            identifier);
         }
         auto old = identifier_;
         identifier_ = identifier;
@@ -276,7 +277,8 @@ const std::string& Processor::getPortGroup(Port* port) const {
     if (it != portGroups_.end()) {
         return it->second;
     } else {
-        throw Exception(IVW_CONTEXT, "Can't find group for port: \"{}\".", port->getIdentifier());
+        throw Exception(SourceContext{}, R"(Can't find group for port: "{}".)",
+                        port->getIdentifier());
     }
 }
 
@@ -293,7 +295,7 @@ const std::vector<Port*>& Processor::getPortsInGroup(std::string_view portGroup)
     if (it != groupPorts_.end()) {
         return it->second;
     } else {
-        throw Exception(IVW_CONTEXT, "Can't find port group: \"{}\".", portGroup);
+        throw Exception(SourceContext{}, R"(Can't find port group: "{}".)", portGroup);
     }
 }
 

@@ -31,7 +31,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
-#include <inviwo/core/util/exception.h>  // for Exception, ExceptionContext, ModuleInitEx...
+#include <inviwo/core/util/exception.h>  // for Exception, SourceContext, ModuleInitEx...
 
 #include <string>  // for string
 
@@ -44,8 +44,8 @@ public:
 
 class IVW_MODULE_OPENGL_API OpenGLInitException : public ModuleInitException {
 public:
-    OpenGLInitException(const std::string& message = "",
-                        ExceptionContext context = ExceptionContext());
+    OpenGLInitException(std::string_view message = "",
+                        SourceContext context = std::source_location::current());
 };
 
 }  // namespace inviwo

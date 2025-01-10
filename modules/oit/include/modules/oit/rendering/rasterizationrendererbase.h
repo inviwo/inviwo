@@ -49,8 +49,7 @@ constexpr std::string_view enumToStr(UseFragmentList val) {
         case UseFragmentList::No:
             return "No";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Invalid UseFragmentList found: {}",
-                    static_cast<int>(val));
+    throw Exception(SourceContext{}, "Invalid UseFragmentList found: {}", static_cast<int>(val));
 }
 
 class IVW_MODULE_OIT_API RasterizationRendererBase {

@@ -37,7 +37,7 @@
 #include <inviwo/core/properties/propertysemantics.h>            // for PropertySemantics
 #include <inviwo/core/properties/valuewrapper.h>                 // for PropertySerializationMode
 #include <inviwo/core/util/exception.h>                          // for Exception
-#include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                      // for SourceContext
 #include <inviwo/core/util/zip.h>                                // for enumerate, zipIterator
 #include <inviwo/dataframe/datastructures/dataframe.h>           // for DataFrameInport, DataFrame
 #include <inviwo/dataframe/properties/columnmetadataproperty.h>  // for ColumnMetaDataProperty
@@ -87,13 +87,13 @@ void ColumnMetaDataListProperty::setPort(DataFrameInport& inport) {
 
 ColumnMetaDataProperty& ColumnMetaDataListProperty::meta(size_t i) {
     if (i >= size()) {
-        throw Exception(IVW_CONTEXT, "ColumnIndex {} greater then size {}", i, size());
+        throw Exception(SourceContext{}, "ColumnIndex {} greater then size {}", i, size());
     }
     return *static_cast<ColumnMetaDataProperty*>((*this)[i]);
 }
 const ColumnMetaDataProperty& ColumnMetaDataListProperty::meta(size_t i) const {
     if (i >= size()) {
-        throw Exception(IVW_CONTEXT, "ColumnIndex {} greater then size {}", i, size());
+        throw Exception(SourceContext{}, "ColumnIndex {} greater then size {}", i, size());
     }
     return *static_cast<const ColumnMetaDataProperty*>((*this)[i]);
 }

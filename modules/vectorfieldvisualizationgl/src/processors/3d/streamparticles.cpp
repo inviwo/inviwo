@@ -188,7 +188,7 @@ void StreamParticles::initializeResources() {
                 "The StreamParticles processor requires OpenGL 4.3"};
             return {ProcessorStatus::Error, error};
         });
-        throw Exception(IVW_CONTEXT, "The StreamParticles processor requires OpenGL 4.3");
+        throw Exception(SourceContext{}, "The StreamParticles processor requires OpenGL 4.3");
     }
 
     shader_.getShaderObject(ShaderType::Compute)

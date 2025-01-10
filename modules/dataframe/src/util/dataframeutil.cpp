@@ -42,7 +42,7 @@
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for ivec2
 #include <inviwo/core/util/iterrange.h>                                 // for iter_range, as_range
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                             // for transform, contains
 #include <inviwo/core/util/stringconversion.h>                          // for toLower
 #include <inviwo/core/util/transformiterator.h>                         // for TransformIterator
@@ -106,17 +106,15 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
                           vecIn.begin() + range.y + 1);
         });
     } else {
-        throw Exception("Data Formats needs to be of same type",
-                        IVW_CONTEXT_CUSTOM("dataframe::copyBufferRange"));
+        throw Exception("Data Formats needs to be of same type");
     }
 }
 
 std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame& right,
                                          bool ignoreDuplicates, bool fillMissingRows) {
     if (!fillMissingRows && (left.getNumberOfRows() != right.getNumberOfRows())) {
-        throw Exception(IVW_CONTEXT_CUSTOM("dataframe::appendColumns"),
-                        "Row counts are different (top: {}, bottom: {})", left.getNumberOfRows(),
-                        right.getNumberOfRows());
+        throw Exception(SourceContext{}, "Row counts are different (top: {}, bottom: {})",
+                        left.getNumberOfRows(), right.getNumberOfRows());
     }
 
     auto dataframe = std::make_shared<DataFrame>(left);
@@ -158,8 +156,7 @@ std::shared_ptr<DataFrame> appendColumns(const DataFrame& left, const DataFrame&
 std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bottom,
                                       bool matchByName) {
     if (top.getNumberOfColumns() != bottom.getNumberOfColumns()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("dataframe::appendRows"),
-                        "Column counts are different (top: {}, bottom: {})",
+        throw Exception(SourceContext{}, "Column counts are different (top: {}, bottom: {})",
                         top.getNumberOfColumns(), bottom.getNumberOfColumns());
     }
 
@@ -169,8 +166,8 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
             if (auto col = dataframe->getColumn(srcCol->getHeader())) {
                 col->append(*srcCol);
             } else {
-                throw Exception(IVW_CONTEXT_CUSTOM("dataframe::appendRows"),
-                                "column '{}' not found in top DataFrame", srcCol->getHeader());
+                throw Exception(SourceContext{}, "column '{}' not found in top DataFrame",
+                                srcCol->getHeader());
             }
         }
     } else {
@@ -395,7 +392,7 @@ std::shared_ptr<DataFrame> innerJoin(
     const std::vector<std::pair<std::string, std::string>>& keyColumns) {
 
     if (keyColumns.empty()) {
-        throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::innerJoin"));
+        throw Exception("no key columns given");
     }
 
     detail::columnCheck(left, right, keyColumns, "dataframe::innerJoin"_sl);
@@ -461,7 +458,7 @@ std::shared_ptr<DataFrame> leftJoin(
     const std::vector<std::pair<std::string, std::string>>& keyColumns) {
 
     if (keyColumns.empty()) {
-        throw Exception("no key columns given", IVW_CONTEXT_CUSTOM("dataframe::leftJoin"));
+        throw Exception("no key columns given");
     }
 
     detail::columnCheck(left, right, keyColumns, "dataframe::leftJoin"_sl);
@@ -495,8 +492,7 @@ std::shared_ptr<DataFrame> leftJoin(
 std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataFrames,
                                              bool skipIndexColumn, std::string skipcol) {
     if (dataFrames.empty()) {
-        throw Exception("DataFrames vector is empty",
-                        IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"));
+        throw Exception("DataFrames vector is empty");
     }
     if (dataFrames.size() == 1) {  // just one df, clone it;
         return std::make_shared<DataFrame>(*dataFrames.front());
@@ -508,8 +504,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     }
 
     if (newSize == 0) {
-        throw Exception("All input DataFrames are empty",
-                        IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"));
+        throw Exception("All input DataFrames are empty");
     }
 
     auto first = *dataFrames.front();
@@ -526,14 +521,14 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
-                    throw Exception(IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"),
+                    throw Exception(SourceContext{},
                                     "Column {} did not exist in first DataFrame but in at least "
                                     "one of the others",
                                     col->getHeader());
                 }
                 if (it->second != col->getBuffer()->getDataFormat()) {
                     if (it == columnType.end()) {
-                        throw Exception(IVW_CONTEXT_CUSTOM("dataframe::combineDataFrames"),
+                        throw Exception(SourceContext{},
                                         "Column {} has different format in DataFrames ({}, {})",
                                         col->getHeader(), it->second->getString(),
                                         col->getBuffer()->getDataFormat()->getString());

@@ -201,7 +201,7 @@ TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(const Layer* la
     , ic_(dims_)
     , sharedImage_(nullptr) {
     if (layer->getDataFormat() != DataFormat<DataType>::get()) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Type mismatch when trying to initialize TemplateImageSampler. Image is {} "
                         "but expected {}",
                         layer->getDataFormat()->getString(),

@@ -178,15 +178,13 @@ TransferFunction TransferFunction::load(const std::filesystem::path& path) {
     if (auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
         return *tf;
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("TransferFunction"),
-                        "Unable to load TransferFunction from {}", path);
+        throw Exception(SourceContext{}, "Unable to load TransferFunction from {}", path);
     }
 }
 void TransferFunction::save(const TransferFunction& tf, const std::filesystem::path& path) {
     auto* factory = util::getDataWriterFactory();
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {
-        throw Exception(IVW_CONTEXT_CUSTOM("TransferFunction"),
-                        "Unable to save TransferFunction to {}", path);
+        throw Exception(SourceContext{}, "Unable to save TransferFunction to {}", path);
     }
 }
 

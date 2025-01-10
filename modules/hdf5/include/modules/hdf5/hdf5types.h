@@ -45,9 +45,7 @@ namespace hdf5 {
 
 template <typename T>
 struct TypeMap {
-    static H5::PredType getType() {
-        throw Exception("Trying to read unknown type", IVW_CONTEXT_CUSTOM("HDFTypeMap"));
-    }
+    static H5::PredType getType() { throw Exception("Trying to read unknown type"); }
 };
 
 template <>

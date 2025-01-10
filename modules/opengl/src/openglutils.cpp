@@ -32,7 +32,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for ImageChannel, Wrapping, Interpo...
 #include <inviwo/core/util/glmvec.h>                      // for vec4, bvec4, ivec4
 #include <inviwo/core/util/moveonlyvalue.h>               // for MoveOnlyValue
-#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>               // for SourceContext
 #include <modules/opengl/openglexception.h>               // for OpenGLException
 #include <modules/opengl/texture/textureunit.h>           // for TextureUnit
 
@@ -95,8 +95,7 @@ Wrapping convertWrappingFromGL(GLenum wrap) {
         case GL_MIRRORED_REPEAT:
             return Wrapping::Mirror;
         default:
-            throw OpenGLException("Unsupported Wrapping mode encountered",
-                                  IVW_CONTEXT_CUSTOM("convertWrappingFromGL"));
+            throw OpenGLException("Unsupported Wrapping mode encountered");
     }
 }
 
@@ -118,8 +117,8 @@ InterpolationType convertInterpolationFromGL(GLenum interpolation) {
         case GL_NEAREST:
             return InterpolationType::Nearest;
         default:
-            throw OpenGLException(IVW_CONTEXT_CUSTOM("convertInterpolationFromGL"),
-                                  "Unsupported filtering mode encountered ({:x})", interpolation);
+            throw OpenGLException(SourceContext{}, "Unsupported filtering mode encountered ({:x})",
+                                  interpolation);
     }
 }
 

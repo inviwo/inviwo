@@ -43,7 +43,6 @@
 #include <inviwo/core/util/fileextension.h>           // for FileExtension
 #include <inviwo/core/util/filesystem.h>              // for getFileNameWithou...
 #include <inviwo/core/util/formats.h>                 // for DataFormatBase
-#include <inviwo/core/util/sourcecontext.h>           // for IVW_CONTEXT_CUSTOM
 
 #include <array>          // for array
 #include <fstream>        // for basic_ofstream, ios
@@ -116,8 +115,7 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
         fout.write(static_cast<const char*>(vr->getData()),
                    glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSizeInBytes());
     } else {
-        throw DataWriterException(IVW_CONTEXT_CUSTOM("util::writeIvfVolume"),
-                                  "Could not write to raw file: {}", rawPath);
+        throw DataWriterException(SourceContext{}, "Could not write to raw file: {}", rawPath);
     }
 }
 }  // namespace util

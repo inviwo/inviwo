@@ -45,12 +45,12 @@ std::vector<std::filesystem::path> util::exportAllFiles(
     network.forEachProcessor([&](Processor* p) {
         if (auto exporter = dynamic_cast<const Exporter*>(p)) {
             if (!p->isValid()) {
-                throw Exception(IVW_CONTEXT_CUSTOM("util::exportAllFiles"),
-                                "Processor {} is not valid, no file exported", p->getIdentifier());
+                throw Exception(SourceContext{}, "Processor {} is not valid, no file exported",
+                                p->getIdentifier());
             }
             if (!p->isReady()) {
-                throw Exception(IVW_CONTEXT_CUSTOM("util::exportAllFiles"),
-                                "Processor {} is not ready, no file exported", p->getIdentifier());
+                throw Exception(SourceContext{}, "Processor {} is not ready, no file exported",
+                                p->getIdentifier());
             }
 
             StrBuffer name;
@@ -66,7 +66,7 @@ std::vector<std::filesystem::path> util::exportAllFiles(
             if (auto file = exporter->exportFile(path, name, candidateExtensions, overwrite)) {
                 exportedFiles.push_back(*file);
             } else {
-                throw Exception(IVW_CONTEXT_CUSTOM("util::exportAllFiles"),
+                throw Exception(SourceContext{},
                                 "No matching extension found for Exporter/Processor {}",
                                 p->getIdentifier());
             }

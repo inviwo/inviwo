@@ -32,7 +32,6 @@
 #include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
 #include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::MeshInfo
 #include <inviwo/core/util/exception.h>                        // for RangeException, NullPointe...
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
 #include <modules/opengl/buffer/buffergl.h>                    // for BufferGL
 #include <modules/opengl/geometry/meshgl.h>                    // for MeshGL
 #include <modules/opengl/openglutils.h>                        // for Enable
@@ -45,7 +44,7 @@ namespace inviwo {
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
-    if (mesh == nullptr) throw NullPointerException("input mesh is null", IVW_CONTEXT);
+    if (mesh == nullptr) throw NullPointerException("input mesh is null");
 }
 
 MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject() const {
@@ -260,8 +259,9 @@ void drawAll(const MeshGL& meshGL, const GetDrawMode& modeForIB, GLenum drawMode
 void MeshDrawerGL::DrawObject::checkIndex(size_t index) const {
     const std::size_t numIndexBuffers = meshGL_->getIndexBufferCount();
     if (index >= numIndexBuffers) {
-        throw RangeException(IVW_CONTEXT, "Index ({}) for indexbuffer of size {} is out-of-range",
-                             index, numIndexBuffers);
+        throw RangeException(SourceContext{},
+                             "Index ({}) for indexbuffer of size {} is out-of-range", index,
+                             numIndexBuffers);
     }
 }
 

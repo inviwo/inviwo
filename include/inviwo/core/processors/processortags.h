@@ -46,7 +46,7 @@ public:
     constexpr Tag() = default;
     constexpr Tag(std::string_view tag) : tag_{0} {
         if (tag.size() >= tag_.size()) {
-            throw Exception(IVW_CONTEXT, "Tag can only have {} chars. Found {} in {}",
+            throw Exception(SourceContext{}, "Tag can only have {} chars. Found {} in {}",
                             tag_.size() - 1, tag.size(), tag);
         }
         std::copy(tag.begin(), tag.end(), tag_.begin());

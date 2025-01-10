@@ -111,8 +111,7 @@ bool isValidIdentifierCharacter(char c, std::string_view extra) {
     return (std::isalnum(c) || c == '_' || util::contains(extra, c));
 }
 
-void validateIdentifier(std::string_view identifier, std::string_view type,
-                        ExceptionContext context) {
+void validateIdentifier(std::string_view identifier, std::string_view type, SourceContext context) {
     if (identifier.empty()) {
         throw Exception(fmt::format("{} identifiers must not be empty", type), context);
     }

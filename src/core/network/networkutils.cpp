@@ -362,7 +362,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                 auto connection = c.toConnection(*network_);
                 network_->addConnection(connection);
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
         for (auto& c : externalConnections) {
@@ -371,7 +371,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                 auto connection = c.toConnection(*network_);
                 network_->addConnection(connection);
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
 
@@ -381,7 +381,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                 auto link = l.toLink(*network_);
                 network_->addLink(link.getSource(), link.getDestination());
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
         for (auto& l : outLinks) {
@@ -390,7 +390,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                 auto link = l.toLink(*network_);
                 network_->addLink(link.getSource(), link.getDestination());
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
         for (auto& l : inLinks) {
@@ -399,7 +399,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                 auto link = l.toLink(*network_);
                 network_->addLink(link.getSource(), link.getDestination());
             } catch (...) {
-                d.handleError(IVW_CONTEXT);
+                d.handleError();
             }
         }
 
@@ -584,8 +584,7 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
 
     auto fs = std::ifstream(workspaceFile);
     if (!fs) {
-        throw Exception(IVW_CONTEXT_CUSTOM("util::appendProcessorNetwork"),
-                        "Could not open workspace file: {}", workspaceFile);
+        throw Exception(SourceContext{}, "Could not open workspace file: {}", workspaceFile);
     }
 
     RenderContext::getPtr()->activateDefaultRenderContext();

@@ -164,7 +164,7 @@ void HDF5ToVolume::process() {
         int j = 0;
         for (size_t i = 0; i < sel.size(); ++i) {
             if (sel[i].end - sel[i].start <= 1) continue;
-            if (j > 2) throw Exception("Invalid selection, resulting rank > 3", IVW_CONTEXT);
+            if (j > 2) throw Exception("Invalid selection, resulting rank > 3");
 
             basis[j] *= static_cast<float>(sel[i].end - sel[i].start) /
                         static_cast<float>(maxSel[i].end - maxSel[i].start);
@@ -200,9 +200,9 @@ mat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
         H5::DataSpace space = dataset.getSpace();
         int rank = space.getSimpleExtentNdims();
         if (rank != 2)
-            throw DataReaderException(
-                "Could not create Basis from: " + meta.path_.toString() + "Invalid rank",
-                IVW_CONTEXT);
+            throw DataReaderException(SourceContext{},
+                                      "Could not create Basis from: {} Invalid rank",
+                                      meta.path_.toString());
         std::vector<hsize_t> dims(rank);
         space.getSimpleExtentDims(dims.data());
         if (dims[0] == 3 && dims[1] == 3) {
@@ -218,9 +218,9 @@ mat4 HDF5ToVolume::getBasisFromMeta(MetaData meta) {
         } else if (dims[0] == 4 && dims[1] == 4) {
             dataset.read(glm::value_ptr(basis), H5::PredType::NATIVE_FLOAT);
         } else {
-            throw DataReaderException(
-                "Could not create Basis from: " + meta.path_.toString() + "Invalid dimensions",
-                IVW_CONTEXT);
+            throw DataReaderException(SourceContext{},
+                                      "Could not create Basis from: {} Invalid dimensions",
+                                      meta.path_.toString());
         }
     }
     return basis;

@@ -32,7 +32,7 @@
 #include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
 
 #include <inviwo/core/util/formats.h>        // for DataFormatId, DataFormatBase, DataFormatI...
-#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
 #include <modules/opengl/inviwoopengl.h>     // for GLuint, GL_RED, GL_RG, GL_RGB, GL_RGBA
 #include <modules/opengl/openglexception.h>  // for OpenGLException
 
@@ -98,7 +98,7 @@ public:
 
     static constexpr const GLFormat& get(DataFormatId id) {
         if (!formats_[static_cast<size_t>(id)].valid) {
-            throw OpenGLException(IVW_CONTEXT_CUSTOM("GLFormat"),
+            throw OpenGLException(SourceContext{},
                                   "Error no OpenGL format available for selected data format: {}",
                                   DataFormatBase::get(id)->getString());
         }
@@ -135,8 +135,8 @@ public:
         if (it != formats_.end()) {
             return *it;
         } else {
-            throw OpenGLException("Error no OpenGL format available for selected type and channels",
-                                  IVW_CONTEXT_CUSTOM("GLFormat"));
+            throw OpenGLException(
+                "Error no OpenGL format available for selected type and channels");
         }
     }
 

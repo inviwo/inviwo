@@ -42,7 +42,6 @@
 #include <inviwo/core/util/formats.h>                                // for DataFormatId, DataFo...
 #include <inviwo/core/util/glmvec.h>                                 // for size3_t
 #include <inviwo/core/util/logcentral.h>                             // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>                       // for replaceInString
 #include <modules/cimg/cimgutils.h>                                  // for loadVolumeData
 

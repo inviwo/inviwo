@@ -369,7 +369,7 @@ struct StatsFunctor {
                     stats[region].add(dpos, value);
                 } else {
                     throw Exception(
-                        IVW_CONTEXT,
+                        SourceContext{},
                         "Unexpected region index found '{}' expected value in range [0,{})", region,
                         stats.size());
                 }
@@ -412,14 +412,14 @@ void VolumeRegionStatistics::process() {
     auto calc = [volume = volume_.getData(), atlas = atlas_.getData(),
                  space = space_.getSelectedValue()]() {
         if (volume->getDimensions() != atlas->getDimensions()) {
-            throw Exception(IVW_CONTEXT_CUSTOM("VolumeRegionStatistics::process"),
+            throw Exception(SourceContext{},
                             "Unexpected dimension missmatch. Volume: {}, Atlas: {}",
                             volume->getDimensions(), atlas->getDimensions());
         }
         if (atlas->getDataFormat()->getComponents() != 1 ||
             atlas->getDataFormat()->getNumericType() != NumericType::UnsignedInteger) {
             throw Exception(
-                IVW_CONTEXT_CUSTOM("VolumeRegionStatistics::process"),
+                SourceContext{},
                 "Unexpected atlas format found, expected an unsigned integer type. Got: {}",
                 atlas->getDataFormat()->getString());
         }

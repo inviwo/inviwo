@@ -38,7 +38,6 @@
 #include <inviwo/core/util/glmvec.h>             // for i64vec3, size3_t
 #include <inviwo/core/util/indexmapper.h>        // for IndexMapper
 #include <inviwo/core/util/logcentral.h>         // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>   // for toString
 
 #include <cstdlib>    // for size_t, abs
@@ -161,9 +160,9 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
 
     if (srcDim * sm != dstDim) {
         throw Exception(
-            "DistanceTransformRAM: Dimensions does not match src = " + toString(srcDim) +
-                " dst = " + toString(dstDim) + " scaling = " + toString(sm),
-            IVW_CONTEXT_CUSTOM("volumeRAMDistanceTransform"));
+            SourceContext{},
+            "DistanceTransformRAM: Dimensions does not match src = {} dst = {} scaling = {}",
+            srcDim, dstDim, sm);
     }
 
     const util::IndexMapper<3, int64> srcInd(srcDim);

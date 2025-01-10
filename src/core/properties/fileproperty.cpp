@@ -152,9 +152,7 @@ std::unique_ptr<FileDialog> FileBase::createFileDialog(std::string_view title,
         InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
     if (!fileDialog) {
         throw Exception(
-            "Failed to create a FileDialog. Add one to the "
-            "InviwoApplication::DialogFactory",
-            IVW_CONTEXT);
+            "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
     }
     fileDialog->setCurrentFile(file);
     fileDialog->addExtensions(getNameFilters());

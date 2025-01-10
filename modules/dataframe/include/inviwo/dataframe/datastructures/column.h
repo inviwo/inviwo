@@ -37,12 +37,12 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
 #include <inviwo/core/metadata/metadataowner.h>                         // for MetaDataOwner
-#include <inviwo/core/util/exception.h>                                 // for ExceptionContext
+#include <inviwo/core/util/exception.h>                                 // for SourceContext
 #include <inviwo/core/util/fmtutils.h>                                  // for FlagFormatter
 #include <inviwo/core/util/glmconvert.h>                                // for glm_convert
 #include <inviwo/core/util/glmvec.h>                                    // for dvec2
 #include <inviwo/core/util/iterrange.h>                                 // for as_range, iter_range
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/transformiterator.h>                         // for TransformIterator
 #include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
 #include <modules/base/algorithm/dataminmax.h>                          // for bufferMinMax
@@ -72,8 +72,7 @@ namespace inviwo {
 
 class IVW_MODULE_DATAFRAME_API InvalidConversion : public Exception {
 public:
-    InvalidConversion(const std::string& message = "",
-                      ExceptionContext context = ExceptionContext())
+    InvalidConversion(const std::string& message = "", SourceContext context = SourceContext())
         : Exception(message, context) {}
     virtual ~InvalidConversion() throw() {}
 };
@@ -654,7 +653,7 @@ void TemplateColumn<T>::append(const Column& col) {
         buffer_->getEditableRAMRepresentation()->append(
             srccol->buffer_->getRAMRepresentation()->getDataContainer());
     } else {
-        throw Exception("data formats of columns do not match", IVW_CONTEXT);
+        throw Exception("data formats of columns do not match");
     }
 }
 

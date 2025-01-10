@@ -116,7 +116,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                         processor->initializeResources();
                     }
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::InitResource, IVW_CONTEXT);
+                    exceptionHandler_(processor, EvaluationType::InitResource, SourceContext{});
                     continue;
                 }
 
@@ -126,7 +126,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                         inport->callOnChangeIfChanged();
                     }
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::PortOnChange, IVW_CONTEXT);
+                    exceptionHandler_(processor, EvaluationType::PortOnChange, SourceContext{});
                     continue;
                 }
 
@@ -143,7 +143,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     if (processor->isReady()) processor->setValid();
 
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::Process, IVW_CONTEXT);
+                    exceptionHandler_(processor, EvaluationType::Process, SourceContext{});
                 }
 
                 processor->notifyObserversFinishedProcess(processor);
@@ -152,7 +152,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 try {
                     processor->doIfNotReady();
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::NotReady, IVW_CONTEXT);
+                    exceptionHandler_(processor, EvaluationType::NotReady, SourceContext{});
                 }
             }
         }

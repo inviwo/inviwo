@@ -113,7 +113,7 @@ template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::registerObject(
     RepresentationConverter<BaseRepr>* converter) {
     if (!util::insert_unique(converters_, converter->getConverterID(), converter))
-        throw(ConverterException("Converter with supplied ID already registered", IVW_CONTEXT));
+        throw(ConverterException("Converter with supplied ID already registered"));
 
     return true;
 }

@@ -48,13 +48,13 @@ public:
         NodeDebugger nd{nullptr};
     };
 
-    SerializationException(std::string_view message, ExceptionContext context,
+    SerializationException(std::string_view message,
+                           SourceContext context = std::source_location::current(),
                            std::string_view key = "", std::string_view type = "",
                            std::string_view id = "", TiXmlElement* n = nullptr);
-    SerializationException(std::string_view format, fmt::format_args&& args,
-                           ExceptionContext context);
+    SerializationException(std::string_view format, fmt::format_args&& args, SourceContext context);
     template <typename... Args>
-    SerializationException(ExceptionContext context, std::string_view format, Args&&... args)
+    SerializationException(SourceContext context, std::string_view format, Args&&... args)
         : Exception{format, fmt::make_format_args(std::forward<Args>(args)...),
                     std::move(context)} {}
 

@@ -49,22 +49,23 @@ using ExceptionContext = SourceContext;
 
 class IVW_CORE_API Exception : public std::runtime_error {
 public:
-    Exception(std::string_view message = "", ExceptionContext context = ExceptionContext());
-    Exception(std::string_view format, fmt::format_args&& args, ExceptionContext context);
+    Exception(std::string_view message = "",
+              SourceContext context = std::source_location::current());
+    Exception(std::string_view format, fmt::format_args&& args, SourceContext context);
     template <typename... Args>
-    Exception(ExceptionContext context, std::string_view format, Args&&... args)
+    Exception(SourceContext context, std::string_view format, Args&&... args)
         : Exception{format, fmt::make_format_args(args...), std::move(context)} {}
     virtual ~Exception() noexcept;
     virtual std::string getMessage() const;
     std::string getFullMessage() const;
     std::string getFullMessage(size_t maxFrames) const;
-    virtual const ExceptionContext& getContext() const;
+    virtual const SourceContext& getContext() const;
     const std::vector<std::string>& getStack() const;
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Exception& e);
 
 private:
-    ExceptionContext context_;
+    SourceContext context_;
     std::vector<std::string> stack_;
 };
 
@@ -101,7 +102,7 @@ public:
 class IVW_CORE_API ModuleInitException : public Exception {
 public:
     using Exception::Exception;
-    ModuleInitException(std::string_view message, ExceptionContext context,
+    ModuleInitException(std::string_view message, SourceContext context,
                         std::vector<std::string> modulesToDeregister);
     virtual ~ModuleInitException() noexcept = default;
 
@@ -116,7 +117,7 @@ private:
 };
 
 struct IVW_CORE_API StandardExceptionHandler {
-    void operator()(ExceptionContext);
+    void operator()(SourceContext);
 };
 
 }  // namespace inviwo

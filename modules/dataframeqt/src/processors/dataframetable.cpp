@@ -43,7 +43,7 @@
 #include <inviwo/core/properties/propertysemantics.h>                  // for PropertySemantics
 #include <inviwo/core/properties/valuewrapper.h>                       // for PropertySerializat...
 #include <inviwo/core/util/exception.h>                                // for Exception
-#include <inviwo/core/util/sourcecontext.h>                            // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
 #include <inviwo/core/util/statecoordinator.h>                         // for StateCoordinator
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>          // for DataFrameTableProc...
@@ -129,8 +129,7 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
     auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get());
     if (processorWidget && !widget) {
         throw Exception(
-            "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget",
-            IVW_CONTEXT);
+            "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget");
     }
 
     if (widget) {
@@ -187,7 +186,7 @@ std::optional<std::filesystem::path> DataFrameTable::exportFile(
         return util::saveData(*data, path, name, candidateExtensions, overwrite);
     }
 
-    throw Exception("Inport has no data", IVW_CONTEXT);
+    throw Exception("Inport has no data");
 }
 
 }  // namespace inviwo
