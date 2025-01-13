@@ -111,7 +111,7 @@ std::shared_ptr<TransferFunction> importTransferFunctionDialog(QWidget* parent) 
                     SourceContext{}, "Unable to find a Transfer function reader for {}", filename);
             }
         } catch (DataReaderException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+            log::exception(e);
         }
     }
     return nullptr;
@@ -140,7 +140,7 @@ std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(QWidget* pare
                                           filename);
             }
         } catch (DataReaderException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+            log::exception(e);
         }
     }
     return nullptr;
@@ -165,14 +165,13 @@ void exportTransferFunctionDialog(const TransferFunction& tf, QWidget* parent) {
                     factory->getWriterForTypeAndExtension<TransferFunction>(fileExt, filename)) {
                 writer->writeData(&tf, filename);
 
-                util::log(SourceContext{}, "Data exported to disk: " + filename, LogLevel::Info,
-                          LogAudience::User);
+                log::info("Data exported to disk: {}", filename);
             } else {
                 throw DataWriterException(
                     SourceContext{}, "Unable to find a Transfer Function writer for {}", filename);
             }
         } catch (DataWriterException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+            log::exception(e);
         }
     }
 }
@@ -203,7 +202,7 @@ void exportIsoValueCollectionDialog(const IsoValueCollection& iso, QWidget* pare
                                           filename);
             }
         } catch (DataWriterException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+            log::exception(e);
         }
     }
 }

@@ -914,7 +914,7 @@ void NetworkEditor::propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEv
             }
         }
     } catch (const Exception& e) {
-        util::log(e.getContext(), e.getFullMessage());
+        log::exception(e);
     }
 }
 
@@ -1228,7 +1228,7 @@ void NetworkEditor::helpEvent(QGraphicsSceneHelpEvent* e) {
                     return;
             }
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getFullMessage());
+            log::exception(e);
             return;
         }
     }
