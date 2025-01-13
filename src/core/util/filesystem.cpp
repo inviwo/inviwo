@@ -152,7 +152,7 @@ void setWorkingDirectory(const fs::path& path) {
     SetCurrentDirectoryW(path.c_str());
 #else
     if (chdir(path.c_str()) != 0) {
-        throw Exception(SourceContext{}, "Error setting working directory path: (}", path);
+        throw Exception(SourceContext{}, "Error setting working directory path: {}", path);
     }
 #endif
 }

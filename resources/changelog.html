@@ -33,9 +33,26 @@
 </style>
 </head>
 <body>
-<h2>2025-01-19 New Logging functions</h2>
-<p>The existing macro based logging functions <code class="notranslate">LogInfo</code>, <code class="notranslate">LogWarn</code>, <code class="notranslate">LogError</code> and there <code class="notranslate">_Custom</code> versions are superseded a new<br>
-API that takes advantage of <code class="notranslate">std::source_location</code>, meaning, we no longer need any macros.</p>
+<h2>2025-01-13 Exception constructors</h2>
+<p>With the new <code class="notranslate">SourceContext</code> we no longer need to use macros to construct the context when throwing exceptions. The following signatures are now used:</p>
+<ul>
+<li>
+<p>For static messages</p>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">Exception</span>(std::string_view)</pre></div>
+<p>Example:</p>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">throw</span> <span class="pl-en">Exception</span>(<span class="pl-s"><span class="pl-pds">"</span>The operation failed<span class="pl-pds">"</span></span>);</pre></div>
+<p>The Exception constructor will capture the SourceContext from the call site automatically .</p>
+</li>
+<li>
+<p>For dynamic messages</p>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">Exception</span>(SourceContext context, std::string_view format, Args&amp;&amp;... args)</pre></div>
+<p>Example:</p>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">throw</span> <span class="pl-en">Exception</span>(SourceContext{}, <span class="pl-s"><span class="pl-pds">"</span>The operation failed because of {}<span class="pl-pds">"</span></span>, error);</pre></div>
+<p>The SourceContext argument will capture the context from the call site.</p>
+</li>
+</ul>
+<h2>2025-01-09 New Logging functions</h2>
+<p>The existing macro based logging functions <code class="notranslate">LogInfo</code>, <code class="notranslate">LogWarn</code>, <code class="notranslate">LogError</code> and there <code class="notranslate">_Custom</code> versions are superseded by a new API that takes advantage of <code class="notranslate">std::source_location</code>, meaning, we no longer need any macros.</p>
 <p>The new log functions all live in the <code class="notranslate">inviwo::log</code> namespace. They either take an explicit <code class="notranslate">SourceContext</code> argument, or automatically extract one from the call site. All functions that take a <code class="notranslate">fmt::format_string</code> do compile time format checks.</p>
 <h4>Basic logging</h4>
 <ul>

@@ -1,8 +1,30 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2025-01-19 New Logging functions
-The existing macro based logging functions `LogInfo`, `LogWarn`, `LogError` and there `_Custom` versions are superseded a new
-API that takes advantage of `std::source_location`, meaning, we no longer need any macros. 
+## 2025-01-13 Exception constructors
+With the new `SourceContext` we no longer need to use macros to construct the context when throwing exceptions. The following signatures are now used:
+ * For static messages
+   ```cpp
+   Exception(std::string_view)
+   ```
+   Example:
+   ```cpp
+   throw Exception("The operation failed");
+   ```
+   The Exception constructor will capture the SourceContext from the call site automatically .
+
+ * For dynamic messages
+   ```cpp
+   Exception(SourceContext context, std::string_view format, Args&&... args)
+   ```
+   Example:
+   ```cpp
+   throw Exception(SourceContext{}, "The operation failed because of {}", error);
+   ```
+   The SourceContext argument will capture the context from the call site. 
+
+
+## 2025-01-09 New Logging functions
+The existing macro based logging functions `LogInfo`, `LogWarn`, `LogError` and there `_Custom` versions are superseded by a new API that takes advantage of `std::source_location`, meaning, we no longer need any macros. 
 
 The new log functions all live in the `inviwo::log` namespace. They either take an explicit `SourceContext` argument, or automatically extract one from the call site. All functions that take a `fmt::format_string` do compile time format checks.
 

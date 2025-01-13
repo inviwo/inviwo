@@ -70,7 +70,7 @@ Exception::Exception(std::string_view message, SourceContext context)
     if (breakOnException()) util::debugBreak();
 }
 
-Exception::Exception(std::string_view format, fmt::format_args&& args, SourceContext context)
+Exception::Exception(fmt::string_view format, fmt::format_args&& args, SourceContext context)
     : std::runtime_error{fmt::vformat(format, std::move(args))}, context_{std::move(context)} {
     if (breakOnException()) util::debugBreak();
 }
