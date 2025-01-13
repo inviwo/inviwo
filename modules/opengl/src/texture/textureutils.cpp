@@ -122,9 +122,8 @@ void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceIn
     if (auto inImage = sourceInport.getData()) {
         inImage->getRepresentation<ImageGL>()->copyRepresentationsTo(outImageGL);
     } else {
-        LogWarnCustom("TextureUtils", "Trying to copy empty image inport: \""
-                                          << sourceInport.getIdentifier() << "\" in processor: \""
-                                          << sourceInport.getProcessor()->getIdentifier() << "\"");
+        log::warn(R"(Trying to copy empty image inport: "{}" in processor: "{}")",
+                  sourceInport.getIdentifier(), sourceInport.getProcessor()->getIdentifier());
     }
     outImageGL->activateBuffer(type);
 }
@@ -539,7 +538,7 @@ void bindTexture(const Volume& volume, const TextureUnit& texUnit) {
     if (const auto* volumeGL = volume.getRepresentation<VolumeGL>()) {
         volumeGL->bindTexture(texUnit.getEnum());
     } else {
-        LogErrorCustom("TextureUtils", "Could not get a GL representation from volume");
+        log::error("Could not get a GL representation from volume");
     }
 }
 

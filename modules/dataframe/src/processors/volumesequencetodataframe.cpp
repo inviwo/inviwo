@@ -50,7 +50,7 @@
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for vec2, size3_t, uvec3
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
 #include <inviwo/dataframe/datastructures/column.h>                     // for TemplateColumn
@@ -151,7 +151,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
         for (auto vol : volumeSequence) {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
             if (vol->getDataFormat()->getComponents() != 1)
-                LogWarn("This volume is omitted because it has more than one channel.");
+                log::warn("This volume is omitted because it has more than one channel.");
             volumeData.push_back(
                 static_cast<const glm::f32*>(vol->getRepresentation<VolumeRAM>()->getData()));
         }

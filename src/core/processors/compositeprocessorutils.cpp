@@ -254,7 +254,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
                 network.addProcessor(subNetwork.removeProcessor(p));
             }
         }
-        auto meta =
+        auto* meta =
             composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         util::offsetPosition(subProcessors, meta->getPosition());
         util::setSelected(subProcessors, true);
@@ -288,7 +288,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
         network.removeProcessor(&composite);
     } catch (const Exception& e) {
-        util::log(e.getContext(), e.getMessage());
+        log::exception(e);
     }
 }
 

@@ -84,7 +84,7 @@ MeshVolumeRenderer::MeshVolumeRenderer()
     }()} {
 
     if (!VolumeFragmentListRenderer::supportsFragmentLists()) {
-        LogProcessorWarn(
+        log::warn(
             "Fragment lists are not supported by the hardware -> volume rasterization disabled, "
             "regular meshes rendered without sorting.");
     }
@@ -133,10 +133,10 @@ void MeshVolumeRenderer::process() {
     }
     const int numVolumes = volumeId;
     if (volumeId > maxSupportedVolumeRasterizers) {
-        LogWarn(
-            fmt::format("More than {} Volume Rasterizers connected to {} ({}). Omitting "
-                        "surplus rasterizers.",
-                        maxSupportedVolumeRasterizers, getDisplayName(), getIdentifier()));
+        log::warn(
+            "More than {} Volume Rasterizers connected to {} ({}). Omitting "
+            "surplus rasterizers.",
+            maxSupportedVolumeRasterizers, getDisplayName(), getIdentifier());
     }
 
     if (intermediateImage_.getDimensions() != outport_.getDimensions()) {

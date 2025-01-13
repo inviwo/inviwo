@@ -38,7 +38,7 @@
 #include <inviwo/core/util/detected.h>                                  // for alwaysFalse
 #include <inviwo/core/util/fileextension.h>                             // for FileExtension
 #include <inviwo/core/util/filesystem.h>                                // for skipByteOrderMark
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
 #include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
 #include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
@@ -462,10 +462,10 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
         }
     }
     if (sampledRows != sampleRows) {
-        LogWarn(
+        log::warn(
             "Could not find any data for some columns, sampled more rows to determine column "
-            "types "
-            << sampledRows);
+            "types {}",
+            sampledRows);
     }
 
     return counts;
@@ -648,7 +648,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         auto prevLocale = std::setlocale(LC_ALL, nullptr);
         std::string prev{prevLocale ? prevLocale : ""};
         if (!std::setlocale(LC_ALL, locale_.c_str())) {
-            LogWarn("Failed to set locale " << locale_);
+            log::warn("Failed to set locale {}", locale_);
         }
         cleanup.setAction([prev]() { std::setlocale(LC_ALL, prev.c_str()); });
     }

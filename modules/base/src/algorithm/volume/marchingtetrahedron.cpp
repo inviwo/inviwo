@@ -36,7 +36,7 @@
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/datastructures/volume/volume.h>                   // IWYU pragma: keep
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
-#include <inviwo/core/util/assertion.h>                                 // for ivwAssert
+#include <inviwo/core/util/assertion.h>                                 // for IVW_ASSERT
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/formatdispatching.h>                         // for PrecisionValueType
 #include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3, vec4
@@ -64,10 +64,9 @@ std::shared_ptr<Mesh> MarchingTetrahedron::apply(
     std::shared_ptr<const Volume> volume, double iso, const vec4& color, bool invert, bool enclose,
     std::function<void(float)> progressCallback,
     std::function<bool(const size3_t&)> maskingCallback) {
-    LogWarnCustom("MarchingTetrahedron::apply",
-                  "Deprecated: Use util::marchingtetrahedron(...) instead");
-    return util::marchingtetrahedron(volume, iso, color, invert, enclose, progressCallback,
-                                     maskingCallback);
+    log::warn("Deprecated: Use util::marchingtetrahedron(...) instead");
+    return util::marchingtetrahedron(std::move(volume), iso, color, invert, enclose,
+                                     std::move(progressCallback), maskingCallback);
 }
 
 namespace marchingtetrahedron {
@@ -255,7 +254,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
                                     dx, dy, dz);
         }
 
-        ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");
+        IVW_ASSERT(positions.size() == normals.size(), "positions_ and normals_ must be equal");
         std::vector<BasicMesh::Vertex> vertices;
         vertices.reserve(positions.size());
 

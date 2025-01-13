@@ -124,24 +124,23 @@ void PoolProcessor::invalidate(InvalidationLevel invalidationLevel, Property* so
 }
 
 std::string PoolProcessor::handleError() {
-    LogError(
-        fmt::format("An error occurred while processing background jobs of {}", getIdentifier()));
+    log::error("An error occurred while processing background jobs of {}", getIdentifier());
 
     std::string message;
     try {
         throw;
     } catch (const Exception& e) {
         message = e.getMessage();
-        util::log(e.getContext(), message, LogLevel::Error);
+        log::exception(e);
     } catch (const fmt::format_error& e) {
         message = fmt::format("fmt format error: {}\n{}", e.what(), util::fmtHelp.view());
-        util::log(IVW_CONTEXT, message, LogLevel::Error);
+        log::report(LogLevel::Error, message);
     } catch (const std::exception& e) {
         message = e.what();
-        util::log(IVW_CONTEXT, message, LogLevel::Error);
+        log::exception(e);
     } catch (...) {
         message = "Unknown error";
-        util::log(IVW_CONTEXT, message, LogLevel::Error);
+        log::exception();
     }
     for (auto port : getOutports()) {
         port->clear();

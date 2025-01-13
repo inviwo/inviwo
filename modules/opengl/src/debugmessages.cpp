@@ -33,7 +33,7 @@
 #include <inviwo/core/properties/optionproperty.h>  // for OptionProperty
 #include <inviwo/core/util/assertion.h>             // for debugBreak
 #include <inviwo/core/util/canvas.h>                // for Canvas, Canvas::ContextID
-#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogInfoCustom, LogAudience
+#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogAudience
 #include <inviwo/core/util/rendercontext.h>         // for RenderContext, ContextHolder
 #include <modules/opengl/openglsettings.h>          // for OpenGLSettings
 
@@ -51,19 +51,18 @@ void logDebugMode(debug::Mode mode, debug::Severity severity, Canvas::ContextID 
     const auto rc = RenderContext::getPtr();
     switch (mode) {
         case debug::Mode::Off:
-            LogInfoCustom("OpenGL Debug",
-                          "Debugging off for context: " << rc->getContextName(context) << " ("
-                                                        << context << ")");
+            log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                        "Debugging off for context: {} ({})", rc->getContextName(context), context);
             break;
         case debug::Mode::Debug:
-            LogInfoCustom("OpenGL Debug", "Debugging active for context: "
-                                              << rc->getContextName(context) << " (" << context
-                                              << ")  at level: " << severity);
+            log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                        "Debugging active for context: {} ({}) at level: {}",
+                        rc->getContextName(context), context, severity);
             break;
         case debug::Mode::DebugSynchronous:
-            LogInfoCustom("OpenGL Debug", "Synchronous debugging active for context: "
-                                              << rc->getContextName(context) << " (" << context
-                                              << ") at level: " << severity);
+            log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                        "Synchronous debugging active for context: {} ({}) at level: {}",
+                        rc->getContextName(context), context, severity);
             break;
     }
 }
@@ -115,7 +114,8 @@ void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity) {
                     if (setOpenGLDebugMode(mode, severity)) {
                         logDebugMode(mode, severity, id);
                     } else {
-                        LogInfoCustom("OpenGL Debug", "Debug messages not supported");
+                        log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                                    "Debug messages not supported");
                     }
                 }
             });
@@ -160,12 +160,12 @@ void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity) {
                     const auto rc = RenderContext::getPtr();
                     canvas->activate();
                     if (configureOpenGLDebugMessages(severity)) {
-                        LogInfoCustom("OpenGL Debug",
-                                      "Debug messages for level: " << severity << " for context: "
-                                                                   << rc->getContextName(id) << " ("
-                                                                   << id << ")");
+                        log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                                    "Debug messages for level: {} for context: {} ({})", severity,
+                                    rc->getContextName(id), id);
                     } else {
-                        LogInfoCustom("OpenGL Debug", "Debug messages not supported");
+                        log::report(LogLevel::Info, SourceContext("OpenGL Debug"_sl),
+                                    "Debug messages not supported");
                     }
                 }
             });
@@ -222,131 +222,102 @@ void handleOpenGLDebugMode(Canvas::ContextID context) {
 
 namespace debug {
 
-std::ostream& operator<<(std::ostream& ss, Mode m) {
+std::string_view enumToStr(Mode m) {
     switch (m) {
         case Mode::Off:
-            ss << "Off";
-            break;
+            return "Off";
         case Mode::Debug:
-            ss << "Debug";
-            break;
+            return "Debug";
         case Mode::DebugSynchronous:
-            ss << "DebugSynchronous";
-            break;
+            return "DebugSynchronous";
         default:
-            break;
+            return "";
     }
-    return ss;
 }
-std::ostream& operator<<(std::ostream& ss, BreakLevel b) {
+std::string_view enumToStr(BreakLevel b) {
     switch (b) {
         case BreakLevel::Off:
-            ss << "Off";
-            break;
+            return "Off";
         case BreakLevel::High:
-            ss << "High";
-            break;
+            return "High";
         case BreakLevel::Medium:
-            ss << "Medium";
-            break;
+            return "Medium";
         case BreakLevel::Low:
-            ss << "Low";
-            break;
+            return "Low";
         case BreakLevel::Notification:
-            ss << "Notification";
-            break;
+            return "Notification";
         default:
-            break;
+            return "";
     }
-    return ss;
 }
-std::ostream& operator<<(std::ostream& ss, Source s) {
+std::string_view enumToStr(Source s) {
     switch (s) {
         case Source::Api:
-            ss << "Api";
-            break;
+            return "Api";
         case Source::WindowSystem:
-            ss << "WindowSystem";
-            break;
+            return "WindowSystem";
         case Source::ShaderCompiler:
-            ss << "ShaderCompiler";
-            break;
+            return "ShaderCompiler";
         case Source::ThirdParty:
-            ss << "ThirdParty";
-            break;
+            return "ThirdParty";
         case Source::Application:
-            ss << "Application";
-            break;
+            return "Application";
         case Source::Other:
-            ss << "Other";
-            break;
+            return "Other";
         case Source::DontCare:
-            ss << "DontCare";
-            break;
+            return "DontCare";
         default:
-            break;
+            return "";
     }
-    return ss;
 }
-std::ostream& operator<<(std::ostream& ss, Type t) {
+std::string_view enumToStr(Type t) {
     switch (t) {
         case Type::Error:
-            ss << "Error";
-            break;
+            return "Error";
         case Type::DeprecatedBehavior:
-            ss << "DeprecatedBehavior";
-            break;
+            return "DeprecatedBehavior";
         case Type::UndefinedBehavior:
-            ss << "UndefinedBehavior";
-            break;
+            return "UndefinedBehavior";
         case Type::Portability:
-            ss << "Portability";
-            break;
+            return "Portability";
         case Type::Performance:
-            ss << "Performance";
-            break;
+            return "Performance";
         case Type::Marker:
-            ss << "Marker";
-            break;
+            return "Marker";
         case Type::PushGroup:
-            ss << "PushGroup";
-            break;
+            return "PushGroup";
         case Type::PopGroup:
-            ss << "PopGroup";
-            break;
+            return "PopGroup";
         case Type::Other:
-            ss << "Other";
-            break;
+            return "Other";
         case Type::DontCare:
-            ss << "DontCare";
-            break;
+            return "DontCare";
         default:
-            break;
+            return "";
     }
-    return ss;
 }
-std::ostream& operator<<(std::ostream& ss, Severity s) {
+std::string_view enumToStr(Severity s) {
     switch (s) {
         case Severity::Low:
-            ss << "Low";
-            break;
+            return "Low";
         case Severity::Medium:
-            ss << "Medium";
-            break;
+            return "Medium";
         case Severity::High:
-            ss << "High";
-            break;
+            return "High";
         case Severity::Notification:
-            ss << "Notification";
-            break;
+            return "Notification";
         case Severity::DontCare:
-            ss << "DontCare";
-            break;
+            return "DontCare";
         default:
-            break;
+            return "";
     }
-    return ss;
 }
+
+std::ostream& operator<<(std::ostream& ss, Mode m) { return ss << enumToStr(m); }
+std::ostream& operator<<(std::ostream& ss, BreakLevel b) { return ss << enumToStr(b); }
+std::ostream& operator<<(std::ostream& ss, Source s) { return ss << enumToStr(s); }
+std::ostream& operator<<(std::ostream& ss, Type t) { return ss << enumToStr(t); }
+std::ostream& operator<<(std::ostream& ss, Severity s) { return ss << enumToStr(s); }
 
 }  // namespace debug
 

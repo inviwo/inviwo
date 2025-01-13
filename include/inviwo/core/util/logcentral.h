@@ -91,22 +91,6 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
                     __LINE__, stream__.str());                                                \
     }
 
-#define LogProcessorSpecial(logger, logLevel, message)                                            \
-    {                                                                                             \
-        std::ostringstream stream__;                                                              \
-        stream__ << message;                                                                      \
-        logger->logProcessor(this, logLevel, inviwo::LogAudience::User, stream__.str(), __FILE__, \
-                             __FUNCTION__, __LINE__);                                             \
-    }
-
-#define LogNetworkSpecial(logger, logLevel, message)                                      \
-    {                                                                                     \
-        std::ostringstream stream__;                                                      \
-        stream__ << message;                                                              \
-        logger->logNetwork(logLevel, inviwo::LogAudience::User, stream__.str(), __FILE__, \
-                           __FUNCTION__, __LINE__);                                       \
-    }
-
 #define LogInfo(message) \
     { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
 #define LogWarn(message) \
@@ -121,20 +105,6 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
 #define LogErrorCustom(source, message) \
     { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message) }
 
-#define LogProcessorInfo(message) \
-    { LogProcessorSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
-#define LogProcessorWarn(message) \
-    { LogProcessorSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message) }
-#define LogProcessorError(message) \
-    { LogProcessorSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message) }
-
-#define LogNetworkInfo(message) \
-    { LogNetworkSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
-#define LogNetworkWarn(message) \
-    { LogNetworkSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message) }
-#define LogNetworkError(message) \
-    { LogNetworkSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message) }
-
 class IVW_CORE_API Logger {
 public:
     Logger() = default;
@@ -143,16 +113,6 @@ public:
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
                      std::string_view file, std::string_view function, int line,
                      std::string_view msg) = 0;
-
-    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string_view msg, std::string_view file,
-                              std::string_view function, int line);
-
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                            std::string_view file, std::string_view function, int line);
-
-    virtual void logAssertion(std::string_view file, std::string_view function, int line,
-                              std::string_view msg);
 };
 
 class IVW_CORE_API LogCentral : public Singleton<LogCentral>, public Logger {
@@ -174,17 +134,6 @@ public:
                      std::string_view file, std::string_view function, int line,
                      std::string_view msg) override;
 
-    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string_view msg, std::string_view file = "",
-                              std::string_view function = "", int line = 0) override;
-
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                            std::string_view file = "", std::string_view function = "",
-                            int line = 0) override;
-
-    virtual void logAssertion(std::string_view file, std::string_view function, int line,
-                              std::string_view msg) override;
-
     void setLogStacktrace(const bool& logStacktrace = true);
     bool getLogStacktrace() const;
 
@@ -204,6 +153,158 @@ private:
     MessageBreakLevel breakLevel_ = MessageBreakLevel::Off;
 };
 
+namespace log {
+
+/**
+ * All log functions either take an explicit SourceContext argument,
+ * or automatically extract one from the call site.
+ * All functions that take a fmt::format_string do compile time format checks.
+ *
+ * # Basic logging
+ * * `info(fmt::format_string<Args...>, Args&&...)`
+ * * `warn(fmt::format_string<Args...>, Args&&...)`
+ * * `error(fmt::format_string<Args...>, Args&&...)`
+ *
+ * # Runtime Log Level
+ * * `report(LogLevel, SourceContext, fmt::format_string, Args&&...)`
+ * * `report(LogLevel, SourceContext, std::string_view)`
+ * * `report(LogLevel, std::string_view)`
+ * * `message(LogLevel level, fmt::format_string<Args...>, Args&&...)`
+
+ * # Log Exceptions
+ * * `exception(const Exception&)`
+ * * `exception(const std::exception&)`
+ * * `exception(std::string_view)`
+ * * `exception()`
+ *
+ * # Log to a custom logger
+ * * `report(Logger&, LogLevel, SourceContext, fmt::format_string, Args&&...)`
+ * * `report(Logger&, LogLevel, SourceContext, std::string_view)
+ * * `report(Logger&, LogLevel, std::string_view)`
+ * * `message(Logger&, LogLevel level, fmt::format_string<Args...>, Args&&...)`
+ */
+
+namespace detail {
+IVW_CORE_API void logDirectly(LogLevel level, SourceContext context, std::string_view message);
+}
+
+inline void report(Logger& logger, LogLevel level, SourceContext context,
+                   std::string_view message) {
+    logger.log(context.source(), level, LogAudience::User, context.file(), context.function(),
+               context.line(), message);
+}
+inline void report(LogLevel level, SourceContext context, std::string_view message) {
+    if (LogCentral::isInitialized()) {
+        ::inviwo::log::report(*LogCentral::getPtr(), level, context, message);
+    } else {
+        ::inviwo::log::detail::logDirectly(level, context, message);
+    }
+}
+
+inline void report(Logger& logger, LogLevel level, std::string_view message,
+                   SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(logger, level, context, message);
+}
+
+inline void report(LogLevel level, std::string_view message,
+                   SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(level, context, message);
+}
+
+namespace detail {
+inline void report(LogLevel level, SourceContext context, fmt::string_view format,
+                   fmt::format_args&& args) {
+    ::inviwo::log::report(level, context, fmt::vformat(format, args));
+}
+inline void report(Logger& logger, LogLevel level, SourceContext context, fmt::string_view format,
+                   fmt::format_args&& args) {
+    ::inviwo::log::report(logger, level, context, fmt::vformat(format, args));
+}
+}  // namespace detail
+
+template <typename... Args>
+inline void report(Logger& logger, LogLevel level, SourceContext context,
+                   fmt::format_string<Args...> format, Args&&... args) {
+    ::inviwo::log::detail::report(logger, level, context, format, fmt::make_format_args(args...));
+}
+template <typename... Args>
+inline void report(LogLevel level, SourceContext context, fmt::format_string<Args...> format,
+                   Args&&... args) {
+    ::inviwo::log::detail::report(level, context, format, fmt::make_format_args(args...));
+}
+
+inline void exception(const Exception& e) {
+    ::inviwo::log::report(LogLevel::Error, e.getContext(), e.getFullMessage());
+}
+template <typename... Args>
+inline void exception(const Exception& e, fmt::format_string<Args...> format, Args&&... args) {
+    ::inviwo::log::detail::report(LogLevel::Warn, e.getContext(), format,
+                                  fmt::make_format_args(args...));
+}
+inline void exception(const std::exception& e,
+                      SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, context, e.what());
+}
+inline void exception(std::string_view message,
+                      SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, context, message);
+}
+inline void exception(SourceContext context = std::source_location::current()) {
+    ::inviwo::log::report(LogLevel::Error, context, "Unknown Exception");
+}
+
+template <typename... Args>
+struct message {
+    message(LogLevel level, fmt::format_string<Args...> format, Args&&... args,
+            SourceContext context = std::source_location::current()) {
+        ::inviwo::log::detail::report(level, context, format, fmt::make_format_args(args...));
+    }
+    message(Logger& logger, LogLevel level, fmt::format_string<Args...> format, Args&&... args,
+            SourceContext context = std::source_location::current()) {
+        ::inviwo::log::detail::report(logger, level, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+message(LogLevel level, fmt::format_string<Args...>, Args&&...) -> message<Args...>;
+template <typename... Args>
+message(Logger& logger, LogLevel level, fmt::format_string<Args...>, Args&&...) -> message<Args...>;
+
+template <typename... Args>
+struct info {
+    explicit info(fmt::format_string<Args...> format, Args&&... args,
+                  SourceContext context = std::source_location::current()) {
+        ::inviwo::log::detail::report(LogLevel::Info, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+info(fmt::format_string<Args...>, Args&&...) -> info<Args...>;
+
+template <typename... Args>
+struct warn {
+    explicit warn(fmt::format_string<Args...> format, Args&&... args,
+                  SourceContext context = std::source_location::current()) {
+        ::inviwo::log::detail::report(LogLevel::Warn, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+warn(fmt::format_string<Args...>, Args&&...) -> warn<Args...>;
+
+template <typename... Args>
+struct error {
+    explicit error(fmt::format_string<Args...> format, Args&&... args,
+                   SourceContext context = std::source_location::current()) {
+        ::inviwo::log::detail::report(LogLevel::Error, context, format,
+                                      fmt::make_format_args(args...));
+    }
+};
+template <typename... Args>
+error(fmt::format_string<Args...>, Args&&...) -> error<Args...>;
+
+}  // namespace log
+
 namespace util {
 
 IVW_CORE_API void log(ExceptionContext context, std::string_view message,
@@ -217,27 +318,26 @@ IVW_CORE_API void log(Logger* logger, ExceptionContext context, std::string_view
 template <typename... Args>
 void log(SourceContext context, LogLevel level, LogAudience audience,
          fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile(),
-                              context.getFunction(), context.getLine(),
-                              fmt::format(format, std::forward<Args>(args)...));
+    LogCentral::getPtr()->log(context.source(), level, audience, context.file(), context.function(),
+                              context.line(), fmt::format(format, std::forward<Args>(args)...));
 }
 
 template <typename... Args>
 void logInfo(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Info, LogAudience::Developer,
-                              context.getFile(), context.getFunction(), context.getLine(),
+    LogCentral::getPtr()->log(context.source(), LogLevel::Info, LogAudience::Developer,
+                              context.file(), context.function(), context.line(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 template <typename... Args>
 void logWarn(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Warn, LogAudience::Developer,
-                              context.getFile(), context.getFunction(), context.getLine(),
+    LogCentral::getPtr()->log(context.source(), LogLevel::Warn, LogAudience::Developer,
+                              context.file(), context.function(), context.line(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 template <typename... Args>
 void logError(SourceContext context, fmt::format_string<Args...> format, Args&&... args) {
-    LogCentral::getPtr()->log(context.getCaller(), LogLevel::Error, LogAudience::Developer,
-                              context.getFile(), context.getFunction(), context.getLine(),
+    LogCentral::getPtr()->log(context.source(), LogLevel::Error, LogAudience::Developer,
+                              context.file(), context.function(), context.line(),
                               fmt::format(format, std::forward<Args>(args)...));
 }
 

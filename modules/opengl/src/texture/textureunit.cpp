@@ -29,7 +29,7 @@
 
 #include <modules/opengl/texture/textureunit.h>
 
-#include <inviwo/core/util/assertion.h>      // for ivwAssert
+#include <inviwo/core/util/assertion.h>      // for IVW_ASSERT
 #include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
 #include <modules/opengl/openglexception.h>  // for OpenGLException
 
@@ -42,7 +42,7 @@ namespace inviwo {
 std::vector<bool> TextureUnit::textureUnits_{};
 
 TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
-    ivwAssert(!textureUnits_.empty(), "Texture unit handler not initialized.");
+    IVW_ASSERT(!textureUnits_.empty(), "Texture unit handler not initialized.");
 
     // check which texture unit is available
     for (size_t i = 1; i < textureUnits_.size(); i++) {

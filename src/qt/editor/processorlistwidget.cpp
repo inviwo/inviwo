@@ -90,9 +90,8 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
                     drag->exec(Qt::MoveAction);
                 }
             } catch (const std::exception& e) {
-                LogError("Error trying to create processor: " << utilqt::fromQString(id)
-                                                              << " Message:\n"
-                                                              << e.what());
+                log::error("Error trying to create processor: {} Message:\n{}",
+                           utilqt::fromQString(id), e.what());
             }
         }
     }
@@ -355,10 +354,8 @@ std::shared_ptr<Processor> ProcessorTreeWidget::createProcessor(QString cid) {
             return p;
         }
     } catch (Exception& exception) {
-        util::log(
-            exception.getContext(),
-            "Unable to create processor \"" + className + "\" due to:\n" + exception.getMessage(),
-            LogLevel::Error);
+        log::exception(exception, "Unable to create processor '{}' due to:\n{}", className,
+                       exception.getMessage());
     }
     return nullptr;
 }

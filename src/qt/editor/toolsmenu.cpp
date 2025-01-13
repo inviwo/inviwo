@@ -134,9 +134,8 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
                 oss << "*/\n";
 
                 QApplication::clipboard()->setText(utilqt::toQString(oss.str()));
-                LogInfoCustom("ToolMenu", "DOXYGEN Template code for processor "
-                                              << dispName << " copied to clipboard");
-                LogInfoCustom("ToolMenu", oss.str());
+                log::info("DOXYGEN Template code for processor {} copied to clipboard", dispName);
+                log::report(LogLevel::Info, oss.str());
             });
         }
     }
@@ -163,22 +162,19 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                 if (ok) {
                     const auto lname = toLower(utilqt::fromQString(name));
 
-                    LogInfoCustom("ToolMenu", "Creating regression test " << lname);
-                    if (auto module = app->getModuleByIdentifier(modulename)) {
+                    log::info("Creating regression test {}", lname);
+                    if (auto* module = app->getModuleByIdentifier(modulename)) {
                         const auto regressiondir = module->getPath(ModulePath::RegressionTests);
                         const auto testdir = regressiondir / lname;
                         if (std::filesystem::is_directory(testdir)) {
-                            LogErrorCustom(
-                                "ToolMenu",
-                                "Dir: \"" << testdir << "\" already exits. use a different name");
+                            log::error("Dir: \"{}\" already exits. use a different name", testdir);
                             return;
                         }
                         try {
                             std::filesystem::create_directories(testdir);
 
                             const auto workspaceName = testdir / (lname + ".inv");
-                            LogInfoCustom("ToolMenu",
-                                          "Saving regression workspace to: " << workspaceName);
+                            log::error("Saving regression workspace to: {}", workspaceName);
 
                             app->getWorkspaceManager()->save(workspaceName);
                             util::exportAllFiles(
@@ -188,9 +184,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                                 Overwrite::Yes);
 
                         } catch (const Exception& error) {
-                            LogErrorCustom("ToolsMenu",
-                                           fmt::format("Failed to create regression test: {}",
-                                                       error.getMessage()));
+                            log::error("Failed to create regression test: {}", error.getMessage());
                             // TODO delete testdir here
                         }
                     }
@@ -232,7 +226,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            log::exception(e);
         }
     });
 
@@ -245,7 +239,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            log::exception(e);
         }
     });
 
@@ -259,7 +253,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            log::exception(e);
         }
     });
 
@@ -273,7 +267,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+            log::exception(e);
         }
     });
 
@@ -294,7 +288,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
                 });
             } catch (const Exception& e) {
-                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+                log::exception(e);
             }
         }
     });
@@ -317,7 +311,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
                 });
             } catch (const Exception& e) {
-                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+                log::exception(e);
             }
         }
     });
@@ -354,10 +348,10 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
                     }};
                 processor->accept(visitor);
             } catch (const Exception& e) {
-                util::log(e.getContext(), e.getMessage());
+                log::exception(e);
             }
         }
-        LogInfo(buffer);
+        log::report(LogLevel::Info, buffer);
     });
 
 }  // namespace inviwo

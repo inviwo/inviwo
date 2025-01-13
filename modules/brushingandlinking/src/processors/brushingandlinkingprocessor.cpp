@@ -64,7 +64,9 @@ const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
     CodeState::Stable,                         // Code state
     "Brushing, Linking",                       // Tags
 };
-const ProcessorInfo& BrushingAndLinkingProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& BrushingAndLinkingProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
@@ -117,9 +119,8 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
                       std::next(indices.begin(), std::min(indices.size(), maxIndices)), ", "),
             indices.size() > maxIndices ? "..." : "");
 
-        LogProcessorInfo(fmt::format(
-            "{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})",
-            getDisplayName(), action, target.getString(), source, str, indices.cardinality()));
+        log::info("{:<20} action: {:<13} target: {}\n  source: {}\n  indices: [{}] ({})",
+                  getDisplayName(), action, target.getString(), source, str, indices.cardinality());
     });
 }
 

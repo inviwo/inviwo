@@ -1,5 +1,65 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-01-19 New Logging functions
+The existing macro based logging functions `LogInfo`, `LogWarn`, `LogError` and there `_Custom` versions are superseded a new
+API that takes advantage of `std::source_location`, meaning, we no longer need any macros. 
+
+The new log functions all live in the `inviwo::log` namespace. They either take an explicit `SourceContext` argument, or automatically extract one from the call site. All functions that take a `fmt::format_string` do compile time format checks.
+
+#### Basic logging
+ * ```cpp
+   log::info(fmt::format_string<Args...>, Args&&...)
+   ```
+ * ```cpp
+   log::warn(fmt::format_string<Args...>, Args&&...)
+   ```
+ * ```cpp
+   log::error(fmt::format_string<Args...>, Args&&...)
+   ```
+
+#### Runtime Log Level
+ * ```cpp
+   log::report(LogLevel, SourceContext, fmt::format_string, Args&&...)
+   ```
+ * ```cpp
+   log::report(LogLevel, SourceContext, std::string_view)
+   ```
+ * ```cpp
+   log::report(LogLevel, std::string_view)
+   ```
+ * ```cpp
+   log::message(LogLevel level, fmt::format_string<Args...>, Args&&...)
+   ```
+ 
+#### Log Exceptions
+ * ```cpp
+   log::exception(const Exception&)
+   ```
+ * ```cpp
+   log::exception(const std::exception&)
+   ```
+ * ```cpp
+   log::exception(std::string_view)
+   ```
+ * ```cpp
+   log::exception()
+   ```
+
+#### Log to a custom logger
+ * ```cpp
+   log::report(Logger&, LogLevel, SourceContext, fmt::format_string, Args&&...)
+   ```
+ * ```cpp
+   log::report(Logger&, LogLevel, SourceContext, std::string_view)
+   ```
+ * ```cpp
+   log::report(Logger&, LogLevel, std::string_view)
+   ```
+ * ```cpp
+   log::message(Logger&, LogLevel level, fmt::format_string<Args...>, Args&&...)
+   ```
+
+
 ## 2024-12-09 __Breaking__ change: string_view class identifiers
 All base classes that have a `virtual std::string getClassIdentifier() const` were refactored into `virtual std::string_view getClassIdentifier() const`. This is done to avoid string allocations. 
 If you have a class that derives from `Inport`, `Outport`, `Property`, `Metadata`, `Camera`, `animation::Track` or `animation::Interpolation` and with a override of 
@@ -171,7 +231,7 @@ This change potentially breaks existing Python processors handling either image 
 *Note:* Numpy arrays must be C-contiguous in order to be used by Inviwo. If they are not, the conversion from Numpy to Inviwo will fail and throw an exception (`Buffer`, `LayerPy`, `VolumePy`, etc.). Bear in mind that in Python the right-most index is the fastest.
 ```python
 l = [ [ 0, 1, 2 ], [ 3, 4, 5 ] ]
-print(l[0][2]) # [2] refers to the fastest running index
+const ProcessorInfo& ::getProcessorInfo() const { return processorInfo_; }l[0][2]) # [2] refers to the fastest running index
 
 n = numpy.array(l)
 print(n.flatten()) # -> [ 0, 1, 2, 3, 4, 5 ]

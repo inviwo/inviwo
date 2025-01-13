@@ -40,7 +40,7 @@
 #include <inviwo/core/util/formats.h>                     // for DataFormat, DataFormatBase, Dat...
 #include <inviwo/core/util/glmmat.h>                      // for mat3
 #include <inviwo/core/util/glmvec.h>                      // for uvec3, vec3, size3_t
-#include <inviwo/core/util/logcentral.h>                  // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>                  // for LogCentral
 #include <inviwo/core/util/raiiutils.h>                   // for OnScopeExit, OnScopeExit::ExitA...
 #include <inviwo/core/util/safecstr.h>                    // for SafeCStr
 #include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
@@ -79,7 +79,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& f
     size3_t dim = volume->getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSizeInBytes());
     std::string size = util::formatBytesToString(bytes);
-    LogInfo("Loaded volume: " << filePath << " size: " << size);
+    log::info("Loaded volume: {} size: {}", filePath, size);
     printMetaInfo(*volume, "description");
     printMetaInfo(*volume, "courtesy");
     printMetaInfo(*volume, "parameter");
@@ -177,7 +177,7 @@ void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        LogInfo(key << ": " << metaStr);
+        log::info("{}: {}", key, metaStr);
     }
 }
 

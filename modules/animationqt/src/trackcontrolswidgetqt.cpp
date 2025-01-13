@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/trackcontrolswidgetqt.h>
 
-#include <inviwo/core/util/logcentral.h>                     // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                     // for LogCentral
 #include <modules/animation/animationcontroller.h>           // for AnimationController
 #include <modules/animation/datastructures/animationtime.h>  // for Seconds
 #include <modules/animation/datastructures/track.h>          // for Track
@@ -99,7 +99,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
             iconSize, QIcon::Normal, QIcon::Off);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this,
-                [=]() { LogWarn("Locking tracks is not implemented yet."); });
+                [=]() { log::warn("Locking tracks is not implemented yet."); });
         lock->setCheckable(true);
         lock->setChecked(false);
         btnLock_ = new QToolButton(this);

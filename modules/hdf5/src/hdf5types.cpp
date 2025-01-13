@@ -58,7 +58,7 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
                     break;
                 }
                 default: {
-                    LogWarnCustom("HDFType", "HDF type not supported");
+                    log::warn("HDF type not supported");
                     return nullptr;
                 }
             }
@@ -73,11 +73,11 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
         }
         case H5T_ARRAY: {
             H5::ArrayType type = dataset.getArrayType();
-            LogWarnCustom("HDFType", "HDF type not supported");
+            log::warn("HDF type not supported");
             return nullptr;
         }
         default: {
-            LogWarnCustom("HDFType", "HDF type not supported");
+            log::warn("HDF type not supported");
             return nullptr;
         }
     }

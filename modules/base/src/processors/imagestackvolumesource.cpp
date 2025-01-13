@@ -185,9 +185,8 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     const auto first = std::find_if(slices.begin(), slices.end(),
                                     [](auto& item) { return item.second != nullptr; });
     if (first == slices.end()) {  // could not find any suitable data reader for the images
-        throw Exception(
-            fmt::format("No supported images found in '{}'", filePattern_.getFilePatternPath()),
-            IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "No supported images found in '{}'",
+                        filePattern_.getFilePatternPath());
     }
 
     const auto referenceLayer = first->second->readData(first->first);
@@ -197,16 +196,14 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     // does not provide meta data for all image formats.
     const auto* referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
     if (glm::compMul(referenceRAM->getDimensions()) == 0) {
-        throw Exception(
-            fmt::format("Could not extract valid image dimensions from {}", first->first),
-            IVW_CONTEXT);
+        throw Exception(IVW_CONTEXT, "Could not extract valid image dimensions from {}",
+                        first->first);
     }
 
     const auto* refFormat = referenceRAM->getDataFormat();
     if ((refFormat->getNumericType() != NumericType::Float) && (refFormat->getPrecision() > 32)) {
-        throw DataReaderException(
-            fmt::format("Unsupported integer bit depth ({})", refFormat->getPrecision()),
-            IVW_CONTEXT);
+        throw DataReaderException(IVW_CONTEXT, "Unsupported integer bit depth ({})",
+                                  refFormat->getPrecision());
     }
 
     return referenceRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
@@ -229,9 +226,8 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             const auto read = [&](const auto& file, auto* reader) -> std::shared_ptr<Layer> {
                 try {
                     return reader->readData(file);
-                } catch (DataReaderException const& e) {
-                    LogProcessorWarn(
-                        fmt::format("Could not load image: {}, {}", file, e.getMessage()));
+                } catch (const DataReaderException& e) {
+                    log::warn("Could not load image: {}, {}", file, e.getMessage());
                     return nullptr;
                 }
             };
@@ -255,16 +251,15 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                 const auto* format = layerRAM->getDataFormat();
                 if ((format->getNumericType() != NumericType::Float) &&
                     (format->getPrecision() > 32)) {
-                    LogProcessorWarn(fmt::format("Unsupported integer bit depth: {}, for image: {}",
-                                                 format->getPrecision(), file));
+                    log::warn("Unsupported integer bit depth: {}, for image: {}",
+                              format->getPrecision(), file);
                     fill(slice);
                     continue;
                 }
 
                 if (layerRAM->getDimensions() != layerDims) {
-                    LogProcessorWarn(
-                        fmt::format("Unexpected dimensions: {}, expected: {}, for image: {}",
-                                    layer->getDimensions(), layerDims, file));
+                    log::warn("Unexpected dimensions: {}, expected: {}, for image: {}",
+                              layer->getDimensions(), layerDims, file);
                     fill(slice);
                     continue;
                 }

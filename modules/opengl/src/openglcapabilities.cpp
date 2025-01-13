@@ -32,7 +32,7 @@
 #include <inviwo/core/properties/buttonproperty.h>  // for ButtonProperty
 #include <inviwo/core/util/exception.h>             // for Exception
 #include <inviwo/core/util/formatconversion.h>      // for formatBytesToString, kilobytes_to_bytes
-#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogWarn, LogError
+#include <inviwo/core/util/logcentral.h>            // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>         // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/staticstring.h>          // for StaticString
 #include <inviwo/core/util/stringconversion.h>      // for stringTo, splitStringView, toString
@@ -119,76 +119,78 @@ OpenGLCapabilities::~OpenGLCapabilities() {
 
 void OpenGLCapabilities::printInfo() {
     // OpenGL General Info
-    print("GPU Vendor: ", glVendorStr_);
-    print("GPU Renderer: ", glRenderStr_);
+    log::info("GPU Vendor: {}", glVendorStr_);
+    log::info("GPU Renderer: {}", glRenderStr_);
     if (isTexturesSupported()) {
         auto totalMem = getTotalAvailableTextureMem();
-        print("Dedicated video memory: ",
-              (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
+        log::info("Dedicated video memory: {}",
+                  (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
     }
-    print("OpenGL Version: ", glVersionStr_);
+    log::info("OpenGL Version: {}", glVersionStr_);
     std::string profile = getProfileString();
     profile[0] = static_cast<char>(toupper(profile[0]));
-    print("OpenGL Profile: ", profile);
+    log::info("OpenGL Profile: {}", profile);
 
     if (isShadersSupported()) {
-        print("GLSL version: ", glslVersionStr_);
+        log::info("GLSL version: {}", glslVersionStr_);
     }
 }
 
 void OpenGLCapabilities::printDetailedInfo() {
     // OpenGL General Info
-    print("GPU Vendor: " + glVendorStr_);
-    print("GPU Renderer: " + glRenderStr_);
-    print("OpenGL Version: " + glVersionStr_);
+    log::info("GPU Vendor: {}", glVendorStr_);
+    log::info("GPU Renderer: {}", glRenderStr_);
+    log::info("OpenGL Version: {}", glVersionStr_);
     std::string profile = getProfileString();
     profile[0] = static_cast<char>(toupper(profile[0]));
-    print("OpenGL Profile: " + profile);
+    log::info("OpenGL Profile: {}", profile);
 
     // GLSL
     if (isShadersSupported()) {
-        print("GLSL version: ", glslVersionStr_);
-        print("Current set global GLSL version: ",
-              getCurrentShaderVersion().getVersionAndProfileAsString());
-        print("Shaders supported: YES");
+        log::info("GLSL version: {}", glslVersionStr_);
+        log::info("Current set global GLSL version: {}",
+                  getCurrentShaderVersion().getVersionAndProfileAsString());
+        log::info("Shaders supported: YES");
     } else if (isShadersSupportedARB()) {
-        print("GLSL version: ", glslVersionStr_);
-        print("Current set global GLSL version: ",
-              getCurrentShaderVersion().getVersionAndProfileAsString());
-        print("Shaders supported: YES(ARB)");
+        log::info("GLSL version: {}", glslVersionStr_);
+        log::info("Current set global GLSL version: {}",
+                  getCurrentShaderVersion().getVersionAndProfileAsString());
+        log::info("Shaders supported: YES(ARB)");
     } else {
-        print("Shaders supported: NO");
+        log::info("Shaders supported: NO");
     }
 
     if (isGeometryShadersSupported()) {
-        print("Geometry shaders supported: YES");
-        print("Geometry shaders: Max output vertices : ", geometryShadersMaxVertices_);
-        print("Geometry shaders: Max output components: ", geometryShadersMaxOutputComponents_);
-        print("Geometry shaders: Max total output components: ",
-              geometryShadersMaxTotalOutputComponents_);
+        log::info("Geometry shaders supported: YES");
+        log::info("Geometry shaders: Max output vertices: {}", geometryShadersMaxVertices_);
+        log::info("Geometry shaders: Max output components: {}",
+                  geometryShadersMaxOutputComponents_);
+        log::info("Geometry shaders: Max total output components: {}",
+                  geometryShadersMaxTotalOutputComponents_);
     } else {
-        print("Geometry shaders supported: NO");
+        log::info("Geometry shaders supported: NO");
     }
 
-    print("Framebuffer objects supported: ", (isFboSupported() ? "YES" : "NO "));
-    // Texturing
-    print("1D/2D textures supported: ", (isTexturesSupported() ? "YES" : "NO "));
-    print("3D textures supported: ", (is3DTexturesSupported() ? "YES" : "NO "));
-    print("Array textures supported: ", (isTextureArraysSupported() ? "YES" : "NO "));
+    log::info("Framebuffer objects supported: {}", (isFboSupported() ? "YES" : "NO "));
 
-    if (isTexturesSupported()) print("Max 1D/2D texture size: ", getMaxTexSize());
-    if (is3DTexturesSupported()) print("Max 3D texture size: ", getMax3DTexSize());
-    if (isTextureArraysSupported()) print("Max array texture size: ", getMaxArrayTexSize());
-    if (isFboSupported()) print("Max color attachments: ", getMaxColorAttachments());
+    // Texturing
+    log::info("1D/2D textures supported: {}", (isTexturesSupported() ? "YES" : "NO "));
+    log::info("3D textures supported: {}", (is3DTexturesSupported() ? "YES" : "NO "));
+    log::info("Array textures supported: {}", (isTextureArraysSupported() ? "YES" : "NO "));
+
+    if (isTexturesSupported()) log::info("Max 1D/2D texture size: {}", getMaxTexSize());
+    if (is3DTexturesSupported()) log::info("Max 3D texture size: {}", getMax3DTexSize());
+    if (isTextureArraysSupported()) log::info("Max array texture size: {}", getMaxArrayTexSize());
+    if (isFboSupported()) log::info("Max color attachments: {}", getMaxColorAttachments());
 
     if (isTexturesSupported()) {
-        print("Max number of texture units: ", getNumTexUnits());
+        log::info("Max number of texture units: {}", getNumTexUnits());
         auto totalMem = getTotalAvailableTextureMem();
-        print("Total available texture memory: ",
-              (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
+        log::info("Total available texture memory: {}",
+                  (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
         auto curMem = getCurrentAvailableTextureMem();
-        print("Current available texture memory: ",
-              (curMem > 0 ? util::formatBytesToString(curMem) : "UNKNOWN"));
+        log::info("Current available texture memory: {}",
+                  (curMem > 0 ? util::formatBytesToString(curMem) : "UNKNOWN"));
     }
 }
 
@@ -303,7 +305,7 @@ size_t OpenGLCapabilities::getCurrentAvailableTextureMem() {
         currentAvailableTexMeminBytes =
             util::kilobytes_to_bytes(static_cast<size_t>(nCurAvailMemoryInKB[0]));
     } catch (const Exception& e) {
-        LogWarn("Failed to fetch current available texture memory: " << e.what());
+        log::warn("Failed to fetch current available texture memory: {}", e.what());
     }
 
     return currentAvailableTexMeminBytes;
@@ -342,7 +344,7 @@ size_t OpenGLCapabilities::getTotalAvailableTextureMem() {
 #endif
         }
     } catch (const Exception& e) {
-        LogWarn("Failed to fetch total available texture memory: " << e.what());
+        log::warn("Failed to fetch total available texture memory: {}", e.what());
     }
 
     return totalAvailableTexMemInBytes;
@@ -386,8 +388,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
             glRenderStr:  {}
             contextMask:  {}
         )");
-        LogError(
-            fmt::format(err, glVersionStr_, glVersion_, glVendorStr_, glRenderStr_, contextMask));
+        log::error(err, glVersionStr_, glVersion_, glVendorStr_, glRenderStr_, contextMask);
         glProfileStr_ = "core";
     }
     // GLSL

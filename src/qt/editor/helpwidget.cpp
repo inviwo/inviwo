@@ -457,10 +457,8 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
             try {
                 util::appendProcessorNetwork(app_->getProcessorNetwork(), filePath, app_);
             } catch (const Exception& e) {
-                util::log(
-                    e.getContext(),
-                    fmt::format("Unable to append network {} due to {}", filePath, e.getMessage()),
-                    LogLevel::Error);
+                log::exception(e, "Unable to append network {} due to {}", filePath,
+                               e.getMessage());
             }
             QTimer::singleShot(0, this, [this]() { backward(); });
             return {"Workspace loaded"};

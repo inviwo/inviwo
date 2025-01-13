@@ -46,16 +46,17 @@ namespace inviwo {
 
 using namespace std::literals;
 
-inline void checkContext(std::string_view error, Canvas::ContextID org, SourceLocation loc) {
+inline void checkContext(std::string_view error, Canvas::ContextID org,
+                         SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
-        auto rc = RenderContext::getPtr();
-        Canvas::ContextID curr = rc->activeContext();
+        auto* rc = RenderContext::getPtr();
+        const auto* const curr = rc->activeContext();
         if (org != curr) {
             const auto message =
                 fmt::format("{}: '{}' ({}) than it was created: '{}' ({})", error,
                             rc->getContextName(curr), curr, rc->getContextName(org), org);
 
-            assertion(loc.getFile(), loc.getFunction(), loc.getLine(), message);
+            assertion(message, context);
         }
     }
 }
@@ -116,7 +117,7 @@ BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
 
 BufferObjectArray::~BufferObjectArray() {
     if (id_ != 0) {
-        checkContext("VAO deleted in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+        checkContext("VAO deleted in a different context"sv, creationContext_);
         glDeleteVertexArrays(1, &id_);
     }
 }
@@ -133,14 +134,14 @@ void BufferObjectArray::clear() {
 }
 
 void BufferObjectArray::bind() const {
-    checkContext("VAO bound in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    checkContext("VAO bound in a different context"sv, creationContext_);
     glBindVertexArray(id_);
 }
 
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
 bool BufferObjectArray::isActive() const {
-    checkContext("VAO used in a different context"sv, creationContext_, IVW_SOURCE_LOCATION);
+    checkContext("VAO used in a different context"sv, creationContext_);
     return glIsVertexArray(id_);
 }
 

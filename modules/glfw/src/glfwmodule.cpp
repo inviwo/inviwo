@@ -36,7 +36,7 @@
 #include <inviwo/core/util/canvas.h>                        // for Canvas, Canvas::ContextID
 #include <inviwo/core/util/exception.h>                     // for ModuleInitException
 #include <inviwo/core/util/glmvec.h>                        // for uvec2
-#include <inviwo/core/util/logcentral.h>                    // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                    // for LogCentral
 #include <inviwo/core/util/rendercontext.h>                 // for RenderContext, ContextHolder
 #include <inviwo/core/util/sourcecontext.h>                 // for IVW_CONTEXT
 #include <modules/glfw/canvasglfw.h>                        // for CanvasGLFW
@@ -140,7 +140,7 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
         case GL_TIMEOUT_EXPIRED:  // Handled above
             break;
         case GL_WAIT_FAILED:
-            LogError("Error syncing with opengl 'GL_WAIT_FAILED'");
+            log::error("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
         case GL_CONDITION_SATISFIED:  // Queue done.
             break;

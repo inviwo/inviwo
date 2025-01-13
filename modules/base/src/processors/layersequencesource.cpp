@@ -173,13 +173,13 @@ void LayerSequenceSource::loadFile(bool deserialize) {
         try {
             layers_ = reader->readData(file_.get(), this);
         } catch (const DataReaderException& e) {
-            LogProcessorError(e.getMessage());
+            log::exception(e);
             layers_.reset();
             loadingFailed_ = true;
             isReady_.update();
         }
     } else {
-        LogProcessorError("Could not find a data reader for file: " << file_.get());
+        log::error("Could not find a data reader for file: {}", file_.get());
         layers_.reset();
         loadingFailed_ = true;
         isReady_.update();
@@ -212,13 +212,13 @@ void LayerSequenceSource::loadFolder(bool deserialize) {
                         layers_->push_back(layer);
                     }
                 } else {
-                    LogProcessorError("Could not find a data reader for file: " << file);
+                    log::error("Could not find a data reader for file: {}", file);
                     layers_.reset();
                     loadingFailed_ = true;
                     isReady_.update();
                 }
             } catch (const DataReaderException& e) {
-                LogProcessorError(e.getMessage());
+                log::exception(e);
                 layers_.reset();
                 loadingFailed_ = true;
                 isReady_.update();

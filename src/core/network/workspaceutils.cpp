@@ -65,8 +65,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
     }
 
     auto update = [&](const std::filesystem::path& fileName) mutable {
-        util::logInfo(IVW_CONTEXT_CUSTOM("util::updateWorkspaces"), "Updating workspace {}/{}: {}",
-                      ++current, total, fileName);
+        log::info("Updating workspace {}/{}: {}", ++current, total, fileName);
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
 
@@ -80,11 +79,11 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
         try {
             {
                 NetworkLock lock(app->getProcessorNetwork());
-                app->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
+                app->getWorkspaceManager()->load(fileName, [&](ExceptionContext) {
                     try {
                         throw;
                     } catch (const IgnoreException& e) {
-                        util::log(e.getContext(), e.getMessage(), LogLevel::Info);
+                        log::report(LogLevel::Info, e.getContext(), e.getMessage());
                     }
                 });
 
@@ -102,20 +101,17 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
             updateGui();
 
             if (dryRun == DryRun::No) {
-                app->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
+                app->getWorkspaceManager()->save(fileName, [&](ExceptionContext) {
                     try {
                         throw;
                     } catch (const IgnoreException& e) {
-                        util::log(e.getContext(), e.getMessage(), LogLevel::Info);
+                        log::report(LogLevel::Info, e.getContext(), e.getMessage());
                     }
                 });
             }
         } catch (const Exception& e) {
-            util::log(
-                e.getContext(),
-                fmt::format("Unable to convert network {} due to {}", fileName, e.getMessage()),
-                LogLevel::Error);
-            NetworkLock lock(app->getProcessorNetwork());
+            log::exception(e, "Unable to convert network {} due to {}", fileName, e.getMessage());
+            const NetworkLock lock(app->getProcessorNetwork());
             app->getWorkspaceManager()->clear();
             updateGui();
         }

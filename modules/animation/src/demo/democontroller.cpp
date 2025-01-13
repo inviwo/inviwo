@@ -142,16 +142,12 @@ void DemoController::loadWorkspaceApp(const std::filesystem::path& fileName) {
             try {
                 throw;
             } catch (const IgnoreException& e) {
-                util::log(e.getContext(),
-                          fmt::format("Incomplete network loading {} due to {}", fileName,
-                                      e.getMessage()),
-                          LogLevel::Error);
+                log::exception(e, "Incomplete network loading {} due to {}", fileName,
+                               e.getMessage());
             }
         });
     } catch (const Exception& e) {
-        util::log(e.getContext(),
-                  fmt::format("Unable to load network {} due to {}", fileName, e.getMessage()),
-                  LogLevel::Error);
+        log::exception(e, "Unable to load network {} due to {}", fileName, e.getMessage());
         app_->getWorkspaceManager()->clear();
     }
 }

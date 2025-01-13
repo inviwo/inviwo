@@ -133,23 +133,17 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
                 throw;
             } catch (const Exception& e) {
                 error(fmt::format("{}: {}", type, e.getMessage()));
-                util::log(e.getContext(),
-                          fmt::format("{} Error in {} : {}", id, type, e.getFullMessage()),
-                          LogLevel::Error);
+                log::exception(e, "{} Error in {} : {}", id, type, e.getFullMessage());
             } catch (const fmt::format_error& e) {
                 error(fmt::format("{}: {}", type, e.what()));
-                util::log(context,
-                          fmt::format("{} Error in {} using fmt formatting: {}\n{}", id, type,
-                                      e.what(), util::fmtHelp.view()),
-                          LogLevel::Error);
+                log::error("{} Error in {} using fmt formatting: {}\n{}", id, type, e.what(),
+                           util::fmtHelp.view());
             } catch (const std::exception& e) {
                 error(fmt::format("{}: {}", type, e.what()));
-                util::log(context, fmt::format("{} Error in {} : {}", id, type, e.what()),
-                          LogLevel::Error);
+                log::error("{} Error in {} : {}", id, type, e.what());
             } catch (...) {
                 error(fmt::format("{}: Unknown error", type));
-                util::log(context, fmt::format("{} Error in {} : Unknown error", id, type),
-                          LogLevel::Error);
+                log::error("{} Error in {} : Unknown error", id, type);
             }
         });
 
@@ -674,7 +668,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     try {
                         processor->getProcessor()->setDisplayName(utilqt::fromQString(text));
                     } catch (const Exception& e) {
-                        LogError(e.getMessage());
+                        log::exception(e);
                     }
                 }
             });
@@ -693,7 +687,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     try {
                         processor->getProcessor()->setIdentifier(utilqt::fromQString(text));
                     } catch (const Exception& e) {
-                        LogError(e.getMessage());
+                        log::exception(e);
                     }
                 }
             });
@@ -850,9 +844,10 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 std::filesystem::create_directories(compDir);
                 const auto path = compDir / (filename + ".inv");
                 p->saveSubNetwork(path);
-                LogInfo("Saved Composite to \"" << path
-                                                << "\". \nComposite is now available in the "
-                                                   "Processor list (restart may be required).");
+                log::info(
+                    "Saved Composite to \"{}\".\nComposite is now available in the "
+                    "Processor list (restart may be required).",
+                    path);
             }
         });
         saveCompAction->setDisabled(selectedComposites.empty());
@@ -1078,7 +1073,7 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
         }
 
     } catch (const Exception&) {
-        LogWarn("Paste operation failed");
+        log::warn("Paste operation failed");
     }
 }
 
@@ -1104,8 +1099,8 @@ void NetworkEditor::append(const std::filesystem::path& workspace) {
         }
 
     } catch (const Exception& e) {
-        util::logError(e.getContext(), "Unable to append network {} due to {}", workspace,
-                       e.getMessage());
+        log::report(LogLevel::Error, e.getContext(), "Unable to append network {} due to {}",
+                    workspace, e.getMessage());
     }
 
 }  // namespace inviwo

@@ -343,7 +343,7 @@ void HDF5ToVolume::makeVolume() {
             outport_.setData(volume_);
 
         } catch (const H5::GroupIException& e) {
-            LogInfo(e.getDetailMsg());
+            log::report(LogLevel::Error, e.getDetailMsg());
         }
     }
 }

@@ -97,11 +97,11 @@ InviwoModule* getProcessorModule(std::string_view classIdentifier, InviwoApplica
     return it != inviwoModules.end() ? &(*it) : nullptr;
 }
 
-std::optional<std::string> getProcessorModuleIdentifier(std::string_view classIdentifier,
-                                                        InviwoApplication& app) {
+std::optional<std::string_view> getProcessorModuleIdentifier(std::string_view classIdentifier,
+                                                             InviwoApplication& app) {
 
     if (auto m = getProcessorModule(classIdentifier, app)) {
-        return m->getIdentifier();
+        return std::string_view{m->getIdentifier()};
     } else {
         return std::nullopt;
     }

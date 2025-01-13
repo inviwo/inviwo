@@ -45,7 +45,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec3Property
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
 #include <inviwo/core/util/glmvec.h>                                    // for vec2, vec3
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <modules/base/algorithm/convexhull.h>                          // for convexHull, isConvex
 #include <modules/base/algorithm/convexhullmesh.h>                      // for convertHullToMesh
 
@@ -132,7 +132,7 @@ void ConvexHull2DProcessor::process() {
     std::vector<vec2> hull;
     hull = util::convexHull(points);
     if (!util::isConvex(hull)) {
-        LogWarn("Hull returned by Monotone Chain algorithm (convexHull) is _not_ convex");
+        log::warn("Hull returned by Monotone Chain algorithm (convexHull) is _not_ convex");
     }
 
     // convert hull into a line strip mesh

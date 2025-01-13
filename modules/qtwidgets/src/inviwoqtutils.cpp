@@ -47,7 +47,7 @@
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/util/exception.h>          // for Exception
 #include <inviwo/core/util/glmvec.h>             // for ivec2, vec4, dvec2
-#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogWarnCustom
+#include <inviwo/core/util/logcentral.h>         // for LogCentral
 #include <inviwo/core/util/safecstr.h>           // for SafeCStr
 #include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>   // for replaceInString, toString

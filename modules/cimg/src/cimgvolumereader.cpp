@@ -41,12 +41,11 @@
 #include <inviwo/core/util/filesystem.h>                             // for fileExists, addBasePath
 #include <inviwo/core/util/formats.h>                                // for DataFormatId, DataFo...
 #include <inviwo/core/util/glmvec.h>                                 // for size3_t
-#include <inviwo/core/util/logcentral.h>                             // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>                             // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>                       // for replaceInString
 #include <modules/cimg/cimgutils.h>                                  // for loadVolumeData
 
-#include <ostream>      // for operator<<, basic_os...
 #include <type_traits>  // for remove_extent_t
 
 #include <fmt/std.h>
@@ -72,7 +71,7 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        LogInfo(key << ": " << metaStr);
+        log::info("{}: {}", key, metaStr);
     }
 }
 

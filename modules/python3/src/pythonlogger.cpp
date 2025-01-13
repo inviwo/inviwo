@@ -29,20 +29,16 @@
 
 #include <modules/python3/pythonlogger.h>
 
-#include <inviwo/core/util/logcentral.h>                      // for LogCentral, LogError, LogInfo
+#include <inviwo/core/util/logcentral.h>                      // for LogCentral
 #include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
 
 namespace inviwo {
 
 void PythonLogger::onPythonExecutionOutput(const std::string& msg, PythonOutputType outputType) {
-    switch (outputType) {
-        case PythonOutputType::sysstderr:
-            LogError(msg);
-            break;
-        case PythonOutputType::sysstdout:
-        default:
-            LogInfo(msg);
-    }
+    const LogLevel level =
+        PythonOutputType::sysstderr == outputType ? LogLevel::Error : LogLevel::Info;
+
+    log::report(level, msg);
 }
 
 }  // namespace inviwo

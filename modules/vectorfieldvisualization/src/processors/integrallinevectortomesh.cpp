@@ -364,12 +364,12 @@ void IntegralLineVectorToMesh::process() {
         if (!mdProp) {  // Fallback
             auto props = getPropertiesByType<ColorByProperty>();
             if (props.size() == 0) {
-                throw Exception("Couldn't get ColorByProperty for meta data " + metaDataKey,
-                                IVW_CONTEXT);
+                throw Exception(IVW_CONTEXT, "Couldn't get ColorByProperty for meta data {}",
+                                metaDataKey);
             }
             mdProp = props.front();
-            LogWarn("Couldn't get ColorByProperty for meta data "
-                    << metaDataKey << ", using " << mdProp->getDisplayName() << " instead");
+            log::warn("Couldn't get ColorByProperty for meta data {}, using {} instead",
+                      metaDataKey, mdProp->getDisplayName());
         }
     }
 
@@ -418,7 +418,7 @@ void IntegralLineVectorToMesh::process() {
                 if (index >= colors->size()) {
                     if (colorWarningOnce) {
                         colorWarningOnce = false;
-                        LogWarn("Line index for color is out of range");
+                        log::warn("Line index for color is out of range");
                     }
                     index %= colors->size();
                 }

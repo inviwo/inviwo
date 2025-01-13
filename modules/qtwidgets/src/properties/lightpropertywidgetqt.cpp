@@ -32,7 +32,7 @@
 #include <inviwo/core/properties/constraintbehavior.h>              // for ConstraintBehavior
 #include <inviwo/core/properties/ordinalproperty.h>                 // for FloatVec3Property
 #include <inviwo/core/util/glmvec.h>                                // for vec3, dvec3
-#include <inviwo/core/util/logcentral.h>                            // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                            // for LogCentral
 #include <inviwo/core/util/zip.h>                                   // for enumerate, zipIterator
 #include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
 #include <modules/qtwidgets/lightpositionwidgetqt.h>                // for LightPositionWidgetQt
@@ -131,10 +131,12 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
 
     // Assuming that minimum value is negative and maximum value is positive
     if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {
-        LogWarn("Minimum value is assumed to be negative. Widget may produce values out of range.")
+        log::warn(
+            "Minimum value is assumed to be negative. Widget may produce values out of range.");
     }
     if (glm::any(glm::lessThan(property_->getMaxValue(), vec3(0.0f)))) {
-        LogWarn("Maximum value is assumed to be positive. Widget may produce values out of range.")
+        log::warn(
+            "Maximum value is assumed to be positive. Widget may produce values out of range.");
     }
 
     radius_->setMinValue(0, ConstraintBehavior::Immutable);

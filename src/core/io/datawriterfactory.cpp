@@ -41,7 +41,7 @@ bool DataWriterFactory::registerObject(DataWriter* writer) {
         if (util::insert_unique(map_, ext, writer)) {
             ++added;
         } else {
-            LogWarn("Failed to register DataWriter for \"" << ext << "\", already registered");
+            log::warn("Failed to register DataWriter for \"{}\", already registered", ext);
         }
     }
     if (added > 0) {

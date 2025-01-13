@@ -43,11 +43,11 @@
 #include <inviwo/core/properties/filepatternproperty.h>  // for FilePatternProperty
 #include <inviwo/core/properties/ordinalproperty.h>      // for IntProperty
 #include <inviwo/core/properties/stringproperty.h>       // for StringProperty
-#include <inviwo/core/util/assertion.h>                  // for ivwAssert
+#include <inviwo/core/util/assertion.h>                  // for IVW_ASSERT
 #include <inviwo/core/util/fileextension.h>              // for FileExtension
 #include <inviwo/core/util/filesystem.h>                 // for getPath
 #include <inviwo/core/util/formats.h>                    // for DataFormat, DataVec4UInt8
-#include <inviwo/core/util/logcentral.h>                 // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>                 // for LogCentral
 #include <inviwo/core/util/pathtype.h>                   // for PathType, PathType::Images
 #include <inviwo/core/util/statecoordinator.h>           // for StateCoordinator
 #include <inviwo/core/util/stdextensions.h>              // for contains_if, erase_remove_if
@@ -128,8 +128,7 @@ void ImageSourceSeries::process() {
     // sanity check for valid index
     const auto index = currentImageIndex_.get() - 1;
     if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
-        LogError("Invalid image index. Exceeded number of files.");
-        return;
+        throw Exception(IVW_CONTEXT, "Invalid image index. Exceeded number of files.");
     }
 
     const auto currentFileName = fileList_[index];
@@ -139,14 +138,10 @@ void ImageSourceSeries::process() {
     auto reader = factory->getReaderForTypeAndExtension<Layer>(sext, currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions
-    ivwAssert(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
+    IVW_ASSERT(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
 
-    try {
-        auto layer = reader->readData(currentFileName);
-        outport_.setData(std::make_shared<Image>(layer));
-    } catch (DataReaderException const& e) {
-        LogError(e.getMessage());
-    }
+    auto layer = reader->readData(currentFileName);
+    outport_.setData(std::make_shared<Image>(layer));
 }
 
 void ImageSourceSeries::onFindFiles() {
@@ -154,14 +149,12 @@ void ImageSourceSeries::onFindFiles() {
     fileList_ = imageFilePattern_.getFileList();
     if (fileList_.empty() && !imageFilePattern_.getFilePattern().empty()) {
         if (imageFilePattern_.hasOutOfRangeMatches()) {
-            LogError("All matching files are outside the specified range (\""
-                     << imageFilePattern_.getFilePattern() << "\", "
-                     << imageFilePattern_.getMinRange() << " - " << imageFilePattern_.getMaxRange()
-                     << ").");
+            log::error("All matching files are outside the specified range (\"{}\", {} - {}).",
+                       imageFilePattern_.getFilePattern(), imageFilePattern_.getMinRange(),
+                       imageFilePattern_.getMaxRange());
         } else {
-            LogError("No images found matching \"" << imageFilePattern_.getFilePattern() << "\" in "
-                                                   << imageFilePattern_.getFilePatternPath()
-                                                   << ".");
+            log::error("No images found matching \"{}\" in {}.", imageFilePattern_.getFilePattern(),
+                       imageFilePattern_.getFilePatternPath());
         }
     }
     updateProperties();

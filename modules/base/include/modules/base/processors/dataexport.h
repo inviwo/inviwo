@@ -119,35 +119,27 @@ template <typename DataType, typename PortType>
 void DataExport<DataType, PortType>::exportData() {
     auto data = getData();
 
-    if (data && !file_.get().empty()) {
-
-        auto writer = wf_->template getWriterForTypeAndExtension<DataType>(
-            file_.getSelectedExtension(), file_.get());
-
-        if (!writer) {
-            LogProcessorError(
-                "Error: Could not find a writer for the specified extension and data type");
-            return;
-        }
-
-        try {
-            writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
-            writer->writeData(data, file_.get());
-            util::log(IVW_CONTEXT, "Data exported to disk: {}" + file_.get().string(),
-                      LogLevel::Info, LogAudience::User);
-
-            // update widgets as the file might now exist
-            file_.clearInitiatingWidget();
-            file_.updateWidgets();
-        } catch (DataWriterException const& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
-        }
-
-    } else if (file_.get().empty()) {
-        LogProcessorWarn("Error: Please specify a file to write to");
-    } else if (!data) {
-        LogProcessorWarn("Error: Please connect a port to export");
+    if (file_.get().empty()) {
+        throw Exception("Please specify a file to write to");
     }
+    if (!data) {
+        throw Exception("Please connect a port to export");
+    }
+
+    auto writer = wf_->template getWriterForTypeAndExtension<DataType>(file_.getSelectedExtension(),
+                                                                       file_.get());
+
+    if (!writer) {
+        throw Exception("Could not find a writer for the specified extension and data type");
+    }
+
+    writer->setOverwrite(overwrite_ ? Overwrite::Yes : Overwrite::No);
+    writer->writeData(data, file_.get());
+    log::info("Data exported to disk: {}", file_.get().string());
+
+    // update widgets as the file might now exist
+    file_.clearInitiatingWidget();
+    file_.updateWidgets();
 }
 
 template <typename DataType, typename PortType>

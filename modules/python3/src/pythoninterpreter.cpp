@@ -43,7 +43,7 @@
 
 #include <inviwo/core/util/exception.h>         // for ModuleInitException
 #include <inviwo/core/util/filesystem.h>        // for getExecutablePath, getFileDirectory
-#include <inviwo/core/util/logcentral.h>        // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>        // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>     // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>  // for toString
 #include <inviwo/core/util/safecstr.h>
@@ -72,7 +72,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
     if (!Py_IsInitialized()) {
 
-        LogInfo("Python version: " + toString(Py_GetVersion()));
+        log::info("Python version: {}", Py_GetVersion());
 
         try {
             py::initialize_interpreter(false);

@@ -137,7 +137,7 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
         if (it != factory_.end()) {
             it->second(key, meta, parent);
         } else {
-            LogErrorCustom("MetaDataToProperty", "Unsupported MetaData type");
+            log::error("Unsupported MetaData type");
         }
     }
 

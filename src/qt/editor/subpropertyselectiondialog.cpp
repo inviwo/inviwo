@@ -555,7 +555,7 @@ public:
                 return false;
             }
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getMessage());
+            log::exception(e);
             return false;
         }
     }

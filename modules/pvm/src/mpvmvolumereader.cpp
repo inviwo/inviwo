@@ -42,7 +42,7 @@
 #include <inviwo/core/util/formatconversion.h>                          // for formatBytesToString
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for size3_t
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>                          // for replaceInString
 #include <modules/pvm/pvmvolumereader.h>                                // for PVMVolumeReader
@@ -99,7 +99,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
         if (newVol) {
             volumes.push_back(newVol);
         } else {
-            LogWarn("Could not load " << fileDirectory << "/" << files[i]);
+            log::warn("Could not load {}", fileDirectory / files[i]);
         }
     }
 
@@ -117,7 +117,8 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     size3_t mdim = volumes[0]->getDimensions();
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
-            LogWarn("PVM volumes did not have the same format or dimensions, using first volume.");
+            log::warn(
+                "PVM volumes did not have the same format or dimensions, using first volume.");
             printPVMMeta(*volumes[0], fileDirectory / files[0]);
             return volumes[0];
         }
@@ -177,7 +178,7 @@ void MPVMVolumeReader::printPVMMeta(const Volume& volume,
     size3_t dim = volume.getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
     std::string size = util::formatBytesToString(bytes);
-    LogInfo("Loaded volume: " << fileName << " size: " << size);
+    log::info("Loaded volume: '{}' size: {}", fileName, size);
     printMetaInfo(volume, "description");
     printMetaInfo(volume, "courtesy");
     printMetaInfo(volume, "parameter");
@@ -189,7 +190,7 @@ void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        LogInfo(key << ": " << metaStr);
+        log::info("{}: {}", key, metaStr);
     }
 }
 

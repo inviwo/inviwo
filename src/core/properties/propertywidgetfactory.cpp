@@ -47,9 +47,10 @@ bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         if (semantics == it->second->getSematics()) {
-            LogWarn("Adding a PropertyWidget for a Property (" << className << ") and semantics ("
-                                                               << semantics
-                                                               << ") that is already registered.");
+            log::warn(
+                "Adding a PropertyWidget for a Property ({}) and semantics ({}) that is already "
+                "registered.",
+                className, semantics);
             return false;
         }
     }
@@ -78,15 +79,16 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         if (PropertySemantics::Default == it->second->getSematics()) {
-            LogWarn("Requested property widget semantics ("
-                    << semantics << ") for property (" << property->getDisplayName() << ", "
-                    << property->getPath() << ") does not exist, returning default semantics.");
+            log::warn(
+                "Requested property widget semantics ({}) for property ({}, {}) does not exist, "
+                "returning default semantics.",
+                semantics, property->getDisplayName(), property->getPath());
             return it->second->create(property);
         }
     }
 
-    LogWarn("Cannot find a property widget for property: " << property->getClassIdentifier() << "("
-                                                           << semantics << ")");
+    log::warn("Cannot find a property widget for property: {} ({})", property->getClassIdentifier(),
+              semantics);
     return {};
 }
 

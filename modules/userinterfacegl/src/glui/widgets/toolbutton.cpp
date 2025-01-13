@@ -142,14 +142,12 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::filesystem::path& fi
             // try to load texture data from current file
             auto layer = reader->readData(filename);
             return layer->getRepresentation<LayerGL>()->getTexture();
-        } catch (DataReaderException const& e) {
-            util::logError(e.getContext(), "Could not load texture data: {}, {}", filename,
-                           e.getMessage());
+        } catch (const DataReaderException& e) {
+            log::exception(e, "Could not load texture data: {}, {}", filename, e.getMessage());
             return nullptr;
         }
     } else {
-        LogErrorCustom("ToolButton::loadImage",
-                       "Could not find a data reader for texture data (" << filename << ").");
+        log::error("Could not find a data reader for texture data ({}).", filename);
         return nullptr;
     }
 }

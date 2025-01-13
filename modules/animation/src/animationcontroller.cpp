@@ -56,7 +56,6 @@
 #include <inviwo/core/properties/propertysemantics.h>   // for PropertySemantics, Prop...
 #include <inviwo/core/properties/stringproperty.h>      // for StringProperty
 #include <inviwo/core/properties/valuewrapper.h>        // for PropertySerializationMode
-#include <inviwo/core/util/assertion.h>                 // for ivwAssert
 #include <inviwo/core/util/fileextension.h>             // for FileExtension, operator<<
 #include <inviwo/core/util/glmvec.h>                    // for ivec2, dvec2
 #include <inviwo/core/util/staticstring.h>              // for operator+
@@ -448,8 +447,7 @@ void AnimationController::render() {
         });
 
         if (recordingFunctors.empty()) {
-            util::log(IVW_CONTEXT, "No applicable exporters selected for rendering",
-                      LogLevel::Warn);
+            log::warn("No applicable exporters selected for rendering");
             return;
         }
 
@@ -482,17 +480,18 @@ void AnimationController::render() {
                            std::chrono::high_resolution_clock::now() - start)
                            .count();
 
-        util::logInfo(IVW_CONTEXT, "Rendered {} frames in {:.3f} seconds, {:.3f} per frame",
-                      numFrames, seconds, seconds / numFrames);
+        log::info("Rendered {} frames in {:.3f} seconds, {:.3f} per frame", numFrames, seconds,
+                  seconds / numFrames);
 
     } catch (const Exception& e) {
-        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
-        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+        log::report(LogLevel::Error, "Rendering aborted");
+        log::exception(e);
     } catch (const std::exception& e) {
-        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
-        util::log(IVW_CONTEXT, e.what(), LogLevel::Error);
+        log::report(LogLevel::Error, "Rendering aborted");
+        log::exception(e);
     } catch (...) {
-        util::log(IVW_CONTEXT, "Rendering aborted", LogLevel::Error);
+        log::report(LogLevel::Error, "Rendering aborted");
+        log::exception();
     }
 }
 

@@ -44,9 +44,9 @@ void saveLayer(const Layer& layer, const std::filesystem::path& path,
                const FileExtension& extension) {
     try {
         util::saveData<Layer>(layer, path, extension, Overwrite::Yes);
-        LogInfoCustom("ImageWriterUtil", "Canvas layer exported to disk: " << path);
-    } catch (DataWriterException const& e) {
-        LogErrorCustom("ImageWriterUtil", e.getMessage());
+        log::info("Canvas layer exported to disk: {}", path);
+    } catch (const DataWriterException& e) {
+        log::exception(e);
     }
 }
 

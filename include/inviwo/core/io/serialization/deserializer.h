@@ -1048,9 +1048,8 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
                 // with the correct type
                 data.reset();
             } else {
-                LogWarn("Object with class Id: '" << data->getClassIdentifier()
-                                                  << "'  deserialized using type '" << *typeAttr
-                                                  << "'");
+                log::warn("Object with class Id: '{}' deserialized using type '{}'",
+                          data->getClassIdentifier(), *typeAttr);
             }
         }
     }

@@ -64,9 +64,9 @@ void addInviwoMetaAction(QMenu* menu) {
                 meta::Creator creator(filesystem::findBasePath(), {}, {}, {true, false, false, ss});
                 func(creator, std::filesystem::path{path});
 
-                LogInfoCustom("Meta", ss.str());
+                log::report(LogLevel::Info, ss.str());
             } catch (const std::runtime_error& e) {
-                LogErrorCustom("Meta", e.what());
+                log::exception(e);
             }
         }
     };

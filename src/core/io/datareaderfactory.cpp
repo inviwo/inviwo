@@ -38,7 +38,7 @@ bool DataReaderFactory::registerObject(DataReader* reader) {
         if (util::insert_unique(map_, ext, reader)) {
             ++added;
         } else {
-            LogWarn("Failed to register DataReader for \"" << ext << "\", already registered");
+            log::warn("Failed to register DataReader for \"{}\", already registered", ext);
         }
     }
     if (added > 0) {

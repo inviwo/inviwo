@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 #include <inviwo/core/io/datareader.h>        // for DataReader
 #include <inviwo/core/io/datawriter.h>        // for DataWriter
-#include <inviwo/core/util/logcentral.h>      // for LogCentral, LogInfo
+#include <inviwo/core/util/logcentral.h>      // for LogCentral
 #include <inviwo/png/pngreader.h>             // for PNGLayerReader
 #include <inviwo/png/pngutils.h>              // for getLibPNGVesrion
 #include <inviwo/png/pngwriter.h>             // for PNGLayerWriter
@@ -45,7 +45,7 @@ class InviwoApplication;
 
 pngModule::pngModule(InviwoApplication* app) : InviwoModule(app, "png") {
 
-    LogInfo("Using LibPNG Version " << pngutil::getLibPNGVesrion());
+    log::info("Using LibPNG Version {}", pngutil::getLibPNGVesrion());
 
     registerDataReader(std::make_unique<PNGLayerReader>());
     registerDataWriter(std::make_unique<PNGLayerWriter>());

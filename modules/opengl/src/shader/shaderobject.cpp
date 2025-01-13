@@ -138,17 +138,15 @@ struct Psm {
             auto pathBegin = std::find(c.curr, c.end, '"');
             if (pathBegin == c.end) {
                 throw OpenGLException{
-                    fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(std::string{s.key}, std::string{s.key}, "",
-                                  static_cast<int>(s.lines + 1))};
+                    SourceContext{"ShaderObject"_sl, s.key, "", static_cast<uint32_t>(s.lines + 1)},
+                    "Invalid include found at {}({})", s.key, s.lines + 1};
             }
 
             auto pathEnd = std::find(pathBegin + 1, c.end, '"');
             if (pathEnd == c.end) {
                 throw OpenGLException{
-                    fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
-                    SourceContext(std::string{s.key}, std::string{s.key}, "",
-                                  static_cast<int>(s.lines + 1))};
+                    SourceContext{"ShaderObject"_sl, s.key, "", static_cast<uint32_t>(s.lines + 1)},
+                    "Invalid include found at {}({})", s.key, s.lines + 1};
             }
 
             const auto path =
@@ -164,8 +162,8 @@ struct Psm {
                 }
             } catch (const OpenGLException& e) {
                 throw OpenGLException(e.getMessage(),
-                                      SourceContext(std::string{s.key}, std::string{s.key}, "",
-                                                    static_cast<int>(s.lines + 1)));
+                                      SourceContext{"ShaderObject"_sl, s.key, "",
+                                                    static_cast<uint32_t>(s.lines + 1)});
             }
         };
 
@@ -305,8 +303,8 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     // Help developer to spot errors
     auto resourceType = ShaderType::typeFromString(resource_->key());
     if (resourceType != shaderType_) {
-        LogWarn("File extension does not match shader type: "
-                << resource_->key() << "\n    expected extension: " << shaderType_.extension());
+        log::warn("File extension does not match shader type: {}\n    expected extension: {}",
+                  resource_->key(), shaderType_.extension());
     }
 
     if (shaderType_ == ShaderType::Fragment) {
@@ -613,8 +611,7 @@ void ShaderObject::compile() {
 
     const auto log = utilgl::getShaderInfoLog(id_);
     if (!log.empty()) {
-        util::log(IVW_CONTEXT, resource_->key() + " " + resolveLog(log), LogLevel::Info,
-                  LogAudience::User);
+        log::info("{} {}", resource_->key(), resolveLog(log));
     }
 }
 

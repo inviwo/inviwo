@@ -43,7 +43,7 @@
 #include <inviwo/core/properties/templateproperty.h>                    // for TemplateProperty
 #include <inviwo/core/util/colorbrewer.h>                               // for getTransferFunction
 #include <inviwo/core/util/formatdispatching.h>                         // for Scalars
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <inviwo/core/util/staticstring.h>                              // for operator+
 #include <inviwo/dataframe/datastructures/column.h>                     // for CategoricalColumn
 #include <modules/base/algorithm/algorithmoptions.h>                    // for IgnoreSpecialValues
@@ -173,10 +173,10 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
         auto maxColors = getMaxNumberOfColorsForFamily(colormap);
         auto numCategories = catCol->getCategories().size();
         if (maxColors < numCategories) {
-            LogWarn(fmt::format(
+            log::warn(
                 "Categories exceed maximum classes in colormap. {} will be used but {} classes are "
                 "needed. Override colormap to provide your own colormap with more classes.",
-                maxColors, numCategories));
+                maxColors, numCategories);
         }
         nColors = numCategories;
         discrete = true;

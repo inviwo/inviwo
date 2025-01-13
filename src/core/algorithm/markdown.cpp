@@ -248,7 +248,7 @@ Document util::md2doc(std::string_view markdown) {
         return 0;
     };
     auto debug_log_callback = [](const char* msg, void*) -> void {
-        LogInfoCustom("Markdown", "Error: " << msg);
+        log::error("Markdown Error: {}", msg);
     };
 
     MD_PARSER parser = {

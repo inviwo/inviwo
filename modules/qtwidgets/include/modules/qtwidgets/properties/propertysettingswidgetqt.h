@@ -39,7 +39,7 @@
 #include <inviwo/core/util/glmcomp.h>               // for glmcomp
 #include <inviwo/core/util/glmutils.h>              // for value_type
 #include <inviwo/core/util/glmvec.h>                // for uvec2
-#include <inviwo/core/util/logcentral.h>            // for LogCentral, LogError
+#include <inviwo/core/util/logcentral.h>            // for LogCentral
 #include <modules/qtwidgets/inviwoqtutils.h>        // for refSpacePx, toQString
 #include <modules/qtwidgets/qstringhelper.h>        // for QStringHelper
 
@@ -278,9 +278,8 @@ void OrdinalLikePropertySettingsWidgetQt<Prop>::apply() {
     for (size_t i = 0; i < settings_.size(); i++) {
         if (util::glmcomp(vals[0], i) > util::glmcomp(vals[1], i) ||
             util::glmcomp(vals[1], i) > util::glmcomp(vals[2], i)) {
-            LogError(fmt::format("Invalid range found elem {}: {} <= {} <= {}", i,
-                                 util::glmcomp(vals[0], i), util::glmcomp(vals[1], i),
-                                 util::glmcomp(vals[1], i)));
+            log::error("Invalid range found elem {}: {} <= {} <= {}", i, util::glmcomp(vals[0], i),
+                       util::glmcomp(vals[1], i), util::glmcomp(vals[1], i));
             return;
         }
     }

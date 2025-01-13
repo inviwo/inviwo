@@ -128,7 +128,7 @@ void ListProperty::set(const ListProperty* src) {
         }
         propertyModified();
     } else {
-        LogWarn("ListProperty prefab type mismatch. Unable to link");
+        log::warn("ListProperty prefab type mismatch. Unable to link");
     }
 }
 
@@ -195,7 +195,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
         invalidate(Property::getInvalidationLevel());
         return property;
     } else {
-        LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
+        log::error("Maximum number of list entries reached ({})", this->getDisplayName());
     }
     return nullptr;
 }
@@ -222,7 +222,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
         CompositeProperty::insertProperty(index, property, owner);
         invalidate(Property::getInvalidationLevel());
     } else {
-        LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
+        log::error("Maximum number of list entries reached ({})", this->getDisplayName());
     }
 }
 

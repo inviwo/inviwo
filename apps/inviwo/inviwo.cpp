@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
     inviwo::utilqt::configureInviwoDefaultNames();
     inviwo::utilqt::configureFileSystemObserver(inviwoApp);
     inviwo::utilqt::configurePostEnqueueFront(inviwoApp);
+    inviwo::utilqt::configureAssertionHandler(inviwoApp);
     inviwo::utilqt::setStyleSheetFile(":/stylesheets/inviwo.qss");
     inviwo::utilqt::configurePalette();
     inviwoApp.setUILocale(inviwo::utilqt::getCurrentStdLocale());
@@ -85,7 +86,7 @@ int main(int argc, char** argv) {
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);
     inviwoApp.printApplicationInfo();
-    LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
+    inviwo::log::info("Qt Version {}", QT_VERSION_STR);
 
     // initialize and show splash screen
     inviwo::InviwoSplashScreen splashScreen(clp.getShowSplashScreen());
@@ -127,10 +128,10 @@ int main(int argc, char** argv) {
     inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     if (auto numErrors = logCounter->getWarnCount()) {
-        LogWarnCustom("inviwo.cpp", numErrors << " warnings generated during startup");
+        inviwo::log::warn("{} warnings generated during startup", numErrors);
     }
     if (auto numErrors = logCounter->getErrorCount()) {
-        LogErrorCustom("inviwo.cpp", numErrors << " errors generated during startup");
+        inviwo::log::warn("{} errors generated during startup", numErrors);
     }
     logCounter.reset();
 
@@ -146,7 +147,7 @@ int main(int argc, char** argv) {
         try {
             return qtApp.exec();
         } catch (const inviwo::Exception& e) {
-            inviwo::util::log(e.getContext(), e.getFullMessage(), inviwo::LogLevel::Error);
+            inviwo::log::exception(e);
             const auto message = fmt::format("{}\nApplication state might be corrupted, be warned.",
                                              e.getFullMessage(10));
             auto res =
@@ -158,7 +159,7 @@ int main(int argc, char** argv) {
             }
 
         } catch (const std::exception& e) {
-            inviwo::util::log(IVW_CONTEXT_CUSTOM("Inviwo"), e.what(), inviwo::LogLevel::Error);
+            inviwo::log::exception(e);
             const auto message =
                 fmt::format("{}\nApplication state might be corrupted, be warned.", e.what());
             auto res =
@@ -169,8 +170,7 @@ int main(int argc, char** argv) {
                 return 1;
             }
         } catch (...) {
-            inviwo::util::log(IVW_CONTEXT_CUSTOM("Inviwo"), "Uncaught exception, terminating",
-                              inviwo::LogLevel::Error);
+            inviwo::log::exception("Uncaught exception, terminating");
             QMessageBox::critical(nullptr, "Fatal Error", "Uncaught exception, terminating");
             return 1;
         }

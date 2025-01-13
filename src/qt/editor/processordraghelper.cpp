@@ -140,7 +140,7 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
     try {
         auto processor = mime->get();
         if (!processor) {
-            LogError("Unable to get processor from drag object");
+            log::error("Unable to get processor from drag object");
             return true;
         }
         editor_.clearSelection();
@@ -151,10 +151,8 @@ bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMi
         automator_.drop(e->scenePos(), e->modifiers(), *addedProcessor);
 
     } catch (Exception& exception) {
-        util::log(exception.getContext(),
-                  "Unable to create processor " + utilqt::fromQString(mime->text()) + " due to " +
-                      exception.getMessage(),
-                  LogLevel::Error);
+        log::exception(exception, "Unable to create processor {} due to {}",
+                       utilqt::fromQString(mime->text()), exception.getMessage());
     }
 
     return true;

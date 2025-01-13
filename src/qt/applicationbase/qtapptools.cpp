@@ -261,6 +261,17 @@ void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
     app.setProcessEventsCallback([]() { QApplication::instance()->processEvents(); });
 }
 
+void utilqt::configureAssertionHandler(InviwoApplication& app) {
+    app.setAssertionHandler([](std::string_view message, SourceContext context) {
+        auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
+                         .arg(toQString(context.file()))
+                         .arg(context.line())
+                         .arg(toQString(context.function()))
+                         .arg(toQString(message));
+        QMessageBox::critical(nullptr, "Assertion Failed", error);
+    });
+}
+
 void utilqt::configurePoolResizeWait(InviwoApplication& app, QWidget* window) {
     app.setPoolResizeWaitCallback(
         [window, enabled = true](InviwoApplication::LongWait type) mutable {

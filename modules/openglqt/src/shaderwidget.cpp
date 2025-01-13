@@ -32,7 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
 #include <inviwo/core/util/colorconversion.h>      // for hsv2rgb, rgb2hsv
 #include <inviwo/core/util/glmvec.h>               // for vec4, vec3
-#include <inviwo/core/util/logcentral.h>           // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>           // for LogCentral
 #include <inviwo/core/util/raiiutils.h>            // for KeepTrueWhileInScope
 #include <modules/opengl/shader/shadermanager.h>   // for ShaderManager
 #include <modules/opengl/shader/shaderobject.h>    // for ShaderObject
@@ -224,10 +224,10 @@ void ShaderWidget::save() {
         resource->setSource(utilqt::fromQString(shadercode_->toPlainText()));
         shadercode_->document()->setModified(false);
     } else {
-        LogWarn(fmt::format(
+        log::warn(
             "Could not save. The ShaderResource \"{}\" was not found in the ShaderManager. It "
             "needs to be registered with the ShaderManager for saving to work.",
-            obj_->getResource()->key()));
+            obj_->getResource()->key());
     }
 }
 

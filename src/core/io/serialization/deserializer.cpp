@@ -57,9 +57,8 @@ TiXmlElement* getRootElement(TiXmlDocument& doc, std::string_view rootElement) {
 
     root = doc.FirstChildElement();
     if (root) {
-        LogInfoCustom("Deserializer", "Expected to find root element of type: '"
-                                          << rootElement << "' but found '" << root->Value()
-                                          << "'");
+        log::warn("Deserializer expected to find root element of type: '{}' but found '{}'",
+                  rootElement, root->Value());
         return root;
     }
 

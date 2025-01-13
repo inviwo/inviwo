@@ -35,6 +35,8 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/network/processornetwork.h>
 
+#include <chrono>
+
 namespace inviwo {
 
 bool operator==(const LogLevel& lhs, const LogVerbosity& rhs) {
@@ -68,22 +70,6 @@ bool operator>(const LogVerbosity& lhs, const LogLevel& rhs) { return rhs < lhs;
 bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(rhs < lhs); }
 
 bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(lhs < rhs); }
-
-void Logger::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                          std::string_view msg, std::string_view file, std::string_view function,
-                          int line) {
-    log("Processor " + processor->getIdentifier(), level, audience, file, function, line, msg);
-}
-
-void Logger::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                        std::string_view file, std::string_view function, int line) {
-    log("ProcessorNetwork", level, audience, file, function, line, msg);
-}
-
-void Logger::logAssertion(std::string_view file, std::string_view function, int line,
-                          std::string_view msg) {
-    log("Assertion failed", LogLevel::Error, LogAudience::Developer, file, function, line, msg);
-}
 
 LogCentral::LogCentral() : logVerbosity_(LogVerbosity::Info), logStacktrace_(false) {}
 
@@ -140,49 +126,6 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
     }
 }
 
-void LogCentral::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string_view msg, std::string_view file,
-                              std::string_view function, int line) {
-    if (level >= logVerbosity_) {
-        // use remove if here to remove expired weak pointers while calling the loggers.
-        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-            if (auto l = logger.lock()) {
-                l->logProcessor(processor, level, audience, msg, file, function, line);
-                return false;
-            } else {
-                return true;
-            }
-        });
-    }
-}
-
-void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string_view msg,
-                            std::string_view file, std::string_view function, int line) {
-    if (level >= logVerbosity_) {
-        // use remove if here to remove expired weak pointers while calling the loggers.
-        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-            if (auto l = logger.lock()) {
-                l->logNetwork(level, audience, msg, file, function, line);
-                return false;
-            } else {
-                return true;
-            }
-        });
-    }
-}
-
-void LogCentral::logAssertion(std::string_view file, std::string_view function, int line,
-                              std::string_view msg) {
-    std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-        if (auto l = logger.lock()) {
-            l->logAssertion(file, function, line, msg);
-            return false;
-        } else {
-            return true;
-        }
-    });
-}
-
 void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }
 
 bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
@@ -199,8 +142,8 @@ void util::log(ExceptionContext context, std::string_view message, LogLevel leve
 
 void util::log(Logger* logger, ExceptionContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
-    logger->log(context.getCaller(), level, audience, context.getFile(), context.getFunction(),
-                context.getLine(), message);
+    logger->log(context.source(), level, audience, context.file(), context.function(),
+                context.line(), message);
 }
 
 std::string_view enumToStr(LogLevel ll) {
@@ -245,5 +188,12 @@ std::string_view enumToStr(MessageBreakLevel ll) {
 std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << enumToStr(ll); }
 std::ostream& operator<<(std::ostream& ss, LogAudience la) { return ss << enumToStr(la); }
 std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll) { return ss << enumToStr(ll); }
+
+void log::detail::logDirectly(LogLevel level, SourceContext context, std::string_view message) {
+    auto& os = level == LogLevel::Error ? std::cerr : std::cout;
+    const auto time = std::chrono::system_clock::now();
+    fmt::print(os, "{:%H:%M:06.3%S} {:5} {:35} {}:{}\n{}", time, level, context.source(),
+               context.file(), context.line(), message);
+}
 
 }  // namespace inviwo

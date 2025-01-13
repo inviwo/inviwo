@@ -414,11 +414,11 @@ void InviwoModule::registerPort() {
     try {
         registerPortInternal<T>();
     } catch (const Exception& e) {
-        LogError(fmt::format(
+        log::error(
             "Error registering port '{0}' in module {1}. Reason: {2}. Have you provided a "
             "DataTraits<{0}> specialization?",
             util::parseTypeIdName(typeid(typename T::type).name()), getIdentifier(),
-            e.getMessage()));
+            e.getMessage());
     }
 }
 

@@ -100,8 +100,7 @@ void parseColorMapsNode(TransferFunction& tf, TxElement* node) {
          child = child->NextSiblingElement("ColorMap")) {
         ++count;
         if (count > 1) {
-            LogWarnCustom("TransferFunctionXMLReader::loadFromXML()",
-                          "Detected more than one ColorMap");
+            log::warn("Detected more than one ColorMap");
             return;
         }
         parseColorMapNode(tf, child);

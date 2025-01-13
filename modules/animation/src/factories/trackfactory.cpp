@@ -31,7 +31,7 @@
 
 #include <inviwo/core/properties/property.h>                 // for Property
 #include <inviwo/core/util/exception.h>                      // for Exception
-#include <inviwo/core/util/logcentral.h>                     // for LogCentral, LogWarn
+#include <inviwo/core/util/logcentral.h>                     // for LogCentral
 #include <modules/animation/datastructures/propertytrack.h>  // for BasePropertyTrack
 #include <modules/animation/datastructures/track.h>          // for Track
 #include <modules/animation/factories/trackfactoryobject.h>  // for TrackFactoryObject
@@ -58,7 +58,8 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
                 try {
                     basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {
-                    LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
+                    log::warn("{} Invalid property class identified?", e.getMessage());
+                    return nullptr;
                 }
 
                 return track;

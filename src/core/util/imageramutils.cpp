@@ -78,7 +78,7 @@ std::shared_ptr<Image> readImageFromDisk(std::string filename) {
         auto outLayer = reader->readData(filename);
         return std::make_shared<Image>(outLayer);
     } else {
-        LogErrorCustom("util::readImageFromDisk", "Failed to read image \'" << filename << "\'");
+        log::error("Failed to read image '{}'", filename);
         return nullptr;
     }
 }
