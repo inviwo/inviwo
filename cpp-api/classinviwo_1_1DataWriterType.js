@@ -1,4 +1,4 @@
 var classinviwo_1_1DataWriterType =
 [
-    [ "writeData", "classinviwo_1_1DataWriterType.html#ab6fb819203f498116ea443dce21699a1", null ]
+    [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
 ];

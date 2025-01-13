@@ -15,8 +15,8 @@ var group__dataio =
       [ "open", "classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6", null ],
       [ "setOption", "classinviwo_1_1DataWriter.html#ad2352d071b77129614c1e0d172dd2099", null ]
     ] ],
-    [ "inviwo::DataWriterType< Layer >", "classinviwo_1_1DataWriterType.html", [
-      [ "writeData", "classinviwo_1_1DataWriterType.html#ab6fb819203f498116ea443dce21699a1", null ]
+    [ "inviwo::DataWriterType< T >", "classinviwo_1_1DataWriterType.html", [
+      [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
     ] ],
     [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", [
       [ "readData", "classinviwo_1_1RawVolumeReader.html#a3b20c9c2a09079fe825920d3f3fd08d3", null ]
@@ -30,7 +30,9 @@ var group__dataio =
       [ "setOption", "classinviwo_1_1AssimpReader.html#aed86b7a704398c48d49eeb32c1f9744f", null ]
     ] ],
     [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
-    [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", null ],
+    [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", [
+      [ "writeData", "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a", null ]
+    ] ],
     [ "inviwo::IvfSequenceVolumeReader", "classinviwo_1_1IvfSequenceVolumeReader.html", [
       [ "readData", "classinviwo_1_1IvfSequenceVolumeReader.html#ae592b806054e43990b29b8d2d0d9ed8c", null ]
     ] ],
@@ -39,9 +41,13 @@ var group__dataio =
       [ "writeData", "classinviwo_1_1IvfSequenceVolumeWriter.html#af8addbb4b091467182d2e9ab7aebd75e", null ]
     ] ],
     [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
-    [ "inviwo::IvfVolumeWriter", "classinviwo_1_1IvfVolumeWriter.html", null ],
+    [ "inviwo::IvfVolumeWriter", "classinviwo_1_1IvfVolumeWriter.html", [
+      [ "writeData", "classinviwo_1_1IvfVolumeWriter.html#a10a1e22c28128510beb4be63447fe565", null ]
+    ] ],
     [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
-    [ "inviwo::CImgLayerWriter", "classinviwo_1_1CImgLayerWriter.html", null ],
+    [ "inviwo::CImgLayerWriter", "classinviwo_1_1CImgLayerWriter.html", [
+      [ "writeData", "classinviwo_1_1CImgLayerWriter.html#a77fc3d9d467dfceaa9cfa9567590a318", null ]
+    ] ],
     [ "inviwo::CImgVolumeReader", "classinviwo_1_1CImgVolumeReader.html", null ],
     [ "inviwo::CSVReader", "classinviwo_1_1CSVReader.html", [
       [ "EmptyField", "classinviwo_1_1CSVReader.html#a64f39e3ad1f7c7af5e91e99a6a28a4f7", [

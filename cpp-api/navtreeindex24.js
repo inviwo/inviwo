@@ -1,5 +1,12 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1DemoControllerObserver.html":[2,0,0,0,35],
+"classinviwo_1_1animation_1_1DemoControllerObserver.html":[4,0,1,1,36],
+"classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[2,0,0,0,36],
+"classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html":[4,0,1,1,37],
+"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[2,0,0,0,38],
+"classinviwo_1_1animation_1_1ImageRecorderFactory.html":[4,0,1,1,39],
+"classinviwo_1_1animation_1_1Interpolation.html":[2,0,0,0,39],
 "classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,1,40],
 "classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40],
 "classinviwo_1_1animation_1_1InterpolationFactory.html":[4,0,1,1,41],
@@ -175,10 +182,9 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[4,0,1,4,1],
 "classinviwo_1_1detail_1_1Build.html":[4,0,1,9,0],
 "classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,13],
-"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,14],
-"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,15],
-"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,16],
-"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,1,9,17],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html":[4,0,1,9,17],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,9,14],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,1,9,15],
 "classinviwo_1_1detail_1_1hasProcessorInfo.html":[4,0,1,9,10],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[2,0,0,8,1],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[4,0,1,10,2],
@@ -243,11 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1glui_1_1RangeSlider.html":[4,0,1,13,15],
 "classinviwo_1_1glui_1_1RangeSlider.html#a01056bc77ef9d13b6e8ec8d4a828ed08":[4,0,1,13,15,0],
 "classinviwo_1_1glui_1_1Renderer.html":[4,0,1,13,16],
-"classinviwo_1_1glui_1_1Renderer.html#ac4850b648f6eca7a2a3c9427224a88f2":[4,0,1,13,16,0],
-"classinviwo_1_1glui_1_1Slider.html":[4,0,1,13,17],
-"classinviwo_1_1glui_1_1Slider.html#ab52b5cd4b771ba20174a243e0d3a3a98":[4,0,1,13,17,0],
-"classinviwo_1_1glui_1_1ToolButton.html":[4,0,1,13,18],
-"classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html":[4,0,1,13,19],
-"classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html#aa23242c2dba03aaf374900bc1bcbf8ed":[4,0,1,13,19,0],
-"classinviwo_1_1glui_1_1VBoxLayout.html":[4,0,1,13,20]
+"classinviwo_1_1glui_1_1Renderer.html#ac4850b648f6eca7a2a3c9427224a88f2":[4,0,1,13,16,0]
 };

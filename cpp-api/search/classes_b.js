@@ -87,12 +87,13 @@ var searchData=
   ['linksettings_84',['LinkSettings',['../classinviwo_1_1LinkSettings.html',1,'inviwo']]],
   ['listproperty_85',['ListProperty',['../classinviwo_1_1ListProperty.html',1,'inviwo']]],
   ['listpropertywidgetqt_86',['ListPropertyWidgetQt',['../classinviwo_1_1ListPropertyWidgetQt.html',1,'inviwo']]],
-  ['logcentral_87',['LogCentral',['../classinviwo_1_1LogCentral.html',1,'inviwo']]],
-  ['logerrorcounter_88',['LogErrorCounter',['../classinviwo_1_1LogErrorCounter.html',1,'inviwo']]],
-  ['logfilter_89',['LogFilter',['../classinviwo_1_1LogFilter.html',1,'inviwo']]],
-  ['logger_90',['Logger',['../classinviwo_1_1Logger.html',1,'inviwo']]],
-  ['logstream_91',['LogStream',['../classinviwo_1_1LogStream.html',1,'inviwo']]],
-  ['logtablemodel_92',['LogTableModel',['../classinviwo_1_1LogTableModel.html',1,'inviwo']]],
-  ['logtablemodelentry_93',['LogTableModelEntry',['../classinviwo_1_1LogTableModelEntry.html',1,'inviwo']]],
-  ['lorenzsystem_94',['LorenzSystem',['../classinviwo_1_1LorenzSystem.html',1,'inviwo']]]
+  ['literal_87',['Literal',['../classinviwo_1_1Literal.html',1,'inviwo']]],
+  ['logcentral_88',['LogCentral',['../classinviwo_1_1LogCentral.html',1,'inviwo']]],
+  ['logerrorcounter_89',['LogErrorCounter',['../classinviwo_1_1LogErrorCounter.html',1,'inviwo']]],
+  ['logfilter_90',['LogFilter',['../classinviwo_1_1LogFilter.html',1,'inviwo']]],
+  ['logger_91',['Logger',['../classinviwo_1_1Logger.html',1,'inviwo']]],
+  ['logstream_92',['LogStream',['../classinviwo_1_1LogStream.html',1,'inviwo']]],
+  ['logtablemodel_93',['LogTableModel',['../classinviwo_1_1LogTableModel.html',1,'inviwo']]],
+  ['logtablemodelentry_94',['LogTableModelEntry',['../classinviwo_1_1LogTableModelEntry.html',1,'inviwo']]],
+  ['lorenzsystem_95',['LorenzSystem',['../classinviwo_1_1LorenzSystem.html',1,'inviwo']]]
 ];

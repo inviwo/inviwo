@@ -1,5 +1,5 @@
 var classinviwo_1_1ScopedClock =
 [
-    [ "print", "classinviwo_1_1ScopedClock.html#a06d308e381b523200c402516b6702dab", null ],
-    [ "printAndReset", "classinviwo_1_1ScopedClock.html#ad4a1ca3722b5733b2106892a92495240", null ]
+    [ "print", "classinviwo_1_1ScopedClock.html#a517bb97a245612c104d1a0c0b3dd19df", null ],
+    [ "printAndReset", "classinviwo_1_1ScopedClock.html#a2e1a8157810bb8d571acbd5590e8b9ee", null ]
 ];

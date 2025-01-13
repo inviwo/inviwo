@@ -1,5 +1,11 @@
 var NAVTREEINDEX6 =
 {
+"classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524ad94b42030b9785fd754d5c1754961269":[2,0,0,357,0,0],
+"classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524ad94b42030b9785fd754d5c1754961269":[4,0,1,364,0,0],
+"classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524aeb334dca00e390e0d3ebf52d205807d7":[2,0,0,357,0,1],
+"classinviwo_1_1GlyphClipping.html#a5e117a11a9864a7770f47cd93076d524aeb334dca00e390e0d3ebf52d205807d7":[4,0,1,364,0,1],
+"classinviwo_1_1GlyphClipping.html#a9b226752ebf4a0159fceb92bf7d7fe9f":[2,0,0,357,1],
+"classinviwo_1_1GlyphClipping.html#a9b226752ebf4a0159fceb92bf7d7fe9f":[4,0,1,364,1],
 "classinviwo_1_1GraphicsItemData.html":[2,0,0,358],
 "classinviwo_1_1GraphicsItemData.html":[4,0,1,365],
 "classinviwo_1_1GridPlanes.html":[2,0,0,359],
@@ -243,11 +249,5 @@ var NAVTREEINDEX6 =
 "classinviwo_1_1ImageRAM.html":[1,1,15],
 "classinviwo_1_1ImageRAM.html#a55e940212da8cc5b19bfbbcd57a0e31a":[1,1,15,1],
 "classinviwo_1_1ImageRAM.html#ab5497c9590a0bddc0240dbce0223f82d":[1,1,15,2],
-"classinviwo_1_1ImageRAM.html#ad1b3ae67cc32f5a458c879766ac5dde1":[1,1,15,0],
-"classinviwo_1_1ImageRepresentation.html":[1,1,16],
-"classinviwo_1_1ImageRepresentation.html#a07caec2133ef7d3d5104f097e2583f3a":[1,1,16,0],
-"classinviwo_1_1ImageRepresentation.html#a362870b0305d5a2b1185259751a8acc3":[1,1,16,2],
-"classinviwo_1_1ImageRepresentation.html#a8b5ce0d6516f09b90fe30674426bd74f":[1,1,16,1],
-"classinviwo_1_1ImageResample.html":[1,3,92],
-"classinviwo_1_1ImageResample.html#aa46d7c26062d2c41dd73d6f4df93308f":[1,3,92,0]
+"classinviwo_1_1ImageRAM.html#ad1b3ae67cc32f5a458c879766ac5dde1":[1,1,15,0]
 };
