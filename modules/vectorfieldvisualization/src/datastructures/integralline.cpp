@@ -48,7 +48,7 @@ std::vector<dvec3>& IntegralLine::getPositions() { return positions_; }
 std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        throw Exception(SourceContext{}, "No meta data with name: {}" + name);
+        throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
     return it->second;
 }

@@ -389,8 +389,8 @@ void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst, std::stri
         try {
             cimgutil::saveCImgToBuffer(img, extension, dst);
         } catch (cimg_library::CImgIOException& e) {
-            throw DataWriterException(SourceContext{}, "Failed to save image to buffer. Reason: " +
-                                                           std::string(e.what()));
+            throw DataWriterException(SourceContext{}, "Failed to save image to buffer. Reason: {}",
+                                      e.what());
         }
     });
 }
