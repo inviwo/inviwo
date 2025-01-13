@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/nodata.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datamapper.h>
 
 #include <algorithm>
 #include <span>
@@ -122,6 +123,10 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                                    .swizzleMask = swizzlemasks::defaultData(activePorts.size())});
 
     [[maybe_unused]] DataMapper destDataMap(commonFormat);
+
+    if constexpr (normalization == detail::ChannelNormalization::Yes) {
+        data->dataMap = destDataMap;
+    }
 
 #include <warn/push>
 #include <warn/ignore/conversion>
