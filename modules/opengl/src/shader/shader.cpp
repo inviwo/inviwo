@@ -303,7 +303,7 @@ void Shader::handleError(OpenGLException& e) {
     auto onError = ShaderManager::getPtr()->getOnShaderError();
     switch (onError) {
         case Shader::OnError::Warn:
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
+            log::exception(e);
             break;
         case Shader::OnError::Throw:
             throw;

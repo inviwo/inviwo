@@ -1254,8 +1254,8 @@ bool InviwoMainWindow::openWorkspace(const std::filesystem::path& fileName, bool
                 try {
                     throw;
                 } catch (const IgnoreException& e) {
-                    util::logError(e.getContext(), "Incomplete network loading {} due to {}",
-                                   fileName, e.getMessage());
+                    log::exception(e, "Incomplete network loading {} due to {}", fileName,
+                                   e.getMessage());
                 }
             });
 
@@ -1266,8 +1266,7 @@ bool InviwoMainWindow::openWorkspace(const std::filesystem::path& fileName, bool
                 addToRecentWorkspaces(fileName);
             }
         } catch (const Exception& e) {
-            util::logError(e.getContext(), "Unable to load network {} due to {}", fileName,
-                           e.getMessage());
+            log::exception(e, "Unable to load network {} due to {}", fileName, e.getMessage());
             app_->getWorkspaceManager()->clear();
             clearCurrentWorkspace();
         }
@@ -1298,16 +1297,14 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
             try {
                 throw;
             } catch (const IgnoreException& e) {
-                util::logError(e.getContext(), "Incomplete network save {} due to {}", fileName,
-                               e.getMessage());
+                log::exception(e, "Incomplete network save {} due to {}", fileName, e.getMessage());
             }
         });
         updateWindowTitle();
         log::info("Workspace saved to: {}", fileName);
         return true;
     } catch (const Exception& e) {
-        util::logError(e.getContext(), "Unable to save network {} due to {}", fileName,
-                       e.getMessage());
+        log::exception(e, "Unable to save network {} due to {}", fileName, e.getMessage());
     }
     return false;
 }

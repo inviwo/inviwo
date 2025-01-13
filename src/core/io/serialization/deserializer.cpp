@@ -175,7 +175,7 @@ void Deserializer::handleError(const SourceContext& context) {
         try {
             throw;
         } catch (SerializationException& e) {
-            util::log(getLogger(), e.getContext(), e.getMessage(), LogLevel::Warn);
+            log::report(*this, LogLevel::Warn, e.getContext(), e.getMessage());
         }
     }
 }
