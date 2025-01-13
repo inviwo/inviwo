@@ -105,7 +105,7 @@ const ProcessorInfo StreamParticles::processorInfo_{
 
 const ProcessorInfo& StreamParticles::getProcessorInfo() const { return processorInfo_; }
 
-StreamParticles::StreamParticles(InviwoApplication* app)
+StreamParticles::StreamParticles()
     : Processor()
     , volume_{"volume", "Velocity field"_help}
     , seeds_{"seeds", "Starting position for particles"_help}

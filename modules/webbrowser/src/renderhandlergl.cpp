@@ -192,7 +192,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     }
 }
 
-void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType /*type*/,
                                          const RectList& dirtyRects,
                                          const CefAcceleratedPaintInfo& info) {
 

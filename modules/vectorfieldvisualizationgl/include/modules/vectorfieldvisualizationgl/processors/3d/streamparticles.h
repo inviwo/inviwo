@@ -59,7 +59,7 @@ class Mesh;
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API StreamParticles : public Processor {
 public:
-    StreamParticles(InviwoApplication* app);
+    StreamParticles();
     virtual ~StreamParticles() = default;
 
     virtual void initializeResources() override;
