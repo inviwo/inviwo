@@ -235,7 +235,7 @@ void UndoManager::pushState() {
 
     try {
         manager_->save(
-            *str, refPath_, [](SourceContext context) -> void { throw; }, WorkspaceSaveMode::Undo);
+            *str, refPath_, [](SourceContext) -> void { throw; }, WorkspaceSaveMode::Undo);
     } catch (...) {
         return;
     }
