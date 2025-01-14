@@ -1015,12 +1015,12 @@ template&lt;class Container&gt; </td></tr>
 <tr class="memitem:a1ffe4e0cdc4f21f1460209c2e91e3cc1" id="r_a1ffe4e0cdc4f21f1460209c2e91e3cc1"><td class="memItemLeft" align="right" valign="top"><a id="a1ffe4e0cdc4f21f1460209c2e91e3cc1" name="a1ffe4e0cdc4f21f1460209c2e91e3cc1"></a>
 void IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>configureCodePage</b> ()</td></tr>
 <tr class="separator:a1ffe4e0cdc4f21f1460209c2e91e3cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a969a21a4a5700b83983fd809c3a644a7" id="r_a969a21a4a5700b83983fd809c3a644a7"><td class="memItemLeft" align="right" valign="top"><a id="a969a21a4a5700b83983fd809c3a644a7" name="a969a21a4a5700b83983fd809c3a644a7"></a>
-IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>log</b> (<a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a> context, std::string_view message, LogLevel level=LogLevel::Info, LogAudience audience=LogAudience::Developer)</td></tr>
-<tr class="separator:a969a21a4a5700b83983fd809c3a644a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add9c8ecb238bf5f82d5929d6e01db80d" id="r_add9c8ecb238bf5f82d5929d6e01db80d"><td class="memItemLeft" align="right" valign="top"><a id="add9c8ecb238bf5f82d5929d6e01db80d" name="add9c8ecb238bf5f82d5929d6e01db80d"></a>
-IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>log</b> (<a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger, <a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a> context, std::string_view message, LogLevel level=LogLevel::Info, LogAudience audience=LogAudience::Developer)</td></tr>
-<tr class="separator:add9c8ecb238bf5f82d5929d6e01db80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a924716e69e9a08c30950f2fd8a0fc5fb" id="r_a924716e69e9a08c30950f2fd8a0fc5fb"><td class="memItemLeft" align="right" valign="top"><a id="a924716e69e9a08c30950f2fd8a0fc5fb" name="a924716e69e9a08c30950f2fd8a0fc5fb"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>log</b> (<a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context, std::string_view message, LogLevel level=LogLevel::Info, LogAudience audience=LogAudience::Developer)</td></tr>
+<tr class="separator:a924716e69e9a08c30950f2fd8a0fc5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf825fd7ed2442ff73dd5b77d52132ff" id="r_acf825fd7ed2442ff73dd5b77d52132ff"><td class="memItemLeft" align="right" valign="top"><a id="acf825fd7ed2442ff73dd5b77d52132ff" name="acf825fd7ed2442ff73dd5b77d52132ff"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>log</b> (<a class="el" href="classinviwo_1_1Logger.html">Logger</a> *logger, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context, std::string_view message, LogLevel level=LogLevel::Info, LogAudience audience=LogAudience::Developer)</td></tr>
+<tr class="separator:acf825fd7ed2442ff73dd5b77d52132ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeefacea9da9a4d2da2cd86fe21609108" id="r_aeefacea9da9a4d2da2cd86fe21609108"><td class="memTemplParams" colspan="2"><a id="aeefacea9da9a4d2da2cd86fe21609108" name="aeefacea9da9a4d2da2cd86fe21609108"></a>
 template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:aeefacea9da9a4d2da2cd86fe21609108"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>log</b> (<a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context, LogLevel level, LogAudience audience, fmt::format_string&lt; Args... &gt; format, Args &amp;&amp;... args)</td></tr>
@@ -1406,8 +1406,8 @@ IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveAllC
 <tr class="memitem:aa40eb018880e2f5c6f66452163325611" id="r_aa40eb018880e2f5c6f66452163325611"><td class="memItemLeft" align="right" valign="top"><a id="aa40eb018880e2f5c6f66452163325611" name="aa40eb018880e2f5c6f66452163325611"></a>
 IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>isValidIdentifierCharacter</b> (char c, std::string_view extra=&quot;&quot;)</td></tr>
 <tr class="separator:aa40eb018880e2f5c6f66452163325611"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84a22c0c040b8e54cdb5bd3d4896a698" id="r_a84a22c0c040b8e54cdb5bd3d4896a698"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84a22c0c040b8e54cdb5bd3d4896a698">validateIdentifier</a> (std::string_view <a class="el" href="structinviwo_1_1util_1_1identifier.html">identifier</a>, std::string_view type, <a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a> context)</td></tr>
-<tr class="separator:a84a22c0c040b8e54cdb5bd3d4896a698"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2bb2a87355c0aa175f5dc794164c129" id="r_aa2bb2a87355c0aa175f5dc794164c129"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2bb2a87355c0aa175f5dc794164c129">validateIdentifier</a> (std::string_view <a class="el" href="structinviwo_1_1util_1_1identifier.html">identifier</a>, std::string_view type, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current())</td></tr>
+<tr class="separator:aa2bb2a87355c0aa175f5dc794164c129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a1641752b9b6ec1384f983f1f7b86a9" id="r_a2a1641752b9b6ec1384f983f1f7b86a9"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a1641752b9b6ec1384f983f1f7b86a9">findUniqueIdentifier</a> (std::string_view <a class="el" href="structinviwo_1_1util_1_1identifier.html">identifier</a>, std::function&lt; bool(std::string_view)&gt; isUnique, std::string_view sep=&quot; &quot;)</td></tr>
 <tr class="separator:a2a1641752b9b6ec1384f983f1f7b86a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9287fded47920b2a0e2dada11249da84" id="r_a9287fded47920b2a0e2dada11249da84"><td class="memItemLeft" align="right" valign="top"><a id="a9287fded47920b2a0e2dada11249da84" name="a9287fded47920b2a0e2dada11249da84"></a>
@@ -2044,8 +2044,8 @@ template&lt;typename T&gt; </div>
 <div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, <a class="code hl_struct" href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">dispatching::filter::Vecs</a>&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
 <div class="line">    <span class="keyword">using </span>VolumeType = <a class="code hl_typedef" href="#ab1e4eff95e999c0f37072af916d5d93b">util::PrecisionType</a>&lt;<span class="keyword">decltype</span>(vrprecision)&gt;;</div>
 <div class="line">    ....</div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:493</div></div>
-<div class="ttc" id="astructinviwo_1_1dispatching_1_1filter_1_1Vecs_html"><div class="ttname"><a href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">inviwo::dispatching::filter::Vecs</a></div><div class="ttdef"><b>Definition</b> formatdispatching.h:393</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:492</div></div>
+<div class="ttc" id="astructinviwo_1_1dispatching_1_1filter_1_1Vecs_html"><div class="ttname"><a href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">inviwo::dispatching::filter::Vecs</a></div><div class="ttdef"><b>Definition</b> formatdispatching.h:392</div></div>
 </div><!-- fragment --><p> VolumeType will then be for example VolumeRamPrecision&lt;vec3&gt; </p>
 
 </div>
@@ -2088,7 +2088,7 @@ template&lt;typename T&gt; </div>
 <div class="line"><span class="keyword">auto</span> count = volumeram-&gt;dispatch&lt;size_t, <a class="code hl_struct" href="structinviwo_1_1dispatching_1_1filter_1_1Vecs.html">dispatching::filter::Vecs</a>&gt;([](<span class="keyword">auto</span> vrprecision) {</div>
 <div class="line">    <span class="keyword">using </span>ValueType = <a class="code hl_typedef" href="#a4c5cc1457325e4cf1c8756319d5e83c5">util::PrecisionValueType</a>&lt;<span class="keyword">decltype</span>(vrprecision)&gt;;</div>
 <div class="line">    ....</div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:511</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:510</div></div>
 </div><!-- fragment --><p> ValueType will then be for example vec3 </p>
 
 </div>
@@ -7561,7 +7561,7 @@ template&lt;typename T&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>valid identifier</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a84a22c0c040b8e54cdb5bd3d4896a698">validateIdentifier</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#aa2bb2a87355c0aa175f5dc794164c129">validateIdentifier</a> </dd></dl>
 
 </div>
 </div>
@@ -7898,8 +7898,8 @@ template&lt;typename T, typename U&gt; </div>
 
 </div>
 </div>
-<a id="a84a22c0c040b8e54cdb5bd3d4896a698" name="a84a22c0c040b8e54cdb5bd3d4896a698"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a84a22c0c040b8e54cdb5bd3d4896a698">&#9670;&#160;</a></span>validateIdentifier()</h2>
+<a id="aa2bb2a87355c0aa175f5dc794164c129" name="aa2bb2a87355c0aa175f5dc794164c129"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2bb2a87355c0aa175f5dc794164c129">&#9670;&#160;</a></span>validateIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7917,7 +7917,7 @@ template&lt;typename T, typename U&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a></td>          <td class="paramname"><span class="paramname"><em>context</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a></td>          <td class="paramname"><span class="paramname"><em>context</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::source_location::current()</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

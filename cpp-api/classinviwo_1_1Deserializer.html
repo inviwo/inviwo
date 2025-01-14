@@ -133,9 +133,9 @@ Public Types</h2></td></tr>
 , <b>NotFound</b>
  }</td></tr>
 <tr class="separator:a3cdba6543fd5d683fc9435badaf7b5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb50c06669b02e227a4dd278e5ceec19" id="r_afb50c06669b02e227a4dd278e5ceec19"><td class="memItemLeft" align="right" valign="top"><a id="afb50c06669b02e227a4dd278e5ceec19" name="afb50c06669b02e227a4dd278e5ceec19"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ExceptionHandler</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a>)&gt;</td></tr>
-<tr class="separator:afb50c06669b02e227a4dd278e5ceec19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8174fea934b8ebeeaafa243fa537703" id="r_ae8174fea934b8ebeeaafa243fa537703"><td class="memItemLeft" align="right" valign="top"><a id="ae8174fea934b8ebeeaafa243fa537703" name="ae8174fea934b8ebeeaafa243fa537703"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ExceptionHandler</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a>)&gt;</td></tr>
+<tr class="separator:ae8174fea934b8ebeeaafa243fa537703"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classinviwo_1_1SerializeBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1SerializeBase')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1SerializeBase.html">inviwo::SerializeBase</a></td></tr>
 <tr class="memitem:a87903e135451ec7948c72b69b00b066f inherit pub_types_classinviwo_1_1SerializeBase" id="r_a87903e135451ec7948c72b69b00b066f"><td class="memItemLeft" align="right" valign="top">
 using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> = std::pmr::polymorphic_allocator&lt;std::byte&gt;</td></tr>
@@ -283,9 +283,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasElement</b> (std::
 <tr class="memitem:a94294c166876e9c7a5d91eff84fea9ff" id="r_a94294c166876e9c7a5d91eff84fea9ff"><td class="memItemLeft" align="right" valign="top"><a id="a94294c166876e9c7a5d91eff84fea9ff" name="a94294c166876e9c7a5d91eff84fea9ff"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setExceptionHandler</b> (ExceptionHandler handler)</td></tr>
 <tr class="separator:a94294c166876e9c7a5d91eff84fea9ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e8bef66bdbbb769e06f7df44e0a0a3a" id="r_a4e8bef66bdbbb769e06f7df44e0a0a3a"><td class="memItemLeft" align="right" valign="top"><a id="a4e8bef66bdbbb769e06f7df44e0a0a3a" name="a4e8bef66bdbbb769e06f7df44e0a0a3a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>handleError</b> (const <a class="el" href="classinviwo_1_1SourceContext.html">ExceptionContext</a> &amp;context)</td></tr>
-<tr class="separator:a4e8bef66bdbbb769e06f7df44e0a0a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8db2ded99642e27deef0fb608311a8fe" id="r_a8db2ded99642e27deef0fb608311a8fe"><td class="memItemLeft" align="right" valign="top"><a id="a8db2ded99642e27deef0fb608311a8fe" name="a8db2ded99642e27deef0fb608311a8fe"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handleError</b> (const <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> &amp;context=std::source_location::current())</td></tr>
+<tr class="separator:a8db2ded99642e27deef0fb608311a8fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bfc06ac56e6a8c68c886aaae8479ae7" id="r_a8bfc06ac56e6a8c68c886aaae8479ae7"><td class="memItemLeft" align="right" valign="top"><a id="a8bfc06ac56e6a8c68c886aaae8479ae7" name="a8bfc06ac56e6a8c68c886aaae8479ae7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>convertVersion</b> (<a class="el" href="classinviwo_1_1VersionConverter.html">VersionConverter</a> *converter)</td></tr>
 <tr class="separator:a8bfc06ac56e6a8c68c886aaae8479ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
