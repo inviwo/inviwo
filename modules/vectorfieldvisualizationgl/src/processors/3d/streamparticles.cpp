@@ -105,7 +105,7 @@ const ProcessorInfo StreamParticles::processorInfo_{
 
 const ProcessorInfo& StreamParticles::getProcessorInfo() const { return processorInfo_; }
 
-StreamParticles::StreamParticles(InviwoApplication* app)
+StreamParticles::StreamParticles()
     : Processor()
     , volume_{"volume", "Velocity field"_help}
     , seeds_{"seeds", "Starting position for particles"_help}
@@ -188,7 +188,7 @@ void StreamParticles::initializeResources() {
                 "The StreamParticles processor requires OpenGL 4.3"};
             return {ProcessorStatus::Error, error};
         });
-        throw Exception(IVW_CONTEXT, "The StreamParticles processor requires OpenGL 4.3");
+        throw Exception(SourceContext{}, "The StreamParticles processor requires OpenGL 4.3");
     }
 
     shader_.getShaderObject(ShaderType::Compute)

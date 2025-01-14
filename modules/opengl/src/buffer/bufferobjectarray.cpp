@@ -33,7 +33,7 @@
 #include <inviwo/core/util/canvas.h>             // for Canvas, Canvas::ContextID
 #include <inviwo/core/util/exception.h>          // for RangeException, Exception
 #include <inviwo/core/util/rendercontext.h>      // for RenderContext
-#include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT, SourceLocation, IVW_SOURCE_...
+#include <inviwo/core/util/sourcecontext.h>      // for SourceLocation
 #include <modules/opengl/buffer/bufferobject.h>  // for BufferObject, BufferObject::BindingType
 
 #include <chrono>       // for literals
@@ -148,13 +148,13 @@ bool BufferObjectArray::isActive() const {
 void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLuint location,
                                            BindingType bindingType) {
     if (location >= attachedBuffers_.size()) {
-        throw RangeException(IVW_CONTEXT,
+        throw RangeException(SourceContext{},
                              "VertexAttribArray location {} exceeds maximum allowed range ({})",
                              location, attachedBuffers_.size());
     }
     if (attachedBuffers_[location].second && bufferObject &&
         (attachedBuffers_[location].second != bufferObject)) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "BufferObjectArray ({}): Cannot bind buffer object (id {}). Location "
                         "{} is already bound to different buffer object "
                         "(id {}).",
@@ -169,7 +169,7 @@ void BufferObjectArray::attachBufferObject(const BufferObject* bufferObject, GLu
 void BufferObjectArray::attachBufferObjectEnforce(const BufferObject* bufferObject, GLuint location,
                                                   BindingType bindingType) {
     if (location >= attachedBuffers_.size()) {
-        throw RangeException(IVW_CONTEXT,
+        throw RangeException(SourceContext{},
                              "VertexAttribArray location {} exceeds maximum allowed range ({})",
                              location, attachedBuffers_.size());
     }
@@ -180,7 +180,7 @@ void BufferObjectArray::attachBufferObjectEnforce(const BufferObject* bufferObje
 
 void BufferObjectArray::detachBufferObject(GLuint location) {
     if (location >= attachedBuffers_.size()) {
-        throw RangeException(IVW_CONTEXT, "Invalid buffer location {}", location);
+        throw RangeException(SourceContext{}, "Invalid buffer location {}", location);
     }
     if (attachedBuffers_[location].second) {
         attachedBuffers_[location].second = nullptr;

@@ -47,7 +47,6 @@
 #include <inviwo/core/util/glmmat.h>                  // for mat3
 #include <inviwo/core/util/glmvec.h>                  // for dvec2, vec3, size3_t
 #include <inviwo/core/util/logcentral.h>              // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>           // for IVW_CONTEXT
 #include <inviwo/core/util/stringconversion.h>        // for toLower, trim, splitByFirst
 #include <modules/base/algorithm/algorithmoptions.h>  // for IgnoreSpecialValues, IgnoreSpe...
 #include <modules/base/algorithm/dataminmax.h>        // for volumeMinMax
@@ -296,7 +295,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
             it->second(state, ss);
             if (!ss) {
                 throw DataReaderException(
-                    IVW_CONTEXT, "Unable to parse key: '{}' with value: '{} in .dat file: '{}'",
+                    SourceContext{}, "Unable to parse key: '{}' with value: '{} in .dat file: '{}'",
                     key, value, filePath);
             }
         } else {
@@ -323,14 +322,15 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
 
     } else {
         if (state.dimensions == size3_t(0)) {
-            throw DataReaderException(
-                IVW_CONTEXT, "Error: Unable to find \"Resolution\" tag in .dat file: {}", filePath);
+            throw DataReaderException(SourceContext{},
+                                      "Error: Unable to find \"Resolution\" tag in .dat file: {}",
+                                      filePath);
         } else if (state.format == nullptr) {
             throw DataReaderException(
-                IVW_CONTEXT, "Error: Unable to find \"Format\" tag in .dat file: {}", filePath);
+                SourceContext{}, "Error: Unable to find \"Format\" tag in .dat file: {}", filePath);
         } else if (state.format->getId() == DataFormatId::NotSpecialized) {
             throw DataReaderException(
-                IVW_CONTEXT,
+                SourceContext{},
                 "Error: Invalid format string found: {} in {} \nThe valid formats are:\n"
                 "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
                 "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
@@ -343,7 +343,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
 
         } else if (state.rawFile == "") {
             throw DataReaderException(
-                IVW_CONTEXT, "Error: Unable to find \"ObjectFilename\" tag in .dat file: {}",
+                SourceContext{}, "Error: Unable to find \"ObjectFilename\" tag in .dat file: {}",
                 filePath);
         }
 

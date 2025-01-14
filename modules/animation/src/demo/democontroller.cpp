@@ -138,7 +138,7 @@ void DemoController::loadWorkspaceApp(const std::filesystem::path& fileName) {
     NetworkLock lock(app_->getProcessorNetwork());
     app_->getWorkspaceManager()->clear();
     try {
-        app_->getWorkspaceManager()->load(fileName, [&](ExceptionContext ec) {
+        app_->getWorkspaceManager()->load(fileName, [&](SourceContext) {
             try {
                 throw;
             } catch (const IgnoreException& e) {

@@ -45,7 +45,7 @@
 #include <inviwo/core/util/exception.h>                // for Exception, Exceptio...
 #include <inviwo/core/util/glmvec.h>                   // for ivec2
 #include <inviwo/core/util/settings/settings.h>        // for Settings
-#include <inviwo/core/util/sourcecontext.h>            // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>            // for SourceContext
 #include <inviwo/core/network/processornetwork.h>
 #include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>  // for PythonFilePropertyW...
 #include <modules/python3qt/properties/pythonpropertywidgetqt.h>      // for PythonPropertyWidgetQt
@@ -217,7 +217,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             });
 
     } catch (const std::exception& e) {
-        throw ModuleInitException(e.what(), IVW_CONTEXT);
+        throw ModuleInitException(e.what());
     }
 
     registerSettings(std::make_unique<PythonSyntaxHighlight>());
@@ -231,7 +231,7 @@ Python3QtModule::~Python3QtModule() = default;
 
 void Python3QtModule::abortPythonEvaluation() { abortPythonEvaluation_ = true; }
 
-PythonAbortException::PythonAbortException(const std::string& message, ExceptionContext context)
+PythonAbortException::PythonAbortException(const std::string& message, SourceContext context)
     : Exception(message, context) {}
 
 }  // namespace inviwo

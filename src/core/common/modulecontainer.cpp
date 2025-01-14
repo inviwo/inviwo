@@ -63,8 +63,7 @@ std::vector<ModuleContainer*> findTransitiveDependencies(const ModuleContainer& 
                     self(self, *it);
                 }
             } else {
-                throw Exception(IVW_CONTEXT_CUSTOM("ModuleManager"), "Missing module dependency {}",
-                                dependency);
+                throw Exception(SourceContext{}, "Missing module dependency {}", dependency);
             }
         }
     };
@@ -152,7 +151,7 @@ void ModuleContainer::load(bool runtimeReload) {
         std::error_code ec;
         if (!std::filesystem::copy_file(libFile_, tmpFile,
                                         std::filesystem::copy_options::update_existing, ec)) {
-            throw Exception(IVW_CONTEXT, "Unable to write temporary file {} since: {}", tmpFile,
+            throw Exception(SourceContext{}, "Unable to write temporary file {} since: {}", tmpFile,
                             ec.message());
         }
         tmpFile_ = tmpFile;
@@ -165,7 +164,7 @@ void ModuleContainer::load(bool runtimeReload) {
         factoryObject_.reset(moduleFunc());
     } else {
         throw Exception(
-            IVW_CONTEXT,
+            SourceContext{},
             "Could not find 'createModule' function needed for creating the module in {}. "
             "Make sure that you have compiled the library and exported the function.",
             libFile_);

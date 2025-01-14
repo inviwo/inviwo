@@ -73,7 +73,7 @@ std::pmr::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
         return xml;
 
     } catch (const TiXmlError& e) {
-        throw DataWriterException(e.what(), IVW_CONTEXT_CUSTOM("TransferFunctionXMLWriter"));
+        throw DataWriterException(e.what());
     }
 }
 
@@ -84,7 +84,7 @@ void TransferFunctionXMLWriter::writeData(const TransferFunction* data,
         of << toXML(*data);
         of.close();
     } catch (const TiXmlError& e) {
-        throw DataWriterException(e.what(), IVW_CONTEXT_CUSTOM("TransferFunctionXMLWriter"));
+        throw DataWriterException(e.what());
     }
 };
 

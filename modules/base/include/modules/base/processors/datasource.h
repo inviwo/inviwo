@@ -242,7 +242,6 @@ std::shared_ptr<DataType> DataSource<DataType, PortType, ReaderType>::transform(
         return data;
     } else {
         throw Exception(
-            IVW_CONTEXT,
             "Derived DataSource class needs to override DataSource::transform, to convert the "
             "'ReaderType' to the 'DataType'");
     }

@@ -44,7 +44,7 @@ PythonFilePropertyWidgetQt::PythonFilePropertyWidgetQt(FileProperty* property)
     : FilePropertyWidgetQt(property) {
 
     if (property->getSemantics() != PropertySemantics::PythonEditor) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Invalid semantics for HtmlPropertyWidgetQt, expected PythonEditor, got {}",
                         property->getSemantics().getString());
     }

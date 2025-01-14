@@ -44,9 +44,8 @@ namespace {
 
 void parseColorMapNode(TransferFunction& tf, TxElement* node) {
     if (node->Value() != "ColorMap") {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("TransferFunctionXMLReader::loadFromXML()"),
-                                  "XML node mismatch (got '{}', expected 'ColorMap')",
-                                  node->Value());
+        throw DataReaderException(
+            SourceContext{}, "XML node mismatch (got '{}', expected 'ColorMap')", node->Value());
     }
 
     const std::string colorspace = node->GetAttribute("space");
@@ -62,9 +61,7 @@ void parseColorMapNode(TransferFunction& tf, TxElement* node) {
         } else if (cs == "rgb") {
             return [](dvec3 c) { return vec3{c}; };
         } else {
-            throw DataReaderException(
-                IVW_CONTEXT_CUSTOM("TransferFunctionXMLReader::loadFromXML()"),
-                "Unsupported colorspace '{}'", cs);
+            throw DataReaderException(SourceContext{}, "Unsupported colorspace '{}'", cs);
         }
     }();
 
@@ -89,9 +86,8 @@ void parseColorMapNode(TransferFunction& tf, TxElement* node) {
 
 void parseColorMapsNode(TransferFunction& tf, TxElement* node) {
     if (node->Value() != "ColorMaps") {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("TransferFunction::loadFromXML()"),
-                                  "XML node mismatch (got '{}', expected 'ColorMaps')",
-                                  node->Value());
+        throw DataReaderException(
+            SourceContext{}, "XML node mismatch (got '{}', expected 'ColorMaps')", node->Value());
     }
 
     size_t count = 0;
@@ -157,11 +153,11 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
 
         auto root = doc.FirstChildElement();
         if (!root) {
-            throw DataReaderException(IVW_CONTEXT, "No XML root node found in '{}'", filePath);
+            throw DataReaderException(SourceContext{}, "No XML root node found in '{}'", filePath);
         }
         parseColorMapsNode(*data, root);
     } catch (const TiXmlError& e) {
-        throw DataReaderException(e.what(), IVW_CONTEXT);
+        throw DataReaderException(e.what());
     }
 
     return data;

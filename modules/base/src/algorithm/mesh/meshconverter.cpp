@@ -34,7 +34,6 @@
 #include <inviwo/core/datastructures/geometry/geometrytype.h>  // for ConnectivityType, DrawType
 #include <inviwo/core/datastructures/geometry/mesh.h>          // for Mesh, Mesh::IndexVector
 #include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stdextensions.h>                    // for find_if
 
 #include <cstddef>      // for size_t
@@ -59,8 +58,7 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
     });
 
     if (posIt == mesh.getBuffers().end()) {
-        throw Exception("Error: could not find a position buffer",
-                        IVW_CONTEXT_CUSTOM("toPointMesh"));
+        throw Exception("Error: could not find a position buffer");
     }
 
     res->addBuffer(posIt->first, std::shared_ptr<BufferBase>(posIt->second->clone()));
@@ -90,8 +88,7 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
     });
 
     if (posIt == mesh.getBuffers().end()) {
-        throw Exception("Error: could not find a position buffer",
-                        IVW_CONTEXT_CUSTOM("toPointMesh"));
+        throw Exception("Error: could not find a position buffer");
     }
 
     res->addBuffer(posIt->first, std::shared_ptr<BufferBase>(posIt->second->clone()));

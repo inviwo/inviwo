@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/property.h>                   // for Property
 #include <inviwo/core/properties/propertyownerobserver.h>      // for PropertyOwnerObservable
 #include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
 #include <inviwo/core/util/staticstring.h>                     // for operator+
 #include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrameInport, DataFrame...
 #include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
@@ -158,7 +158,7 @@ void DataFrameJoin::process() {
             dataframe = dataframe::leftJoin(*inportLeft_.getData(), *inportRight_.getData(), keys);
             break;
         default:
-            throw Exception("unsupported join operation", IVW_CONTEXT);
+            throw Exception("unsupported join operation");
     }
     outport_.setData(dataframe);
 }

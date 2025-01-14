@@ -56,7 +56,6 @@
 #include <inviwo/core/util/glmvec.h>                            // for vec3, dvec2, size2_t
 #include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogPr...
 #include <inviwo/core/util/raiiutils.h>                         // for OnScopeExit, OnSc...
-#include <inviwo/core/util/sourcecontext.h>                     // for IVW_CONTEXT
 #include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
 #include <inviwo/core/util/zip.h>                               // for zipper, enumerate
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty
@@ -185,7 +184,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     const auto first = std::find_if(slices.begin(), slices.end(),
                                     [](auto& item) { return item.second != nullptr; });
     if (first == slices.end()) {  // could not find any suitable data reader for the images
-        throw Exception(IVW_CONTEXT, "No supported images found in '{}'",
+        throw Exception(SourceContext{}, "No supported images found in '{}'",
                         filePattern_.getFilePatternPath());
     }
 
@@ -196,13 +195,13 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     // does not provide meta data for all image formats.
     const auto* referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
     if (glm::compMul(referenceRAM->getDimensions()) == 0) {
-        throw Exception(IVW_CONTEXT, "Could not extract valid image dimensions from {}",
+        throw Exception(SourceContext{}, "Could not extract valid image dimensions from {}",
                         first->first);
     }
 
     const auto* refFormat = referenceRAM->getDataFormat();
     if ((refFormat->getNumericType() != NumericType::Float) && (refFormat->getPrecision() > 32)) {
-        throw DataReaderException(IVW_CONTEXT, "Unsupported integer bit depth ({})",
+        throw DataReaderException(SourceContext{}, "Unsupported integer bit depth ({})",
                                   refFormat->getPrecision());
     }
 

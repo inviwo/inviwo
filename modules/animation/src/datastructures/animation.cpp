@@ -37,7 +37,7 @@
 #include <inviwo/core/util/exception.h>                          // for Exception
 #include <inviwo/core/util/indirectiterator.h>                   // for makeIndirectIterator
 #include <inviwo/core/util/logcentral.h>                         // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                      // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                      // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                      // for erase_remove
 #include <inviwo/core/util/typetraits.h>                         // for alwaysTrue, identity
 #include <modules/animation/animationmanager.h>                  // for AnimationManager
@@ -363,7 +363,7 @@ AnimationManager* Animation::getManager() {
     if (am_) {
         return am_;
     } else {
-        throw Exception("AnimationManager must be set to use this functionality", IVW_CONTEXT);
+        throw Exception("AnimationManager must be set to use this functionality");
     }
 }
 

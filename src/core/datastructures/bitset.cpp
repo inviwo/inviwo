@@ -290,7 +290,7 @@ void BitSet::readData(std::istream& is) {
         is.read(buf.data(), numBytes);
         *roaring_ = roaring::Roaring::read(buf.data(), true);
     } catch (std::runtime_error&) {
-        throw Exception("Error reading BitSet", IVW_CONTEXT);
+        throw Exception("Error reading BitSet");
     }
 }
 

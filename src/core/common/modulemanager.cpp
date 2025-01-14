@@ -58,14 +58,12 @@ void topologicalSort(std::vector<ModuleContainer>& containers) {
                      std::vector<std::string>& sorted) -> void {
         auto it = std::ranges::find(containers, lname, &ModuleContainer::identifier);
         if (it == containers.end()) {
-            throw Exception(IVW_CONTEXT_CUSTOM("ModuleManager"), "Missing module dependency {}",
-                            lname);
+            throw Exception(SourceContext{}, "Missing module dependency {}", lname);
         }
 
         if (visited.contains(lname)) return;  // Already visited;
         if (tmpVisited.contains(lname)) {
-            throw Exception("Dependency graph not a DAG",
-                            IVW_CONTEXT_CUSTOM("TopologicalModuleSort"));
+            throw Exception(SourceContext{}, "Module Dependency graph is not a DAG");
         }
 
         tmpVisited.insert(lname);
@@ -133,14 +131,13 @@ void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) 
             const auto err = dereg.empty() ? ""
                                            : fmt::format("\nUnregistered dependent modules: {}",
                                                          fmt::join(dereg, ", "));
-            util::logError(e.getContext(), "Failed to register module: {}. Reason:\n {}{}",
-                           cont.name(), e.getMessage(), err);
+            log::exception(e, "Failed to register module: {}. Reason:\n {}{}", cont.name(),
+                           e.getMessage(), err);
         } catch (const Exception& e) {
-            util::logError(e.getContext(), "Failed to register module: {}. Reason:\n{}",
-                           cont.name(), e.getMessage());
+            log::exception(e, "Failed to register module: {}. Reason:\n{}", cont.name(),
+                           e.getMessage());
         } catch (const std::exception& e) {
-            util::logError(IVW_CONTEXT, "Failed to register module: {}. Reason:\n{}", cont.name(),
-                           e.what());
+            log::error("Failed to register module: {}. Reason:\n{}", cont.name(), e.what());
         }
     }
 

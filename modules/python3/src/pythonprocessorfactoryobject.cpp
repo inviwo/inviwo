@@ -48,7 +48,7 @@
 #include <inviwo/core/util/fileobserver.h>                  // for FileObserver
 #include <inviwo/core/util/filesystem.h>                    // for getFileNameWithoutExtension
 #include <inviwo/core/util/logcentral.h>                    // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                 // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                 // for SourceContext
 #include <inviwo/core/util/stringconversion.h>              // for trim
 #include <inviwo/core/util/utilities.h>                     // for stripIdentifier
 
@@ -80,9 +80,8 @@ std::shared_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
         return proc.cast<std::shared_ptr<Processor>>();
 
     } catch (std::exception& e) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to create processor {} from script: {}\n{}", name_, file_,
-                        e.what());
+        throw Exception(SourceContext{}, "Failed to create processor {} from script: {}\n{}", name_,
+                        file_, e.what());
     }
 }
 
@@ -176,7 +175,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
             printedNoteOnce = true;
 
             throw Exception(
-                IVW_CONTEXT_CUSTOM("Python"),
+                SourceContext{},
                 "Failed to load python processor: '{}' due to missing module: '{}'. File: {}{}",
                 name, missingModule, file, note);
         } else if (e.matches(PyExc_SyntaxError)) {
@@ -193,22 +192,20 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
                 e.value().attr("lineno") = lineno;
             }
 
-            throw Exception(IVW_CONTEXT_CUSTOM("Python"), "{}\n{:<6}:{}\n{:>{}}", e.what(), lineno,
-                            rtrim(text), "^", offset + 7);
+            throw Exception(SourceContext{}, "{}\n{:<6}:{}\n{:>{}}", e.what(), lineno, rtrim(text),
+                            "^", offset + 7);
 
         } else {
-            throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                            "Failed to load python processor: '{}'. File: {}\n{}", name, file,
-                            e.what());
+            throw Exception(SourceContext{}, "Failed to load python processor: '{}'. File: {}\n{}",
+                            name, file, e.what());
         }
     } catch (const std::exception& e) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
-                        "Failed to load python processor: '{}'. File: {}\n{}", name, file,
-                        e.what());
+        throw Exception(SourceContext{}, "Failed to load python processor: '{}'. File: {}\n{}",
+                        name, file, e.what());
     }
 
     if (!py::globals().contains(name.c_str())) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+        throw Exception(SourceContext{},
                         "Failed to find python processor: '{}' in pythons object register", name);
     }
 
@@ -217,7 +214,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
         auto p = proc.cast<ProcessorInfo>();
         return {p, name, file};
     } catch (const std::exception& e) {
-        throw Exception(IVW_CONTEXT_CUSTOM("Python"),
+        throw Exception(SourceContext{},
                         "Failed to get ProcessorInfo for python processor: '{}'. File: {}\n{}",
                         name, file, e.what());
     }

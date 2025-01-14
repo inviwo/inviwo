@@ -213,7 +213,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         }
 
     } catch (const Exception& e) {
-        util::log(e.getContext(), e.getMessage());
+        log::exception(e);
     }
 }
 

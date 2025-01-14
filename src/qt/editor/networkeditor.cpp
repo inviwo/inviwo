@@ -120,9 +120,9 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     setObjectName(name);
 
     mainWindow->getInviwoApplication()->getProcessorNetworkEvaluator()->setExceptionHandler(
-        [this](Processor* processor, EvaluationType type, ExceptionContext context) {
+        [this](Processor* processor, EvaluationType type, SourceContext) {
             const auto& id = processor->getIdentifier();
-            const auto error = [&](std::string error) {
+            const auto error = [&](std::string_view error) {
                 if (auto pgi = getProcessorGraphicsItem(processor)) {
                     pgi->getStatusItem()->setRuntimeError();
                     pgi->setErrorText(error);
@@ -836,8 +836,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 const auto compDir = filesystem::getPath(PathType::Settings, "/composites", true);
                 const auto filename = util::findUniqueIdentifier(
                     util::stripIdentifier(p->getDisplayName()),
-                    [&](std::string_view name) {
-                        auto path = compDir / fmt::format("{}.inv", name);
+                    [&](std::string_view basename) {
+                        auto path = compDir / fmt::format("{}.inv", basename);
                         return !std::filesystem::is_regular_file(path);
                     },
                     "");
@@ -914,7 +914,7 @@ void NetworkEditor::propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEv
             }
         }
     } catch (const Exception& e) {
-        util::log(e.getContext(), e.getFullMessage());
+        log::exception(e);
     }
 }
 
@@ -1228,7 +1228,7 @@ void NetworkEditor::helpEvent(QGraphicsSceneHelpEvent* e) {
                     return;
             }
         } catch (const Exception& e) {
-            util::log(e.getContext(), e.getFullMessage());
+            log::exception(e);
             return;
         }
     }

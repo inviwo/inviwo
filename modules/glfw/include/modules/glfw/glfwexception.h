@@ -31,7 +31,7 @@
 
 #include <modules/glfw/glfwmoduledefine.h>  // for IVW_MODULE_GLFW_API
 
-#include <inviwo/core/util/exception.h>  // for ExceptionContext, Exception, ModuleInitException
+#include <inviwo/core/util/exception.h>  // for SourceContext, Exception, ModuleInitException
 
 #include <string>  // for string
 
@@ -42,14 +42,13 @@ namespace inviwo {
  */
 class IVW_MODULE_GLFW_API GLFWException : public Exception {
 public:
-    GLFWException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    GLFWException(const std::string& message = "", SourceContext context = SourceContext());
     virtual ~GLFWException() throw() {}
 };
 
 class IVW_MODULE_GLFW_API GLFWInitException : public ModuleInitException {
 public:
-    GLFWInitException(const std::string& message = "",
-                      ExceptionContext context = ExceptionContext());
+    GLFWInitException(const std::string& message = "", SourceContext context = SourceContext());
     virtual ~GLFWInitException() throw() {}
 };
 

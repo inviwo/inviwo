@@ -49,7 +49,6 @@
 #include <inviwo/core/util/glmvec.h>             // for ivec2, vec4, dvec2
 #include <inviwo/core/util/logcentral.h>         // for LogCentral
 #include <inviwo/core/util/safecstr.h>           // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>      // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/stringconversion.h>   // for replaceInString, toString
 #include <inviwo/core/util/transformiterator.h>  // for TransformIterator
 #include <inviwo/core/util/zip.h>                // for enumerate, zipIterator, zipper
@@ -296,7 +295,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
     static constexpr int rightPadding = 10;
     static constexpr int bottomPadding = 10;
     const bool withinAnyDesktop = [&]() {
-        QList<QScreen*> const screens = QGuiApplication::screens();
+        const QList<QScreen*> screens = QGuiApplication::screens();
         for (QScreen* screen : screens) {
             auto geom = screen->geometry().marginsRemoved(
                 {leftPadding, topPadding, rightPadding, bottomPadding});
@@ -361,7 +360,7 @@ QMenu* addMenu(std::string_view menuName, QMenu* before) {
             return menuBar->addMenu(utilqt::toQString(menuName));
         }
     }
-    throw Exception("No Qt main window found", IVW_CONTEXT_CUSTOM("utilqt::addMenu"));
+    throw Exception("No Qt main window found");
 }
 
 QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
@@ -385,7 +384,7 @@ QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
             return nullptr;
         }
     }
-    throw Exception("No Qt main window found", IVW_CONTEXT_CUSTOM("utilqt::getMenu"));
+    throw Exception("No Qt main window found");
 }
 
 QImage layerToQImage(const Layer& layer) {

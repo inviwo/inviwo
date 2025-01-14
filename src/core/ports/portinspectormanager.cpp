@@ -245,10 +245,9 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
             }
         }
     } catch (Exception& exception) {
-        util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
+        log::exception(exception);
     } catch (...) {
-        util::log(IVW_CONTEXT_CUSTOM("PortInspector"), "Problem using port inspector",
-                  LogLevel::Error);
+        log::exception("Problem using port inspector");
     }
     return image;
 }

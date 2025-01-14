@@ -337,7 +337,7 @@ bool LightVolumeGL::lightSourceChanged() {
         case LightSourceType::SpotLight:
         case LightSourceType::Area:
         default:
-            throw Exception(IVW_CONTEXT, "unsupported light source '{}', expected '{}' or '{}'",
+            throw Exception(SourceContext{}, "unsupported light source '{}', expected '{}' or '{}'",
                             lightSource_.getData()->getLightSourceType(), LightSourceType::Point,
                             LightSourceType::Directional);
             break;

@@ -52,7 +52,7 @@ std::shared_ptr<VolumeGL> VolumePy2GLConverter::createFrom(
         auto src = volumeSrc->data().data(0);
         volumeDst->getTexture()->initialize(src);
     } else {
-        throw Exception("Unable to convert from VolumePy to VolumeGL", IVW_CONTEXT);
+        throw Exception("Unable to convert from VolumePy to VolumeGL");
     }
 
     return volumeDst;
@@ -76,7 +76,7 @@ void VolumePy2GLConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
         auto src = volumeSrc->data().data(0);
         volumeDst->getTexture()->upload(src);
     } else {
-        throw Exception("Unable to convert from VolumePy to VolumeGL", IVW_CONTEXT);
+        throw Exception("Unable to convert from VolumePy to VolumeGL");
     }
 }
 
@@ -96,7 +96,7 @@ std::shared_ptr<VolumePy> VolumeGL2PyConverter::createFrom(
         auto dst = volumeDst->data().mutable_data(0);
         volumeSrc->getTexture()->download(dst);
     } else {
-        throw Exception("Unable to convert from VolumeGL to VolumePy", IVW_CONTEXT);
+        throw Exception("Unable to convert from VolumeGL to VolumePy");
     }
 
     return volumeDst;
@@ -120,7 +120,7 @@ void VolumeGL2PyConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
         auto dst = volumeDst->data().mutable_data(0);
         volumeSrc->getTexture()->download(dst);
     } else {
-        throw Exception("Unable to convert from VolumeGL to VolumePy", IVW_CONTEXT);
+        throw Exception("Unable to convert from VolumeGL to VolumePy");
     }
 }
 

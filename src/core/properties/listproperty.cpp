@@ -157,9 +157,8 @@ void ListProperty::clear() {
 
 Property* ListProperty::constructProperty(size_t prefabIndex) {
     if (prefabIndex >= prefabs_.value.size()) {
-        throw RangeException("Invalid prefab index " + std::to_string(prefabIndex) + " (" +
-                                 std::to_string(prefabs_.value.size()) + " prefabs)",
-                             IVW_CONTEXT);
+        throw RangeException(SourceContext{}, "Invalid prefab index {} ({} prefabs)", prefabIndex,
+                             prefabs_.value.size());
     }
 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
@@ -213,7 +212,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
                            [&, id = property->getClassIdentifier()](auto& elem) {
                                return elem->getClassIdentifier() == id;
                            })) {
-        throw Exception(IVW_CONTEXT, "Unsupported property type, no prefab matching `{}`.",
+        throw Exception(SourceContext{}, "Unsupported property type, no prefab matching `{}`.",
                         property->getClassIdentifier());
     }
 

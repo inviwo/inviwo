@@ -83,7 +83,7 @@ Recorder::Recorder(const std::filesystem::path& filename, OutputFormat format, M
     /* Add the audio and video streams using the default format codecs
      * and initialize the codecs. */
     if (out.ctx->oformat->video_codec == AV_CODEC_ID_NONE) {
-        throw inviwo::Exception(IVW_CONTEXT, "No video codec");
+        throw inviwo::Exception(SourceContext{}, "No video codec");
     }
 
     worker = std::thread{[this]() {
@@ -130,8 +130,8 @@ void Recorder::queueFrame(const LayerRAM& layer) {
             if (static_cast<int>(layer.getDimensions().x) != width ||
                 static_cast<int>(layer.getDimensions().y) != height) {
                 throw inviwo::Exception(
-                    IVW_CONTEXT, "Video dimensions do not match, expected: {}x{} got: {}x{}", width,
-                    height, layer.getDimensions().x, layer.getDimensions().y);
+                    SourceContext{}, "Video dimensions do not match, expected: {}x{} got: {}x{}",
+                    width, height, layer.getDimensions().x, layer.getDimensions().y);
             }
 
             if (layer.getDataFormat()->getId() == DataFormatId::Vec4UInt8) {

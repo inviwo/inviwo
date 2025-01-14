@@ -312,16 +312,15 @@ void exposeProcessors(pybind11::module& m) {
                                    ->getDataWriterFactory()
                                    ->getWriterForTypeAndExtension<Layer>(filePath);
                  if (!writer) {
-                     throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"), "No writer for {}",
-                                     filePath);
+                     throw Exception(SourceContext{}, "No writer for {}", filePath);
                  }
 
                  if (auto layer = canvas->getVisibleLayer()) {
                      rendercontext::activateDefault();
                      writer->writeData(layer, filePath);
                  } else {
-                     throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"),
-                                     "No image in canvas {}", canvas->getIdentifier());
+                     throw Exception(SourceContext{}, "No image in canvas {}",
+                                     canvas->getIdentifier());
                  }
              })
 
@@ -331,8 +330,7 @@ void exposeProcessors(pybind11::module& m) {
                     ->getDataWriterFactory()
                     ->getWriterForTypeAndExtension<Layer>(filePath)};
             if (!writer) {
-                throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"), "No writer for {}",
-                                filePath);
+                throw Exception(SourceContext{}, "No writer for {}", filePath);
             }
 
             if (auto layer = canvas->getVisibleLayer()) {
@@ -346,8 +344,7 @@ void exposeProcessors(pybind11::module& m) {
                         writer->writeData(layerClone.get(), filePath);
                     });
             } else {
-                throw Exception(IVW_CONTEXT_CUSTOM("exposeProcessors"), "No image in canvas {}",
-                                canvas->getIdentifier());
+                throw Exception(SourceContext{}, "No image in canvas {}", canvas->getIdentifier());
             }
         });
 }

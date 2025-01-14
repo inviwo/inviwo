@@ -58,7 +58,7 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
     , help_{std::move(help)} {
 
     if (!identifier_.empty()) {
-        util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
+        util::validateIdentifier(identifier, "Property");
     }
 }
 
@@ -92,7 +92,7 @@ Property& Property::setIdentifier(std::string_view identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
 
-        util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
+        util::validateIdentifier(identifier, "Property");
 
         notifyObserversOnSetIdentifier(this, identifier_);
         notifyAboutChange();

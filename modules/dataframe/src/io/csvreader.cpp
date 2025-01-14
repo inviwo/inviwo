@@ -41,7 +41,7 @@
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral
 #include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
 #include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                             // for overloaded
 #include <inviwo/core/util/stringconversion.h>                          // for trim
 #include <inviwo/core/util/zip.h>                                       // for zipIterator, zipper
@@ -248,7 +248,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::filesystem::path& file
     file.seekg(0, std::ios::beg);
 
     if (len == std::streampos(0)) {
-        throw DataReaderException(IVW_CONTEXT, "Emtpy file: {}", fileName);
+        throw DataReaderException(SourceContext{}, "Emtpy file: {}", fileName);
     }
 
     return readData(file);
@@ -282,14 +282,14 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
                 break;
             } else {
                 const auto ref = refLine ? *refLine : startPart;
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("CSVReader"),
+                throw DataReaderException(SourceContext{},
                                           "Detected unmatched quote starting on line: {}", ref);
             }
         }
 
         if (expectedParts && index >= *expectedParts) {
             const auto ref = refLine ? *refLine : startPart;
-            throw DataReaderException(IVW_CONTEXT_CUSTOM("CSVReader"),
+            throw DataReaderException(SourceContext{},
                                       "Extra columns on line {}, expected {} found {}", ref,
                                       *expectedParts, index + 1);
         }
@@ -313,7 +313,7 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
 
     if (expectedParts && index < *expectedParts) {
         const auto ref = refLine ? *refLine : 0;
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("CSVReader"),
+        throw DataReaderException(SourceContext{},
                                   "Missing columns on line {}, expected {} found {}", ref,
                                   *expectedParts, index);
     }
@@ -495,8 +495,8 @@ std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
         if (str.empty()) {
             switch (emptyField) {
                 case CSVReader::EmptyField::Throw:
-                    throw DataReaderException(IVW_CONTEXT_CUSTOM("CSVReader"),
-                                              "Empty field on line {}, column {}", line, col);
+                    throw DataReaderException(SourceContext{}, "Empty field on line {}, column {}",
+                                              line, col);
                 case CSVReader::EmptyField::NanOrZero:
                     if constexpr (std::is_floating_point_v<T>) {
                         data.push_back(std::numeric_limits<T>::quiet_NaN());
@@ -514,8 +514,8 @@ std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
         } else if (auto val = util::toNumber<T>(str, cLocale)) {
             data.push_back(*val);
         } else {
-            throw DataReaderException(IVW_CONTEXT_CUSTOM("CSVReader"),
-                                      "Invalid format on line {}, column {}", line, col);
+            throw DataReaderException(SourceContext{}, "Invalid format on line {}, column {}", line,
+                                      col);
         }
     };
 }
@@ -668,7 +668,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
                 });
 
     if (rows.empty()) {
-        throw DataReaderException("No data", IVW_CONTEXT);
+        throw DataReaderException("No data");
     }
 
     // extract first row

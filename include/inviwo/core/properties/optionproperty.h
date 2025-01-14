@@ -379,8 +379,9 @@ protected:
     const OptionPropertyOption<T>& opt(size_t index) const {
         auto& options = opts();
         if (index >= options.size()) {
-            throw Exception{IVW_CONTEXT, "Index out of range (number of options: {}, index: {})",
-                            options.size(), index};
+            throw Exception{SourceContext{},
+                            "Index out of range (number of options: {}, index: {})", options.size(),
+                            index};
         }
         return options[index];
     }

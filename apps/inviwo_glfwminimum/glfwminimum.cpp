@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
 
     try {
         if (!workspace.empty()) {
-            inviwoApp.getWorkspaceManager()->load(workspace, [&](ExceptionContext ec) {
+            inviwoApp.getWorkspaceManager()->load(workspace, [&](SourceContext ec) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {

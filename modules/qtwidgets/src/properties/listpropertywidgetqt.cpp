@@ -33,7 +33,6 @@
 #include <inviwo/core/properties/property.h>                         // for Property
 #include <inviwo/core/util/exception.h>                              // for Exception
 #include <inviwo/core/util/rendercontext.h>                          // for RenderContext
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT
 #include <inviwo/core/util/zip.h>                                    // for enumerate, zipIterator
 #include <modules/qtwidgets/inviwoqtutils.h>                         // for toQString
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>  // for CompositePropertyWid...
@@ -61,7 +60,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     : CompositePropertyWidgetQt(property), listProperty_(property) {
 
     if (!listProperty_) {
-        throw Exception("ListPropertyWidgetQt got a null ListProperty", IVW_CONTEXT);
+        throw Exception("ListPropertyWidgetQt got a null ListProperty");
     }
 
     setShowIfEmpty(true);
@@ -69,7 +68,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
 
     auto headerlayout = dynamic_cast<QHBoxLayout*>(layout()->itemAt(0)->layout());
     if (!headerlayout) {
-        throw Exception("CompositePropertyWidget has no header layout.", IVW_CONTEXT);
+        throw Exception("CompositePropertyWidget has no header layout.");
     }
 
     // inject "add" button in the header of the composite property for adding list elements

@@ -42,7 +42,6 @@
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
 #include <inviwo/core/util/glmutils.h>                                  // for Matrix
 #include <inviwo/core/util/logcentral.h>                                // for log, LogAudience
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
 #include <inviwo/core/util/stdextensions.h>                             // for find_if
 #include <modules/base/algorithm/meshutils.h>                           // for forEachTriangle
 
@@ -90,16 +89,16 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
 
     if (pit == data->getBuffers().end()) {
-        throw DataWriterException("Error: could not find a position buffer", IVW_CONTEXT);
+        throw DataWriterException("Error: could not find a position buffer");
     }
 
     const auto posBuffer = pit->second;
     const auto posRam = posBuffer->getRepresentation<BufferRAM>();
     if (!posRam) {
-        throw DataWriterException("Error: could not find a position buffer ram", IVW_CONTEXT);
+        throw DataWriterException("Error: could not find a position buffer ram");
     }
     if (posRam->getDataFormat()->getComponents() != 3) {
-        throw DataWriterException("Error: Only 3 dimensional meshes are supported", IVW_CONTEXT);
+        throw DataWriterException("Error: Only 3 dimensional meshes are supported");
     }
 
     const auto model = data->getModelMatrix();

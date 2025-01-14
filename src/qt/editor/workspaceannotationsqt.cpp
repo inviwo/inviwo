@@ -54,7 +54,7 @@ struct NetworkShim {
 }  // namespace
 
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(InviwoApplication* app)
-    : WorkspaceAnnotations(app){};
+    : WorkspaceAnnotations(app) {};
 
 WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(
     const QImage& network, const std::vector<std::pair<std::string, QImage>>& canvasImages,
@@ -85,7 +85,7 @@ WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const std::filesystem::path& path
             ++processorCounts_[p.displayName];
         }
     } else {
-        throw Exception(IVW_CONTEXT, "Unable to open file {}", path);
+        throw Exception(SourceContext{}, "Unable to open file {}", path);
     }
 }
 

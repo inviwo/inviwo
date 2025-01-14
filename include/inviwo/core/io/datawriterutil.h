@@ -60,10 +60,9 @@ void saveData(const T& data, const std::filesystem::path& filePath, const FileEx
         writer->setOverwrite(overwrite);
         writer->writeData(&data, filePath);
     } else {
-        throw DataWriterException(
-            fmt::format("Could not find a writer for {} of the specified extension {}", filePath,
-                        extension.toString()),
-            IVW_CONTEXT_CUSTOM("datawriterutil"));
+        throw DataWriterException(SourceContext{},
+                                  "Could not find a writer for {} of the specified extension {}",
+                                  filePath, extension.toString());
     }
 }
 

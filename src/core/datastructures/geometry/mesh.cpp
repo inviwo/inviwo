@@ -109,7 +109,7 @@ void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer) {
     if (it == buffers_.end()) {
         buffers_.emplace_back(info, buffer);
     } else {
-        throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
+        throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
     }
 }
 
@@ -153,7 +153,8 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
                 return item.first.location == info.location;
             });
             if (it != buffers_.end()) {
-                throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
+                throw Exception(SourceContext{}, "Location '{}' already used in Mesh",
+                                info.location);
             }
         }
 
@@ -176,7 +177,8 @@ auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr
                 return item.first.location == info.location;
             });
             if (locit != buffers_.end()) {
-                throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
+                throw Exception(SourceContext{}, "Location '{}' already used in Mesh",
+                                info.location);
             }
         }
 
@@ -225,7 +227,7 @@ void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
 
 const BufferBase* Mesh::getBuffer(size_t idx) const {
     if (idx >= buffers_.size()) {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException("Index out of range");
     }
     return buffers_[idx].second.get();
 }
@@ -254,7 +256,7 @@ bool Mesh::hasBuffer(BufferType type) const { return findBuffer(type).first != n
 
 Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
     if (idx >= buffers_.size()) {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException("Index out of range");
     }
     return buffers_[idx].first;
 }
@@ -265,7 +267,7 @@ Mesh::BufferInfo Mesh::getBufferInfo(BufferBase* buffer) const {
     if (it != buffers_.end()) {
         return it->first;
     } else {
-        throw Exception("Buffer not found in Mesh", IVW_CONTEXT);
+        throw Exception("Buffer not found in Mesh");
     }
 }
 
@@ -275,12 +277,12 @@ void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
             return item.first.location == info.location;
         });
         if (&*locit != &buffers_[idx] && locit != buffers_.end()) {
-            throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
+            throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
         }
 
         buffers_[idx].first = info;
     } else {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException("Index out of range");
     }
 }
 
@@ -292,24 +294,24 @@ void Mesh::setBufferInfo(BufferBase* buffer, BufferInfo info) {
             return item.first.location == info.location;
         });
         if (locit != it && locit != buffers_.end()) {
-            throw Exception(IVW_CONTEXT, "Location '{}' already used in Mesh", info.location);
+            throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
         }
         it->first = info;
     } else {
-        throw Exception("Buffer not found in Mesh", IVW_CONTEXT);
+        throw Exception("Buffer not found in Mesh");
     }
 }
 
 const IndexBuffer* Mesh::getIndices(size_t idx) const {
     if (idx >= indices_.size()) {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException("Index out of range");
     }
     return indices_[idx].second.get();
 }
 
 BufferBase* Mesh::getBuffer(size_t idx) {
     if (idx >= buffers_.size()) {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException("Index out of range");
     }
     return buffers_[idx].second.get();
 }
@@ -326,7 +328,7 @@ BufferBase* Mesh::getBuffer(BufferType type) {
 
 IndexBuffer* Mesh::getIndices(size_t idx) {
     if (idx >= indices_.size()) {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException(SourceContext{}, "Index out of range");
     }
     return indices_[idx].second.get();
 }
@@ -335,7 +337,7 @@ Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 
 Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const {
     if (idx >= indices_.size()) {
-        throw RangeException("Index out of range", IVW_CONTEXT);
+        throw RangeException("Index out of range");
     }
     return indices_[idx].first;
 }
@@ -346,12 +348,12 @@ size_t Mesh::getNumberOfIndicies() const { return indices_.size(); }
 
 void Mesh::append(const Mesh& mesh) {
     if (buffers_.size() != mesh.buffers_.size()) {
-        throw Exception("Mismatched meshed, number of buffer does not match", IVW_CONTEXT);
+        throw Exception("Mismatched meshed, number of buffer does not match");
     }
     for (size_t i = 0; i < buffers_.size(); ++i) {
         if (buffers_[i].first != mesh.buffers_[i].first ||
             buffers_[i].second->getDataFormat() != mesh.buffers_[i].second->getDataFormat()) {
-            throw Exception("Mismatched meshed, buffer types does not match", IVW_CONTEXT);
+            throw Exception("Mismatched meshed, buffer types does not match");
         }
     }
     size_t size = buffers_[0].second->getSize();

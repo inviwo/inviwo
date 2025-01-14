@@ -41,7 +41,7 @@ void DataReader::addExtension(FileExtension ext) { extensions_.push_back(ext); }
 
 void DataReader::checkExists(const std::filesystem::path& path) const {
     if (!std::filesystem::is_regular_file(path)) {
-        throw DataReaderException(IVW_CONTEXT, "Could not find input file: {}", path);
+        throw DataReaderException(SourceContext{}, "Could not find input file: {}", path);
     }
 }
 
@@ -51,7 +51,7 @@ std::ifstream DataReader::open(const std::filesystem::path& path,
     if (auto file = std::ifstream(path, mode)) {
         return file;
     } else {
-        throw FileException(IVW_CONTEXT, "Could not open file: {}", path);
+        throw FileException(SourceContext{}, "Could not open file: {}", path);
     }
 }
 

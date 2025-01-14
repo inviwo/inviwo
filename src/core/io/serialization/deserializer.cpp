@@ -47,7 +47,7 @@ int getVersionAttribute(TiXmlElement* elem) {
         detail::fromStr(*ver, version);
         return version;
     } else {
-        throw AbortException("Missing version", IVW_CONTEXT_CUSTOM("Deserializer"));
+        throw AbortException("Missing version tag");
     }
 }
 
@@ -62,8 +62,8 @@ TiXmlElement* getRootElement(TiXmlDocument& doc, std::string_view rootElement) {
         return root;
     }
 
-    throw AbortException(IVW_CONTEXT_CUSTOM("Deserializer"),
-                         "Unable to find a root element, expected a '{}'", rootElement);
+    throw AbortException(SourceContext{}, "Unable to find a root element, expected a '{}'",
+                         rootElement);
 }
 
 }  // namespace
@@ -76,7 +76,7 @@ Deserializer::Deserializer(const std::filesystem::path& fileName, std::string_vi
         rootElement_ = getRootElement(*doc_, rootElement);
         version_ = getVersionAttribute(rootElement_);
     } catch (const TiXmlError& e) {
-        throw AbortException(e.what(), IVW_CONTEXT);
+        throw AbortException(e.what());
     }
 }
 
@@ -94,7 +94,7 @@ Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& re
         rootElement_ = getRootElement(*doc_, rootElement);
         version_ = getVersionAttribute(rootElement_);
     } catch (const TiXmlError& e) {
-        throw AbortException(e.what(), IVW_CONTEXT);
+        throw AbortException(e.what());
     }
 }
 
@@ -106,7 +106,7 @@ Deserializer::Deserializer(const std::pmr::string& content, const std::filesyste
         rootElement_ = getRootElement(*doc_, rootElement);
         version_ = getVersionAttribute(rootElement_);
     } catch (const TiXmlError& e) {
-        throw AbortException(e.what(), IVW_CONTEXT);
+        throw AbortException(e.what());
     }
 }
 
@@ -135,7 +135,7 @@ void Deserializer::deserialize(std::string_view key, std::filesystem::path& path
             }
         }
     } catch (...) {
-        handleError(IVW_CONTEXT);
+        handleError();
     }
 }
 
@@ -168,14 +168,14 @@ void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHand
 
 void Deserializer::convertVersion(VersionConverter* converter) { converter->convert(rootElement_); }
 
-void Deserializer::handleError(const ExceptionContext& context) {
+void Deserializer::handleError(const SourceContext& context) {
     if (exceptionHandler_) {
         exceptionHandler_(context);
     } else {  // If no error handler found:
         try {
             throw;
         } catch (SerializationException& e) {
-            util::log(getLogger(), e.getContext(), e.getMessage(), LogLevel::Warn);
+            log::report(*this, LogLevel::Warn, e.getContext(), e.getMessage());
         }
     }
 }

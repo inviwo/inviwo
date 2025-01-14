@@ -36,7 +36,7 @@
 #include <inviwo/core/datastructures/unitsystem.h>                      // for Unit
 #include <inviwo/core/util/exception.h>                                 // for Exception, RangeE...
 #include <inviwo/core/util/glmvec.h>                                    // for dvec2
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stdextensions.h>                             // for transform
 #include <inviwo/core/util/zip.h>
 
@@ -178,7 +178,7 @@ void CategoricalColumn::set(size_t idx, std::string_view str) {
 
 void CategoricalColumn::set(size_t idx, std::uint32_t id) {
     if (id >= lookUpTable_.size()) {
-        throw RangeException(IVW_CONTEXT, "Invalid categorical index: {}", id);
+        throw RangeException(SourceContext{}, "Invalid categorical index: {}", id);
     }
     buffer_->getEditableRAMRepresentation()->set(idx, id);
 }
@@ -220,7 +220,7 @@ void CategoricalColumn::append(const Column& col) {
         }
 
     } else {
-        throw Exception("data formats of columns do not match", IVW_CONTEXT);
+        throw Exception("data formats of columns do not match");
     }
 }
 
@@ -266,7 +266,7 @@ std::string_view enumToStr(ColumnType type) {
         case ColumnType::Categorical:
             return "Categorical";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid ColumnType enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid ColumnType enum value '{}'",
                     static_cast<int>(type));
 }
 std::ostream& operator<<(std::ostream& ss, ColumnType type) { return ss << enumToStr(type); }

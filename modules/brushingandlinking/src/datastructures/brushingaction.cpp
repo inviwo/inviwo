@@ -31,7 +31,7 @@
 
 #include <inviwo/core/util/exception.h>      // for Exception
 #include <inviwo/core/util/ostreamjoiner.h>  // for ostream_joiner, make_ostream_joiner
-#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>  // for SourceContext
 
 #include <algorithm>    // for copy, find_if
 #include <iostream>     // for char_traits, operator<<, operator>>
@@ -70,7 +70,7 @@ std::string_view enumToStr(BrushingAction action) {
         case BrushingAction::Highlight:
             return "Highlight";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid BrushingAction enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid BrushingAction enum value '{}'",
                     static_cast<int>(action));
 }
 
@@ -83,8 +83,8 @@ std::string_view enumToStr(BrushingModification bm) {
         case BrushingModification::Highlighted:
             return "Highlighted";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid BrushingModification enum value '{}'", static_cast<int>(bm));
+    throw Exception(SourceContext{}, "Found invalid BrushingModification enum value '{}'",
+                    static_cast<int>(bm));
 }
 
 std::ostream& operator<<(std::ostream& ss, BrushingAction action) {

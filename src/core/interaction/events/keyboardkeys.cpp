@@ -51,7 +51,7 @@ std::string_view enumToStr(KeyModifier m) {
         case KeyModifier::Meta:
             return "Meta";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid KeyModifier enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid KeyModifier enum value '{}'",
                     static_cast<int>(m));
 }
 std::string_view enumToStr(KeyState s) {
@@ -61,8 +61,7 @@ std::string_view enumToStr(KeyState s) {
         case KeyState::Release:
             return "Release";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid KeyState enum value '{}'",
-                    static_cast<int>(s));
+    throw Exception(SourceContext{}, "Found invalid KeyState enum value '{}'", static_cast<int>(s));
 }
 std::string_view enumToStr(IvwKey k) {
     switch (k) {
@@ -355,8 +354,7 @@ std::string_view enumToStr(IvwKey k) {
         case IvwKey::RightMeta:
             return "RightMeta";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"), "Found invalid IvwKey enum value '{}'",
-                    static_cast<int>(k));
+    throw Exception(SourceContext{}, "Found invalid IvwKey enum value '{}'", static_cast<int>(k));
 }
 
 std::ostream& operator<<(std::ostream& ss, KeyModifier m) { return ss << enumToStr(m); }

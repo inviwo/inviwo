@@ -43,7 +43,6 @@
 #include <inviwo/core/util/glmutils.h>                                  // for same_extent
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, vec2, vec4
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral, LogWa...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT_CUSTOM
 
 #include <algorithm>      // for transform, find_if
 #include <cstddef>        // for size_t
@@ -310,14 +309,12 @@ void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
                        [&](uint32_t p) { return positions[p]; });
 
         std::vector<vec4> uv4;
-        std::transform(loop.begin(), loop.end(), std::back_inserter(uv4), [&](uint32_t p) {
-            return trans * vec4{positions[p], 1.0f};
-        });
+        std::transform(loop.begin(), loop.end(), std::back_inserter(uv4),
+                       [&](uint32_t p) { return trans * vec4{positions[p], 1.0f}; });
 
         std::vector<vec2> uv;
-        std::transform(loop.begin(), loop.end(), std::back_inserter(uv), [&](uint32_t p) {
-            return vec2{trans * vec4{positions[p], 1.0f}};
-        });
+        std::transform(loop.begin(), loop.end(), std::back_inserter(uv),
+                       [&](uint32_t p) { return vec2{trans * vec4{positions[p], 1.0f}}; });
 
         const auto uvCenter = polygonCentroid(uv);
         const auto center = vec3{glm::inverse(trans) * vec4{uvCenter, 0.0f, 1.0f}};
@@ -460,8 +457,7 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
             }
 
         } else {
-            throw Exception("Cannot clip, need line connectivity Strip or None",
-                            IVW_CONTEXT_CUSTOM("MeshClipping"));
+            throw Exception("Cannot clip, need line connectivity Strip or None");
         }
     } else if (meshInfo.dt == DrawType::Triangles) {
         if (indices.size() < 3) return newEdges;
@@ -485,8 +481,7 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
                 if (newEdge) newEdges.push_back(*newEdge);
             }
         } else {
-            throw Exception("Cannot clip, need triangle connectivity Strip or None",
-                            IVW_CONTEXT_CUSTOM("MeshClipping"));
+            throw Exception("Cannot clip, need triangle connectivity Strip or None");
         }
     }
     return newEdges;
@@ -583,8 +578,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     };
 
     if (!posBuffer) {
-        throw Exception("Unsupported mesh type, vec3 position buffer not found",
-                        IVW_CONTEXT_CUSTOM("MeshClipping"));
+        throw Exception("Unsupported mesh type, vec3 position buffer not found");
     }
 
     const auto& positions = posBuffer->getDataContainer();

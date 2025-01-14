@@ -33,7 +33,7 @@
 #include <inviwo/core/util/exception.h>                            // for Exception
 #include <inviwo/core/util/glmmat.h>                               // for mat4
 #include <inviwo/core/util/glmvec.h>                               // for ivec2, vec2, size2_t
-#include <inviwo/core/util/sourcecontext.h>                        // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                        // for SourceContext
 #include <inviwo/core/util/zip.h>                                  // for proxy, zip, zipIterator
 #include <modules/fontrendering/datastructures/texatlasentry.h>    // for TexAtlasEntry, TexAtla...
 #include <modules/fontrendering/datastructures/textboundingbox.h>  // for TextBoundingBox
@@ -100,7 +100,7 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEnt
         });
 
     if (minArea > static_cast<double>(maxTexSize_ * maxTexSize_)) {
-        throw Exception("Max size for texture atlas exceeded", IVW_CONTEXT);
+        throw Exception("Max size for texture atlas exceeded");
     }
 
     std::vector<size_t> indices(bboxes.size());
@@ -173,7 +173,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
             lineHeights.push_back(extent.y);
             conservativeHeight += extent.y;
             if (conservativeHeight > maxTexSize_) {
-                throw Exception("Max size for texture atlas exceeded", IVW_CONTEXT);
+                throw Exception("Max size for texture atlas exceeded");
             }
         }
     }
@@ -192,7 +192,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
     }(32);
 
     if (height > maxTexSize_) {
-        throw Exception("Max size for texture atlas exceeded", IVW_CONTEXT);
+        throw Exception("Max size for texture atlas exceeded");
     }
     return {width, height};
 }

@@ -176,8 +176,7 @@ void exposeImage(py::module& m) {
                                    ->getDataWriterFactory()
                                    ->getWriterForTypeAndExtension<Layer>(filepath);
                  if (!writer) {
-                     throw Exception(IVW_CONTEXT_CUSTOM("exposeImage"), "No writer for {}",
-                                     filepath);
+                     throw Exception(SourceContext{}, "No writer for {}", filepath);
                  }
                  writer->writeData(&self, filepath);
              })
@@ -205,8 +204,7 @@ void exposeImage(py::module& m) {
                 if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
                     memcpy(rep->getData(), data.data(0), data.nbytes());
                 } else {
-                    throw Exception("Unable to convert from array to LayerRAM",
-                                    IVW_CONTEXT_CUSTOM("PyImage"));
+                    throw Exception("Unable to convert from array to LayerRAM");
                 }
             })
         .def("__repr__", [](const Layer& self) {

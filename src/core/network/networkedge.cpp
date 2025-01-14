@@ -60,13 +60,13 @@ PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
     if (!outport && !inport) {
         const auto message = fmt::format(err, srcPath, dstPath, "Outport and Inport not found.");
-        throw SerializationException(message, IVW_CONTEXT, "Connection");
+        throw SerializationException(message, SourceContext{}, "Connection");
     } else if (!outport) {
         const auto message = fmt::format(err, srcPath, dstPath, "Outport not found.");
-        throw SerializationException(message, IVW_CONTEXT, "Connection");
+        throw SerializationException(message, SourceContext{}, "Connection");
     } else if (!inport) {
         const auto message = fmt::format(err, srcPath, dstPath, "Inport not found.");
-        throw SerializationException(message, IVW_CONTEXT, "Connection");
+        throw SerializationException(message, SourceContext{}, "Connection");
     }
 
     return {outport, inport};
@@ -81,14 +81,14 @@ PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
     if (!sprop && !dprop) {
         const auto message =
             fmt::format(err, srcPath, dstPath, "Source and destination properties not found.");
-        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
+        throw SerializationException(message, SourceContext{}, "PropertyLink");
     } else if (!sprop) {
         const auto message = fmt::format(err, srcPath, dstPath, "Source property not found.");
-        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
+        throw SerializationException(message, SourceContext{}, "PropertyLink");
 
     } else if (!dprop) {
         const auto message = fmt::format(err, srcPath, dstPath, "Destination property not found.");
-        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
+        throw SerializationException(message, SourceContext{}, "PropertyLink");
     }
 
     return {sprop, dprop};

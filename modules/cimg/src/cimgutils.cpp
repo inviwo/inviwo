@@ -49,7 +49,7 @@
 #include <inviwo/core/util/glmvec.h>                                    // for uvec2, size3_t
 #include <inviwo/core/util/raiiutils.h>                                 // for OnScopeExit, OnSc...
 #include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT, IVW_...
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                          // for toLower
 #include <modules/cimg/cimgsavebuffer.h>                                // for saveCImgToBuffer
 
@@ -200,8 +200,7 @@ std::shared_ptr<LayerRAM> loadLayer(const std::filesystem::path& filePath) {
             const auto imageFormat = DataFormatBase::get(scalarFormat->getNumericType(), components,
                                                          scalarFormat->getPrecision());
             if (!imageFormat) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::loadLayer"),
-                                          "could not find proper data type");
+                throw DataReaderException("could not find proper data type");
             }
 
             return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
@@ -234,12 +233,10 @@ std::shared_ptr<LayerRAM> loadLayerTiff(const std::filesystem::path& filePath) {
             }
 
             if (size2_t{header.dimensions} != dimensions) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::loadLayerTiff"),
-                                          "Image size missmatch");
+                throw DataReaderException("Image size missmatch");
             }
             if (util::extent_v<T> != components) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::loadLayerTiff"),
-                                          "Image component missmatch");
+                throw DataReaderException("Image component missmatch");
             }
 
             img._is_shared = true;  // Steal the buffer from img
@@ -264,8 +261,7 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath) {
             const auto imageFormat = DataFormatBase::get(scalarFormat->getNumericType(), components,
                                                          scalarFormat->getPrecision());
             if (!imageFormat) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::loadVolume"),
-                                          "could not find proper data type");
+                throw DataReaderException("could not find proper data type");
             }
 
             return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>,
@@ -289,12 +285,10 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath,
             img.mirror("y");  // Image is up-side-down
 
             if (dims != dimensions) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
-                                          "Volume size missmatch");
+                throw DataReaderException("Volume size missmatch");
             }
             if (util::extent_v<T> != components) {
-                throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
-                                          "Volume component missmatch");
+                throw DataReaderException("Volume component missmatch");
             }
 
             img._is_shared = true;  // Steal the buffer from img
@@ -312,12 +306,10 @@ void updateVolume(VolumeRAM& volume, const std::filesystem::path& filePath) {
         img.mirror("y");  // Image is up-side-down
 
         if (vr->getDimensions() != dimensions) {
-            throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
-                                      "Volume size missmatch");
+            throw DataReaderException("Volume size missmatch");
         }
         if (util::extent_v<T> != components) {
-            throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::updateVolume"),
-                                      "Volume component missmatch");
+            throw DataReaderException("Volume component missmatch");
         }
         auto* dst = static_cast<Scalar*>(vr->getData());
         std::copy(img.data(), img.data() + glm::compMul(dimensions) * components, dst);
@@ -385,8 +377,8 @@ void saveLayer(const LayerRAM& layer, const std::filesystem::path& filePath) {
         try {
             img.save(filePath.string().c_str());
         } catch (cimg_library::CImgIOException& e) {
-            throw DataWriterException(IVW_CONTEXT_CUSTOM("cimgutil::saveLayer"),
-                                      "Failed to save image to: {} Reason: {}", filePath, e.what());
+            throw DataWriterException(SourceContext{}, "Failed to save image to: {} Reason: {}",
+                                      filePath, e.what());
         }
     });
 }
@@ -397,9 +389,8 @@ void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst, std::stri
         try {
             cimgutil::saveCImgToBuffer(img, extension, dst);
         } catch (cimg_library::CImgIOException& e) {
-            throw DataWriterException(
-                IVW_CONTEXT_CUSTOM("cimgutil::saveLayer"),
-                "Failed to save image to buffer. Reason: " + std::string(e.what()));
+            throw DataWriterException(SourceContext{}, "Failed to save image to buffer. Reason: {}",
+                                      e.what());
         }
     });
 }
@@ -508,8 +499,7 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     });
 
     if (!tif) {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"),
-                                  "Error could not open input file: {}", filename);
+        throw DataReaderException(SourceContext{}, "Error could not open input file: {}", filename);
     }
     TIFFSetDirectory(tif, 0);
 
@@ -563,8 +553,7 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
         case SAMPLEFORMAT_COMPLEXIEEEFP:
             [[fallthrough]];
         case SAMPLEFORMAT_COMPLEXINT:
-            throw DataReaderException("Unsupported TIFF format",
-                                      IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
+            throw DataReaderException("Unsupported TIFF format");
             break;
         default:
             numericType = NumericType::UnsignedInteger;
@@ -581,15 +570,14 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     } else if (samplesPerPixel == 4) {
         swizzleMask = swizzlemasks::rgba;
     } else {
-        throw DataReaderException("Unsupported TIFF format with more than 4 channels",
-                                  IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
+        throw DataReaderException("Unsupported TIFF format with more than 4 channels");
     }
 
     auto df = DataFormatBase::get(numericType, samplesPerPixel, bitsPerSample);
 
     return {df, size3_t{x, y, z}, res, resolutionUnit, swizzleMask};
 #else
-    throw Exception("TIFF not available", IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
+    throw Exception("TIFF not available");
     return {};
 #endif
 }

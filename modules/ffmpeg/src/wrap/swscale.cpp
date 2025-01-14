@@ -43,7 +43,7 @@ SwScale::SwScale(int srcW, int srcH, enum AVPixelFormat srcFormat, int dstW, int
                          param)} {
 
     if (!ctx) {
-        throw inviwo::Exception(IVW_CONTEXT, "Could not initialize the scale context");
+        throw inviwo::Exception("Could not initialize the scale context");
     }
 }
 

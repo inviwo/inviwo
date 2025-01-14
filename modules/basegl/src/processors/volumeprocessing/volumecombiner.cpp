@@ -58,7 +58,7 @@
 #include <inviwo/core/util/exception.h>                                 // for Exception
 #include <inviwo/core/util/glmvec.h>                                    // for dvec2, vec4, size3_t
 #include <inviwo/core/util/shuntingyard.h>                              // for Calculator
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/statecoordinator.h>                          // for StateCoordinator
 #include <inviwo/core/util/staticstring.h>                              // for operator+
 #include <inviwo/core/util/stringconversion.h>                          // for toString
@@ -319,7 +319,7 @@ void VolumeCombiner::process() {
         } catch (Exception& e) {
             valid_ = false;
             isReady_.update();
-            throw Exception(e.getMessage() + ": " + eqn_.get(), IVW_CONTEXT);
+            throw Exception(SourceContext{}, "{}: {}", e.getMessage(), eqn_.get());
         }
     }
 

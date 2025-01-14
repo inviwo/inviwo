@@ -88,8 +88,8 @@ constexpr std::string_view enumToStr(ProcessorStatus::Status s) {
         case Error:
             return "Error";
     }
-    throw Exception(IVW_CONTEXT_CUSTOM("enumToStr"),
-                    "Found invalid ProcessorStatus::Status enum value '{}'", static_cast<int>(s));
+    throw Exception(SourceContext{}, "Found invalid ProcessorStatus::Status enum value '{}'",
+                    static_cast<int>(s));
 }
 
 constexpr std::string_view ProcessorStatus::str() const { return enumToStr(status_); }

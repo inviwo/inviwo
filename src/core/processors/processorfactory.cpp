@@ -75,10 +75,10 @@ bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
 }
 
 std::unique_ptr<Processor> ProcessorFactory::create(std::string_view, InviwoApplication*) const {
-    throw Exception(IVW_CONTEXT, "Processors can only be created using createShared");
+    throw Exception("Processors can only be created using createShared");
 }
 std::unique_ptr<Processor> ProcessorFactory::create(std::string_view) const {
-    throw Exception(IVW_CONTEXT, "Processors can only be created using createShared");
+    throw Exception("Processors can only be created using createShared");
 }
 
 std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key) const {

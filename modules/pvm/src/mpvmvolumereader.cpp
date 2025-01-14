@@ -43,7 +43,7 @@
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for size3_t
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                          // for replaceInString
 #include <modules/pvm/pvmvolumereader.h>                                // for PVMVolumeReader
 
@@ -85,11 +85,11 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     }
 
     if (files.empty()) {
-        throw DataReaderException(IVW_CONTEXT, "Error: No PVM files found in {}", filePath);
+        throw DataReaderException(SourceContext{}, "Error: No PVM files found in {}", filePath);
     }
     if (files.size() > 4) {
-        throw DataReaderException(IVW_CONTEXT, "Error: Maximum 4 pvm files are supported, file: {}",
-                                  filePath);
+        throw DataReaderException(SourceContext{},
+                                  "Error: Maximum 4 pvm files are supported, file: {}", filePath);
     }
 
     // Read all pvm volumes
@@ -104,7 +104,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     }
 
     if (volumes.empty()) {
-        throw DataReaderException(IVW_CONTEXT, "No PVM volumes could be read from file: {}",
+        throw DataReaderException(SourceContext{}, "No PVM volumes could be read from file: {}",
                                   filePath);
     }
     if (volumes.size() == 1) {

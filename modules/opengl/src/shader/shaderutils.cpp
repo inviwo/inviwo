@@ -49,7 +49,7 @@
 #include <inviwo/core/properties/volumeindicatorproperty.h>   // for VolumeIndicatorProperty
 #include <inviwo/core/util/formats.h>                         // for DataFormatBase, NumericType
 #include <inviwo/core/util/glmvec.h>                          // for vec4
-#include <inviwo/core/util/sourcecontext.h>                   // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                   // for SourceContext
 #include <inviwo/core/util/stringconversion.h>                // for StrBuffer, splitStringView
 #include <modules/opengl/inviwoopengl.h>                      // for LGL_ERROR
 #include <modules/opengl/glformats.h>
@@ -744,9 +744,8 @@ std::shared_ptr<const ShaderResource> findShaderResource(std::string_view fileNa
     auto resource = ShaderManager::getPtr()->getShaderResource(fileName);
     if (!resource) {
         throw OpenGLException(
-            fmt::format("Shader file: '{}' not found in shader search paths or shader resources.",
-                        fileName),
-            IVW_CONTEXT_CUSTOM("ShaderUtils"));
+            SourceContext{},
+            "Shader file: '{}' not found in shader search paths or shader resources.", fileName);
     }
     return resource;
 }

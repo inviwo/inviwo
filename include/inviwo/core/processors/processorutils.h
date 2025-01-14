@@ -155,12 +155,11 @@ T& trySetProperty(Processor* proc, std::string_view identifier, V&& val, bool re
             tp->set(std::forward<V>(val));
             return *tp;
         } else {
-            throw Exception(IVW_CONTEXT_CUSTOM("util::trySetProperty"),
-                            "Property '{}' not of type '{}'", identifier, typeid(T).name());
+            throw Exception(SourceContext{}, "Property '{}' not of type '{}'", identifier,
+                            typeid(T).name());
         }
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("util::trySetProperty"), "Could not find property: '{}'",
-                        identifier);
+        throw Exception(SourceContext{}, "Could not find property: '{}'", identifier);
     }
 }
 

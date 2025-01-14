@@ -31,7 +31,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
 #include <inviwo/core/util/exception.h>                        // for Exception
-#include <inviwo/core/util/sourcecontext.h>                    // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
 #include <modules/userinterfacegl/glui/widgetfactory.h>        // for WidgetFactory
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>  // for WidgetFactoryObject
 #include <modules/userinterfacegl/userinterfaceglmodule.h>     // for UserInterfaceGLModule
@@ -49,8 +49,7 @@ WidgetSupplier::WidgetSupplier(InviwoApplication* app)
                 return *uiGLModule;
             }
         }
-        throw Exception("Was not able to find the User Interface GL module",
-                        IVW_CONTEXT_CUSTOM("UserInterfaceGLModule"));
+        throw Exception("Was not able to find the User Interface GL module");
     }()} {}
 
 WidgetSupplier::~WidgetSupplier() { unregisterAll(); }

@@ -37,7 +37,6 @@
 #include <inviwo/core/util/glmmat.h>                      // for mat4
 #include <inviwo/core/util/glmvec.h>                      // for vec3, size3_t, vec4, dvec2
 #include <inviwo/core/util/indexmapper.h>                 // for IndexMapper, IndexMapper3D
-#include <inviwo/core/util/sourcecontext.h>               // for IVW_CONTEXT_CUSTOM
 #include <inviwo/core/util/volumeramutils.h>              // for forEachVoxelParallel
 #include <inviwo/core/util/zip.h>                         // for zip, zipper
 
@@ -151,21 +150,18 @@ std::shared_ptr<Volume> voronoiSegmentation(
     const std::optional<std::vector<float>>& weights) {
 
     if (seedPointsWithIndices.size() == 0) {
-        throw Exception("No seed points, cannot create volume voronoi segmentation",
-                        IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
+        throw Exception("No seed points, cannot create volume voronoi segmentation");
     }
 
     if (weights.has_value() && weights.value().size() != seedPointsWithIndices.size()) {
         throw Exception(
             "Cannot use weighted voronoi when dimensions do not match (weights and seed "
-            "positions)",
-            IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
+            "positions)");
     }
 
     if (wrapping[0] == Wrapping::Mirror || wrapping[1] == Wrapping::Mirror ||
         wrapping[2] == Wrapping::Mirror) {
-        throw Exception("Mirror Wrapping is not supported",
-                        IVW_CONTEXT_CUSTOM("VoronoiSegmentation"));
+        throw Exception("Mirror Wrapping is not supported");
     }
 
     auto voronoiVolumeRep = std::make_shared<VolumeRAMPrecision<unsigned short>>(volumeDimensions);
@@ -182,8 +178,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
     voronoiVolume->dataMap.valueRange = voronoiVolume->dataMap.dataRange;
 
     if (itMax->first > std::numeric_limits<unsigned short>::max()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("VoronoiSegmentation"),
-                        "Seed point index greater than {} is not supported",
+        throw Exception(SourceContext{}, "Seed point index greater than {} is not supported",
                         std::numeric_limits<unsigned short>::max());
     }
 

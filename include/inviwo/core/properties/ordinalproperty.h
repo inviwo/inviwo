@@ -455,7 +455,7 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
     , maxConstraint_{"maxConstraint", maxValue.second} {
 
     if (!validRange(minValue_, maxValue_) || value_ != clamp(value_)) {
-        throw Exception{IVW_CONTEXT,
+        throw Exception{SourceContext{},
                         "Invalid range ({} <= {} <= {}) given for \"{}\" ({}Property, {})",
                         minValue_.value,
                         value_.value,
@@ -579,7 +579,7 @@ void OrdinalProperty<T>::set(component_type val, size_t i, size_t j) {
 template <typename T>
 void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, const T& increment) {
     if (!validRange(minVal, maxVal)) {
-        throw Exception{IVW_CONTEXT, "Invalid range given for \"{}\" ({}Property, {})",
+        throw Exception{SourceContext{}, "Invalid range given for \"{}\" ({}Property, {})",
                         this->getDisplayName(), Defaultvalues<T>::getName(), this->getPath()};
     }
 

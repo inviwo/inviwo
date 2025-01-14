@@ -30,7 +30,6 @@
 #include <modules/opengl/texture/textureunit.h>
 
 #include <inviwo/core/util/assertion.h>      // for IVW_ASSERT
-#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT
 #include <modules/opengl/openglexception.h>  // for OpenGLException
 
 #include <algorithm>    // for max
@@ -55,7 +54,7 @@ TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
         }
     }
 
-    throw OpenGLException("Exceeding number of available texture units.", IVW_CONTEXT);
+    throw OpenGLException("Exceeding number of available texture units.");
 }
 
 TextureUnit::TextureUnit(TextureUnit&& rhs) noexcept

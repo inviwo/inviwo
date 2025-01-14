@@ -155,7 +155,7 @@ void FrameBufferObject::registerAttachment(GLenum attachmentID, GLuint texId) {
     } else {
         const auto num = enumToNumber(attachmentID);
         if (num >= maxColorAttachments()) {
-            throw OpenGLException(IVW_CONTEXT, "Invalid attachment id: {}", attachmentID);
+            throw OpenGLException(SourceContext{}, "Invalid attachment id: {}", attachmentID);
         }
         attachedColorIds_[num] = texId;
     }
@@ -168,7 +168,7 @@ void FrameBufferObject::deregisterAttachment(GLenum attachmentID) {
 GLenum FrameBufferObject::firstFreeAttachmentID() const {
     const auto it = std::find(attachedColorIds_.begin(), attachedColorIds_.end(), GLenum{0});
     if (it == attachedColorIds_.end()) {
-        throw OpenGLException("Maximum number of color attachments reached.", IVW_CONTEXT);
+        throw OpenGLException("Maximum number of color attachments reached.");
     }
     return numberToEnum(static_cast<GLuint>(std::distance(attachedColorIds_.begin(), it)));
 }

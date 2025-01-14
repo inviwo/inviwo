@@ -121,10 +121,10 @@ void Buffer<T, Target>::append(const Buffer<T, Target>& buffer) {
 template <typename T, BufferTarget Target>
 void Buffer<T, Target>::append(const BufferBase& buffer) {
     if (buffer.getDataFormat() != DataFormat<T>::get()) {
-        throw Exception("Mismatched buffers: types does not match", IVW_CONTEXT);
+        throw Exception("Mismatched buffers: types does not match");
     }
     if (buffer.getBufferTarget() != Target) {
-        throw Exception("Mismatched buffers: Targets does not match", IVW_CONTEXT);
+        throw Exception("Mismatched buffers: Targets does not match");
     }
     append(static_cast<const Buffer<T, Target>&>(buffer));
 }

@@ -88,14 +88,14 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
             }
         });
 };
-}
+}  // namespace
 
 void VolumeVoronoiSegmentation::process() {
     auto calc = [dataFrame = dataFrame_.getData(), volume = volume_.getData(), iCol = iCol_.get(),
                  xCol = xCol_.get(), yCol = yCol_.get(), zCol = zCol_.get(), wCol = wCol_.get(),
                  weighted = weighted_.get(), offset = indexOffset_.get()]() {
         if (iCol < 0 || static_cast<size_t>(iCol) >= dataFrame->getNumberOfColumns()) {
-            throw Exception("Missing column", IVW_CONTEXT_CUSTOM("VolumeVoronoiSegmentation"));
+            throw Exception("Missing column");
         }
 
         const auto nrows = dataFrame->getIndexColumn()->getSize();
@@ -107,7 +107,7 @@ void VolumeVoronoiSegmentation::process() {
 
         const auto setColumnDataAsFloats = [&](int column, int idx) {
             if (column < 0 || static_cast<size_t>(column) >= dataFrame->getNumberOfColumns()) {
-                throw Exception("Missing column", IVW_CONTEXT_CUSTOM("VolumeVoronoiSegmentation"));
+                throw Exception("Missing column");
             }
             copyColumn(
                 *dataFrame->getColumn(column), seedPointsWithIndices,

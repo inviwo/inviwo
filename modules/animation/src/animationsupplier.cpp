@@ -31,7 +31,6 @@
 
 #include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
 #include <inviwo/core/util/exception.h>                              // for Exception
-#include <inviwo/core/util/sourcecontext.h>                          // for IVW_CONTEXT_CUSTOM
 #include <modules/animation/animationmanager.h>                      // for AnimationManager
 #include <modules/animation/animationmodule.h>                       // for AnimationModule
 #include <modules/animation/factories/interpolationfactory.h>        // for InterpolationFactory
@@ -52,8 +51,7 @@ AnimationManager& getAnimationManager(InviwoApplication* app) {
             return animationmodule->getAnimationManager();
         }
     }
-    throw Exception("Was not able to find the animation manager",
-                    IVW_CONTEXT_CUSTOM("AnimationSupplier"));
+    throw Exception("Was not able to find the animation manager");
 }
 
 AnimationSupplier::AnimationSupplier(AnimationManager& manager) : manager_(manager) {}

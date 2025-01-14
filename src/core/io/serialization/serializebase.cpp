@@ -140,12 +140,11 @@ void fromStrInternal(std::string_view value, T& dest) {
                 } else if (value == "-nan" || value == "-nan(ind)") {
                     dest = -std::numeric_limits<T>::quiet_NaN();
                 } else {
-                    throw SerializationException(IVW_CONTEXT_CUSTOM("SerializationBase"),
+                    throw SerializationException(SourceContext{},
                                                  "Error parsing floating point number ({})", value);
                 }
             } else {
-                throw SerializationException(IVW_CONTEXT_CUSTOM("SerializationBase"),
-                                             "Error parsing number ({})", value);
+                throw SerializationException(SourceContext{}, "Error parsing number ({})", value);
             }
         }
     } else if constexpr (std::is_same_v<bool, T>) {
@@ -156,8 +155,8 @@ void fromStrInternal(std::string_view value, T& dest) {
         } else if (value == falseVal) {
             dest = false;
         } else {
-            throw SerializationException(IVW_CONTEXT_CUSTOM("SerializationBase"),
-                                         "Error parsing boolean value ({})", value);
+            throw SerializationException(SourceContext{}, "Error parsing boolean value ({})",
+                                         value);
         }
     } else {
         std::istringstream stream{std::string{value}};

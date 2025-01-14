@@ -41,7 +41,7 @@
 #include <inviwo/core/util/glmmat.h>                                    // for mat3
 #include <inviwo/core/util/glmvec.h>                                    // for size3_t, vec3
 #include <inviwo/core/util/safecstr.h>                                  // for SafeCStr
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
+#include <inviwo/core/util/sourcecontext.h>                             // for SourceContext
 
 #include <cstring>        // for strncpy, memcpy
 #include <memory>         // for allocator, unique...
@@ -89,7 +89,8 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
 #include <warn/pop>
 
     if (components == 0) {
-        throw DataWriterException(IVW_CONTEXT, "Error: Output format {} not support by PVM writer",
+        throw DataWriterException(SourceContext{},
+                                  "Error: Output format {} not support by PVM writer",
                                   format->getString());
     }
 

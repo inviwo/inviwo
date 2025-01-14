@@ -32,13 +32,13 @@
 
 namespace inviwo {
 
-SerializationException::SerializationException(std::string_view message, ExceptionContext context,
+SerializationException::SerializationException(std::string_view message, SourceContext context,
                                                std::string_view key, std::string_view type,
                                                std::string_view id, TiXmlElement* node)
     : Exception{message, context}, data_{.key{key}, .type{type}, .id{id}, .nd{node}} {}
 
 SerializationException::SerializationException(std::string_view format, fmt::format_args&& args,
-                                               ExceptionContext context)
+                                               SourceContext context)
     : Exception(format, std::move(args), context), data_{} {}
 
 const std::string& SerializationException::getKey() const noexcept { return data_.key; }

@@ -128,7 +128,7 @@ private:
 template <typename T>
 std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string& name) {
     if (hasMetaData(name)) {
-        throw Exception("Meta data with name " + name + " already exists", IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Meta data with name {} already exists", name);
     }
     auto md = std::make_shared<Buffer<T>>();
     metaData_[name] = md;
@@ -139,15 +139,14 @@ template <typename T>
 const std::vector<T>& IntegralLine::getMetaData(const std::string& name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IVW_CONTEXT);
+        throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
     auto askedDF = DataFormat<T>::get();
     auto isDF = it->second->getDataFormat();
     if (isDF != askedDF) {
-        std::ostringstream oss;
-        oss << "Incorrect dataformat for meta data " << name << " asking for "
-            << askedDF->getString() << " but is" << isDF->getString();
-        throw Exception(oss.str(), IVW_CONTEXT);
+        throw Exception(SourceContext{},
+                        "Incorrect dataformat for meta data {} asking for {} but is {}", name,
+                        askedDF->getString(), isDF->getString());
     }
 
     return static_cast<Buffer<T>*>(it->second.get())->getRAMRepresentation()->getDataContainer();
@@ -157,7 +156,7 @@ template <typename T>
 std::vector<T>& IntegralLine::getMetaData(const std::string& name, bool create) {
     auto it = metaData_.find(name);
     if (it == metaData_.end() && !create) {
-        throw Exception("No meta data with name: " + name, IVW_CONTEXT);
+        throw Exception(SourceContext{}, "No meta data with name: {}", name);
     } else if (it == metaData_.end()) {
         auto md = createMetaData<T>(name);
         return md->getEditableRAMRepresentation()->getDataContainer();
@@ -165,10 +164,9 @@ std::vector<T>& IntegralLine::getMetaData(const std::string& name, bool create) 
     auto askedDF = DataFormat<T>::get();
     auto isDF = it->second->getDataFormat();
     if (isDF != askedDF) {
-        std::ostringstream oss;
-        oss << "Incorrect dataformat for meta data " << name << " asking for "
-            << askedDF->getString() << " but is " << isDF->getString();
-        throw Exception(oss.str(), IVW_CONTEXT);
+        throw Exception(SourceContext{},
+                        "Incorrect dataformat for meta data {} asking for {} but is {}", name,
+                        askedDF->getString(), isDF->getString());
     }
 
     return static_cast<Buffer<T>*>(it->second.get())

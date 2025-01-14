@@ -60,8 +60,7 @@ void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset,
             delete[] temp;
         }
     } else {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("readBytesIntoBuffer"),
-                                  "Error: Could not read from file: ", file);
+        throw DataReaderException(SourceContext{}, "Error: Could not read from file: ", file);
     }
 }
 

@@ -29,8 +29,8 @@
 
 #include <modules/animation/datastructures/easing.h>
 
-#include <inviwo/core/util/exception.h>      // for Exception
-#include <inviwo/core/util/sourcecontext.h>  // for IVW_CONTEXT_CUSTOM
+#include <inviwo/core/util/exception.h>  // for Exception
+#include <inviwo/core/util/sourcecontext.h>
 
 #include <ostream>      // for operator<<
 #include <string>       // for string
@@ -153,7 +153,7 @@ std::ostream& operator<<(std::ostream& os, EasingType type) {
             os << "InOutBounce";
             break;
         default:
-            throw Exception("Unknown Easing type", IVW_CONTEXT_CUSTOM("Easing::operator<<"));
+            throw Exception("Unknown Easing type");
     }
 
     return os;

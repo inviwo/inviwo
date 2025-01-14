@@ -119,7 +119,7 @@ void LayerResampling::process() {
         if (!cimgutil::rescaleLayerRamToLayerRam(sourceLayerRam, destLayerRam,
                                                  interpolationMode_.get(),
                                                  cimgutil::ConsiderAspectRatio::No)) {
-            throw Exception(IVW_CONTEXT, "Rescaling layer failed.");
+            throw Exception("Rescaling layer failed.");
         }
 
         outport_.setData(layer);
