@@ -31,7 +31,6 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS...
 
-#include <inviwo/core/network/processornetworkevaluationobserver.h>  // for ProcessorNetworkEval...
 #include <inviwo/core/network/processornetworkobserver.h>            // for ProcessorNetworkObse...
 #include <inviwo/core/properties/propertyownerobserver.h>            // for PropertyOwnerObserver
 #include <modules/qtwidgets/inviwodockwidget.h>                      // for InviwoDockWidget
@@ -106,8 +105,7 @@ private:
     static QEvent::Type PropertyListEventType;
 };
 
-class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget,
-                                                    ProcessorNetworkEvaluationObserver {
+class IVW_MODULE_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
 public:
     PropertyListWidget(QWidget* parent, InviwoApplication* app);
     virtual ~PropertyListWidget();
@@ -122,10 +120,6 @@ public:
 
     // Override QWidget
     virtual bool event(QEvent* e) override;
-
-    // ProcessorNetworkEvaluationObserver
-    virtual void onProcessorNetworkEvaluationBegin() override;
-    virtual void onProcessorNetworkEvaluationEnd() override;
 
     void focusProperty(Property* property);
 

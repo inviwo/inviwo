@@ -304,8 +304,6 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     frame_ = new PropertyListFrame(this, app->getPropertyWidgetFactory());
     scrollArea_->setWidget(frame_);
     setWidget(scrollArea_);
-
-    app->getProcessorNetworkEvaluator()->addObserver(this);
 }
 
 PropertyListWidget::~PropertyListWidget() = default;
@@ -366,10 +364,6 @@ bool PropertyListWidget::event(QEvent* e) {
         return InviwoDockWidget::event(e);
     }
 }
-
-void PropertyListWidget::onProcessorNetworkEvaluationBegin() { setUpdatesEnabled(false); }
-
-void PropertyListWidget::onProcessorNetworkEvaluationEnd() { setUpdatesEnabled(true); }
 
 PropertyListEvent::PropertyListEvent(Action aAction, std::string aIdentifier)
     : QEvent(PropertyListEvent::type()), action(aAction), identifier(aIdentifier) {}
