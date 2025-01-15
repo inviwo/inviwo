@@ -2218,8 +2218,7 @@ var hierarchy =
       [ "inviwo::ProcessorNetworkEvaluationObserver", "classinviwo_1_1ProcessorNetworkEvaluationObserver.html", [
         [ "inviwo::GLFWModule", "classinviwo_1_1GLFWModule.html", null ],
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
-        [ "inviwo::OpenGLQtModule", "classinviwo_1_1OpenGLQtModule.html", null ],
-        [ "inviwo::PropertyListWidget", "classinviwo_1_1PropertyListWidget.html", null ]
+        [ "inviwo::OpenGLQtModule", "classinviwo_1_1OpenGLQtModule.html", null ]
       ] ],
       [ "inviwo::ProcessorNetworkObserver", "classinviwo_1_1ProcessorNetworkObserver.html", [
         [ "inviwo::CanvasProcessorWidget", "classinviwo_1_1CanvasProcessorWidget.html", [
