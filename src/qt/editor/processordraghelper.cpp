@@ -109,50 +109,81 @@ bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
 
 bool ProcessorDragHelper::enter(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime) {
     e->acceptProposedAction();
-
-    auto processor = mime->processor();
-    const auto zoom = 1.0 / editor_.views().front()->transform().m11();
-    automator_.enter(e->scenePos(), e->modifiers(), *processor, zoom);
+    try {
+        auto processor = mime->processor();
+        const auto zoom = 1.0 / editor_.views().front()->transform().m11();
+        automator_.enter(e->scenePos(), e->modifiers(), *processor, zoom);
+    } catch (const Exception& exception) {
+        log::exception(exception);
+    } catch (const std::exception& exception) {
+        log::exception(exception);
+    } catch (...) {
+        log::exception();
+    }
     return true;
 }
 bool ProcessorDragHelper::move(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime) {
     e->accept();
-    auto processor = mime->processor();
-    util::setPosition(processor, utilqt::toGLM(e->scenePos()));
+    try {
+        auto processor = mime->processor();
+        util::setPosition(processor, utilqt::toGLM(e->scenePos()));
 
-    const auto zoom = 1.0 / editor_.views().front()->transform().m11();
-    automator_.move(e->scenePos(), e->modifiers(), *processor, zoom);
-
+        const auto zoom = 1.0 / editor_.views().front()->transform().m11();
+        automator_.move(e->scenePos(), e->modifiers(), *processor, zoom);
+    } catch (const Exception& exception) {
+        log::exception(exception);
+    } catch (const std::exception& exception) {
+        log::exception(exception);
+    } catch (...) {
+        log::exception();
+    }
     return true;
 }
 
 bool ProcessorDragHelper::leave(QGraphicsSceneDragDropEvent* e) {
     e->accept();
-    automator_.leave();
+    try {
+        automator_.leave();
+    } catch (const Exception& exception) {
+        log::exception(exception);
+    } catch (const std::exception& exception) {
+        log::exception(exception);
+    } catch (...) {
+        log::exception();
+    }
     return true;
 }
 bool ProcessorDragHelper::drop(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime) {
     e->accept();
 
-    auto network = editor_.getNetwork();
-    NetworkLock lock(network);
-
     try {
-        auto processor = mime->get();
-        if (!processor) {
-            log::error("Unable to get processor from drag object");
-            return true;
+        auto* network = editor_.getNetwork();
+        const NetworkLock lock(network);
+
+        try {
+            auto processor = mime->get();
+            if (!processor) {
+                log::error("Unable to get processor from drag object");
+                return true;
+            }
+            editor_.clearSelection();
+            RenderContext::getPtr()->activateDefaultRenderContext();
+            util::setPosition(processor.get(),
+                              utilqt::toGLM(NetworkEditor::snapToGrid(e->scenePos())));
+
+            auto* addedProcessor = network->addProcessor(std::move(processor));
+            automator_.drop(e->scenePos(), e->modifiers(), *addedProcessor);
+
+        } catch (const Exception& exception) {
+            log::exception(exception, "Unable to create processor {} due to {}",
+                           utilqt::fromQString(mime->text()), exception.getMessage());
         }
-        editor_.clearSelection();
-        RenderContext::getPtr()->activateDefaultRenderContext();
-        util::setPosition(processor.get(), utilqt::toGLM(NetworkEditor::snapToGrid(e->scenePos())));
-
-        auto* addedProcessor = network->addProcessor(std::move(processor));
-        automator_.drop(e->scenePos(), e->modifiers(), *addedProcessor);
-
-    } catch (Exception& exception) {
-        log::exception(exception, "Unable to create processor {} due to {}",
-                       utilqt::fromQString(mime->text()), exception.getMessage());
+    } catch (const Exception& exception) {
+        log::exception(exception);
+    } catch (const std::exception& exception) {
+        log::exception(exception);
+    } catch (...) {
+        log::exception();
     }
 
     return true;

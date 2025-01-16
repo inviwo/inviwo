@@ -10,7 +10,8 @@ set(HEADER_FILES
     include/inviwo/dataframe/io/csvreader.h
     include/inviwo/dataframe/io/csvwriter.h
     include/inviwo/dataframe/io/json/dataframepropertyjsonconverter.h
-    include/inviwo/dataframe/io/jsonreader.h
+    include/inviwo/dataframe/io/jsondataframewriter.h
+    include/inviwo/dataframe/io/jsondataframereader.h
     include/inviwo/dataframe/io/xmlwriter.h
     include/inviwo/dataframe/jsondataframeconversion.h
     include/inviwo/dataframe/processors/csvsource.h
@@ -45,7 +46,8 @@ set(SOURCE_FILES
     src/io/csvreader.cpp
     src/io/csvwriter.cpp
     src/io/json/dataframepropertyjsonconverter.cpp
-    src/io/jsonreader.cpp
+    src/io/jsondataframewriter.cpp
+    src/io/jsondataframereader.cpp
     src/io/xmlwriter.cpp
     src/jsondataframeconversion.cpp
     src/processors/csvsource.cpp

@@ -121,7 +121,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
 void MultiFilePropertyWidgetQt::setPropertyValue() {
     const auto fileName = property_->front() ? *property_->front() : std::filesystem::path{};
 
-    InviwoFileDialog fileDialog(this, property_->getDisplayName(), property_->getContentType(),
+    InviwoFileDialog fileDialog(nullptr, property_->getDisplayName(), property_->getContentType(),
                                 fileName);
 
     fileDialog.setAcceptMode(property_->getAcceptMode());

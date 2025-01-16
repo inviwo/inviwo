@@ -754,11 +754,19 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 
         auto it = std::ranges::find(container, identifier, f.getID);
         if (it != container.end()) {
-            deserialize(itemKey, *it);
+            try {
+                deserialize(itemKey, *it);
+            } catch (...) {
+                handleError();
+            }
         } else if (f.filter(identifier, index)) {
             T newItem = f.makeNew();
-            deserialize(itemKey, newItem);
-            f.onNew(newItem, index);
+            try {
+                deserialize(itemKey, newItem);
+                f.onNew(newItem, index);
+            } catch (...) {
+                handleError();
+            }
         }
         ++index;
     });
@@ -793,11 +801,20 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
         const NodeSwitch elementNodeSwitch(*this, child, false);
 
         if (index < container.size()) {
-            deserialize(itemKey, container[index]);
+            try {
+                deserialize(itemKey, container[index]);
+            } catch (...) {
+                handleError();
+            }
         } else {
             container.emplace_back(f.makeNew());
-            deserialize(itemKey, container.back());
-            f.onNew(container.back(), index);
+            try {
+                deserialize(itemKey, container.back());
+                f.onNew(container.back(), index);
+            } catch (...) {
+                container.pop_back();
+                handleError();
+            }
         }
         ++index;
     });
@@ -820,7 +837,6 @@ template <typename C, typename K, typename T, typename... Funcs>
     }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::MapFunctions<Funcs...> f) {
-
     std::pmr::vector<K> toRemove(getAllocator());
     for (const auto& item : container) {
         toRemove.emplace_back(item.first);
@@ -840,11 +856,19 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 
         auto it = container.find(key);
         if (it != container.end()) {
-            deserialize(itemKey, it->second);
+            try {
+                deserialize(itemKey, it->second);
+            } catch (...) {
+                handleError();
+            }
         } else if (f.filter(key)) {
             T newItem = f.makeNew();
-            deserialize(itemKey, newItem);
-            f.onNew(key, newItem);
+            try {
+                deserialize(itemKey, newItem);
+                f.onNew(key, newItem);
+            } catch (...) {
+                handleError();
+            }
         }
     });
 
@@ -1045,8 +1069,8 @@ void Deserializer::deserializeSmartPtr(std::string_view key, Ptr& data) {
                   }) {
         if (data && typeAttr && *typeAttr != data->getClassIdentifier()) {
             if constexpr (Resettable) {
-                // object has wrong type, delete it and let the deserialization create a new object
-                // with the correct type
+                // object has wrong type, delete it and let the deserialization create a new
+                // object with the correct type
                 data.reset();
             } else {
                 log::warn("Object with class Id: '{}' deserialized using type '{}'",

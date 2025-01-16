@@ -27,9 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/io/jsonreader.h>
+#include <inviwo/dataframe/io/jsondataframereader.h>
 
-#include <inviwo/core/io/datareader.h>                  // for DataReaderType
 #include <inviwo/core/util/exception.h>                 // for FileException
 #include <inviwo/core/util/fileextension.h>             // for FileExtension
 #include <inviwo/core/util/sourcecontext.h>             // for SourceContext
@@ -46,7 +45,7 @@ using json = nlohmann::json;
 namespace inviwo {
 
 JSONDataFrameReader::JSONDataFrameReader() {
-    addExtension(FileExtension("json", "JavaScript Object Notation (JSON)"));
+    addExtension(FileExtension("json", "DataFrame in JavaScript Object Notation (JSON)"));
 }
 
 JSONDataFrameReader* JSONDataFrameReader::clone() const { return new JSONDataFrameReader(*this); }

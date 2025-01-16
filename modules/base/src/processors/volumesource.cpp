@@ -68,6 +68,46 @@
 namespace inviwo {
 class Deserializer;
 
+namespace {
+
+template <typename T>
+auto getReaderFor(const FileProperty& filePath, OptionProperty<FileExtension>& extensions,
+                  const DataReaderFactory& rf) {
+
+    const auto& opts = extensions.getOptions();
+    const auto it =
+        std::find_if(opts.begin(), opts.end(), [&](const OptionPropertyOption<FileExtension>& opt) {
+            if (opt.value_.matches(filePath.get())) {
+                return rf.hasReaderForTypeAndExtension<T>(opt.value_);
+            }
+            return false;
+        });
+    return it;
+}
+
+template <typename... Types>
+inline void updateReaderFromFileAndType(const FileProperty& filePath,
+                                        OptionProperty<FileExtension>& extensions,
+                                        const DataReaderFactory& rf) {
+    if (extensions.empty()) return;
+
+    if ((filePath.getSelectedExtension() == FileExtension::all() &&
+         !extensions.getSelectedValue().matches(filePath)) ||
+        filePath.getSelectedExtension().empty()) {
+
+        for (auto& it : {getReaderFor<Types>(filePath, extensions, rf)...}) {
+            if (it != extensions.getOptions().end()) {
+                extensions.setSelectedValue(it->value_);
+                return;
+            }
+        }
+        extensions.setSelectedValue(FileExtension{});
+    } else {
+        extensions.setSelectedValue(filePath.getSelectedExtension());
+    }
+}
+}  // namespace
+
 const ProcessorInfo VolumeSource::processorInfo_{
     "org.inviwo.VolumeSource",  // Class identifier
     "Volume Source",            // Display name
@@ -99,11 +139,12 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     addProperties(file_, reader_, reload_, information_, basis_, volumeSequence_);
     volumeSequence_.setVisible(false);
 
-    util::updateFilenameFilters<Volume, VolumeSequence>(*util::getDataReaderFactory(app), file_,
+    util::updateFilenameFilters<VolumeSequence, Volume>(*util::getDataReaderFactory(app), file_,
                                                         reader_);
     reader_.setCurrentStateAsDefault();
 
-    util::updateReaderFromFile(file_, reader_);
+    auto* rf = util::getDataReaderFactory(app_);
+    updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
@@ -124,7 +165,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
         }
     });
     file_.onChange([this]() {
-        util::updateReaderFromFile(file_, reader_);
+        auto* rf = util::getDataReaderFactory(app_);
+        updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
         error_.clear();
         isReady_.update();
     });
@@ -203,7 +245,7 @@ void VolumeSource::process() {
 
 void VolumeSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    util::updateFilenameFilters<Volume, VolumeSequence>(*util::getDataReaderFactory(app_), file_,
+    util::updateFilenameFilters<VolumeSequence, Volume>(*util::getDataReaderFactory(app_), file_,
                                                         reader_);
     deserialized_ = true;
 }

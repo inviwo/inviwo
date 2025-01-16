@@ -43,8 +43,10 @@ namespace inviwo {
 class IVW_MODULE_BASE_API DatVolumeWriter : public DataWriterType<Volume> {
 public:
     DatVolumeWriter();
-    DatVolumeWriter(const DatVolumeWriter& rhs);
-    DatVolumeWriter& operator=(const DatVolumeWriter& that);
+    DatVolumeWriter(const DatVolumeWriter&) = default;
+    DatVolumeWriter(DatVolumeWriter&&) noexcept = default;
+    DatVolumeWriter& operator=(const DatVolumeWriter&) = default;
+    DatVolumeWriter& operator=(DatVolumeWriter&&) noexcept = default;
     virtual DatVolumeWriter* clone() const override;
     virtual ~DatVolumeWriter() = default;
 

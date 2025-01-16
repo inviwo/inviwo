@@ -89,8 +89,8 @@ namespace inviwo {
 
 namespace util {
 
-std::shared_ptr<TransferFunction> importTransferFunctionDialog(QWidget* parent) {
-    InviwoFileDialog importFileDialog(parent, "Import Transfer Function", "transferfunction");
+std::shared_ptr<TransferFunction> importTransferFunctionDialog() {
+    InviwoFileDialog importFileDialog(nullptr, "Import Transfer Function", "transferfunction");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
 
@@ -117,8 +117,8 @@ std::shared_ptr<TransferFunction> importTransferFunctionDialog(QWidget* parent) 
     return nullptr;
 }
 
-std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(QWidget* parent) {
-    InviwoFileDialog importFileDialog(parent, "Import Iso Value Collection", "isovaluecollection");
+std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog() {
+    InviwoFileDialog importFileDialog(nullptr, "Import Iso Value Collection", "isovaluecollection");
     importFileDialog.setAcceptMode(AcceptMode::Open);
     importFileDialog.setFileMode(FileMode::ExistingFile);
 
@@ -146,8 +146,8 @@ std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(QWidget* pare
     return nullptr;
 }
 
-void exportTransferFunctionDialog(const TransferFunction& tf, QWidget* parent) {
-    InviwoFileDialog exportFileDialog(parent, "Export Transfer Function", "transferfunction");
+void exportTransferFunctionDialog(const TransferFunction& tf) {
+    InviwoFileDialog exportFileDialog(nullptr, "Export Transfer Function", "transferfunction");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);
 
@@ -176,8 +176,8 @@ void exportTransferFunctionDialog(const TransferFunction& tf, QWidget* parent) {
     }
 }
 
-void exportIsoValueCollectionDialog(const IsoValueCollection& iso, QWidget* parent) {
-    InviwoFileDialog exportFileDialog(parent, "Export Iso Value Collection", "isovaluecollection");
+void exportIsoValueCollectionDialog(const IsoValueCollection& iso) {
+    InviwoFileDialog exportFileDialog(nullptr, "Export Iso Value Collection", "isovaluecollection");
     exportFileDialog.setAcceptMode(AcceptMode::Save);
     exportFileDialog.setFileMode(FileMode::AnyFile);
 

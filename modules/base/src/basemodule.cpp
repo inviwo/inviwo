@@ -299,6 +299,12 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<InputSelector<ImageMultiInport, ImageOutport>>();
     registerProcessor<InputSelector<LayerMultiInport, LayerOutport>>();
 
+    // FileCache
+    registerProcessor<FileCache<Volume>>();
+    registerProcessor<FileCache<Mesh>>();
+    registerProcessor<FileCache<Layer>>();
+    registerProcessor<FileCache<Image, ImageInport, ImageOutport>>();
+
     registerProperty<BasisProperty>();
     registerProperty<BufferInformationProperty>();
     registerProperty<DataRangeProperty>();
@@ -321,6 +327,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<TransformListProperty>();
 
     // Register Data readers
+    registerDataReader(std::make_unique<DatVolumeReader>());
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfVolumeReader>());
     registerDataReader(std::make_unique<IvfSequenceVolumeReader>());

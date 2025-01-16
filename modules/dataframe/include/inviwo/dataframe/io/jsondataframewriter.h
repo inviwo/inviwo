@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,8 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
-
-#include <inviwo/core/io/datareader.h>  // for DataReaderType
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/core/io/datawriter.h>
 
 #include <iosfwd>       // for istream
 #include <memory>       // for shared_ptr
@@ -40,50 +39,30 @@ namespace inviwo {
 class DataFrame;
 
 /**
- * \class JSONDataFrameReader
+ * \class JSONDataFrameWriter
  * \ingroup dataio
- * Reads a json file into DataFrame
+ * Writes a DataFrame into a json file
  * Expects object layout:
  * [ {"Col1": val11, "Col2": val12 },
  *   {"Col1": val21, "Col2": val22 } ]
  * The example above contains two rows and two columns.
  */
-class IVW_MODULE_DATAFRAME_API JSONDataFrameReader : public DataReaderType<DataFrame> {
+class IVW_MODULE_DATAFRAME_API JSONDataFrameWriter : public DataWriterType<DataFrame> {
 public:
-    JSONDataFrameReader();
-    JSONDataFrameReader(const JSONDataFrameReader&) = default;
-    JSONDataFrameReader(JSONDataFrameReader&&) noexcept = default;
-    JSONDataFrameReader& operator=(const JSONDataFrameReader&) = default;
-    JSONDataFrameReader& operator=(JSONDataFrameReader&&) noexcept = default;
-    virtual JSONDataFrameReader* clone() const override;
-    virtual ~JSONDataFrameReader() = default;
-    using DataReaderType<DataFrame>::readData;
+    JSONDataFrameWriter();
+    JSONDataFrameWriter(const JSONDataFrameWriter&) = default;
+    JSONDataFrameWriter(JSONDataFrameWriter&&) noexcept = default;
+    JSONDataFrameWriter& operator=(const JSONDataFrameWriter&) = default;
+    JSONDataFrameWriter& operator=(JSONDataFrameWriter&&) noexcept = default;
+    virtual JSONDataFrameWriter* clone() const override;
+    virtual ~JSONDataFrameWriter() = default;
 
-    /**
-     * read a JSON file from a file
-     * Expects object layout:
-     * [ {"Col1": val11, "Col2": val12 },
-     *   {"Col1": val21, "Col2": val22 } ]
-     * The example above contains two rows and two columns.
-     *
-     * @param fileName   name of the input file
-     * @return a DataFrame containing the JSON data
-     * @throws FileException if the file cannot be accessed
-     */
-    virtual std::shared_ptr<DataFrame> readData(const std::filesystem::path& fileName) override;
+    virtual void writeData(const DataFrame* data,
+                           const std::filesystem::path& filePath) const override;
+    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
+        const DataFrame* data, std::string_view fileExtension) const override;
 
-    /**
-     * read DataFrame from a JSON-encoded input stream, e.g. a std::ifstream. In case
-     * file streams are used, the file must have be opened prior calling this function.
-     * Expects object layout:
-     * [ {"Col1": val11, "Col2": val12 },
-     *   {"Col1": val21, "Col2": val22 } ]
-     * The example above contains two rows and two columns.
-     *
-     * @param stream    input stream with the json data
-     * @return a DataFrame containing the data
-     */
-    std::shared_ptr<DataFrame> readData(std::istream& stream) const;
+    void writeData(const DataFrame* data, std::ostream& os) const;
 };
 
 }  // namespace inviwo

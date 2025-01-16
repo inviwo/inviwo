@@ -55,7 +55,7 @@
 namespace inviwo {
 
 CSVWriter::CSVWriter() : DataWriterType<DataFrame>() {
-    addExtension(FileExtension("csv", "Comma separated values"));
+    addExtension(FileExtension("csv", "Comma Separated Values"));
 }
 
 CSVWriter* CSVWriter::clone() const { return new CSVWriter(*this); }

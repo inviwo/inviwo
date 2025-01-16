@@ -449,6 +449,8 @@ public:
 
     int runningBackgroundJobs() const { return backgoundJobs_; }
 
+    static constexpr int processorNetworkVersion() { return processorNetworkVersion_; }
+
 private:
     // Assign an identifier and display name, if none is set.
     static void assignIdentifierAndName(Processor& p, std::string_view name);

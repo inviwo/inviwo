@@ -139,7 +139,7 @@ void FilePropertyWidgetQt::addEditor() {
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
-    InviwoFileDialog fileDialog(this, property_->getDisplayName(), property_->getContentType(),
+    InviwoFileDialog fileDialog(nullptr, property_->getDisplayName(), property_->getContentType(),
                                 property_->get());
 
     fileDialog.setAcceptMode(property_->getAcceptMode());

@@ -94,8 +94,10 @@ namespace inviwo {
 class IVW_MODULE_BASE_API DatVolumeSequenceReader : public DataReaderType<VolumeSequence> {
 public:
     DatVolumeSequenceReader();
-    DatVolumeSequenceReader(const DatVolumeSequenceReader& rhs);
-    DatVolumeSequenceReader& operator=(const DatVolumeSequenceReader& that);
+    DatVolumeSequenceReader(const DatVolumeSequenceReader&) = default;
+    DatVolumeSequenceReader(DatVolumeSequenceReader&&) noexcept = default;
+    DatVolumeSequenceReader& operator=(const DatVolumeSequenceReader&) = default;
+    DatVolumeSequenceReader& operator=(DatVolumeSequenceReader&&) noexcept = default;
     virtual DatVolumeSequenceReader* clone() const override;
     virtual ~DatVolumeSequenceReader() = default;
 
@@ -104,6 +106,19 @@ public:
 
 private:
     bool enableLogOutput_;
+};
+
+class IVW_MODULE_BASE_API DatVolumeReader : public DataReaderType<Volume> {
+public:
+    DatVolumeReader();
+    DatVolumeReader(const DatVolumeReader&) = default;
+    DatVolumeReader(DatVolumeReader&&) noexcept = default;
+    DatVolumeReader& operator=(const DatVolumeReader&) = default;
+    DatVolumeReader& operator=(DatVolumeReader&&) noexcept = default;
+    virtual DatVolumeReader* clone() const override;
+    virtual ~DatVolumeReader() = default;
+
+    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo

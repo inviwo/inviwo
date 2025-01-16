@@ -47,7 +47,10 @@ class IVW_MODULE_DATAFRAME_API XMLWriter : public DataWriterType<DataFrame> {
 public:
     XMLWriter();
     XMLWriter(const XMLWriter&) = default;
+    XMLWriter(XMLWriter&&) noexcept = default;
     XMLWriter& operator=(const XMLWriter&) = default;
+    XMLWriter& operator=(XMLWriter&&) noexcept = default;
+
     virtual XMLWriter* clone() const override;
     virtual ~XMLWriter() = default;
 

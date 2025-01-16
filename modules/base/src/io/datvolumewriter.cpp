@@ -66,12 +66,8 @@
 namespace inviwo {
 
 DatVolumeWriter::DatVolumeWriter() : DataWriterType<Volume>() {
-    addExtension(FileExtension("dat", "Inviwo dat file format"));
+    addExtension(FileExtension("dat", "Inviwo dat Volume file format"));
 }
-
-DatVolumeWriter::DatVolumeWriter(const DatVolumeWriter& rhs) = default;
-
-DatVolumeWriter& DatVolumeWriter::operator=(const DatVolumeWriter& that) = default;
 
 DatVolumeWriter* DatVolumeWriter::clone() const { return new DatVolumeWriter(*this); }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/tetramesh/tetrameshmodule.h>
-
-#include <inviwo/tetramesh/datastructures/tetramesh.h>
-#include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-
-#include <modules/base/processors/inputselector.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/json/jsonmoduledefine.h>
+#include <modules/json/json.h>
+#include <inviwo/core/io/datawriter.h>
+#include <iosfwd>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_JSON_API JSONWriter : public DataWriterType<json> {
+public:
+    JSONWriter();
+    JSONWriter(const JSONWriter&) = default;
+    JSONWriter(JSONWriter&&) noexcept = default;
+    JSONWriter& operator=(const JSONWriter&) = default;
+    JSONWriter& operator=(JSONWriter&&) noexcept = default;
+    virtual JSONWriter* clone() const override;
+    virtual ~JSONWriter() = default;
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
+    virtual void writeData(const json* data, const std::filesystem::path& filePath) const override;
+    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
+        const json* data, std::string_view fileExtension) const override;
 
-    registerProcessor<InputSelector<MultiDataInport<TetraMesh>, DataOutport<TetraMesh>>>();
-
-    registerDefaultsForDataType<TetraMesh>();
-}
+    void writeData(const json* data, std::ostream& os) const;
+};
 
 }  // namespace inviwo
