@@ -29,48 +29,51 @@
 
 #include <inviwo/dataframe/dataframemodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                     // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>                          // for InviwoModule
-#include <inviwo/core/io/datareader.h>                                // for DataReader
-#include <inviwo/core/io/datawriter.h>                                // for DataWriter
-#include <inviwo/core/ports/outportiterable.h>                        // for OutportIterable, Out...
-#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty
-#include <inviwo/core/properties/propertyconverter.h>                 // for OptionToStringConverter
-#include <inviwo/core/util/exception.h>                               // for Exception
-#include <inviwo/core/util/foreacharg.h>                              // for for_each_type
-#include <inviwo/core/util/glmvec.h>                                  // for uvec3
-#include <inviwo/core/util/staticstring.h>                            // for operator+
-#include <inviwo/core/util/stringconversion.h>                        // for htmlEncode
+#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>           // for InviwoModule
+#include <inviwo/core/io/datareader.h>                 // for DataReader
+#include <inviwo/core/io/datawriter.h>                 // for DataWriter
+#include <inviwo/core/ports/outportiterable.h>         // for OutportIterable, Out...
+#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
+#include <inviwo/core/properties/propertyconverter.h>  // for OptionToStringConverter
+#include <inviwo/core/util/exception.h>                // for Exception
+#include <inviwo/core/util/foreacharg.h>               // for for_each_type
+#include <inviwo/core/util/glmvec.h>                   // for uvec3
+#include <inviwo/core/util/staticstring.h>             // for operator+
+#include <inviwo/core/util/stringconversion.h>         // for htmlEncode
+#include <modules/base/processors/filecache.h>
+#include <modules/base/processors/inputselector.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>                // for DataFrame
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>  // IWYU pragma: keep
 #include <inviwo/dataframe/io/csvreader.h>                            // for CSVReader
 #include <inviwo/dataframe/io/csvwriter.h>                            // for CSVWriter
-#include <inviwo/dataframe/io/jsonreader.h>                           // for JSONDataFrameReader
-#include <inviwo/dataframe/io/xmlwriter.h>                            // for XMLWriter
-#include <inviwo/dataframe/processors/csvsource.h>                    // for CSVSource
-#include <inviwo/dataframe/processors/dataframeexporter.h>            // for DataFrameExporter
-#include <inviwo/dataframe/processors/dataframefilter.h>              // for DataFrameFilter
-#include <inviwo/dataframe/processors/dataframefloat32converter.h>    // for DataFrameFloat32Conv...
-#include <inviwo/dataframe/processors/dataframejoin.h>                // for DataFrameJoin
-#include <inviwo/dataframe/processors/dataframemetadata.h>            // for DataFrameMetaData
-#include <inviwo/dataframe/processors/dataframesource.h>              // for DataFrameSource
-#include <inviwo/dataframe/processors/imagetodataframe.h>             // for ImageToDataFrame
-#include <inviwo/dataframe/processors/syntheticdataframe.h>           // for SyntheticDataFrame
-#include <inviwo/dataframe/processors/volumesequencetodataframe.h>    // for VolumeSequenceToData...
-#include <inviwo/dataframe/processors/volumetodataframe.h>            // for VolumeToDataFrame
-#include <inviwo/dataframe/properties/colormapproperty.h>             // for ColormapProperty
-#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>   // for ColumnMetaDataListPr...
-#include <inviwo/dataframe/properties/columnmetadataproperty.h>       // for ColumnMetaDataProperty
-#include <inviwo/dataframe/properties/columnoptionproperty.h>         // for ColumnOptionProperty
-#include <inviwo/dataframe/properties/filterlistproperty.h>           // for FilterListProperty
-#include <inviwo/dataframe/properties/optionconverter.h>              // IWYU pragma: keep
-#include <inviwo/dataframe/util/filters.h>                            // for NumberComp, StringComp
-#include <inviwo/dataframe/jsondataframeconversion.h>                 // IWYU pragma: keep
-#include <modules/json/jsonmodule.h>                                  // for JSONModule
-
-#include <cstddef>     // for size_t
-#include <functional>  // for __base, function
+#include <inviwo/dataframe/io/jsondataframereader.h>
+#include <inviwo/dataframe/io/jsondataframewriter.h>
+#include <inviwo/dataframe/io/xmlwriter.h>                          // for XMLWriter
+#include <inviwo/dataframe/processors/csvsource.h>                  // for CSVSource
+#include <inviwo/dataframe/processors/dataframeexporter.h>          // for DataFrameExporter
+#include <inviwo/dataframe/processors/dataframefilter.h>            // for DataFrameFilter
+#include <inviwo/dataframe/processors/dataframefloat32converter.h>  // for DataFrameFloat32Conv...
+#include <inviwo/dataframe/processors/dataframejoin.h>              // for DataFrameJoin
+#include <inviwo/dataframe/processors/dataframemetadata.h>          // for DataFrameMetaData
+#include <inviwo/dataframe/processors/dataframesource.h>            // for DataFrameSource
+#include <inviwo/dataframe/processors/imagetodataframe.h>           // for ImageToDataFrame
+#include <inviwo/dataframe/processors/syntheticdataframe.h>         // for SyntheticDataFrame
+#include <inviwo/dataframe/processors/volumesequencetodataframe.h>  // for VolumeSequenceToData...
+#include <inviwo/dataframe/processors/volumetodataframe.h>          // for VolumeToDataFrame
 #include <inviwo/dataframe/processors/dataframetovector.h>
+#include <inviwo/dataframe/properties/colormapproperty.h>            // for ColormapProperty
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
+#include <inviwo/dataframe/properties/columnmetadataproperty.h>      // for ColumnMetaDataProperty
+#include <inviwo/dataframe/properties/columnoptionproperty.h>        // for ColumnOptionProperty
+#include <inviwo/dataframe/properties/filterlistproperty.h>          // for FilterListProperty
+#include <inviwo/dataframe/properties/optionconverter.h>             // IWYU pragma: keep
+#include <inviwo/dataframe/util/filters.h>                           // for NumberComp, StringComp
+#include <inviwo/dataframe/jsondataframeconversion.h>                // IWYU pragma: keep
+#include <modules/json/jsonmodule.h>                                 // for JSONModule
+
+#include <cstddef>        // for size_t
+#include <functional>     // for __base, function
 #include <memory>         // for unique_ptr, make_unique
 #include <string>         // for operator+, operator==
 #include <tuple>          // for tuple
@@ -107,6 +110,9 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<VolumeToDataFrame>();
     registerProcessor<VolumeSequenceToDataFrame>();
 
+    registerProcessor<InputSelector<MultiDataInport<DataFrame>, DataOutport<DataFrame>>>();
+    registerProcessor<FileCache<DataFrame>>();
+
     registerDefaultsForDataType<DataFrame>();
     // Properties
     registerProperty<ColormapProperty>();
@@ -123,6 +129,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
 
     registerDataWriter(std::make_unique<CSVWriter>());
     registerDataWriter(std::make_unique<XMLWriter>());
+    registerDataWriter(std::make_unique<JSONDataFrameWriter>());
 
     // Data converters
     registerPropertyConverter(std::make_unique<OptionToStringConverter<ColumnOptionProperty>>());

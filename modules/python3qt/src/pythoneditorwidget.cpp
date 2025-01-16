@@ -339,7 +339,7 @@ void PythonEditorWidget::readFile() {
 }
 
 void PythonEditorWidget::saveAs() {
-    InviwoFileDialog saveFileDialog(this, "Save Python Script ...", "script");
+    InviwoFileDialog saveFileDialog(nullptr, "Save Python Script ...", "script");
 
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
@@ -363,7 +363,7 @@ void PythonEditorWidget::open() {
         return;
     }
 
-    InviwoFileDialog openFileDialog(this, "Open Python Script ...", "script");
+    InviwoFileDialog openFileDialog(nullptr, "Open Python Script ...", "script");
     openFileDialog.setFileMode(FileMode::AnyFile);
     openFileDialog.addSidebarPath(PathType::Scripts);
     openFileDialog.addExtension("py", "Python Script");

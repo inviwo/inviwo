@@ -93,14 +93,13 @@ public:
 
     void write(const char* message) {
         if (strlen(message) == 0) return;
-        std::string tmp(message);
-        while ('\n' == tmp.back()) tmp.pop_back();
-        if (!fileName_.empty()) {
-            tmp += fmt::format(" ({})", fileName_);
-        }
 
-        LogCentral::getPtr()->log("AssimpReader", loglevel_, LogAudience::User, __FILE__,
-                                  "inviwo::AssimpReader::readData", 0, tmp);
+        if (fileName_.empty()) {
+            log::report(loglevel_, SourceContext{"AssimpReader"_sl}, "{}", util::trim(message));
+        } else {
+            log::report(loglevel_, SourceContext{"AssimpReader"_sl}, "{} ({})", util::trim(message),
+                        fileName_);
+        }
     }
 };
 
@@ -117,7 +116,7 @@ AssimpReader::AssimpReader()
         const aiImporterDesc* desc = importer.GetImporterInfo(i);
         for (std::string_view e :
              util::splitStringView(std::string_view(desc->mFileExtensions), ' ')) {
-            addExtension(FileExtension(e, desc->mName));
+            addExtension(FileExtension(e, util::trim(removeSubString(desc->mName, "Importer"))));
         }
     }
 

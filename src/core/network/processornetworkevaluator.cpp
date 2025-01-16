@@ -98,12 +98,12 @@ void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
     NetworkLock lock(processorNetwork_);
 
+    notifyObserversProcessorNetworkEvaluationBegin();
+
     if (needsSorting_) {
         processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
         needsSorting_ = false;
     }
-
-    notifyObserversProcessorNetworkEvaluationBegin();
 
     IVW_CPU_PROFILING_IF(500, "Evaluated Processor Network");
 

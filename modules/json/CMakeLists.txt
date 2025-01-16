@@ -13,6 +13,8 @@ set(HEADER_FILES
     include/modules/json/io/json/ordinalrefpropertyjsonconverter.h
     include/modules/json/io/json/stringpropertyjsonconverter.h
     include/modules/json/io/json/templatepropertyjsonconverter.h
+    include/modules/json/io/jsonreader.h
+    include/modules/json/io/jsonwriter.h
     include/modules/json/json.h
     include/modules/json/jsonconverter.h
     include/modules/json/jsonconverterregistry.h
@@ -33,6 +35,8 @@ set(SOURCE_FILES
     src/io/json/filepropertyjsonconverter.cpp
     src/io/json/ordinalrefpropertyjsonconverter.cpp
     src/io/json/stringpropertyjsonconverter.cpp
+    src/io/jsonreader.cpp
+    src/io/jsonwriter.cpp
     src/json.cpp
     src/jsonconverter.cpp
     src/jsonconverterregistry.cpp

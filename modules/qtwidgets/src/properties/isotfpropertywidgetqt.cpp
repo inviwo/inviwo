@@ -131,13 +131,13 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto importTF = importMenu->addAction("&TF...");
     auto importIso = importMenu->addAction("&Isovalues...");
     connect(importTF, &QAction::triggered, this, [this]() {
-        if (auto tf = util::importTransferFunctionDialog(this)) {
+        if (auto tf = util::importTransferFunctionDialog()) {
             NetworkLock lock{property_};
             static_cast<IsoTFProperty*>(property_)->tf_.get() = *tf;
         }
     });
     connect(importIso, &QAction::triggered, this, [this]() {
-        if (auto iso = util::importIsoValueCollectionDialog(this)) {
+        if (auto iso = util::importIsoValueCollectionDialog()) {
             NetworkLock lock{property_};
             static_cast<IsoTFProperty*>(property_)->isovalues_.get() = *iso;
         }
@@ -146,11 +146,11 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto exportTF = exportMenu->addAction("&TF...");
     auto exportIso = exportMenu->addAction("&Isovalues...");
     connect(exportTF, &QAction::triggered, this, [this]() {
-        util::exportTransferFunctionDialog(static_cast<IsoTFProperty*>(property_)->tf_.get(), this);
+        util::exportTransferFunctionDialog(static_cast<IsoTFProperty*>(property_)->tf_.get());
     });
     connect(exportIso, &QAction::triggered, this, [this]() {
         util::exportIsoValueCollectionDialog(
-            static_cast<IsoTFProperty*>(property_)->isovalues_.get(), this);
+            static_cast<IsoTFProperty*>(property_)->isovalues_.get());
     });
 
     return menu;

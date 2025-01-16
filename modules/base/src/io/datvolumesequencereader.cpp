@@ -75,60 +75,42 @@
 
 namespace inviwo {
 
-DatVolumeSequenceReader::DatVolumeSequenceReader()
-    : DataReaderType<VolumeSequence>(), enableLogOutput_(true) {
-    addExtension(FileExtension("dat", "Inviwo dat file format"));
-}
+namespace {
 
-DatVolumeSequenceReader::DatVolumeSequenceReader(const DatVolumeSequenceReader& rhs) = default;
-DatVolumeSequenceReader& DatVolumeSequenceReader::operator=(const DatVolumeSequenceReader& that) =
-    default;
+struct State {
+    std::filesystem::path rawFile;
+    size3_t dimensions{0u};
+    size_t byteOffset = 0u;
+    const DataFormatBase* format = nullptr;
+    bool littleEndian = true;
 
-DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
-    return new DatVolumeSequenceReader(*this);
-}
+    std::string formatFlag = "";
+    mat3 basis{2.0f};
+    std::optional<vec3> offset = std::nullopt;
+    std::optional<vec3> spacing = std::nullopt;
+    std::optional<vec3> a = std::nullopt;
+    std::optional<vec3> b = std::nullopt;
+    std::optional<vec3> c = std::nullopt;
 
-std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
-    const std::filesystem::path& filePath) {
+    std::array<Axis, 3> axes = util::defaultAxes<3>();
 
-    const auto fileDirectory = filePath.parent_path();
+    mat4 wtm{1.0f};
 
-    // Read the dat file content
-    auto f = open(filePath);
+    std::optional<dvec2> dataRange = std::nullopt;
+    std::optional<dvec2> valueRange = std::nullopt;
+    Unit valueUnit = Unit{};
+    std::string valueName{};
+    size_t sequences{1};
 
-    struct State {
-        std::filesystem::path rawFile;
-        size3_t dimensions{0u};
-        size_t byteOffset = 0u;
-        const DataFormatBase* format = nullptr;
-        bool littleEndian = true;
+    SwizzleMask swizzleMask{swizzlemasks::rgba};
+    InterpolationType interpolation{InterpolationType::Linear};
+    Wrapping3D wrapping{wrapping3d::clampAll};
 
-        std::string formatFlag = "";
-        mat3 basis{2.0f};
-        std::optional<vec3> offset = std::nullopt;
-        std::optional<vec3> spacing = std::nullopt;
-        std::optional<vec3> a = std::nullopt;
-        std::optional<vec3> b = std::nullopt;
-        std::optional<vec3> c = std::nullopt;
+    std::unordered_map<std::string, std::string> metadata;
+    std::vector<std::filesystem::path> datFiles;
+};
 
-        std::array<Axis, 3> axes = util::defaultAxes<3>();
-
-        mat4 wtm{1.0f};
-
-        std::optional<dvec2> dataRange = std::nullopt;
-        std::optional<dvec2> valueRange = std::nullopt;
-        Unit valueUnit = Unit{};
-        std::string valueName{};
-        size_t sequences{1};
-
-        SwizzleMask swizzleMask{swizzlemasks::rgba};
-        InterpolationType interpolation{InterpolationType::Linear};
-        Wrapping3D wrapping{wrapping3d::clampAll};
-
-        std::unordered_map<std::string, std::string> metadata;
-        std::vector<std::filesystem::path> datFiles;
-    };
-
+State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
     using parser = void (*)(State&, std::stringstream&);
 
     const std::unordered_map<std::string, parser> parsers = {
@@ -303,6 +285,158 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         }
     };
 
+    return state;
+}
+
+void validateDatFile(const State& state, const std::filesystem::path& filePath) {
+    if (state.dimensions == size3_t(0)) {
+        throw DataReaderException(
+            SourceContext{}, "Error: Unable to find \"Resolution\" tag in .dat file: {}", filePath);
+    } else if (state.format == nullptr) {
+        throw DataReaderException(
+            SourceContext{}, "Error: Unable to find \"Format\" tag in .dat file: {}", filePath);
+    } else if (state.format->getId() == DataFormatId::NotSpecialized) {
+        throw DataReaderException(
+            SourceContext{},
+            "Error: Invalid format string found: {} in {} \nThe valid formats are:\n"
+            "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
+            "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
+            "Vec2INT32, Vec2INT64, Vec2UINT8, Vec2UINT16, Vec2UINT32, Vec2UINT64, "
+            "Vec3FLOAT16, Vec3FLOAT32, Vec3FLOAT64, Vec3INT8, Vec3INT16, Vec3INT32, "
+            "Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16, "
+            "Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64, "
+            "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
+            state.formatFlag, filePath);
+
+    } else if (state.rawFile == "") {
+        throw DataReaderException(SourceContext{},
+                                  "Error: Unable to find \"ObjectFilename\" tag in .dat file: {}",
+                                  filePath);
+    }
+}
+
+void resolve(State& state) {
+    if (state.spacing) {
+        state.basis[0][0] = state.dimensions.x * state.spacing->x;
+        state.basis[1][1] = state.dimensions.y * state.spacing->y;
+        state.basis[2][2] = state.dimensions.z * state.spacing->z;
+    }
+
+    if (state.a && state.b && state.c) {
+        state.basis[0][0] = state.a->x;
+        state.basis[1][0] = state.a->y;
+        state.basis[2][0] = state.a->z;
+        state.basis[0][1] = state.b->x;
+        state.basis[1][1] = state.b->y;
+        state.basis[2][1] = state.b->z;
+        state.basis[0][2] = state.c->x;
+        state.basis[1][2] = state.c->y;
+        state.basis[2][2] = state.c->z;
+    }
+
+    // If not specified, center the data around origo.
+    if (!state.offset) {
+        state.offset = -0.5f * (state.basis[0] + state.basis[1] + state.basis[2]);
+    }
+}
+
+std::shared_ptr<Volume> createVolume(const State& state) {
+    auto volume = std::make_shared<Volume>(state.dimensions, state.format, state.swizzleMask,
+                                           state.interpolation, state.wrapping);
+    volume->setBasis(state.basis);
+    volume->setOffset(*state.offset);
+    volume->setWorldMatrix(state.wtm);
+
+    if (state.dataRange) {
+        volume->dataMap.dataRange = *state.dataRange;
+    }
+    if (state.valueRange) {
+        volume->dataMap.valueRange = *state.valueRange;
+    } else {
+        volume->dataMap.valueRange = volume->dataMap.dataRange;
+    }
+
+    volume->dataMap.valueAxis.unit = state.valueUnit;
+    volume->dataMap.valueAxis.name = state.valueName;
+    volume->axes = state.axes;
+
+    for (auto elem : state.metadata) {
+        volume->setMetaData<StringMetaData>(elem.first, elem.second);
+    }
+
+    return volume;
+}
+
+std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
+                                                    const std::filesystem::path& datPath,
+                                                    const std::filesystem::path& rawPath,
+                                                    size_t offset) {
+
+    auto diskRepr =
+        std::make_shared<VolumeDisk>(datPath, state.dimensions, state.format, state.swizzleMask,
+                                     state.interpolation, state.wrapping);
+
+    const auto filePos = offset + state.byteOffset;
+
+    auto loader = std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.littleEndian);
+    diskRepr->setLoader(loader.release());
+
+    return diskRepr;
+}
+
+void updateDataRange(Volume& volume, const State& state) {
+    auto minmax = util::volumeMinMax(&volume, IgnoreSpecialValues::No);
+    // minmax always have four components, unused components are set to zero.
+    // Hence, only consider components used by the data format
+    dvec2 computedRange(minmax.first[0], minmax.second[0]);
+    for (size_t component = 1; component < state.format->getComponents(); ++component) {
+        computedRange = dvec2(glm::min(computedRange[0], minmax.first[component]),
+                              glm::max(computedRange[1], minmax.second[component]));
+    }
+    // Set value range
+    volume.dataMap.dataRange = computedRange;
+    // Also set value range if not specified
+    if (!state.valueRange) {
+        volume.dataMap.valueRange = computedRange;
+    }
+}
+
+void perfWarning(Volume& volume, const std::filesystem::path& filePath) {
+    const auto computedRange = volume.dataMap.dataRange;
+    log::warn(
+        "Performance warning: Using min/max of data since DataRange was not "
+        "specified. Data range refer to the range of the data type, i.e. [0 4095] "
+        "for 12-bit unsigned integer data. It is important that the data range is "
+        "specified for data types with a large range (for example 32/64-bit float "
+        "and integer) since the data is often normalized to [0 1], when for "
+        "example performing color mapping, i.e. applying a transfer function. "
+        "\nValue range refer to the physical meaning of the value, i.e. Hounsfield "
+        "value range is from [-1000 3000]. Improve volume read performance by "
+        "adding for example: \nDataRange: {} {}\nValueRange: {} {}\nin file: ",
+        computedRange[0], computedRange[1], computedRange[0], computedRange[1], filePath);
+}
+
+}  // namespace
+
+DatVolumeSequenceReader::DatVolumeSequenceReader()
+    : DataReaderType<VolumeSequence>(), enableLogOutput_(true) {
+    addExtension(FileExtension("dat", "Inviwo dat file format"));
+}
+
+DatVolumeSequenceReader* DatVolumeSequenceReader::clone() const {
+    return new DatVolumeSequenceReader(*this);
+}
+
+std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
+    const std::filesystem::path& filePath) {
+
+    const auto fileDirectory = filePath.parent_path();
+
+    // Read the dat file content
+    auto f = open(filePath);
+
+    auto state = parseDatFile(f, filePath);
+
     // Check if other dat files where specified, and then only consider them as a sequence
     auto volumes = std::make_shared<VolumeSequence>();
 
@@ -321,79 +455,11 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         }
 
     } else {
-        if (state.dimensions == size3_t(0)) {
-            throw DataReaderException(SourceContext{},
-                                      "Error: Unable to find \"Resolution\" tag in .dat file: {}",
-                                      filePath);
-        } else if (state.format == nullptr) {
-            throw DataReaderException(
-                SourceContext{}, "Error: Unable to find \"Format\" tag in .dat file: {}", filePath);
-        } else if (state.format->getId() == DataFormatId::NotSpecialized) {
-            throw DataReaderException(
-                SourceContext{},
-                "Error: Invalid format string found: {} in {} \nThe valid formats are:\n"
-                "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
-                "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
-                "Vec2INT32, Vec2INT64, Vec2UINT8, Vec2UINT16, Vec2UINT32, Vec2UINT64, "
-                "Vec3FLOAT16, Vec3FLOAT32, Vec3FLOAT64, Vec3INT8, Vec3INT16, Vec3INT32, "
-                "Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16, "
-                "Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64, "
-                "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
-                state.formatFlag, filePath);
-
-        } else if (state.rawFile == "") {
-            throw DataReaderException(
-                SourceContext{}, "Error: Unable to find \"ObjectFilename\" tag in .dat file: {}",
-                filePath);
-        }
-
-        if (state.spacing) {
-            state.basis[0][0] = state.dimensions.x * state.spacing->x;
-            state.basis[1][1] = state.dimensions.y * state.spacing->y;
-            state.basis[2][2] = state.dimensions.z * state.spacing->z;
-        }
-
-        if (state.a && state.b && state.c) {
-            state.basis[0][0] = state.a->x;
-            state.basis[1][0] = state.a->y;
-            state.basis[2][0] = state.a->z;
-            state.basis[0][1] = state.b->x;
-            state.basis[1][1] = state.b->y;
-            state.basis[2][1] = state.b->z;
-            state.basis[0][2] = state.c->x;
-            state.basis[1][2] = state.c->y;
-            state.basis[2][2] = state.c->z;
-        }
-
-        // If not specified, center the data around origo.
-        if (!state.offset) {
-            state.offset = -0.5f * (state.basis[0] + state.basis[1] + state.basis[2]);
-        }
-
-        auto volume = std::make_shared<Volume>(state.dimensions, state.format, state.swizzleMask,
-                                               state.interpolation, state.wrapping);
-        volume->setBasis(state.basis);
-        volume->setOffset(*state.offset);
-        volume->setWorldMatrix(state.wtm);
-
-        if (state.dataRange) {
-            volume->dataMap.dataRange = *state.dataRange;
-        }
-        if (state.valueRange) {
-            volume->dataMap.valueRange = *state.valueRange;
-        } else {
-            volume->dataMap.valueRange = volume->dataMap.dataRange;
-        }
-
-        volume->dataMap.valueAxis.unit = state.valueUnit;
-        volume->dataMap.valueAxis.name = state.valueName;
-        volume->axes = state.axes;
+        validateDatFile(state, filePath);
+        resolve(state);
+        auto volume = createVolume(state);
 
         const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
-
-        for (auto elem : state.metadata) {
-            volume->setMetaData<StringMetaData>(elem.first, elem.second);
-        }
 
         for (size_t t = 0; t < state.sequences; ++t) {
             if (t == 0) {
@@ -401,48 +467,18 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
             } else {
                 volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             }
-            auto diskRepr = std::make_shared<VolumeDisk>(filePath, state.dimensions, state.format,
-                                                         state.swizzleMask, state.interpolation,
-                                                         state.wrapping);
-            const auto filePos = t * bytes + state.byteOffset;
-
-            auto loader = std::make_unique<RawVolumeRAMLoader>(fileDirectory / state.rawFile,
-                                                               filePos, state.littleEndian);
-            diskRepr->setLoader(loader.release());
+            auto diskRepr =
+                createDiskRepWithLoader(state, filePath, fileDirectory / state.rawFile, t * bytes);
             volumes->back()->addRepresentation(diskRepr);
-            // Compute data range if not specified
+
             if (t == 0 && !state.dataRange) {
                 // Use min/max value in data as data range if none is given
                 // Only consider first time step since it can be time consuming
                 // to compute for all time steps
-                auto minmax = util::volumeMinMax(volumes->front().get(), IgnoreSpecialValues::No);
-                // minmax always have four components, unused components are set to zero.
-                // Hence, only consider components used by the data format
-                dvec2 computedRange(minmax.first[0], minmax.second[0]);
-                for (size_t component = 1; component < state.format->getComponents(); ++component) {
-                    computedRange = dvec2(glm::min(computedRange[0], minmax.first[component]),
-                                          glm::max(computedRange[1], minmax.second[component]));
-                }
-                // Set value range
-                volumes->front()->dataMap.dataRange = computedRange;
-                // Also set value range if not specified
-                if (!state.valueRange) {
-                    volumes->front()->dataMap.valueRange = computedRange;
-                }
-                // Performance warning for larger volumes (rougly > 2MB)
-                if (bytes < 128 * 128 * 128 || state.sequences > 1) {
-                    log::warn(
-                        "Performance warning: Using min/max of data since DataRange was not "
-                        "specified. Data range refer to the range of the data type, i.e. [0 4095] "
-                        "for 12-bit unsigned integer data. It is important that the data range is "
-                        "specified for data types with a large range (for example 32/64-bit float "
-                        "and integer) since the data is often normalized to [0 1], when for "
-                        "example performing color mapping, i.e. applying a transfer function. "
-                        "\nValue range refer to the physical meaning of the value, i.e. Hounsfield "
-                        "value range is from [-1000 3000]. Improve volume read performance by "
-                        "adding for example: \nDataRange: {} {}\nValueRange: {} {}\nin file: ",
-                        computedRange[0], computedRange[1], computedRange[0], computedRange[1],
-                        filePath);
+                updateDataRange(*volumes->front(), state);
+                if (bytes > 128 * 128 * 128 || state.sequences > 1) {
+                    // Performance warning for larger volumes (rougly > 2MB)
+                    perfWarning(*volumes->front(), filePath);
                 }
                 if (state.sequences > 1) {
                     log::warn(
@@ -460,6 +496,51 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         }
     }
     return volumes;
+}
+
+DatVolumeReader::DatVolumeReader() : DataReaderType<Volume>() {
+    addExtension(FileExtension("dat", "Inviwo dat Volume file format"));
+}
+
+DatVolumeReader* DatVolumeReader::clone() const { return new DatVolumeReader(*this); }
+
+std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& filePath) {
+    // Read the dat file content
+    auto f = open(filePath);
+    auto state = parseDatFile(f, filePath);
+
+    if (!state.datFiles.empty()) {
+        throw DataReaderException{
+            SourceContext{},
+            "Volume sequences are not handled in the DatVolumeReader, use the "
+            "DatVolumeSequenceReader"};
+    }
+    if (state.sequences != 1) {
+        throw DataReaderException{
+            SourceContext{},
+            "Volume sequences are not handled in the DatVolumeReader, use the "
+            "DatVolumeSequenceReader"};
+    }
+
+    validateDatFile(state, filePath);
+    resolve(state);
+    auto volume = createVolume(state);
+    auto diskRepr =
+        createDiskRepWithLoader(state, filePath, filePath.parent_path() / state.rawFile, 0);
+    volume->addRepresentation(diskRepr);
+
+    const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+    if (!state.dataRange) {  // Use min/max value in data as data range if none is given
+        updateDataRange(*volume, state);
+        if (bytes > 128 * 128 * 128) {
+            // Performance warning for larger volumes (rougly > 2MB)
+            perfWarning(*volume, filePath);
+        }
+    }
+    const auto size = util::formatBytesToString(bytes);
+    log::info("Loaded volume sequence: {} size: {}", filePath, size);
+
+    return volume;
 }
 
 }  // namespace inviwo

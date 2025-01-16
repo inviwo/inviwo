@@ -29,20 +29,22 @@
 
 #include <modules/json/jsonmodule.h>
 
-#include <inviwo/core/common/inviwomodule.h>                       // for InviwoModule
-#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                 // for ButtonProperty
-#include <inviwo/core/properties/directoryproperty.h>              // for DirectoryProperty
-#include <inviwo/core/properties/fileproperty.h>                   // for FileProperty
-#include <inviwo/core/properties/minmaxproperty.h>                 // for MinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>                 // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                // for OrdinalProperty
-#include <inviwo/core/properties/ordinalrefproperty.h>             // for OrdinalRefProperty
-#include <inviwo/core/properties/stringproperty.h>                 // for StringProperty
-#include <inviwo/core/util/foreacharg.h>                           // for for_each_type
-#include <inviwo/core/util/glmmat.h>                               // for dmat2, dmat3, dmat4
-#include <inviwo/core/util/glmvec.h>                               // for dvec2, dvec3, dvec4
-#include <inviwo/core/util/staticstring.h>                         // for operator+
+#include <inviwo/core/common/inviwomodule.h>            // for InviwoModule
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>      // for ButtonProperty
+#include <inviwo/core/properties/directoryproperty.h>   // for DirectoryProperty
+#include <inviwo/core/properties/fileproperty.h>        // for FileProperty
+#include <inviwo/core/properties/minmaxproperty.h>      // for MinMaxProperty
+#include <inviwo/core/properties/optionproperty.h>      // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>     // for OrdinalProperty
+#include <inviwo/core/properties/ordinalrefproperty.h>  // for OrdinalRefProperty
+#include <inviwo/core/properties/stringproperty.h>      // for StringProperty
+#include <inviwo/core/util/foreacharg.h>                // for for_each_type
+#include <inviwo/core/util/glmmat.h>                    // for dmat2, dmat3, dmat4
+#include <inviwo/core/util/glmvec.h>                    // for dvec2, dvec3, dvec4
+#include <inviwo/core/util/staticstring.h>              // for operator+
+#include <modules/base/processors/filecache.h>
+#include <modules/base/processors/inputselector.h>
 #include <modules/json/io/json/boolpropertyjsonconverter.h>        // for to_json
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>      // for to_json
 #include <modules/json/io/json/directorypropertyjsonconverter.h>   // for to_json
@@ -53,6 +55,8 @@
 #include <modules/json/io/json/ordinalrefpropertyjsonconverter.h>  // for to_json
 #include <modules/json/io/json/stringpropertyjsonconverter.h>      // for to_json
 #include <modules/json/io/json/templatepropertyjsonconverter.h>    // for to_json
+#include <modules/json/io/jsonreader.h>
+#include <modules/json/io/jsonwriter.h>
 
 #include <modules/json/jsonport.h>
 #include <cstddef>      // for size_t
@@ -141,6 +145,12 @@ JSONModule::JSONModule(InviwoApplication* app)
         enum class eU : std::make_unsigned_t<T>;
         registerJSONConverter<OptionProperty<eU>>();
     });
+
+    registerProcessor<InputSelector<MultiDataInport<json>, DataOutport<json>>>();
+    registerProcessor<FileCache<json>>();
+
+    registerDataReader(std::make_unique<JSONReader>());
+    registerDataWriter(std::make_unique<JSONWriter>());
 
     registerDefaultsForDataType<json>();
 

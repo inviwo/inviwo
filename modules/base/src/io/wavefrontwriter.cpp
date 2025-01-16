@@ -66,7 +66,7 @@
 namespace inviwo {
 
 WaveFrontWriter::WaveFrontWriter() : DataWriterType<Mesh>() {
-    addExtension(FileExtension("obj", "WaveFront Obj file format"));
+    addExtension(FileExtension("obj", "Wavefront Object"));
 }
 
 WaveFrontWriter* WaveFrontWriter::clone() const { return new WaveFrontWriter(*this); }

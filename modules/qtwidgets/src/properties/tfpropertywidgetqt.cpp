@@ -146,14 +146,14 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     auto* exportTF = menu->addAction("&Export TF...");
     importTF->setDisabled(property_->getReadOnly());
     connect(importTF, &QAction::triggered, this, [this]() {
-        if (auto tf = util::importTransferFunctionDialog(this)) {
+        if (auto tf = util::importTransferFunctionDialog()) {
             NetworkLock lock{property_};
             static_cast<TransferFunctionProperty*>(property_)->get() = *tf;
         }
     });
     connect(exportTF, &QAction::triggered, this, [this]() {
-        util::exportTransferFunctionDialog(static_cast<TransferFunctionProperty*>(property_)->get(),
-                                           this);
+        util::exportTransferFunctionDialog(
+            static_cast<TransferFunctionProperty*>(property_)->get());
     });
 
     return menu;

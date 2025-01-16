@@ -114,14 +114,13 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
     auto exportIso = menu->addAction("&Export Isovalues...");
     importIso->setEnabled(!property_->getReadOnly());
     connect(importIso, &QAction::triggered, this, [this]() {
-        if (auto iso = util::importIsoValueCollectionDialog(this)) {
+        if (auto iso = util::importIsoValueCollectionDialog()) {
             NetworkLock lock{property_};
             static_cast<IsoValueProperty*>(property_)->get() = *iso;
         }
     });
     connect(exportIso, &QAction::triggered, this, [this]() {
-        util::exportIsoValueCollectionDialog(static_cast<IsoValueProperty*>(property_)->get(),
-                                             this);
+        util::exportIsoValueCollectionDialog(static_cast<IsoValueProperty*>(property_)->get());
     });
 
     return menu;

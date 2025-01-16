@@ -597,7 +597,7 @@ void InviwoMainWindow::addActions() {
 
         auto exportNetworkImageFunc = [this, backgroundVisibleAction](bool entireScene) {
             return [this, backgroundVisibleAction, entireScene](bool /*state*/) {
-                InviwoFileDialog saveFileDialog(this, "Export Network ...", "image");
+                InviwoFileDialog saveFileDialog(nullptr, "Export Network ...", "image");
                 saveFileDialog.setFileMode(FileMode::AnyFile);
                 saveFileDialog.setAcceptMode(AcceptMode::Save);
                 saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
@@ -1209,7 +1209,7 @@ void InviwoMainWindow::openLastWorkspace(const std::filesystem::path& workspace)
 
 std::optional<std::filesystem::path> InviwoMainWindow::askForWorkspaceToOpen() {
     if (askToSaveWorkspaceChanges()) {
-        InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
+        InviwoFileDialog openFileDialog(nullptr, "Open Workspace ...", "workspace");
 
         openFileDialog.addSidebarPath(PathType::Workspaces);
         openFileDialog.addSidebarPath(lastWorkspaceFileDir_);
@@ -1318,7 +1318,7 @@ bool InviwoMainWindow::saveWorkspace() {
 }
 
 bool InviwoMainWindow::saveWorkspaceAs() {
-    InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
+    InviwoFileDialog saveFileDialog(nullptr, "Save Workspace ...", "workspace");
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
@@ -1342,7 +1342,7 @@ bool InviwoMainWindow::saveWorkspaceAs() {
 }
 
 void InviwoMainWindow::saveWorkspaceAsCopy() {
-    InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
+    InviwoFileDialog saveFileDialog(nullptr, "Save Workspace ...", "workspace");
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
     saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);

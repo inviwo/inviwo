@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/tetramesh/tetrameshmodule.h>
-
-#include <inviwo/tetramesh/datastructures/tetramesh.h>
-#include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-
-#include <modules/base/processors/inputselector.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/json/jsonmoduledefine.h>
+#include <modules/json/json.h>
+#include <inviwo/core/io/datareader.h>
+#include <iosfwd>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_JSON_API JSONReader : public DataReaderType<json> {
+public:
+    JSONReader();
+    JSONReader(const JSONReader&) = default;
+    JSONReader(JSONReader&&) noexcept = default;
+    JSONReader& operator=(const JSONReader&) = default;
+    JSONReader& operator=(JSONReader&&) noexcept = default;
+    virtual JSONReader* clone() const override;
+    virtual ~JSONReader() = default;
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
-
-    registerProcessor<InputSelector<MultiDataInport<TetraMesh>, DataOutport<TetraMesh>>>();
-
-    registerDefaultsForDataType<TetraMesh>();
-}
+    virtual std::shared_ptr<json> readData(const std::filesystem::path& fileName) override;
+    virtual std::shared_ptr<json> readData(const std::filesystem::path& filePath,
+                                           MetaDataOwner*) override;
+    std::shared_ptr<json> readData(std::istream& stream) const;
+};
 
 }  // namespace inviwo

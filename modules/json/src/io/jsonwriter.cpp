@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/tetrameshmodule.h>
+#include <modules/json/io/jsonwriter.h>
+#include <inviwo/core/util/fileextension.h>
 
-#include <inviwo/tetramesh/datastructures/tetramesh.h>
-#include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-
-#include <modules/base/processors/inputselector.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <fstream>
+#include <string>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+JSONWriter::JSONWriter() {
+    addExtension(FileExtension("json", "JavaScript Object Notation (JSON)"));
+}
+JSONWriter* JSONWriter::clone() const { return new JSONWriter(*this); }
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
+void JSONWriter::writeData(const json* data, const std::filesystem::path& filePath) const {
+    auto f = open(filePath);
+    writeData(data, f);
+}
+std::unique_ptr<std::vector<unsigned char>> JSONWriter::writeDataToBuffer(
+    const json* data, std::string_view fileExtension) const {
+    std::stringstream ss;
+    writeData(data, ss);
+    auto stringData = std::move(ss).str();
+    return std::make_unique<std::vector<unsigned char>>(stringData.begin(), stringData.end());
+}
 
-    registerProcessor<InputSelector<MultiDataInport<TetraMesh>, DataOutport<TetraMesh>>>();
-
-    registerDefaultsForDataType<TetraMesh>();
+void JSONWriter::writeData(const json* data, std::ostream& os) const {
+    if (data) {
+        os << *data;
+    }
 }
 
 }  // namespace inviwo

@@ -337,7 +337,8 @@ void camelCaseToHeader(std::string_view s, std::string& dest) {
     const auto first = dest.size();
     char previous = ' ';
     for (auto c : s) {
-        if (std::isalpha(c) && std::tolower(previous) == previous && std::toupper(c) == c) {
+        if (previous != ' ' && std::isalpha(c) && std::tolower(previous) == previous &&
+            std::toupper(c) == c) {
             dest.push_back(' ');
         }
         dest.push_back(c);
