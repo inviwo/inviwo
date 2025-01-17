@@ -86,9 +86,6 @@ float residualRatioTrackingTransmittance(vec3 raystart, vec3 raydir, float tStar
                                          sampler2D transferFunction, float opacityUpperbound,
                                          float opacityControl) {
     opacityUpperbound *= upperBoundMultiplier;
-    if (opacityUpperbound < 2e-6) {
-        return 1.f;
-    }
     float invMaxExtinction = 1.f / opacityToExtinction(opacityUpperbound);
     float invOpacitUpperbound = 1.f / opacityUpperbound;
     float t = tStart;
@@ -148,15 +145,13 @@ float poissonResidualTrackingTransmittance(vec3 raystart, vec3 raydir, float tSt
                                            sampler2D transferFunction, float opacityUpperbound,
                                            float opacityControl) {
     opacityUpperbound *= upperBoundMultiplier;
-    if (opacityUpperbound < 2e-6) {
-        return 1.f;
-    }
-    float invMaxExtinction = 1.f / (opacityUpperbound - opacityControl);
+    float controlUpperBoundDiff = (opacityUpperbound - opacityControl);
+    float invMaxExtinction = 1.f / controlUpperBoundDiff;
     float d = (tEnd - tStart);
     float Tc = exp(-opacityToExtinction(opacityControl) * d);
     float Tr = 1.f;  // Transmittance
 
-    int k = poisson_uni(hashSeed, d * (opacityToExtinction(opacityUpperbound - opacityControl)));
+    int k = poisson_uni(hashSeed, d * (opacityToExtinction(controlUpperBoundDiff)));
 
     for (int i = 0; i < k; i++) {
         float t = tStart + randomize(hashSeed) * d;

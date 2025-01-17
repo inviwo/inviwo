@@ -230,7 +230,7 @@ void main() {
     }
 
     vec4 color =
-        pathtrace(entryPoint, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
+        pathtrace(entryPoint.xyz, exitPoint, entryPointDepth, exitPointDepth, rayDepth, depth,
         bgColor);
 
     //vec4 color = rayOpacityTextureTesting(entryPoint, exitPoint, 4);
