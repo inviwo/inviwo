@@ -72,13 +72,13 @@ private:
     DirectoryProperty cacheDir_;
     OptionProperty<FileExtension> extensions_;
 
-    const DataReaderFactory& rf;
-    const DataWriterFactory& wf;
+    const DataReaderFactory& rf_;
+    const DataWriterFactory& wf_;
     struct Cache {
         std::string key;
         std::filesystem::path file;
     };
-    std::pmr::string xml;
+    std::pmr::string xml_;
     std::optional<Cache> cache_ = std::nullopt;
     bool isCached_ = false;
     std::string loadedKey_;
@@ -159,13 +159,13 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
 
     , cacheDir_{"cacheDir", "Cache Dir"}
     , extensions_{"readerWriter", "Data Reader And Writer"}
-    , rf{*app->getDataReaderFactory()}
-    , wf{*app->getDataWriterFactory()} {
+    , rf_{*app->getDataReaderFactory()}
+    , wf_{*app->getDataWriterFactory()} {
 
     addPorts(inport_, outport_);
     addProperties(cacheDir_, extensions_);
 
-    detail::updateFilenameFilters<DataType>(rf, wf, extensions_);
+    detail::updateFilenameFilters<DataType>(rf_, wf_, extensions_);
     extensions_.setCurrentStateAsDefault();
 
     isReady_.setUpdate([this]() {
@@ -181,7 +181,9 @@ template <typename DataType, typename InportType, typename OutportType>
 void FileCache<DataType, InportType, OutportType>::onProcessorNetworkEvaluationBegin() {
     if (extensions_.empty()) return;
 
-    const auto key = detail::cacheState(this, *getNetwork(), xml);
+    if (isValid()) return;
+
+    const auto key = detail::cacheState(this, *getNetwork(), xml_);
 
     const auto cf =
         cacheDir_.get() / fmt::format("{}.{}", key, extensions_.getSelectedValue().extension_);
@@ -219,7 +221,7 @@ void FileCache<DataType, InportType, OutportType>::process() {
     if (cache_ && loadedKey_ == cache_->key) {
         return;
     } else if (cache_ && isCached_) {
-        if (auto reader = rf.template getReaderForTypeAndExtension<DataType>(sext, cache_->file)) {
+        if (auto reader = rf_.template getReaderForTypeAndExtension<DataType>(sext, cache_->file)) {
             outport_.setData(reader->readData(cache_->file));
             loadedKey_ = cache_->key;
         } else {
@@ -229,13 +231,13 @@ void FileCache<DataType, InportType, OutportType>::process() {
         if (auto data = inport_.getData()) {
 
             if (auto writer =
-                    wf.template getWriterForTypeAndExtension<DataType>(sext, cache_->file)) {
+                    wf_.template getWriterForTypeAndExtension<DataType>(sext, cache_->file)) {
                 writer->writeData(data.get(), cache_->file);
             } else {
                 throw Exception("No writer found");
             }
             if (auto f = std::ofstream(cacheDir_.get() / fmt::format("{}.inv", cache_->key))) {
-                f << xml;
+                f << xml_;
             } else {
                 throw Exception(SourceContext{}, "Could not write to xml file: {}/{}.inv",
                                 cacheDir_.get(), cache_->key);
