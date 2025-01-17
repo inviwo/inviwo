@@ -62,11 +62,15 @@ runs:
         sudo update-alternatives --set gcc /usr/bin/gcc-${{ inputs.gcc-version }}
 
     - name: "Setup Clang ${{ inputs.clang-version }}"
+      shell: bash
       if: runner.os == 'Linux' && inputs.linux-compilter == 'clang'
-      uses: KyleMayes/install-llvm-action@v2
-      with:
-        version: ${{ inputs.clang-version }}
-        env: true
+      run: |
+        sudo apt install --fix-missing clang-${{ inputs.clang-version }} \
+                                       clang-tidy-${{ inputs.clang-version }} \
+                                       clang-format-${{ inputs.clang-version }} 
+        echo "LLVM_PATH=/usr/lib/llvm-${{ inputs.clang-version }}/bin"   >> $GITHUB_ENV
+        echo "CC=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang"    >> $GITHUB_ENV
+        echo "CXX=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang++" >> $GITHUB_ENV
 
     - name: "Setup Python"
       uses: actions/setup-python@v5
@@ -98,6 +102,3 @@ runs:
         dir: ${{ github.workspace }}
         setup-python: false
         archives: 'qtbase qtsvg'
-
-
-

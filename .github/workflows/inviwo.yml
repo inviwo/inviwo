@@ -385,7 +385,6 @@ jobs:
       shell: bash
       run: >
         cmake -S inviwo -B build --preset gha-dynamic
-        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DCMAKE_BUILD_TYPE=Release
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_WEBBROWSER=ON
