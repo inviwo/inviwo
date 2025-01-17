@@ -8,11 +8,11 @@ New file caching processors have been added:
  * `JSON File Cache` 
  * `DataFrame File Cache`
 
-They can be used to "cache" result from step within the network. Just drop a File Cache processor on a connection, and it will capture the state of all the processors above it in a hash and then save it's data to disk.
-If the same state happens at a later point the processor will load the data from disk, and the potentially expensive computation above can be avoided. 
+They can be used to "cache" results from steps within the network. Just drop a File Cache processor onto a connection, and it will capture the state of all the processors above it in a hash and then save its data to disk.
+If the same state happens at a later point, the processor will load the data from disk, and the potentially expensive computation above can be avoided. 
 
-The the screenshot below show an example where we have cached the results of an "expensive"  `Volume Creator`. 
-Here we have reloaded the network and can note that the `Volume Creator` have not been run, since the `File Cache` was able to provide the data.
+The screenshot below shows an example where we have cached the results of an "expensive"  `Volume Creator`. 
+Here we have reloaded the network and can note that the `Volume Creator` has not been run since the `File Cache` was able to provide the data.
 ![File cache example](resources/changelog/filecache.png)
 
 For the File Cache processor to work you have to provide an existing directory to store caches in. The processor will never remove any caches, so you might want to do that manually periodically. 
