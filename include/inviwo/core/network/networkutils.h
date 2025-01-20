@@ -80,33 +80,33 @@ template <TraversalDirection D, VisitPattern V, typename Func,
 void traverseNetwork(
     std::unordered_set<Processor*, std::hash<Processor*>, std::equal_to<Processor*>, Alloc>& state,
     Processor* processor, Func f, Filter connectionFilter = DefaultTraversalFilter{}) {
-    if (state.count(processor) == 0) {
-        state.insert(processor);
+    if (state.contains(processor)) return;
 
-        if constexpr (V == VisitPattern::Pre) f(processor);
+    state.insert(processor);
 
-        if constexpr (D == TraversalDirection::Up) {
-            for (auto port : processor->getInports()) {
-                for (auto connectedPort : port->getConnectedOutports()) {
-                    if (connectionFilter(processor, port, connectedPort)) {
-                        traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
-                                                    connectionFilter);
-                    }
-                }
-            }
-        } else {
-            for (auto port : processor->getOutports()) {
-                for (auto connectedPort : port->getConnectedInports()) {
-                    if (connectionFilter(processor, port, connectedPort)) {
-                        traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
-                                                    connectionFilter);
-                    }
+    if constexpr (V == VisitPattern::Pre) f(processor);
+
+    if constexpr (D == TraversalDirection::Up) {
+        for (auto port : processor->getInports()) {
+            for (auto connectedPort : port->getConnectedOutports()) {
+                if (connectionFilter(processor, port, connectedPort)) {
+                    traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
+                                                connectionFilter);
                 }
             }
         }
-
-        if constexpr (V == VisitPattern::Post) f(processor);
+    } else {
+        for (auto port : processor->getOutports()) {
+            for (auto connectedPort : port->getConnectedInports()) {
+                if (connectionFilter(processor, port, connectedPort)) {
+                    traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
+                                                connectionFilter);
+                }
+            }
+        }
     }
+
+    if constexpr (V == VisitPattern::Post) f(processor);
 }
 
 IVW_CORE_API std::vector<Processor*> topologicalSortFiltered(ProcessorNetwork* network);

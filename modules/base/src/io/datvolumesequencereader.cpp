@@ -84,7 +84,7 @@ struct State {
     const DataFormatBase* format = nullptr;
     bool littleEndian = true;
 
-    std::string formatFlag = "";
+    std::string formatFlag;
     mat3 basis{2.0f};
     std::optional<vec3> offset = std::nullopt;
     std::optional<vec3> spacing = std::nullopt;
@@ -360,7 +360,7 @@ std::shared_ptr<Volume> createVolume(const State& state) {
     volume->dataMap.valueAxis.name = state.valueName;
     volume->axes = state.axes;
 
-    for (auto elem : state.metadata) {
+    for (const auto& elem : state.metadata) {
         volume->setMetaData<StringMetaData>(elem.first, elem.second);
     }
 
@@ -477,7 +477,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
                 // to compute for all time steps
                 updateDataRange(*volumes->front(), state);
                 if (bytes > 128 * 128 * 128 || state.sequences > 1) {
-                    // Performance warning for larger volumes (rougly > 2MB)
+                    // Performance warning for larger volumes (roughly > 2MB)
                     perfWarning(*volumes->front(), filePath);
                 }
                 if (state.sequences > 1) {

@@ -55,7 +55,11 @@ template <typename DataType, typename InportType = DataInport<DataType>,
           typename OutportType = DataOutport<DataType>>
 class FileCache : public Processor, public ProcessorNetworkEvaluationObserver {
 public:
-    FileCache(InviwoApplication* app);
+    explicit FileCache(InviwoApplication* app);
+    FileCache(const FileCache&) = delete;
+    FileCache(FileCache&&) = delete;
+    FileCache& operator=(const FileCache&) = delete;
+    FileCache& operator=(FileCache&&) = delete;
 
     virtual void process() override;
 
