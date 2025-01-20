@@ -18,6 +18,6 @@ var searchData=
   ['expandcompositeprocessorintonetwork_15',['expandCompositeProcessorIntoNetwork',['../namespaceinviwo_1_1util.html#a4c89b716938f61f15132ae42d6d4a16b',1,'inviwo::util']]],
   ['exportallfiles_16',['exportAllFiles',['../namespaceinviwo_1_1util.html#ac1e400fc2734a064a4b9257da2776893',1,'inviwo::util']]],
   ['exportfile_17',['exportFile',['../classinviwo_1_1CanvasProcessor.html#a91b5876c21f8b6c1cb6096f781a8c3a0',1,'inviwo::CanvasProcessor::exportFile()'],['../classinviwo_1_1Exporter.html#a9ec52a70bed8b76ace3a5b9fe8f7b376',1,'inviwo::Exporter::exportFile()'],['../classinviwo_1_1DataFrameTable.html#a1f4310fa4fd8de8360b3baaf1cd54b47',1,'inviwo::DataFrameTable::exportFile()'],['../classinviwo_1_1CanvasWithPropertiesProcessor.html#a10b92e838106b3584c3b282ba0c39fa2',1,'inviwo::CanvasWithPropertiesProcessor::exportFile()']]],
-  ['exportisovaluecollectiondialog_18',['exportIsoValueCollectionDialog',['../namespaceinviwo_1_1util.html#a754bddb595bebae365189d7de121ec9a',1,'inviwo::util']]],
-  ['exporttransferfunctiondialog_19',['exportTransferFunctionDialog',['../namespaceinviwo_1_1util.html#a7336f466792bdd174b745bd6285048bc',1,'inviwo::util']]]
+  ['exportisovaluecollectiondialog_18',['exportIsoValueCollectionDialog',['../namespaceinviwo_1_1util.html#a34a9e3c48f540abb09474bfff830fe76',1,'inviwo::util']]],
+  ['exporttransferfunctiondialog_19',['exportTransferFunctionDialog',['../namespaceinviwo_1_1util.html#a777c6629181cd035dde67507f9be94a9',1,'inviwo::util']]]
 ];

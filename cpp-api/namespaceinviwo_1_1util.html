@@ -623,10 +623,10 @@ IVW_CORE_API std::unordered_set&lt; <a class="el" href="classinviwo_1_1Processor
 <tr class="memitem:a0bb8d1b84ba1196842c236e7e45b6cd9" id="r_a0bb8d1b84ba1196842c236e7e45b6cd9"><td class="memItemLeft" align="right" valign="top"><a id="a0bb8d1b84ba1196842c236e7e45b6cd9" name="a0bb8d1b84ba1196842c236e7e45b6cd9"></a>
 IVW_CORE_API std::unordered_set&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSuccessors</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor)</td></tr>
 <tr class="separator:a0bb8d1b84ba1196842c236e7e45b6cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8265d9e0a2ad906d2ffb7d2671efc65" id="r_ab8265d9e0a2ad906d2ffb7d2671efc65"><td class="memTemplParams" colspan="2"><a id="ab8265d9e0a2ad906d2ffb7d2671efc65" name="ab8265d9e0a2ad906d2ffb7d2671efc65"></a>
-template&lt;TraversalDirection D, VisitPattern V, typename Func, typename <a class="el" href="namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">Filter</a> = DefaultTraversalFilter&gt; </td></tr>
-<tr class="memitem:ab8265d9e0a2ad906d2ffb7d2671efc65"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>traverseNetwork</b> (std::unordered_set&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;state, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, Func f, <a class="el" href="namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">Filter</a> connectionFilter=<a class="el" href="structinviwo_1_1util_1_1DefaultTraversalFilter.html">DefaultTraversalFilter</a>{})</td></tr>
-<tr class="separator:ab8265d9e0a2ad906d2ffb7d2671efc65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a494e09b58d597b84722f3c492ac2b460" id="r_a494e09b58d597b84722f3c492ac2b460"><td class="memTemplParams" colspan="2"><a id="a494e09b58d597b84722f3c492ac2b460" name="a494e09b58d597b84722f3c492ac2b460"></a>
+template&lt;TraversalDirection D, VisitPattern V, typename Func, typename <a class="el" href="namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">Filter</a> = DefaultTraversalFilter, typename Alloc = std::allocator&lt;Processor*&gt;&gt; </td></tr>
+<tr class="memitem:a494e09b58d597b84722f3c492ac2b460"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>traverseNetwork</b> (std::unordered_set&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, std::hash&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;, std::equal_to&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;, Alloc &gt; &amp;state, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, Func f, <a class="el" href="namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a">Filter</a> connectionFilter=<a class="el" href="structinviwo_1_1util_1_1DefaultTraversalFilter.html">DefaultTraversalFilter</a>{})</td></tr>
+<tr class="separator:a494e09b58d597b84722f3c492ac2b460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5a41b8c7fc838241322d10ec52760b4" id="r_aa5a41b8c7fc838241322d10ec52760b4"><td class="memItemLeft" align="right" valign="top"><a id="aa5a41b8c7fc838241322d10ec52760b4" name="aa5a41b8c7fc838241322d10ec52760b4"></a>
 IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>topologicalSortFiltered</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network)</td></tr>
 <tr class="separator:aa5a41b8c7fc838241322d10ec52760b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1765,18 +1765,20 @@ template&lt;typename T&gt; </td></tr>
 template&lt;class T, class... Args&gt; </td></tr>
 <tr class="memitem:a2e4897a3d44e5783c20282e56a1a2a47"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_qptr</b> (Args &amp;&amp;... args)</td></tr>
 <tr class="separator:a2e4897a3d44e5783c20282e56a1a2a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd9a27c97b0b7391d9538f03a329b4d0" id="r_afd9a27c97b0b7391d9538f03a329b4d0"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd9a27c97b0b7391d9538f03a329b4d0">importTransferFunctionDialog</a> (QWidget *parent=nullptr)</td></tr>
-<tr class="memdesc:afd9a27c97b0b7391d9538f03a329b4d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to import a <a class="el" href="classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data">TransferFunction</a> from a file.  <br /></td></tr>
-<tr class="separator:afd9a27c97b0b7391d9538f03a329b4d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7336f466792bdd174b745bd6285048bc" id="r_a7336f466792bdd174b745bd6285048bc"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7336f466792bdd174b745bd6285048bc">exportTransferFunctionDialog</a> (const <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &amp;tf, QWidget *parent=nullptr)</td></tr>
-<tr class="memdesc:a7336f466792bdd174b745bd6285048bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to export a <a class="el" href="classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives">TFPrimitiveSet</a> to a file.  <br /></td></tr>
-<tr class="separator:a7336f466792bdd174b745bd6285048bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af36a5eb1a40ce3beee139b0564980a54" id="r_af36a5eb1a40ce3beee139b0564980a54"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af36a5eb1a40ce3beee139b0564980a54">importIsoValueCollectionDialog</a> (QWidget *parent=nullptr)</td></tr>
-<tr class="memdesc:af36a5eb1a40ce3beee139b0564980a54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to import a <a class="el" href="classinviwo_1_1IsoValueCollection.html" title="data structure representing isovalues">IsoValueCollection</a> from a file.  <br /></td></tr>
-<tr class="separator:af36a5eb1a40ce3beee139b0564980a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a754bddb595bebae365189d7de121ec9a" id="r_a754bddb595bebae365189d7de121ec9a"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a754bddb595bebae365189d7de121ec9a">exportIsoValueCollectionDialog</a> (const <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &amp;iso, QWidget *parent=nullptr)</td></tr>
-<tr class="memdesc:a754bddb595bebae365189d7de121ec9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to export a <a class="el" href="classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives">TFPrimitiveSet</a> to a file.  <br /></td></tr>
-<tr class="separator:a754bddb595bebae365189d7de121ec9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5197563ab66e48de72c4743a8043c6ca" id="r_a5197563ab66e48de72c4743a8043c6ca"><td class="memItemLeft" align="right" valign="top"><a id="a5197563ab66e48de72c4743a8043c6ca" name="a5197563ab66e48de72c4743a8043c6ca"></a>
+IVW_MODULE_QTWIDGETS_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>importTransferFunctionDialog</b> ()</td></tr>
+<tr class="memdesc:a5197563ab66e48de72c4743a8043c6ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to import a <a class="el" href="classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data">TransferFunction</a> from a file. <br /></td></tr>
+<tr class="separator:a5197563ab66e48de72c4743a8043c6ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a777c6629181cd035dde67507f9be94a9" id="r_a777c6629181cd035dde67507f9be94a9"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a777c6629181cd035dde67507f9be94a9">exportTransferFunctionDialog</a> (const <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &amp;tf)</td></tr>
+<tr class="memdesc:a777c6629181cd035dde67507f9be94a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to export a <a class="el" href="classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives">TFPrimitiveSet</a> to a file.  <br /></td></tr>
+<tr class="separator:a777c6629181cd035dde67507f9be94a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62ec8299689d2becb16e21cbfbe98f37" id="r_a62ec8299689d2becb16e21cbfbe98f37"><td class="memItemLeft" align="right" valign="top"><a id="a62ec8299689d2becb16e21cbfbe98f37" name="a62ec8299689d2becb16e21cbfbe98f37"></a>
+IVW_MODULE_QTWIDGETS_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>importIsoValueCollectionDialog</b> ()</td></tr>
+<tr class="memdesc:a62ec8299689d2becb16e21cbfbe98f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to import a <a class="el" href="classinviwo_1_1IsoValueCollection.html" title="data structure representing isovalues">IsoValueCollection</a> from a file. <br /></td></tr>
+<tr class="separator:a62ec8299689d2becb16e21cbfbe98f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34a9e3c48f540abb09474bfff830fe76" id="r_a34a9e3c48f540abb09474bfff830fe76"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a34a9e3c48f540abb09474bfff830fe76">exportIsoValueCollectionDialog</a> (const <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &amp;iso)</td></tr>
+<tr class="memdesc:a34a9e3c48f540abb09474bfff830fe76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to export a <a class="el" href="classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives">TFPrimitiveSet</a> to a file.  <br /></td></tr>
+<tr class="separator:a34a9e3c48f540abb09474bfff830fe76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a416c8d9416964edc5a92908f30761f6f" id="r_a416c8d9416964edc5a92908f30761f6f"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API QMenu *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a416c8d9416964edc5a92908f30761f6f">addTFPresetsMenu</a> (QWidget *parent, QMenu *menu, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *property)</td></tr>
 <tr class="memdesc:a416c8d9416964edc5a92908f30761f6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a submenu containing entries for TF presets of all transfer functions found in the path <code>PathType::TransferFunctions</code>. Upon selecting a menu entry, the respective preset will be loaded by <code class="param">property</code>. The submenu will be disabled if <code class="param">property</code> is read-only.  <br /></td></tr>
 <tr class="separator:a416c8d9416964edc5a92908f30761f6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2121,7 +2123,6 @@ template&lt;typename T&gt; </div>
 <p>create a submenu containing entries for TF presets of all transfer functions found in the path <code>PathType::TransferFunctions</code>. Upon selecting a menu entry, the respective preset will be loaded by <code class="param">property</code>. The submenu will be disabled if <code class="param">property</code> is read-only. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">parent</td><td>parent widget </td></tr>
     <tr><td class="paramname">menu</td><td>parent menu to which the TF preset submenu should be added </td></tr>
     <tr><td class="paramname">property</td><td>this property will load the TF presets once the menu entries are triggered </td></tr>
   </table>
@@ -3226,8 +3227,8 @@ template&lt;typename TIndex = size_t, typename T, typename... Ts&gt; </div>
 
 </div>
 </div>
-<a id="a754bddb595bebae365189d7de121ec9a" name="a754bddb595bebae365189d7de121ec9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a754bddb595bebae365189d7de121ec9a">&#9670;&#160;</a></span>exportIsoValueCollectionDialog()</h2>
+<a id="a34a9e3c48f540abb09474bfff830fe76" name="a34a9e3c48f540abb09474bfff830fe76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34a9e3c48f540abb09474bfff830fe76">&#9670;&#160;</a></span>exportIsoValueCollectionDialog()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3235,12 +3236,8 @@ template&lt;typename TIndex = size_t, typename T, typename... Ts&gt; </div>
         <tr>
           <td class="memname">IVW_MODULE_QTWIDGETS_API void inviwo::util::exportIsoValueCollectionDialog </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>iso</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>iso</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3249,15 +3246,14 @@ template&lt;typename TIndex = size_t, typename T, typename... Ts&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">iso</td><td><a class="el" href="classinviwo_1_1IsoValueCollection.html" title="data structure representing isovalues">IsoValueCollection</a> set to be exported </td></tr>
-    <tr><td class="paramname">parent</td><td>parent widget of the file dialog </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a7336f466792bdd174b745bd6285048bc" name="a7336f466792bdd174b745bd6285048bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7336f466792bdd174b745bd6285048bc">&#9670;&#160;</a></span>exportTransferFunctionDialog()</h2>
+<a id="a777c6629181cd035dde67507f9be94a9" name="a777c6629181cd035dde67507f9be94a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a777c6629181cd035dde67507f9be94a9">&#9670;&#160;</a></span>exportTransferFunctionDialog()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3265,12 +3261,8 @@ template&lt;typename TIndex = size_t, typename T, typename... Ts&gt; </div>
         <tr>
           <td class="memname">IVW_MODULE_QTWIDGETS_API void inviwo::util::exportTransferFunctionDialog </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>tf</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>tf</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3279,7 +3271,6 @@ template&lt;typename TIndex = size_t, typename T, typename... Ts&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tf</td><td><a class="el" href="classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data">TransferFunction</a> set to be exported </td></tr>
-    <tr><td class="paramname">parent</td><td>parent widget of the file dialog </td></tr>
   </table>
   </dd>
 </dl>
@@ -5671,56 +5662,6 @@ template&lt;class T&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if last part of str is equal to suffix, false otherwise. </dd></dl>
-
-</div>
-</div>
-<a id="af36a5eb1a40ce3beee139b0564980a54" name="af36a5eb1a40ce3beee139b0564980a54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af36a5eb1a40ce3beee139b0564980a54">&#9670;&#160;</a></span>importIsoValueCollectionDialog()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IVW_MODULE_QTWIDGETS_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &gt; inviwo::util::importIsoValueCollectionDialog </td>
-          <td>(</td>
-          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to import a <a class="el" href="classinviwo_1_1IsoValueCollection.html" title="data structure representing isovalues">IsoValueCollection</a> from a file. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">parent</td><td>parent widget of the file dialog </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="afd9a27c97b0b7391d9538f03a329b4d0" name="afd9a27c97b0b7391d9538f03a329b4d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd9a27c97b0b7391d9538f03a329b4d0">&#9670;&#160;</a></span>importTransferFunctionDialog()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IVW_MODULE_QTWIDGETS_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> &gt; inviwo::util::importTransferFunctionDialog </td>
-          <td>(</td>
-          <td class="paramtype">QWidget *</td>          <td class="paramname"><span class="paramname"><em>parent</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Shows an <a class="el" href="classinviwo_1_1InviwoFileDialog.html">InviwoFileDialog</a> to import a <a class="el" href="classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data">TransferFunction</a> from a file. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">parent</td><td>parent widget of the file dialog </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

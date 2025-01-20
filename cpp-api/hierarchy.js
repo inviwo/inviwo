@@ -331,6 +331,7 @@ var hierarchy =
       ] ],
       [ "inviwo::DataReaderType< Volume >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::CImgVolumeReader", "classinviwo_1_1CImgVolumeReader.html", null ],
+        [ "inviwo::DatVolumeReader", "classinviwo_1_1DatVolumeReader.html", null ],
         [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
         [ "inviwo::MPVMVolumeReader", "classinviwo_1_1MPVMVolumeReader.html", null ],
         [ "inviwo::PVMVolumeReader", "classinviwo_1_1PVMVolumeReader.html", null ],
@@ -348,6 +349,9 @@ var hierarchy =
       ] ],
       [ "inviwo::DataReaderType< IsoValueCollection >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::IsoValueCollectionIIVReader", "classinviwo_1_1IsoValueCollectionIIVReader.html", null ]
+      ] ],
+      [ "inviwo::DataReaderType< json >", "classinviwo_1_1DataReaderType.html", [
+        [ "inviwo::JSONReader", "classinviwo_1_1JSONReader.html", null ]
       ] ],
       [ "inviwo::DataReaderType< TransferFunction >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::TransferFunctionITFReader", "classinviwo_1_1TransferFunctionITFReader.html", null ],
@@ -446,6 +450,7 @@ var hierarchy =
       ] ],
       [ "inviwo::DataWriterType< DataFrame >", "classinviwo_1_1DataWriterType.html", [
         [ "inviwo::CSVWriter", "classinviwo_1_1CSVWriter.html", null ],
+        [ "inviwo::JSONDataFrameWriter", "classinviwo_1_1JSONDataFrameWriter.html", null ],
         [ "inviwo::XMLWriter", "classinviwo_1_1XMLWriter.html", null ]
       ] ],
       [ "inviwo::DataWriterType< Volume >", "classinviwo_1_1DataWriterType.html", [
@@ -458,6 +463,9 @@ var hierarchy =
       ] ],
       [ "inviwo::DataWriterType< VolumeSequence >", "classinviwo_1_1DataWriterType.html", [
         [ "inviwo::IvfSequenceVolumeWriter", "classinviwo_1_1IvfSequenceVolumeWriter.html", null ]
+      ] ],
+      [ "inviwo::DataWriterType< json >", "classinviwo_1_1DataWriterType.html", [
+        [ "inviwo::JSONWriter", "classinviwo_1_1JSONWriter.html", null ]
       ] ],
       [ "inviwo::DataWriterType< TransferFunction >", "classinviwo_1_1DataWriterType.html", [
         [ "inviwo::TransferFunctionITFWriter", "classinviwo_1_1TransferFunctionITFWriter.html", null ],
@@ -631,6 +639,7 @@ var hierarchy =
         [ "inviwo::EmbeddedVolumeSlice", "classinviwo_1_1EmbeddedVolumeSlice.html", null ],
         [ "inviwo::EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", null ],
         [ "inviwo::FXAA", "classinviwo_1_1FXAA.html", null ],
+        [ "inviwo::FileCache< DataType, InportType, OutportType >", "classinviwo_1_1FileCache.html", null ],
         [ "inviwo::FirstIvwProcessor", "classinviwo_1_1FirstIvwProcessor.html", null ],
         [ "inviwo::Fog", "classinviwo_1_1Fog.html", null ],
         [ "inviwo::GLUITestProcessor", "classinviwo_1_1GLUITestProcessor.html", null ],
@@ -2216,6 +2225,7 @@ var hierarchy =
         [ "inviwo::ProcessorNetwork", "classinviwo_1_1ProcessorNetwork.html", null ]
       ] ],
       [ "inviwo::ProcessorNetworkEvaluationObserver", "classinviwo_1_1ProcessorNetworkEvaluationObserver.html", [
+        [ "inviwo::FileCache< DataType, InportType, OutportType >", "classinviwo_1_1FileCache.html", null ],
         [ "inviwo::GLFWModule", "classinviwo_1_1GLFWModule.html", null ],
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
         [ "inviwo::OpenGLQtModule", "classinviwo_1_1OpenGLQtModule.html", null ]
@@ -2644,6 +2654,7 @@ var hierarchy =
     [ "inviwo::ProcessorTraits< BasisTransform< Volume > >", "structinviwo_1_1ProcessorTraits_3_01BasisTransform_3_01Volume_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< CompositeSink< InportType, OutportType > >", "structinviwo_1_1ProcessorTraits_3_01CompositeSink_3_01InportType_00_01OutportType_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< CompositeSource< InportType, OutportType > >", "structinviwo_1_1ProcessorTraits_3_01CompositeSource_3_01InportType_00_01OutportType_01_4_01_4.html", null ],
+    [ "inviwo::ProcessorTraits< FileCache< DataType, InportType, OutportType > >", "structinviwo_1_1ProcessorTraits_3_01FileCache_3_01DataType_00_01InportType_00_01OutportType_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< HistogramToDataFrame< Layer > >", "structinviwo_1_1ProcessorTraits_3_01HistogramToDataFrame_3_01Layer_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< HistogramToDataFrame< Volume > >", "structinviwo_1_1ProcessorTraits_3_01HistogramToDataFrame_3_01Volume_01_4_01_4.html", null ],
     [ "inviwo::ProcessorTraits< InputSelector< Inport, Outport > >", "structinviwo_1_1ProcessorTraits_3_01InputSelector_3_01Inport_00_01Outport_01_4_01_4.html", null ],

@@ -13,9 +13,12 @@ var searchData=
   ['jsonconverterregistry_3c_20outport_20_3e_10',['JSONConverterRegistry&lt; Outport &gt;',['../classinviwo_1_1JSONConverterRegistry.html',1,'inviwo']]],
   ['jsonconverterregistry_3c_20property_20_3e_11',['JSONConverterRegistry&lt; Property &gt;',['../classinviwo_1_1JSONConverterRegistry.html',1,'inviwo']]],
   ['jsondataframereader_12',['JSONDataFrameReader',['../classinviwo_1_1JSONDataFrameReader.html',1,'inviwo']]],
-  ['jsonmodule_13',['JSONModule',['../classinviwo_1_1JSONModule.html',1,'inviwo']]],
-  ['jsonsupplier_14',['JSONSupplier',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
-  ['jsonsupplier_3c_20inport_2c_20porttraits_20_3e_15',['JSONSupplier&lt; Inport, PortTraits &gt;',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
-  ['jsonsupplier_3c_20outport_2c_20porttraits_20_3e_16',['JSONSupplier&lt; Outport, PortTraits &gt;',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
-  ['jsonsupplier_3c_20property_2c_20propertytraits_20_3e_17',['JSONSupplier&lt; Property, PropertyTraits &gt;',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]]
+  ['jsondataframewriter_13',['JSONDataFrameWriter',['../classinviwo_1_1JSONDataFrameWriter.html',1,'inviwo']]],
+  ['jsonmodule_14',['JSONModule',['../classinviwo_1_1JSONModule.html',1,'inviwo']]],
+  ['jsonreader_15',['JSONReader',['../classinviwo_1_1JSONReader.html',1,'inviwo']]],
+  ['jsonsupplier_16',['JSONSupplier',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
+  ['jsonsupplier_3c_20inport_2c_20porttraits_20_3e_17',['JSONSupplier&lt; Inport, PortTraits &gt;',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
+  ['jsonsupplier_3c_20outport_2c_20porttraits_20_3e_18',['JSONSupplier&lt; Outport, PortTraits &gt;',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
+  ['jsonsupplier_3c_20property_2c_20propertytraits_20_3e_19',['JSONSupplier&lt; Property, PropertyTraits &gt;',['../classinviwo_1_1JSONSupplier.html',1,'inviwo']]],
+  ['jsonwriter_20',['JSONWriter',['../classinviwo_1_1JSONWriter.html',1,'inviwo']]]
 ];

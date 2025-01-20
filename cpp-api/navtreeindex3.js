@@ -88,6 +88,8 @@ var NAVTREEINDEX3 =
 "classinviwo_1_1CustomDoubleSpinBoxQt.html#a713e1c732b7d494d24869552109bcf78":[4,0,1,184,0],
 "classinviwo_1_1CustomDoubleSpinBoxQt.html#adaae841d9c603ba8455455a1e67e8d32":[2,0,0,177,1],
 "classinviwo_1_1CustomDoubleSpinBoxQt.html#adaae841d9c603ba8455455a1e67e8d32":[4,0,1,184,1],
+"classinviwo_1_1DatVolumeReader.html":[2,0,0,243],
+"classinviwo_1_1DatVolumeReader.html":[4,0,1,250],
 "classinviwo_1_1DatVolumeSequenceReader.html":[1,0,7],
 "classinviwo_1_1DatVolumeWriter.html":[1,0,8],
 "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a":[1,0,8,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX3 =
 "classinviwo_1_1DataReader.html#a9c1a337b2481488fd247aa64387385b4":[1,0,0,2],
 "classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88":[1,0,0,1],
 "classinviwo_1_1DataReaderException.html":[2,0,0,208],
-"classinviwo_1_1DataReaderException.html":[4,0,1,215],
-"classinviwo_1_1DataReaderFactory.html":[2,0,0,209],
-"classinviwo_1_1DataReaderFactory.html":[4,0,1,216]
+"classinviwo_1_1DataReaderException.html":[4,0,1,215]
 };
