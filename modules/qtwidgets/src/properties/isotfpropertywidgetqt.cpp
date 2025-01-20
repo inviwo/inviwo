@@ -88,6 +88,10 @@ IsoTFPropertyWidgetQt::~IsoTFPropertyWidgetQt() {
     if (tfDialog_) tfDialog_->hide();
 }
 
+IsoTFProperty* IsoTFPropertyWidgetQt::isoTfProperty() const {
+    return static_cast<IsoTFProperty*>(property_);
+}
+
 void IsoTFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
 TFPropertyDialog* IsoTFPropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
@@ -110,17 +114,16 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     clearTF->setEnabled(!property_->getReadOnly());
 
     connect(clearTF, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        auto p = static_cast<IsoTFProperty*>(property_);
+        const NetworkLock lock(property_);
+        auto* p = isoTfProperty();
         p->tf_.get().clear();
         p->isovalues_.get().clear();
     });
 
     menu->addSeparator();
 
-    util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
-    util::addTFColorbrewerPresetsMenu(this, menu.get(),
-                                      &static_cast<IsoTFProperty*>(property_)->tf_);
+    util::addTFPresetsMenu(this, menu.get(), &isoTfProperty()->tf_);
+    util::addTFColorbrewerPresetsMenu(this, menu.get(), &isoTfProperty()->tf_);
 
     menu->addSeparator();
 
@@ -132,26 +135,23 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto importIso = importMenu->addAction("&Isovalues...");
     connect(importTF, &QAction::triggered, this, [this]() {
         if (auto tf = util::importTransferFunctionDialog()) {
-            NetworkLock lock{property_};
-            static_cast<IsoTFProperty*>(property_)->tf_.get() = *tf;
+            const NetworkLock lock{property_};
+            isoTfProperty()->tf_.get() = *tf;
         }
     });
     connect(importIso, &QAction::triggered, this, [this]() {
         if (auto iso = util::importIsoValueCollectionDialog()) {
-            NetworkLock lock{property_};
-            static_cast<IsoTFProperty*>(property_)->isovalues_.get() = *iso;
+            const NetworkLock lock{property_};
+            isoTfProperty()->isovalues_.get() = *iso;
         }
     });
 
     auto exportTF = exportMenu->addAction("&TF...");
     auto exportIso = exportMenu->addAction("&Isovalues...");
-    connect(exportTF, &QAction::triggered, this, [this]() {
-        util::exportTransferFunctionDialog(static_cast<IsoTFProperty*>(property_)->tf_.get());
-    });
-    connect(exportIso, &QAction::triggered, this, [this]() {
-        util::exportIsoValueCollectionDialog(
-            static_cast<IsoTFProperty*>(property_)->isovalues_.get());
-    });
+    connect(exportTF, &QAction::triggered, this,
+            [this]() { util::exportTransferFunctionDialog(isoTfProperty()->tf_.get()); });
+    connect(exportIso, &QAction::triggered, this,
+            [this]() { util::exportIsoValueCollectionDialog(isoTfProperty()->isovalues_.get()); });
 
     return menu;
 }

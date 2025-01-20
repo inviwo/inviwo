@@ -55,7 +55,7 @@ void JSONDataFrameWriter::writeData(const DataFrame* data,
     writeData(data, f);
 }
 std::unique_ptr<std::vector<unsigned char>> JSONDataFrameWriter::writeDataToBuffer(
-    const DataFrame* data, std::string_view fileExtension) const {
+    const DataFrame* data, std::string_view) const {
     std::stringstream ss;
     writeData(data, ss);
     auto stringData = std::move(ss).str();

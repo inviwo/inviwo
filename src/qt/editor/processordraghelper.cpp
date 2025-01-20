@@ -110,7 +110,7 @@ bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
 bool ProcessorDragHelper::enter(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime) {
     e->acceptProposedAction();
     try {
-        auto processor = mime->processor();
+        auto* processor = mime->processor();
         const auto zoom = 1.0 / editor_.views().front()->transform().m11();
         automator_.enter(e->scenePos(), e->modifiers(), *processor, zoom);
     } catch (const Exception& exception) {
@@ -125,7 +125,7 @@ bool ProcessorDragHelper::enter(QGraphicsSceneDragDropEvent* e, const ProcessorM
 bool ProcessorDragHelper::move(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime) {
     e->accept();
     try {
-        auto processor = mime->processor();
+        auto* processor = mime->processor();
         util::setPosition(processor, utilqt::toGLM(e->scenePos()));
 
         const auto zoom = 1.0 / editor_.views().front()->transform().m11();

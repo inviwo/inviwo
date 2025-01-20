@@ -69,8 +69,7 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
 
     connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
         if (!tfDialog_) {
-            tfDialog_ =
-                std::make_unique<TFPropertyDialog>(static_cast<IsoValueProperty*>(property_));
+            tfDialog_ = std::make_unique<TFPropertyDialog>(isoProperty());
             tfDialog_->setVisible(true);
         } else {
             tfDialog_->setVisible(!tfDialog_->isVisible());
@@ -80,6 +79,10 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     setSizePolicy(sp);
+}
+
+IsoValueProperty* IsoValuePropertyWidgetQt::isoProperty() const {
+    return static_cast<IsoValueProperty*>(property_);
 }
 
 TFPropertyDialog* IsoValuePropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
@@ -100,28 +103,27 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
 
     menu->addSeparator();
 
-    auto clearTF = menu->addAction("&Clear Isovalues");
+    auto* clearTF = menu->addAction("&Clear Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());
 
     connect(clearTF, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        static_cast<IsoValueProperty*>(property_)->get().clear();
+        const NetworkLock lock(property_);
+        isoProperty()->get().clear();
     });
 
     menu->addSeparator();
 
-    auto importIso = menu->addAction("&Import Isovalues...");
-    auto exportIso = menu->addAction("&Export Isovalues...");
+    auto* importIso = menu->addAction("&Import Isovalues...");
+    auto* exportIso = menu->addAction("&Export Isovalues...");
     importIso->setEnabled(!property_->getReadOnly());
     connect(importIso, &QAction::triggered, this, [this]() {
         if (auto iso = util::importIsoValueCollectionDialog()) {
-            NetworkLock lock{property_};
-            static_cast<IsoValueProperty*>(property_)->get() = *iso;
+            const NetworkLock lock{property_};
+            isoProperty()->get() = *iso;
         }
     });
-    connect(exportIso, &QAction::triggered, this, [this]() {
-        util::exportIsoValueCollectionDialog(static_cast<IsoValueProperty*>(property_)->get());
-    });
+    connect(exportIso, &QAction::triggered, this,
+            [this]() { util::exportIsoValueCollectionDialog(isoProperty()->get()); });
 
     return menu;
 }

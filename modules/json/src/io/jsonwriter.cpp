@@ -44,8 +44,8 @@ void JSONWriter::writeData(const json* data, const std::filesystem::path& filePa
     auto f = open(filePath);
     writeData(data, f);
 }
-std::unique_ptr<std::vector<unsigned char>> JSONWriter::writeDataToBuffer(
-    const json* data, std::string_view fileExtension) const {
+std::unique_ptr<std::vector<unsigned char>> JSONWriter::writeDataToBuffer(const json* data,
+                                                                          std::string_view) const {
     std::stringstream ss;
     writeData(data, ss);
     auto stringData = std::move(ss).str();

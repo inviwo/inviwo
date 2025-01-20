@@ -71,8 +71,7 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
 
     connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
         if (!transferFunctionDialog_) {
-            transferFunctionDialog_ = std::make_unique<TFPropertyDialog>(
-                static_cast<TransferFunctionProperty*>(property_));
+            transferFunctionDialog_ = std::make_unique<TFPropertyDialog>(tfProperty());
             transferFunctionDialog_->setVisible(true);
         } else {
             transferFunctionDialog_->setVisible(!transferFunctionDialog_->isVisible());
@@ -105,6 +104,10 @@ TFPropertyWidgetQt::~TFPropertyWidgetQt() {
     if (transferFunctionDialog_) transferFunctionDialog_->hide();
 }
 
+TransferFunctionProperty* TFPropertyWidgetQt::tfProperty() const {
+    return static_cast<TransferFunctionProperty*>(property_);
+}
+
 void TFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
 TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() const {
@@ -130,15 +133,14 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     clearTF->setDisabled(property_->getReadOnly());
 
     connect(clearTF, &QAction::triggered, this, [this]() {
-        NetworkLock lock(property_);
-        static_cast<TransferFunctionProperty*>(property_)->get().clear();
+        const NetworkLock lock(property_);
+        tfProperty()->get().clear();
     });
 
     menu->addSeparator();
 
-    util::addTFPresetsMenu(this, menu.get(), static_cast<TransferFunctionProperty*>(property_));
-    util::addTFColorbrewerPresetsMenu(this, menu.get(),
-                                      static_cast<TransferFunctionProperty*>(property_));
+    util::addTFPresetsMenu(this, menu.get(), tfProperty());
+    util::addTFColorbrewerPresetsMenu(this, menu.get(), tfProperty());
 
     menu->addSeparator();
 
@@ -147,14 +149,12 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     importTF->setDisabled(property_->getReadOnly());
     connect(importTF, &QAction::triggered, this, [this]() {
         if (auto tf = util::importTransferFunctionDialog()) {
-            NetworkLock lock{property_};
-            static_cast<TransferFunctionProperty*>(property_)->get() = *tf;
+            const NetworkLock lock{property_};
+            tfProperty()->get() = *tf;
         }
     });
-    connect(exportTF, &QAction::triggered, this, [this]() {
-        util::exportTransferFunctionDialog(
-            static_cast<TransferFunctionProperty*>(property_)->get());
-    });
+    connect(exportTF, &QAction::triggered, this,
+            [this]() { util::exportTransferFunctionDialog(tfProperty()->get()); });
 
     return menu;
 }

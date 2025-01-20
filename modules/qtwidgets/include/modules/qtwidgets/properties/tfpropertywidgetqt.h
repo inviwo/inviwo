@@ -65,6 +65,8 @@ public:
 protected:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
 
+    TransferFunctionProperty* tfProperty() const;
+
 private:
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;

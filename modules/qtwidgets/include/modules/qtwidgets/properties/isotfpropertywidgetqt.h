@@ -57,6 +57,7 @@ public:
 
 protected:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
+    IsoTFProperty* isoTfProperty() const;
 
 private:
     EditableLabelQt* label_ = nullptr;
