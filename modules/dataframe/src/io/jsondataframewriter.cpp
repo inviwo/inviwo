@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,54 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/io/xmlwriter.h>
+#include <inviwo/dataframe/io/jsondataframewriter.h>
 
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAM
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
-#include <inviwo/core/io/serialization/serializer.h>                    // for Serializer
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/dataframe/datastructures/dataframe.h>                  // for DataFrame
+#include <inviwo/core/util/exception.h>                 // for FileException
+#include <inviwo/core/util/fileextension.h>             // for FileExtension
+#include <inviwo/core/util/sourcecontext.h>             // for SourceContext
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
 
-#include <fstream>        // for stringstream, bas...
-#include <string>         // for basic_string
-#include <type_traits>    // for remove_extent_t
-#include <unordered_set>  // for unordered_set
+#include <fstream>  // for basic_ifstream, ios, istream, str...
+#include <string>   // for operator==, fpos
+
+#include <nlohmann/json.hpp>  // for operator>>, json
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
-XMLWriter::XMLWriter() : DataWriterType<DataFrame>() {
-    addExtension(FileExtension("xml", "XML file"));
+JSONDataFrameWriter::JSONDataFrameWriter() {
+    addExtension(FileExtension("json", "DataFrame in JavaScript Object Notation (JSON)"));
 }
+JSONDataFrameWriter* JSONDataFrameWriter::clone() const { return new JSONDataFrameWriter(*this); }
 
-XMLWriter* XMLWriter::clone() const { return new XMLWriter(*this); }
-
-void XMLWriter::writeData(const DataFrame* data, const std::filesystem::path& filePath) const {
+void JSONDataFrameWriter::writeData(const DataFrame* data,
+                                    const std::filesystem::path& filePath) const {
     auto f = open(filePath);
     writeData(data, f);
 }
-
-std::unique_ptr<std::vector<unsigned char>> XMLWriter::writeDataToBuffer(
-    const DataFrame* data, std::string_view /*fileExtension*/) const {
+std::unique_ptr<std::vector<unsigned char>> JSONDataFrameWriter::writeDataToBuffer(
+    const DataFrame* data, std::string_view) const {
     std::stringstream ss;
     writeData(data, ss);
     auto stringData = std::move(ss).str();
     return std::make_unique<std::vector<unsigned char>>(stringData.begin(), stringData.end());
 }
 
-void XMLWriter::writeData(const DataFrame* dataFrame, std::ostream& file) const {
-    Serializer serializer("");
-
-    for (const auto& col : *dataFrame) {
-        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol) {
-            continue;
-        }
-        col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>([&](auto br) {
-            serializer.serialize(col->getHeader(), br->getDataContainer(), "Item");
-        });
+void JSONDataFrameWriter::writeData(const DataFrame* data, std::ostream& os) const {
+    if (data) {
+        json j;
+        j = *data;
+        os << j;
     }
-
-    serializer.writeFile(file);
 }
+
 }  // namespace inviwo

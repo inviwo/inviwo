@@ -413,7 +413,14 @@ jobs:
         thread-comments: update
         file-annotations: false
         verbosity: debug
-        
+
+    - name: "Upload Vcpkg build Logs"
+      if: "${{ failure() }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: vcpkg-logs-clang-tidy
+        path: vcpkg/buildtrees/**/*.log
+
     - name: "Setup tmate session"
       if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3

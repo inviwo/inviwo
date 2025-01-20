@@ -109,7 +109,8 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         saveas->setToolTip("Save Script As...");
         mainWindow->addAction(saveas);
         connect(saveas, &QAction::triggered, this, [this]() {
-            InviwoFileDialog saveFileDialog(this, "Save File ...", fileProperty_->getContentType());
+            InviwoFileDialog saveFileDialog(nullptr, "Save File ...",
+                                            fileProperty_->getContentType());
 
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);

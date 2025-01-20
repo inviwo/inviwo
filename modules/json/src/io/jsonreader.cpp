@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,42 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/tetrameshmodule.h>
+#include <modules/json/io/jsonreader.h>
+#include <inviwo/core/util/fileextension.h>
 
-#include <inviwo/tetramesh/datastructures/tetramesh.h>
-#include <inviwo/tetramesh/processors/tetrameshboundingbox.h>
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/processors/transformtetramesh.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-
-#include <inviwo/tetramesh/ports/tetrameshport.h>
-
-#include <modules/base/processors/inputselector.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <fstream>
+#include <string>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+JSONReader::JSONReader() {
+    addExtension(FileExtension("json", "JavaScript Object Notation (JSON)"));
+}
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshBoundingBox>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<TransformTetraMesh>();
-    registerProcessor<VolumeToTetraMesh>();
+JSONReader* JSONReader::clone() const { return new JSONReader(*this); }
 
-    registerProcessor<InputSelector<MultiDataInport<TetraMesh>, DataOutport<TetraMesh>>>();
+std::shared_ptr<json> JSONReader::readData(const std::filesystem::path& fileName) {
+    auto file = open(fileName);
 
-    registerDefaultsForDataType<TetraMesh>();
+    file.seekg(0, std::ios::end);
+    const std::streampos len = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    if (len == std::streampos(0)) {
+        throw FileException("Empty file, no data");
+    }
+
+    return readData(file);
+}
+
+std::shared_ptr<json> JSONReader::readData(const std::filesystem::path& filePath, MetaDataOwner*) {
+    return readData(filePath);
+}
+
+std::shared_ptr<json> JSONReader::readData(std::istream& stream) const {
+    const auto j = std::make_shared<json>();
+    stream >> *j;
+    return j;
 }
 
 }  // namespace inviwo

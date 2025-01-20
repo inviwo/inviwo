@@ -47,43 +47,34 @@ namespace util {
 /**
  * \brief Shows an InviwoFileDialog to import a TransferFunction from a file.
  *
- * @param parent         parent widget of the file dialog
  */
-IVW_MODULE_QTWIDGETS_API std::shared_ptr<TransferFunction> importTransferFunctionDialog(
-    QWidget* parent = nullptr);
+IVW_MODULE_QTWIDGETS_API std::shared_ptr<TransferFunction> importTransferFunctionDialog();
 
 /**
  * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
  *
  * @param tf             TransferFunction set to be exported
- * @param parent         parent widget of the file dialog
  */
-IVW_MODULE_QTWIDGETS_API void exportTransferFunctionDialog(const TransferFunction& tf,
-                                                           QWidget* parent = nullptr);
+IVW_MODULE_QTWIDGETS_API void exportTransferFunctionDialog(const TransferFunction& tf);
 
 /**
  * \brief Shows an InviwoFileDialog to import a IsoValueCollection from a file.
  *
- * @param parent         parent widget of the file dialog
  */
-IVW_MODULE_QTWIDGETS_API std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog(
-    QWidget* parent = nullptr);
+IVW_MODULE_QTWIDGETS_API std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog();
 
 /**
  * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
  *
  * @param iso            IsoValueCollection set to be exported
- * @param parent         parent widget of the file dialog
  */
-IVW_MODULE_QTWIDGETS_API void exportIsoValueCollectionDialog(const IsoValueCollection& iso,
-                                                             QWidget* parent = nullptr);
+IVW_MODULE_QTWIDGETS_API void exportIsoValueCollectionDialog(const IsoValueCollection& iso);
 
 /**
  * \brief create a submenu containing entries for TF presets of all transfer functions found in
  * the path `PathType::TransferFunctions`. Upon selecting a menu entry, the respective preset will
  * be loaded by \p property. The submenu will be disabled if \p property is read-only.
  *
- * @param parent     parent widget
  * @param menu       parent menu to which the TF preset submenu should be added
  * @param property   this property will load the TF presets once the menu entries are triggered
  * @return newly created submenu, which is owned by \p parent

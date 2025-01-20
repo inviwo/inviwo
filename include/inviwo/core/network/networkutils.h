@@ -76,36 +76,37 @@ struct DefaultTraversalFilter {
 };
 
 template <TraversalDirection D, VisitPattern V, typename Func,
-          typename Filter = DefaultTraversalFilter>
-void traverseNetwork(std::unordered_set<Processor*>& state, Processor* processor, Func f,
-                     Filter connectionFilter = DefaultTraversalFilter{}) {
-    if (state.count(processor) == 0) {
-        state.insert(processor);
+          typename Filter = DefaultTraversalFilter, typename Alloc = std::allocator<Processor*>>
+void traverseNetwork(
+    std::unordered_set<Processor*, std::hash<Processor*>, std::equal_to<Processor*>, Alloc>& state,
+    Processor* processor, Func f, Filter connectionFilter = DefaultTraversalFilter{}) {
+    if (state.contains(processor)) return;
 
-        if constexpr (V == VisitPattern::Pre) f(processor);
+    state.insert(processor);
 
-        if constexpr (D == TraversalDirection::Up) {
-            for (auto port : processor->getInports()) {
-                for (auto connectedPort : port->getConnectedOutports()) {
-                    if (connectionFilter(processor, port, connectedPort)) {
-                        traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
-                                                    connectionFilter);
-                    }
-                }
-            }
-        } else {
-            for (auto port : processor->getOutports()) {
-                for (auto connectedPort : port->getConnectedInports()) {
-                    if (connectionFilter(processor, port, connectedPort)) {
-                        traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
-                                                    connectionFilter);
-                    }
+    if constexpr (V == VisitPattern::Pre) f(processor);
+
+    if constexpr (D == TraversalDirection::Up) {
+        for (auto port : processor->getInports()) {
+            for (auto connectedPort : port->getConnectedOutports()) {
+                if (connectionFilter(processor, port, connectedPort)) {
+                    traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
+                                                connectionFilter);
                 }
             }
         }
-
-        if constexpr (V == VisitPattern::Post) f(processor);
+    } else {
+        for (auto port : processor->getOutports()) {
+            for (auto connectedPort : port->getConnectedInports()) {
+                if (connectionFilter(processor, port, connectedPort)) {
+                    traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
+                                                connectionFilter);
+                }
+            }
+        }
     }
+
+    if constexpr (V == VisitPattern::Post) f(processor);
 }
 
 IVW_CORE_API std::vector<Processor*> topologicalSortFiltered(ProcessorNetwork* network);
@@ -190,14 +191,12 @@ IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(
     ProcessorNetwork* destinationNetwork, const std::filesystem::path& workspaceFile,
     InviwoApplication* app);
 
-IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork& network,
-                                           Processor& processor,
+IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork& network, Processor& processor,
                                            PortConnection connection);
 
 IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
                                            std::shared_ptr<Processor> processor,
                                            PortConnection connection);
-
 
 IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
                                                          Processor& newProcessor,
@@ -206,7 +205,6 @@ IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* netwo
 IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
                                                          std::shared_ptr<Processor> newProcessor,
                                                          Processor* oldProcessor);
-
 
 IVW_CORE_API bool canSplitConnection(Processor& p, const PortConnection& connection);
 
