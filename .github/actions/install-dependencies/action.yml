@@ -67,7 +67,8 @@ runs:
       run: |
         sudo apt install --fix-missing clang-${{ inputs.clang-version }} \
                                        clang-tidy-${{ inputs.clang-version }} \
-                                       clang-format-${{ inputs.clang-version }} 
+                                       clang-format-${{ inputs.clang-version }} \
+                                       libc++-${{ inputs.clang-version }}-dev  
         echo "LLVM_PATH=/usr/lib/llvm-${{ inputs.clang-version }}/bin"   >> $GITHUB_ENV
         echo "CC=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang"    >> $GITHUB_ENV
         echo "CXX=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang++" >> $GITHUB_ENV
