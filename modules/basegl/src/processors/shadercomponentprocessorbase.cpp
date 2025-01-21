@@ -123,7 +123,7 @@ void ShaderComponentProcessorBase::process() {
     TextureUnitContainer units;
     utilgl::setUniforms(shader_, outport_);
 
-    for (auto& comp : components_) {
+    for (auto* comp : components_) {
         try {
             comp->process(shader_, units);
         } catch (...) {
@@ -145,16 +145,15 @@ void ShaderComponentProcessorBase::handleError(std::string_view action,
                                                std::string_view componentName) const {
     try {
         throw;
-    } catch (Exception& e) {
-        throw Exception{fmt::format("Error while {} in shader component: {}, message: {}", action,
-                                    componentName, e.getMessage()),
-                        e.getContext()};
+    } catch (const Exception& e) {
+        throw Exception{e.getContext(), "Error while {} in shader component: {}, message: {}",
+                        action, componentName, e.getMessage()};
 
-    } catch (fmt::format_error& e) {
+    } catch (const fmt::format_error& e) {
         throw Exception{SourceContext{},
                         "Error while {} in shader component: {}, fmt::format_error: {}", action,
                         componentName, e.what()};
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         throw Exception{SourceContext{}, "Error while {} in shader component: {}, message: {}",
                         action, componentName, e.what()};
     }
