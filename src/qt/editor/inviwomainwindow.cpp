@@ -430,6 +430,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     networkEditorView_->setFocus();
 
     utilqt::configurePoolResizeWait(*app_, this);
+
+    moduleLoadedCallback_ =
+        app_->getModuleManager().onModulesDidRegister([this]() { editorSettings_->load(); });
 }
 
 InviwoMainWindow::~InviwoMainWindow() { app_->setPoolResizeWaitCallback(nullptr); }
