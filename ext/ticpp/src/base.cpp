@@ -433,7 +433,7 @@ void TiXmlBase::EncodeStringSlowPath(const std::string_view str, std::pmr::strin
         } else if (c == entity[4].chr) {
             out.append(entity[4].str);
             ++i;
-        } else if (c < 32) {
+        } else if (c>= 0 && c < 32) {
             // Easy pass at non-alpha/numeric/symbol
             // Below 32 is symbolic.
             fmt::format_to(std::back_inserter(out), "&#x{:02X};", c);

@@ -293,6 +293,8 @@ private:
     VisibleWidgets visibleWidgetState_;  //!< holds all processor and dock widgets that were visible
                                          //!< before showing the welcome widget
     WorkspaceManager::ClearHandle visibleWidgetsClearHandle_;
+
+    std::shared_ptr<std::function<void()>> moduleLoadedCallback_;
 };
 
 }  // namespace inviwo
