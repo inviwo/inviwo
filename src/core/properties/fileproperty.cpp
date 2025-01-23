@@ -32,6 +32,7 @@
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/properties/multifileproperty.h>
 
 namespace inviwo {

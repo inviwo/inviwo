@@ -38,6 +38,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/isstreaminsertable.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <type_traits>
 #include <iterator>

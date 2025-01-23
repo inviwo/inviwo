@@ -327,6 +327,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/docbuilder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/docutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/enumtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
@@ -698,6 +699,7 @@ set(SOURCE_FILES
     util/dialogfactoryobject.cpp
     util/docbuilder.cpp
     util/document.cpp
+    util/docutils.cpp
     util/enumtraits.cpp
     util/exception.cpp
     util/factory.cpp

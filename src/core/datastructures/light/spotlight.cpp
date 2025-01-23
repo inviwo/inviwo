@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/light/spotlight.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/util/glmfmt.h>
 
 #include <fmt/format.h>

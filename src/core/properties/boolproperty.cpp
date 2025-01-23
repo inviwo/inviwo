@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 
 namespace inviwo {
 

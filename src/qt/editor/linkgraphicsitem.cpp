@@ -50,6 +50,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <fmt/format.h>
 

@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
+#include <inviwo/core/util/docutils.h>
 
 namespace inviwo {
 

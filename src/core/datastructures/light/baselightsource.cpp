@@ -30,6 +30,7 @@
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/glmfmt.h>
 
