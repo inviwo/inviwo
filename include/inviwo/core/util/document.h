@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/typetraits.h>
+#include <inviwo/core/util/isstreaminsertable.h>
 #include <inviwo/core/util/transparentmaps.h>
 
 #include <functional>
