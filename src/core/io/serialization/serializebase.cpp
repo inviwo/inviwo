@@ -34,6 +34,10 @@
 
 #include <charconv>
 #include <sstream>
+#include <filesystem>
+
+#include <fmt/format.h>
+#include <fmt/std.h>
 
 #if !(defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L)
 #include <fast_float/fast_float.h>
@@ -41,9 +45,20 @@
 
 namespace inviwo {
 
+struct SerializeBase::PathsImpl {
+    explicit PathsImpl(const std::filesystem::path& fileName)
+        : fileName_{fileName}, fileDir_{fileName.parent_path()} {}
+    PathsImpl(const PathsImpl&) = default;
+    PathsImpl(PathsImpl&&) = default;
+    PathsImpl& operator=(const PathsImpl&) = default;
+    PathsImpl& operator=(PathsImpl&&) = default;
+
+    std::filesystem::path fileName_;
+    std::filesystem::path fileDir_;
+};
+
 SerializeBase::SerializeBase(const std::filesystem::path& fileName, allocator_type alloc)
-    : fileName_{fileName}
-    , fileDir_{fileName.parent_path()}
+    : filePaths_{util::pmr_make_unique<PathsImpl>(alloc, fileName)}
     , doc_{std::make_unique<TiXmlDocument>(fileName.string(), alloc)}
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
@@ -51,6 +66,10 @@ SerializeBase::SerializeBase(const std::filesystem::path& fileName, allocator_ty
 SerializeBase::~SerializeBase() = default;
 SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
 SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
+
+const std::filesystem::path& SerializeBase::getFileName() const { return filePaths_->fileName_; }
+
+const std::filesystem::path& SerializeBase::getFileDir() const { return filePaths_->fileDir_; }
 
 auto SerializeBase::getAllocator() const -> allocator_type { return doc_->getAllocator(); }
 
@@ -164,6 +183,21 @@ void fromStrInternal(std::string_view value, T& dest) {
     }
 }
 
+template <class T>
+void formatToInternal(const T& value, std::pmr::string& out) {
+    if constexpr (std::is_same_v<std::string, T>) {
+        out.append(value);
+    } else if constexpr (std::is_same_v<std::string_view, T>) {
+        out.append(value);
+    } else if constexpr (std::is_same_v<bool, T>) {
+        constexpr char trueVal = '1';
+        constexpr char falseVal = '0';
+        out.push_back(value ? trueVal : falseVal);
+    } else {
+        fmt::format_to(std::back_inserter(out), "{}", value);
+    }
+}
+
 }  // namespace
 
 void detail::fromStr(std::string_view value, double& dest) { fromStrInternal(value, dest); }
@@ -185,5 +219,48 @@ void detail::fromStr(std::string_view value, unsigned long long& dest) {
 void detail::fromStr(std::string_view value, bool& dest) { fromStrInternal(value, dest); }
 void detail::fromStr(std::string_view value, std::string& dest) { dest = value; }
 void detail::fromStr(std::string_view value, std::pmr::string& dest) { dest = value; }
+
+void detail::formatTo(const double& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const float& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const char& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const signed char& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const unsigned char& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const short& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const unsigned short& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const int& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const unsigned int& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const long& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const unsigned long& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const long long& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const unsigned long long& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+
+void detail::formatTo(const bool& value, std::pmr::string& out) { formatToInternal(value, out); }
+void detail::formatTo(const std::string& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const std::pmr::string& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+void detail::formatTo(const std::filesystem::path& value, std::pmr::string& out) {
+    formatToInternal(value, out);
+}
+
+void detail::formatToBinary(const unsigned long long& value, size_t bits, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{:0{}b}", value, bits);
+}
 
 }  // namespace inviwo
