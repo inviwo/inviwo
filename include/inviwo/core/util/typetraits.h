@@ -35,7 +35,6 @@
 #include <warn/ignore/all>
 #include <type_traits>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <warn/pop>
 
@@ -131,19 +130,6 @@ class is_container {
 
 public:
     static const bool value = decltype(test<test_type>(0))::value;
-};
-
-template <class T>
-class is_stream_insertable {
-    template <typename U, class = typename std::enable_if<std::is_convertible<
-                              decltype(std::declval<std::ostream&>() << std::declval<U>()),
-                              std::ostream&>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
-
-public:
-    static const bool value = decltype(check<T>(0))::value;
 };
 
 // primary template handles types that do not support dereferencing:

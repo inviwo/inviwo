@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/util/isstreaminsertable.h>
 
 #include <iosfwd>
 

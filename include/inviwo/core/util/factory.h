@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/iterrange.h>
 #include <inviwo/core/util/typetraits.h>
+#include <inviwo/core/util/isstreaminsertable.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/transformiterator.h>

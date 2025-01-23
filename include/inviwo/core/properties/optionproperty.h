@@ -37,6 +37,7 @@
 #include <inviwo/core/util/enumtraits.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/isstreaminsertable.h>
 
 #include <type_traits>
 #include <iterator>
