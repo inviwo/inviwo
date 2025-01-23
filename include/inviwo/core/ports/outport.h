@@ -116,6 +116,8 @@ protected:
     virtual void connectTo(Inport* port);
     virtual void disconnectFrom(Inport* port);
 
+    static Document getDefaultPortInfo(const Outport* port, std::string_view portname);
+
     StateCoordinator<bool> isReady_;
     InvalidationLevel invalidationLevel_;
     std::vector<Inport*> connectedInports_;

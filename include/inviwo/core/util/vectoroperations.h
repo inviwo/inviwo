@@ -30,8 +30,9 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/typetraits.h>
 #include <vector>
+#include <memory>
 
 namespace inviwo {
 

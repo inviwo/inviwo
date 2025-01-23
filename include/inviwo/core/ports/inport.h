@@ -162,6 +162,8 @@ protected:
     // Called by the processor network.
     void callOnChangeIfChanged() const;
 
+    static Document getDefaultPortInfo(const Inport* port, std::string_view portname);
+
     StateCoordinator<bool> isReady_;
     StateCoordinator<bool> isOptional_;
     std::vector<Outport*> connectedOutports_;

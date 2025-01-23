@@ -38,6 +38,7 @@
 #include <inviwo/core/util/glmcomp.h>
 #include <inviwo/core/util/glmmatext.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <string>
 #include <functional>

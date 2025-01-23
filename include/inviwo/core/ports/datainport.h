@@ -255,24 +255,7 @@ Document DataInport<T, N, Flat>::getInfo() const {
     }
     name.append(" Inport");
 
-    Document doc;
-    using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
-    doc.append("b", name.view(), {{"class", "name"}});
-
-    if (!help_.empty()) {
-        doc.append("div", "", {{"class", "help"}}).append(help_);
-    }
-
-    utildoc::TableBuilder tb(doc.handle(), P::end());
-    tb(H("Identifier"), getIdentifier());
-    tb(H("Class"), getClassIdentifier());
-    tb(H("Ready"), isReady());
-    tb(H("Connected"), isConnected());
-
-    tb(H("Connections"),
-       fmt::format("{} ({})", getNumberOfConnections(), getMaxNumberOfConnections()));
-    tb(H("Optional"), isOptional());
+    Document doc = getDefaultPortInfo(this, name.view());
 
     if (hasData()) {
         doc.append("p").append(DataTraits<T>::info(*getData()));

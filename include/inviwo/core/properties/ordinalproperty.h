@@ -37,6 +37,7 @@
 #include <inviwo/core/util/glmfmt.h>
 #include <inviwo/core/util/glmcomp.h>
 #include <inviwo/core/util/glmmatext.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <string>
 #include <type_traits>

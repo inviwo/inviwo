@@ -345,48 +345,4 @@ std::ostream& operator<<(std::ostream& ss, const Document& doc) {
     return ss;
 }
 
-utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
-                                    const UnorderedStringMap<std::string>& attributes)
-    : table_(handle.insert(pos, "table", "", attributes)) {}
-
-utildoc::TableBuilder::TableBuilder(Document::DocumentHandle table) : table_(table) {}
-
-void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) {
-    row.insert(Document::PathComponent::end(), "td", val.data_, val.attributes_);
-}
-
-void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) {
-    row.insert(Document::PathComponent::end(), "th", val.data_, {{"align", "left"}});
-}
-
-void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) {
-    row.insert(Document::PathComponent::end(), "td", std::string(val));
-}
-
-void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {
-    auto l = row.get({Document::PathComponent::last()});
-    if (l) {
-        auto it = l.element().attributes().find("colspan");
-        if (it != l.element().attributes().end()) {
-            std::stringstream ss;
-            ss << it->second;
-            int count{0};
-            ss >> count;
-            l.element().attributes()["colspan"] = std::to_string(count + 1);
-        } else {
-            l.element().attributes()["colspan"] = std::to_string(1);
-        }
-    }
-}
-
-void utildoc::TableBuilder::tabledata(Document::DocumentHandle& row, const std::string& val) {
-    row.insert(Document::PathComponent::end(), "td", val);
-}
-
-utildoc::TableBuilder::Wrapper::Wrapper(const char* const data) : data_(data) {}
-
-utildoc::TableBuilder::Wrapper::Wrapper(std::string_view data) : data_{data} {}
-
-utildoc::TableBuilder::Wrapper::Wrapper(const std::string& data) : data_(data) {}
-
 }  // namespace inviwo

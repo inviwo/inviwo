@@ -180,22 +180,10 @@ void DataOutport<T>::clear() {
 
 template <typename T>
 Document DataOutport<T>::getInfo() const {
-    using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
+    StrBuffer name;
+    name.append("{} Outport", util::htmlEncode(DataTraits<T>::dataName()));
 
-    Document doc;
-    doc.append("b", util::htmlEncode(DataTraits<T>::dataName()) + " Outport", {{"class", "name"}});
-
-    if (!help_.empty()) {
-        doc.append("div", "", {{"class", "help"}}).append(help_);
-    }
-
-    utildoc::TableBuilder tb(doc.handle(), P::end());
-    tb(H("Identifier"), getIdentifier());
-    tb(H("Class"), getClassIdentifier());
-    tb(H("Ready"), isReady());
-    tb(H("Connected"), isConnected());
-    tb(H("Connections"), connectedInports_.size());
+    Document doc = getDefaultPortInfo(this, name.view());
 
     if (hasData()) {
         doc.append("p").append(DataTraits<T>::info(*getData()));

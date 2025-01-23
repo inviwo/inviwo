@@ -34,6 +34,7 @@
 #include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/docutils.h>
 
 namespace inviwo {
 

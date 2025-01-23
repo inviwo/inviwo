@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/util/exception.h>
 
 #include <fmt/format.h>

@@ -30,6 +30,8 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 
 namespace inviwo {
 
@@ -97,6 +99,26 @@ void Outport::connectTo(Inport* inport) {
 void Outport::disconnectFrom(Inport* inport) {
     std::erase(connectedInports_, inport);
     onDisconnectCallback_.invokeAll();
+}
+
+Document Outport::getDefaultPortInfo(const Outport* port, std::string_view portname) {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    Document doc;
+    doc.append("b", portname, {{"class", "name"}});
+
+    if (!port->help_.empty()) {
+        doc.append("div", "", {{"class", "help"}}).append(port->help_);
+    }
+
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Identifier"), port->getIdentifier());
+    tb(H("Class"), port->getClassIdentifier());
+    tb(H("Ready"), port->isReady());
+    tb(H("Connected"), port->isConnected());
+    tb(H("Connections"), port->connectedInports_.size());
+    return doc;
 }
 
 }  // namespace inviwo
