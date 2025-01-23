@@ -377,6 +377,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/pathtype.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/pmrutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/safecstr.h
@@ -739,6 +740,7 @@ set(SOURCE_FILES
     util/moveonlyvalue.cpp
     util/networkdebugobserver.cpp
     util/observer.cpp
+    util/pmrutils.cpp
     util/rendercontext.cpp
     util/safecstr.cpp
     util/settings/linksettings.cpp
