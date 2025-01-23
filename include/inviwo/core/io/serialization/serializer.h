@@ -48,9 +48,16 @@
 #include <unordered_map>
 #include <map>
 #include <memory>
-#include <filesystem>
+
+namespace std::filesystem {
+class path;
+};
 
 namespace inviwo {
+
+enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
+ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
+using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 class IVW_CORE_API Serializer : public SerializeBase {
 public:

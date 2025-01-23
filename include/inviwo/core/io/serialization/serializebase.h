@@ -30,24 +30,22 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <flags/flags.h>
+#include <inviwo/core/util/pmrutils.h>
 
 #include <string>
 #include <string_view>
-#include <filesystem>
-
-#include <fmt/format.h>
-#include <fmt/std.h>
+#include <bitset>
+#include <limits>
+#include <memory>
 
 class TiXmlElement;
 class TiXmlDocument;
 
-namespace inviwo {
+namespace std::filesystem {
+class path;
+};
 
-enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
-ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
-using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
+namespace inviwo {
 
 enum class SerializationTarget { Node, Attribute };
 
@@ -78,11 +76,11 @@ public:
     /**
      * \brief Gets the workspace file name.
      */
-    const std::filesystem::path& getFileName() const { return fileName_; }
+    const std::filesystem::path& getFileName() const;
     /**
      * \brief Gets the workspace file directory.
      */
-    const std::filesystem::path& getFileDir() const { return fileDir_; }
+    const std::filesystem::path& getFileDir() const;
 
     /**
      * \brief Checks whether the given type is a primitive type.
@@ -110,10 +108,11 @@ public:
 
 protected:
     friend class NodeSwitch;
+    struct PathsImpl;
 
-    std::filesystem::path fileName_;
-    std::filesystem::path fileDir_;
+    std::unique_ptr<PathsImpl, util::PMRDeleter> filePaths_;
     std::unique_ptr<TiXmlDocument> doc_;
+
     TiXmlElement* rootElement_;
     bool retrieveChild_;
 };
@@ -138,18 +137,33 @@ IVW_CORE_API void fromStr(std::string_view value, bool& dest);
 IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
 IVW_CORE_API void fromStr(std::string_view value, std::pmr::string& dest);
 
-template <class T>
-void formatTo(const T& value, std::pmr::string& out) {
-    if constexpr (std::is_same_v<std::string, T>) {
-        out.append(value);
-    } else if constexpr (std::is_same_v<std::string_view, T>) {
-        out.append(value);
-    } else if constexpr (std::is_same_v<bool, T>) {
-        constexpr char trueVal = '1';
-        constexpr char falseVal = '0';
-        out.push_back(value ? trueVal : falseVal);
+IVW_CORE_API void formatTo(const double& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const float& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const char& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const signed char& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const unsigned char& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const short& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const unsigned short& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const int& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const unsigned int& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const long& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const unsigned long& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const long long& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const unsigned long long& value, std::pmr::string& out);
+IVW_CORE_API void formatToBinary(const unsigned long long& value, size_t bits,
+                                 std::pmr::string& out);
+
+IVW_CORE_API void formatTo(const bool& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const std::string& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const std::pmr::string& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const std::filesystem::path& value, std::pmr::string& out);
+
+template <size_t N>
+void formatTo(const std::bitset<N>& value, std::pmr::string& out) {
+    if constexpr (N <= std::numeric_limits<unsigned long long>::digits) {
+        formatToBinary(value.to_ullong(), value.size(), out);
     } else {
-        fmt::format_to(std::back_inserter(out), "{}", value);
+        out = value.to_string();
     }
 }
 

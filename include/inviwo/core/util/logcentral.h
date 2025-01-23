@@ -42,6 +42,7 @@
 #include <vector>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
