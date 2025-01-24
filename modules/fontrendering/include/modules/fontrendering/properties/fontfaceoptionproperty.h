@@ -37,8 +37,17 @@
 
 #include <string>       // for string
 #include <string_view>  // for string_view
+#include <filesystem>
 
 namespace inviwo {
+
+template <>
+struct OptionPropertyTraits<std::filesystem::path> {
+    static std::string_view classIdentifier() {
+        static const auto identifier = "org.inviwo.OptionPropertyPath";
+        return identifier;
+    }
+};
 
 /**
  * \ingroup properties

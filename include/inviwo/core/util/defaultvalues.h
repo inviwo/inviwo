@@ -39,7 +39,6 @@
 #include <glm/fwd.hpp>
 
 #include <string_view>
-#include <filesystem>
 #include <string>
 
 namespace inviwo {
@@ -147,15 +146,6 @@ struct InviwoDefaults<std::string> {
     static constexpr auto get() {
         return InviwoDefaultData{StaticString{"String"}, uvec2(1, 1),   std::string{},
                                  std::string{},          std::string{}, std::string{}};
-    }
-};
-
-template <>
-struct InviwoDefaults<std::filesystem::path> {
-    static auto get() {
-        return InviwoDefaultData{StaticString{"Path"},    uvec2(1, 1),
-                                 std::filesystem::path{}, std::filesystem::path{},
-                                 std::filesystem::path{}, std::filesystem::path{}};
     }
 };
 
