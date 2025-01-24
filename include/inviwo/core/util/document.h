@@ -33,7 +33,7 @@
 #include <inviwo/core/util/transparentmaps.h>
 
 #include <functional>
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <memory>
 #include <vector>
