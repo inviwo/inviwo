@@ -33,7 +33,6 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/iterrange.h>
 #include <inviwo/core/util/typetraits.h>
-#include <inviwo/core/util/isstreaminsertable.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/transformiterator.h>
@@ -42,6 +41,8 @@
 #include <string_view>
 #include <memory>
 #include <map>
+
+#include <fmt/base.h>
 
 namespace inviwo {
 
@@ -221,12 +222,12 @@ public:
 
 namespace detail {
 template <typename T>
-typename std::enable_if<util::is_stream_insertable<T>::value, const T&>::type filter(const T& val) {
+typename std::enable_if<fmt::is_formattable<T>::value, const T&>::type filter(const T& val) {
     return val;
 }
 
 template <typename T>
-typename std::enable_if<!util::is_stream_insertable<T>::value, std::string>::type filter(const T&) {
+typename std::enable_if<!fmt::is_formattable<T>::value, std::string>::type filter(const T&) {
     return "???";
 }
 
