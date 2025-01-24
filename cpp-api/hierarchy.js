@@ -132,11 +132,6 @@ var hierarchy =
         [ "inviwo::RepresentationFactoryObjectTemplate< Representation, Derived >", "classinviwo_1_1RepresentationFactoryObjectTemplate.html", null ]
       ] ]
     ] ],
-    [ "std::basic_string_view< Char >", null, [
-      [ "std::string_view", null, [
-        [ "inviwo::Literal", "classinviwo_1_1Literal.html", null ]
-      ] ]
-    ] ],
     [ "inviwo::BitSet::BitSetIterator", "classinviwo_1_1BitSet_1_1BitSetIterator.html", null ],
     [ "inviwo::plot::BoxSelectionRenderer", "classinviwo_1_1plot_1_1BoxSelectionRenderer.html", null ],
     [ "inviwo::plot::BoxSelectionSettingsInterface", "classinviwo_1_1plot_1_1BoxSelectionSettingsInterface.html", [
@@ -1611,6 +1606,7 @@ var hierarchy =
       [ "inviwo::GraphicsItemData< T >", "classinviwo_1_1GraphicsItemData.html", null ]
     ] ],
     [ "inviwo::LinkEvaluator", "classinviwo_1_1LinkEvaluator.html", null ],
+    [ "inviwo::Literal", "classinviwo_1_1Literal.html", null ],
     [ "inviwo::Logger", "classinviwo_1_1Logger.html", [
       [ "inviwo::ConsoleLogger", "classinviwo_1_1ConsoleLogger.html", null ],
       [ "inviwo::ConsoleWidget", "classinviwo_1_1ConsoleWidget.html", null ],
