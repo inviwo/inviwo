@@ -40,18 +40,20 @@
 
 namespace inviwo {
 
-class IVW_CORE_API Literal : public std::string_view {
+class IVW_CORE_API Literal {
 public:
+    Literal() = delete;
     constexpr Literal(const Literal&) = default;
-    constexpr Literal(Literal&&) = default;
+    constexpr Literal(Literal&&) noexcept = default;
     constexpr Literal& operator=(const Literal&) = default;
-    constexpr Literal& operator=(Literal&&) = default;
+    constexpr Literal& operator=(Literal&&) noexcept = default;
+    constexpr ~Literal() noexcept = default;
 
-    constexpr std::string_view view() const { return *this; }
+    constexpr std::string_view view() const { return view_; }
 
 private:
-    constexpr Literal(const char* str, size_t len) : std::string_view{str, len} {}
-    Literal() = delete;
+    std::string_view view_;
+    constexpr Literal(const char* str, size_t len) : view_{str, len} {}
     friend constexpr Literal operator""_sl(const char* str, size_t len);
 };
 
