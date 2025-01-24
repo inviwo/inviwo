@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/enumtraits.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 
 #include <algorithm>
@@ -74,25 +75,21 @@ ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() 
     return new ConstantInterpolation<Key, Result>(*this);
 }
 
-namespace detail {
-template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-std::string_view getConstantInterpolationClassIdentifier() {
-    static const auto cid =
-        "org.inviwo.animation.constantinterpolation." + Defaultvalues<T>::getName();
-    return cid;
-}
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-std::string_view getConstantInterpolationClassIdentifier() {
-    using ET = std::underlying_type_t<T>;
-    static const auto cid =
-        "org.inviwo.animation.constantinterpolation.enum." + Defaultvalues<ET>::getName();
-    return cid;
-}
-}  // namespace detail
-
 template <typename Key, typename Result>
 std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
-    return detail::getConstantInterpolationClassIdentifier<typename Key::value_type>();
+    using V = typename Key::value_type;
+    if constexpr (std::is_enum_v<V>) {
+        static const std::string identifier =
+            fmt::format("org.inviwo.animation.constantinterpolation.enum.{}", util::enumName<V>());
+        return identifier;
+    } else if constexpr (std::is_same_v<V, std::filesystem::path>) {
+        static const std::string identifier = "org.inviwo.animation.constantinterpolation.Path";
+        return identifier;
+    } else {
+        static const auto identifier =
+            "org.inviwo.animation.constantinterpolation." + Defaultvalues<V>::getName();
+        return identifier;
+    }
 }
 
 template <typename Key, typename Result>
