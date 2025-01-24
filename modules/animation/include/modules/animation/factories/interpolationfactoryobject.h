@@ -32,6 +32,7 @@
 
 #include <memory>  // for unique_ptr, make_unique
 #include <string>  // for string
+#include <string_view>
 
 namespace inviwo {
 namespace animation {
@@ -71,7 +72,7 @@ class InterpolationFactoryObjectTemplate
 public:
     using key_type = typename InterpTyped::key_type;
     using result_type = typename InterpTyped::result_type;
-    // Requiers a static classIdentifier() method on InterpolationType
+    // Requires a static classIdentifier() method on InterpolationType
     InterpolationFactoryObjectTemplate()
         : InterpolationFactoryObjectKeyframe<key_type>(InterpTyped::classIdentifier()) {}
 
