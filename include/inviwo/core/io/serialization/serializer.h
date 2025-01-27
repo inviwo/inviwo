@@ -49,10 +49,6 @@
 #include <map>
 #include <memory>
 
-namespace std::filesystem {
-class path;
-};
-
 namespace inviwo {
 
 enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
