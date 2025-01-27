@@ -33,23 +33,23 @@ namespace inviwo::utildoc {
 
 TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                            const UnorderedStringMap<std::string>& attributes)
-    : table_(handle.insert(pos, "table", "", attributes)) {}
+    : table_(handle.insert(std::move(pos), "table", "", attributes)) {}
 
 TableBuilder::TableBuilder(Document::DocumentHandle table) : table_(table) {}
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) const {
     row.insert(Document::PathComponent::end(), "td", val.data_, val.attributes_);
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) const {
     row.insert(Document::PathComponent::end(), "th", val.data_, {{"align", "left"}});
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) const {
     row.insert(Document::PathComponent::end(), "td", std::string(val));
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {
+void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) const {
     auto l = row.get({Document::PathComponent::last()});
     if (l) {
         auto it = l.element().attributes().find("colspan");
@@ -65,7 +65,7 @@ void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {
     }
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const std::string& val) {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const std::string& val) const {
     row.insert(Document::PathComponent::end(), "td", val);
 }
 
@@ -73,6 +73,6 @@ TableBuilder::Wrapper::Wrapper(const char* const data) : data_(data) {}
 
 TableBuilder::Wrapper::Wrapper(std::string_view data) : data_{data} {}
 
-TableBuilder::Wrapper::Wrapper(const std::string& data) : data_(data) {}
+TableBuilder::Wrapper::Wrapper(std::string data) : data_(std::move(data)) {}
 
 }  // namespace inviwo::utildoc

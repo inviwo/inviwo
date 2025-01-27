@@ -44,18 +44,21 @@ namespace inviwo::utildoc {
 
 namespace detail {
 
-template <typename T,
-          typename std::enable_if<util::is_stream_insertable<T>::value, std::size_t>::type = 0>
-std::string convert(T&& val) {
+template <typename T>
+std::string convert(T&& val)
+    requires util::is_stream_insertable<T>::value
+{
     std::stringstream value;
     value << std::boolalpha << std::forward<T>(val);
     return value.str();
 }
-template <typename T,
-          typename std::enable_if<!util::is_stream_insertable<T>::value, std::size_t>::type = 0>
-std::string convert(T&& /*val*/) {
+template <typename T>
+std::string convert(T&& /*val*/)
+    requires(!util::is_stream_insertable<T>::value)
+{
     return "???";
 }
+
 }  // namespace detail
 
 class IVW_CORE_API TableBuilder {
@@ -65,10 +68,12 @@ public:
 
     protected:
         template <typename T>
-        Wrapper(T&& data) : data_(detail::convert(std::forward<T>(data))) {}
-        Wrapper(const std::string& data);
-        Wrapper(const char* const data);
-        Wrapper(std::string_view data);
+        explicit Wrapper(T&& data)
+            requires(!std::is_same_v<T, Wrapper>)
+            : data_(detail::convert(std::forward<T>(data))) {}
+        explicit Wrapper(std::string data);
+        explicit Wrapper(const char* const data);
+        explicit Wrapper(std::string_view data);
     };
 
     struct IVW_CORE_API ArrributeWrapper : Wrapper {
@@ -79,7 +84,9 @@ public:
     };
     struct IVW_CORE_API Header : Wrapper {
         template <typename T>
-        Header(T&& data) : Wrapper(std::forward<T>(data)) {}
+        explicit Header(T&& data)
+            requires(!std::is_same_v<T, Header>)
+            : Wrapper(std::forward<T>(data)) {}
     };
 
     struct Span_t {};
@@ -87,11 +94,11 @@ public:
     TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                  const UnorderedStringMap<std::string>& attributes = {});
 
-    TableBuilder(Document::DocumentHandle table);
+    explicit TableBuilder(Document::DocumentHandle table);
 
     template <typename... Args>
     Document::DocumentHandle operator()(Document::PathComponent pos, Args&&... args) {
-        auto row = table_.insert(pos, "tr");
+        auto row = table_.insert(std::move(pos), "tr");
         tablerow(row, std::forward<Args>(args)...);
         return row;
     }
@@ -103,28 +110,29 @@ public:
 
 private:
     template <typename T, typename... Args>
-    void tablerow(Document::DocumentHandle& w, T&& val, Args&&... args) {
+    void tablerow(Document::DocumentHandle& w, T&& val, Args&&... args) const {
         tabledata(w, std::forward<T>(val));
         tablerow(w, std::forward<Args>(args)...);
     }
 
     template <typename T>
-    void tablerow(Document::DocumentHandle& w, T&& val) {
+    void tablerow(Document::DocumentHandle& w, T&& val) const {
         tabledata(w, std::forward<T>(val));
     }
 
-    void tabledata(Document::DocumentHandle& row, const std::string& val);
-    void tabledata(Document::DocumentHandle& row, const char* const val);
+    void tabledata(Document::DocumentHandle& row, const std::string& val) const;
+    void tabledata(Document::DocumentHandle& row, const char* val) const;
 
-    template <typename T, typename std::enable_if<!std::is_base_of<Wrapper, std::decay_t<T>>::value,
-                                                  int>::type = 0>
-    void tabledata(Document::DocumentHandle& row, T&& val) {
-        row.insert(Document::PathComponent::end(), "td", detail::convert(val));
+    template <typename T>
+    void tabledata(Document::DocumentHandle& row, T&& val) const
+        requires(!std::is_base_of_v<Wrapper, std::decay_t<T>>)
+    {
+        row.insert(Document::PathComponent::end(), "td", detail::convert(std::forward<T>(val)));
     }
-    void tabledata(Document::DocumentHandle& row, Span_t val);
+    void tabledata(Document::DocumentHandle& row, Span_t val) const;
 
-    void tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val);
-    void tabledata(Document::DocumentHandle& row, const Header& val);
+    void tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) const;
+    void tabledata(Document::DocumentHandle& row, const Header& val) const;
 
     Document::DocumentHandle table_;
 };
