@@ -30,20 +30,16 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/pmrutils.h>
 
 #include <string>
 #include <string_view>
 #include <bitset>
 #include <limits>
 #include <memory>
+#include <filesystem>
 
 class TiXmlElement;
 class TiXmlDocument;
-
-namespace std::filesystem {
-class path;
-};
 
 namespace inviwo {
 
@@ -76,11 +72,11 @@ public:
     /**
      * \brief Gets the workspace file name.
      */
-    const std::filesystem::path& getFileName() const;
+    const std::filesystem::path& getFileName() const { return fileName_; }
     /**
      * \brief Gets the workspace file directory.
      */
-    const std::filesystem::path& getFileDir() const;
+    const std::filesystem::path& getFileDir() const { return fileDir_; }
 
     /**
      * \brief Checks whether the given type is a primitive type.
@@ -108,9 +104,9 @@ public:
 
 protected:
     friend class NodeSwitch;
-    struct PathsImpl;
 
-    std::unique_ptr<PathsImpl, util::PMRDeleter> filePaths_;
+    std::filesystem::path fileName_;
+    std::filesystem::path fileDir_;
     std::unique_ptr<TiXmlDocument> doc_;
 
     TiXmlElement* rootElement_;
