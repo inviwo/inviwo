@@ -34,7 +34,6 @@
 
 #include <charconv>
 #include <sstream>
-#include <filesystem>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -45,20 +44,9 @@
 
 namespace inviwo {
 
-struct SerializeBase::PathsImpl {
-    explicit PathsImpl(const std::filesystem::path& fileName)
-        : fileName_{fileName}, fileDir_{fileName.parent_path()} {}
-    PathsImpl(const PathsImpl&) = default;
-    PathsImpl(PathsImpl&&) = default;
-    PathsImpl& operator=(const PathsImpl&) = default;
-    PathsImpl& operator=(PathsImpl&&) = default;
-
-    std::filesystem::path fileName_;
-    std::filesystem::path fileDir_;
-};
-
 SerializeBase::SerializeBase(const std::filesystem::path& fileName, allocator_type alloc)
-    : filePaths_{util::pmr_make_unique<PathsImpl>(alloc, fileName)}
+    : fileName_{fileName}
+    , fileDir_{fileName.parent_path()}
     , doc_{std::make_unique<TiXmlDocument>(fileName.string(), alloc)}
     , rootElement_{nullptr}
     , retrieveChild_{true} {}
@@ -66,10 +54,6 @@ SerializeBase::SerializeBase(const std::filesystem::path& fileName, allocator_ty
 SerializeBase::~SerializeBase() = default;
 SerializeBase::SerializeBase(SerializeBase&&) noexcept = default;
 SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
-
-const std::filesystem::path& SerializeBase::getFileName() const { return filePaths_->fileName_; }
-
-const std::filesystem::path& SerializeBase::getFileDir() const { return filePaths_->fileDir_; }
 
 auto SerializeBase::getAllocator() const -> allocator_type { return doc_->getAllocator(); }
 
@@ -185,9 +169,7 @@ void fromStrInternal(std::string_view value, T& dest) {
 
 template <class T>
 void formatToInternal(const T& value, std::pmr::string& out) {
-    if constexpr (std::is_same_v<std::string, T>) {
-        out.append(value);
-    } else if constexpr (std::is_same_v<std::string_view, T>) {
+    if constexpr (std::is_same_v<std::string, T> || std::is_same_v<std::string_view, T>) {
         out.append(value);
     } else if constexpr (std::is_same_v<bool, T>) {
         constexpr char trueVal = '1';
