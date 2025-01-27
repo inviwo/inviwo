@@ -42,6 +42,7 @@ struct IVW_CORE_API PMRDeleter {
     PMRDeleter(PMRDeleter&&) = default;
     PMRDeleter& operator=(const PMRDeleter&) = default;
     PMRDeleter& operator=(PMRDeleter&&) = default;
+    ~PMRDeleter() = default;
 
     template <typename T>
     void operator()(T* item) {

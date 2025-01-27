@@ -36,10 +36,10 @@ namespace inviwo::util {
 
 template <class T>
 class is_stream_insertable {
-    template <typename U, class = typename std::enable_if<std::is_convertible<
-                              decltype(std::declval<std::ostream&>() << std::declval<U>()),
-                              std::ostream&>::value>::type>
-    static std::true_type check(int);
+    template <typename U>
+    static std::true_type check(int)
+        requires std::is_convertible_v<decltype(std::declval<std::ostream&>() << std::declval<U>()),
+                                       std::ostream&>;
     template <class>
     static std::false_type check(...);
 
