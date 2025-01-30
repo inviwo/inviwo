@@ -36,7 +36,9 @@
 #include <inviwo/core/util/raiiutils.h>            // for KeepTrueWhileInScope
 #include <modules/opengl/shader/shadermanager.h>   // for ShaderManager
 #include <modules/opengl/shader/shaderobject.h>    // for ShaderObject
-#include <modules/opengl/shader/shaderresource.h>  // for StringShaderResource
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/stringshaderresource.h>
+#include <modules/opengl/shader/fileshaderresource.h>
 #include <modules/openglqt/glslsyntaxhighlight.h>  // for setGLSLSyntaxHighlight, GLSLSyntaxHigh...
 #include <modules/qtwidgets/codeedit.h>            // for CodeEdit
 #include <modules/qtwidgets/inviwodockwidget.h>    // for InviwoDockWidget

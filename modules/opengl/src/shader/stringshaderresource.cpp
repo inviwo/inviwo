@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,24 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/io/transferfunctionitfwriter.h>
-#include <inviwo/core/io/serialization/serializer.h>
-
-#include <string>
-#include <memory_resource>
-#include <filesystem>
+#include <modules/opengl/shader/stringshaderresource.h>
 
 namespace inviwo {
 
-TransferFunctionITFWriter::TransferFunctionITFWriter() {
-    addExtension({"itf", "Inviwo Transfer Function"});
+StringShaderResource::StringShaderResource(std::string_view key, std::string_view source)
+    : key_(key), source_(source) {}
+
+std::unique_ptr<ShaderResource> StringShaderResource::clone() const {
+    return std::make_unique<StringShaderResource>(key_, source_);
 }
 
-TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
-    return new TransferFunctionITFWriter(*this);
-};
+const std::string& StringShaderResource::key() const { return key_; }
 
-void TransferFunctionITFWriter::writeData(const TransferFunction* data,
-                                          const std::filesystem::path& filePath) const {
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer(filePath, "InviwoTransferFunction", &mbr);
-    data->serialize(serializer);
-    serializer.writeFile();
-};
+const std::string& StringShaderResource::source() const { return source_; }
 
-std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeDataToBuffer(
-    const TransferFunction* data, std::string_view) const {
-
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer{{}, "InviwoTransferFunction", &mbr};
-    data->serialize(serializer);
-
-    std::pmr::string xml{&mbr};
-    serializer.write(xml);
-
-    auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
-    return buffer;
-};
+void StringShaderResource::setSource(std::string_view source) {
+    source_ = source;
+    callbacks_.invoke(this);
+}
 
 }  // namespace inviwo

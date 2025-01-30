@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 

@@ -30,7 +30,8 @@
 
 #include <modules/userinterfacegl/processors/gluiprocessor.h>
 
-#include <inviwo/core/common/inviwoapplication.h>           // for InviwoApplication
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
 #include <inviwo/core/processors/processor.h>               // for Processor
 #include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
@@ -126,7 +127,7 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
           [app]() {
               std::vector<std::unique_ptr<Property>> v;
               const auto& factory =
-                  app->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
+                  util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app).getGLUIWidgetFactory();
               auto* propertyFactory = app->getPropertyFactory();
 
               for (auto&& key : factory.getKeyView()) {
@@ -220,7 +221,7 @@ void GLUIProcessor::process() {
 void GLUIProcessor::onWillAddProperty(PropertyOwner*, Property*, size_t) {}
 
 void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
-    const auto& factory = app_->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
+    const auto& factory = util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app_).getGLUIWidgetFactory();
 
     auto widget = factory.create(property->getClassIdentifier(), *property, *this, uiRenderer_);
     layout_.addElement(*widget.get());

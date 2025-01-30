@@ -49,6 +49,8 @@
 
 #include <filesystem>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 template <typename DataType, typename InportType = DataInport<DataType>,

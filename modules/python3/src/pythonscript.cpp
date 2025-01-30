@@ -34,8 +34,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 
-#include <inviwo/core/common/inviwoapplication.h>             // for InviwoApplication
-#include <inviwo/core/common/inviwoapplicationutil.h>         // for getInviwoApplication
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/assertion.h>                       // for IVW_ASSERT
 #include <inviwo/core/util/callback.h>                        // for CallBackList, BaseCallBack
 #include <inviwo/core/util/fileobserver.h>                    // for FileObserver
@@ -181,17 +180,22 @@ std::string PythonScript::getAndFormatError() {
     return std::move(err).str();
 }
 
+namespace {
+
+PythonInterpreter& getPythonInterpreter() {
+    return *util::getModuleByTypeOrThrow<Python3Module>().getPythonInterpreter();
+}
+
+}  // namespace
+
 bool PythonScript::checkCompileError() {
     if (!PyErr_Occurred()) return true;
 
     const auto error = getAndFormatError();
 
-    InviwoApplication::getPtr()
-        ->getModuleByType<Python3Module>()
-        ->getPythonInterpreter()
-        ->pythonExecutionOutputEvent(
-            fmt::format("Compile Error occurred when compiling script {}\n{}", name_, error),
-            PythonOutputType::sysstderr);
+    getPythonInterpreter().pythonExecutionOutputEvent(
+        fmt::format("Compile Error occurred when compiling script {}\n{}", name_, error),
+        PythonOutputType::sysstderr);
 
     return false;
 }
@@ -201,10 +205,8 @@ bool PythonScript::checkRuntimeError() {
 
     auto error = getAndFormatError();
 
-    InviwoApplication::getPtr()
-        ->getModuleByType<Python3Module>()
-        ->getPythonInterpreter()
-        ->pythonExecutionOutputEvent(error, PythonOutputType::sysstderr);
+    getPythonInterpreter().pythonExecutionOutputEvent(error, PythonOutputType::sysstderr);
+
     return false;
 }
 

@@ -49,7 +49,6 @@
 #include <unordered_map>  // for unordered_map
 #include <utility>        // for move, pair, forward
 #include <vector>         // for vector
-#include <filesystem>
 
 namespace inviwo {
 

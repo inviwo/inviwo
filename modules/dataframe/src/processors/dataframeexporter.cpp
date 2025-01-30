@@ -55,6 +55,7 @@
 #include <string_view>  // for string_view
 
 #include <fmt/core.h>  // for format_to, basic_string_view, format
+#include <fmt/std.h>
 
 namespace inviwo {
 

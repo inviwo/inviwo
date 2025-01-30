@@ -35,6 +35,8 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/common/factoryutil.h>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

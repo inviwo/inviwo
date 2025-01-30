@@ -98,6 +98,9 @@ Deserializer::Deserializer(std::istream& stream, const std::filesystem::path& re
     }
 }
 
+Deserializer::Deserializer(std::istream& stream, std::string_view rootElement, allocator_type alloc)
+    : Deserializer{stream, std::filesystem::path{}, rootElement, alloc} {}
+
 Deserializer::Deserializer(const std::pmr::string& content, const std::filesystem::path& refPath,
                            std::string_view rootElement, allocator_type alloc)
     : SerializeBase(refPath, alloc), registeredFactories_{alloc} {
@@ -109,6 +112,10 @@ Deserializer::Deserializer(const std::pmr::string& content, const std::filesyste
         throw AbortException(e.what());
     }
 }
+
+Deserializer::Deserializer(const std::pmr::string& content, std::string_view rootElement,
+                           allocator_type alloc)
+    : Deserializer{content, std::filesystem::path{}, rootElement, alloc} {}
 
 void Deserializer::deserialize(std::string_view key, std::filesystem::path& path,
                                const SerializationTarget& target) {

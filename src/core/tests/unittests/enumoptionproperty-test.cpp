@@ -94,10 +94,10 @@ TEST(EnumOptionProperty, Serialization) {
     std::unique_ptr<Property> propA = std::make_unique<OptionProperty<MyEnumB>>("test", "test");
     propA->setSerializationMode(PropertySerializationMode::All);
     std::stringstream ss;
-    Serializer s("");
+    Serializer s{};
     s.serialize("property", propA);
     s.writeFile(ss);
-    Deserializer d(ss, "");
+    Deserializer d{ss};
     d.registerFactory(&factory);
 
     std::unique_ptr<Property> propB;

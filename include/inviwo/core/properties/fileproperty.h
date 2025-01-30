@@ -35,6 +35,7 @@
 #include <inviwo/core/util/filedialogstate.h>
 
 #include <vector>
+#include <filesystem>
 
 namespace inviwo {
 

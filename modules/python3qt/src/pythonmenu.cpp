@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwomodule.h>       // for InviwoModule
 #include <inviwo/core/util/filedialogstate.h>      // for AcceptMode, AcceptMode::Save, FileMode
 #include <inviwo/core/util/filesystem.h>           // for createDirectoryRecursively, getFileNam...
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/pathtype.h>             // for PathType, PathType::Settings
 #include <modules/python3/python3module.h>         // for Python3Module
 #include <modules/python3/pythonscript.h>          // for PythonScriptDisk
@@ -75,8 +76,8 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
     , editors_{}
     , toolbar_{win_->addToolBar("Python")}
     , menu_{utilqt::addMenu("&Python")}
-    , scriptMenu_{app->getModuleByType<Python3Module>()->getWorkspaceScripts(), menu_.get(), app,
-                  win} {
+    , scriptMenu_{util::getModuleByTypeOrThrow<Python3Module>(app).getWorkspaceScripts(),
+                  menu_.get(), app, win} {
 
     toolbar_->setObjectName("PythonToolBar");
     toolbar_->setMovable(false);
@@ -130,9 +131,9 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
 
     auto pyProperties = menu_->addAction("&List unexposed properties");
     QObject::connect(pyProperties, &QAction::triggered, [app]() {
-        auto mod = app->getModuleByType<Python3Module>();
+        auto& mod = util::getModuleByTypeOrThrow<Python3Module>(app);
         auto script =
-            PythonScript::fromFile(mod->getPath() / "scripts" / "list_not_exposed_properties.py");
+            PythonScript::fromFile(mod.getPath() / "scripts" / "list_not_exposed_properties.py");
         script.run();
     });
 }

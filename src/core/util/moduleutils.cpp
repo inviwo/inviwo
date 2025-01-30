@@ -30,6 +30,7 @@
 #include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 
 namespace inviwo {
 
@@ -40,7 +41,9 @@ ModuleManager& getModuleManager(InviwoApplication* app) { return app->getModuleM
 ModuleManager& getModuleManager() { return getModuleManager(InviwoApplication::getPtr()); }
 
 size_t getNumberOfModules() { return getNumberOfModules(InviwoApplication::getPtr()); }
-size_t getNumberOfModules(InviwoApplication* app) { return getModuleManager(app).size(); }
+size_t getNumberOfModules(InviwoApplication* app) {
+    return app ? getModuleManager(app).size() : size_t{0};
+}
 
 InviwoModule* getModuleByIndex(size_t index) {
     return getModuleByIndex(InviwoApplication::getPtr(), index);

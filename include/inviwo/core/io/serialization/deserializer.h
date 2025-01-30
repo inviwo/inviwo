@@ -54,7 +54,7 @@
 #include <optional>
 #include <concepts>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 
@@ -137,12 +137,20 @@ public:
                  std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                  allocator_type alloc = {});
 
+    Deserializer(std::istream& stream,
+                 std::string_view rootElement = SerializeConstants::InviwoWorkspace,
+                 allocator_type alloc = {});
+
     /**
      * \brief Deserialize content from a stream.
      * @param content String with content that is to be deserialized.
      * @param refPath Used to calculate paths relative to the stream source if any.
      */
     Deserializer(const std::pmr::string& content, const std::filesystem::path& refPath,
+                 std::string_view rootElement = SerializeConstants::InviwoWorkspace,
+                 allocator_type alloc = {});
+
+    Deserializer(const std::pmr::string& content,
                  std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                  allocator_type alloc = {});
 

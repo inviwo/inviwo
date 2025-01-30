@@ -48,14 +48,14 @@ TEST(SerializerPolymorphicTest, NullUniquePtr) {
     prop1->setSerializationMode(PropertySerializationMode::All);
 
     std::stringstream ss;
-    Serializer s("");
+    Serializer s{};
 
     s.serialize("prop", prop1);
     s.writeFile(ss);
 
     std::unique_ptr<Property> prop2;
 
-    Deserializer d(ss, "");
+    Deserializer d{ss};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("prop", prop2);
@@ -76,15 +76,15 @@ TEST(SerializerPolymorphicTest, NonNullUniquePtr) {
     prop1->setSerializationMode(PropertySerializationMode::All);
 
     std::stringstream ss;
-    Serializer s("");
+    Serializer s{};
 
     s.serialize("prop", prop1);
     s.writeFile(ss);
 
     std::unique_ptr<Property> prop2 = std::make_unique<FloatProperty>("float2", "float2", 0.234f);
-    ;
 
-    Deserializer d(ss, "");
+
+    Deserializer d{ss};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("prop", prop2);
@@ -104,8 +104,7 @@ TEST(SerializerPolymorphicTest, DifferentTypeUniquePtr) {
     std::unique_ptr<Property> prop1 = std::make_unique<FloatProperty>("float1", "float1", 0.123f);
     prop1->setSerializationMode(PropertySerializationMode::All);
 
-
-    Serializer s({});
+    Serializer s{};
 
     s.serialize("prop", prop1);
     std::pmr::string xml;
@@ -114,7 +113,7 @@ TEST(SerializerPolymorphicTest, DifferentTypeUniquePtr) {
     std::unique_ptr<Property> prop2 =
         std::make_unique<DoubleProperty>("double2", "double2", 0.234f);
 
-    Deserializer d(xml, {});
+    Deserializer d{xml};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("prop", prop2);
@@ -139,14 +138,14 @@ TEST(SerializerPolymorphicTest, NullVectorUniquePtr) {
     props1[1]->setSerializationMode(PropertySerializationMode::All);
 
     std::stringstream ss;
-    Serializer s("");
+    Serializer s{};
 
     s.serialize("props", props1);
     s.writeFile(ss);
 
     std::vector<std::unique_ptr<Property>> props2;
 
-    Deserializer d(ss, "");
+    Deserializer d{ss};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("props", props2);
@@ -177,7 +176,7 @@ TEST(SerializerPolymorphicTest, NonNullVectorUniquePtr) {
     props1[1]->setSerializationMode(PropertySerializationMode::All);
 
     std::stringstream ss;
-    Serializer s("");
+    Serializer s{};
 
     s.serialize("props", props1);
     s.writeFile(ss);
@@ -186,7 +185,7 @@ TEST(SerializerPolymorphicTest, NonNullVectorUniquePtr) {
     props2.emplace_back(std::make_unique<FloatProperty>("float1", "float1", 0.0123f));
     props2.emplace_back(std::make_unique<DoubleProperty>("double2", "double2", 0.0234));
 
-    Deserializer d(ss, "");
+    Deserializer d{ss};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("props", props2);
@@ -214,7 +213,7 @@ TEST(SerializerPolymorphicTest, DifferentTypeVectorUniquePtr) {
     props1[0]->setSerializationMode(PropertySerializationMode::All);
     props1[1]->setSerializationMode(PropertySerializationMode::All);
 
-    Serializer s({});
+    Serializer s{};
 
     s.serialize("props", props1);
     std::pmr::string xml;
@@ -224,7 +223,7 @@ TEST(SerializerPolymorphicTest, DifferentTypeVectorUniquePtr) {
     props2.emplace_back(std::make_unique<IntProperty>("int1", "int1", 1));
     props2.emplace_back(std::make_unique<IntProperty>("int2", "int2", 2));
 
-    Deserializer d(xml, {});
+    Deserializer d{xml};
     d.registerFactory(InviwoApplication::getPtr()->getPropertyFactory());
 
     d.deserialize("props", props2);

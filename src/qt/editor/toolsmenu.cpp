@@ -69,6 +69,8 @@
 #include <algorithm>
 #include <warn/pop>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 namespace {

@@ -29,8 +29,9 @@
 
 #include <modules/qtwidgets/tf/tfpropertydialog.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                 // for InviwoApplication
-#include <inviwo/core/common/inviwoapplicationutil.h>             // for getInviwoApplication
+#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
+#include <inviwo/core/common/inviwoapplicationutil.h>  // for getInviwoApplication
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/datastructures/datamapper.h>                // for DataMapper
 #include <inviwo/core/datastructures/histogram.h>                 // for HistogramMode
 #include <inviwo/core/datastructures/isovaluecollection.h>        // for IsoValueCollection
@@ -123,10 +124,10 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             helpBtn->setFocusPolicy(Qt::FocusPolicy::NoFocus);
             layout->insertWidget(1, helpBtn);
 
-            auto qtModule = util::getInviwoApplication(concept_->getProperty())
-                                ->getModuleByType<QtWidgetsModule>();
-            QObject::connect(helpBtn, &QToolButton::clicked, this,
-                             [qtModule]() { qtModule->showTFHelpWindow(); });
+            if (auto* qtModule = util::getModuleByType<QtWidgetsModule>()) {
+                QObject::connect(helpBtn, &QToolButton::clicked, this,
+                                 [qtModule]() { qtModule->showTFHelpWindow(); });
+            }
         }
     }
 
@@ -365,9 +366,8 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
         if (!settings.contains("shownonce") || !settings.value("shownonce").toBool()) {
             settings.setValue("shownonce", true);
 
-            util::getInviwoApplication(concept_->getProperty())
-                ->getModuleByType<QtWidgetsModule>()
-                ->showTFHelpWindow();
+            auto* app = util::getInviwoApplication(concept_->getProperty());
+            util::getModuleByTypeOrThrow<QtWidgetsModule>(app).showTFHelpWindow();
         }
         settings.endGroup();
     }

@@ -29,6 +29,7 @@
 
 #include <inviwo/core/network/workspaceannotations.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <inviwo/core/util/glm.h>
 

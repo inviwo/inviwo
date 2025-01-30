@@ -60,6 +60,8 @@
 #include <ostream>      // for operator<<, basic_ostream
 #include <string_view>  // for string_view
 
+#include <fmt/std.h>
+
 namespace inviwo {
 class Layer;
 

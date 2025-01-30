@@ -88,6 +88,15 @@ T* getModuleByType(InviwoApplication* app) {
     }
     return nullptr;
 }
+template <class T>
+T& getModuleByTypeOrThrow(InviwoApplication* app,
+                          SourceContext context = std::source_location::current()) {
+    if (auto* m = getModuleByType<T>(app)) {
+        return *m;
+    } else {
+        throw Exception(context, "Could not locate module");
+    }
+}
 
 template <class T>
 T* getModuleByType() {
@@ -98,6 +107,14 @@ T* getModuleByType() {
         }
     }
     return nullptr;
+}
+template <class T>
+T& getModuleByTypeOrThrow(SourceContext context = std::source_location::current()) {
+    if (auto* m = getModuleByType<T>()) {
+        return *m;
+    } else {
+        throw Exception(context, "Could not locate module");
+    }
 }
 
 /**

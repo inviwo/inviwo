@@ -69,6 +69,8 @@ public:
                         std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                         allocator_type alloc = {});
 
+    explicit Serializer(allocator_type alloc = {});
+
     virtual ~Serializer();
 
     /**

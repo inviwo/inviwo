@@ -31,6 +31,7 @@
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <string>

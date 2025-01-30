@@ -36,6 +36,7 @@
 #include <inviwo/core/network/processornetwork.h>
 
 #include <chrono>
+#include <iostream>
 
 namespace inviwo {
 

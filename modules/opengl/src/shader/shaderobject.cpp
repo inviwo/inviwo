@@ -29,6 +29,8 @@
 
 #include <modules/opengl/shader/shaderobject.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 #include <inviwo/core/util/assertion.h>                // for IVW_ASSERT
 #include <inviwo/core/util/dispatcher.h>               // for Dispatcher
 #include <inviwo/core/util/filesystem.h>               // for getFileExtension
@@ -433,9 +435,22 @@ void ShaderObject::preprocess() {
     sourceProcessed_ = source.str();
 }
 
+namespace {
+
+const OpenGLCapabilities& getOpenGLCapabilities() {
+    if (auto* app = util::getInviwoApplication()) {
+        if (auto* capa = app->getCapabilitiesByType<OpenGLCapabilities>()) {
+            return *capa;
+        }
+    }
+    throw OpenGLException(SourceContext{}, "OpenGLCapabilities not available");
+}
+
+}  // namespace
+
 void ShaderObject::addDefines(std::ostringstream& source) {
-    auto capa = ShaderManager::getPtr()->getOpenGLCapabilities();
-    const auto current = capa->getCurrentShaderVersion();
+    const auto& capa = getOpenGLCapabilities();
+    const auto current = capa.getCurrentShaderVersion();
 
     source << "#version " << current.getVersionAndProfileAsString() << "\n";
     lnr_.addLine("Version", 0);
@@ -466,8 +481,8 @@ void ShaderObject::addDefines(std::ostringstream& source) {
     }
 
     int lastVersion = -1;
-    for (size_t i = capa->getCurrentShaderIndex(); i < capa->getNumberOfShaderVersions(); i++) {
-        const auto version = capa->getShaderVersion(i);
+    for (size_t i = capa.getCurrentShaderIndex(); i < capa.getNumberOfShaderVersions(); i++) {
+        const auto version = capa.getShaderVersion(i);
         if (lastVersion != version.getVersion()) {
             source << "#define GLSL_VERSION_" << version.getVersionAsString() << "\n";
             lnr_.addLine("Header", 0);
@@ -475,8 +490,8 @@ void ShaderObject::addDefines(std::ostringstream& source) {
         }
     }
 
-    if (capa->getMaxProgramLoopCount() > 0) {
-        source << "#define MAX_PROGRAM_LOOP_COUNT " << capa->getMaxProgramLoopCount() << "\n";
+    if (capa.getMaxProgramLoopCount() > 0) {
+        source << "#define MAX_PROGRAM_LOOP_COUNT " << capa.getMaxProgramLoopCount() << "\n";
         lnr_.addLine("Header", 0);
     }
 

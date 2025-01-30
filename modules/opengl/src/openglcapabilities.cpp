@@ -226,7 +226,7 @@ void OpenGLCapabilities::initializeGLEW() {
     }
 }
 
-OpenGLCapabilities::GLSLShaderVersion OpenGLCapabilities::getCurrentShaderVersion() {
+OpenGLCapabilities::GLSLShaderVersion OpenGLCapabilities::getCurrentShaderVersion() const {
     if (supportedShaderVersions_.size() > currentGlobalGLSLVersionIdx_) {
         return supportedShaderVersions_[currentGlobalGLSLVersionIdx_];
     } else {

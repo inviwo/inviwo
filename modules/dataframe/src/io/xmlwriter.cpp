@@ -64,7 +64,7 @@ std::unique_ptr<std::vector<unsigned char>> XMLWriter::writeDataToBuffer(
 }
 
 void XMLWriter::writeData(const DataFrame* dataFrame, std::ostream& file) const {
-    Serializer serializer("");
+    Serializer serializer{};
 
     for (const auto& col : *dataFrame) {
         if ((col == dataFrame->getIndexColumn()) && !exportIndexCol) {

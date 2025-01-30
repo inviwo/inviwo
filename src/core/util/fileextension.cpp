@@ -35,6 +35,7 @@
 #include <inviwo/core/util/filesystem.h>
 
 #include <ostream>
+#include <filesystem>
 
 namespace inviwo {
 

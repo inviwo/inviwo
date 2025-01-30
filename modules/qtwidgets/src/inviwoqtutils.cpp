@@ -641,4 +641,17 @@ void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop) {
     widget->setVisible(visible);
 }
 
+
+ QString toQString(const std::filesystem::path& path) {
+    auto str = path.generic_u8string();
+    return QString::fromUtf8(reinterpret_cast<char*>(str.data()), str.size());
+}
+
+ std::filesystem::path toPath(const QString& str) {
+    auto buffer = str.toUtf8();
+    const std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
+                                   static_cast<size_t>(buffer.size())};
+    return std::filesystem::path{u8str};
+}
+
 }  // namespace inviwo::utilqt

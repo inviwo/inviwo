@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/fmtutils.h>
 #include <inviwo/core/util/demangle.h>
 
 #include <ostream>
@@ -41,8 +40,7 @@
 #include <string_view>
 #include <vector>
 
-#include <fmt/format.h>
-#include <fmt/std.h>
+#include <fmt/base.h>
 
 namespace inviwo {
 
@@ -70,6 +68,11 @@ IVW_CORE_API bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs);
 IVW_CORE_API std::string_view enumToStr(LogLevel ll);
 IVW_CORE_API std::string_view enumToStr(LogAudience la);
 IVW_CORE_API std::string_view enumToStr(MessageBreakLevel ll);
+
+inline std::string_view format_as(LogLevel ll) { return enumToStr(ll); }
+inline std::string_view format_as(LogAudience la) { return enumToStr(la); }
+inline std::string_view format_as(MessageBreakLevel ll) { return enumToStr(ll); }
+
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogLevel ll);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogAudience la);
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
@@ -343,13 +346,3 @@ void logError(SourceContext context, fmt::format_string<Args...> format, Args&&.
 }  // namespace util
 
 }  // namespace inviwo
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-template <>
-struct fmt::formatter<inviwo::LogLevel> : inviwo::FlagFormatter<inviwo::LogLevel> {};
-template <>
-struct fmt::formatter<inviwo::LogAudience> : inviwo::FlagFormatter<inviwo::LogAudience> {};
-template <>
-struct fmt::formatter<inviwo::MessageBreakLevel>
-    : inviwo::FlagFormatter<inviwo::MessageBreakLevel> {};
-#endif

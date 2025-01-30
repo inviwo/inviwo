@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,44 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/io/transferfunctionitfwriter.h>
-#include <inviwo/core/io/serialization/serializer.h>
+#include <modules/opengl/shader/fileshaderresource.h>
 
-#include <string>
-#include <memory_resource>
-#include <filesystem>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+
+#include <iostream>
 
 namespace inviwo {
-
-TransferFunctionITFWriter::TransferFunctionITFWriter() {
-    addExtension({"itf", "Inviwo Transfer Function"});
+FileShaderResource::FileShaderResource(std::string_view key, const std::filesystem::path& fileName)
+    : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
+    startFileObservation(fileName_);
 }
 
-TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
-    return new TransferFunctionITFWriter(*this);
-};
+std::unique_ptr<ShaderResource> FileShaderResource::clone() const {
+    return std::make_unique<FileShaderResource>(key_, fileName_);
+}
 
-void TransferFunctionITFWriter::writeData(const TransferFunction* data,
-                                          const std::filesystem::path& filePath) const {
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer(filePath, "InviwoTransferFunction", &mbr);
-    data->serialize(serializer);
-    serializer.writeFile();
-};
+const std::string& FileShaderResource::key() const { return key_; }
 
-std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeDataToBuffer(
-    const TransferFunction* data, std::string_view) const {
+const std::string& FileShaderResource::source() const {
+    if (!cache_.empty()) return cache_;
+    auto stream = std::ifstream(fileName_);
+    std::stringstream buffer;
+    buffer << stream.rdbuf();
+    cache_ = buffer.str();
+    return cache_;
+}
 
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer{{}, "InviwoTransferFunction", &mbr};
-    data->serialize(serializer);
+void FileShaderResource::setSource(std::string_view source) {
+    auto file = std::ofstream(fileName_);
+    file << source;
+    file.close();
+}
 
-    std::pmr::string xml{&mbr};
-    serializer.write(xml);
+const std::filesystem::path& FileShaderResource::file() const { return fileName_; }
 
-    auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
-    return buffer;
-};
+void FileShaderResource::fileChanged(const std::filesystem::path& /*fileName*/) {
+    cache_ = "";
+    callbacks_.invoke(this);
+}
 
 }  // namespace inviwo
