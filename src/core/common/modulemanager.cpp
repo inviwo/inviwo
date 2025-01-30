@@ -39,6 +39,7 @@
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocommondefines.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <string>
 #include <functional>

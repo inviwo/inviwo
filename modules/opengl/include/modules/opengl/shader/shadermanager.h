@@ -47,7 +47,6 @@
 
 namespace inviwo {
 
-class OpenGLCapabilities;
 class OpenGLSettings;
 class ShaderResource;
 template <typename T>
@@ -65,8 +64,6 @@ public:
     void registerShader(Shader* shader);
     void unregisterShader(Shader* shader);
     bool isRegistered(Shader* shader) const;
-
-    int getGlobalGLSLVersion();
 
     void addShaderSearchPath(const std::filesystem::path& path);
     const std::vector<std::filesystem::path>& getShaderSearchPaths();
@@ -88,12 +85,9 @@ public:
     template <typename T>
     std::shared_ptr<Callback> onWillRemoveShader(T&& callback);
 
-    OpenGLCapabilities* getOpenGLCapabilities();
-
 private:
     bool addShaderSearchPathImpl(const std::filesystem::path& path);
     std::vector<Shader*> shaders_;
-    OpenGLCapabilities* openGLInfoRef_;
     std::vector<std::filesystem::path> shaderSearchPaths_;
 
     std::vector<std::shared_ptr<ShaderResource>> ownedResources_;

@@ -29,7 +29,7 @@
 
 #include <modules/animation/animationsupplier.h>
 
-#include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/exception.h>                              // for Exception
 #include <modules/animation/animationmanager.h>                      // for AnimationManager
 #include <modules/animation/animationmodule.h>                       // for AnimationModule
@@ -46,12 +46,7 @@ namespace inviwo {
 namespace animation {
 
 AnimationManager& getAnimationManager(InviwoApplication* app) {
-    if (app) {
-        if (auto animationmodule = app->getModuleByType<AnimationModule>()) {
-            return animationmodule->getAnimationManager();
-        }
-    }
-    throw Exception("Was not able to find the animation manager");
+    return util::getModuleByTypeOrThrow<AnimationModule>(app).getAnimationManager();
 }
 
 AnimationSupplier::AnimationSupplier(AnimationManager& manager) : manager_(manager) {}

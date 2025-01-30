@@ -29,16 +29,14 @@
 
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <inviwo/core/util/dispatcher.h>    // for Dispatcher
-#include <inviwo/core/util/fileobserver.h>  // for FileObserver
+#include <inviwo/core/util/dispatcher.h>
 
-#include <functional>   // for function
-#include <memory>       // for unique_ptr, shared_ptr
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <utility>      // for forward
+#include <functional>
+#include <memory>
+#include <string>
+#include <string_view>
 
 namespace inviwo {
 
@@ -69,45 +67,5 @@ template <typename T>
 std::shared_ptr<ShaderResource::Callback> ShaderResource::onChange(T&& callback) const {
     return callbacks_.add(std::forward<T>(callback));
 }
-
-class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource, public FileObserver {
-public:
-    FileShaderResource(std::string_view key, const std::filesystem::path& fileName);
-    virtual ~FileShaderResource() = default;
-
-    virtual std::unique_ptr<ShaderResource> clone() const override;
-
-    virtual const std::string& key() const override;
-    virtual const std::string& source() const override;
-
-    virtual void setSource(std::string_view source) override;
-
-    const std::filesystem::path& file() const;
-
-    virtual void fileChanged(const std::filesystem::path& fileName) override;
-
-private:
-    std::string key_;
-    std::filesystem::path fileName_;
-
-    mutable std::string cache_;
-};
-
-class IVW_MODULE_OPENGL_API StringShaderResource : public ShaderResource {
-public:
-    StringShaderResource(std::string_view key, std::string_view source);
-    virtual ~StringShaderResource() = default;
-
-    virtual std::unique_ptr<ShaderResource> clone() const override;
-
-    virtual const std::string& key() const override;
-    virtual const std::string& source() const override;
-
-    virtual void setSource(std::string_view source) override;
-
-private:
-    std::string key_;
-    std::string source_;
-};
 
 }  // namespace inviwo

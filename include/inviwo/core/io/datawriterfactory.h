@@ -40,6 +40,7 @@
 #include <memory>
 #include <algorithm>
 #include <ranges>
+#include <filesystem>
 
 namespace inviwo {
 

@@ -40,6 +40,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/util/document.h>
 
 #include <algorithm>

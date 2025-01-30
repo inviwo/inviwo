@@ -47,6 +47,7 @@
 #include <memory>         // for allocator, unique...
 #include <string>         // for basic_string, ope...
 #include <unordered_set>  // for unordered_set
+#include <filesystem>
 
 #include <glm/mat3x3.hpp>   // for mat<>::col_type
 #include <glm/vec3.hpp>     // for vec<>::(anonymous)

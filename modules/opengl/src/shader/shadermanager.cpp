@@ -36,26 +36,27 @@
 #include <inviwo/core/util/logcentral.h>            // for LogCentral
 #include <inviwo/core/util/stdextensions.h>         // for erase_remove, find_if
 #include <inviwo/core/util/stringconversion.h>      // for replaceInString
-#include <inviwo/core/util/vectoroperations.h>      // for getTypeFromVector
-#include <modules/opengl/openglcapabilities.h>      // for OpenGLCapabilities, OpenGLCapabilitie...
 #include <modules/opengl/openglmodule.h>            // for OpenGLModule
 #include <modules/opengl/openglsettings.h>          // for OpenGLSettings
 #include <modules/opengl/shader/shader.h>           // for Shader, Shader::OnError
 #include <modules/opengl/shader/shaderresource.h>   // for FileShaderResource, StringShaderResource
+#include <modules/opengl/shader/fileshaderresource.h>
+#include <modules/opengl/shader/stringshaderresource.h>
 
 #include <algorithm>    // for find
 #include <ostream>      // for operator<<
 #include <string>       // for string, operator<, basic_string, char...
 #include <type_traits>  // for remove_extent_t
 
-#include <fmt/core.h>  // for format
+#include <fmt/base.h>  // for format
+#include <fmt/std.h>
 
 namespace inviwo {
 
 ShaderManager* ShaderManager::instance_ = nullptr;
 
 ShaderManager::ShaderManager()
-    : openGLInfoRef_{nullptr}, uniformWarnings_(nullptr), shaderObjectErrors_{nullptr} {}
+    : uniformWarnings_(nullptr), shaderObjectErrors_{nullptr} {}
 
 void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
@@ -87,11 +88,6 @@ void ShaderManager::unregisterShader(Shader* shader) {
 
 bool ShaderManager::isRegistered(Shader* shader) const {
     return std::find(shaders_.begin(), shaders_.end(), shader) != shaders_.end();
-}
-
-int ShaderManager::getGlobalGLSLVersion() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilities();
-    return glCaps->getCurrentShaderVersion().getVersion();
 }
 
 const std::vector<std::filesystem::path>& ShaderManager::getShaderSearchPaths() {
@@ -160,14 +156,6 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_vie
     }
 
     return nullptr;
-}
-
-OpenGLCapabilities* ShaderManager::getOpenGLCapabilities() {
-    if (!openGLInfoRef_) {
-        if (auto openGLModule = InviwoApplication::getPtr()->getModuleByType<OpenGLModule>())
-            openGLInfoRef_ = getTypeFromVector<OpenGLCapabilities>(openGLModule->getCapabilities());
-    }
-    return openGLInfoRef_;
 }
 
 void ShaderManager::rebuildAllShaders() {

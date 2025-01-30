@@ -29,7 +29,7 @@
 
 #include <modules/fontrendering/util/fontutils.h>
 
-#include <inviwo/core/common/inviwoapplication.h>       // for InviwoApplication
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/filesystem.h>                // for getDirectoryContents, getFileExte...
 #include <inviwo/core/util/stdextensions.h>             // for contains, erase_remove_if
 #include <inviwo/core/util/stringconversion.h>          // for toLower
@@ -95,7 +95,7 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
 }
 
 std::filesystem::path getDefaultFontPath() {
-    return InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() / "fonts";
+    return util::getModuleByType<FontRenderingModule>()->getPath() / "fonts";
 }
 
 std::filesystem::path getFont(FontType type, FullPath path) {

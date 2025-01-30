@@ -31,7 +31,6 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/factoryutil.h>
-#include <inviwo/core/common/factoryutil.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>

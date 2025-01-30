@@ -36,8 +36,10 @@
 #include <inviwo/core/util/stringconversion.h>
 
 #include <inviwo/core/properties/property.h>
-#include <fmt/format.h>
+#include <fmt/base.h>
+#include <fmt/std.h>
 #include <ranges>
+#include <filesystem>
 
 namespace inviwo {
 namespace util {

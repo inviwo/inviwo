@@ -121,21 +121,14 @@ inline QString toQString(std::string_view str) { return QString::fromUtf8(str.da
 inline QString toQString(const std::string& str) {
     return QString::fromUtf8(str.data(), str.size());
 }
-inline QString toQString(const std::filesystem::path& path) {
-    auto str = path.generic_u8string();
-    return QString::fromUtf8(reinterpret_cast<char*>(str.data()), str.size());
-}
+
 /**
  * \brief create a UTF8-encoded std::string from a QString
  */
 inline std::string fromQString(const QString& str) { return {str.toUtf8().constData()}; }
 
-inline std::filesystem::path toPath(const QString& str) {
-    auto buffer = str.toUtf8();
-    const std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
-                                   static_cast<size_t>(buffer.size())};
-    return std::filesystem::path{u8str};
-}
+IVW_MODULE_QTWIDGETS_API QString toQString(const std::filesystem::path& path);
+IVW_MODULE_QTWIDGETS_API std::filesystem::path toPath(const QString& str);
 
 constexpr QPointF toQPoint(dvec2 v) { return {v.x, v.y}; }
 constexpr QPoint toQPoint(ivec2 v) { return {v.x, v.y}; }

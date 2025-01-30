@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/io/transferfunctionitfwriter.h>
-#include <inviwo/core/io/serialization/serializer.h>
+#include <modules/opengl/openglmoduledefine.h>
 
-#include <string>
-#include <memory_resource>
-#include <filesystem>
+#include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/util/fileobserver.h>
 
 namespace inviwo {
 
-TransferFunctionITFWriter::TransferFunctionITFWriter() {
-    addExtension({"itf", "Inviwo Transfer Function"});
-}
+class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource, public FileObserver {
+public:
+    FileShaderResource(std::string_view key, const std::filesystem::path& fileName);
+    virtual ~FileShaderResource() = default;
 
-TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
-    return new TransferFunctionITFWriter(*this);
-};
+    virtual std::unique_ptr<ShaderResource> clone() const override;
 
-void TransferFunctionITFWriter::writeData(const TransferFunction* data,
-                                          const std::filesystem::path& filePath) const {
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer(filePath, "InviwoTransferFunction", &mbr);
-    data->serialize(serializer);
-    serializer.writeFile();
-};
+    virtual const std::string& key() const override;
+    virtual const std::string& source() const override;
 
-std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeDataToBuffer(
-    const TransferFunction* data, std::string_view) const {
+    virtual void setSource(std::string_view source) override;
 
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer{{}, "InviwoTransferFunction", &mbr};
-    data->serialize(serializer);
+    const std::filesystem::path& file() const;
 
-    std::pmr::string xml{&mbr};
-    serializer.write(xml);
+    virtual void fileChanged(const std::filesystem::path& fileName) override;
 
-    auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
-    return buffer;
+private:
+    std::string key_;
+    std::filesystem::path fileName_;
+
+    mutable std::string cache_;
 };
 
 }  // namespace inviwo

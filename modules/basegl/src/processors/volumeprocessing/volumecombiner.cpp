@@ -66,7 +66,7 @@
 #include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
 #include <modules/opengl/inviwoopengl.h>                                // for glViewport, GLsizei
 #include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
-#include <modules/opengl/shader/shaderresource.h>                       // for StringShaderResource
+#include <modules/opengl/shader/stringshaderresource.h>                       // for StringShaderResource
 #include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
 #include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer

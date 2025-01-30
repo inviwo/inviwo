@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/hashcombine.h>
+#include <functional>
 
 namespace inviwo {
 

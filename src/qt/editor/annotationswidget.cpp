@@ -29,6 +29,7 @@
 
 #include <inviwo/qt/editor/annotationswidget.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>

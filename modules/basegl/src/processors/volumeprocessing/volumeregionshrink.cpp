@@ -50,6 +50,7 @@
 #include <modules/opengl/shader/shadermanager.h>                        // for ShaderManager
 #include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
 #include <modules/opengl/shader/shaderresource.h>                       // for StringShaderResource
+#include <modules/opengl/shader/stringshaderresource.h>
 #include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
 #include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer

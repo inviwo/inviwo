@@ -29,8 +29,9 @@
 
 #include <inviwo/dataframe/dataframemodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>      // for InviwoApplication
-#include <inviwo/core/common/inviwomodule.h>           // for InviwoModule
+#include <inviwo/core/common/inviwoapplication.h>  // for InviwoApplication
+#include <inviwo/core/common/inviwomodule.h>       // for InviwoModule
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/io/datareader.h>                 // for DataReader
 #include <inviwo/core/io/datawriter.h>                 // for DataWriter
 #include <inviwo/core/ports/outportiterable.h>         // for OutportIterable, Out...
@@ -91,9 +92,10 @@ enum class OptionRegEnumUInt : unsigned int {};
 
 DataFrameModule::DataFrameModule(InviwoApplication* app)
     : InviwoModule(app, "DataFrame")
-    , JSONSupplier<Inport, PortTraits>{app->getModuleByType<JSONModule>()->getRegistry<Inport>()}
+    , JSONSupplier<Inport, PortTraits>{util::getModuleByTypeOrThrow<JSONModule>(app)
+                                           .getRegistry<Inport>()}
     , JSONSupplier<Property, PropertyTraits>{
-          app->getModuleByType<JSONModule>()->getRegistry<Property>()} {
+          util::getModuleByTypeOrThrow<JSONModule>(app).getRegistry<Property>()} {
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors

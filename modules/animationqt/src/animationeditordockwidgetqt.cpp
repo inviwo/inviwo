@@ -86,6 +86,7 @@
 #include <Qt>              // for operator|, WidgetWit...
 #include <QtGlobal>        // for QNonConstOverload<>::of
 #include <fmt/core.h>      // for format
+#include <fmt/std.h>
 
 class QWidget;
 

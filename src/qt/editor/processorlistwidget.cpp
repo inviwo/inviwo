@@ -35,6 +35,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/autolinker.h>

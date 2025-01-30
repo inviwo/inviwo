@@ -51,6 +51,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/moduleutils.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -61,8 +62,7 @@ namespace inviwo {
 
 namespace {
 std::filesystem::path getPath() {
-    auto path = util::getInviwoApplication()->getModuleByType<Python3Module>()->getPath(
-        ModulePath::UnitTests);
+    auto path = util::getModuleByTypeOrThrow<Python3Module>().getPath(ModulePath::UnitTests);
     return path / "scripts";
 }
 }  // namespace

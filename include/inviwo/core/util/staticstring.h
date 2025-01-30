@@ -34,7 +34,7 @@
 #include <string>
 #include <algorithm>
 
-#include <fmt/format.h>
+#include <fmt/base.h>
 #include <fmt/ranges.h>
 #include <fmt/compile.h>
 

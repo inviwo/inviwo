@@ -71,6 +71,7 @@
 #include <inviwopy/pycameraproperty.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/commandlineparser.h>
 
 #include <inviwo/core/properties/propertyowner.h>
@@ -151,7 +152,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
         "getApp", []() { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
-        if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {
+        if (auto* module = util::getModuleByType<Python3Module>()) {
             if (auto interpreter = module->getPythonInterpreter()) {
                 interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)
                                                                  ? PythonOutputType::sysstdout

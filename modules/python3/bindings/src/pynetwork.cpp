@@ -40,6 +40,7 @@
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>

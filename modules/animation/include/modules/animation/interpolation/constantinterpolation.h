@@ -38,6 +38,8 @@
 
 #include <algorithm>
 
+#include <filesystem>
+
 namespace inviwo {
 
 namespace animation {

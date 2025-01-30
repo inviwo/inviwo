@@ -172,13 +172,13 @@ TEST(OptionProperty, SerializeCopyAll) {
     OptionProperty<int> src{"src", "src", {1, 2, 3, 4, 5}, 1};
     src.setSerializationMode(PropertySerializationMode::All);
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", src);
     std::pmr::string xml;
     s.write(xml);
 
     OptionProperty<int> dst{"dst", "dst"};
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", dst);
 
     ASSERT_EQ(dst.size(), 5);
@@ -194,13 +194,13 @@ TEST(OptionProperty, SerializeCopyAll) {
 TEST(OptionProperty, SerializeCopyDefault) {
     OptionProperty<int> src{"src", "src", {1, 2, 3, 4, 5}, 1};
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", src);
     std::pmr::string xml;
     s.write(xml);
 
     OptionProperty<int> dst{"dst", "dst"};
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", dst);
 
     ASSERT_EQ(dst.size(), 0);
@@ -210,13 +210,13 @@ TEST(OptionProperty, SerializeCopyNone) {
     OptionProperty<int> src{"src", "src", {1, 2, 3, 4, 5}, 1};
     src.setSerializationMode(PropertySerializationMode::None);
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", src);
     std::pmr::string xml;
     s.write(xml);
 
     OptionProperty<int> dst{"dst", "dst"};
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", dst);
 
     ASSERT_EQ(dst.size(), 0);
@@ -225,7 +225,7 @@ TEST(OptionProperty, SerializeCopyNone) {
 TEST(OptionProperty, SerializeClear) {
     OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", prop);
     std::pmr::string xml;
     s.write(xml);
@@ -236,7 +236,7 @@ TEST(OptionProperty, SerializeClear) {
     EXPECT_FALSE(prop.isDefaultState());
     EXPECT_EQ(prop.size(), 0);
 
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", prop);
 
     EXPECT_TRUE(prop.isDefaultState());
@@ -256,7 +256,7 @@ TEST(OptionProperty, SerializeSelectedIndex) {
     OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
 
     prop.setSelectedIndex(4);
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", prop);
     std::pmr::string xml;
     s.write(xml);
@@ -265,7 +265,7 @@ TEST(OptionProperty, SerializeSelectedIndex) {
     prop.resetToDefaultState();
     EXPECT_TRUE(prop.isDefaultState());
 
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", prop);
 
     EXPECT_FALSE(prop.isDefaultState());
@@ -290,7 +290,7 @@ TEST(OptionProperty, SerializeOptions1) {
     EXPECT_EQ(prop.size(), 8);
     EXPECT_THAT(prop.getValues(), ElementsAre(1, 2, 3, 4, 5, 6, 7, 8));
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", prop);
     std::pmr::string xml;
     s.write(xml);
@@ -299,7 +299,7 @@ TEST(OptionProperty, SerializeOptions1) {
     prop.resetToDefaultState();
     EXPECT_TRUE(prop.isDefaultState());
 
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", prop);
 
     EXPECT_FALSE(prop.isDefaultState());
@@ -311,7 +311,7 @@ TEST(OptionProperty, SerializeOptions1) {
 TEST(OptionProperty, SerializeOptions2) {
     OptionProperty<int> prop{"test", "test", {1, 2, 3, 4, 5}, 1};
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", prop);
     std::pmr::string xml;
     s.write(xml);
@@ -324,7 +324,7 @@ TEST(OptionProperty, SerializeOptions2) {
 
     EXPECT_FALSE(prop.isDefaultState());
 
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", prop);
 
     EXPECT_TRUE(prop.isDefaultState());
@@ -340,7 +340,7 @@ TEST(OptionProperty, SerializeOptions3) {
     prop.addOption(6);
     EXPECT_EQ(prop.size(), 6);
 
-    Serializer s{"dummy.inv"};
+    Serializer s{};
     s.serialize("Property", prop);
     std::pmr::string xml;
     s.write(xml);
@@ -352,7 +352,7 @@ TEST(OptionProperty, SerializeOptions3) {
 
     EXPECT_FALSE(prop.isDefaultState());
 
-    Deserializer d{xml, "dummy.inv"};
+    Deserializer d{xml};
     d.deserialize("Property", prop);
 
     EXPECT_FALSE(prop.isDefaultState());

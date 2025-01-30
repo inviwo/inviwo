@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <fmt/std.h>
