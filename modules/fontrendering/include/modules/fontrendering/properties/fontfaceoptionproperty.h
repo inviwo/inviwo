@@ -41,14 +41,6 @@
 
 namespace inviwo {
 
-template <>
-struct OptionPropertyTraits<std::filesystem::path> {
-    static std::string_view classIdentifier() {
-        static const auto identifier = "org.inviwo.OptionPropertyPath";
-        return identifier;
-    }
-};
-
 /**
  * \ingroup properties
  * This option property lists all available font faces which can be used for font rendering.

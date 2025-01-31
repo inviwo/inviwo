@@ -233,13 +233,6 @@ void InviwoApplication::registerModules(RuntimeModuleLoading token,
     moduleManager_->registerModules(token, isEnabled);
 }
 
-std::filesystem::path InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
-
-std::filesystem::path InviwoApplication::getPath(PathType pathType, const std::string& suffix,
-                                                 const bool& createFolder) {
-    return filesystem::getPath(pathType, suffix, createFolder);
-}
-
 ModuleManager& InviwoApplication::getModuleManager() { return *moduleManager_; }
 
 const ModuleManager& InviwoApplication::getModuleManager() const { return *moduleManager_; }
@@ -282,7 +275,7 @@ void InviwoApplication::printApplicationInfo() {
             log::info("Git {}  hash: {}", name, hash);
         }
     }
-    log::info("Base Path: {}", getBasePath());
+    log::info("Base Path: {}", filesystem::findBasePath());
     log::info("ThreadPool Worker Threads: {}", pool_.getSize());
 
     log::info("Config: {} [{}] {} ({})", build::generator, build::configuration, build::compiler,

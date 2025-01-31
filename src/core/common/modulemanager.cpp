@@ -200,7 +200,7 @@ void ModuleManager::reloadModules() {
     // Serialize network
     std::stringstream stream;
     try {
-        app_->getWorkspaceManager()->save(stream, app_->getBasePath());
+        app_->getWorkspaceManager()->save(stream, filesystem::findBasePath());
     } catch (SerializationException& e) {
         log::exception(e, "Unable to save network due to {}", e.getMessage());
         return;
@@ -268,7 +268,7 @@ void ModuleManager::reloadModules() {
     // De-serialize network
     try {
         // Lock the network that so no evaluations are triggered during the de-serialization
-        app_->getWorkspaceManager()->load(stream, app_->getBasePath());
+        app_->getWorkspaceManager()->load(stream, filesystem::findBasePath());
     } catch (SerializationException& e) {
         log::exception(e, "Unable to load network due to {}", e.getMessage());
         return;

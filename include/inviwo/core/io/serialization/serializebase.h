@@ -130,36 +130,39 @@ IVW_CORE_API void fromStr(std::string_view value, long long& dest);
 IVW_CORE_API void fromStr(std::string_view value, unsigned long long& dest);
 
 IVW_CORE_API void fromStr(std::string_view value, bool& dest);
-IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
-IVW_CORE_API void fromStr(std::string_view value, std::pmr::string& dest);
+inline void fromStr(std::string_view value, std::string& dest) { dest = value; }
+inline void fromStr(std::string_view value, std::pmr::string& dest) { dest = value; }
 
-IVW_CORE_API void formatTo(const double& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const float& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const char& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const signed char& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const unsigned char& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const short& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const unsigned short& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const int& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const unsigned int& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const long& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const unsigned long& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const long long& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const unsigned long long& value, std::pmr::string& out);
-IVW_CORE_API void formatToBinary(const unsigned long long& value, size_t bits,
-                                 std::pmr::string& out);
-
-IVW_CORE_API void formatTo(const bool& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const std::string& value, std::pmr::string& out);
-IVW_CORE_API void formatTo(const std::pmr::string& value, std::pmr::string& out);
+IVW_CORE_API void formatTo(double value, std::pmr::string& out);
+IVW_CORE_API void formatTo(float value, std::pmr::string& out);
+IVW_CORE_API void formatTo(char value, std::pmr::string& out);
+IVW_CORE_API void formatTo(signed char value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned char value, std::pmr::string& out);
+IVW_CORE_API void formatTo(short value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned short value, std::pmr::string& out);
+IVW_CORE_API void formatTo(int value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned int value, std::pmr::string& out);
+IVW_CORE_API void formatTo(long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(long long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned long long value, std::pmr::string& out);
 IVW_CORE_API void formatTo(const std::filesystem::path& value, std::pmr::string& out);
 
+inline void formatTo(bool value, std::pmr::string& out) {
+    static constexpr char trueVal = '1';
+    static constexpr char falseVal = '0';
+    out.push_back(value ? trueVal : falseVal);
+}
+inline void formatTo(const std::string& value, std::pmr::string& out) { out.append(value); }
+inline void formatTo(const std::pmr::string& value, std::pmr::string& out) { out.append(value); }
+
+IVW_CORE_API void formatToBinary(unsigned long long value, size_t bits, std::pmr::string& out);
 template <size_t N>
 void formatTo(const std::bitset<N>& value, std::pmr::string& out) {
     if constexpr (N <= std::numeric_limits<unsigned long long>::digits) {
         formatToBinary(value.to_ullong(), value.size(), out);
     } else {
-        out = value.to_string();
+        out.append(value.to_string());
     }
 }
 

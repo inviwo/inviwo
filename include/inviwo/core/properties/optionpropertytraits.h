@@ -34,12 +34,25 @@
 
 namespace inviwo {
 
+namespace detail {
+template <typename T>
+concept pathlike = requires(T t, T b) {
+    t.root_directory();
+    t.lexically_proximate(b);
+    t.generic_string();
+    t / b;
+};
+}  // namespace detail
+
 template <typename T>
 struct OptionPropertyTraits {
     static std::string_view classIdentifier() {
         if constexpr (std::is_enum_v<T>) {
             static const std::string identifier =
                 fmt::format("org.inviwo.OptionProperty{}", util::enumName<T>());
+            return identifier;
+        } else if constexpr (detail::pathlike<T>) {
+            static constexpr std::string_view identifier = "org.inviwo.OptionPropertyPath";
             return identifier;
         } else {
             static const auto identifier =
