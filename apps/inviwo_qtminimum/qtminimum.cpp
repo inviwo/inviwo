@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
 
     const auto workspace = cmdParser.getLoadWorkspaceFromArg()
                                ? cmdParser.getWorkspacePath()
-                               : inviwoApp.getPath(inviwo::PathType::Workspaces, "/boron.inv");
+                               : inviwo::filesystem::getPath(inviwo::PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {

@@ -38,6 +38,9 @@
 #include <chrono>
 #include <iostream>
 
+#include <fmt/std.h>
+#include <fmt/chrono.h>
+
 namespace inviwo {
 
 bool operator==(const LogLevel& lhs, const LogVerbosity& rhs) {

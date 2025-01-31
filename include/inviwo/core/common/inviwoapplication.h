@@ -143,23 +143,6 @@ public:
 
     void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> isEnabled);
 
-    /**
-     * Get the base path of the application.
-     * i.e. where the core data and modules folder and etc are.
-     */
-    std::filesystem::path getBasePath() const;
-
-    /**
-     * Get basePath + pathType + suffix.
-     * @see PathType
-     * @param pathType Enum for type of path
-     * @param suffix Path extension
-     * @param createFolder whether to create the folder if it does not exist.
-     * @return basePath + pathType + suffix
-     */
-    std::filesystem::path getPath(PathType pathType, const std::string& suffix = "",
-                                  const bool& createFolder = false);
-
     ModuleManager& getModuleManager();
     const ModuleManager& getModuleManager() const;
 
