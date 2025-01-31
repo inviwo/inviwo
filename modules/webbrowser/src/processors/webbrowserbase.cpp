@@ -54,13 +54,16 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor& processor, Ima
                [this](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); }}
     , cefToInviwoImageConverter_{picking_.getColor()}
     , renderHandler_{dynamic_cast<RenderHandlerGL*>(
-          app->getModuleByType<WebBrowserModule>()->getBrowserClient()->GetRenderHandler().get())}
+          util::getModuleByTypeOrThrow<WebBrowserModule>(app)
+              .getBrowserClient()
+              ->GetRenderHandler()
+              .get())}
     , url_{url}
     , onLoadingChanged_{onLoadingChanged} {
 
     // Setup CEF browser
     auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
-    auto browserClient = app->getModuleByType<WebBrowserModule>()->getBrowserClient();
+    auto browserClient = util::getModuleByTypeOrThrow<WebBrowserModule>(app).getBrowserClient();
     // Note that browserClient_ outlives this class so make sure to remove
     // this CefLoadHandler in destructor
     browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, url_, browserSettings,
