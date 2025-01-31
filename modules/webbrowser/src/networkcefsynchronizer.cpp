@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/moduleutils.h>
 
 #include <modules/json/jsonmodule.h>
 #include <modules/json/jsonpropertyconverter.h>
@@ -58,9 +59,11 @@ static constexpr std::string_view propCommand = "prop.";
 
 NetWorkCefSynchronizer::NetWorkCefSynchronizer(InviwoApplication* app)
     : app_{app}
-    , jsonPropertyConverter_{app_->getModuleByType<JSONModule>()->getJSONPropertyConverter()}
-    , jsonInportConverter_{app_->getModuleByType<JSONModule>()->getJSONInportConverter()}
-    , jsonOutportConverter_{app_->getModuleByType<JSONModule>()->getJSONOutportConverter()} {
+    , jsonPropertyConverter_{util::getModuleByTypeOrThrow<JSONModule>(app)
+                                 .getJSONPropertyConverter()}
+    , jsonInportConverter_{util::getModuleByTypeOrThrow<JSONModule>(app).getJSONInportConverter()}
+    , jsonOutportConverter_{
+          util::getModuleByTypeOrThrow<JSONModule>(app).getJSONOutportConverter()} {
 
     app_->getProcessorNetwork()->addObserver(this);
 }

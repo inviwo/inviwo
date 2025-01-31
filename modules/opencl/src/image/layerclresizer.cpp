@@ -33,13 +33,13 @@
 #include <modules/opencl/openclmodule.h>
 #include <modules/opencl/image/layerclresizer.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/moduleutils.h>
 
 namespace inviwo {
 
 LayerCLResizer::LayerCLResizer() {
     try {
-        auto path =
-            InviwoApplication::getPtr()->getModuleByType<OpenCLModule>()->getPath(ModulePath::CL);
+        auto path = util::getModuleByTypeOrThrow<OpenCLModule>().getPath(ModulePath::CL);
         cl::Program program = OpenCL::buildProgram(path / "img_resize.cl");
         resizeKernel_ = cl::Kernel(program, "resizeLayer");
     } catch (cl::Error&) {
