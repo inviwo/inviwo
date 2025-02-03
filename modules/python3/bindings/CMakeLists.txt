@@ -115,3 +115,19 @@ ivw_install_helper(TARGET inviwopy
     DESTINATION inviwo
 )
 
+# The python bindings require a lot of memory to build. Here we limit the number of parallel
+# compiler instances for the inviwopy target to ensure that each instance can get 4GB of memory
+# this only apply for the ninja build system. 
+if (CMAKE_GENERATOR MATCHES "^Ninja.*")
+    set(memRequired 4000)
+    cmake_host_system_information(RESULT mem QUERY TOTAL_PHYSICAL_MEMORY)
+    cmake_host_system_information(RESULT cores QUERY NUMBER_OF_LOGICAL_CORES)
+    math(EXPR maxMem "${memRequired} * ${cores}") 
+
+    if (mem LESS maxMem) 
+        math(EXPR maxCores "${mem} / ${memRequired}")
+        message(WARNING "Setting max parallel jobs for inviwopy to ${maxCores}")
+        set_property(GLOBAL PROPERTY JOB_POOLS memorybound=${maxCores})
+        set_property(TARGET inviwopy PROPERTY JOB_POOL_COMPILE memorybound)
+    endif()
+endif()

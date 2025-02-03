@@ -511,9 +511,6 @@ void InviwoMainWindow::addActions() {
         addAction(welcomeAction);
         connect(welcomeAction, &QAction::triggered, this, [this]() {
             toggleWelcomeScreen();
-            // need to manually repaint the central widget after triggering the action from the file
-            // menu. Otherwise the welcome widget is active but not redrawn.
-            centralWidget_->repaint();
         });
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
@@ -1392,6 +1389,10 @@ void InviwoMainWindow::showWelcomeScreen() {
     setUpdatesEnabled(true);
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     welcomeWidget->setFocus();
+    
+    // need to manually repaint the central widget after triggering the action from the file
+    // menu. Otherwise the welcome widget is active but not redrawn.
+    centralWidget_->repaint();
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
