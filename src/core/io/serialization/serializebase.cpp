@@ -150,6 +150,7 @@ void fromStrInternal(std::string_view value, T& dest) {
 
 }  // namespace
 
+// NOLINTBEGIN(google-runtime-int)
 void detail::fromStr(std::string_view value, double& dest) { fromStrInternal(value, dest); }
 void detail::fromStr(std::string_view value, float& dest) { fromStrInternal(value, dest); }
 void detail::fromStr(std::string_view value, char& dest) { fromStrInternal(value, dest); }
@@ -224,5 +225,6 @@ void detail::formatTo(const std::filesystem::path& value, std::pmr::string& out)
 void detail::formatToBinary(unsigned long long value, size_t bits, std::pmr::string& out) {
     fmt::format_to(std::back_inserter(out), "{:0{}b}", value, bits);
 }
+// NOLINTEND(google-runtime-int)
 
 }  // namespace inviwo

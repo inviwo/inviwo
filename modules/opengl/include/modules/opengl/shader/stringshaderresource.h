@@ -40,6 +40,10 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API StringShaderResource : public ShaderResource {
 public:
     StringShaderResource(std::string_view key, std::string_view source);
+    StringShaderResource(const StringShaderResource& rhs) = delete;
+    StringShaderResource(StringShaderResource&& rhs) noexcept = default;
+    StringShaderResource& operator=(const StringShaderResource&) = delete;
+    StringShaderResource& operator=(StringShaderResource&&) noexcept = default;
     virtual ~StringShaderResource() = default;
 
     virtual std::unique_ptr<ShaderResource> clone() const override;

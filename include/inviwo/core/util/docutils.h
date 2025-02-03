@@ -72,7 +72,7 @@ public:
             requires(!std::is_same_v<T, Wrapper>)
             : data_(detail::convert(std::forward<T>(data))) {}
         explicit Wrapper(std::string data);
-        explicit Wrapper(const char* const data);
+        explicit Wrapper(const char* data);
         explicit Wrapper(std::string_view data);
     };
 
@@ -120,19 +120,19 @@ private:
         tabledata(w, std::forward<T>(val));
     }
 
-    void tabledata(Document::DocumentHandle& row, const std::string& val) const;
-    void tabledata(Document::DocumentHandle& row, const char* val) const;
+    static void tabledata(Document::DocumentHandle& row, const std::string& val);
+    static void tabledata(Document::DocumentHandle& row, const char* val);
 
     template <typename T>
-    void tabledata(Document::DocumentHandle& row, T&& val) const
+    static void tabledata(Document::DocumentHandle& row, T&& val)
         requires(!std::is_base_of_v<Wrapper, std::decay_t<T>>)
     {
         row.insert(Document::PathComponent::end(), "td", detail::convert(std::forward<T>(val)));
     }
-    void tabledata(Document::DocumentHandle& row, Span_t val) const;
+    static void tabledata(Document::DocumentHandle& row, Span_t val);
 
-    void tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) const;
-    void tabledata(Document::DocumentHandle& row, const Header& val) const;
+    static void tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val);
+    static void tabledata(Document::DocumentHandle& row, const Header& val);
 
     Document::DocumentHandle table_;
 };
