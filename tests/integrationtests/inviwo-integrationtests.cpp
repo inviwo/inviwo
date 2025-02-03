@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         RenderContext::getPtr()->activateDefaultRenderContext();
 
         for (auto* settings : util::getModuleByTypeOrThrow<OpenGLModule>(&inviwoApp).getSettings()) {
-            if (auto glSettings = dynamic_cast<OpenGLSettings*>(settings)) {
+            if (auto* glSettings = dynamic_cast<OpenGLSettings*>(settings)) {
                 glSettings->debugMessages_.set(utilgl::debug::Mode::DebugSynchronous);
                 glSettings->debugSeverity_.set(utilgl::debug::Severity::Medium);
             }

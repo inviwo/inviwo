@@ -37,9 +37,12 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource, public FileObserver {
 public:
-    FileShaderResource(std::string_view key, const std::filesystem::path& fileName);
+    FileShaderResource(std::string_view key, const std::filesystem::path& fileName);   
+    FileShaderResource(const FileShaderResource& rhs) = delete;
+    FileShaderResource(FileShaderResource&& rhs) noexcept = default;
+    FileShaderResource& operator=(const FileShaderResource&) = delete;
+    FileShaderResource& operator=(FileShaderResource&&) noexcept = default;
     virtual ~FileShaderResource() = default;
-
     virtual std::unique_ptr<ShaderResource> clone() const override;
 
     virtual const std::string& key() const override;

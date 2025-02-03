@@ -153,7 +153,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
         if (auto* module = util::getModuleByType<Python3Module>()) {
-            if (auto interpreter = module->getPythonInterpreter()) {
+            if (auto* interpreter = module->getPythonInterpreter()) {
                 interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)
                                                                  ? PythonOutputType::sysstdout
                                                                  : PythonOutputType::sysstderr);

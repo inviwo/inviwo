@@ -51,7 +51,7 @@
 
 namespace inviwo {
 
-enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
+enum class WorkspaceSaveMode : int { Disk = 1 << 0, Undo = 1 << 1 };
 ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
 using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
@@ -71,6 +71,10 @@ public:
 
     explicit Serializer(allocator_type alloc = {});
 
+    Serializer(const Serializer& rhs) = delete;
+    Serializer(Serializer&& rhs) noexcept = default;
+    Serializer& operator=(const Serializer&) = delete;
+    Serializer& operator=(Serializer&&) noexcept = default;
     virtual ~Serializer();
 
     /**

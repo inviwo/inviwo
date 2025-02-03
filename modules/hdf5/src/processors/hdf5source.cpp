@@ -32,9 +32,7 @@
 
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 const ProcessorInfo Source::processorInfo_{
     "org.inviwo.hdf5.Source",  // Class identifier
@@ -66,5 +64,4 @@ void Source::process() {
     }
 }
 
-}  // namespace hdf5
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

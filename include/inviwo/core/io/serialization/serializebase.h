@@ -115,6 +115,7 @@ protected:
 
 namespace detail {
 
+// NOLINTBEGIN(google-runtime-int)
 IVW_CORE_API void fromStr(std::string_view value, double& dest);
 IVW_CORE_API void fromStr(std::string_view value, float& dest);
 IVW_CORE_API void fromStr(std::string_view value, char& dest);
@@ -165,6 +166,8 @@ void formatTo(const std::bitset<N>& value, std::pmr::string& out) {
         out.append(value.to_string());
     }
 }
+
+// NOLINTEND(google-runtime-int)
 
 }  // namespace detail
 

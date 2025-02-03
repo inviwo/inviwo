@@ -167,7 +167,7 @@ CefRefPtr<CefStreamResourceHandler> streamData(std::string_view string,
 }
 
 OptionPropertyState<std::string> convertableProperties(InviwoApplication* app) {
-    auto& conv = util::getModuleByTypeOrThrow<JSONModule>(app).getJSONPropertyConverter();
+    const auto& conv = util::getModuleByTypeOrThrow<JSONModule>(app).getJSONPropertyConverter();
 
     std::vector<OptionPropertyOption<std::string>> options;
     for (auto key : conv.getKeyView()) {

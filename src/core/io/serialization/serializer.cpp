@@ -57,7 +57,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, std::string_view r
 Serializer::Serializer(allocator_type alloc)
     : Serializer{std::filesystem::path{}, SerializeConstants::InviwoWorkspace, alloc} {}
 
-Serializer::~Serializer() {}
+Serializer::~Serializer() = default;
 
 void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
                            SerializationTarget target) {

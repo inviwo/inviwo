@@ -37,19 +37,19 @@ TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathCompon
 
 TableBuilder::TableBuilder(Document::DocumentHandle table) : table_(table) {}
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) const {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val) {
     row.insert(Document::PathComponent::end(), "td", val.data_, val.attributes_);
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) const {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) {
     row.insert(Document::PathComponent::end(), "th", val.data_, {{"align", "left"}});
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) const {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) {
     row.insert(Document::PathComponent::end(), "td", std::string(val));
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) const {
+void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {
     auto l = row.get({Document::PathComponent::last()});
     if (l) {
         auto it = l.element().attributes().find("colspan");
@@ -65,7 +65,7 @@ void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) const {
     }
 }
 
-void TableBuilder::tabledata(Document::DocumentHandle& row, const std::string& val) const {
+void TableBuilder::tabledata(Document::DocumentHandle& row, const std::string& val) {
     row.insert(Document::PathComponent::end(), "td", val);
 }
 

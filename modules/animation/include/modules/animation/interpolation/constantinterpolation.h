@@ -40,9 +40,7 @@
 
 #include <filesystem>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /** \class ConstantInterpolation
  * Interpolation function for key frames.
@@ -155,6 +153,4 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

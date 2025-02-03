@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 
 #include <iostream>
+#include <sstream>
 
 namespace inviwo {
 FileShaderResource::FileShaderResource(std::string_view key, const std::filesystem::path& fileName)
@@ -50,7 +51,7 @@ const std::string& FileShaderResource::source() const {
     auto stream = std::ifstream(fileName_);
     std::stringstream buffer;
     buffer << stream.rdbuf();
-    cache_ = buffer.str();
+    cache_ = std::move(buffer).str();
     return cache_;
 }
 
