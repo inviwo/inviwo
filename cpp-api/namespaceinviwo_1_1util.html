@@ -225,6 +225,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1Permutations.html">Permutations</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1PMRDeleter.html">PMRDeleter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1PropertyDistanceSorter.html">PropertyDistanceSorter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1RandomCubicalPointGeneration.html">RandomCubicalPointGeneration</a></td></tr>
@@ -325,6 +327,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>IndexMapper2D</b> = 
 <tr class="memitem:a85756acd1a8f5735b65db27476be8da2" id="r_a85756acd1a8f5735b65db27476be8da2"><td class="memItemLeft" align="right" valign="top"><a id="a85756acd1a8f5735b65db27476be8da2" name="a85756acd1a8f5735b65db27476be8da2"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>IndexMapper3D</b> = <a class="el" href="structinviwo_1_1util_1_1IndexMapper.html">IndexMapper</a>&lt;3, size_t&gt;</td></tr>
 <tr class="separator:a85756acd1a8f5735b65db27476be8da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeffcad88ef543f547a0278933e620c06" id="r_aeffcad88ef543f547a0278933e620c06"><td class="memTemplParams" colspan="2"><a id="aeffcad88ef543f547a0278933e620c06" name="aeffcad88ef543f547a0278933e620c06"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:aeffcad88ef543f547a0278933e620c06"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>PMRUnique</b> = std::unique_ptr&lt;T, <a class="el" href="structinviwo_1_1util_1_1PMRDeleter.html">PMRDeleter</a>&gt;</td></tr>
+<tr class="separator:aeffcad88ef543f547a0278933e620c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1e4eff95e999c0f37072af916d5d93b" id="r_ab1e4eff95e999c0f37072af916d5d93b"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:ab1e4eff95e999c0f37072af916d5d93b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab1e4eff95e999c0f37072af916d5d93b">PrecisionType</a></td></tr>
 <tr class="separator:ab1e4eff95e999c0f37072af916d5d93b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1083,10 +1089,18 @@ IVW_CORE_API std::filesystem::path&#160;</td><td class="memItemRight" valign="bo
 template&lt;class T&gt; </td></tr>
 <tr class="memitem:a6279574ee6793f5170cac05c64ca97e2"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getModuleByType</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
 <tr class="separator:a6279574ee6793f5170cac05c64ca97e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed18c6ba879de72e79cb97eaa6c0541" id="r_a5ed18c6ba879de72e79cb97eaa6c0541"><td class="memTemplParams" colspan="2"><a id="a5ed18c6ba879de72e79cb97eaa6c0541" name="a5ed18c6ba879de72e79cb97eaa6c0541"></a>
+template&lt;class T&gt; </td></tr>
+<tr class="memitem:a5ed18c6ba879de72e79cb97eaa6c0541"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getModuleByTypeOrThrow</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current())</td></tr>
+<tr class="separator:a5ed18c6ba879de72e79cb97eaa6c0541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc204f3a2aad2feed2708e407b351756" id="r_adc204f3a2aad2feed2708e407b351756"><td class="memTemplParams" colspan="2"><a id="adc204f3a2aad2feed2708e407b351756" name="adc204f3a2aad2feed2708e407b351756"></a>
 template&lt;class T&gt; </td></tr>
 <tr class="memitem:adc204f3a2aad2feed2708e407b351756"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getModuleByType</b> ()</td></tr>
 <tr class="separator:adc204f3a2aad2feed2708e407b351756"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c54eebbeb82dab36c4aa6cc8c35dee5" id="r_a2c54eebbeb82dab36c4aa6cc8c35dee5"><td class="memTemplParams" colspan="2"><a id="a2c54eebbeb82dab36c4aa6cc8c35dee5" name="a2c54eebbeb82dab36c4aa6cc8c35dee5"></a>
+template&lt;class T&gt; </td></tr>
+<tr class="memitem:a2c54eebbeb82dab36c4aa6cc8c35dee5"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getModuleByTypeOrThrow</b> (<a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current())</td></tr>
+<tr class="separator:a2c54eebbeb82dab36c4aa6cc8c35dee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a721fe3b2ce0d411ffcffee6e563357bd" id="r_a721fe3b2ce0d411ffcffee6e563357bd"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a721fe3b2ce0d411ffcffee6e563357bd"><td class="memTemplItemLeft" align="right" valign="top">std::filesystem::path&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a721fe3b2ce0d411ffcffee6e563357bd">getModulePath</a> (ModulePath pathType)</td></tr>
 <tr class="memdesc:a721fe3b2ce0d411ffcffee6e563357bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the path for a specific type located within the requested module of type T  <br /></td></tr>
@@ -1099,6 +1113,10 @@ template&lt;typename T&gt; </td></tr>
 template&lt;class charT, class traits, class DelimT&gt; </td></tr>
 <tr class="memitem:afa0fd3611aa8a9a7c2e3dbf98335146c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1util_1_1ostream__joiner.html">ostream_joiner</a>&lt; std::decay_t&lt; DelimT &gt;, charT, traits &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_ostream_joiner</b> (std::basic_ostream&lt; charT, traits &gt; &amp;os, DelimT &amp;&amp;delimiter)</td></tr>
 <tr class="separator:afa0fd3611aa8a9a7c2e3dbf98335146c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af68296774b998b609a16d92fc0d9050c" id="r_af68296774b998b609a16d92fc0d9050c"><td class="memTemplParams" colspan="2"><a id="af68296774b998b609a16d92fc0d9050c" name="af68296774b998b609a16d92fc0d9050c"></a>
+template&lt;class T, class... Args&gt; </td></tr>
+<tr class="memitem:af68296774b998b609a16d92fc0d9050c"><td class="memTemplItemLeft" align="right" valign="top">PMRUnique&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>pmr_make_unique</b> (std::pmr::polymorphic_allocator&lt; std::byte &gt; alloc, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:af68296774b998b609a16d92fc0d9050c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7515b33c203ea126830f4bb9238bcaf1" id="r_a7515b33c203ea126830f4bb9238bcaf1"><td class="memTemplParams" colspan="2"><a id="a7515b33c203ea126830f4bb9238bcaf1" name="a7515b33c203ea126830f4bb9238bcaf1"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a7515b33c203ea126830f4bb9238bcaf1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetValue</b> (T &amp;t, T value)</td></tr>

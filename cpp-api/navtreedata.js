@@ -60,10 +60,10 @@ var NAVTREEINDEX =
 "classinviwo_1_1CameraFactory.html",
 "classinviwo_1_1CompositeProcessor.html#aea2d79255686acb65bcff7a1f2e23419",
 "classinviwo_1_1DataReaderFactory.html",
-"classinviwo_1_1Exporter.html",
-"classinviwo_1_1GestureEvent.html#af8a8ec2481d3e497440da66822a6ab6a",
-"classinviwo_1_1ImageOverlayGL.html#a417d034130a6f3f9872796892c8e40b0",
-"classinviwo_1_1InviwoApplication.html#ab43a8a02f728f9b6f140429bcb16a67c",
+"classinviwo_1_1EventPropertyWidgetQt.html#ac6ef93b66e251b1c6c6cf31e447cdf7a",
+"classinviwo_1_1GestureEvent.html",
+"classinviwo_1_1ImageOutport.html#a8f04741a8a6cd70d56c0f43b8d458f32",
+"classinviwo_1_1InviwoApplication.html#aa524c7e0bce88761087122d5d1b5e42d",
 "classinviwo_1_1LayerContour.html",
 "classinviwo_1_1LineEditEventFilter.html",
 "classinviwo_1_1MeshInformationVisualizer.html#a39e524942849bbff78e91aec24971f3a",
@@ -82,12 +82,12 @@ var NAVTREEINDEX =
 "classinviwo_1_1animation_1_1ControlKeyframe.html",
 "classinviwo_1_1glui_1_1GLUIProcessor.html#a10a5d025635e1e05954b06587898d4c3",
 "classinviwo_1_1pngModule.html",
-"namespaceinviwo_1_1color.html#a786abe908fe1d6695e75d30836a46471",
-"namespaceinviwo_1_1util.html#a886b02bc8bf08edc11981f255bdc9780",
-"structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html",
-"structinviwo_1_1ProcessorTraits_3_01FileCache_3_01DataType_00_01InportType_00_01OutportType_01_4_01_4.html",
-"structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html",
-"structinviwo_1_1util_1_1is__dereferenceable.html"
+"namespaceinviwo_1_1color.html#a756c889dc0ed0a92b19bc2c63dca0848",
+"namespaceinviwo_1_1util.html#a86d2b2443c5b46240122de8b5dd5b400",
+"structinviwo_1_1DataTraits_3_01Rasterization_01_4.html",
+"structinviwo_1_1ProcessorTraits_3_01HistogramToDataFrame_3_01Layer_01_4_01_4.html",
+"structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html",
+"structinviwo_1_1util_1_1is__constructible.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

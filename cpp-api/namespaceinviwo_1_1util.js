@@ -48,6 +48,7 @@ var namespaceinviwo_1_1util =
     [ "ostream_joiner", "classinviwo_1_1util_1_1ostream__joiner.html", null ],
     [ "overloaded", "structinviwo_1_1util_1_1overloaded.html", null ],
     [ "Permutations", "classinviwo_1_1util_1_1Permutations.html", null ],
+    [ "PMRDeleter", "structinviwo_1_1util_1_1PMRDeleter.html", null ],
     [ "PropertyDistanceSorter", "structinviwo_1_1util_1_1PropertyDistanceSorter.html", null ],
     [ "RandomCubicalPointGeneration", "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html", null ],
     [ "RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],

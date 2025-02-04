@@ -149,9 +149,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afa8c9a7b085282b9a3da1e6f5c147bdb" id="r_afa8c9a7b085282b9a3da1e6f5c147bdb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa8c9a7b085282b9a3da1e6f5c147bdb">Deserializer</a> (std::istream &amp;stream, const std::filesystem::path &amp;refPath, std::string_view rootElement=SerializeConstants::InviwoWorkspace, allocator_type alloc={})</td></tr>
 <tr class="memdesc:afa8c9a7b085282b9a3da1e6f5c147bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a stream.  <br /></td></tr>
 <tr class="separator:afa8c9a7b085282b9a3da1e6f5c147bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f87fa7134fd151bdcb99ea1d1c462a8" id="r_a8f87fa7134fd151bdcb99ea1d1c462a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f87fa7134fd151bdcb99ea1d1c462a8">Deserializer</a> (std::istream &amp;stream, std::string_view rootElement=SerializeConstants::InviwoWorkspace, allocator_type alloc={})</td></tr>
+<tr class="memdesc:a8f87fa7134fd151bdcb99ea1d1c462a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a stream.  <br /></td></tr>
+<tr class="separator:a8f87fa7134fd151bdcb99ea1d1c462a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac489c44a45a711d08bc9b86a7d7226b2" id="r_ac489c44a45a711d08bc9b86a7d7226b2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac489c44a45a711d08bc9b86a7d7226b2">Deserializer</a> (const std::pmr::string &amp;content, const std::filesystem::path &amp;refPath, std::string_view rootElement=SerializeConstants::InviwoWorkspace, allocator_type alloc={})</td></tr>
-<tr class="memdesc:ac489c44a45a711d08bc9b86a7d7226b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a stream.  <br /></td></tr>
+<tr class="memdesc:ac489c44a45a711d08bc9b86a7d7226b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a string.  <br /></td></tr>
 <tr class="separator:ac489c44a45a711d08bc9b86a7d7226b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af38cad1ddbb22a606c9a8a34fd7908fe" id="r_af38cad1ddbb22a606c9a8a34fd7908fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af38cad1ddbb22a606c9a8a34fd7908fe">Deserializer</a> (const std::pmr::string &amp;content, std::string_view rootElement=SerializeConstants::InviwoWorkspace, allocator_type alloc={})</td></tr>
+<tr class="memdesc:af38cad1ddbb22a606c9a8a34fd7908fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize content from a string.  <br /></td></tr>
+<tr class="separator:af38cad1ddbb22a606c9a8a34fd7908fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceffe5a1ff620974454b8b7433894229" id="r_aceffe5a1ff620974454b8b7433894229"><td class="memItemLeft" align="right" valign="top"><a id="aceffe5a1ff620974454b8b7433894229" name="aceffe5a1ff620974454b8b7433894229"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Deserializer</b> (const <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;)=delete</td></tr>
 <tr class="separator:aceffe5a1ff620974454b8b7433894229"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -388,7 +394,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9b2828aaaa31e90c4240edd8428ba638" name="a9b2828aaaa31e90c4240edd8428ba638"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b2828aaaa31e90c4240edd8428ba638">&#9670;&#160;</a></span>Deserializer() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b2828aaaa31e90c4240edd8428ba638">&#9670;&#160;</a></span>Deserializer() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -430,10 +436,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
 </div>
 </div>
 <a id="afa8c9a7b085282b9a3da1e6f5c147bdb" name="afa8c9a7b085282b9a3da1e6f5c147bdb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa8c9a7b085282b9a3da1e6f5c147bdb">&#9670;&#160;</a></span>Deserializer() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afa8c9a7b085282b9a3da1e6f5c147bdb">&#9670;&#160;</a></span>Deserializer() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::Deserializer::Deserializer </td>
@@ -456,6 +465,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
           <td class="paramtype">allocator_type</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Deserialize content from a stream. </p>
@@ -469,11 +483,56 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
 
 </div>
 </div>
-<a id="ac489c44a45a711d08bc9b86a7d7226b2" name="ac489c44a45a711d08bc9b86a7d7226b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac489c44a45a711d08bc9b86a7d7226b2">&#9670;&#160;</a></span>Deserializer() <span class="overload">[3/3]</span></h2>
+<a id="a8f87fa7134fd151bdcb99ea1d1c462a8" name="a8f87fa7134fd151bdcb99ea1d1c462a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f87fa7134fd151bdcb99ea1d1c462a8">&#9670;&#160;</a></span>Deserializer() <span class="overload">[3/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">inviwo::Deserializer::Deserializer </td>
+          <td>(</td>
+          <td class="paramtype">std::istream &amp;</td>          <td class="paramname"><span class="paramname"><em>stream</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>rootElement</em></span><span class="paramdefsep"> = </span><span class="paramdefval">SerializeConstants::InviwoWorkspace</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">allocator_type</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deserialize content from a stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Stream with content that is to be deserialized. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac489c44a45a711d08bc9b86a7d7226b2" name="ac489c44a45a711d08bc9b86a7d7226b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac489c44a45a711d08bc9b86a7d7226b2">&#9670;&#160;</a></span>Deserializer() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::Deserializer::Deserializer </td>
@@ -496,13 +555,60 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
           <td class="paramtype">allocator_type</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Deserialize content from a stream. </p>
+<p>Deserialize content from a string. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">content</td><td>String with content that is to be deserialized. </td></tr>
     <tr><td class="paramname">refPath</td><td>Used to calculate paths relative to the stream source if any. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af38cad1ddbb22a606c9a8a34fd7908fe" name="af38cad1ddbb22a606c9a8a34fd7908fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af38cad1ddbb22a606c9a8a34fd7908fe">&#9670;&#160;</a></span>Deserializer() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">inviwo::Deserializer::Deserializer </td>
+          <td>(</td>
+          <td class="paramtype">const std::pmr::string &amp;</td>          <td class="paramname"><span class="paramname"><em>content</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>rootElement</em></span><span class="paramdefsep"> = </span><span class="paramdefval">SerializeConstants::InviwoWorkspace</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">allocator_type</td>          <td class="paramname"><span class="paramname"><em>alloc</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deserialize content from a string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">content</td><td>String with content that is to be deserialized. </td></tr>
   </table>
   </dd>
 </dl>

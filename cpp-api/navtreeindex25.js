@@ -249,5 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1VolumeAxis.html":[4,0,1,19,41],
 "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[2,0,0,14,40,0],
 "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[4,0,1,19,41,0],
-"classinviwo_1_1pngModule.html":[2,0,0,768]
+"classinviwo_1_1pngModule.html":[2,0,0,767]
 };

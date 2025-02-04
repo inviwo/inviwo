@@ -1,5 +1,9 @@
 var NAVTREEINDEX5 =
 {
+"classinviwo_1_1EventPropertyWidgetQt.html#ac6ef93b66e251b1c6c6cf31e447cdf7a":[2,0,0,295,0],
+"classinviwo_1_1EventPropertyWidgetQt.html#ac6ef93b66e251b1c6c6cf31e447cdf7a":[4,0,1,302,0],
+"classinviwo_1_1Exception.html":[2,0,0,296],
+"classinviwo_1_1Exception.html":[4,0,1,303],
 "classinviwo_1_1Exporter.html":[2,0,0,297],
 "classinviwo_1_1Exporter.html":[4,0,1,304],
 "classinviwo_1_1Exporter.html#a9ec52a70bed8b76ace3a5b9fe8f7b376":[2,0,0,297,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX5 =
 "classinviwo_1_1GeneralEventMatcher.html":[2,0,0,342],
 "classinviwo_1_1GeneralEventMatcher.html":[4,0,1,349],
 "classinviwo_1_1GeometryEntryExitPoints.html":[1,3,33],
-"classinviwo_1_1GeometryEntryExitPoints.html#a6e376e5b4f3a0e823737bf1ddf46357e":[1,3,33,0],
-"classinviwo_1_1GestureEvent.html":[2,0,0,344],
-"classinviwo_1_1GestureEvent.html":[4,0,1,351],
-"classinviwo_1_1GestureEvent.html#a3e08d175726e90fbdb700f5a4ae63ad1":[2,0,0,344,0],
-"classinviwo_1_1GestureEvent.html#a3e08d175726e90fbdb700f5a4ae63ad1":[4,0,1,351,0]
+"classinviwo_1_1GeometryEntryExitPoints.html#a6e376e5b4f3a0e823737bf1ddf46357e":[1,3,33,0]
 };

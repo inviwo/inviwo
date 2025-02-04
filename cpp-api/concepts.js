@@ -7,7 +7,8 @@ var concepts =
         ] ]
       ] ],
       [ "detail", null, [
-        [ "is_transparent", "conceptinviwo_1_1detail_1_1is__transparent.html", null ]
+        [ "is_transparent", "conceptinviwo_1_1detail_1_1is__transparent.html", null ],
+        [ "pathlike", "conceptinviwo_1_1detail_1_1pathlike.html", null ]
       ] ],
       [ "DataType", "conceptinviwo_1_1DataType.html", null ],
       [ "RepresentationOf", "conceptinviwo_1_1RepresentationOf.html", null ],

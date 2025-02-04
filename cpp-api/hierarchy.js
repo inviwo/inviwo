@@ -1484,7 +1484,6 @@ var hierarchy =
     [ "inviwo::InviwoDefaults< int >", "structinviwo_1_1InviwoDefaults_3_01int_01_4.html", null ],
     [ "inviwo::InviwoDefaults< short >", "structinviwo_1_1InviwoDefaults_3_01short_01_4.html", null ],
     [ "inviwo::InviwoDefaults< size_t >", "structinviwo_1_1InviwoDefaults_3_01size__t_01_4.html", null ],
-    [ "inviwo::InviwoDefaults< std::filesystem::path >", "structinviwo_1_1InviwoDefaults_3_01std_1_1filesystem_1_1path_01_4.html", null ],
     [ "inviwo::InviwoDefaults< std::string >", "structinviwo_1_1InviwoDefaults_3_01std_1_1string_01_4.html", null ],
     [ "inviwo::InviwoDefaults< unsigned char >", "structinviwo_1_1InviwoDefaults_3_01unsigned_01char_01_4.html", null ],
     [ "inviwo::InviwoDefaults< unsigned int >", "structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html", null ],
@@ -2610,6 +2609,7 @@ var hierarchy =
       [ "inviwo::plot::PlotTextData", "classinviwo_1_1plot_1_1PlotTextData.html", null ],
       [ "inviwo::plot::PlotTextProperty", "classinviwo_1_1plot_1_1PlotTextProperty.html", null ]
     ] ],
+    [ "inviwo::util::PMRDeleter", "structinviwo_1_1util_1_1PMRDeleter.html", null ],
     [ "inviwo::plot::ScatterPlotGL::Points", "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html", null ],
     [ "inviwo::Polygon< T >", "classinviwo_1_1Polygon.html", null ],
     [ "inviwo::utilgl::PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
