@@ -480,6 +480,7 @@ protected:
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
     std::unique_ptr<RepresentationMetaFactory> representationMetaFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
+    std::vector<Settings*> settingsRegistry_;
     std::unique_ptr<SystemSettings> systemSettings_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
     std::unique_ptr<ModuleManager> moduleManager_;
@@ -489,7 +490,7 @@ protected:
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
     std::unique_ptr<PortInspectorManager> portInspectorManager_;
     std::unique_ptr<detail::InviwoApplicationCallbacks> callbacks_;
-    std::vector<Settings*> settingsRegistry_;
+
     std::unique_ptr<TimerThread> timerThread_;
     LayerRamResizer* layerRamResizer_;
     std::function<void(std::string_view message, SourceContext context)> assertionHandler_;
