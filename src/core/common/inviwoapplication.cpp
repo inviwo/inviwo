@@ -150,6 +150,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , propertyWidgetFactory_{std::make_unique<PropertyWidgetFactory>()}
     , representationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
+    , settingsRegistry_{}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , moduleCallbackActions_{}
     , moduleManager_{std::make_unique<ModuleManager>(this)}
@@ -160,10 +161,9 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , propertyPresetManager_{std::make_unique<PropertyPresetManager>(this)}
     , portInspectorManager_{std::make_unique<PortInspectorManager>(this)}
     , callbacks_{std::make_unique<detail::InviwoApplicationCallbacks>()}
-    , settingsRegistry_{}
     , layerRamResizer_{nullptr} {
 
-    settingsRegistry_.push_back(systemSettings_.get());
+    registerSettings(systemSettings_.get());
 
     // Keep the pool at size 0 if are quiting directly to make sure that we don't have
     // unfinished results in the worker threads
