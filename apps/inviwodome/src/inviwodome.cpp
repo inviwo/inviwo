@@ -163,7 +163,7 @@ struct SGCTCallbacks {
 
         if (sgct::Engine::instance().isMaster()) {
             app.getWorkspaceManager()->load(
-                app.getPath(inviwo::PathType::Workspaces, "/boron.inv"));
+                inviwo::filesystem::getPath(inviwo::PathType::Workspaces, "/boron.inv"));
             setCamerasToSGCT(*app.getProcessorNetwork());
         } else {
             // Only the master node needs to have any widgets.

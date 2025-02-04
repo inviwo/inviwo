@@ -52,6 +52,7 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/stringshaderresource.h>
 #include <modules/opengl/image/layergl.h>
 
 #include <modules/opengl/shader/shader.h>
@@ -73,6 +74,7 @@
 #include <algorithm>
 #include <string_view>
 #include <algorithm>
+
 
 namespace inviwo {
 
