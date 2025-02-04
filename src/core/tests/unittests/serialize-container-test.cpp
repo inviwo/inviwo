@@ -40,7 +40,7 @@ namespace inviwo {
 
 TEST(SerializationContainerTest, Minimal) {
     std::stringstream ss;
-    Serializer serializer("");
+    Serializer serializer{};
 
     std::vector<int> vector{1, 2, 3, 4, 5};
 
@@ -50,7 +50,7 @@ TEST(SerializationContainerTest, Minimal) {
     vector[2] = 10;
     vector.pop_back();
 
-    Deserializer deserializer(ss, "");
+    Deserializer deserializer{ss};
     deserializer.deserialize("Vector", vector, "Item");
 
     ASSERT_EQ(5, vector.size());
@@ -80,7 +80,7 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
     };
 
     std::stringstream ss;
-    Serializer serializer("");
+    Serializer serializer{};
 
     std::vector<Item*> vector;
 
@@ -96,7 +96,7 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
     vector.pop_back();
     vector.insert(vector.begin(), new Item("d", 1));
 
-    Deserializer deserializer(ss, "");
+    Deserializer deserializer{ss};
     deserializer.deserialize("Vector", vector, "Item",
                              deserializer::IdentifierFunctions{
                                  .getID = [](Item* const& i) -> std::string_view { return i->id_; },
@@ -138,7 +138,7 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
 
 TEST(SerialitionContainerTest, IndexFunctions) {
     std::stringstream ss;
-    Serializer serializer("");
+    Serializer serializer{};
 
     std::vector<int> vector{1, 2, 3, 4, 5};
 
@@ -148,7 +148,7 @@ TEST(SerialitionContainerTest, IndexFunctions) {
     vector[2] = 10;
     vector.push_back(12);
 
-    Deserializer deserializer(ss, "");
+    Deserializer deserializer{ss};
     deserializer.deserialize("Vector", vector, "Item",
                              deserializer::IndexFunctions{
                                  .makeNew = []() { return 0; },
@@ -166,7 +166,7 @@ TEST(SerialitionContainerTest, IndexFunctions) {
 
 TEST(SerialitionContainerTest, MapFunctions1) {
     std::stringstream ss;
-    Serializer serializer("");
+    Serializer serializer{};
 
     std::unordered_map<std::string, int> map = {{"a", 1}, {"b", 2}, {"c", 3}};
 
@@ -179,7 +179,7 @@ TEST(SerialitionContainerTest, MapFunctions1) {
     map.erase("b");
     map["d"] = 20;
 
-    Deserializer deserializer(ss, "");
+    Deserializer deserializer{ss};
 
     deserializer.deserialize(
         "Map", map, "Item",
@@ -198,7 +198,7 @@ TEST(SerialitionContainerTest, MapFunctions1) {
 
 TEST(SerialitionContainerTest, MapFunctions2) {
     std::stringstream ss;
-    Serializer serializer("");
+    Serializer serializer{};
 
     std::unordered_map<int, std::string> map = {{1, "a"}, {2, "b"}, {3, "c"}};
 
@@ -211,7 +211,7 @@ TEST(SerialitionContainerTest, MapFunctions2) {
     map.erase(2);
     map[4] = "h";
 
-    Deserializer deserializer(ss, "");
+    Deserializer deserializer{ss};
     deserializer.deserialize(
         "Map", map, "Item",
         deserializer::MapFunctions{.idTransform = [](std::string_view s) -> int {

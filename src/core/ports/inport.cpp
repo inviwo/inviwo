@@ -31,6 +31,8 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/network/networkutils.h>
 
 namespace inviwo {
@@ -208,6 +210,28 @@ bool Inport::circularConnection(const Port* port) const {
     // Check for circular depends.
     auto pd = util::getPredecessors(port->getProcessor());
     return pd.find(getProcessor()) != pd.end();
+}
+
+Document Inport::getDefaultPortInfo(const Inport* port, std::string_view portname) {
+    Document doc;
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    doc.append("b", portname, {{"class", "name"}});
+
+    if (!port->help_.empty()) {
+        doc.append("div", "", {{"class", "help"}}).append(port->help_);
+    }
+
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H("Identifier"), port->getIdentifier());
+    tb(H("Class"), port->getClassIdentifier());
+    tb(H("Ready"), port->isReady());
+    tb(H("Connected"), port->isConnected());
+
+    tb(H("Connections"),
+       fmt::format("{} ({})", port->getNumberOfConnections(), port->getMaxNumberOfConnections()));
+    tb(H("Optional"), port->isOptional());
+    return doc;
 }
 
 }  // namespace inviwo

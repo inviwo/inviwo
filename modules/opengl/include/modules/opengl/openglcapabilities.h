@@ -103,7 +103,7 @@ public:
      */
     static bool isSignedIntNormalizationSymmetric();
 
-    GLSLShaderVersion getCurrentShaderVersion();
+    GLSLShaderVersion getCurrentShaderVersion() const;
     size_t getCurrentShaderIndex() const;
     size_t getNumberOfShaderVersions() const;
     GLSLShaderVersion getShaderVersion(size_t ind) const;

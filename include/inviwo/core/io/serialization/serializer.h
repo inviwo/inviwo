@@ -48,9 +48,12 @@
 #include <unordered_map>
 #include <map>
 #include <memory>
-#include <filesystem>
 
 namespace inviwo {
+
+enum class WorkspaceSaveMode : int { Disk = 1 << 0, Undo = 1 << 1 };
+ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
+using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 class IVW_CORE_API Serializer : public SerializeBase {
 public:
@@ -66,6 +69,12 @@ public:
                         std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                         allocator_type alloc = {});
 
+    explicit Serializer(allocator_type alloc = {});
+
+    Serializer(const Serializer& rhs) = delete;
+    Serializer(Serializer&& rhs) noexcept = default;
+    Serializer& operator=(const Serializer&) = delete;
+    Serializer& operator=(Serializer&&) noexcept = default;
     virtual ~Serializer();
 
     /**

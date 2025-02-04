@@ -31,23 +31,17 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <flags/flags.h>
-
 #include <string>
 #include <string_view>
+#include <bitset>
+#include <limits>
+#include <memory>
 #include <filesystem>
-
-#include <fmt/format.h>
-#include <fmt/std.h>
 
 class TiXmlElement;
 class TiXmlDocument;
 
 namespace inviwo {
-
-enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
-ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
-using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 enum class SerializationTarget { Node, Attribute };
 
@@ -114,12 +108,14 @@ protected:
     std::filesystem::path fileName_;
     std::filesystem::path fileDir_;
     std::unique_ptr<TiXmlDocument> doc_;
+
     TiXmlElement* rootElement_;
     bool retrieveChild_;
 };
 
 namespace detail {
 
+// NOLINTBEGIN(google-runtime-int)
 IVW_CORE_API void fromStr(std::string_view value, double& dest);
 IVW_CORE_API void fromStr(std::string_view value, float& dest);
 IVW_CORE_API void fromStr(std::string_view value, char& dest);
@@ -135,23 +131,43 @@ IVW_CORE_API void fromStr(std::string_view value, long long& dest);
 IVW_CORE_API void fromStr(std::string_view value, unsigned long long& dest);
 
 IVW_CORE_API void fromStr(std::string_view value, bool& dest);
-IVW_CORE_API void fromStr(std::string_view value, std::string& dest);
-IVW_CORE_API void fromStr(std::string_view value, std::pmr::string& dest);
+inline void fromStr(std::string_view value, std::string& dest) { dest = value; }
+inline void fromStr(std::string_view value, std::pmr::string& dest) { dest = value; }
 
-template <class T>
-void formatTo(const T& value, std::pmr::string& out) {
-    if constexpr (std::is_same_v<std::string, T>) {
-        out.append(value);
-    } else if constexpr (std::is_same_v<std::string_view, T>) {
-        out.append(value);
-    } else if constexpr (std::is_same_v<bool, T>) {
-        constexpr char trueVal = '1';
-        constexpr char falseVal = '0';
-        out.push_back(value ? trueVal : falseVal);
+IVW_CORE_API void formatTo(double value, std::pmr::string& out);
+IVW_CORE_API void formatTo(float value, std::pmr::string& out);
+IVW_CORE_API void formatTo(char value, std::pmr::string& out);
+IVW_CORE_API void formatTo(signed char value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned char value, std::pmr::string& out);
+IVW_CORE_API void formatTo(short value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned short value, std::pmr::string& out);
+IVW_CORE_API void formatTo(int value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned int value, std::pmr::string& out);
+IVW_CORE_API void formatTo(long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(long long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(unsigned long long value, std::pmr::string& out);
+IVW_CORE_API void formatTo(const std::filesystem::path& value, std::pmr::string& out);
+
+inline void formatTo(bool value, std::pmr::string& out) {
+    static constexpr char trueVal = '1';
+    static constexpr char falseVal = '0';
+    out.push_back(value ? trueVal : falseVal);
+}
+inline void formatTo(const std::string& value, std::pmr::string& out) { out.append(value); }
+inline void formatTo(const std::pmr::string& value, std::pmr::string& out) { out.append(value); }
+
+IVW_CORE_API void formatToBinary(unsigned long long value, size_t bits, std::pmr::string& out);
+template <size_t N>
+void formatTo(const std::bitset<N>& value, std::pmr::string& out) {
+    if constexpr (N <= std::numeric_limits<unsigned long long>::digits) {
+        formatToBinary(value.to_ullong(), value.size(), out);
     } else {
-        fmt::format_to(std::back_inserter(out), "{}", value);
+        out.append(value.to_string());
     }
 }
+
+// NOLINTEND(google-runtime-int)
 
 }  // namespace detail
 

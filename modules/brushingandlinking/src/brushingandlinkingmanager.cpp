@@ -447,7 +447,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
         if (std::holds_alternative<BitSetTargets>(targetmap)) {
             auto& map = std::get<BitSetTargets>(targetmap);
 
-            d.deserialize(toString(action), map, "selection",
+            d.deserialize(fmt::to_string(action), map, "selection",
                           deserializer::MapFunctions{
                               .idTransform = [](std::string_view id) { return BrushingTarget(id); },
                               .makeNew = []() { return BitSet(); },
@@ -458,7 +458,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
             auto& map = std::get<IndexListTargets>(targetmap);
 
             d.deserialize(
-                toString(action), map, "selection",
+                fmt::to_string(action), map, "selection",
                 deserializer::MapFunctions{
                     .idTransform = [](std::string_view id) { return BrushingTarget(id); },
                     .makeNew = []() { return IndexList(); },

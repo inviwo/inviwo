@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/common/inviwocommondefines.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/datastructures/camera/camerafactory.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -39,6 +40,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/ports/portinspectormanager.h>
@@ -73,8 +75,22 @@
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
 #include <chrono>
+#include <fmt/std.h>
 
 namespace inviwo {
+
+namespace detail {
+class InviwoApplicationCallbacks {
+public:
+    WorkspaceManager::ClearHandle networkClear;
+    WorkspaceManager::SerializationHandle networkSerialization;
+    WorkspaceManager::DeserializationHandle networkDeserialization;
+
+    WorkspaceManager::ClearHandle presetsClear;
+    WorkspaceManager::SerializationHandle presetsSerialization;
+    WorkspaceManager::DeserializationHandle presetsDeserialization;
+};
+}  // namespace detail
 
 InviwoApplication* InviwoApplication::instance_ = nullptr;
 
@@ -136,13 +152,14 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , moduleCallbackActions_{}
-    , moduleManager_{this}
+    , moduleManager_{std::make_unique<ModuleManager>(this)}
     , processorNetwork_{std::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{std::make_unique<ProcessorNetworkEvaluator>(
           processorNetwork_.get())}
     , workspaceManager_{std::make_unique<WorkspaceManager>(this)}
     , propertyPresetManager_{std::make_unique<PropertyPresetManager>(this)}
     , portInspectorManager_{std::make_unique<PortInspectorManager>(this)}
+    , callbacks_{std::make_unique<detail::InviwoApplicationCallbacks>()}
     , settingsRegistry_{}
     , layerRamResizer_{nullptr} {
 
@@ -167,24 +184,24 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     workspaceManager_->registerFactory(getOutportFactory());
     workspaceManager_->registerFactory(getCameraFactory());
 
-    networkClearHandle_ = workspaceManager_->onClear([&]() {
+    callbacks_->networkClear = workspaceManager_->onClear([&]() {
         portInspectorManager_->clear();
         processorNetwork_->clear();
     });
-    networkSerializationHandle_ = workspaceManager_->onSave([&](Serializer& s) {
+    callbacks_->networkSerialization = workspaceManager_->onSave([&](Serializer& s) {
         s.serialize("ProcessorNetwork", *processorNetwork_);
         s.serialize("PortInspectors", *portInspectorManager_);
     });
-    networkDeserializationHandle_ = workspaceManager_->onLoad([&](Deserializer& d) {
+    callbacks_->networkDeserialization = workspaceManager_->onLoad([&](Deserializer& d) {
         d.deserialize("ProcessorNetwork", *processorNetwork_);
         d.deserialize("PortInspectors", *portInspectorManager_);
     });
 
-    presetsClearHandle_ =
+    callbacks_->presetsClear =
         workspaceManager_->onClear([&]() { propertyPresetManager_->clearWorkspacePresets(); });
-    presetsSerializationHandle_ = workspaceManager_->onSave(
+    callbacks_->presetsSerialization = workspaceManager_->onSave(
         [&](Serializer& s) { propertyPresetManager_->saveWorkspacePresets(s); });
-    presetsDeserializationHandle_ = workspaceManager_->onLoad(
+    callbacks_->presetsDeserialization = workspaceManager_->onLoad(
         [&](Deserializer& d) { propertyPresetManager_->loadWorkspacePresets(d); });
 
     // Make sure that all data formats are initialized.
@@ -204,31 +221,24 @@ InviwoApplication::~InviwoApplication() { resizePool(0); }
 
 void InviwoApplication::registerModules(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
-    moduleManager_.registerModules(std::move(moduleFactories));
+    moduleManager_->registerModules(std::move(moduleFactories));
 }
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token) {
-    moduleManager_.registerModules(token);
+    moduleManager_->registerModules(token);
 }
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token,
                                         std::function<bool(std::string_view)> isEnabled) {
-    moduleManager_.registerModules(token, isEnabled);
+    moduleManager_->registerModules(token, std::move(isEnabled));
 }
 
-std::filesystem::path InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
+ModuleManager& InviwoApplication::getModuleManager() { return *moduleManager_; }
 
-std::filesystem::path InviwoApplication::getPath(PathType pathType, const std::string& suffix,
-                                                 const bool& createFolder) {
-    return filesystem::getPath(pathType, suffix, createFolder);
-}
-
-ModuleManager& InviwoApplication::getModuleManager() { return moduleManager_; }
-
-const ModuleManager& InviwoApplication::getModuleManager() const { return moduleManager_; }
+const ModuleManager& InviwoApplication::getModuleManager() const { return *moduleManager_; }
 
 InviwoModule* InviwoApplication::getModuleByIdentifier(const std::string& identifier) const {
-    return moduleManager_.getModuleByIdentifier(identifier);
+    return moduleManager_->getModuleByIdentifier(identifier);
 }
 
 ProcessorNetwork* InviwoApplication::getProcessorNetwork() { return processorNetwork_.get(); }
@@ -265,7 +275,7 @@ void InviwoApplication::printApplicationInfo() {
             log::info("Git {}  hash: {}", name, hash);
         }
     }
-    log::info("Base Path: {}", getBasePath());
+    log::info("Base Path: {}", filesystem::findBasePath());
     log::info("ThreadPool Worker Threads: {}", pool_.getSize());
 
     log::info("Config: {} [{}] {} ({})", build::generator, build::configuration, build::compiler,
@@ -305,7 +315,7 @@ SystemSettings& InviwoApplication::getSystemSettings() { return *systemSettings_
 
 std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
     std::vector<Capabilities*> allModuleCapabilities;
-    for (auto& inviwoModule : moduleManager_.getInviwoModules()) {
+    for (auto& inviwoModule : moduleManager_->getInviwoModules()) {
         auto modCapabilities = inviwoModule.getCapabilities();
         allModuleCapabilities.insert(allModuleCapabilities.end(), modCapabilities.begin(),
                                      modCapabilities.end());
@@ -417,7 +427,8 @@ ThreadPool& InviwoApplication::getThreadPool() { return pool_; }
 void InviwoApplication::waitForPool() {
     size_t old_size = pool_.getSize();
     resizePool(0);  // This will wait until all tasks are done;
-    while (processFront()) {}
+    while (processFront()) {
+    }
     resizePool(old_size);
 }
 

@@ -34,6 +34,8 @@
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/util/safecstr.h>
 
+#include <filesystem>
+
 namespace inviwo {
 
 Serializer::Serializer(const std::filesystem::path& fileName, std::string_view rootElement,
@@ -52,7 +54,10 @@ Serializer::Serializer(const std::filesystem::path& fileName, std::string_view r
     }
 }
 
-Serializer::~Serializer() {}
+Serializer::Serializer(allocator_type alloc)
+    : Serializer{std::filesystem::path{}, SerializeConstants::InviwoWorkspace, alloc} {}
+
+Serializer::~Serializer() = default;
 
 void Serializer::serialize(std::string_view key, const std::filesystem::path& path,
                            SerializationTarget target) {

@@ -37,7 +37,7 @@
 #include <string>
 #include <vector>
 
-#include <fmt/format.h>
+#include <fmt/base.h>
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>

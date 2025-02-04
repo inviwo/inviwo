@@ -37,6 +37,7 @@
 
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/util/typetraits.h>
+#include <inviwo/core/util/isstreaminsertable.h>
 
 #include <flags/flags.h>
 #include <fmt/format.h>

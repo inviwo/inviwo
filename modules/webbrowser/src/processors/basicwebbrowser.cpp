@@ -36,6 +36,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/util/moduleutils.h>
 #include <modules/webbrowser/webbrowserutil.h>
 
 #include <include/wrapper/cef_stream_resource_handler.h>
@@ -166,7 +167,7 @@ CefRefPtr<CefStreamResourceHandler> streamData(std::string_view string,
 }
 
 OptionPropertyState<std::string> convertableProperties(InviwoApplication* app) {
-    auto& conv = app->getModuleByType<JSONModule>()->getJSONPropertyConverter();
+    const auto& conv = util::getModuleByTypeOrThrow<JSONModule>(app).getJSONPropertyConverter();
 
     std::vector<OptionPropertyOption<std::string>> options;
     for (auto key : conv.getKeyView()) {

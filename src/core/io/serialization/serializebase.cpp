@@ -33,7 +33,8 @@
 #include <inviwo/core/io/serialization/serializeconstants.h>
 
 #include <charconv>
-#include <sstream>
+#include <fmt/format.h>
+#include <fmt/std.h>
 
 #if !(defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L)
 #include <fast_float/fast_float.h>
@@ -120,52 +121,36 @@ namespace {
 
 template <class T>
 void fromStrInternal(std::string_view value, T& dest) {
-    if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T> ||
-                  (!std::is_same_v<bool, T> && std::is_integral_v<T>)) {
-        const auto end = value.data() + value.size();
+    const auto end = value.data() + value.size();
 
 #if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
-        auto [p, ec] = std::from_chars(value.data(), end, dest);
+    auto [p, ec] = std::from_chars(value.data(), end, dest);
 #else
-        auto [p, ec] = fast_float::from_chars(value.data(), end, dest);
+    auto [p, ec] = fast_float::from_chars(value.data(), end, dest);
 #endif
-        if (ec != std::errc() || p != end) {
-            if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T>) {
-                if (value == "inf") {
-                    dest = std::numeric_limits<T>::infinity();
-                } else if (value == "-inf") {
-                    dest = -std::numeric_limits<T>::infinity();
-                } else if (value == "nan") {
-                    dest = std::numeric_limits<T>::quiet_NaN();
-                } else if (value == "-nan" || value == "-nan(ind)") {
-                    dest = -std::numeric_limits<T>::quiet_NaN();
-                } else {
-                    throw SerializationException(SourceContext{},
-                                                 "Error parsing floating point number ({})", value);
-                }
+    if (ec != std::errc() || p != end) {
+        if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T>) {
+            if (value == "inf") {
+                dest = std::numeric_limits<T>::infinity();
+            } else if (value == "-inf") {
+                dest = -std::numeric_limits<T>::infinity();
+            } else if (value == "nan") {
+                dest = std::numeric_limits<T>::quiet_NaN();
+            } else if (value == "-nan" || value == "-nan(ind)") {
+                dest = -std::numeric_limits<T>::quiet_NaN();
             } else {
-                throw SerializationException(SourceContext{}, "Error parsing number ({})", value);
+                throw SerializationException(SourceContext{},
+                                             "Error parsing floating point number ({})", value);
             }
-        }
-    } else if constexpr (std::is_same_v<bool, T>) {
-        static constexpr std::string_view trueVal = "1";
-        static constexpr std::string_view falseVal = "0";
-        if (value == trueVal) {
-            dest = true;
-        } else if (value == falseVal) {
-            dest = false;
         } else {
-            throw SerializationException(SourceContext{}, "Error parsing boolean value ({})",
-                                         value);
+            throw SerializationException(SourceContext{}, "Error parsing number ({})", value);
         }
-    } else {
-        std::istringstream stream{std::string{value}};
-        stream >> dest;
     }
 }
 
 }  // namespace
 
+// NOLINTBEGIN(google-runtime-int)
 void detail::fromStr(std::string_view value, double& dest) { fromStrInternal(value, dest); }
 void detail::fromStr(std::string_view value, float& dest) { fromStrInternal(value, dest); }
 void detail::fromStr(std::string_view value, char& dest) { fromStrInternal(value, dest); }
@@ -181,9 +166,65 @@ void detail::fromStr(std::string_view value, long long& dest) { fromStrInternal(
 void detail::fromStr(std::string_view value, unsigned long long& dest) {
     fromStrInternal(value, dest);
 }
+void detail::fromStr(std::string_view value, bool& dest) {
+    static constexpr std::string_view trueVal = "1";
+    static constexpr std::string_view falseVal = "0";
+    if (value == trueVal) {
+        dest = true;
+    } else if (value == falseVal) {
+        dest = false;
+    } else {
+        throw SerializationException(SourceContext{}, "Error parsing boolean value ({})", value);
+    }
+}
 
-void detail::fromStr(std::string_view value, bool& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, std::string& dest) { dest = value; }
-void detail::fromStr(std::string_view value, std::pmr::string& dest) { dest = value; }
+void detail::formatTo(double value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(float value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(char value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(signed char value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(unsigned char value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(short value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(unsigned short value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(int value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(unsigned int value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(long value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(unsigned long value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(long long value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+void detail::formatTo(unsigned long long value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+
+void detail::formatTo(const std::filesystem::path& value, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{}", value);
+}
+
+void detail::formatToBinary(unsigned long long value, size_t bits, std::pmr::string& out) {
+    fmt::format_to(std::back_inserter(out), "{:0{}b}", value, bits);
+}
+// NOLINTEND(google-runtime-int)
 
 }  // namespace inviwo

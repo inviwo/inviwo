@@ -183,14 +183,14 @@ TEST(bitset, serialization) {
     std::vector<std::uint32_t> indices = getIndices(20);
 
     std::stringstream ss;
-    Serializer serializer("");
+    Serializer serializer{};
 
     auto b = BitSet(indices.begin(), indices.end());
     b.serialize(serializer);
     serializer.writeFile(ss);
 
     BitSet result;
-    Deserializer deserializer(ss, "");
+    Deserializer deserializer{ss};
     result.deserialize(deserializer);
     EXPECT_EQ(b, result);
 }

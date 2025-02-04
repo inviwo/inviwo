@@ -30,6 +30,7 @@
 #include <modules/userinterfacegl/glui/widgetsupplier.h>
 
 #include <inviwo/core/common/inviwoapplication.h>              // for InviwoApplication
+#include <inviwo/core/util/moduleutils.h>
 #include <inviwo/core/util/exception.h>                        // for Exception
 #include <inviwo/core/util/sourcecontext.h>                    // for SourceContext
 #include <modules/userinterfacegl/glui/widgetfactory.h>        // for WidgetFactory
@@ -45,7 +46,7 @@ WidgetSupplier::WidgetSupplier(UserInterfaceGLModule& uiGLModule) : uiGLModule_(
 WidgetSupplier::WidgetSupplier(InviwoApplication* app)
     : uiGLModule_{[app]() -> UserInterfaceGLModule& {
         if (app) {
-            if (auto uiGLModule = app->getModuleByType<UserInterfaceGLModule>()) {
+            if (auto* uiGLModule = util::getModuleByType<UserInterfaceGLModule>(app)) {
                 return *uiGLModule;
             }
         }

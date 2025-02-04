@@ -58,6 +58,8 @@
 #include <modules/animation/factories/trackfactory.h>
 #include <modules/animation/factories/trackfactoryobject.h>
 
+#include <filesystem>
+
 namespace inviwo {
 namespace animation {
 
@@ -345,7 +347,7 @@ TEST(AnimationTests, CallbackTrackTest) {
 TEST(AnimationTests, KeyframeSerializationTest) {
     ValueKeyframe<dvec3> keyframe{Seconds{4.0}, dvec3(2.0)};
 
-    const std::string refPath = "/tmp";
+    const std::filesystem::path refPath = "/tmp";
 
     Serializer s(refPath);
     keyframe.serialize(s);
@@ -366,7 +368,7 @@ TEST(AnimationTests, InterpolationSerializationTest) {
     InterpolationFactoryObjectTemplate<LinearInterpolation<ValueKeyframe<dvec3>>> linearIFO;
     factory.registerObject(&linearIFO);
 
-    const std::string refPath = "/tmp";
+    const std::filesystem::path refPath = "/tmp";
 
     LinearInterpolation<ValueKeyframe<dvec3>> linear;
 
@@ -401,7 +403,7 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence{
         std::move(dseq), std::make_unique<LinearInterpolation<ValueKeyframe<dvec3>>>()};
 
-    const std::string refPath = "/tmp";
+    const std::filesystem::path refPath = "/tmp";
 
     Serializer s(refPath);
     doubleSequence.serialize(s);
@@ -534,7 +536,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
     ProcessorFactoryObjectTemplate<TestProcessor> testPFO;
     processorFactory.registerObject(&testPFO);
 
-    const std::string refPath = "/tmp";
+    const std::filesystem::path refPath = "/tmp";
     std::stringstream ss;
     ProcessorNetwork net{nullptr};
     Animation animation;

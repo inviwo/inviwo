@@ -38,6 +38,7 @@ namespace inviwo {
 
 class SharedOpenGLResources;
 class ShaderManager;
+class OpenGLCapabilities;
 
 class IVW_MODULE_OPENGL_API OpenGLModule : public InviwoModule {
 public:

@@ -38,6 +38,7 @@
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/chronoutils.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/util/stdextensions.h>
 
 #include <inviwo/qt/editor/networkeditor.h>

@@ -29,62 +29,7 @@
 
 #include <modules/opengl/shader/shaderresource.h>
 
-#include <inviwo/core/common/inviwoapplicationutil.h>  // for getInviwoApplication
-#include <inviwo/core/util/dispatcher.h>               // for Dispatcher
-#include <inviwo/core/util/fileobserver.h>             // for FileObserver
-#include <inviwo/core/util/filesystem.h>               // for ifstream, ofstream
-
-#include <sstream>  // IWYU pragma: keep
-
 namespace inviwo {
 
-FileShaderResource::FileShaderResource(std::string_view key, const std::filesystem::path& fileName)
-    : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
-    startFileObservation(fileName_);
-}
-
-std::unique_ptr<ShaderResource> FileShaderResource::clone() const {
-    return std::make_unique<FileShaderResource>(key_, fileName_);
-}
-
-const std::string& FileShaderResource::key() const { return key_; }
-
-const std::string& FileShaderResource::source() const {
-    if (!cache_.empty()) return cache_;
-    auto stream = std::ifstream(fileName_);
-    std::stringstream buffer;
-    buffer << stream.rdbuf();
-    cache_ = buffer.str();
-    return cache_;
-}
-
-void FileShaderResource::setSource(std::string_view source) {
-    auto file = std::ofstream(fileName_);
-    file << source;
-    file.close();
-}
-
-const std::filesystem::path& FileShaderResource::file() const { return fileName_; }
-
-void FileShaderResource::fileChanged(const std::filesystem::path& /*fileName*/) {
-    cache_ = "";
-    callbacks_.invoke(this);
-}
-
-StringShaderResource::StringShaderResource(std::string_view key, std::string_view source)
-    : key_(key), source_(source) {}
-
-std::unique_ptr<ShaderResource> StringShaderResource::clone() const {
-    return std::make_unique<StringShaderResource>(key_, source_);
-}
-
-const std::string& StringShaderResource::key() const { return key_; }
-
-const std::string& StringShaderResource::source() const { return source_; }
-
-void StringShaderResource::setSource(std::string_view source) {
-    source_ = source;
-    callbacks_.invoke(this);
-}
 
 }  // namespace inviwo

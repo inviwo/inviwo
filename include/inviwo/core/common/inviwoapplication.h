@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/common/runtimemoduleregistration.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/threadpool.h>
@@ -42,18 +41,14 @@
 #include <inviwo/core/datastructures/representationmetafactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
-#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <queue>
 #include <memory>
 #include <mutex>
 #include <future>
 #include <locale>
 #include <set>
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -79,11 +74,14 @@ class PortInspectorFactory;
 class PortInspectorManager;
 
 class DataVisualizerManager;
+class WorkspaceManager;
 
 class Settings;
 class SystemSettings;
 class Capabilities;
 class InviwoModule;
+class ModuleManager;
+class InviwoModuleFactoryObject;
 class ModuleCallbackAction;
 class FileObserver;
 
@@ -100,6 +98,12 @@ class TimerThread;
 class FileSystemObserver;
 
 class LayerRamResizer;
+
+namespace detail {
+
+class InviwoApplicationCallbacks;
+
+}  // namespace detail
 
 /**
  * \class InviwoApplication
@@ -139,28 +143,9 @@ public:
 
     void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> isEnabled);
 
-    /**
-     * Get the base path of the application.
-     * i.e. where the core data and modules folder and etc are.
-     */
-    std::filesystem::path getBasePath() const;
-
-    /**
-     * Get basePath + pathType + suffix.
-     * @see PathType
-     * @param pathType Enum for type of path
-     * @param suffix Path extension
-     * @param createFolder whether to create the folder if it does not exist.
-     * @return basePath + pathType + suffix
-     */
-    std::filesystem::path getPath(PathType pathType, const std::string& suffix = "",
-                                  const bool& createFolder = false);
-
     ModuleManager& getModuleManager();
     const ModuleManager& getModuleManager() const;
 
-    template <class T>
-    T* getModuleByType() const;
     InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
 
     ProcessorNetwork* getProcessorNetwork();
@@ -497,20 +482,14 @@ protected:
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
-    ModuleManager moduleManager_;
+    std::unique_ptr<ModuleManager> moduleManager_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
     std::unique_ptr<WorkspaceManager> workspaceManager_;
     std::unique_ptr<PropertyPresetManager> propertyPresetManager_;
     std::unique_ptr<PortInspectorManager> portInspectorManager_;
+    std::unique_ptr<detail::InviwoApplicationCallbacks> callbacks_;
     std::vector<Settings*> settingsRegistry_;
-    WorkspaceManager::ClearHandle networkClearHandle_;
-    WorkspaceManager::SerializationHandle networkSerializationHandle_;
-    WorkspaceManager::DeserializationHandle networkDeserializationHandle_;
-
-    WorkspaceManager::ClearHandle presetsClearHandle_;
-    WorkspaceManager::SerializationHandle presetsSerializationHandle_;
-    WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
     LayerRamResizer* layerRamResizer_;
     std::function<void(std::string_view message, SourceContext context)> assertionHandler_;
@@ -548,11 +527,6 @@ auto dispatchPool(F&& f, Args&&... args) -> std::future<std::invoke_result_t<F, 
 template <class T>
 T* InviwoApplication::getSettingsByType() {
     return getTypeFromVector<T>(getModuleSettings());
-}
-
-template <class T>
-T* InviwoApplication::getModuleByType() const {
-    return moduleManager_.getModuleByType<T>();
 }
 
 template <class T>

@@ -33,6 +33,7 @@
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/moduleutils.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pybindutils.h>
@@ -47,8 +48,7 @@ namespace inviwo {
 
 namespace {
 std::filesystem::path getPath() {
-    auto path = util::getInviwoApplication()->getModuleByType<Python3Module>()->getPath(
-        ModulePath::UnitTests);
+    auto path = util::getModuleByTypeOrThrow<Python3Module>().getPath(ModulePath::UnitTests);
     return path / "scripts";
 }
 }  // namespace

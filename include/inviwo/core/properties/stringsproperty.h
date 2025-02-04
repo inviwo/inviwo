@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <array>
 #include <span>

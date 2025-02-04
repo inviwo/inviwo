@@ -48,6 +48,8 @@
 
 #include <modules/python3/polymorphictypehooks.h>
 
+#include <inviwo/core/util/filesystem.h>
+
 namespace inviwo {
 
 class ModuleIdentifierWrapper {
@@ -157,10 +159,13 @@ void exposeInviwoApplication(pybind11::module& m) {
     py::class_<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
         .def(py::init<>())
         .def(py::init<std::string>())
-        .def("getBasePath", &InviwoApplication::getBasePath)
-        .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "",
-             py::arg("createFolder") = false)
-        .def_property_readonly("basePath", &InviwoApplication::getBasePath)
+        .def("getBasePath", [](InviwoApplication*) { return filesystem::findBasePath(); })
+        .def(
+            "getPath",
+            [](InviwoApplication*, PathType type, std::string_view suffix,
+               const bool createFolder) { return filesystem::getPath(type, suffix, createFolder); },
+            py::arg("pathType"), py::arg("suffix") = "", py::arg("createFolder") = false)
+        .def_property_readonly("basePath", &filesystem::findBasePath)
         .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
 
         .def_property_readonly("modules",

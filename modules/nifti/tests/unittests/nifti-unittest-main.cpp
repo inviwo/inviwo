@@ -33,6 +33,7 @@
 
 #include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/testutil/configurablegtesteventlistener.h>

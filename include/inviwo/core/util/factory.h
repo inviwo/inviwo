@@ -42,6 +42,8 @@
 #include <memory>
 #include <map>
 
+#include <fmt/base.h>
+
 namespace inviwo {
 
 class Serializable;
@@ -220,12 +222,16 @@ public:
 
 namespace detail {
 template <typename T>
-typename std::enable_if<util::is_stream_insertable<T>::value, const T&>::type filter(const T& val) {
+const T& filter(const T& val)
+    requires fmt::is_formattable<T>::value
+{
     return val;
 }
 
 template <typename T>
-typename std::enable_if<!util::is_stream_insertable<T>::value, std::string>::type filter(const T&) {
+std::string_view filter(const T&)
+    requires(!fmt::is_formattable<T>::value)
+{
     return "???";
 }
 

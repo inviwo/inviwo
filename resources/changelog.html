@@ -42,10 +42,10 @@
 <li><code class="notranslate">JSON File Cache</code></li>
 <li><code class="notranslate">DataFrame File Cache</code></li>
 </ul>
-<p>They can be used to "cache" result from step within the network. Just drop a File Cache processor on a connection, and it will capture the state of all the processors above it in a hash and then save it's data to disk.<br>
-If the same state happens at a later point the processor will load the data from disk, and the potentially expensive computation above can be avoided.</p>
-<p>The the screenshot below show an example where we have cached the results of an "expensive"  <code class="notranslate">Volume Creator</code>.<br>
-Here we have reloaded the network and can note that the <code class="notranslate">Volume Creator</code> have not been run, since the <code class="notranslate">File Cache</code> was able to provide the data.<br>
+<p>They can be used to "cache" results from steps within the network. Just drop a File Cache processor onto a connection, and it will capture the state of all the processors above it in a hash and then save its data to disk.<br>
+If the same state happens at a later point, the processor will load the data from disk, and the potentially expensive computation above can be avoided.</p>
+<p>The screenshot below shows an example where we have cached the results of an "expensive"  <code class="notranslate">Volume Creator</code>.<br>
+Here we have reloaded the network and can note that the <code class="notranslate">Volume Creator</code> has not been run since the <code class="notranslate">File Cache</code> was able to provide the data.<br>
 <a target="_blank" rel="noopener noreferrer" href="resources/changelog/filecache.png"><img src="resources/changelog/filecache.png" alt="File cache example" style="max-width: 100%;"></a></p>
 <p>For the File Cache processor to work you have to provide an existing directory to store caches in. The processor will never remove any caches, so you might want to do that manually periodically.</p>
 <p>A <code class="notranslate">FileCache</code> can easily be registered for other data types.</p>

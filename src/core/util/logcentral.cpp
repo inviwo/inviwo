@@ -36,6 +36,10 @@
 #include <inviwo/core/network/processornetwork.h>
 
 #include <chrono>
+#include <iostream>
+
+#include <fmt/std.h>
+#include <fmt/chrono.h>
 
 namespace inviwo {
 

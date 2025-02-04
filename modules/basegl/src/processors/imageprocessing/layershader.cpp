@@ -31,7 +31,7 @@
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/foreacharg.h>
-#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/stringshaderresource.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>

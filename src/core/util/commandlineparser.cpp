@@ -171,9 +171,8 @@ bool CommandLineParser::getShowSplashScreen() const {
 
 bool CommandLineParser::getLoadWorkspaceFromArg() const {
     if (workspace_.isSet()) {
-        std::string values = workspace_.getValue();
-        assert(values.size() != 0);
-        return true;
+        const auto& value = workspace_.getValue();
+        return !value.empty();
     }
 
     return false;
@@ -181,9 +180,8 @@ bool CommandLineParser::getLoadWorkspaceFromArg() const {
 
 bool CommandLineParser::getLogToFile() const {
     if (logfile_.isSet()) {
-        std::string values = logfile_.getValue();
-        assert(values.size() != 0);
-        return true;
+        const auto& value = logfile_.getValue();
+        return !value.empty();
     }
 
     return false;

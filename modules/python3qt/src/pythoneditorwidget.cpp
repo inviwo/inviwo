@@ -35,6 +35,7 @@
 #include <inviwo/core/util/pathtype.h>                        // for PathType, PathType::Scripts
 #include <inviwo/core/util/raiiutils.h>                       // for OnScopeExit, OnScopeExit::E...
 #include <inviwo/core/util/stringconversion.h>                // for replaceInString
+#include <inviwo/core/util/moduleutils.h>
 #include <modules/python3/python3module.h>                    // for Python3Module
 #include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
 #include <modules/python3/pythoninterpreter.h>                // for PythonInterpreter
@@ -382,11 +383,12 @@ void PythonEditorWidget::runOrStop(bool runScript) {
 }
 
 void PythonEditorWidget::run() {
-    app_->getModuleByType<Python3Module>()->getPythonInterpreter()->addObserver(this);
+    util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->addObserver(this);
 
     util::OnScopeExit reenable([&]() {
         runAction_->setChecked(false);
-        app_->getModuleByType<Python3Module>()->getPythonInterpreter()->removeObserver(this);
+        util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->removeObserver(
+            this);
     });
 
     if (!appendLog_->isChecked()) {
@@ -410,7 +412,7 @@ void PythonEditorWidget::run() {
 }
 
 void PythonEditorWidget::stop() {
-    app_->getModuleByType<Python3QtModule>()->abortPythonEvaluation();
+    util::getModuleByTypeOrThrow<Python3QtModule>(app_).abortPythonEvaluation();
 }
 
 void PythonEditorWidget::show() {

@@ -743,11 +743,11 @@ LogTableModelEntry::LogTableModelEntry(std::chrono::system_clock::time_point tim
     , date{utilqt::toQString(getDate(time))}
     , time{utilqt::toQString(getTime(time))}
     , source{utilqt::toQString(source)}
-    , levelStr{utilqt::toQString(toString(level))}
-    , audience{utilqt::toQString(toString(audience))}
+    , levelStr{utilqt::toQString(fmt::to_string(level))}
+    , audience{utilqt::toQString(fmt::to_string(audience))}
     , path{utilqt::toQString(file.parent_path())}
     , file{utilqt::toQString(file.filename())}
-    , line{utilqt::toQString(toString(line))}
+    , line{utilqt::toQString(fmt::to_string(line))}
     , function{utilqt::toQString(function)}
     , message{utilqt::toQString(util::elideLines(util::rtrim(msg)))}
     , fullMessage{utilqt::toQString(util::rtrim(msg))}

@@ -30,14 +30,11 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/transparentmaps.h>
 
 #include <functional>
-#include <sstream>
-#include <type_traits>
+#include <iosfwd>
 #include <string>
-#include <unordered_map>
 #include <memory>
 #include <vector>
 
@@ -111,12 +108,11 @@ public:
         PathComponent(std::string_view strrep,
                       std::function<ElemVec::const_iterator(const ElemVec&)> matcher);
 
-        PathComponent(int index);
-        PathComponent(std::string_view name);
-        PathComponent(const UnorderedStringMap<std::string>& attributes);
+        explicit PathComponent(int index);
+        explicit PathComponent(std::string_view name);
+        explicit PathComponent(const UnorderedStringMap<std::string>& attributes);
 
-        PathComponent(std::string_view name,
-                      const UnorderedStringMap<std::string>& attributes);
+        PathComponent(std::string_view name, const UnorderedStringMap<std::string>& attributes);
 
         static PathComponent first();
 
@@ -229,96 +225,5 @@ public:
 private:
     std::unique_ptr<Element> root_;
 };
-
-namespace utildoc {
-
-namespace detail {
-
-template <typename T,
-          typename std::enable_if<util::is_stream_insertable<T>::value, std::size_t>::type = 0>
-std::string convert(T&& val) {
-    std::stringstream value;
-    value << std::boolalpha << std::forward<T>(val);
-    return value.str();
-}
-template <typename T,
-          typename std::enable_if<!util::is_stream_insertable<T>::value, std::size_t>::type = 0>
-std::string convert(T&& /*val*/) {
-    return "???";
-}
-}  // namespace detail
-
-class IVW_CORE_API TableBuilder {
-public:
-    struct IVW_CORE_API Wrapper {
-        std::string data_;
-
-    protected:
-        template <typename T>
-        Wrapper(T&& data) : data_(detail::convert(std::forward<T>(data))) {}
-        Wrapper(const std::string& data);
-        Wrapper(const char* const data);
-        Wrapper(std::string_view data);
-    };
-
-    struct IVW_CORE_API ArrributeWrapper : Wrapper {
-        template <typename T>
-        ArrributeWrapper(const UnorderedStringMap<std::string>& attributes, T&& data)
-            : Wrapper(std::forward<T>(data)), attributes_(attributes) {}
-        UnorderedStringMap<std::string> attributes_;
-    };
-    struct IVW_CORE_API Header : Wrapper {
-        template <typename T>
-        Header(T&& data) : Wrapper(std::forward<T>(data)) {}
-    };
-
-    struct Span_t {};
-
-    TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
-                 const UnorderedStringMap<std::string>& attributes = {});
-
-    TableBuilder(Document::DocumentHandle table);
-
-    template <typename... Args>
-    Document::DocumentHandle operator()(Document::PathComponent pos, Args&&... args) {
-        auto row = table_.insert(pos, "tr");
-        tablerow(row, std::forward<Args>(args)...);
-        return row;
-    }
-
-    template <typename... Args>
-    Document::DocumentHandle operator()(Args&&... args) {
-        return operator()(Document::PathComponent::end(), std::forward<Args>(args)...);
-    }
-
-private:
-    template <typename T, typename... Args>
-    void tablerow(Document::DocumentHandle& w, T&& val, Args&&... args) {
-        tabledata(w, std::forward<T>(val));
-        tablerow(w, std::forward<Args>(args)...);
-    }
-
-    template <typename T>
-    void tablerow(Document::DocumentHandle& w, T&& val) {
-        tabledata(w, std::forward<T>(val));
-    }
-
-    void tabledata(Document::DocumentHandle& row, const std::string& val);
-    void tabledata(Document::DocumentHandle& row, const char* const val);
-
-    template <typename T, typename std::enable_if<!std::is_base_of<Wrapper, std::decay_t<T>>::value,
-                                                  int>::type = 0>
-    void tabledata(Document::DocumentHandle& row, T&& val) {
-        row.insert(Document::PathComponent::end(), "td", detail::convert(val));
-    }
-    void tabledata(Document::DocumentHandle& row, Span_t val);
-
-    void tabledata(Document::DocumentHandle& row, const ArrributeWrapper& val);
-    void tabledata(Document::DocumentHandle& row, const Header& val);
-
-    Document::DocumentHandle table_;
-};
-
-}  // namespace utildoc
 
 }  // namespace inviwo

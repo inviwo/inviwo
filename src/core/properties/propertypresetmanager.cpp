@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>

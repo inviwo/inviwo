@@ -327,6 +327,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/dispatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/docbuilder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/docutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/enumtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/factory.h
@@ -362,6 +363,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/isstreaminsertable.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/iterrange.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/localetools.h
@@ -377,6 +379,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/ostreamjoiner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/pathtype.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/pmrutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/safecstr.h
@@ -696,6 +699,7 @@ set(SOURCE_FILES
     util/dialogfactoryobject.cpp
     util/docbuilder.cpp
     util/document.cpp
+    util/docutils.cpp
     util/enumtraits.cpp
     util/exception.cpp
     util/factory.cpp
@@ -726,6 +730,7 @@ set(SOURCE_FILES
     util/indirectiterator.cpp
     util/introspection.cpp
     util/inviwosetupinfo.cpp
+    util/isstreaminsertable.cpp
     util/iterrange.cpp
     util/licenseinfo.cpp
     util/localetools.cpp
@@ -739,6 +744,7 @@ set(SOURCE_FILES
     util/moveonlyvalue.cpp
     util/networkdebugobserver.cpp
     util/observer.cpp
+    util/pmrutils.cpp
     util/rendercontext.cpp
     util/safecstr.cpp
     util/settings/linksettings.cpp

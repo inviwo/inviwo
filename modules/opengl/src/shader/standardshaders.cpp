@@ -30,6 +30,7 @@
 #include <modules/opengl/shader/standardshaders.h>
 
 #include <modules/opengl/shader/shaderresource.h>  // for StringShaderResource, ShaderResource (...
+#include <modules/opengl/shader/stringshaderresource.h>
 #include <modules/opengl/shader/shadertype.h>      // for ShaderType, ShaderType::Vertex, Shader...
 
 namespace inviwo {

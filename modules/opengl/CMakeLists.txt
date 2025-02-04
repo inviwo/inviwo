@@ -29,6 +29,7 @@ set(HEADER_FILES
     include/modules/opengl/openglutils.h
     include/modules/opengl/rendering/meshdrawergl.h
     include/modules/opengl/rendering/texturequadrenderer.h
+    include/modules/opengl/shader/fileshaderresource.h
     include/modules/opengl/shader/linenumberresolver.h
     include/modules/opengl/shader/shader.h
     include/modules/opengl/shader/shadermanager.h
@@ -38,6 +39,7 @@ set(HEADER_FILES
     include/modules/opengl/shader/shadertype.h
     include/modules/opengl/shader/shaderutils.h
     include/modules/opengl/shader/standardshaders.h
+    include/modules/opengl/shader/stringshaderresource.h
     include/modules/opengl/sharedopenglresources.h
     include/modules/opengl/texture/buffertexture.h
     include/modules/opengl/texture/texture.h
@@ -78,6 +80,7 @@ set(SOURCE_FILES
     src/openglutils.cpp
     src/rendering/meshdrawergl.cpp
     src/rendering/texturequadrenderer.cpp
+    src/shader/fileshaderresource.cpp
     src/shader/linenumberresolver.cpp
     src/shader/shader.cpp
     src/shader/shadermanager.cpp
@@ -87,6 +90,7 @@ set(SOURCE_FILES
     src/shader/shadertype.cpp
     src/shader/shaderutils.cpp
     src/shader/standardshaders.cpp
+    src/shader/stringshaderresource.cpp
     src/sharedopenglresources.cpp
     src/texture/buffertexture.cpp
     src/texture/texture.cpp

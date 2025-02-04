@@ -32,6 +32,7 @@
 
 #include <string>
 #include <memory_resource>
+#include <filesystem>
 
 namespace inviwo {
 

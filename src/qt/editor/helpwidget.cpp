@@ -33,6 +33,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -425,7 +426,7 @@ void HelpBrowser::setCurrent(std::string_view processorClassIdentifier) {
 QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     std::string s = utilqt::fromQString(resourceUrl.toString(QUrl::None));
     replaceInString(s, "~modulePath~", currentModulePath_.generic_string());
-    replaceInString(s, "~basePath~", app_->getBasePath().generic_string());
+    replaceInString(s, "~basePath~", filesystem::findBasePath().generic_string());
     const QUrl url(utilqt::toQString(s), QUrl::TolerantMode);
 
     const QUrlQuery query(url);

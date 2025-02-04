@@ -136,7 +136,7 @@ void SeedPointGenerator2D::process() {
             case Generator::HaltonSequence: {
                 std::ranges::copy(std::views::iota(size_t{1}, seeds->size()) |
                                       std::views::transform([baseX = haltonXBase_.get(),
-                                                             baseY = haltonYBase_.get()](int i) {
+                                                             baseY = haltonYBase_.get()](size_t i) {
                                           return vec3{util::haltonSequence<float>(i, baseX),
                                                       util::haltonSequence<float>(i, baseY), 0.0f};
                                       }),
@@ -158,10 +158,8 @@ void SeedPointGenerator2D::process() {
             case Generator::HaltonSequence: {
                 std::ranges::generate_n(
                     seeds->begin(), numPoints_,
-                    [i = 1, baseX = haltonXBase_.get(),
-                     baseY = haltonYBase_.get()]() mutable -> vec3 {
-                        return vec3{util::haltonSequence<float>(i++, baseX), 0.0f, 0.0f};
-                    });
+                    [i = 1, baseX = haltonXBase_.get(), baseY = haltonYBase_.get()]() mutable
+                    -> vec3 { return vec3{util::haltonSequence<float>(i++, baseX), 0.0f, 0.0f}; });
                 break;
             }
 

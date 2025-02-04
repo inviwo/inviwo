@@ -37,6 +37,8 @@
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/processors/progressbarowner.h>
 
+#include <filesystem>
+
 namespace inviwo {
 
 class InviwoApplication;

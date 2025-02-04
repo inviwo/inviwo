@@ -53,6 +53,7 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/networkdebugobserver.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <inviwo/sys/moduleloading.h>
 
@@ -96,7 +97,7 @@ int main(int argc, char** argv) {
         &snapshotArg,
         [&]() {
             auto path = cmdParser.getOutputPath();
-            if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+            if (path.empty()) path = inviwo::filesystem::getPath(PathType::Images);
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
         },
         1000);
@@ -143,11 +144,11 @@ int main(int argc, char** argv) {
     inviwoApp.getProcessorNetwork()->lock();
     const auto workspace = cmdParser.getLoadWorkspaceFromArg()
                                ? cmdParser.getWorkspacePath()
-                               : (inviwoApp.getPath(PathType::Workspaces) / "boron.inv");
+                               : (filesystem::getPath(PathType::Workspaces) / "boron.inv");
 
     try {
         if (!workspace.empty()) {
-            inviwoApp.getWorkspaceManager()->load(workspace, [&](SourceContext ec) {
+            inviwoApp.getWorkspaceManager()->load(workspace, [&](SourceContext) {
                 try {
                     throw;
                 } catch (const IgnoreException& e) {

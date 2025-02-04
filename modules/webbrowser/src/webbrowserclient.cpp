@@ -37,6 +37,7 @@
 #include <inviwo/core/util/logcentral.h>         // for LogCentral, LogError
 #include <inviwo/core/util/stdextensions.h>      // for erase_remove
 #include <inviwo/core/util/stringconversion.h>   // for replaceInString, spl...
+#include <inviwo/core/util/filesystem.h>
 #include <modules/webbrowser/renderhandlergl.h>  // for RenderHandlerGL, Ren...
 #include <modules/webbrowser/webbrowserutil.h>   // for CefString, cef_log_s...
 
@@ -138,7 +139,7 @@ WebBrowserClient::WebBrowserClient(InviwoApplication* app)
     , stringResourceProvider_{std::make_unique<StringResourceProvider>()} {
 
     resourceManager_->AddProvider(stringResourceProvider_.get(), 50, "StringResourceProvider");
-    resourceManager_->AddDirectoryProvider("https://inviwo/app/", app->getBasePath().string(), 99,
+    resourceManager_->AddDirectoryProvider("https://inviwo/app/", filesystem::findBasePath().string(), 99,
                                            std::string());
     onModulesRegisteredCallback_ = app->getModuleManager().onModulesDidRegister([&, app]() {
         // Ensure that all module resources have been registered before setting up resources

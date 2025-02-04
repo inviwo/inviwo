@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <string>
 #include <string_view>
