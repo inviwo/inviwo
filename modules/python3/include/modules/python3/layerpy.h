@@ -64,7 +64,9 @@ public:
             const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
 
     explicit LayerPy(const LayerReprConfig& config);
-
+    LayerPy(LayerPy&&) = delete;
+    LayerPy& operator=(const LayerPy&) = delete;
+    LayerPy& operator=(LayerPy&&) = delete;
     virtual ~LayerPy();
 
     LayerPy* clone() const override;
@@ -90,6 +92,9 @@ public:
     const pybind11::array& data() const { return data_; }
 
 private:
+    LayerPy(const LayerPy&);
+
+    std::optional<pybind11::gil_scoped_acquire> gil_;
     SwizzleMask swizzleMask_;
     InterpolationType interpolation_;
     Wrapping2D wrapping_;

@@ -41,6 +41,7 @@
 
 #include <memory>     // for shared_ptr
 #include <typeindex>  // for type_index
+#include <optional>
 
 namespace inviwo {
 
@@ -64,7 +65,9 @@ public:
              const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
 
     explicit VolumePy(const VolumeReprConfig& config);
-
+    VolumePy(VolumePy&&) = delete;
+    VolumePy& operator=(const VolumePy&) = delete;
+    VolumePy& operator=(VolumePy&&) = delete;
     virtual ~VolumePy();
 
     VolumePy* clone() const override;
@@ -90,6 +93,9 @@ public:
     virtual void updateResource(const ResourceMeta& meta) const override;
 
 private:
+    VolumePy(const VolumePy&);
+
+    std::optional<pybind11::gil_scoped_acquire> gil_;
     SwizzleMask swizzleMask_;
     InterpolationType interpolation_;
     Wrapping3D wrapping_;

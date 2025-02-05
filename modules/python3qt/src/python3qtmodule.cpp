@@ -104,6 +104,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     namespace py = pybind11;
 
     try {
+        const pybind11::gil_scoped_acquire gil;
         auto inviwopy = py::module::import("inviwopy");
         auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
 

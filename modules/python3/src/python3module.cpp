@@ -161,6 +161,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     // We need to import inviwopy to trigger the initialization code in inviwopy.cpp, this is needed
     // to be able to cast cpp/inviwo objects to python objects.
     try {
+        const pybind11::gil_scoped_acquire gil;
         pybind11::module::import("inviwopy");
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what());

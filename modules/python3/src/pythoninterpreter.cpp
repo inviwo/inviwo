@@ -153,6 +153,9 @@ sys.stdout = OutputRedirector(0)
 sys.stderr = OutputRedirector(1)
 )",
                      py::globals());
+
+        tstate_ = PyEval_SaveThread();
+
         } catch (const py::error_already_set& e) {
             throw ModuleInitException(
                 SourceContext{}, "Error while initializing the Python Interpreter\n{}", e.what());
@@ -163,6 +166,7 @@ sys.stderr = OutputRedirector(1)
 PythonInterpreter::~PythonInterpreter() {
     namespace py = pybind11;
     if (embedded_) {
+        PyEval_RestoreThread(tstate_);
         py::finalize_interpreter();
     }
 }
