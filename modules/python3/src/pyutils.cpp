@@ -54,6 +54,8 @@ void addModulePath(const std::filesystem::path& path) {
     }
 
     std::string pathConv{path.generic_string()};
+
+    const pybind11::gil_scoped_acquire gil;
     py::module::import("sys").attr("path").cast<py::list>().append(pathConv);
 }
 
@@ -65,6 +67,8 @@ void removeModulePath(const std::filesystem::path& path) {
     }
 
     std::string pathConv{path.generic_string()};
+
+    const pybind11::gil_scoped_acquire gil;
     py::module::import("sys").attr("path").attr("remove")(pathConv);
 }
 
