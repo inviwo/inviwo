@@ -252,7 +252,7 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     view_->header()->setDefaultAlignment(Qt::AlignLeft);
     view_->header()->setDefaultSectionSize(utilqt::emToPx(this, 10.0));
     view_->expandRecursively({});
-    view_->setUniformRowHeights(true); // This make layout of the tree faster.
+    view_->setUniformRowHeights(true);  // This make layout of the tree faster.
 
     auto& settings = InviwoApplication::getPtr()->getSystemSettings();
     auto* enable = new QCheckBox("Enable");
@@ -273,10 +273,18 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
         const QSignalBlocker block{enable};
         enable->setChecked(settings.enableResourceTracking_.get());
     });
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(enable, &QCheckBox::checkStateChanged, [enable, &settings](Qt::CheckState state) {
+        const QSignalBlocker block{enable};
+        settings.enableResourceTracking_.set(state == Qt::Checked);
+    });
+#else
+    // QCheckBox::stateChanged deprecated since 6.7, supported until 6.9
     connect(enable, &QCheckBox::stateChanged, [enable, &settings](int state) {
         const QSignalBlocker block{enable};
         settings.enableResourceTracking_.set(state == Qt::Checked);
     });
+#endif
 }
 
 }  // namespace inviwo

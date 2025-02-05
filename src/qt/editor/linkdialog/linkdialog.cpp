@@ -88,8 +88,14 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
 
     // hidden check box
     auto showHidden = new QCheckBox("Show Hidden", this);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(showHidden, &QCheckBox::checkStateChanged,
+            [scene](int state) { scene->showHidden(state == Qt::Checked); });
+#else
+    // QCheckBox::stateChanged deprecated since 6.7, supported until 6.9
     connect(showHidden, &QCheckBox::stateChanged,
             [scene](int state) { scene->showHidden(state == Qt::Checked); });
+#endif
     smartLinkPushButtonLayout->addWidget(showHidden, 10);
 
     // smart link button
