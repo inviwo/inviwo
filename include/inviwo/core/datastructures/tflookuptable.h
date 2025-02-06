@@ -55,7 +55,7 @@ public:
     void setTransferFunction(TransferFunction& tf);
 
     template <typename T>
-    const T* getRepresentation() {
+    const T* getRepresentation() const {
         if (invalid_) {
             calc();
         }
@@ -70,13 +70,14 @@ protected:
     virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
 
 private:
-    void calc();
+    void calc() const;
 
     TransferFunction* tf_;  // Should not be null
     size_t size_;
-    bool invalid_;
-    std::shared_ptr<LayerRAMPrecision<vec4>> repr_;
-    std::unique_ptr<Layer> data_;
+    // Mutable due to modification in const context by getRepresentation()/calc()
+    mutable bool invalid_;
+    mutable std::shared_ptr<LayerRAMPrecision<vec4>> repr_;
+    mutable std::unique_ptr<Layer> data_;
 };
 
 }  // namespace inviwo

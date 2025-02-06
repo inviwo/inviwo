@@ -241,7 +241,7 @@ public:
     const TFData& data() const { return data_; }
 
     template <typename T>
-    const T* getRepresentation() {
+    const T* getRepresentation() const {
         return lookup_.getRepresentation<T>();
     }
     size_t getLookUpTableSize() const { return lookup_.getSize(); }

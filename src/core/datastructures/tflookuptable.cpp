@@ -54,7 +54,7 @@ void TFLookupTable::setTransferFunction(TransferFunction& tf) {
     }
 }
 
-void TFLookupTable::calc() {
+void TFLookupTable::calc() const {
     if (!repr_) {
         repr_ = std::make_shared<LayerRAMPrecision<vec4>>(size2_t{size_, 1});
     }
