@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
 #include <inviwo/core/util/zip.h>                                        // for zipper
 #include <modules/basegl/processors/raycasting/volumeraycasterbase.h>    // for VolumeRaycasterBase
+#include <modules/basegl/processors/shadercomponentprocessorbase.h>
 #include <modules/basegl/shadercomponents/acceleratecomponent.h>
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>         // for BackgroundComponent
 #include <modules/basegl/shadercomponents/cameracomponent.h>             // for CameraComponent
@@ -57,7 +58,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API AcceleratedVolumeRaycaster : public VolumeRaycasterBase {
+class IVW_MODULE_BASEGL_API AcceleratedVolumeRaycaster : public ShaderComponentProcessorBase {
 public:
     AcceleratedVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
     virtual ~AcceleratedVolumeRaycaster();
