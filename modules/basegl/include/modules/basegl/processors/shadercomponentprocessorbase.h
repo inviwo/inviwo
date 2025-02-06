@@ -57,13 +57,13 @@ public:
     virtual ~ShaderComponentProcessorBase();
 
     /**
-     * Register a `ShaderComponent`s. The Inport and Properties of each components will be
+     * Register a `ShaderComponent`s. The Inport and Properties of each component will be
      * added to this in the order registered.
      */
     void registerComponent(ShaderComponent& comps);
 
     /**
-     * Register a set of `ShaderComponent`s. The Inport and Properties of each components will be
+     * Register a set of `ShaderComponent`s. The Inport and Properties of each component will be
      * added to this in the order registered.
      *
      */
@@ -80,7 +80,8 @@ protected:
     ShaderComponentProcessorBase(
         const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>&
             shaderResources,
-        std::string_view identifier, std::string_view displayName);
+        std::string_view identifier, std::string_view displayName,
+        const DataFormatBase* format = DataVec4UInt8::get());
     /**
      * Handle any error while using the raycasting components.
      * Override to customize error handling.

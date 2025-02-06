@@ -39,12 +39,13 @@
 
 namespace inviwo {
 
-VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::string_view displayName)
+VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::string_view displayName,
+                                         const DataFormatBase* format)
     : ShaderComponentProcessorBase(
           {utilgl::imgIdentityVert(),
            {ShaderType::Fragment,
             utilgl::findShaderResource("raycasting/raycaster-template.frag")}},
-          identifier, displayName) {
+          identifier, displayName, format) {
     outport_.setHelp("output image containing volume rendering of the input"_help);
 }
 
