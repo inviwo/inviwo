@@ -36,6 +36,8 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/shader/stringshaderresource.h>
+
 
 namespace inviwo {
 
