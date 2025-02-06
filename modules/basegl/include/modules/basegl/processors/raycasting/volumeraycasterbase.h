@@ -52,8 +52,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API VolumeRaycasterBase : public ShaderComponentProcessorBase {
 protected:
-    explicit VolumeRaycasterBase(std::string_view identifier = "",
-                                 std::string_view displayName = "");
+    VolumeRaycasterBase(std::string_view identifier = "", std::string_view displayName = "",
+                        const DataFormatBase* format = DataVec4UInt8::get());
     virtual ~VolumeRaycasterBase();
 };
 
