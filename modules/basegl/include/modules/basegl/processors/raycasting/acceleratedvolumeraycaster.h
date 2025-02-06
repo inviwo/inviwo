@@ -31,11 +31,8 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <inviwo/core/datastructures/representationconverter.h>          // for RepresentationCo...
-#include <inviwo/core/datastructures/representationconverterfactory.h>   // for RepresentationCo...
-#include <inviwo/core/processors/processorinfo.h>                        // for ProcessorInfo
-#include <inviwo/core/util/zip.h>                                        // for zipper
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>    // for VolumeRaycasterBase
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>  // for VolumeRaycasterBase
+#include <modules/basegl/processors/shadercomponentprocessorbase.h>
 #include <modules/basegl/shadercomponents/acceleratecomponent.h>
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>         // for BackgroundComponent
 #include <modules/basegl/shadercomponents/cameracomponent.h>             // for CameraComponent
@@ -47,17 +44,11 @@
 #include <modules/basegl/shadercomponents/sampletransformcomponent.h>    // for SampleTransformC...
 #include <modules/basegl/shadercomponents/volumecomponent.h>             // for VolumeComponent
 
-#include <array>          // for array
-#include <memory>         // for unique_ptr
-#include <string_view>    // for string_view
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
-
-#include <fmt/core.h>  // for format, basic_st...
+#include <string_view>  // for string_view
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API AcceleratedVolumeRaycaster : public VolumeRaycasterBase {
+class IVW_MODULE_BASEGL_API AcceleratedVolumeRaycaster : public ShaderComponentProcessorBase {
 public:
     AcceleratedVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
     virtual ~AcceleratedVolumeRaycaster();
