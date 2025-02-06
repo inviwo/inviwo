@@ -61,9 +61,9 @@ class ShaderType;
 ShaderComponentProcessorBase::ShaderComponentProcessorBase(
     const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>&
         shaderResources,
-    std::string_view identifier, std::string_view displayName)
+    std::string_view identifier, std::string_view displayName, const DataFormatBase* format)
     : Processor(identifier, displayName)
-    , outport_("outport")
+    , outport_("outport", format)
     , shader_{shaderResources, Shader::Build::No}
     , components_{} {
 
