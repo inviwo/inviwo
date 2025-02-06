@@ -45,6 +45,10 @@
 #include <modules/basegl/shadercomponents/raycastingcomponent.h>        // for RaycastingComponent
 #include <modules/basegl/shadercomponents/volumecomponent.h>            // for VolumeComponent
 
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/standardshaders.h>
+
 #include <functional>   // for __base
 #include <string>       // for string
 #include <type_traits>  // for remove_extent_t
@@ -72,7 +76,11 @@ const ProcessorInfo& AcceleratedVolumeRaycaster::getProcessorInfo() const { retu
 
 AcceleratedVolumeRaycaster::AcceleratedVolumeRaycaster(std::string_view identifier,
                                                        std::string_view displayName)
-    : VolumeRaycasterBase(identifier, displayName)
+    : ShaderComponentProcessorBase(
+          {utilgl::imgIdentityVert(),
+           {ShaderType::Fragment,
+            utilgl::findShaderResource("raycasting/raycaster-template-tmp.frag")}},
+          identifier, displayName, DataVec4Float32::get())
     , volume_{"volume"}
     , entryExit_{}
     , background_{*this}
@@ -108,7 +116,7 @@ void AcceleratedVolumeRaycaster::process() {
     }
 
     accelerate_.preprocess();
-    VolumeRaycasterBase::process();
+    ShaderComponentProcessorBase::process();
 }
 
 }  // namespace inviwo
