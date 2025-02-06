@@ -30,26 +30,11 @@
 #include <modules/basegl/processors/raycasting/acceleratedvolumeraycaster.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags::GL, Tags
-#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/zip.h>                                       // for zipper
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>   // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/cameracomponent.h>            // for CameraComponent
-#include <modules/basegl/shadercomponents/isotfcomponent.h>             // for IsoTFComponent
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>        // for RaycastingComponent
-#include <modules/basegl/shadercomponents/volumecomponent.h>            // for VolumeComponent
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
-#include <functional>   // for __base
-#include <string>       // for string
-#include <type_traits>  // for remove_extent_t
-
-#include <fmt/core.h>  // for basic_string_view
+#include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/standardshaders.h>
 
 namespace inviwo {
 
@@ -72,7 +57,11 @@ const ProcessorInfo& AcceleratedVolumeRaycaster::getProcessorInfo() const { retu
 
 AcceleratedVolumeRaycaster::AcceleratedVolumeRaycaster(std::string_view identifier,
                                                        std::string_view displayName)
-    : VolumeRaycasterBase(identifier, displayName)
+    : ShaderComponentProcessorBase(
+          {utilgl::imgIdentityVert(),
+           {ShaderType::Fragment,
+            utilgl::findShaderResource("raycasting/raycaster-template-tmp.frag")}},
+          identifier, displayName, DataVec4Float32::get())
     , volume_{"volume"}
     , entryExit_{}
     , background_{*this}
@@ -84,13 +73,6 @@ AcceleratedVolumeRaycaster::AcceleratedVolumeRaycaster(std::string_view identifi
     , positionIndicator_{}
     , sampleTransform_{} {
 
-    volume_.volumePort.onChange([this]() {
-        if (volume_.volumePort.hasData()) {
-            const auto channels = volume_.volumePort.getData()->getDataFormat()->getComponents();
-            raycasting_.setUsedChannels(channels);
-        }
-    });
-
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, accelerate_, camera_,
                        light_, positionIndicator_, sampleTransform_);
 
@@ -100,6 +82,8 @@ AcceleratedVolumeRaycaster::AcceleratedVolumeRaycaster(std::string_view identifi
 AcceleratedVolumeRaycaster::~AcceleratedVolumeRaycaster() = default;
 
 void AcceleratedVolumeRaycaster::process() {
+    util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
+
     auto data = outport_.getEditableData();
     if (data->getNumberOfColorLayers() < 2) {
         auto layer0 = data->getColorLayer(0);
@@ -108,7 +92,7 @@ void AcceleratedVolumeRaycaster::process() {
     }
 
     accelerate_.preprocess();
-    VolumeRaycasterBase::process();
+    ShaderComponentProcessorBase::process();
 }
 
 }  // namespace inviwo
