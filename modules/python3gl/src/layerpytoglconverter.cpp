@@ -35,6 +35,8 @@ namespace inviwo {
 
 std::shared_ptr<LayerGL> LayerPy2GLConverter::createFrom(
     std::shared_ptr<const LayerPy> source) const {
+    const pybind11::gil_scoped_acquire guard{};
+
     auto destination = std::make_shared<LayerGL>(source->getDimensions(), source->getLayerType(),
                                                  source->getDataFormat(), source->getSwizzleMask(),
                                                  source->getInterpolation(), source->getWrapping());
@@ -56,6 +58,8 @@ std::shared_ptr<LayerGL> LayerPy2GLConverter::createFrom(
 
 void LayerPy2GLConverter::update(std::shared_ptr<const LayerPy> source,
                                  std::shared_ptr<LayerGL> destination) const {
+    const pybind11::gil_scoped_acquire guard{};
+
     destination->setDimensions(source->getDimensions());
     destination->setSwizzleMask(source->getSwizzleMask());
     destination->setInterpolation(source->getInterpolation());
@@ -76,6 +80,7 @@ void LayerPy2GLConverter::update(std::shared_ptr<const LayerPy> source,
 
 std::shared_ptr<LayerPy> LayerGL2PyConverter::createFrom(
     std::shared_ptr<const LayerGL> source) const {
+    const pybind11::gil_scoped_acquire guard{};
     auto destination = std::make_shared<LayerPy>(source->getDimensions(), source->getLayerType(),
                                                  source->getDataFormat(), source->getSwizzleMask(),
                                                  source->getInterpolation(), source->getWrapping());
@@ -97,6 +102,7 @@ std::shared_ptr<LayerPy> LayerGL2PyConverter::createFrom(
 
 void LayerGL2PyConverter::update(std::shared_ptr<const LayerGL> source,
                                  std::shared_ptr<LayerPy> destination) const {
+    const pybind11::gil_scoped_acquire guard{};
     destination->setDimensions(source->getDimensions());
     destination->setSwizzleMask(source->getSwizzleMask());
     destination->setInterpolation(source->getInterpolation());
