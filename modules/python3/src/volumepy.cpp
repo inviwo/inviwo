@@ -126,7 +126,7 @@ VolumePy::VolumePy(const VolumePy& rhs)
     , dims_{rhs.dims_} {
 
     resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
-                                                  .format = getDataFormat()->getId(),
+                                                  .format = format(data_)->getId(),
                                                   .desc = "VolumePY"});
 
     gil_.reset();

@@ -63,8 +63,14 @@ PythonScript PythonScript::fromFile(const std::filesystem::path& path) {
 }
 
 PythonScript::~PythonScript() {
-    const pybind11::gil_scoped_acquire guard{};
-    Py_XDECREF(static_cast<PyObject*>(byteCode_));
+    try {
+        const pybind11::gil_scoped_acquire guard{};
+        Py_XDECREF(static_cast<PyObject*>(byteCode_));
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception("Unable to acquire the Python GIL");
+    }
 }
 
 void PythonScript::setName(std::string_view name) { name_ = name; }
