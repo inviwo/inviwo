@@ -95,6 +95,8 @@ public:
 };
 
 void runScript(PythonScript& script, InviwoApplication* app) {
+    const pybind11::gil_scoped_acquire guard{};
+
     auto extra = app->getCommandLineParser().getIgnoredArgs();
     extra.insert(extra.begin(), app->getCommandLineParser().getArgs().front());
     pybind11::module::import("sys").attr("argv") = extra;
