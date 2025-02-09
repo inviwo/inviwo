@@ -87,6 +87,8 @@ d.add{0}Column('{0}Col')
 }  // namespace
 
 TEST(DataFrameTests, Create) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
@@ -112,12 +114,16 @@ d2 = ivwdataframe.DataFrame(10)
 }
 
 TEST(DataFrameTests, AddColumn) {
+    pybind11::gil_scoped_acquire guard{};
+
     using Scalars = std::tuple<float, double, int, glm::i64, std::uint32_t>;
 
     util::for_each_type<Scalars>{}(AddColumnScript{});
 }
 
 TEST(DataFrameTests, AddCategoricalColumn) {
+    pybind11::gil_scoped_acquire guard{};
+    
     const std::string colname = "CatColumn";
 
     const std::string source = fmt::format(R"delim(
@@ -145,6 +151,8 @@ d.addCategoricalColumn('{}')
 }
 
 TEST(DataFrameTests, AddCategoricalColumnData) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string colname = "CatColumn";
 
     const std::string source = fmt::format(R"delim(
@@ -181,6 +189,8 @@ d.updateIndex()
 }
 
 TEST(DataFrameTests, AddColumnFromBuffer) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string colName = "FloatCol";
 
     const std::string source = fmt::format(R"delim(
@@ -211,6 +221,8 @@ d.updateIndex()
 }
 
 TEST(DataFrameTests, RowAccess) {
+    pybind11::gil_scoped_acquire guard{};
+
     const size_t rowIndex = 1;
 
     const std::string source = R"delim(

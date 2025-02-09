@@ -91,12 +91,15 @@ col = ivwdataframe.{0}Column('{0}Col')
 }  // namespace
 
 TEST(ColumnTests, Create) {
+    pybind11::gil_scoped_acquire guard{};
     using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
 
     util::for_each_type<Scalars>{}(CreateColumnScript{});
 }
 
 TEST(ColumnTests, CategoricalColumn) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
@@ -124,6 +127,8 @@ col.add('a')
 }
 
 TEST(ColumnTests, FloatColumn) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
@@ -153,6 +158,8 @@ col.buffer.data = np.array([0.0, 0.1, 0.5, 1.0, 2.0, 10.0], dtype=np.single)
 }
 
 TEST(ColumnTests, DataAccess) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
@@ -188,6 +195,8 @@ col.set(2, 5.0)
 }
 
 TEST(ColumnAppend, IntColumn) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
@@ -225,6 +234,8 @@ col.append(col2)
 }
 
 TEST(ColumnAppend, Categorical) {
+    pybind11::gil_scoped_acquire guard{};
+
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
