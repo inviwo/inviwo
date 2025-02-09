@@ -51,6 +51,7 @@
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -296,7 +297,11 @@ void exposeProcessors(pybind11::module& m) {
             [](Processor* p) {
                 return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
             },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference)
+        .def("getDirectPredecessors", [](Processor* p) { return util::getDirectPredecessors(p); })
+        .def("getDirectSuccessors", [](Processor* p) { return util::getDirectSuccessors(p); })
+        .def("getPredecessors", [](Processor* p) { return util::getPredecessors(p); })
+        .def("getSuccessors", [](Processor* p) { return util::getSuccessors(p); });
 
     py::class_<CanvasProcessor, Processor>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
