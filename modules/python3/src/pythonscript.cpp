@@ -63,7 +63,7 @@ PythonScript PythonScript::fromFile(const std::filesystem::path& path) {
 }
 
 PythonScript::~PythonScript() {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     Py_XDECREF(static_cast<PyObject*>(byteCode_));
 }
 
@@ -72,7 +72,7 @@ void PythonScript::setName(std::string_view name) { name_ = name; }
 const std::string& PythonScript::getName() const { return name_; }
 
 void PythonScript::setSource(std::string_view source) {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     source_ = source;
     isCompileNeeded_ = true;
     Py_XDECREF(static_cast<PyObject*>(byteCode_));
@@ -82,7 +82,7 @@ void PythonScript::setSource(std::string_view source) {
 const std::string& PythonScript::getSource() const { return source_; }
 
 bool PythonScript::compile() {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     Py_XDECREF(static_cast<PyObject*>(byteCode_));
     byteCode_ = Py_CompileString(source_.c_str(), name_.c_str(), Py_file_input);
@@ -99,7 +99,7 @@ bool PythonScript::compile() {
 bool PythonScript::run(std::function<void(pybind11::dict)> callback) {
     namespace py = pybind11;
 
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     // Copy the dict to get a clean slate every time we run the script
     py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     return run(global, callback);
@@ -109,7 +109,7 @@ bool PythonScript::run(std::unordered_map<std::string, pybind11::object> locals,
                        std::function<void(pybind11::dict)> callback) {
     namespace py = pybind11;
 
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     // Copy the dict to get a clean slate every time we run the script
     py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     for (auto& item : locals) {
@@ -126,7 +126,7 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
 
     IVW_ASSERT(byteCode_ != nullptr, "No byte code");
 
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     if (PyEval_EvalCode(static_cast<PyObject*>(byteCode_), locals.ptr(), locals.ptr())) {
         if (callback) {
             callback(locals);
@@ -139,7 +139,7 @@ bool PythonScript::run(pybind11::dict locals, std::function<void(pybind11::dict)
 }
 
 std::string PythonScript::getAndFormatError() {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     namespace py = pybind11;
     py::object type;
     py::object value;

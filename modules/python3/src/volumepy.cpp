@@ -133,7 +133,13 @@ VolumePy::VolumePy(const VolumePy& rhs)
 }
 
 VolumePy::~VolumePy() {
-    gil_.emplace();
+    try {
+        gil_.emplace();
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception("Unable to acquire the Python GIL");
+    }
     resource::remove(resource::toPY(data_));
 }
 
@@ -142,13 +148,13 @@ VolumePy* VolumePy::clone() const { return new VolumePy(*this); }
 std::type_index VolumePy::getTypeIndex() const { return std::type_index(typeid(VolumePy)); }
 
 const DataFormatBase* VolumePy::getDataFormat() const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     return format(data_);
 }
 
 void VolumePy::setDimensions(size3_t dimensions) {
     if (dimensions != dims_) {
-        pybind11::gil_scoped_acquire guard{};
+        const pybind11::gil_scoped_acquire guard{};
 
         const auto old = resource::remove(resource::toPY(data_));
         data_ = pybind11::array(
@@ -175,13 +181,13 @@ void VolumePy::setWrapping(const Wrapping3D& wrapping) { wrapping_ = wrapping; }
 Wrapping3D VolumePy::getWrapping() const { return wrapping_; }
 
 void VolumePy::updateResource(const ResourceMeta& meta) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     resource::meta(resource::toPY(data_), meta);
 }
 
 std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeSrc) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     pybind11::array data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
         using ValueType = util::PrecisionValueType<decltype(vr)>;
@@ -211,7 +217,7 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
 
 void VolumeRAM2PyConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
                                    std::shared_ptr<VolumePy> volumeDst) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     volumeDst->setDimensions(volumeSrc->getDimensions());
     volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
@@ -229,7 +235,7 @@ void VolumeRAM2PyConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
 
 std::shared_ptr<VolumeRAM> VolumePy2RAMConverter::createFrom(
     std::shared_ptr<const VolumePy> volumeSrc) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     auto volumeDst = createVolumeRAM(volumeSrc->getDimensions(), volumeSrc->getDataFormat(),
                                      nullptr, volumeSrc->getSwizzleMask(),
@@ -251,7 +257,7 @@ std::shared_ptr<VolumeRAM> VolumePy2RAMConverter::createFrom(
 
 void VolumePy2RAMConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
                                    std::shared_ptr<VolumeRAM> volumeDst) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     volumeDst->setDimensions(volumeSrc->getDimensions());
     volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
     volumeDst->setInterpolation(volumeSrc->getInterpolation());

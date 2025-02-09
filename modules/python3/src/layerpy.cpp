@@ -81,9 +81,9 @@ LayerPy::LayerPy(size2_t dimensions, LayerType type, const DataFormatBase* forma
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
-    , data_{pybind11::array(pyutil::toNumPyFormat(format),
-                            pybind11::array::ShapeContainer{dimensions.y, dimensions.x,
-                                                            format->getComponents()})}
+    , data_{pybind11::array(
+          pyutil::toNumPyFormat(format),
+          pybind11::array::ShapeContainer{dimensions.y, dimensions.x, format->getComponents()})}
     , dims_{dimensions} {
 
     gil_.reset();
@@ -109,7 +109,15 @@ LayerPy::LayerPy(const LayerPy& rhs)
     gil_.reset();
 }
 
-LayerPy::~LayerPy() { gil_.emplace(); }
+LayerPy::~LayerPy() {
+    try {
+        gil_.emplace();
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception("Unable to acquire the Python GIL");
+    }
+}
 
 LayerPy* LayerPy::clone() const { return new LayerPy(*this); }
 
@@ -117,7 +125,7 @@ std::type_index LayerPy::getTypeIndex() const { return std::type_index(typeid(La
 
 void LayerPy::setDimensions(size2_t dimensions) {
     if (dimensions != dims_) {
-        pybind11::gil_scoped_acquire guard{};
+        const pybind11::gil_scoped_acquire guard{};
         data_ = pybind11::array(data_.dtype(),
                                 pybind11::array::ShapeContainer{dimensions.y, dimensions.x,
                                                                 getDataFormat()->getComponents()});
@@ -126,7 +134,7 @@ void LayerPy::setDimensions(size2_t dimensions) {
 }
 
 const DataFormatBase* LayerPy::getDataFormat() const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     return format(data_);
 }
 
@@ -148,7 +156,7 @@ bool LayerPy::copyRepresentationsTo(LayerRepresentation*) const { return false; 
 
 std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
     std::shared_ptr<const LayerRAM> source) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     pybind11::array data = source->dispatch<pybind11::array>([](auto lr) {
         using ValueType = util::PrecisionValueType<decltype(lr)>;
@@ -179,7 +187,7 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
 
 void LayerRAM2PyConverter::update(std::shared_ptr<const LayerRAM> source,
                                   std::shared_ptr<LayerPy> destination) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     destination->setDimensions(source->getDimensions());
     destination->setSwizzleMask(source->getSwizzleMask());
     destination->setInterpolation(source->getInterpolation());
@@ -196,7 +204,7 @@ void LayerRAM2PyConverter::update(std::shared_ptr<const LayerRAM> source,
 
 std::shared_ptr<LayerRAM> LayerPy2RAMConverter::createFrom(
     std::shared_ptr<const LayerPy> source) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     auto destination =
         createLayerRAM(source->getDimensions(), source->getLayerType(), source->getDataFormat(),
@@ -218,7 +226,7 @@ std::shared_ptr<LayerRAM> LayerPy2RAMConverter::createFrom(
 
 void LayerPy2RAMConverter::update(std::shared_ptr<const LayerPy> source,
                                   std::shared_ptr<LayerRAM> destination) const {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
     destination->setDimensions(source->getDimensions());
     destination->setSwizzleMask(source->getSwizzleMask());
     destination->setInterpolation(source->getInterpolation());

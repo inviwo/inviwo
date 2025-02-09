@@ -80,7 +80,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
             PyConfig_InitPythonConfig(&config);
             config.parse_argv = 0;
             config.install_signal_handlers = 0;
-            if (auto venvPath = std::getenv("VIRTUAL_ENV")) {
+            if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
 
                 // Relevant documentation:
                 // https://stackoverflow.com/questions/77881387/
