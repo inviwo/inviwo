@@ -58,7 +58,7 @@
 namespace inviwo {
 
 TEST(Python3Representations, LayerPy2RAM) {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     // create a 4 x 3 layer with two identical channels
     // voxel values increase in x direction
@@ -104,7 +104,7 @@ arr.shape = (3, 4, 2)
 }
 
 TEST(Python3Representations, LayerRAM2Py) {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     // a 4 x 3 x 1 volume with two identical channels
     // voxel values increase in x direction
@@ -149,7 +149,7 @@ result = np.array_equal(expected, arr.flatten())
 }
 
 TEST(Python3Representations, VolumePy2RAM) {
-    pybind11::gil_scoped_acquire guard{};
+    const pybind11::gil_scoped_acquire guard{};
 
     // create a 4 x 3 x 1 volume with two identical channels
     // voxel values increase in x direction
@@ -195,8 +195,8 @@ arr.shape = (1, 3, 4, 2)
 }
 
 TEST(Python3Representations, VolumeRAM2Py) {
-    pybind11::gil_scoped_acquire guard{};
-    
+    const pybind11::gil_scoped_acquire guard{};
+
     // a 4 x 3 x 1 volume with two identical channels
     // voxel values increase in x direction
     std::array<int, 24> data = {0, 0, 1, 1, 2, 2, 3, 3, 4,  4,  5,  5,
