@@ -41,6 +41,8 @@ PythonOutport::PythonOutport(std::string_view identifier, Document help)
 }
 
 Document PythonOutport::getInfo() const {
+    const pybind11::gil_scoped_acquire guard{};
+
     Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;

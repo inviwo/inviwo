@@ -33,6 +33,7 @@
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
 #include <filesystem>
+#include <pytypedefs.h>
 
 namespace inviwo {
 class Python3Module;
@@ -50,6 +51,7 @@ public:
 private:
     bool embedded_;
     bool isInit_;
+    PyThreadState* tstate_;
 };
 
 }  // namespace inviwo

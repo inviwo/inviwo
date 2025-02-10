@@ -38,15 +38,15 @@ void PythonWorkspaceScriptsObserver::onScriptUpdate(std::string_view, std::strin
 
 PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
     : manager_{manager}
-    , sHandle_{manager.onSave(
-          [this](Serializer& s) {
-              s.serialize("PythonScripts", pythonScripts_, "Script");
+    , sHandle_{manager.onSave([this](Serializer& s) {
+        s.serialize("PythonScripts", pythonScripts_, "Script");
 
-              for (auto& [key, script] : pythonScripts_) {
-                  notifyObserversOnScriptSaved(key, script);
-              }
-          },
-          WorkspaceSaveMode::Disk)}
+        if (s.getWorkspaceSaveMode() == WorkspaceSaveMode::Disk) {
+            for (auto& [key, script] : pythonScripts_) {
+                notifyObserversOnScriptSaved(key, script);
+            }
+        }
+    })}
     , dHandle_{manager.onLoad([this](Deserializer& d) {
         d.deserialize("PythonScripts", pythonScripts_, "Script",
                       deserializer::MapFunctions{
@@ -55,6 +55,9 @@ PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
                           .onNew = [&](const std::string& key,
                                        std::string& script) { addScript(key, script); },
                           .onRemove = [&](const std::string& key) { removeScript(key); }});
+        for (auto& [key, script] : pythonScripts_) {
+            notifyObserversOnScriptUpdate(key, script);
+        }
     })}
     , cHandle_{manager.onClear([this]() {
         while (!pythonScripts_.empty()) {

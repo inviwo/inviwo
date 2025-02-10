@@ -77,6 +77,8 @@ TEST(Python3Scripts, SimpleBufferTest) {
     intBuffer.getEditableRAMRepresentation()->getDataContainer()[1] = 1;
     intBuffer.getEditableRAMRepresentation()->getDataContainer()[3] = 3;
 
+    const pybind11::gil_scoped_acquire guard{};
+
     bool status = false;
     script.run({{"intBuffer", pybind11::cast(static_cast<BufferBase*>(&intBuffer),
                                              pybind11::return_value_policy::reference)}},

@@ -39,6 +39,7 @@ DataFramePythonModule::DataFramePythonModule(InviwoApplication* app)
     : InviwoModule(app, "DataFramePython") {
 
     try {
+        const pybind11::gil_scoped_acquire gil;
         pybind11::module::import("ivwdataframe");
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what());

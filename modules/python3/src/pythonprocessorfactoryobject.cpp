@@ -74,6 +74,7 @@ std::shared_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
     const auto& pi = getProcessorInfo();
 
     try {
+        const pybind11::gil_scoped_acquire gil;
         auto main = py::module::import("__main__");
         py::object proc =
             main.attr(name_.c_str())(util::stripIdentifier(pi.displayName), pi.displayName);
@@ -142,6 +143,7 @@ pybind11::object compileAndRun(const std::string& expr, const std::string& name,
 PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     const std::filesystem::path& file) {
     namespace py = pybind11;
+    const pybind11::gil_scoped_acquire gil;
 
     auto ifs = std::ifstream(file);
     std::stringstream ss;

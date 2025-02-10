@@ -54,6 +54,8 @@ std::filesystem::path getPath() {
 }  // namespace
 
 TEST(Python3Scripts, GrabReturnValues) {
+    const pybind11::gil_scoped_acquire guard{};
+
     auto script = PythonScript::fromFile(getPath() / "grabreturnvalue.py");
 
     bool status = false;
@@ -83,6 +85,8 @@ TEST(Python3Scripts, GrabReturnValues) {
 }
 
 TEST(Python3Scripts, PassValues) {
+    const pybind11::gil_scoped_acquire guard{};
+
     auto script = PythonScript::fromFile(getPath() / "passvalues.py");
 
     bool status = false;
@@ -108,6 +112,8 @@ TEST(Python3Scripts, PassValues) {
 }
 
 TEST(Python3Scripts, GLMTest) {
+    const pybind11::gil_scoped_acquire guard{};
+
     auto script = PythonScript::fromFile(getPath() / "glm.py");
 
     bool status = false;
@@ -176,6 +182,8 @@ TEST(Python3Scripts, GLMTest) {
 }
 
 TEST(Python3Scripts, OptionPropertyTest) {
+    const pybind11::gil_scoped_acquire guard{};
+
     auto script = PythonScript::fromFile(getPath() / "option_property.py");
 
     bool status = false;

@@ -55,6 +55,8 @@
 #include <string>       // for operator+, string, basic_string
 #include <string_view>  // for string_view
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
@@ -71,11 +73,27 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 #endif
 
     if (!Py_IsInitialized()) {
-
         log::info("Python version: {}", Py_GetVersion());
 
         try {
-            py::initialize_interpreter(false);
+            PyConfig config;
+            PyConfig_InitPythonConfig(&config);
+            config.parse_argv = 0;
+            config.install_signal_handlers = 0;
+            if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
+
+                // Relevant documentation:
+                // https://stackoverflow.com/questions/77881387/
+                // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
+                // https://docs.python.org/3/library/site.html
+#ifdef WIN32
+                auto venvExecutable = fmt::format("{}/Scripts/python.exe", venvPath);
+#else
+                auto venvExecutable = fmt::format("{}/bin/python", venvPath);
+#endif
+                PyConfig_SetBytesString(&config, &config.executable, venvExecutable.c_str());
+            }
+            py::initialize_interpreter(&config);
         } catch (const std::exception& e) {
             throw ModuleInitException(e.what());
         }
@@ -153,6 +171,9 @@ sys.stdout = OutputRedirector(0)
 sys.stderr = OutputRedirector(1)
 )",
                      py::globals());
+
+            tstate_ = PyEval_SaveThread();
+
         } catch (const py::error_already_set& e) {
             throw ModuleInitException(
                 SourceContext{}, "Error while initializing the Python Interpreter\n{}", e.what());
@@ -163,6 +184,7 @@ sys.stderr = OutputRedirector(1)
 PythonInterpreter::~PythonInterpreter() {
     namespace py = pybind11;
     if (embedded_) {
+        PyEval_RestoreThread(tstate_);
         py::finalize_interpreter();
     }
 }
