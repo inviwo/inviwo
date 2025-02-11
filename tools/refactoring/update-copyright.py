@@ -46,12 +46,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('-p', '--paths', type=str, nargs='+', action="store",
-                        help='Paths to inviwo repos')
+                        required=True, help='Paths to inviwo repos')
     args = parser.parse_args()
     year = time.localtime().tm_year
 
     update(args.paths, year)
-
-
-
-
