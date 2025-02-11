@@ -141,4 +141,6 @@ inline bool Event::setUsed(bool isUsed) {
     return curr;
 }
 
+IVW_CORE_API std::string format_as(const Event& e);
+
 }  // namespace inviwo
