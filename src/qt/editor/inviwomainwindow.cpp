@@ -388,14 +388,14 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     propertyListWidget_->setVisible(true);
     propertyListWidget_->loadState();
 
+    resourceManagerDockWidget_ = new ResourceManagerDockWidget(this, *app->getResourceManager());
+    tabifyDockWidget(propertyListWidget_, resourceManagerDockWidget_);
+    resourceManagerDockWidget_->setVisible(false);
+    resourceManagerDockWidget_->loadState();
+
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_.get());
     consoleWidget_->setVisible(true);
     consoleWidget_->loadState();
-
-    resourceManagerDockWidget_ = new ResourceManagerDockWidget(this, *app->getResourceManager());
-    addDockWidget(Qt::LeftDockWidgetArea, resourceManagerDockWidget_);
-    resourceManagerDockWidget_->setVisible(false);
-    resourceManagerDockWidget_->loadState();
 
     centralWidget_ = new QStackedWidget(this);
     centralWidget_->setObjectName("CentralTabWidget");
@@ -406,7 +406,17 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     workspaceModifiedHandle_ =
         app_->getWorkspaceManager()->onModifiedChanged([this](bool) { updateWindowTitle(); });
 
+    // initialize menus
+    addActions();
+    networkEditorView_->setFocus();
+
+    utilqt::configurePoolResizeWait(*app_, this);
+
+    moduleLoadedCallback_ =
+        app_->getModuleManager().onModulesDidRegister([this]() { editorSettings_->load(); });
+
     // load settings and restore window state
+    storeDefaultState();
 
     // prevent loading of the window and geometry states when the
     // reset-window-state command line argument is present. This is
@@ -425,15 +435,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     }
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
-
-    // initialize menus
-    addActions();
-    networkEditorView_->setFocus();
-
-    utilqt::configurePoolResizeWait(*app_, this);
-
-    moduleLoadedCallback_ =
-        app_->getModuleManager().onModulesDidRegister([this]() { editorSettings_->load(); });
 }
 
 InviwoMainWindow::~InviwoMainWindow() { app_->setPoolResizeWaitCallback(nullptr); }
@@ -510,9 +511,7 @@ void InviwoMainWindow::addActions() {
         welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
         welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(welcomeAction);
-        connect(welcomeAction, &QAction::triggered, this, [this]() {
-            toggleWelcomeScreen();
-        });
+        connect(welcomeAction, &QAction::triggered, this, [this]() { toggleWelcomeScreen(); });
         fileMenuItem->addAction(welcomeAction);
         fileMenuItem->addSeparator();
         workspaceToolBar->addAction(welcomeAction);
@@ -881,6 +880,10 @@ void InviwoMainWindow::addActions() {
     // View
     {
         // dock widget visibility menu entries
+        auto* restore = viewMenuItem->addAction("Restore Window State");
+        connect(restore, &QAction::triggered, this, [this]() { restoreDefaultState(); });
+        viewMenuItem->addSeparator();
+
         viewMenuItem->addAction(settings_->toggleViewAction());
         processorTreeWidget_->toggleViewAction()->setText(tr("&Processor List"));
         viewMenuItem->addAction(processorTreeWidget_->toggleViewAction());
@@ -1390,7 +1393,7 @@ void InviwoMainWindow::showWelcomeScreen() {
     setUpdatesEnabled(true);
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
     welcomeWidget->setFocus();
-    
+
     // need to manually repaint the central widget after triggering the action from the file
     // menu. Otherwise the welcome widget is active but not redrawn.
     centralWidget_->repaint();
@@ -1495,6 +1498,16 @@ void InviwoMainWindow::loadWindowState() {
     restoreState(settings.value("state", saveState()).toByteArray());
     maximized_ = settings.value("maximized", false).toBool();
     settings.endGroup();
+}
+
+void InviwoMainWindow::storeDefaultState() {
+    defaultState_.geometry = saveGeometry();
+    defaultState_.state = saveState();
+}
+
+void InviwoMainWindow::restoreDefaultState() {
+    restoreState(defaultState_.state);
+    restoreGeometry(defaultState_.geometry);
 }
 
 void InviwoMainWindow::closeEvent(QCloseEvent* event) {

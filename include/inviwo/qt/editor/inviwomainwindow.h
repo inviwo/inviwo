@@ -40,6 +40,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+#include <QByteArray>
 
 #include <tclap/CmdLine.h>
 
@@ -217,6 +218,13 @@ private:
     void saveWindowState();
     void loadWindowState();
 
+    struct DefaultState {
+        QByteArray geometry;
+        QByteArray state;
+    };
+    void storeDefaultState();
+    void restoreDefaultState();
+
     void saveSnapshots(const std::filesystem::path& path, std::string_view fileName);
     void getScreenGrab(const std::filesystem::path& path, std::string_view fileName);
 
@@ -295,6 +303,8 @@ private:
     WorkspaceManager::ClearHandle visibleWidgetsClearHandle_;
 
     std::shared_ptr<std::function<void()>> moduleLoadedCallback_;
+
+    DefaultState defaultState_;
 };
 
 }  // namespace inviwo
