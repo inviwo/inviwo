@@ -6,7 +6,7 @@ export function cefAPIRequest(request) {
                 try {
                     var data = JSON.parse(response);
                 } catch (e) {
-                    throw Error(`Failed to parse json response from: '${request.command}' got: '${response}''`)
+                    throw Error(`Failed to parse json response from: '${request.command}' got: '${response}'`)
                 }
                 resolve(data);
             },

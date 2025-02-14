@@ -35,7 +35,7 @@ uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
 
 uniform int channel = 0;
-uniform float gradientScaling = 1.0;
+uniform float scaling = 1.0;
 
 in vec4 texCoord_;
 
@@ -43,6 +43,6 @@ void main() {
     float magnitude =
         length(gradientCentralDiff(vec4(1.0f), volume, volumeParameters, texCoord_.xyz, channel));
 
-    magnitude *= gradientScaling;
+    magnitude *= scaling;
     FragData0 = vec4(magnitude);
 }

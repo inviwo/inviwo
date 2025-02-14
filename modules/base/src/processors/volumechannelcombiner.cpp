@@ -41,21 +41,13 @@ const ProcessorInfo VolumeChannelCombiner::processorInfo_{
     "Volume Operation",                  // Category
     CodeState::Experimental,             // Code state
     Tags::CPU | Tag{"Volume"},           // Tags
-    R"(
-Combines multiple volume channels into a single volume with multiple channels. All volumes must 
-share the same dimensions. The resulting data format depends on the common data type
-and precision of the inputs.
-)"_unindentHelp,
+    R"(Combines multiple volume channels into a single volume with multiple channels. All volumes must 
+       share the same dimensions. The resulting data format depends on the common data type
+       and precision of the inputs.
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& VolumeChannelCombiner::getProcessorInfo() const { return processorInfo_; }
-
-namespace {
-const std::vector<OptionPropertyIntOption> channelsList = {{"channel1", "Channel 1", 0},
-                                                           {"channel2", "Channel 2", 1},
-                                                           {"channel3", "Channel 3", 2},
-                                                           {"channel4", "Channel 4", 3}};
-}
 
 VolumeChannelCombiner::VolumeChannelCombiner()
     : Processor{}
@@ -66,13 +58,22 @@ VolumeChannelCombiner::VolumeChannelCombiner()
     , outport_{"outport", "Resulting Volume with combined channels"_help}
 
     , channel_{OptionPropertyInt{"dest1", "Channel 1 Out",
-                                 "Selected channel of the first input"_help, channelsList},
+                                 "Selected channel of the first input"_help,
+                                 util::enumeratedOptions("Channel", 4)},
                OptionPropertyInt{"dest2", "Channel 2 Out",
-                                 "Selected channel of the second input"_help, channelsList},
+                                 "Selected channel of the second input"_help,
+                                 util::enumeratedOptions("Channel", 4)},
                OptionPropertyInt{"dest3", "Channel 3 Out",
-                                 "Selected channel of the third input"_help, channelsList},
+                                 "Selected channel of the third input"_help,
+                                 util::enumeratedOptions("Channel", 4)},
                OptionPropertyInt{"dest4", "Channel 4 Out",
-                                 "Selected channel of the fourth input"_help, channelsList}}
+                                 "Selected channel of the fourth input"_help,
+                                 util::enumeratedOptions("Channel", 4)}}
+    , normalizeChannels_{"normalizeChannels", "Normalize Channels",
+                         "If true, the individual channels of the output volume will be normalized "
+                         "using the data ranges of their corresponding input volumes. Otherwise, "
+                         "the Data Range of the first input volume is used."_help,
+                         false}
     , dataRange_{"dataRange", "Data Range", source_[0], true} {
 
     addPorts(source_[0], source_[1], source_[2], source_[3], outport_);
@@ -80,17 +81,21 @@ VolumeChannelCombiner::VolumeChannelCombiner()
         port.setOptional(true);
     }
 
-    for (auto& prop : channel_) {
-        addProperty(prop);
-    }
-    addProperty(dataRange_);
+    addProperties(channel_[0], channel_[1], channel_[2], channel_[3], normalizeChannels_,
+                  dataRange_);
 }
 
 void VolumeChannelCombiner::process() {
-    auto volume = util::combineChannels<Volume, VolumeRAM>(
-        source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
-    volume->dataMap.dataRange = dataRange_.getDataRange();
-    volume->dataMap.valueRange = dataRange_.getValueRange();
+    std::shared_ptr<Volume> volume;
+    if (normalizeChannels_) {
+        volume = util::combineChannels<Volume, VolumeRAM, util::detail::ChannelNormalization::Yes>(
+            source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
+    } else {
+        volume = util::combineChannels<Volume, VolumeRAM>(
+            source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
+        volume->dataMap.dataRange = dataRange_.getDataRange();
+        volume->dataMap.valueRange = dataRange_.getValueRange();
+    }
 
     outport_.setData(volume);
 }

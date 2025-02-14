@@ -31,8 +31,8 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/base/properties/datarangeproperty.h>
 
@@ -52,7 +52,7 @@ private:
     VolumeOutport outport_;
 
     std::array<OptionPropertyInt, 4> channel_;
-
+    BoolProperty normalizeChannels_;
     DataRangeProperty dataRange_;
 };
 

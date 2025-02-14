@@ -13,7 +13,7 @@ excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking
                     "*/.git*", "*/.clang-format", "*/LICENSE", ".git", "Jenkinsfile",
                     ".gitattributes", "*/AUTHORS", "" "*/tools/meta/templates/*", "*.natvis",
                     "*/depends.cmake", "*moduledefine.h", "*moduledefine.hpp", "*/config.json",
-                    "*.js", "*/CMakeLists.txt", "*.monopic"]
+                    "*.js", "*/CMakeLists.txt", "*.monopic", "*.xz", "*.gz", "*.zip"]
 
 
 def update(paths, year):
@@ -46,12 +46,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('-p', '--paths', type=str, nargs='+', action="store",
-                        help='Paths to inviwo repos')
+                        required=True, help='Paths to inviwo repos')
     args = parser.parse_args()
     year = time.localtime().tm_year
 
     update(args.paths, year)
-
-
-
-

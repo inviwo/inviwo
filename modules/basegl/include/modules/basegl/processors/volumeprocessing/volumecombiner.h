@@ -61,32 +61,6 @@
 namespace inviwo {
 class StringShaderResource;
 
-/** \docpage{org.inviwo.VolumeCombiner, Volume Combiner}
- * Combines/fuses volumes into a single volume. Resolution and data type of the
- * result match the first input volume. The input volumes can be scaled individually.
- * ![](org.inviwo.VolumeCombiner.png?classIdentifier=org.inviwo.VolumeCombiner)
- *
- * ### Inports
- *   * __VolumeInport__ Input volume A.
- *   * __VolumeInport__ Input volume B.
- *
- * ### Outports
- *   * __VolumeOutport__ The output volume. Dimension and data type match input volume A.
- *                       <tt>combine(a,b) = a * volScale1 + b * volScale2</tt>
- *
- *
- * ### Properties
- *   * __Normalization mode__ Determine how to normalize the incoming volumes.
- *   * __Volume 1 Scaling__ Scaling factor for volume 1.
- *   * __Volume 2 Scaling__ Scaling factor for volume 2.
- *   * __useWorldSpace__ Retrieve data in world space corrdinate system.
- *   * __borderValue__ Value to use for coordinates outside the first volume.
- */
-
-/*! \class VolumeCombiner
- *
- * \brief Combines two volumes.
- */
 class IVW_MODULE_BASEGL_API VolumeCombiner : public Processor {
 public:
     virtual const ProcessorInfo& getProcessorInfo() const override;

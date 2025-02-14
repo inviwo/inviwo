@@ -65,10 +65,7 @@ private:
     IntSizeTProperty significantVoxels_;
     DoubleProperty significantVoxelsRatio_;
 
-    DoubleMinMaxProperty minMaxChannel1_;
-    DoubleMinMaxProperty minMaxChannel2_;
-    DoubleMinMaxProperty minMaxChannel3_;
-    DoubleMinMaxProperty minMaxChannel4_;
+    std::array<DoubleMinMaxProperty, 4> minMax_;
 
     FloatMat3Property basis_;
     FloatVec3Property offset_;
