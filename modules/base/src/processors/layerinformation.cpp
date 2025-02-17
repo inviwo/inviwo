@@ -185,9 +185,9 @@ void LayerInformation::process() {
     util::updateDefaultState(offset_, layer->getOffset(), Yes);
 
     auto m = trans.getTextureToWorldMatrix();
-    vec4 dx = m * vec4(1.0f / dim.x, 0, 0, 0);
-    vec4 dy = m * vec4(0, 1.0f / dim.y, 0, 0);
-    vec2 ts = {glm::length(dx), glm::length(dy)};
+    const vec4 dx = m * vec4(1.0f / dim.x, 0, 0, 0);
+    const vec4 dy = m * vec4(0, 1.0f / dim.y, 0, 0);
+    const vec2 ts = {glm::length(dx), glm::length(dy)};
     texelSize_.set(ts);
 
     for (auto&& [index, transform] : util::enumerate(spaceTransforms_)) {
@@ -196,7 +196,7 @@ void LayerInformation::process() {
     }
 
     if (perTexelProperties_.isChecked()) {
-        auto layerRAM = layer->getRepresentation<LayerRAM>();
+        const auto* layerRAM = layer->getRepresentation<LayerRAM>();
         const auto channels = layer->getDataFormat()->getComponents();
 
         auto&& [min, max] = util::layerMinMax(layerRAM);

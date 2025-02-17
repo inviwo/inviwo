@@ -66,7 +66,7 @@
 #include <modules/opengl/buffer/framebufferobject.h>                    // for FrameBufferObject
 #include <modules/opengl/inviwoopengl.h>                                // for glViewport, GLsizei
 #include <modules/opengl/shader/shader.h>                               // for Shader, Shader::B...
-#include <modules/opengl/shader/stringshaderresource.h>                       // for StringShaderResource
+#include <modules/opengl/shader/stringshaderresource.h>                 // for StringShaderResource
 #include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
 #include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
@@ -175,7 +175,7 @@ VolumeCombiner::VolumeCombiner()
     normalizationMode_.onChange([this]() { dirty_ = true; });
 
     addScale_.onChange([this]() {
-        size_t i = scales_.size();
+        const size_t i = scales_.size();
         auto p = std::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1), 1.0f,
                                                  -2.f, 2.f, 0.01f);
         p->setSerializationMode(PropertySerializationMode::All);
