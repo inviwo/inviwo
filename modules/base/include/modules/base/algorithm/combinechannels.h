@@ -59,7 +59,7 @@ namespace detail {
 
 enum class ChannelNormalization { No, Yes };
 
-}
+}  // namespace detail
 
 /**
  * Combines up to four channels from four inports into a single object of type @p T. The data format

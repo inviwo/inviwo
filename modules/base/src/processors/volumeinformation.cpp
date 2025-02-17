@@ -262,7 +262,7 @@ void VolumeInformation::process() {
     }
 
     if (perVoxelProperties_.isChecked()) {
-        auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+        const auto* volumeRAM = volume->getRepresentation<VolumeRAM>();
         const auto channels = volume->getDataFormat()->getComponents();
 
         auto sigVoxels = util::volumeSignificantVoxels(volumeRAM, IgnoreSpecialValues::Yes);
