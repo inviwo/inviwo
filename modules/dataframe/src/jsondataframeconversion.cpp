@@ -93,7 +93,7 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             df.addColumn<uint32_t>(header, 0u);
             break;
         case json::value_t::number_float:  ///< number value (floating-point)
-            df.addColumn<float>(header, 0u);
+            df.addColumn<double>(header, 0u);
             break;
         case json::value_t::discarded:  ///< discarded by the the parser callback function
             throw JSONConversionException(
