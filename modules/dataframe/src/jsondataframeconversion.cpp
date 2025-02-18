@@ -105,6 +105,61 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
     }
 }
 
+void extractColumnsFromRow(const json& j, DataFrame& df) {
+    const auto& firstRow = j.at(0);
+    for (const auto& col : firstRow.items()) {
+        switch (col.value().type()) {
+            case json::value_t::null: {  ///< null value
+                // need to check more rows to know type
+                bool found = false;
+                for (const auto& row : j) {
+                    auto item = row.find(col.key());
+                    if (item->type() != json::value_t::null) {
+                        try {
+                            detail::addDataFrameColumnHelper(item.value().type(), col.key(), df);
+                            found = true;
+                        } catch (JSONConversionException& e) {
+                            throw e;
+                        }
+                        // Stop searching when we found a non-null item
+                        break;
+                    }
+                }
+                if (!found) {
+                    // entire column is empty, assume float
+                    detail::addDataFrameColumnHelper(json::value_t::number_float, col.key(), df);
+                }
+                break;
+            }
+            case json::value_t::object:  ///< object (unordered set of name/value pairs)
+                // Not supported
+                throw JSONConversionException(
+                    "Object (unordered set of name/value pairs) is unsupported");
+                break;
+            case json::value_t::array:  ///< array (ordered collection of values)
+                // Not supported
+                throw JSONConversionException(
+                    "Array (ordered collection of values) is unsupported");
+                break;
+            case json::value_t::string:           ///< string value
+            case json::value_t::boolean:          ///< boolean value
+            case json::value_t::number_integer:   ///< number value (signed integer)
+            case json::value_t::number_unsigned:  ///< number value (unsigned integer)
+            case json::value_t::number_float:     ///< number value (floating-point)
+                detail::addDataFrameColumnHelper(col.value().type(), col.key(), df);
+                break;
+            case json::value_t::discarded:  ///< discarded by the the parser callback function
+                throw JSONConversionException(
+                    "Value was discarded by the parser callback function");
+                break;
+            case json::value_t::binary:
+                // Not supported
+                throw JSONConversionException("Binary elements are unsupported");
+                break;
+        }
+    }
+}
+
 }  // namespace detail
 
 void to_json(json& j, const DataFrame& df) {
@@ -166,59 +221,8 @@ void from_json(const json& j, DataFrame& df) {
         // Only support object types, i.e. [ {key: value} ]
         return;
     }
-    // Extract header names from first object
-    const auto& firstRow = j.at(0);
-    for (const auto& col : firstRow.items()) {
-        switch (col.value().type()) {
-            case json::value_t::null: {  ///< null value
-                // need to check more rows to know type
-                bool found = false;
-                for (const auto& row : j) {
-                    auto item = row.find(col.key());
-                    if (item->type() != json::value_t::null) {
-                        try {
-                            detail::addDataFrameColumnHelper(item.value().type(), col.key(), df);
-                            found = true;
-                        } catch (JSONConversionException& e) {
-                            throw e;
-                        }
-                        // Stop searching when we found a non-null item
-                        break;
-                    }
-                }
-                if (!found) {
-                    // entire column is empty, assume float
-                    detail::addDataFrameColumnHelper(json::value_t::number_float, col.key(), df);
-                }
-                break;
-            }
-            case json::value_t::object:  ///< object (unordered set of name/value pairs)
-                // Not supported
-                throw JSONConversionException(
-                    "Object (unordered set of name/value pairs) is unsupported");
-                break;
-            case json::value_t::array:  ///< array (ordered collection of values)
-                // Not supported
-                throw JSONConversionException(
-                    "Array (ordered collection of values) is unsupported");
-                break;
-            case json::value_t::string:           ///< string value
-            case json::value_t::boolean:          ///< boolean value
-            case json::value_t::number_integer:   ///< number value (signed integer)
-            case json::value_t::number_unsigned:  ///< number value (unsigned integer)
-            case json::value_t::number_float:     ///< number value (floating-point)
-                detail::addDataFrameColumnHelper(col.value().type(), col.key(), df);
-                break;
-            case json::value_t::discarded:  ///< discarded by the the parser callback function
-                throw JSONConversionException(
-                    "Value was discarded by the the parser callback function");
-                break;
-            case json::value_t::binary:
-                // Not supported
-                throw JSONConversionException("Binary elements is unsupported");
-                break;
-        }
-    }
+    // Extract header names and column types from first object/row
+    detail::extractColumnsFromRow(j, df);
     // Extract values of each column
     for (const auto& row : j) {
         auto colIdx = 1u;  // 0 column is index column
