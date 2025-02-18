@@ -38,7 +38,7 @@
 #include <inviwo/core/util/zip.h>
 
 #include <algorithm>
-#include <sstream>
+#include <ranges>
 
 namespace inviwo {
 
@@ -109,12 +109,14 @@ TEST(JSONConversion, DataFrameToDataFrame) {
     auto petalWidthCol = result.getColumn("petalWidth");
     auto speciesCol = result.getColumn("species");
 
-    for (size_t i = 0; i < result.getNumberOfRows(); ++i) {
-        EXPECT_NEAR(sepalLength[i], sepalLengthCol->getAsDouble(i), 1e-6);
-        EXPECT_NEAR(petalLength[i], petalLengthCol->getAsDouble(i), 1e-6);
-        EXPECT_NEAR(petalWidth[i], petalWidthCol->getAsDouble(i), 1e-6);
-        EXPECT_EQ(species[i], speciesCol->getAsString(i));
+    bool isMatching = true;
+    for (auto row : std::ranges::iota_view{size_t{0}, result.getNumberOfRows()}) {
+        isMatching &= util::almostEqual(sepalLength[row], sepalLengthCol->getAsDouble(row));
+        isMatching &= util::almostEqual(petalLength[row], petalLengthCol->getAsDouble(row));
+        isMatching &= util::almostEqual(petalWidth[row], petalWidthCol->getAsDouble(row));
+        isMatching &= species[row] == speciesCol->getAsString(row);
     }
+    EXPECT_TRUE(isMatching) << "Converted DataFrame does not match source DataFrame";
 }
 
 }  // namespace inviwo
