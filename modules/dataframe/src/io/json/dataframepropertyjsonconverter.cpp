@@ -35,7 +35,6 @@
 
 #include <nlohmann/json.hpp>  // for basic_json<>::object_t, ordered_json
 
-
 namespace inviwo {
 
 using json = ::nlohmann::ordered_json;
