@@ -30,11 +30,9 @@
 #pragma once
 
 #include <inviwo/core/properties/optionproperty.h>
-#include <nlohmann/json.hpp>
+#include <modules/json/json.h>
 
 namespace inviwo {
-
-using json = nlohmann::json;
 
 /**
  * Converts an OptionPropertyOption to a JSON object.

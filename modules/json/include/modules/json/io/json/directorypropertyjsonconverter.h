@@ -30,13 +30,10 @@
 #pragma once
 
 #include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
-
-#include <nlohmann/json.hpp>  // for json
+#include <modules/json/json.h>
 
 namespace inviwo {
 class DirectoryProperty;
-
-using json = ::nlohmann::json;
 
 /**
  * Converts an DirectoryProperty to a JSON object.

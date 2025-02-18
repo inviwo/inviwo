@@ -33,23 +33,18 @@
 
 #include <inviwo/core/common/inviwomodule.h>  // for InviwoModule
 #include <inviwo/core/properties/property.h>
-
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/porttraits.h>
 
+#include <modules/json/json.h>
 #include <modules/json/jsonconverter.h>
 #include <modules/json/jsonconverterregistry.h>
 #include <modules/json/jsonsupplier.h>
-
 #include <modules/json/jsoninportconverter.h>
 #include <modules/json/jsonoutportconverter.h>
 #include <modules/json/jsonpropertyconverter.h>
 
-#include <nlohmann/json.hpp>
-
 namespace inviwo {
-using json = ::nlohmann::json;
-
 class InviwoApplication;
 
 class IVW_MODULE_JSON_API JSONModule : public InviwoModule,

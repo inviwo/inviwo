@@ -33,14 +33,11 @@
 #include <inviwo/core/io/datareaderexception.h>         // for DataReaderException
 #include <inviwo/core/util/exception.h>                 // for SourceContext
 #include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <modules/json/json.h>
 
 #include <string>  // for string
 
-#include <nlohmann/json.hpp>  // for json
-
 namespace inviwo {
-
-using json = nlohmann::json;
 
 /**
  * \class JSONConversionException

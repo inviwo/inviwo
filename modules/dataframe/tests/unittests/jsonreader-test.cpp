@@ -81,7 +81,7 @@ TEST(JSONdata, nullItem) {
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
     // Note that json reorders columns...
-    EXPECT_EQ("nan", dataframe->getColumn(3)->getAsString(0)) << "first item is not nan";
+    EXPECT_EQ("nan", dataframe->getColumn(1)->getAsString(0)) << "first item is not nan";
     EXPECT_EQ(NumericType::Float,
               dataframe->getColumn(3)->getBuffer()->getDataFormat()->getNumericType())
         << "incorrect guessing of data type";
@@ -103,7 +103,7 @@ TEST(JSONdata, nullColumn) {
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
     // Note that json reorders columns...
-    EXPECT_EQ("nan", dataframe->getColumn(3)->getAsString(0)) << "first item is not nan";
+    EXPECT_EQ("nan", dataframe->getColumn(1)->getAsString(0)) << "first item is not nan";
     EXPECT_EQ(NumericType::Float,
               dataframe->getColumn(3)->getBuffer()->getDataFormat()->getNumericType())
         << "incorrect guessing of data type";

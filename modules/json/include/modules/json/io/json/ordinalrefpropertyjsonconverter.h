@@ -28,13 +28,12 @@
  *********************************************************************************/
 #pragma once
 
-#include <nlohmann/json.hpp>  // for json
+#include <modules/json/json.h>
 
 namespace inviwo {
+
 template <typename T>
 class OrdinalRefProperty;
-
-using json = ::nlohmann::json;
 
 /**
  * Converts an OrdinalRefProperty to a JSON object.

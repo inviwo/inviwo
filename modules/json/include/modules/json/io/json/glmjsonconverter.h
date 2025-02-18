@@ -30,27 +30,26 @@
 #pragma once
 
 #include <inviwo/core/util/glm.h>
-
-#include <nlohmann/json.hpp>
+#include <modules/json/json.h>
 
 namespace glm {
 
 template <glm::length_t L, typename T, glm::qualifier Q>
-void from_json(const nlohmann::json& j, glm::vec<L, T, Q>& v) {
+void from_json(const inviwo::json& j, glm::vec<L, T, Q>& v) {
     for (glm::length_t i = 0; i < L; ++i) {
         v[i] = j[i].get<T>();
     }
 }
 
 template <typename T, glm::qualifier Q>
-void from_json(const nlohmann::json& j, glm::qua<T, Q>& v) {
+void from_json(const inviwo::json& j, glm::qua<T, Q>& v) {
     for (glm::length_t i = 0; i < glm::qua<T, Q>::length(); ++i) {
         v[i] = j[i].get<T>();
     }
 }
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-void from_json(const nlohmann::json& js, glm::mat<C, R, T, Q>& v) {
+void from_json(const inviwo::json& js, glm::mat<C, R, T, Q>& v) {
     for (glm::length_t i = 0; i < C; ++i) {
         for (glm::length_t j = 0; j < R; ++j) {
             v[i][j] = js[i * C + j].get<T>();
@@ -59,21 +58,21 @@ void from_json(const nlohmann::json& js, glm::mat<C, R, T, Q>& v) {
 }
 
 template <glm::length_t L, typename T, glm::qualifier Q>
-void to_json(nlohmann::json& j, const glm::vec<L, T, Q>& v) {
+void to_json(inviwo::json& j, const glm::vec<L, T, Q>& v) {
     for (glm::length_t i = 0; i < L; ++i) {
         j.push_back(v[i]);
     }
 }
 
 template <typename T, glm::qualifier Q>
-void to_json(nlohmann::json& j, const glm::qua<T, Q>& v) {
+void to_json(inviwo::json& j, const glm::qua<T, Q>& v) {
     for (glm::length_t i = 0; i < glm::qua<T, Q>::length(); ++i) {
         j.push_back(v[i]);
     }
 }
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-void to_json(nlohmann::json& js, const glm::mat<C, R, T, Q>& v) {
+void to_json(inviwo::json& js, const glm::mat<C, R, T, Q>& v) {
     for (glm::length_t i = 0; i < C; ++i) {
         for (glm::length_t j = 0; j < R; ++j) js.push_back(v[i][j]);
     }
