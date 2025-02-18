@@ -31,7 +31,7 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>  // for IVW_MODULE_DATAFRAME_API
 
-#include <nlohmann/json.hpp>  // for json
+#include <nlohmann/json.hpp>  // for ordered_json
 
 namespace inviwo {
 class ColumnOptionProperty;
@@ -50,7 +50,7 @@ class ColumnOptionProperty;
  * json j = p;
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const ColumnOptionProperty& p);
+IVW_MODULE_DATAFRAME_API void to_json(nlohmann::ordered_json& j, const ColumnOptionProperty& p);
 
 /**
  * Converts a JSON object to an OptionProperty.
@@ -65,6 +65,6 @@ IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const ColumnOptionPrope
  * auto p = j.get<OptionProperty<double>>();
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::json& j, ColumnOptionProperty& p);
+IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::ordered_json& j, ColumnOptionProperty& p);
 
 }  // namespace inviwo

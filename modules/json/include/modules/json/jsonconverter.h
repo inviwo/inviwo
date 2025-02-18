@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 template <typename Base>
 class JSONConverter {

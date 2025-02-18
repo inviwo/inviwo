@@ -55,7 +55,7 @@
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 class InviwoApplication;
 class PropertyWidgetCEF;

@@ -31,12 +31,12 @@
 
 #include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
 
-#include <nlohmann/json.hpp>  // for json
+#include <nlohmann/json.hpp>  // for ordered_json
 
 namespace inviwo {
 class ButtonProperty;
 
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 /**
  * Converts an ButtonProperty to a JSON object.

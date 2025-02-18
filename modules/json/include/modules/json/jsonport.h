@@ -38,7 +38,7 @@
 #include <nlohmann/json.hpp>
 
 namespace inviwo {
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 using JSONInport = DataInport<json>;
 using JSONOutport = DataOutport<json>;

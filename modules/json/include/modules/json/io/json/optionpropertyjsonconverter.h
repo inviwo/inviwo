@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-using json = nlohmann::json;
+using json = nlohmann::ordered_json;
 
 /**
  * Converts an OptionPropertyOption to a JSON object.

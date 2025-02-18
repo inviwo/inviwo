@@ -48,7 +48,7 @@
 #include <nlohmann/json.hpp>
 
 namespace inviwo {
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 class InviwoApplication;
 

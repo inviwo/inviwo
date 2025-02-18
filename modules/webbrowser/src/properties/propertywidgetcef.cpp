@@ -45,9 +45,10 @@
 
 class CefBrowser;
 
-using json = nlohmann::json;
 
 namespace inviwo {
+
+using json = ::nlohmann::ordered_json;
 
 PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, const JSONPropertyConverter& converter,
                                      CefRefPtr<CefFrame> frame, std::string_view onChange)

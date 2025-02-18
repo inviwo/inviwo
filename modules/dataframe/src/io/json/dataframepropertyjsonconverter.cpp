@@ -33,11 +33,12 @@
 #include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
 #include <modules/json/io/json/optionpropertyjsonconverter.h>  // for from_json, to_json, json
 
-#include <nlohmann/json.hpp>  // for basic_json<>::object_t, json
+#include <nlohmann/json.hpp>  // for basic_json<>::object_t, ordered_json
 
-using json = nlohmann::json;
 
 namespace inviwo {
+
+using json = ::nlohmann::ordered_json;
 
 void to_json(json& j, const ColumnOptionProperty& p) {
     to_json(j, static_cast<const OptionPropertyInt&>(p));
