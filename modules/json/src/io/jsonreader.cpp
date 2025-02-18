@@ -29,6 +29,7 @@
 
 #include <modules/json/io/jsonreader.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/exception.h>
 
 #include <fstream>
 #include <string>

@@ -31,11 +31,9 @@
 
 #include <modules/json/io/json/glmjsonconverter.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <nlohmann/json.hpp>
+#include <modules/json/json.h>
 
 namespace inviwo {
-
-using json = ::nlohmann::json;
 
 /**
  * Converts an OrdinalProperty to a JSON object.

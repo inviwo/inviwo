@@ -29,13 +29,10 @@
 #pragma once
 
 #include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
-
-#include <nlohmann/json.hpp>  // for json
+#include <modules/json/json.h>
 
 namespace inviwo {
 class StringProperty;
-
-using json = ::nlohmann::json;
 
 /**
  * Converts an StringProperty to a JSON object.

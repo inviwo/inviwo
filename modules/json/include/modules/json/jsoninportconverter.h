@@ -32,11 +32,10 @@
 
 #include <inviwo/core/ports/inport.h>
 #include <modules/json/jsonconverterregistry.h>
-#include <nlohmann/json.hpp>
+#include <modules/json/json.h>
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
 using JSONInportConverter = JSONConverterRegistry<Inport>;
 
 }  // namespace inviwo

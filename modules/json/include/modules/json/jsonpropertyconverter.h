@@ -30,13 +30,12 @@
 
 #include <modules/json/jsonmoduledefine.h>
 
-#include <inviwo/core/properties/property.h>
+#include <modules/json/json.h>
 #include <modules/json/jsonconverterregistry.h>
-#include <nlohmann/json.hpp>
+#include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
 using JSONPropertyConverter = JSONConverterRegistry<Property>;
 
 }  // namespace inviwo

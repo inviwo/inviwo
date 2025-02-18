@@ -34,11 +34,9 @@
 #include <inviwo/core/ports/dataoutport.h>
 
 #include <modules/json/json.h>
-
-#include <nlohmann/json.hpp>
+#include <modules/json/jsontraits.h>
 
 namespace inviwo {
-using json = ::nlohmann::json;
 
 using JSONInport = DataInport<json>;
 using JSONOutport = DataOutport<json>;

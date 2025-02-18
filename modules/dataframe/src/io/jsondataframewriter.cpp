@@ -34,13 +34,10 @@
 #include <inviwo/core/util/sourcecontext.h>             // for SourceContext
 #include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
 #include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
+#include <modules/json/json.h>
 
 #include <fstream>  // for basic_ifstream, ios, istream, str...
 #include <string>   // for operator==, fpos
-
-#include <nlohmann/json.hpp>  // for operator>>, json
-
-using json = nlohmann::json;
 
 namespace inviwo {
 

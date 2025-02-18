@@ -37,6 +37,7 @@
 
 #include <modules/webbrowser/processors/progressbarobservercef.h>
 
+#include <modules/json/json.h>
 #include <modules/json/jsonpropertyconverter.h>
 #include <modules/json/jsoninportconverter.h>
 #include <modules/json/jsonoutportconverter.h>
@@ -48,14 +49,10 @@
 #include <include/cef_base.h>
 #include <warn/pop>
 
-#include <nlohmann/json.hpp>
-
 #include <string>
 #include <string_view>
 
 namespace inviwo {
-
-using json = ::nlohmann::json;
 
 class InviwoApplication;
 class PropertyWidgetCEF;

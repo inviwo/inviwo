@@ -37,8 +37,6 @@
 #include <stdexcept>  // for out_of_range
 #include <string>     // for string, basic_string
 
-#include <nlohmann/json.hpp>  // for basic_json, basic_json<>::ob...
-
 namespace inviwo {
 
 void to_json(json& j, const DirectoryProperty& p) {
