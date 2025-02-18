@@ -86,6 +86,7 @@ set(TEST_FILES
     tests/unittests/dataframe-test.cpp
     tests/unittests/dataframe-unittest-main.cpp
     tests/unittests/join-test.cpp
+    tests/unittests/jsonconversion-test.cpp
     tests/unittests/jsonreader-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
