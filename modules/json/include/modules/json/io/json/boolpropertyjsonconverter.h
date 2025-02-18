@@ -30,13 +30,10 @@
 #pragma once
 
 #include <modules/json/jsonmoduledefine.h>  // for IVW_MODULE_JSON_API
-
-#include <nlohmann/json.hpp>  // for json
+#include <modules/json/json.h>
 
 namespace inviwo {
 class BoolProperty;
-
-using json = ::nlohmann::json;
 
 /**
  * Converts an BoolProperty to a JSON object.

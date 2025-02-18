@@ -54,7 +54,6 @@
 
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
 #include <glm/gtx/io.hpp>        // for operator<<
-#include <nlohmann/json.hpp>     // for iteration_proxy_v...
 
 namespace inviwo {
 
