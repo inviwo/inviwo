@@ -230,9 +230,16 @@ void from_json(const json& j, DataFrame& df) {
                 // Skip unsupported types
                 continue;
             }
-            std::stringstream ss;
-            ss << col.value();
-            df.getColumn(colIdx++)->add(ss.str());
+            if (col.value().type() == json::value_t::string) {
+                // avoid quoted strings with explict cast
+                // see https://github.com/nlohmann/json/issues/853
+                df.getColumn(colIdx)->add(col.value().get<std::string_view>());
+            } else {
+                std::stringstream ss;
+                ss << col.value();
+                df.getColumn(colIdx)->add(ss.str());
+            }
+            ++colIdx;
         }
     }
     // Update index buffer when we are done
