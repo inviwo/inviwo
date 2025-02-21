@@ -5,9 +5,9 @@ set(HEADER_FILES
     include/modules/opactopt/opactoptmoduledefine.h
     include/modules/opactopt/processors/directopacityoptimisation.h
     include/modules/opactopt/processors/meshmappingvolume.h
-    include/modules/opactopt/rendering/approximation.h
     include/modules/opactopt/io/rawpointreader.h
-    include/modules/opactopt/algorithm/gaussian.h
+    include/modules/opactopt/utils/approximation.h
+    include/modules/opactopt/utils/gaussian.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -15,9 +15,9 @@ set(SOURCE_FILES
     src/opactoptmodule.cpp
     src/processors/directopacityoptimisation.cpp
     src/processors/meshmappingvolume.cpp
-    src/rendering/approximation.cpp
     src/io/rawpointreader.cpp
-    src/algorithm/gaussian.cpp
+    src/utils/approximation.cpp
+    src/utils/gaussian.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
