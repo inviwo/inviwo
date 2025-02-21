@@ -40,13 +40,12 @@
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/openglcapabilities.h>
 
-#include <inviwo/core/interaction/cameratrackball.h>  // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>              // for ImageInport, ImageOutport
-#include <inviwo/core/ports/meshport.h>               // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>         // for Processor
-#include <inviwo/core/processors/processorinfo.h>     // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>      // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/interaction/cameratrackball.h>         // for CameraTrackball
+#include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
+#include <inviwo/core/ports/meshport.h>                      // for MeshFlatMultiInport
+#include <inviwo/core/processors/processor.h>                // for Processor
+#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
 #include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
 #include <inviwo/core/properties/compositeproperty.h>        // for CompositeProperty
 #include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyInt
@@ -75,8 +74,8 @@ public:
 
 protected:
     void setUniforms(Shader& shader);
-    void renderGeometry(int pass);
-    void resizeBuffers(size2_t screenSize);
+    void renderGeometry(const int pass);
+    void resizeBuffers(const size2_t screenSize);
     void generateAndUploadGaussianKernel();
     void generateAndUploadLegendreCoefficients();
 
