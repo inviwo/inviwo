@@ -133,27 +133,6 @@ void DebugBuffer::retrieveDebugInfo(int nIsc, int nOdc) {
                        debugApproxSamples_ * sizeof(float), &debugOpticalDepthSamples_[0]);
 }
 
-void DebugBuffer::exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap,
-                                  float q, float r, float lambda) {
-    std::ofstream file(path);
-
-    file << debugCoeffs_.importanceSumCoeffs.size() << std::endl;
-    file << debugCoeffs_.opticalDepthCoeffs.size() << std::endl;
-    file << debugFrags.size() << std::endl;
-    file << debugApproxSamples_ << std::endl;
-    file << q << std::endl;
-    file << r << std::endl;
-    file << lambda << std::endl;
-    file << ap.name << std::endl;
-    for (float isc : debugCoeffs_.importanceSumCoeffs) file << isc << std::endl;
-    for (float odc : debugCoeffs_.opticalDepthCoeffs) file << odc << std::endl;
-    for (auto frag : debugFrags) file << frag.depth << " " << frag.importance << std::endl;
-    for (float val : debugImportanceSumSamples_) file << val << std::endl;
-    for (float val : debugOpticalDepthSamples_) file << val << std::endl;
-
-    LogInfo("Debug info exported to " << path);
-}
-
 MomentSettings::MomentSettings()
     : momentSettingsBuffer_{2 * sizeof(float) + sizeof(glm::vec4),
                                 GLFormats::getGLFormat(GL_FLOAT, 1), GL_STATIC_READ,

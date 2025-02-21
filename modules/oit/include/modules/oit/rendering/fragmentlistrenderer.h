@@ -71,10 +71,8 @@ class Image;
  */
 class IVW_MODULE_OIT_API FragmentListRenderer {
 public:
-    size2_t screenSize_;
-
     FragmentListRenderer();
-    virtual ~FragmentListRenderer();
+    ~FragmentListRenderer();
 
     /**
      * \brief Starts the rendering of transparent objects using fragment lists.
@@ -82,14 +80,14 @@ public:
      * This has to be called each frame before objects can be rendered with the fragment lists.
      * \param screenSize the current screen size
      */
-    virtual void prePass(const size2_t& screenSize);
+    void prePass(const size2_t& screenSize);
 
     /**
      * \brief Sets the shader uniforms required by the fragment list renderer.
      * The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>
      * \param shader the shader of the object to be rendered
      */
-    virtual void setShaderUniforms(Shader& shader) const;
+    void setShaderUniforms(Shader& shader) const;
 
     /**
      * \brief Finishes the fragment list pass and renders the final result.
@@ -100,7 +98,7 @@ public:
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */
-    virtual bool postPass(bool useIllustration, const Image* background);
+    bool postPass(bool useIllustration, const Image* background);
 
     void beginCount();
     void endCount();
@@ -113,7 +111,6 @@ public:
         float edgeSmoothing_;
         float haloSmoothing_;
     };
-
     void setIllustrationSettings(const IllustrationSettings& settings) {
         illustration_.settings = settings;
     }
@@ -132,20 +129,21 @@ public:
      */
     static bool supportsIllustration();
 
-    virtual DispatcherHandle<void()> onReload(std::function<void()> callback);
+    DispatcherHandle<void()> onReload(std::function<void()> callback);
 
     void debugFragmentLists(std::ostream& oss);
     void debugIllustrationBuffer(std::ostream& oss);
 
-protected:
-    virtual void buildShaders(bool hasBackground = false);
+private:
+    void buildShaders(bool hasBackground = false);
 
-    virtual void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
-    virtual void resizeBuffers(const size2_t& screenSize);
+    void setUniforms(Shader& shader, const TextureUnit& abuffUnit) const;
+    void resizeBuffers(const size2_t& screenSize);
 
     void fillIllustration(TextureUnit& abuffUnit, TextureUnit& idxUnit, TextureUnit& countUnit,
                           const Image* background);
 
+    size2_t screenSize_;
     size_t fragmentSize_;
 
     // basic fragment lists
@@ -157,7 +155,7 @@ protected:
     BufferObject pixelBuffer_;
 
     GLuint totalFragmentQuery_;
-    
+
     Shader clear_;
     Shader display_;
 

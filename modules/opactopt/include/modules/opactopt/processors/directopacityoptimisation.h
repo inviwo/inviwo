@@ -31,7 +31,6 @@
 #include <modules/opactopt/opactoptmoduledefine.h>
 
 #include <modules/opactopt/rendering/approximation.h>
-#include <modules/opactopt/utils/graphicsexectimer.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -154,18 +153,6 @@ protected:
     bool legendreCoefficientsGenerated_ = false;
 
     Approximations::MomentSettings ms;
-
-    IntVec2Property debugCoords_;
-    FileProperty debugFileName_;
-    ButtonProperty debugApproximation_;
-
-    util::GraphicsExecTimer execTimer;
-    IntProperty timingMode_;  // 0 off, 1 total, 2 per pass
-    Int64Property timeTotal_, timeSetup_, timeProjection_, timeSmoothing_, timeImportanceApprox_,
-        timeBlending_, timeNormalisation_;
-
-    bool debugOn_;
-    Approximations::DebugBuffer db_;
 };
 
 }  // namespace inviwo

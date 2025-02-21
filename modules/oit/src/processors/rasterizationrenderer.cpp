@@ -88,19 +88,22 @@ void RasterizationRenderer::initializeResources() { initializeShader_.invoke(); 
 
 RasterizationRenderer::RasterizationRenderer()
     : Processor{}
-    , rasterizations_{"rasterizations",
+    , rasterizations_{"rastarizations",
                       "Input rasterizations filling the fragment lists/render target"_help}
     , background_{"imageInport", "Optional background image"_help}
     , outport_{"image",
-               "output image containing the rendered objects and the optional input image"_help, inviwo::DataVec4Float32::get()}
+               "output image containing the rendered objects and the optional input image"_help}
     , intermediateImage_{}
     , camera_{"camera", "Camera", [this]() { return boundingBox(); }}
     , lighting_{"lighting", "Lighting", &camera_}
     , trackball_{&camera_}
     , illustrationSettings_{}
-    , flr_{[]() -> std::unique_ptr<FragmentListRenderer> {
+    , flr_{[]() -> std::optional<FragmentListRenderer> {
         if (FragmentListRenderer::supportsFragmentLists())
-            return std::make_unique<FragmentListRenderer>();
+            return std::optional<FragmentListRenderer>{std::in_place};
+        else {
+            return std::nullopt;
+        }
     }()} {
 
     if (!FragmentListRenderer::supportsFragmentLists()) {
@@ -218,7 +221,6 @@ void RasterizationRenderer::process() {
         flr_->prePass(outport_.getDimensions());
 
         flr_->beginCount();
-
         for (const auto& rasterization : rasterizations_) {
             if (rasterization->usesFragmentLists() == UseFragmentList::Yes) {
                 rasterization->rasterize(outport_.getDimensions(), mat4(1.0));
