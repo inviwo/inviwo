@@ -213,27 +213,7 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     , legendreCoefficients_{Approximations::approximations.at("legendre").maxCoefficients *
                                 sizeof(int),
                             GLFormats::getGLFormat(GL_INT, 1),  // dummy format
-                            GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
-    , debugCoords_{"debugCoords", "Debug coords"}
-    , debugFileName_{"debugFile", "Debug file"}
-    , debugApproximation_{"debugApproximation", "Debug and export"}
-    , timingMode_{"timingMode", "Timing mode", 0, 0, 2, 1, InvalidationLevel::Valid}
-    , timeTotal_{"timeTotal", "Total time", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid}
-    , timeSetup_{"timeSetup", "Setup time", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid}
-    , timeProjection_{"timeProjection",        "Time projection", 0, 0, INT64_MAX, 1,
-                      InvalidationLevel::Valid}
-    , timeSmoothing_{"timeSmoothing",         "Time smoothing", 0, 0, INT64_MAX, 1,
-                     InvalidationLevel::Valid}
-    , timeImportanceApprox_{"timeImportanceApprox",
-                            "Time importance approximation",
-                            0,
-                            0,
-                            INT64_MAX,
-                            1,
-                            InvalidationLevel::Valid}
-    , timeBlending_{"timeBlending", "Time blending", 0, 0, INT64_MAX, 1, InvalidationLevel::Valid}
-    , timeNormalisation_{"timeNormalisation",     "Time normalisation", 0, 0, INT64_MAX, 1,
-                         InvalidationLevel::Valid} {
+                            GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
@@ -246,25 +226,11 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     addProperties(camera_, q_, r_, lambda_, approximationProperties_, meshProperties_,
                   lineSettings_, pointProperties_, lightingProperty_, trackball_, layers_);
 
-    std::vector<Int64Property*> timers{&timeSetup_,     &timeProjection_,
-                                       &timeSmoothing_, &timeImportanceApprox_,
-                                       &timeBlending_,  &timeNormalisation_};
-    for (auto timer : timers) {
-        addProperty(timer);
-        timer->setVisible(false);
-    }
-    addProperties(timeTotal_, timingMode_);
-    timeTotal_.setVisible(false);
-    timingMode_.setVisible(false);
-
-    execTimer.setTimers(&timeTotal_, timers);
-
     approximationProperties_.addProperties(approximationMethod_, importanceSumCoefficients_,
                                            opticalDepthCoefficients_);
     if (!OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float"))
         approximationProperties_.addProperty(coeffTexFixedPointFactor_);
-    approximationProperties_.addProperties(normalisedBlending_, smoothing_, debugCoords_,
-                                           debugFileName_, debugApproximation_);
+    approximationProperties_.addProperties(normalisedBlending_, smoothing_);
 
     for (auto& ist : importanceSumTexture_) ist.initialize(nullptr);
     opticalDepthTexture_.initialize(nullptr);
@@ -311,15 +277,6 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
         .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty p) { return p.get(); });
 
     layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);
-
-    debugApproximation_.onChange([this]() {
-        if (!debugFileName_.get().empty()) {
-            debugOn_ = true;
-            initializeResources();
-        } else {
-            LogError("Debug file: Invalid file name");
-        }
-    });
 
     for (auto& shader : meshShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -378,7 +335,6 @@ void DirectOpacityOptimisation::initializeResources() {
         else
             frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
                                   std::to_string(coeffTexFixedPointFactor_));
-        if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         shader.build();
     }
@@ -418,7 +374,6 @@ void DirectOpacityOptimisation::initializeResources() {
         else
             frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
                                   std::to_string(coeffTexFixedPointFactor_));
-        if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         shader.build();
     }
@@ -461,7 +416,6 @@ void DirectOpacityOptimisation::initializeResources() {
         else
             frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
                                   std::to_string(coeffTexFixedPointFactor_));
-        if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         shader.build();
     }
@@ -492,7 +446,6 @@ void DirectOpacityOptimisation::initializeResources() {
         else
             frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
                                   std::to_string(coeffTexFixedPointFactor_));
-        if (debugOn_) frag->setShaderDefine("DEBUG", true);
 
         shader.build();
     }
@@ -543,7 +496,6 @@ void DirectOpacityOptimisation::initializeResources() {
         else
             frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
                                   std::to_string(coeffTexFixedPointFactor_));
-        if (debugOn_) frag->setShaderDefine("DEBUG", true);
         frag->setShaderDefine("NORMALISE", normalisedBlending_);
         frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
 
@@ -580,9 +532,6 @@ void DirectOpacityOptimisation::initializeResources() {
 }
 
 void DirectOpacityOptimisation::process() {
-    execTimer.reset(timingMode_);
-    execTimer.addCounter();
-
     resizeBuffers(outport_.getDimensions());
 
     if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
@@ -615,20 +564,14 @@ void DirectOpacityOptimisation::process() {
     glBindImageTexture(opticalDepthUnit_->getUnitNumber(), opticalDepthTexture_.getID(), 0, true, 0,
                        GL_READ_WRITE, imageFormat_.internalFormat);
 
-    if (debugOn_) db_.initialiseDebugBuffer();
-
     // clear coefficient buffers
     clear_.activate();
     setUniforms(clear_);
     utilgl::singleDrawImagePlaneRect();
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    // Stop setup timer
-    execTimer.addCounter();
-
     // Pass 1: Project importance
     renderGeometry(0);
-    execTimer.addCounter();
 
     // Optional smoothing of importance coefficients
     utilgl::activateTarget(
@@ -657,16 +600,13 @@ void DirectOpacityOptimisation::process() {
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
-    execTimer.addCounter();
 
     // Pass 2: Approximate importance and project opacities
     renderGeometry(1);
-    execTimer.addCounter();
 
     // Pass 3: Approximate blending, render to target
     utilgl::BlendModeState blending(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
     renderGeometry(2);
-    execTimer.addCounter();
 
     // normalise
     utilgl::activateAndClearTarget(outport_);
@@ -680,18 +620,10 @@ void DirectOpacityOptimisation::process() {
                                    ImageType::ColorDepth);
     setUniforms(normalise_);
     utilgl::singleDrawImagePlaneRect();
-    execTimer.addCounter();
 
     glUseProgram(0);
     textureUnits_.clear();
     utilgl::deactivateCurrentTarget();
-
-    if (debugOn_) {
-        db_.retrieveDebugInfo(importanceSumCoefficients_, opticalDepthCoefficients_);
-        debugOn_ = false;
-        db_.exportDebugInfo(debugFileName_, *ap_, q_, r_, lambda_);
-        initializeResources();
-    }
 }
 
 void DirectOpacityOptimisation::setUniforms(Shader& shader) {
@@ -709,8 +641,6 @@ void DirectOpacityOptimisation::setUniforms(Shader& shader) {
 
     if (importanceVolume_.hasData())
         utilgl::bindAndSetUniforms(shader, textureUnits_, importanceVolume_);
-
-    if (debugOn_) shader.setUniform("debugCoords", debugCoords_);
 }
 
 void DirectOpacityOptimisation::renderGeometry(int pass) {
@@ -857,9 +787,6 @@ void DirectOpacityOptimisation::resizeBuffers(size2_t screenSize) {
             nullptr, size3_t(screenSize.x, screenSize.y, importanceSumCoefficients_));
         opticalDepthTexture_.uploadAndResize(
             nullptr, size3_t(screenSize.x, screenSize.y, opticalDepthCoefficients_));
-
-        debugCoords_.setMinValue({0, 0});
-        debugCoords_.setMaxValue(ivec2(outport_.getDimensions()) - ivec2(1, 1));
     }
 }
 
