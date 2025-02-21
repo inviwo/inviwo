@@ -70,34 +70,6 @@ double choose(double n, double k);
 std::vector<OptionPropertyStringOption> generateApproximationStringOptions();
 std::vector<float> generateLegendreCoefficients();
 
-struct IVW_MODULE_OPACTOPT_API DebugApproximationCoeffs {
-    std::vector<float> importanceSumCoeffs;
-    std::vector<float> opticalDepthCoeffs;
-};
-
-struct IVW_MODULE_OPACTOPT_API DebugFragment {
-    float depth;
-    float importance;
-};
-
-class DebugBuffer {
-public:
-    bool ready = false;
-
-    DebugBuffer();
-    void initialiseDebugBuffer();
-    void retrieveDebugInfo(int nIsc, int nOdc);
-    void exportDebugInfo(std::filesystem::path path, const ApproximationProperties ap, float q, float r,
-                         float lambda);
-
-private:
-    const int debugApproxSamples_ = 10000;
-    BufferObject debugApproximationCoeffsBuffer_, debugFragmentsBuffer_, debugApproxSamplesBuffer_;
-    DebugApproximationCoeffs debugCoeffs_;
-    std::vector<DebugFragment> debugFrags;
-    std::vector<float> debugImportanceSumSamples_, debugOpticalDepthSamples_;
-};
-
 class MomentSettings {
 public:
     const float wrapping_zone_angle = 0.1f * M_PI;
