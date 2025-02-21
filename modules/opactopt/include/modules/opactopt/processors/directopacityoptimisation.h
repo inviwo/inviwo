@@ -30,7 +30,7 @@
 #pragma once
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <modules/opactopt/rendering/approximation.h>
+#include <modules/opactopt/utils/approximation.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>

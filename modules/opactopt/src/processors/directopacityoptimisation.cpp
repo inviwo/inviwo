@@ -57,7 +57,7 @@
 #include <modules/opengl/shader/shaderobject.h>        // for ShaderObject
 #include <modules/opengl/shader/shaderutils.h>         // for addShaderDefines, setShaderUniforms
 #include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
-#include <modules/opactopt/algorithm/gaussian.h>
+#include <modules/opactopt/utils/gaussian.h>
 
 #include <cstddef>      // for size_t
 #include <functional>   // for __base
