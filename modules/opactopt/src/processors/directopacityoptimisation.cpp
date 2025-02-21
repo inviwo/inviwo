@@ -210,10 +210,10 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     , smoothing_{"smoothing", "Smoothing", false}
     , gaussianRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
     , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50}
-    , legendreCoefficients_{Approximations::approximations.at("legendre").maxCoefficients *
-                                sizeof(int),
-                            GLFormats::getGLFormat(GL_INT, 1),  // dummy format
-                            GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER} {
+    , legendreCoefficients_{
+          Approximations::approximations.at("legendre").maxCoefficients * sizeof(int),
+          GLFormats::getGLFormat(GL_INT, 1),  // dummy format
+          GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
@@ -304,6 +304,7 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
 DirectOpacityOptimisation::~DirectOpacityOptimisation() = default;
 
 void DirectOpacityOptimisation::initializeResources() {
+    // Configure all the shaders with correct extensions and defines
     for (auto& shader : meshShaders_) {
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
@@ -555,7 +556,8 @@ void DirectOpacityOptimisation::process() {
         importanceSumUnitSmooth_->activate();
         importanceSumTexture_[1].bind();
         glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
-                           importanceSumTexture_[1].getID(), 0, true, 0, GL_READ_WRITE, imageFormat_.internalFormat);
+                           importanceSumTexture_[1].getID(), 0, true, 0, GL_READ_WRITE,
+                           imageFormat_.internalFormat);
     }
 
     opticalDepthUnit_ = &textureUnits_.emplace_back();
@@ -643,7 +645,7 @@ void DirectOpacityOptimisation::setUniforms(Shader& shader) {
         utilgl::bindAndSetUniforms(shader, textureUnits_, importanceVolume_);
 }
 
-void DirectOpacityOptimisation::renderGeometry(int pass) {
+void DirectOpacityOptimisation::renderGeometry(const int pass) {
     // Mesh
     meshShaders_[pass].activate();
     utilgl::setUniforms(meshShaders_[pass], camera_, lightingProperty_, overrideColor_);
@@ -778,7 +780,7 @@ void DirectOpacityOptimisation::renderGeometry(int pass) {
     LGL_ERROR_CLASS;
 }
 
-void DirectOpacityOptimisation::resizeBuffers(size2_t screenSize) {
+void DirectOpacityOptimisation::resizeBuffers(const size2_t screenSize) {
     if (screenSize != screenSize_) {
         screenSize_ = screenSize;
         importanceSumTexture_[0].uploadAndResize(
