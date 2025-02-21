@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/algorithm/gaussian.h>
+#include <modules/opactopt/utils/gaussian.h>
 
 namespace inviwo {
 namespace util {

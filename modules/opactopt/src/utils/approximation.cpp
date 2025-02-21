@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#include <modules/opactopt/rendering/approximation.h>
+#include <modules/opactopt/utils/approximation.h>
 
 namespace inviwo {
 namespace Approximations {
