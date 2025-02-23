@@ -29,6 +29,7 @@
 
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
+#include "utils/sampler3d.glsl"
 
 uniform float pointSize; // [pixel]
 uniform float borderWidth; // [pixel]
@@ -94,7 +95,7 @@ void main() {
         vec4 worldPos = camera.clipToWorld * clip;
         worldPos /= worldPos.w;
         vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-        float gi = clamp(texture(importanceVolume, texPos.xyz).x, 0.0, 1.0); // sample importance from volume
+        float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
     #else
         float gi = color_.a;
     #endif
