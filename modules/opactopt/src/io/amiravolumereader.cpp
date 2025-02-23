@@ -191,6 +191,9 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
             return std::pair<dvec4, dvec4>{util::glm_convert<dvec4>(minmax.first),
                                            util::glm_convert<dvec4>(minmax.second)};
         });
+    auto compMinMax = glm::dvec2{glm::compMin(minmax.first), glm::compMax(minmax.second)};
+    volume->dataMap_.dataRange = compMinMax;
+    volume->dataMap_.valueRange = compMinMax;
     LogInfo("Min: " << minmax.first << ", Max: " << minmax.second);
 
     std::string size = util::formatBytesToString(xDim * yDim * zDim * (format->getSizeInBytes()));
