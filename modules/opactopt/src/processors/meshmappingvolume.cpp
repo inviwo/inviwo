@@ -143,10 +143,9 @@ void MeshMappingVolume::process() {
         const auto volume = volumeInport_.getData();
         const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
 
-        // fill color vector);
+        // fill color vector
         std::vector<vec4> colorsOut(srcBuffer->getSize());
         bool accessOutsideBounds = false;
-
         srcBuffer->dispatch<void>(
             [comp = component_.getSelectedIndex(),
              range = useCustomDataRange_.get() ? customDataRange_.get() : dataRange_.get(),
@@ -160,12 +159,12 @@ void MeshMappingVolume::process() {
                         vec3(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
 
                     // trilinear interpolation
+                    if (glm::any(glm::lessThan(texpos, glm::zero<glm::vec3>())) ||
+                        glm::any(glm::greaterThanEqual(texpos, glm::vec3(volume->getDimensions()))))
+                        accessOutsideBounds = true;
                     double c[8];
                     for (int i = 0; i < 8; i++) {
                         size3_t samplepos = size3_t(texpos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
-                        if (glm::any(glm::lessThan(samplepos, glm::zero<size3_t>())) ||
-                            glm::any(glm::greaterThanEqual(samplepos, volume->getDimensions())))
-                            accessOutsideBounds = true;
 
                         c[i] = volumeRAM->getAsDouble(
                             glm::clamp(samplepos, glm::zero<size3_t>(), volume->getDimensions() - size3_t(1)));
