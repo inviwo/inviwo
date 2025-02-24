@@ -41,22 +41,25 @@ uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), m
 uniform bool pickingEnabled = false;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
 
-out vec4 worldPosition_;
-out vec4 vertexColor_;
-flat out uint pickID_;
+out LineVert {
+    vec4 worldPosition;
+    vec4 color;
+    flat uint pickID;
+    flat uint index;
+} vertex;
  
 void main() {
 #if defined(HAS_COLOR)
-    vertexColor_ = in_Color;
+    vertex.color = in_Color;
 #else
-    vertexColor_ = defaultColor;
+    vertex.color = defaultColor;
 #endif
 
-    worldPosition_ = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
-    gl_Position = camera.worldToClip * worldPosition_;
+    vertex.worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    gl_Position = camera.worldToClip * vertex.worldPosition;
 #if defined(HAS_PICKING)
-    pickID_ = in_Picking;
+    vertex.pickID = in_Picking;
 #else 
-    pickID_ = 0;
+    vertex.pickID = 0;
 #endif
 }
