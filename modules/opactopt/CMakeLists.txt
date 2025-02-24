@@ -44,15 +44,6 @@ set(SHADER_FILES
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
-# Add script files
-set(SCRIPT_FILES
-    scripts/accuracyeval.py
-    scripts/approximationeval.py
-    scripts/memoryeval.py
-    scripts/renderereval.py
-)
-ivw_group("Script Files" ${SCRIPT_FILES})
-
 set(TEST_FILES
     tests/unittests/opactopt-unittest-main.cpp
 )
