@@ -148,37 +148,49 @@ void MeshMappingVolume::process() {
         // fill color vector
         std::vector<vec4> colorsOut(srcBuffer->getSize());
         bool accessOutsideBounds = false;
-        srcBuffer->dispatch<void>(
-            [comp = component_.getSelectedIndex(),
-             range = useCustomDataRange_.get() ? customDataRange_.get() : dataRange_.get(),
-             dst = &colorsOut, tf = &tf_.get(), volume, volumeRAM,
-             &accessOutsideBounds](auto pBuffer) {
-                auto& vec = pBuffer->getDataContainer();
-                std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
-                    glm::vec4 worldpos = {util::glmcomp(v, 0), util::glmcomp(v, 1),
-                                          util::glmcomp(v, 2), 1.0};
-                    const auto texpos =
-                        vec3(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
+        srcBuffer->dispatch<void>([comp = component_.getSelectedIndex(),
+                                   range = useCustomDataRange_.get() ? customDataRange_.get()
+                                                                     : dataRange_.get(),
+                                   dst = &colorsOut, tf = &tf_.get(), volume, volumeRAM,
+                                   &accessOutsideBounds](auto pBuffer) {
+            auto& vec = pBuffer->getDataContainer();
+            std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
+                glm::vec4 worldpos = {util::glmcomp(v, 0), util::glmcomp(v, 1), util::glmcomp(v, 2),
+                                      1.0};
+                const auto texpos =
+                    vec3(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
 
+                if (glm::any(glm::lessThan(glm::floor(texpos), glm::zero<glm::vec3>())) ||
+                    glm::any(glm::greaterThanEqual(glm::ceil(texpos), glm::vec3(volume->getDimensions()))))
+                    accessOutsideBounds = true;
+
+                double res;
+                vec3 dummy;
+                if (volume->getInterpolation() == InterpolationType::Linear) {
                     // trilinear interpolation
-                    if (glm::any(glm::lessThan(texpos, glm::zero<glm::vec3>())) ||
-                        glm::any(glm::greaterThanEqual(texpos, glm::vec3(volume->getDimensions()))))
-                        accessOutsideBounds = true;
                     double c[8];
                     for (int i = 0; i < 8; i++) {
-                        size3_t samplepos = size3_t(texpos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
+                        size3_t samplepos =
+                            size3_t(texpos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
 
-                        c[i] = volumeRAM->getAsDouble(
-                            glm::clamp(samplepos, glm::zero<size3_t>(), volume->getDimensions() - size3_t(1)));
+                        c[i] = volumeRAM->getAsDouble(glm::clamp(
+                            samplepos, glm::zero<size3_t>(), volume->getDimensions() - size3_t(1)));
                     }
-                    vec3 dummy;
-                    double res = triInterp(c, glm::modf(texpos, dummy));
-                    double normalized = (static_cast<double>(res) - range.x) / (range.y - range.x);
-                    return tf->sample(normalized);
-                });
+                    res = triInterp(c, glm::modf(texpos, dummy));
+                } else {
+                    size3_t samplepos = size3_t(glm::round(texpos));
+                    res = volumeRAM->getAsDouble(glm::clamp(samplepos, glm::zero<size3_t>(),
+                                                            volume->getDimensions() - size3_t(1)));
+                }
+
+                double normalized = (static_cast<double>(res) - range.x) / (range.y - range.x);
+                return tf->sample(normalized);
             });
+        });
         if (accessOutsideBounds)
-            LogWarn("The volume is being sampled out of bounds one or more times. The mesh and volume may not be aligned.");
+            LogWarn(
+                "The volume is being sampled out of bounds one or more times. The mesh and volume "
+                "may not be aligned.");
 
         // create a new mesh containing all buffers of the input mesh
         // The first color buffer, if existing, is replaced with the mapped colors.
