@@ -57,7 +57,7 @@ struct MinMaxHelper {
 
         auto classname = Defaultvalues<T>::getName() + "MinMaxProperty";
 
-        py::class_<P, Property> prop(m, classname.c_str());
+        py::classh<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
                              const T& valueMin, const T& valueMax, const T& rangeMin,
                              const T& rangeMax, const T& increment, const T& minSeparation,

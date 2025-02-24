@@ -44,7 +44,7 @@ namespace inviwo {
 void exposeCamera(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<Camera>(m, "Camera")
+    py::classh<Camera>(m, "Camera")
         .def("clone", &Camera::clone)
         .def("updateFrom", &Camera::updateFrom)
         .def_property("lookFrom", &Camera::getLookFrom, &Camera::setLookFrom)
@@ -64,7 +64,7 @@ void exposeCamera(pybind11::module& m) {
         .def("getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth",
              &Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth);
 
-    py::class_<PerspectiveCamera, Camera>(m, "PerspectiveCamera")
+    py::classh<PerspectiveCamera, Camera>(m, "PerspectiveCamera")
         .def(py::init<vec3, vec3, vec3, float, float, float, float>(),
              py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
              py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
@@ -72,14 +72,14 @@ void exposeCamera(pybind11::module& m) {
              py::arg("fieldOfView") = 60.f)
         .def_property("fovy", &PerspectiveCamera::getFovy, &PerspectiveCamera::setFovy);
 
-    py::class_<OrthographicCamera, Camera>(m, "OrthographicCamera")
+    py::classh<OrthographicCamera, Camera>(m, "OrthographicCamera")
         .def(py::init<vec3, vec3, vec3, float, float, float, float>(),
              py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
              py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,
              py::arg("farPlane") = 10000.0f, py::arg("aspectRatio") = 1.f, py::arg("width") = 60.f)
         .def_property("width", &OrthographicCamera::getWidth, &OrthographicCamera::setWidth);
 
-    py::class_<SkewedPerspectiveCamera, Camera>(m, "SkewedPerspectiveCamera")
+    py::classh<SkewedPerspectiveCamera, Camera>(m, "SkewedPerspectiveCamera")
         .def(py::init<vec3, vec3, vec3, float, float, float, float, vec2>(),
              py::arg("lookFrom") = vec3(0.0f, 0.0f, 2.0f), py::arg("lookTo") = vec3(0.0f),
              py::arg("lookUp") = vec3(0.0f, 1.0f, 0.0f), py::arg("nearPlane") = 0.01f,

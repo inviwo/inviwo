@@ -82,7 +82,7 @@ void exposePickingMapper(pybind11::module& m) {
 
     exposeFlags<PickingHoverState>(m, pickingHoverState, "PickingHoverStates");
 
-    py::class_<PickingEvent, Event>(m, "PickingEvent")
+    py::classh<PickingEvent, Event>(m, "PickingEvent")
         .def(py::init<const PickingAction*, InteractionEvent*, PickingState, PickingPressState,
                       PickingPressItem, PickingHoverState, PickingPressItems, size_t, size_t,
                       size_t, size_t, dvec3, dvec3>(),
@@ -123,7 +123,7 @@ void exposePickingMapper(pybind11::module& m) {
         .def("setToolTip", &PickingEvent::setToolTip)
         .def_property_readonly_static("chash", &PickingEvent::chash);
 
-    py::class_<PickingMapper>(m, "PickingMapper")
+    py::classh<PickingMapper>(m, "PickingMapper")
         .def(py::init([](Processor* p, size_t size, pybind11::function callback) {
             return new PickingMapper(p, size, [callback](PickingEvent* e) {
                 try {

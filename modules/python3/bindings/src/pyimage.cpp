@@ -87,7 +87,7 @@ void exposeImage(py::module& m) {
         .value("Zero", ImageChannel::Zero)
         .value("One", ImageChannel::One);
 
-    py::class_<SwizzleMask>(m, "SwizzleMask")
+    py::classh<SwizzleMask>(m, "SwizzleMask")
         .def(py::init<>([]() { return swizzlemasks::rgba; }))
         .def(py::init<SwizzleMask>())
         .def(py::init<>([](ImageChannel r, ImageChannel g, ImageChannel b, ImageChannel a) {
@@ -114,7 +114,7 @@ void exposeImage(py::module& m) {
         .value("Repeat", Wrapping::Repeat)
         .value("Mirror", Wrapping::Mirror);
 
-    py::class_<Image>(m, "Image")
+    py::classh<Image>(m, "Image")
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
         .def(py::init<std::vector<std::shared_ptr<Layer>>>())
@@ -141,7 +141,7 @@ void exposeImage(py::module& m) {
                             : toString(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
         });
 
-    py::class_<Layer>(m, "Layer")
+    py::classh<Layer>(m, "Layer")
         .def(py::init<std::shared_ptr<LayerRepresentation>>())
         .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<size2_t, const DataFormatBase*, LayerType, const SwizzleMask&,
@@ -215,7 +215,7 @@ void exposeImage(py::module& m) {
                 self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
-    py::class_<LayerRepresentation>(m, "LayerRepresentation")
+    py::classh<LayerRepresentation>(m, "LayerRepresentation")
         .def_property_readonly("layertype", &LayerRepresentation::getLayerType)
         .def_property("dimensions", &LayerRepresentation::getDimensions,
                       &LayerRepresentation::setDimensions)
@@ -237,7 +237,7 @@ void exposeImage(py::module& m) {
                 self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
-    py::class_<LayerPy, LayerRepresentation>(m, "LayerPy")
+    py::classh<LayerPy, LayerRepresentation>(m, "LayerPy")
         .def(py::init<py::array, LayerType, const SwizzleMask&, InterpolationType,
                       const Wrapping2D&>(),
              py::arg("data"), py::arg("layerType") = LayerType::Color,
