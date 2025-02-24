@@ -67,9 +67,9 @@ void exposeLogging(pybind11::module& m) {
         .value("Warn", MessageBreakLevel::Warn)
         .value("Info", MessageBreakLevel::Info);
 
-    py::class_<Logger>(m, "Logger").def("log", &Logger::log);
+    py::classh<Logger>(m, "Logger").def("log", &Logger::log);
 
-    py::class_<LogCentral, Logger>(m, "LogCentral")
+    py::classh<LogCentral, Logger>(m, "LogCentral")
         .def(py::init([]() {
             auto lc = std::make_unique<LogCentral>();
             if (!LogCentral::isInitialized()) {
@@ -88,11 +88,11 @@ void exposeLogging(pybind11::module& m) {
              py::arg("audience") = LogAudience::Developer, py::arg("file") = "",
              py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
-    py::class_<ConsoleLogger, Logger>(m, "ConsoleLogger")
+    py::classh<ConsoleLogger, Logger>(m, "ConsoleLogger")
         .def(py::init<>())
         .def("log", &ConsoleLogger::log);
 
-    py::class_<FileLogger, Logger>(m, "FileLogger")
+    py::classh<FileLogger, Logger>(m, "FileLogger")
         .def(py::init<std::string>())
         .def("log", &FileLogger::log);
 

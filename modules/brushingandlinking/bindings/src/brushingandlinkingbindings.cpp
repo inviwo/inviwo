@@ -75,7 +75,7 @@ void exposeBnL(py::module& m) {
     brushingModification.def_static("fromAction", &fromAction);
     exposeFlags<BrushingModification>(m, brushingModification, "BrushingModifications");
 
-    py::class_<BrushingTarget>(m, "BrushingTarget")
+    py::classh<BrushingTarget>(m, "BrushingTarget")
         .def(py::init<>())
         .def(py::init<std::string_view>())
         .def(py::init<const BrushingTarget&>())
@@ -89,7 +89,7 @@ void exposeBnL(py::module& m) {
         .def_property_readonly_static("Row", [](py::object) { return BrushingTarget::Row; })
         .def_property_readonly_static("Column", [](py::object) { return BrushingTarget::Column; });
 
-    py::class_<IndexList>(m, "IndexList")
+    py::classh<IndexList>(m, "IndexList")
         .def(py::init<>())
         .def("empty", &IndexList::empty)
         .def("size", &IndexList::size)
@@ -99,7 +99,7 @@ void exposeBnL(py::module& m) {
         .def("getIndices", &IndexList::getIndices)
         .def("removeSource", &IndexList::removeSources);
 
-    py::class_<BrushingTargetsInvalidationLevel>{m, "BrushingTargetsInvalidationLevel"}
+    py::classh<BrushingTargetsInvalidationLevel>{m, "BrushingTargetsInvalidationLevel"}
         .def(py::init<BrushingModifications, InvalidationLevel>(), py::arg("mods"),
              py::arg("invalidationLevel"))
         .def(py::init<std::vector<BrushingTarget>, BrushingModifications, InvalidationLevel>(),
@@ -114,7 +114,7 @@ void exposeBnL(py::module& m) {
         .def_readwrite("modifications", &BrushingTargetsInvalidationLevel::modifications)
         .def_readwrite("invalidationLevel", &BrushingTargetsInvalidationLevel::invalidationLevel);
 
-    py::class_<BrushingAndLinkingInport, Inport>{m, "BrushingAndLinkingInport"}
+    py::classh<BrushingAndLinkingInport, Inport>{m, "BrushingAndLinkingInport"}
         .def(py::init([](std::string_view identifier) {
                  return std::make_shared<BrushingAndLinkingInport>(identifier);
              }),
@@ -161,7 +161,7 @@ void exposeBnL(py::module& m) {
                  &BrushingAndLinkingInport::getManager),
              py::return_value_policy::reference);
 
-    py::class_<BrushingAndLinkingOutport, Outport>{m, "BrushingAndLinkingOutport"}
+    py::classh<BrushingAndLinkingOutport, Outport>{m, "BrushingAndLinkingOutport"}
 
         .def(py::init<std::string_view, Document>(), py::arg("identifier"), py::arg("help"))
         .def("getManager",
@@ -171,7 +171,7 @@ void exposeBnL(py::module& m) {
         .def("getInvalidationLevels", &BrushingAndLinkingOutport::getInvalidationLevels)
         .def("setInvalidationLevels", &BrushingAndLinkingOutport::setInvalidationLevels);
 
-    py::class_<BrushingAndLinkingManager>{m, "BrushingAndLinkingManager"}
+    py::classh<BrushingAndLinkingManager>{m, "BrushingAndLinkingManager"}
         .def(py::init([](BrushingAndLinkingInport* inport) {
                  return std::make_shared<BrushingAndLinkingManager>(inport);
              }),

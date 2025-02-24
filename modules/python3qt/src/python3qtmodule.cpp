@@ -182,7 +182,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                 }
             });
 
-        py::class_<PropertyListWidget>(m, "PropertyListWidget")
+        py::classh<PropertyListWidget>(m, "PropertyListWidget")
             .def(py::init([](InviwoApplication* app) {
                 auto mainwin = utilqt::getApplicationMainWindow();
                 auto plw = new PropertyListWidget(mainwin, app);

@@ -49,7 +49,7 @@ namespace inviwo {
 
 void exposeCompositeProperties(py::module& m) {
 
-    py::class_<CompositeProperty, PropertyOwner, Property>(
+    py::classh<CompositeProperty, PropertyOwner, Property>(
         m, "CompositeProperty", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -64,7 +64,7 @@ void exposeCompositeProperties(py::module& m) {
         .def_property("collapsed", &BoolCompositeProperty::isCollapsed,
                       py::overload_cast<bool>(&CompositeProperty::setCollapsed));
 
-    py::class_<BoolCompositeProperty, CompositeProperty>(m, "BoolCompositeProperty")
+    py::classh<BoolCompositeProperty, CompositeProperty>(m, "BoolCompositeProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BoolCompositeProperty(identifier, displayName, checked,
@@ -79,7 +79,7 @@ void exposeCompositeProperties(py::module& m) {
                       &BoolCompositeProperty::setChecked)
         .def("__bool__", &BoolCompositeProperty::isChecked);
 
-    py::class_<ListProperty, CompositeProperty>(m, "ListProperty")
+    py::classh<ListProperty, CompositeProperty>(m, "ListProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -104,7 +104,7 @@ void exposeCompositeProperties(py::module& m) {
             return list.getPrefabs()[idx].get();
         });
 
-    py::class_<IsoTFProperty, CompositeProperty>(m, "IsoTFProperty")
+    py::classh<IsoTFProperty, CompositeProperty>(m, "IsoTFProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          const IsoValueCollection& isovalues, const TransferFunction& tf,
                          VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
@@ -137,7 +137,7 @@ void exposeCompositeProperties(py::module& m) {
         .def_property("zoomH", &IsoTFProperty::getZoomH, &IsoTFProperty::setZoomH)
         .def_property("zoomV", &IsoTFProperty::getZoomV, &IsoTFProperty::setZoomV);
 
-    py::class_<FilePatternProperty, CompositeProperty>(m, "FilePatternProperty")
+    py::classh<FilePatternProperty, CompositeProperty>(m, "FilePatternProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          std::string_view pattern, std::string_view directory,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
