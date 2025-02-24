@@ -53,9 +53,10 @@ uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
 #endif
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec4 color_;
+in Point {
+    vec4 color;
+    vec4 pickColor;
+} fragment;
 
 // Opacity optimisation settings
 uniform float q;
@@ -81,7 +82,7 @@ uniform float lambda;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if(fragment.color.a == 0) { discard; }
 
     // calculate normal from texture coordinates
     vec3 normal;
@@ -106,7 +107,7 @@ void main() {
     vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
     float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
 #else
-    float gi = color_.a;
+    float gi = fragment.color.a;
 #endif
 
     // Project importance

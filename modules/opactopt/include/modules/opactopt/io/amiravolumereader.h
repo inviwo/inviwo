@@ -31,6 +31,7 @@
 #include <modules/opactopt/opactoptmoduledefine.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datareader.h>
 
 #include <any>          // for any

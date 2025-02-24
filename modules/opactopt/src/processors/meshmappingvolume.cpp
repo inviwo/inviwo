@@ -31,6 +31,8 @@
 
 #include <modules/base/algorithm/dataminmax.h>  // for bufferMinMax
 #include <inviwo/core/util/zip.h>               // for enumerate, zipIte...
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
 
@@ -42,7 +44,7 @@ const ProcessorInfo MeshMappingVolume::processorInfo_{
     CodeState::Experimental,         // Code state
     "CPU, Mesh, Color Mapping",      // Tags
 };
-const ProcessorInfo MeshMappingVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshMappingVolume::getProcessorInfo() const { return processorInfo_; }
 
 MeshMappingVolume::MeshMappingVolume()
     : Processor()
@@ -176,10 +178,7 @@ void MeshMappingVolume::process() {
                 });
             });
         if (accessOutsideBounds)
-            LogProcessorWarn(
-                "The volume is being sampled out of bounds one or more times. The mesh and "
-                "volume "
-                "may not be aligned.");
+            LogWarn("The volume is being sampled out of bounds one or more times. The mesh and volume may not be aligned.");
 
         // create a new mesh containing all buffers of the input mesh
         // The first color buffer, if existing, is replaced with the mapped colors.

@@ -37,6 +37,8 @@
 #include <modules/opengl/buffer/bufferobject.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/openglcapabilities.h>
 
@@ -66,7 +68,7 @@ public:
 
     virtual ~DirectOpacityOptimisation();
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void initializeResources() override;

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/raiiutils.h>
 
 #include <vector>  // for vector
+#include <fstream>
 
 namespace inviwo {
 

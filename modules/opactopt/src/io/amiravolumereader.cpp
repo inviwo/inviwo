@@ -43,6 +43,8 @@
 #include <type_traits>  // for remove_extent_t
 #include <vector>       // for vector
 
+#include <glm/gtx/component_wise.hpp>
+
 namespace inviwo {
 
 AmiraVolumeReader::AmiraVolumeReader() : DataReaderType<Volume>() {
@@ -192,8 +194,8 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
                                            util::glm_convert<dvec4>(minmax.second)};
         });
     auto compMinMax = glm::dvec2{glm::compMin(minmax.first), glm::compMax(minmax.second)};
-    volume->dataMap_.dataRange = compMinMax;
-    volume->dataMap_.valueRange = compMinMax;
+    volume->dataMap.dataRange = compMinMax;
+    volume->dataMap.valueRange = compMinMax;
     LogInfo("Min: " << minmax.first << ", Max: " << minmax.second);
 
     std::string size = util::formatBytesToString(xDim * yDim * zDim * (format->getSizeInBytes()));
