@@ -76,10 +76,13 @@ public:
 
 protected:
     void setUniforms(Shader& shader);
+    void buildShaders();
     void renderGeometry(const int pass);
     void resizeBuffers(const size2_t screenSize);
     void generateAndUploadGaussianKernel();
     void generateAndUploadLegendreCoefficients();
+
+    bool rebuildShaders = false;
 
     size2_t screenSize_;
 

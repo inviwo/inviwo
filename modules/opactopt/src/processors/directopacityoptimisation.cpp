@@ -220,8 +220,8 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     addPort(importanceVolume_).setOptional(true);
     addPort(outport_);
 
-    imageInport_.onChange([this]() { initializeResources(); });
-    importanceVolume_.onChange([this]() { initializeResources(); });
+    //imageInport_.onChange([this]() { initializeResources(); });
+    //importanceVolume_.onChange([this]() { initializeResources(); });
 
     addProperties(camera_, q_, r_, lambda_, approximationProperties_, meshProperties_,
                   lineSettings_, pointProperties_, lightingProperty_, trackball_, layers_);
@@ -231,9 +231,6 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     if (!OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float"))
         approximationProperties_.addProperty(coeffTexFixedPointFactor_);
     approximationProperties_.addProperties(normalisedBlending_, smoothing_);
-
-    for (auto& ist : importanceSumTexture_) ist.initialize(nullptr);
-    opticalDepthTexture_.initialize(nullptr);
 
     approximationMethod_.setDefault("fourier");
     approximationMethod_.set("fourier");
@@ -245,7 +242,7 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
         opticalDepthCoefficients_.setMinValue(ap_->minCoefficients);
         opticalDepthCoefficients_.setMaxValue(ap_->maxCoefficients);
         opticalDepthCoefficients_.setIncrement(ap_->increment);
-        initializeResources();
+        rebuildShaders = true;
     });
     approximationMethod_.propertyModified();
 
@@ -254,16 +251,16 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
             nullptr, size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_));
         importanceSumTexture_[1].uploadAndResize(
             nullptr, size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_));
-        initializeResources();
+        rebuildShaders = true;
     });
     opticalDepthCoefficients_.onChange([this]() {
         opticalDepthTexture_.uploadAndResize(
             nullptr, size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_));
-        initializeResources();
+        rebuildShaders = true;
     });
-    normalisedBlending_.onChange([this]() { initializeResources(); });
+    normalisedBlending_.onChange([this]() { rebuildShaders = true; });
     if (!OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float"))
-        coeffTexFixedPointFactor_.onChange([this]() { initializeResources(); });
+        coeffTexFixedPointFactor_.onChange([this]() { rebuildShaders = true; });
 
     smoothing_.addProperties(gaussianRadius_, gaussianSigma_);
 
@@ -295,15 +292,23 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
         shader->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
 
-    generateAndUploadGaussianKernel();
-    generateAndUploadLegendreCoefficients();
-    legendreCoefficients_.bindBase(9);
+    initializeResources();
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
 DirectOpacityOptimisation::~DirectOpacityOptimisation() = default;
 
 void DirectOpacityOptimisation::initializeResources() {
+    for (auto& ist : importanceSumTexture_) ist.initialize(nullptr);
+    opticalDepthTexture_.initialize(nullptr);
+
+    buildShaders();
+    generateAndUploadGaussianKernel();
+    generateAndUploadLegendreCoefficients();
+    legendreCoefficients_.bindBase(9);
+}
+
+void DirectOpacityOptimisation::buildShaders() {
     // Configure all the shaders with correct extensions and defines
     for (auto& shader : meshShaders_) {
         auto vert = shader.getVertexShaderObject();
@@ -535,6 +540,11 @@ void DirectOpacityOptimisation::initializeResources() {
 void DirectOpacityOptimisation::process() {
     resizeBuffers(outport_.getDimensions());
 
+    if (rebuildShaders) {
+        buildShaders();
+        rebuildShaders = false;
+    }
+
     if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
         intermediateImage_.setDimensions(outport_.getDimensions());
     }
@@ -673,9 +683,9 @@ void DirectOpacityOptimisation::renderGeometry(const int pass) {
 
         lineShaders_[pass].setUniform("screenDim", vec2(screenSize_));
         utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
-        utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth,
-                            lineSettings_.antialiasing, lineSettings_.miterLimit,
-                            lineSettings_.roundCaps, lineSettings_.defaultColor);
+        utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth, lineSettings_.antialiasing,
+                            lineSettings_.miterLimit, lineSettings_.roundCaps,
+                            lineSettings_.defaultColor);
 
         // Stippling settings
         lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
