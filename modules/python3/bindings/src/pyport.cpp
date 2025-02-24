@@ -65,12 +65,12 @@ struct InportCallbackHolderOutport {
 void exposePort(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<InportCallbackHolderVoid>(m, "InportCallbackHolderVoid")
+    py::classh<InportCallbackHolderVoid>(m, "InportCallbackHolderVoid")
         .def("reset", [](InportCallbackHolderVoid* h) { h->value.reset(); });
-    py::class_<InportCallbackHolderOutport>(m, "InportCallbackHolderOutport")
+    py::classh<InportCallbackHolderOutport>(m, "InportCallbackHolderOutport")
         .def("reset", [](InportCallbackHolderOutport* h) { h->value.reset(); });
 
-    py::class_<Port>(m, "Port")
+    py::classh<Port>(m, "Port")
         .def_property_readonly("identifier", &Port::getIdentifier)
         .def_property_readonly("processor", &Port::getProcessor, py::return_value_policy::reference)
         .def_property_readonly("classIdentifier", &Port::getClassIdentifier)
@@ -78,14 +78,14 @@ void exposePort(pybind11::module& m) {
         .def("isConnected", &Port::isConnected)
         .def("isReady", &Port::isReady);
 
-    py::class_<Outport, Port>(m, "Outport")
+    py::classh<Outport, Port>(m, "Outport")
         .def("isConnectedTo", &Outport::isConnectedTo)
         .def("getConnectedInports", &Outport::getConnectedInports,
              py::return_value_policy::reference)
         .def("hasData", &Outport::hasData)
         .def("clear", &Outport::clear);
 
-    py::class_<Inport, Port>(m, "Inport")
+    py::classh<Inport, Port>(m, "Inport")
         .def_property("optional", &Inport::isOptional, &Inport::setOptional)
         .def("isChanged", &Inport::isChanged)
         .def("canConnectTo", &Inport::canConnectTo)
@@ -116,12 +116,12 @@ void exposePort(pybind11::module& m) {
             return InportCallbackHolderOutport{p->onDisconnectScoped(std::move(func))};
         });
 
-    py::class_<PythonInport, Inport>(m, "PythonInport")
+    py::classh<PythonInport, Inport>(m, "PythonInport")
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("hasData", &PythonInport::hasData)
         .def("getData", &PythonInport::getData);
 
-    py::class_<PythonOutport, Outport>(m, "PythonOutport")
+    py::classh<PythonOutport, Outport>(m, "PythonOutport")
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("getData", &PythonOutport::getData)
         .def("setData", &PythonOutport::setData);

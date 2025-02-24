@@ -57,14 +57,14 @@ struct OptionPropertyHelper {
         auto classname = "OptionProperty" + Defaultvalues<T>::getName();
         auto optionclassname = Defaultvalues<T>::getName() + "Option";
 
-        py::class_<O>(m, optionclassname.c_str())
+        py::classh<O>(m, optionclassname.c_str())
             .def(py::init<>())
             .def(py::init<std::string_view, std::string_view, const T&>())
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
 
-        py::class_<P, BaseOptionProperty> prop(m, classname.c_str());
+        py::classh<P, BaseOptionProperty> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
                              std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -122,7 +122,7 @@ struct OptionPropertyHelper {
 
 void exposeOptionProperties(py::module& m) {
 
-    py::class_<BaseOptionProperty, Property>(m, "BaseOptionProperty")
+    py::classh<BaseOptionProperty, Property>(m, "BaseOptionProperty")
         .def_property_readonly("clearOptions", &BaseOptionProperty::clearOptions)
         .def_property_readonly("size", &BaseOptionProperty::size)
 

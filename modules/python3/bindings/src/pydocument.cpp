@@ -53,7 +53,7 @@ void exposeDocument(pybind11::module& m) {
         .value("Node", Document::ElementType::Node)
         .value("Text", Document::ElementType::Text);
 
-    py::class_<Document::Element>(doc, "Element")
+    py::classh<Document::Element>(doc, "Element")
         .def(py::init<Document::ElementType, std::string_view>(), py::arg("type"),
              py::arg("content"))
         .def(py::init<std::string_view, std::string_view, const UnorderedStringMap<std::string>&>(),
@@ -72,7 +72,7 @@ void exposeDocument(pybind11::module& m) {
         .def("emptyTag", &Document::Element::emptyTag)
         .def("noIndent", &Document::Element::noIndent);
 
-    py::class_<Document::PathComponent>(doc, "PathComponent")
+    py::classh<Document::PathComponent>(doc, "PathComponent")
         .def(py::init<int>(), py::arg("index"))
         .def(py::init<std::string_view>(), py::arg("name"))
         .def(py::init<const UnorderedStringMap<std::string>&>(), py::arg("attributes"))
@@ -82,7 +82,7 @@ void exposeDocument(pybind11::module& m) {
         .def_property_readonly_static("last", &Document::PathComponent::last)
         .def_property_readonly_static("end", &Document::PathComponent::end);
 
-    py::class_<Document::DocumentHandle>(doc, "DocumentHandle")
+    py::classh<Document::DocumentHandle>(doc, "DocumentHandle")
         .def("get", &Document::DocumentHandle::get)
         .def("insert",
              static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
@@ -101,7 +101,7 @@ void exposeDocument(pybind11::module& m) {
                  &Document::DocumentHandle::append))
         .def_property_readonly("element", [](Document::DocumentHandle& d) { return d.element(); });
 
-    py::class_<Document>(doc, "Document")
+    py::classh<Document>(doc, "Document")
         .def(py::init<>())
         .def(py::init<std::string_view>())
         .def("str", &Document::str)

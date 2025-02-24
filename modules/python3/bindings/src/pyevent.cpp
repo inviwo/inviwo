@@ -246,7 +246,7 @@ void exposeEvents(pybind11::module& m) {
 
     exposeFlags<TouchState>(m, touchState, "TouchStates");
 
-    py::class_<Event>(m, "Event")
+    py::classh<Event>(m, "Event")
         .def("clone", &Event::clone)
         .def("hash", &Event::hash)
         .def("shouldPropagateTo", &Event::shouldPropagateTo)
@@ -272,13 +272,13 @@ void exposeEvents(pybind11::module& m) {
             return oss.str();
         });
 
-    py::class_<InteractionEvent, Event>(m, "InteractionEvent")
+    py::classh<InteractionEvent, Event>(m, "InteractionEvent")
         .def("modifiers", &InteractionEvent::modifiers)
         .def("setModifiers", &InteractionEvent::setModifiers)
         .def("modifierNames", &InteractionEvent::modifierNames)
         .def("setToolTip", &InteractionEvent::setToolTip);
 
-    py::class_<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")
+    py::classh<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")
         .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string&>(),
              py::arg("key") = IvwKey::Unknown, py::arg("state") = KeyState::Press,
              py::arg("modifiers") = KeyModifier::None, py::arg("nativeVirtualKey") = 0,
@@ -291,7 +291,7 @@ void exposeEvents(pybind11::module& m) {
         .def_property("text", &KeyboardEvent::text, &KeyboardEvent::setText)
         .def_property_readonly_static("chash", &KeyboardEvent::chash);
 
-    py::class_<MouseInteractionEvent, InteractionEvent>(m, "MouseInteractionEvent")
+    py::classh<MouseInteractionEvent, InteractionEvent>(m, "MouseInteractionEvent")
         .def_property("buttonState", &MouseInteractionEvent::buttonState,
                       &MouseInteractionEvent::setButtonState)
         .def_property("pos", &MouseInteractionEvent::pos, &MouseInteractionEvent::setPos)
@@ -305,7 +305,7 @@ void exposeEvents(pybind11::module& m) {
         .def_property_readonly("y", &MouseInteractionEvent::y)
         .def_property_readonly("buttonName", &MouseInteractionEvent::buttonName);
 
-    py::class_<MouseEvent, MouseInteractionEvent>(m, "MouseEvent")
+    py::classh<MouseEvent, MouseInteractionEvent>(m, "MouseEvent")
         .def(py::init<MouseButton, MouseState, MouseButtons, KeyModifiers, dvec2, uvec2, double>(),
              py::arg("button") = MouseButton::Left, py::arg("state") = MouseState::Press,
              py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
@@ -315,7 +315,7 @@ void exposeEvents(pybind11::module& m) {
         .def_property("state", &MouseEvent::state, &MouseEvent::setState)
         .def_property_readonly_static("chash", &MouseEvent::chash);
 
-    py::class_<WheelEvent, MouseInteractionEvent>(m, "WheelEvent")
+    py::classh<WheelEvent, MouseInteractionEvent>(m, "WheelEvent")
         .def(py::init<MouseButtons, KeyModifiers, dvec2, dvec2, uvec2, double>(),
              py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
              py::arg("delta") = dvec2(0), py::arg("normalizedPosition") = dvec2(0),
@@ -323,7 +323,7 @@ void exposeEvents(pybind11::module& m) {
         .def_property("delta", &WheelEvent::delta, &WheelEvent::setDelta)
         .def_property_readonly_static("chash", &WheelEvent::chash);
 
-    py::class_<TouchPoint>(m, "TouchPoint")
+    py::classh<TouchPoint>(m, "TouchPoint")
         .def(py::init<>())
         .def(py::init<int, TouchState, dvec2, dvec2, dvec2, uvec2, double, double>(), py::arg("id"),
              py::arg("touchState"), py::arg("posNormalized"), py::arg("prevPosNormalized"),
@@ -348,13 +348,13 @@ void exposeEvents(pybind11::module& m) {
         .value("Screen", TouchDevice::DeviceType::TouchScreen)
         .value("Pad", TouchDevice::DeviceType::TouchPad);
 
-    py::class_<TouchDevice>(m, "TouchDevice")
+    py::classh<TouchDevice>(m, "TouchDevice")
         .def(py::init<TouchDevice::DeviceType, std::string>(),
              py::arg("type") = TouchDevice::DeviceType::TouchScreen, py::arg("name") = "")
         .def_property("type", &TouchDevice::getType, &TouchDevice::setType)
         .def_property("name", &TouchDevice::getName, &TouchDevice::setName);
 
-    py::class_<TouchEvent, InteractionEvent>(m, "TouchEvent")
+    py::classh<TouchEvent, InteractionEvent>(m, "TouchEvent")
         .def(py::init<const std::vector<TouchPoint>&, const TouchDevice*, KeyModifiers>(),
              py::arg("touchPoints"), py::arg("source"), py::arg("modifiers"))
         .def("hasTouchPoints", &TouchEvent::hasTouchPoints)
@@ -374,7 +374,7 @@ void exposeEvents(pybind11::module& m) {
         .def_property_readonly_static("chash", &TouchEvent::chash)
         .def_static("getPickingState", &TouchEvent::getPickingState);
 
-    py::class_<ResizeEvent, Event>(m, "ResizeEvent")
+    py::classh<ResizeEvent, Event>(m, "ResizeEvent")
         .def(py::init<size2_t>(), py::arg("newSize"))
         .def(py::init<size2_t, size2_t>(), py::arg("newSize"), py::arg("previousSize"))
         .def(py::init<ResizeEvent>())
@@ -382,10 +382,10 @@ void exposeEvents(pybind11::module& m) {
         .def_property("previousSize", &ResizeEvent::previousSize, &ResizeEvent::setPreviousSize)
         .def_property_readonly_static("chash", &ResizeEvent::chash);
 
-    py::class_<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
-    py::class_<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
+    py::classh<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
+    py::classh<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
 
-    py::class_<ViewEvent, Event>(m, "ViewEvent")
+    py::classh<ViewEvent, Event>(m, "ViewEvent")
         .def(py::init<typename ViewEvent::Action>())
         .def_property_readonly("action", &ViewEvent::getAction)
         .def_property_readonly_static("chash", &ViewEvent::chash);

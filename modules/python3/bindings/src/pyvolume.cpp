@@ -58,7 +58,7 @@ namespace inviwo {
 void exposeVolume(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<Volume>(m, "Volume")
+    py::classh<Volume>(m, "Volume")
         .def(py::init<std::shared_ptr<VolumeRepresentation>>())
         .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
                       const Wrapping3D&>(),
@@ -119,7 +119,7 @@ void exposeVolume(pybind11::module& m) {
                 volume.dataMap.valueAxis.unit, volume.getModelMatrix(), volume.getWorldMatrix());
         });
 
-    py::class_<VolumeRepresentation>(m, "VolumeRepresentation")
+    py::classh<VolumeRepresentation>(m, "VolumeRepresentation")
         .def_property("dimensions", &VolumeRepresentation::getDimensions,
                       &VolumeRepresentation::setDimensions)
         .def_property("swizzleMask", &VolumeRepresentation::getSwizzleMask,
@@ -133,7 +133,7 @@ void exposeVolume(pybind11::module& m) {
         .def("getOwner", &VolumeRepresentation::getOwner)
         .def_property_readonly("format", &VolumeRepresentation::getDataFormat);
 
-    py::class_<VolumePy, VolumeRepresentation>(m, "VolumePy")
+    py::classh<VolumePy, VolumeRepresentation>(m, "VolumePy")
         .def(py::init<py::array, const SwizzleMask&, InterpolationType, const Wrapping3D&>(),
              py::arg("data"), py::arg("swizzleMask") = swizzlemasks::rgba,
              py::arg("interpolation") = InterpolationType::Linear,
@@ -146,7 +146,7 @@ void exposeVolume(pybind11::module& m) {
         .def_property_readonly(
             "data", static_cast<const py::array& (VolumePy::*)() const>(&VolumePy::data));
 
-    py::class_<VolumeSequence>(m, "VolumeSequence", py::module_local(false))
+    py::classh<VolumeSequence>(m, "VolumeSequence", py::module_local(false))
         .def(py::init<>())
         .def(py::init<std::span<std::shared_ptr<const Volume>>>(), py::arg("volumes"))
         .def(py::init<const VolumeSequence&>(), "Copy constructor")

@@ -87,7 +87,7 @@ public:
 #include <warn/pop>
 
 template <typename T>
-void exposeFactoryWriterType(pybind11::class_<DataWriterFactory>& r, std::string_view type) {
+void exposeFactoryWriterType(pybind11::classh<DataWriterFactory>& r, std::string_view type) {
     namespace py = pybind11;
     r.def(fmt::format("getExtensionsFor{}", type).c_str(),
           (std::vector<FileExtension>(DataWriterFactory::*)() const) &
@@ -117,7 +117,7 @@ void exposeFactoryWriterType(pybind11::class_<DataWriterFactory>& r, std::string
 template <typename T>
 void exposeWriterType(pybind11::module& m, std::string_view name) {
     namespace py = pybind11;
-    py::class_<DataWriterType<T>, DataWriter, DataWriterTypeTrampoline<T>>(
+    py::classh<DataWriterType<T>, DataWriter, DataWriterTypeTrampoline<T>>(
         m, fmt::format("{}DataWriter", name).c_str())
         .def("writeData", &DataWriterType<T>::writeData);
 }
@@ -125,7 +125,7 @@ void exposeWriterType(pybind11::module& m, std::string_view name) {
 void exposeDataWriters(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<DataWriter>(m, "DataWriter")
+    py::classh<DataWriter>(m, "DataWriter")
         .def("clone", &DataWriter::clone)
         .def_property_readonly("extensions", &DataWriter::getExtensions,
                                py::return_value_policy::reference_internal)
@@ -135,18 +135,16 @@ void exposeDataWriters(pybind11::module& m) {
         .def("setOption", &DataWriter::setOption)
         .def("getOption", &DataWriter::getOption);
 
-    auto fr =
-        py::class_<DataWriterFactory>(m, "DataWriterFactory")
-            .def("create",
-                 (std::unique_ptr<DataWriter>(DataWriterFactory::*)(const FileExtension&) const) &
-                     DataWriterFactory::create)
-            .def("create",
-                 (std::unique_ptr<DataWriter>(DataWriterFactory::*)(std::string_view) const) &
-                     DataWriterFactory::create)
-            .def("hasKey",
-                 (bool(DataWriterFactory::*)(std::string_view) const) & DataWriterFactory::hasKey)
-            .def("hasKey", (bool(DataWriterFactory::*)(const FileExtension&) const) &
-                               DataWriterFactory::hasKey);
+    auto fr = py::classh<DataWriterFactory>(m, "DataWriterFactory");
+    fr.def("create",
+           (std::unique_ptr<DataWriter>(DataWriterFactory::*)(const FileExtension&) const) &
+               DataWriterFactory::create)
+        .def("create", (std::unique_ptr<DataWriter>(DataWriterFactory::*)(std::string_view) const) &
+                           DataWriterFactory::create)
+        .def("hasKey",
+             (bool(DataWriterFactory::*)(std::string_view) const) & DataWriterFactory::hasKey)
+        .def("hasKey",
+             (bool(DataWriterFactory::*)(const FileExtension&) const) & DataWriterFactory::hasKey);
 
     // No good way of dealing with template return types so we manually define one for each known
     // type. https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004

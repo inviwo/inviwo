@@ -84,7 +84,7 @@ public:
 void exposeInviwoModule(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<Version>(m, "Version")
+    py::classh<Version>(m, "Version")
         .def(py::init<std::string_view>())
         .def(py::init<unsigned int, unsigned int, unsigned int, std::string_view,
                       std::string_view>(),
@@ -104,7 +104,7 @@ void exposeInviwoModule(pybind11::module& m) {
         .def(py::self == py::self)
         .def("semanticVersionEqual", &Version::semanticVersionEqual);
 
-    py::class_<LicenseInfo>(m, "LicenseInfo")
+    py::classh<LicenseInfo>(m, "LicenseInfo")
         .def(py::init<std::string_view, std::string_view, std::string_view, std::string_view,
                       std::string_view, std::string_view, const std::vector<std::string>&>(),
              py::arg("id"), py::arg("name"), py::arg("version"), py::arg("url"), py::arg("module"),
@@ -136,7 +136,7 @@ void exposeInviwoModule(pybind11::module& m) {
         .value("GLSL", ModulePath::GLSL)
         .value("CL", ModulePath::CL);
 
-    py::class_<InviwoModule>(m, "InviwoModule")
+    py::classh<InviwoModule>(m, "InviwoModule")
         .def(py::init<InviwoApplication*, std::string_view>())
         .def("__repr__",
              [](InviwoModule* m) {
@@ -151,7 +151,7 @@ void exposeInviwoModule(pybind11::module& m) {
             m->registerProcessor(std::make_unique<ProcessorFactoryObjectPythonWrapper>(pfo));
         });
 
-    py::class_<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
+    py::classh<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
         m, "InviwoModuleFactoryObject")
         .def(py::init<std::string_view, Version, std::string_view, const std::filesystem::path&,
                       Version, std::vector<std::string>, std::vector<Version>,

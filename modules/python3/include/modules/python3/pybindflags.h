@@ -54,7 +54,7 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
 
     using Iter = typename flags::flags<E>::iterator;
 
-    py::class_<Iter>(m, fmt::format("{}Iterator", name).c_str())
+    py::classh<Iter>(m, fmt::format("{}Iterator", name).c_str())
         .def(py::init<Iter>())
         .def("__iter__", [](Iter& self) { return Iter{self}; })
         .def("__next__", [](Iter& self) {
@@ -65,7 +65,7 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
             }
         });
 
-    py::class_<flags::flags<E>> flags(m, SafeCStr{name}.c_str());
+    py::classh<flags::flags<E>> flags(m, SafeCStr{name}.c_str());
     flags.def(py::init([]() { return flags::flags<E>{flags::empty}; }))
         .def(py::init<E>())
         .def(py::init<flags::flags<E>>())

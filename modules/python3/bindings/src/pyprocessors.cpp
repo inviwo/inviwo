@@ -112,14 +112,14 @@ void exposeProcessors(pybind11::module& m) {
         .value("Experimental", CodeState::Experimental)
         .value("Stable", CodeState::Stable);
 
-    py::class_<Tag>(m, "Tag")
+    py::classh<Tag>(m, "Tag")
         .def(py::init())
         .def(py::init<std::string_view>())
         .def(py::init<Tag>())
         .def("getString", &Tag::getString)
         .def(py::self | py::self);
 
-    py::class_<Tags>(m, "Tags")
+    py::classh<Tags>(m, "Tags")
         .def(py::init())
         .def(py::init<Tag>())
         .def(py::init<std::vector<Tag>>())
@@ -147,7 +147,7 @@ void exposeProcessors(pybind11::module& m) {
 
     py::implicitly_convertible<Tag, Tags>();
 
-    py::class_<ProcessorInfo>(m, "ProcessorInfo")
+    py::classh<ProcessorInfo>(m, "ProcessorInfo")
         .def(py::init<std::string, std::string, std::string, CodeState, Tags, Document>(),
              py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
              py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY,
@@ -159,12 +159,12 @@ void exposeProcessors(pybind11::module& m) {
         .def_readonly("tags", &ProcessorInfo::tags)
         .def_readonly("visible", &ProcessorInfo::visible);
 
-    py::class_<ProcessorFactoryObject, ProcessorFactoryObjectTrampoline>(m,
+    py::classh<ProcessorFactoryObject, ProcessorFactoryObjectTrampoline>(m,
                                                                          "ProcessorFactoryObject")
         .def(py::init<ProcessorInfo, std::string_view>())
         .def("getProcessorInfo", &ProcessorFactoryObject::getProcessorInfo);
 
-    py::class_<ProcessorFactory>(m, "ProcessorFactory")
+    py::classh<ProcessorFactory>(m, "ProcessorFactory")
         .def("hasKey", &ProcessorFactory::hasKey)
         .def_property_readonly("keys", &ProcessorFactory::getKeys)
         .def("create", [](ProcessorFactory* pf, std::string key) { return pf->createShared(key); })
@@ -182,7 +182,7 @@ void exposeProcessors(pybind11::module& m) {
         .def("registerObject", &ProcessorFactory::registerObject)
         .def("unRegisterObject", &ProcessorFactory::unRegisterObject);
 
-    py::class_<ProcessorWidget>(m, "ProcessorWidget", py::multiple_inheritance{})
+    py::classh<ProcessorWidget>(m, "ProcessorWidget", py::multiple_inheritance{})
         .def_property("visible", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
         .def_property("dimensions", &ProcessorWidget::getDimensions,
                       &ProcessorWidget::setDimensions)
@@ -193,7 +193,7 @@ void exposeProcessors(pybind11::module& m) {
             return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
         });
 
-    py::class_<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
+    py::classh<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
         .def("registerObject", &ProcessorWidgetFactory::registerObject)
         .def("unRegisterObject", &ProcessorWidgetFactory::unRegisterObject)
         .def("create", [](ProcessorWidgetFactory* pf, Processor* p) { return pf->create(p); })
@@ -202,12 +202,12 @@ void exposeProcessors(pybind11::module& m) {
              [](ProcessorWidgetFactory* pf, std::string_view id) { return pf->hasKey(id); })
         .def("getkeys", &ProcessorWidgetFactory::getKeys);
 
-    py::class_<ProcessorWidgetFactoryObject, ProcessorWidgetFactoryObjectTrampoline>(
+    py::classh<ProcessorWidgetFactoryObject, ProcessorWidgetFactoryObjectTrampoline>(
         m, "ProcessorWidgetFactoryObject")
         .def(py::init<const std::string&>())
         .def("getClassIdentifier", &ProcessorWidgetFactoryObject::getClassIdentifier);
 
-    py::class_<ProcessorMetaData>(m, "ProcessorMetaData")
+    py::classh<ProcessorMetaData>(m, "ProcessorMetaData")
         .def_property("position", &ProcessorMetaData::getPosition, &ProcessorMetaData::setPosition)
         .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
         .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
@@ -221,7 +221,7 @@ void exposeProcessors(pybind11::module& m) {
     exposeVectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>(
         m, "OutportVectorWrapper");
 
-    py::class_<Processor, PropertyOwner, ProcessorTrampoline>(
+    py::classh<Processor, PropertyOwner, ProcessorTrampoline>(
         m, "Processor", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(py::init<const std::string&, const std::string&>())
         .def("__repr__", &Processor::getIdentifier)
@@ -303,7 +303,7 @@ void exposeProcessors(pybind11::module& m) {
         .def("getPredecessors", [](Processor* p) { return util::getPredecessors(p); })
         .def("getSuccessors", [](Processor* p) { return util::getSuccessors(p); });
 
-    py::class_<CanvasProcessor, Processor>(m, "CanvasProcessor")
+    py::classh<CanvasProcessor, Processor>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)
         .def("getUseCustomDimensions", &CanvasProcessor::getUseCustomDimensions)
         .def_property_readonly("customDimensions", &CanvasProcessor::getCustomDimensions)

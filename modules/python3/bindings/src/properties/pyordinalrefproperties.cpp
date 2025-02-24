@@ -52,7 +52,7 @@ struct OrdinalRefPropertyHelper {
 
         auto classname = Defaultvalues<T>::getName() + "RefProperty";
 
-        py::class_<P, Property> prop(m, classname.c_str());
+        py::classh<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name,
                              std::function<T()> get, std::function<void(const T&)> set,
                              const std::pair<T, ConstraintBehavior>& min,

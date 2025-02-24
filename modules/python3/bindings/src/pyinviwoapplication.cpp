@@ -124,7 +124,7 @@ private:
 void exposeModuleIdentifierWrapper(pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
 
-    py::class_<ModuleIdentifierWrapper>(m, name.c_str())
+    py::classh<ModuleIdentifierWrapper>(m, name.c_str())
         .def("__getattr__", &ModuleIdentifierWrapper::getFromIdentifier,
              py::return_value_policy::reference)
         .def("__getitem__", &ModuleIdentifierWrapper::getFromIdentifier,
@@ -156,7 +156,7 @@ void exposeInviwoApplication(pybind11::module& m) {
 
     exposeModuleIdentifierWrapper(m, "ModuleIdentifierWrapper");
 
-    py::class_<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
+    py::classh<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
         .def(py::init<>())
         .def(py::init<std::string>())
         .def("getBasePath", [](InviwoApplication*) { return filesystem::findBasePath(); })
