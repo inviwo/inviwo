@@ -74,11 +74,13 @@ uniform VolumeParameters importanceVolumeParameters;
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
 
-in float segmentLength_; // total length of the current line segment in screen space
-in float distanceWorld_; // distance in world coords to segment start
-in vec2 texCoord_; // x = distance to segment start, y = orth. distance to center (in screen coords)
-in vec4 color_;
-flat in vec4 pickColor_;
+in LineGeom {
+    vec2 texCoord; // x = distance to segment start, y = orth. distance to center (in screen coords)
+    vec4 color;
+    flat vec4 pickColor;
+    float segmentLength; // total length of the current line segment in screen space
+    float distanceWorld;  // distance in world coords to segment start
+} fragment;
 
 // Opacity optimisation settings
 uniform float q;
@@ -103,17 +105,17 @@ uniform float lambda;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a < 0.01) { discard; }
+    if(fragment.color.a < 0.01) { discard; }
 
     float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
-    float distance = abs(texCoord_.y);
-    if (texCoord_.x < 0.0) { 
-        distance = length(texCoord_); 
+    float distance = abs(fragment.texCoord.y);
+    if (fragment.texCoord.x < 0.0) { 
+        distance = length(fragment.texCoord); 
     }
-    else if(texCoord_.x > segmentLength_) { 
-        distance = length(vec2(texCoord_.x - segmentLength_, texCoord_.y)); 
+    else if(fragment.texCoord.x > fragment.segmentLength) { 
+        distance = length(vec2(fragment.texCoord.x - fragment.segmentLength, fragment.texCoord.y)); 
     }
 
     float d = distance - linewidthHalf + antialiasing;
@@ -142,7 +144,7 @@ void main() {
     vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
     float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
 #else
-    float gi = color_.a;
+    float gi = fragment.color.a;
 #endif
 
     float alphamul = 1.0;
@@ -152,10 +154,10 @@ void main() {
 
 #if STIPPLE_MODE == 2
     // in world space
-    float v = (distanceWorld_ * stippling.worldScale);
+    float v = (fragment.distanceWorld * stippling.worldScale);
 #else
     // in screen space
-    float v = (texCoord_.x + stippling.offset) / stippling.length;    
+    float v = (fragment.texCoord.x + stippling.offset) / stippling.length;    
 #endif // STIPPLE_MODE
 
     float t = fract(v) * (stippling.length) / stippling.spacing;
