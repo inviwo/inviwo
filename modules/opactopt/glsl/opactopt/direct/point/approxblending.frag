@@ -53,9 +53,10 @@ uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
 #endif
 
-in vec4 worldPosition_;
-in vec3 normal_;
-in vec4 color_;
+in Point {
+    vec4 color;
+    vec4 pickColor;
+} fragment;
 
 // Opacity optimisation settings
 uniform float q;
@@ -80,7 +81,7 @@ uniform float lambda;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if(fragment.color.a == 0) { discard; }
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
@@ -97,7 +98,7 @@ void main() {
         vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
         float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
     #else
-        float gi = color_.a;
+        float gi = fragment.color.a;
     #endif
 
     // find alpha
@@ -133,7 +134,7 @@ void main() {
     float borderAlpha = clamp(mix(1.0, 0.0, (rad - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
     alpha *= borderAlpha;
 
-    vec4 c = mix(color_, borderColor, borderValue);
+    vec4 c = mix(fragment.color, borderColor, borderValue);
     
     // Approximate blending
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);

@@ -80,7 +80,7 @@ const ProcessorInfo DirectOpacityOptimisation::processorInfo_{
     " and optionally an importance volume and background"
     "texture. The output is an opacity optimised image."_help};
 
-const ProcessorInfo DirectOpacityOptimisation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DirectOpacityOptimisation::getProcessorInfo() const { return processorInfo_; }
 
 DirectOpacityOptimisation::DirectOpacityOptimisation()
     : Processor()
@@ -673,9 +673,9 @@ void DirectOpacityOptimisation::renderGeometry(const int pass) {
 
         lineShaders_[pass].setUniform("screenDim", vec2(screenSize_));
         utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
-        utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth_,
-                            lineSettings_.antialiasing_, lineSettings_.miterLimit_,
-                            lineSettings_.roundCaps_, lineSettings_.defaultColor_);
+        utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth,
+                            lineSettings_.antialiasing, lineSettings_.miterLimit,
+                            lineSettings_.roundCaps, lineSettings_.defaultColor);
 
         // Stippling settings
         lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
@@ -714,9 +714,9 @@ void DirectOpacityOptimisation::renderGeometry(const int pass) {
 
         lineAdjacencyShaders_[pass].setUniform("screenDim", vec2(screenSize_));
         utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], camera_, "camera");
-        utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth_,
-                            lineSettings_.antialiasing_, lineSettings_.miterLimit_,
-                            lineSettings_.roundCaps_, lineSettings_.defaultColor_);
+        utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth,
+                            lineSettings_.antialiasing, lineSettings_.miterLimit,
+                            lineSettings_.roundCaps, lineSettings_.defaultColor);
 
         // Stippling settings
         lineAdjacencyShaders_[pass].setUniform("stippling.length",
