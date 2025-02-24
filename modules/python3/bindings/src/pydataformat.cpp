@@ -68,7 +68,7 @@ void exposeDataFormat(pybind11::module& m) {
     }
     dfid.value("NumberOfFormats", DataFormatId::NumberOfFormats);
 
-    py::class_<DataFormatBase>(m, "DataFormat")
+    py::classh<DataFormatBase>(m, "DataFormat")
         .def_property_readonly("size", &DataFormatBase::getSizeInBytes)
         .def_property_readonly("components", &DataFormatBase::getComponents)
         .def_property_readonly("precision", &DataFormatBase::getPrecision)

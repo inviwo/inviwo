@@ -53,7 +53,7 @@ void exposePropertyOwner(pybind11::module& m) {
     exposeVectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>(
         m, "PropertyVecWrapper");
 
-    py::class_<PropertyOwner>(m, "PropertyOwner", py::multiple_inheritance{}, py::dynamic_attr{})
+    py::classh<PropertyOwner>(m, "PropertyOwner", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(
             "__getattr__",
             [](PropertyOwner& po, const std::string& key) {

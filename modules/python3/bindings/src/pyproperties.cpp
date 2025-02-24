@@ -89,7 +89,7 @@ void exposeProperties(py::module& m) {
                                   .value("Remove", ListPropertyUIFlag::Remove);
     exposeFlags<ListPropertyUIFlag>(m, listPropertyUIFlag, "ListPropertyUIFlags");
 
-    py::class_<PropertySemantics>(m, "PropertySemantics")
+    py::classh<PropertySemantics>(m, "PropertySemantics")
         .def(py::init())
         .def(py::init<std::string>(), py::arg("semantic"))
         .def("getString", &PropertySemantics::getString)
@@ -109,12 +109,12 @@ void exposeProperties(py::module& m) {
             return fmt::format("<PropertySemantics: '{}'>", s.getString());
         });
 
-    py::class_<PropertyFactory>(m, "PropertyFactory")
+    py::classh<PropertyFactory>(m, "PropertyFactory")
         .def("hasKey", [](PropertyFactory* pf, std::string key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](PropertyFactory* pf) { return pf->getKeys(); })
         .def("create", [](PropertyFactory* pf, std::string key) { return pf->create(key); });
 
-    py::class_<PropertyWidget>(m, "PropertyWidget", py::multiple_inheritance{})
+    py::classh<PropertyWidget>(m, "PropertyWidget", py::multiple_inheritance{})
         .def_property_readonly("property", &PropertyWidget::getProperty,
                                py::return_value_policy::reference)
 
@@ -126,7 +126,7 @@ void exposeProperties(py::module& m) {
             return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
         });
 
-    py::class_<PropertyEditorWidget>(m, "PropertyEditorWidget", py::multiple_inheritance{})
+    py::classh<PropertyEditorWidget>(m, "PropertyEditorWidget", py::multiple_inheritance{})
         .def_property("visible", &PropertyEditorWidget::isVisible,
                       &PropertyEditorWidget::setVisible)
         .def_property("dimensions", &PropertyEditorWidget::getDimensions,
@@ -137,7 +137,7 @@ void exposeProperties(py::module& m) {
             return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));
         });
 
-    py::class_<Property>(m, "Property")
+    py::classh<Property>(m, "Property")
         .def_property("identifier", &Property::getIdentifier, &Property::setIdentifier)
         .def_property("displayName", &Property::getDisplayName, &Property::setDisplayName)
         .def_property("readOnly", &Property::getReadOnly, &Property::setReadOnly)
@@ -167,7 +167,7 @@ void exposeProperties(py::module& m) {
         .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
         .def("getDescription", &Property::getDescription);
 
-    py::class_<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
+    py::classh<TransferFunctionProperty, Property>(m, "TransferFunctionProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          const TransferFunction& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
@@ -237,7 +237,7 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    py::class_<IsoValueProperty, Property>(m, "IsoValueProperty")
+    py::classh<IsoValueProperty, Property>(m, "IsoValueProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          const IsoValueCollection& value, VolumeInport* volumeInport,
                          PropertySemantics semantics) {
@@ -290,7 +290,7 @@ void exposeProperties(py::module& m) {
             return oss.str();
         });
 
-    py::class_<StringProperty, Property> strProperty(m, "StringProperty");
+    py::classh<StringProperty, Property> strProperty(m, "StringProperty");
     strProperty
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          std::string_view value, InvalidationLevel invalidationLevel,
@@ -326,7 +326,7 @@ void exposeProperties(py::module& m) {
         .value("Directory", FileMode::Directory)
         .value("ExistingFiles", FileMode::ExistingFiles);
 
-    py::class_<FileExtension>(m, "FileExtension")
+    py::classh<FileExtension>(m, "FileExtension")
         .def(py::init<>())
         .def(py::init<std::string, std::string>(), py::arg("ext"), py::arg("desc"))
         .def("toString", &FileExtension::toString)
@@ -337,7 +337,7 @@ void exposeProperties(py::module& m) {
         .def_readwrite("extension", &FileExtension::extension_)
         .def_readwrite("description", &FileExtension::description_);
 
-    py::class_<FileProperty, Property> fileProperty(m, "FileProperty");
+    py::classh<FileProperty, Property> fileProperty(m, "FileProperty");
     fileProperty
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          std::string_view value, std::string_view contentType,
@@ -379,7 +379,7 @@ void exposeProperties(py::module& m) {
                       &FileProperty::setSelectedExtension)
         .def("__repr__", [](FileProperty& p) { return fmt::format("FileProperty({})", p.get()); });
 
-    py::class_<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");
+    py::classh<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");
     dirProperty
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          std::string_view value, std::string_view contentType,
@@ -404,7 +404,7 @@ void exposeProperties(py::module& m) {
         .def("__repr__",
              [](DirectoryProperty& p) { return fmt::format("DirectoryProperty({})", p.get()); });
 
-    py::class_<BoolProperty, Property> boolProperty(m, "BoolProperty");
+    py::classh<BoolProperty, Property> boolProperty(m, "BoolProperty");
     boolProperty
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          bool value, InvalidationLevel invalidationLevel,
@@ -430,7 +430,7 @@ void exposeProperties(py::module& m) {
         .def("__bool__", &BoolProperty::get)
         .def("__repr__", [](BoolProperty& p) { return fmt::format("BoolProperty({})", p.get()); });
 
-    py::class_<ButtonProperty, Property>(m, "ButtonProperty")
+    py::classh<ButtonProperty, Property>(m, "ButtonProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonProperty(identifier, displayName, invalidationLevel, semantics);
@@ -458,11 +458,11 @@ void exposeProperties(py::module& m) {
              py::arg("semantics") = PropertySemantics::Default)
         .def("press", &ButtonProperty::pressButton);
 
-    py::class_<ButtonGroupProperty::Button>(m, "ButtonGroupPropertyButton")
+    py::classh<ButtonGroupProperty::Button>(m, "ButtonGroupPropertyButton")
         .def(py::init<std::optional<std::string>, std::optional<std::string>,
                       std::optional<std::string>, std::function<void()>>());
 
-    py::class_<ButtonGroupProperty, Property>(m, "ButtonGroupProperty")
+    py::classh<ButtonGroupProperty, Property>(m, "ButtonGroupProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonGroupProperty(identifier, displayName, invalidationLevel,

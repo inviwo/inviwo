@@ -63,12 +63,12 @@ template <typename T, size_t N>
 using ith_T = T;
 
 template <typename V, typename T, std::size_t... I>
-void addInitImpl(pybind11::class_<V>& pyv, std::index_sequence<I...>) {
+void addInitImpl(pybind11::classh<V>& pyv, std::index_sequence<I...>) {
     pyv.def(pybind11::init<ith_T<T, I>...>());
 }
 
 template <typename T, typename V, unsigned C, typename Indices = std::make_index_sequence<C>>
-void addInit(pybind11::class_<V>& pyv) {
+void addInit(pybind11::classh<V>& pyv) {
     addInitImpl<V, T>(pyv, Indices{});
 }
 
@@ -101,7 +101,7 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
         return ss.str();
     }();
 
-    pybind11::class_<Mat> pym(m, classname.c_str(), pybind11::buffer_protocol{});
+    pybind11::classh<Mat> pym(m, classname.c_str(), pybind11::buffer_protocol{});
     addInit<T, Mat, Cols * Rows>(pym);
     addInit<ColumnVector, Mat, Cols>(pym);
     pym.def(pybind11::init<T>())

@@ -95,7 +95,7 @@ public:
 #include <warn/pop>
 
 template <typename T>
-void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string_view type) {
+void exposeFactoryReaderType(pybind11::classh<DataReaderFactory>& r, std::string_view type) {
     namespace py = pybind11;
     r.def(fmt::format("getExtensionsFor{}", type).c_str(),
           (std::vector<FileExtension>(DataReaderFactory::*)() const) &
@@ -125,7 +125,7 @@ void exposeFactoryReaderType(pybind11::class_<DataReaderFactory>& r, std::string
 template <typename T>
 void exposeReaderType(pybind11::module& m, std::string_view name) {
     namespace py = pybind11;
-    py::class_<DataReaderType<T>, DataReader, DataReaderTypeTrampoline<T>>(
+    py::classh<DataReaderType<T>, DataReader, DataReaderTypeTrampoline<T>>(
         m, fmt::format("{}DataReader", name).c_str())
         .def("readData",
              py::overload_cast<const std::filesystem::path&>(&DataReaderType<T>::readData))
@@ -136,7 +136,7 @@ void exposeReaderType(pybind11::module& m, std::string_view name) {
 void exposeDataReaders(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<DataReader>(m, "DataReader")
+    py::classh<DataReader>(m, "DataReader")
         .def("clone", &DataReader::clone)
         .def_property_readonly("extensions", &DataReader::getExtensions,
                                py::return_value_policy::reference_internal)
@@ -144,18 +144,16 @@ void exposeDataReaders(pybind11::module& m) {
         .def("setOption", &DataReader::setOption)
         .def("getOption", &DataReader::getOption);
 
-    auto fr =
-        py::class_<DataReaderFactory>(m, "DataReaderFactory")
-            .def("create",
-                 (std::unique_ptr<DataReader>(DataReaderFactory::*)(const FileExtension&) const) &
-                     DataReaderFactory::create)
-            .def("create",
-                 (std::unique_ptr<DataReader>(DataReaderFactory::*)(std::string_view) const) &
-                     DataReaderFactory::create)
-            .def("hasKey",
-                 (bool(DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
-            .def("hasKey", (bool(DataReaderFactory::*)(const FileExtension&) const) &
-                               DataReaderFactory::hasKey);
+    auto fr = py::classh<DataReaderFactory>(m, "DataReaderFactory");
+    fr.def("create",
+           (std::unique_ptr<DataReader>(DataReaderFactory::*)(const FileExtension&) const) &
+               DataReaderFactory::create)
+        .def("create", (std::unique_ptr<DataReader>(DataReaderFactory::*)(std::string_view) const) &
+                           DataReaderFactory::create)
+        .def("hasKey",
+             (bool(DataReaderFactory::*)(std::string_view) const) & DataReaderFactory::hasKey)
+        .def("hasKey",
+             (bool(DataReaderFactory::*)(const FileExtension&) const) & DataReaderFactory::hasKey);
 
     // No good way of dealing with template return types so we manually define one for each known
     // type. https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004
