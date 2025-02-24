@@ -381,7 +381,7 @@ TEST(AnimationTests, InterpolationSerializationTest) {
     s.writeFile(ss);
 
     Deserializer d(ss, refPath);
-    d.setExceptionHandler([](SourceContext context) { throw; });
+    d.setExceptionHandler([](SourceContext) { throw; });
     d.registerFactory(&factory);
 
     std::unique_ptr<Interpolation> iptr2;
@@ -412,7 +412,7 @@ TEST(AnimationTests, KeyframeSequenceSerializationTest) {
     s.writeFile(ss);
 
     Deserializer d(ss, refPath);
-    d.setExceptionHandler([](SourceContext context) { throw; });
+    d.setExceptionHandler([](SourceContext) { throw; });
     d.registerFactory(&factory);
 
     KeyframeSequenceTyped<ValueKeyframe<dvec3>> doubleSequence2(
@@ -493,7 +493,7 @@ TEST(AnimationTests, TrackSerializationTest) {
         trackFactory.registerObject(&floatTFO);
 
         Deserializer d(ss, refPath);
-        d.setExceptionHandler([](SourceContext context) { throw; });
+        d.setExceptionHandler([](SourceContext) { throw; });
         d.registerFactory(&interpolationFactory);
         d.registerFactory(&propertyFactory);
         d.registerFactory(&processorFactory);
@@ -581,7 +581,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
         trackFactory.registerObject(&floatTFO);
 
         Deserializer d(ss, refPath);
-        d.setExceptionHandler([](SourceContext context) { throw; });
+        d.setExceptionHandler([](SourceContext) { throw; });
         d.registerFactory(&interpolationFactory);
         d.registerFactory(&propertyFactory);
         d.registerFactory(&trackFactory);

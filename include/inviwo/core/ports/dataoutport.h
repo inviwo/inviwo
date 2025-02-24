@@ -143,7 +143,9 @@ void DataOutport<T>::setData(std::shared_ptr<const T> data) {
     isReady_.update();
 
     if constexpr (util::is_detected_v<detail::updateResourceType, T>) {
-        data_->updateResource(ResourceMeta{.source = getPath()});
+        if (data_) {
+            data_->updateResource(ResourceMeta{.source = getPath()});
+        }
     }
 }
 
