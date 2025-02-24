@@ -220,8 +220,8 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     addPort(importanceVolume_).setOptional(true);
     addPort(outport_);
 
-    //imageInport_.onChange([this]() { initializeResources(); });
-    //importanceVolume_.onChange([this]() { initializeResources(); });
+     imageInport_.onChange([this]() { rebuildShaders = true; });
+     importanceVolume_.onChange([this]() { rebuildShaders = true; });
 
     addProperties(camera_, q_, r_, lambda_, approximationProperties_, meshProperties_,
                   lineSettings_, pointProperties_, lightingProperty_, trackball_, layers_);
@@ -576,6 +576,11 @@ void DirectOpacityOptimisation::process() {
     glBindImageTexture(opticalDepthUnit_->getUnitNumber(), opticalDepthTexture_.getID(), 0, true, 0,
                        GL_READ_WRITE, imageFormat_.internalFormat);
 
+    if (importanceVolume_.hasData()) {
+        importanceVolumeUnit_ = &textureUnits_.emplace_back();
+        utilgl::bindTexture(importanceVolume_, *importanceVolumeUnit_);
+    }
+
     // clear coefficient buffers
     clear_.activate();
     setUniforms(clear_);
@@ -651,8 +656,12 @@ void DirectOpacityOptimisation::setUniforms(Shader& shader) {
         shader.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
     shader.setUniform("opticalDepthCoeffs", opticalDepthUnit_->getUnitNumber());
 
-    if (importanceVolume_.hasData())
-        utilgl::bindAndSetUniforms(shader, textureUnits_, importanceVolume_);
+    if (importanceVolume_.hasData()) {
+        shader.setUniform(importanceVolume_.getIdentifier(),
+                          importanceVolumeUnit_->getUnitNumber());
+        utilgl::setShaderUniforms(shader, importanceVolume_,
+                                  StrBuffer{"{}Parameters", importanceVolume_.getIdentifier()});
+    }
 }
 
 void DirectOpacityOptimisation::renderGeometry(const int pass) {
@@ -678,86 +687,79 @@ void DirectOpacityOptimisation::renderGeometry(const int pass) {
     }
 
     // Lines
+    lineShaders_[pass].activate();
+
+    lineShaders_[pass].setUniform("screenDim", vec2(screenSize_));
+    utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
+    utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth, lineSettings_.antialiasing,
+                        lineSettings_.miterLimit, lineSettings_.roundCaps,
+                        lineSettings_.defaultColor);
+
+    // Stippling settings
+    lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
+    lineShaders_[pass].setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
+    lineShaders_[pass].setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
+    lineShaders_[pass].setUniform("stippling.worldScale",
+                                  lineSettings_.getStippling().getWorldScale());
+
+    setUniforms(lineShaders_[pass]);
     for (const auto& mesh : inport_) {
-        lineShaders_[pass].activate();
-
-        lineShaders_[pass].setUniform("screenDim", vec2(screenSize_));
-        utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
-        utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth, lineSettings_.antialiasing,
-                            lineSettings_.miterLimit, lineSettings_.roundCaps,
-                            lineSettings_.defaultColor);
-
-        // Stippling settings
-        lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
-        lineShaders_[pass].setUniform("stippling.spacing",
-                                      lineSettings_.getStippling().getSpacing());
-        lineShaders_[pass].setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
-        lineShaders_[pass].setUniform("stippling.worldScale",
-                                      lineSettings_.getStippling().getWorldScale());
-
         utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
-        setUniforms(lineShaders_[pass]);
-        for (auto mesh : inport_) {
-            utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
-            MeshDrawerGL::DrawObject drawer(*mesh);
+        MeshDrawerGL::DrawObject drawer(*mesh);
 
-            if (mesh->getNumberOfIndicies() > 0) {
-                for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                    if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines ||
-                        mesh->getIndexMeshInfo(0).ct != ConnectivityType::None)
-                        continue;
+        if (mesh->getNumberOfIndicies() > 0) {
+            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+                if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines ||
+                    mesh->getIndexMeshInfo(0).ct != ConnectivityType::None)
+                    continue;
 
-                    drawer.draw(i);
-                    if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-                }
-            } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines &&
-                       mesh->getDefaultMeshInfo().ct == ConnectivityType::None) {
-                drawer.draw();
+                drawer.draw(i);
                 if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
             }
+        } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines &&
+                   mesh->getDefaultMeshInfo().ct == ConnectivityType::None) {
+            drawer.draw();
+            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         }
     }
 
     // Line adjacency
+    lineAdjacencyShaders_[pass].activate();
+
+    lineAdjacencyShaders_[pass].setUniform("screenDim", vec2(screenSize_));
+    utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], camera_, "camera");
+    utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth,
+                        lineSettings_.antialiasing, lineSettings_.miterLimit,
+                        lineSettings_.roundCaps, lineSettings_.defaultColor);
+
+    // Stippling settings
+    lineAdjacencyShaders_[pass].setUniform("stippling.length",
+                                           lineSettings_.getStippling().getLength());
+    lineAdjacencyShaders_[pass].setUniform("stippling.spacing",
+                                           lineSettings_.getStippling().getSpacing());
+    lineAdjacencyShaders_[pass].setUniform("stippling.offset",
+                                           lineSettings_.getStippling().getOffset());
+    lineAdjacencyShaders_[pass].setUniform("stippling.worldScale",
+                                           lineSettings_.getStippling().getWorldScale());
+
+    setUniforms(lineAdjacencyShaders_[pass]);
     for (const auto& mesh : inport_) {
-        lineAdjacencyShaders_[pass].activate();
-
-        lineAdjacencyShaders_[pass].setUniform("screenDim", vec2(screenSize_));
-        utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], camera_, "camera");
-        utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth,
-                            lineSettings_.antialiasing, lineSettings_.miterLimit,
-                            lineSettings_.roundCaps, lineSettings_.defaultColor);
-
-        // Stippling settings
-        lineAdjacencyShaders_[pass].setUniform("stippling.length",
-                                               lineSettings_.getStippling().getLength());
-        lineAdjacencyShaders_[pass].setUniform("stippling.spacing",
-                                               lineSettings_.getStippling().getSpacing());
-        lineAdjacencyShaders_[pass].setUniform("stippling.offset",
-                                               lineSettings_.getStippling().getOffset());
-        lineAdjacencyShaders_[pass].setUniform("stippling.worldScale",
-                                               lineSettings_.getStippling().getWorldScale());
-
         utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], *mesh, "geometry");
-        setUniforms(lineAdjacencyShaders_[pass]);
-        for (auto mesh : inport_) {
-            utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], *mesh, "geometry");
-            MeshDrawerGL::DrawObject drawer(*mesh);
+        MeshDrawerGL::DrawObject drawer(*mesh);
 
-            if (mesh->getNumberOfIndicies() > 0) {
-                for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                    if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines ||
-                        mesh->getIndexMeshInfo(0).ct < ConnectivityType::Adjacency)
-                        continue;
+        if (mesh->getNumberOfIndicies() > 0) {
+            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+                if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines ||
+                    mesh->getIndexMeshInfo(0).ct < ConnectivityType::Adjacency)
+                    continue;
 
-                    drawer.draw(i);
-                    if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-                }
-            } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines &&
-                       mesh->getDefaultMeshInfo().ct >= ConnectivityType::Adjacency) {
-                drawer.draw();
+                drawer.draw(i);
                 if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
             }
+        } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines &&
+                   mesh->getDefaultMeshInfo().ct >= ConnectivityType::Adjacency) {
+            drawer.draw();
+            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         }
     }
 
