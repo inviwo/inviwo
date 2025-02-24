@@ -146,7 +146,7 @@ protected:
         1);
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
-    TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_;
+    TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_, *importanceVolumeUnit_;
 
     BufferObject gaussianKernel_;
     BoolCompositeProperty smoothing_;
