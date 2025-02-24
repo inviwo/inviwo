@@ -27,22 +27,6 @@
  *
  *********************************************************************************/
 
-/**
- * Fast Single-pass A-Buffer using OpenGL 4.0 V2.0
- * Copyright Cyril Crassin, July 2010
- *
- * Edited by the Inviwo Foundation.
- * Edited by Aritra Bhakat
- **/
-
-// need extensions added from C++
-// GL_NV_gpu_shader5, GL_EXT_shader_image_load_store, GL_NV_shader_buffer_load,
-// GL_EXT_bindable_uniform
-
-#ifdef USE_ABUFFER
-    #include "oit/abufferlinkedlist.glsl"
-#endif
-
 uniform ivec2 screenSize;
 uniform int radius;
 layout(std430, binding = 8) buffer gaussianKernelBuffer {
@@ -79,9 +63,7 @@ void main() {
         ivec2 dir = ivec2(0, 1);
     #endif
 
-    #if defined(USE_ABUFFER)
-        if (getPixelLink(coords) == 0) return;
-    #elif defined(USE_PICK_IMAGE)
+    #ifdef USE_PICK_IMAGE
         if (texelFetch(imagePicking, coords, 0).a == 0.0) return;
     #else
         if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
@@ -115,9 +97,9 @@ void main() {
         val /= kernel_sum;
 
         #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val));
+            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val));
         #else
-        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
+            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
         #endif
     }
 
