@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-using json = nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 /**
  * Converts an TemplateProperty to a JSON object.

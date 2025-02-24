@@ -36,11 +36,11 @@
 
 #include <string>  // for string
 
-#include <nlohmann/json.hpp>  // for json
+#include <nlohmann/json.hpp>  // for ordered_json
 
 namespace inviwo {
 
-using json = nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 /**
  * \class JSONConversionException

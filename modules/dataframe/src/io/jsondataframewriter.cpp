@@ -38,11 +38,11 @@
 #include <fstream>  // for basic_ifstream, ios, istream, str...
 #include <string>   // for operator==, fpos
 
-#include <nlohmann/json.hpp>  // for operator>>, json
-
-using json = nlohmann::json;
+#include <nlohmann/json.hpp>  // for operator>>, ordered_json
 
 namespace inviwo {
+
+using json = ::nlohmann::ordered_json;
 
 JSONDataFrameWriter::JSONDataFrameWriter() {
     addExtension(FileExtension("json", "DataFrame in JavaScript Object Notation (JSON)"));

@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 template <typename T>
 concept JSONConvertable = requires(T& t, json& j) {

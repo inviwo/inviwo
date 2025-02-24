@@ -37,7 +37,7 @@ namespace inviwo {
 class FileExtension;
 class FileProperty;
 
-using json = nlohmann::json;
+using json = ::nlohmann::ordered_json;
 
 /**
  * Converts an FileExtension to a JSON object.

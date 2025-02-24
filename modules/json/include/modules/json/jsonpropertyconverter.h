@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
+using json = ::nlohmann::ordered_json;
 using JSONPropertyConverter = JSONConverterRegistry<Property>;
 
 }  // namespace inviwo
