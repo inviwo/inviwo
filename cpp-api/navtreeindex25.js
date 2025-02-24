@@ -1,5 +1,10 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1glui_1_1FloatMinMaxPropertyWidget.html":[4,0,1,13,8],
+"classinviwo_1_1glui_1_1FloatMinMaxPropertyWidget.html#aba9a4acb27dfee71b7ca057e231af5f1":[4,0,1,13,8,0],
+"classinviwo_1_1glui_1_1FloatPropertyWidget.html":[4,0,1,13,9],
+"classinviwo_1_1glui_1_1FloatPropertyWidget.html#a9c3c6778cbf53c7c452aa4f0a4741b69":[4,0,1,13,9,0],
+"classinviwo_1_1glui_1_1GLUIProcessor.html":[4,0,1,13,10],
 "classinviwo_1_1glui_1_1GLUIProcessor.html#a10a5d025635e1e05954b06587898d4c3":[4,0,1,13,10,0],
 "classinviwo_1_1glui_1_1GLUIProcessor.html#ac4825a452a6e617fd920e31b37b0cc21":[4,0,1,13,10,1],
 "classinviwo_1_1glui_1_1HBoxLayout.html":[4,0,1,13,11],
@@ -59,8 +64,8 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1AxisProperty.html#aa8b8fdcb42012eae4ac9387855bad919":[4,0,1,19,4,4],
 "classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef":[2,0,0,14,3,2],
 "classinviwo_1_1plot_1_1AxisProperty.html#abc0c6f5733da1b032935df15fe5aeaef":[4,0,1,19,4,2],
-"classinviwo_1_1plot_1_1AxisRenderProcessor.html":[1,3,107],
-"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[1,3,107,0],
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html":[1,3,105],
+"classinviwo_1_1plot_1_1AxisRenderProcessor.html#acd6617b0ddbd2520aa27dd16b2fb7e5a":[1,3,105,0],
 "classinviwo_1_1plot_1_1AxisRenderer.html":[2,0,0,14,4],
 "classinviwo_1_1plot_1_1AxisRenderer.html":[4,0,1,19,5],
 "classinviwo_1_1plot_1_1AxisRenderer.html#a1fcc2ed0b7a321a5553a2bb775a6f093":[2,0,0,14,4,0],
@@ -191,8 +196,8 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html":[4,0,1,19,33,0],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html#a5cbd8c77df0d4295371958d78f694f8e":[2,0,0,14,32,0,0],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html#a5cbd8c77df0d4295371958d78f694f8e":[4,0,1,19,33,0,0],
-"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html":[1,3,108],
-"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html#aeb1bb65ffc20eda5588765072fa1d5f4":[1,3,108,0],
+"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html":[1,3,106],
+"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html#aeb1bb65ffc20eda5588765072fa1d5f4":[1,3,106,0],
 "classinviwo_1_1plot_1_1PlotTextData.html":[2,0,0,14,34],
 "classinviwo_1_1plot_1_1PlotTextData.html":[4,0,1,19,35],
 "classinviwo_1_1plot_1_1PlotTextData.html#a9a22efa210d50a3b18b1a4b65a5e0621":[2,0,0,14,34,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html":[1,3,76],
 "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html#aa4a4149666c9a683e018cd3a3d3e0a43":[1,3,76,0],
 "classinviwo_1_1plot_1_1ScatterPlotProcessor.html":[1,3,77],
-"classinviwo_1_1plot_1_1ScatterPlotProcessor.html#abc85907b5761f93fb4a175fed46ba612":[1,3,77,0],
-"classinviwo_1_1plot_1_1VolumeAxis.html":[2,0,0,14,40],
-"classinviwo_1_1plot_1_1VolumeAxis.html":[4,0,1,19,41],
-"classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[2,0,0,14,40,0],
-"classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[4,0,1,19,41,0],
-"classinviwo_1_1pngModule.html":[2,0,0,767]
+"classinviwo_1_1plot_1_1ScatterPlotProcessor.html#abc85907b5761f93fb4a175fed46ba612":[1,3,77,0]
 };

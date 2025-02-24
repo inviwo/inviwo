@@ -77,17 +77,17 @@ var NAVTREEINDEX =
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#af0b74f782fa6397321e88f0fecf42ffc",
 "classinviwo_1_1TetraMesh.html#a5cffd83b9a73015ded6808b144800e60",
 "classinviwo_1_1TransferFunctionITFWriter.html",
-"classinviwo_1_1VolumeDownsample.html",
-"classinviwo_1_1WebBrowserClient.html",
-"classinviwo_1_1animation_1_1ControlKeyframe.html",
-"classinviwo_1_1glui_1_1GLUIProcessor.html#a10a5d025635e1e05954b06587898d4c3",
-"classinviwo_1_1pngModule.html",
-"namespaceinviwo_1_1color.html#a756c889dc0ed0a92b19bc2c63dca0848",
-"namespaceinviwo_1_1util.html#a86d2b2443c5b46240122de8b5dd5b400",
-"structinviwo_1_1DataTraits_3_01Rasterization_01_4.html",
-"structinviwo_1_1ProcessorTraits_3_01HistogramToDataFrame_3_01Layer_01_4_01_4.html",
-"structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html",
-"structinviwo_1_1util_1_1is__constructible.html"
+"classinviwo_1_1VolumeDivergenceCPUProcessor.html#a271e01d39f4ef170b31b10b32f18c984",
+"classinviwo_1_1WebBrowserBase.html#a57bff7e3b9f3d8dba619c12cd7e33ab5",
+"classinviwo_1_1animation_1_1CameraLinearInterpolation.html",
+"classinviwo_1_1glui_1_1FloatMinMaxPropertyWidget.html",
+"classinviwo_1_1plot_1_1VolumeAxis.html",
+"namespaceinviwo_1_1color.html#a41efdc0158db68ac7b295cddc49fe624",
+"namespaceinviwo_1_1util.html#a7a96dd02792cfa20cef05e9d001b497b",
+"structinviwo_1_1DataTraits_3_01Eigen_1_1MatrixXf_01_4.html",
+"structinviwo_1_1ProcessorTraits_3_01BasisTransform_3_01Volume_01_4_01_4.html",
+"structinviwo_1_1dataframefilters_1_1Filters.html",
+"structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

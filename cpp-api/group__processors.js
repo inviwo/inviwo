@@ -330,13 +330,6 @@ var group__processors =
       [ "postProcess", "classinviwo_1_1VolumeBinary.html#a59d8ec00d279d5bda750ce0e53125265", null ],
       [ "preProcess", "classinviwo_1_1VolumeBinary.html#a4fc045941511063ac037dee21cfc4ae1", null ]
     ] ],
-    [ "inviwo::VolumeCombiner", "classinviwo_1_1VolumeCombiner.html", [
-      [ "process", "classinviwo_1_1VolumeCombiner.html#aa8411ddd2c28be6ab509e7a10b09914b", null ]
-    ] ],
-    [ "inviwo::VolumeGradientMagnitude", "classinviwo_1_1VolumeGradientMagnitude.html", [
-      [ "postProcess", "classinviwo_1_1VolumeGradientMagnitude.html#a7cfaebfa991a6e106a684d3500a97ad6", null ],
-      [ "preProcess", "classinviwo_1_1VolumeGradientMagnitude.html#a3a0b2a08dd57f13319ad39de2e82d7bc", null ]
-    ] ],
     [ "inviwo::VolumeGradientProcessor", "classinviwo_1_1VolumeGradientProcessor.html", [
       [ "initializeResources", "classinviwo_1_1VolumeGradientProcessor.html#a29fe169b968ee4101d58b729defa0f0b", null ],
       [ "postProcess", "classinviwo_1_1VolumeGradientProcessor.html#afc9aa8873ad65359fb41cb69161e9e47", null ],

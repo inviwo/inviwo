@@ -1,5 +1,12 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1dataframefilters_1_1Filters.html":[2,0,0,7,0],
+"structinviwo_1_1dataframefilters_1_1Filters.html":[4,0,1,7,0],
+"structinviwo_1_1deserializer_1_1IdentifierFunctions.html":[4,0,1,8,0],
+"structinviwo_1_1deserializer_1_1IndexFunctions.html":[4,0,1,8,1],
+"structinviwo_1_1deserializer_1_1MapFunctions.html":[4,0,1,8,2],
+"structinviwo_1_1detail_1_1ColorConverter.html":[4,0,1,9,1],
+"structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html":[4,0,1,9,2],
 "structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html":[4,0,1,9,3],
 "structinviwo_1_1detail_1_1ColorConverter_3_01ivec3_01_4.html":[4,0,1,9,4],
 "structinviwo_1_1detail_1_1ColorConverter_3_01ivec4_01_4.html":[4,0,1,9,5],
@@ -242,12 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1util_1_1glmtype_3_01T_00_011_00_011_00_01P_01_4.html":[2,0,0,19,19],
 "structinviwo_1_1util_1_1glmtype_3_01T_00_011_00_011_00_01P_01_4.html":[4,0,1,27,23],
 "structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html":[2,0,0,19,20],
-"structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html":[4,0,1,27,24],
-"structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl.html":[4,0,1,27,3,0],
-"structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl_3_01Tuple_00_010_01_4.html":[4,0,1,27,3,1],
-"structinviwo_1_1util_1_1identifier.html":[2,0,0,19,23],
-"structinviwo_1_1util_1_1identifier.html":[4,0,1,27,27],
-"structinviwo_1_1util_1_1identity.html":[2,0,0,19,24],
-"structinviwo_1_1util_1_1identity.html":[4,0,1,27,28],
-"structinviwo_1_1util_1_1is__constructible.html":[2,0,0,19,30]
+"structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html":[4,0,1,27,24]
 };

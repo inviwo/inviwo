@@ -106,6 +106,7 @@ $(function(){initNavTree('namespaceinviwo_1_1util.html',''); initResizable(true)
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -268,6 +269,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>value_type&lt; glm::tquat&lt; T, Q &gt; &gt;</b></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>value_type&lt; glm::vec&lt; L, T, Q &gt; &gt;</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptinviwo_1_1util_1_1hasRAMrepresentation.html">hasRAMrepresentation</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -1526,10 +1532,10 @@ template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a35e7bd2ae4735fa0fdbbfb8d3e0d5b28" id="r_a35e7bd2ae4735fa0fdbbfb8d3e0d5b28"><td class="memItemLeft" align="right" valign="top"><a id="a35e7bd2ae4735fa0fdbbfb8d3e0d5b28" name="a35e7bd2ae4735fa0fdbbfb8d3e0d5b28"></a>
 void IVW_QTEDITOR_API&#160;</td><td class="memItemRight" valign="bottom"><b>insertNetworkForData</b> (const std::filesystem::path &amp;dataFile, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *net, bool alwaysFirst=false, bool onlySource=false, QWidget *parent=nullptr)</td></tr>
 <tr class="separator:a35e7bd2ae4735fa0fdbbfb8d3e0d5b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0aaefd44a8fc7b7156c27f830e98ace1" id="r_a0aaefd44a8fc7b7156c27f830e98ace1"><td class="memTemplParams" colspan="2">template&lt;typename T, typename TRAMrep&gt; <br />
-requires requires(T data) { typename T::repr; std::is_base_of_v&lt;typename T::repr, TRAMrep&gt;; data.template getRepresentation&lt;TRAMrep&gt;(); }</td></tr>
-<tr class="memitem:a0aaefd44a8fc7b7156c27f830e98ace1"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a0aaefd44a8fc7b7156c27f830e98ace1">combineChannels</a> (const std::array&lt; <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; T &gt;, 4 &gt; &amp;sources, const std::array&lt; int, 4 &gt; &amp;selectedPortChannels)</td></tr>
-<tr class="separator:a0aaefd44a8fc7b7156c27f830e98ace1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04708c4c24b525baa5e4fa486b1d4355" id="r_a04708c4c24b525baa5e4fa486b1d4355"><td class="memTemplParams" colspan="2">template&lt;typename T, typename TRAMrep, detail::ChannelNormalization normalization = detail::ChannelNormalization::No&gt; <br />
+requires hasRAMrepresentation&lt;T, TRAMrep&gt;</td></tr>
+<tr class="memitem:a04708c4c24b525baa5e4fa486b1d4355"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a04708c4c24b525baa5e4fa486b1d4355">combineChannels</a> (const std::array&lt; <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; T &gt;, 4 &gt; &amp;sources, const std::array&lt; int, 4 &gt; &amp;selectedPortChannels)</td></tr>
+<tr class="separator:a04708c4c24b525baa5e4fa486b1d4355"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa048b0cf2e27625499d9ac8e03af03d6" id="r_aa048b0cf2e27625499d9ac8e03af03d6"><td class="memTemplParams" colspan="2">template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </td></tr>
 <tr class="memitem:aa048b0cf2e27625499d9ac8e03af03d6"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa048b0cf2e27625499d9ac8e03af03d6">isConvex</a> (const std::vector&lt; T &gt; &amp;polygon)</td></tr>
 <tr class="memdesc:aa048b0cf2e27625499d9ac8e03af03d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether the given polygon is convex  <br /></td></tr>
@@ -2695,14 +2701,14 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a0aaefd44a8fc7b7156c27f830e98ace1" name="a0aaefd44a8fc7b7156c27f830e98ace1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0aaefd44a8fc7b7156c27f830e98ace1">&#9670;&#160;</a></span>combineChannels()</h2>
+<a id="a04708c4c24b525baa5e4fa486b1d4355" name="a04708c4c24b525baa5e4fa486b1d4355"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04708c4c24b525baa5e4fa486b1d4355">&#9670;&#160;</a></span>combineChannels()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T, typename TRAMrep&gt; <br />
-requires requires(T data) { typename T::repr; std::is_base_of_v&lt;typename T::repr, TRAMrep&gt;; data.template getRepresentation&lt;TRAMrep&gt;(); }</div>
+template&lt;typename T, typename TRAMrep, detail::ChannelNormalization normalization = detail::ChannelNormalization::No&gt; <br />
+requires hasRAMrepresentation&lt;T, TRAMrep&gt;</div>
       <table class="memname">
         <tr>
           <td class="memname">std::shared_ptr&lt; T &gt; inviwo::util::combineChannels </td>
@@ -2716,11 +2722,12 @@ requires requires(T data) { typename T::repr; std::is_base_of_v&lt;typename T::r
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Combines up to four channels from four inports into a single object of type <code class="param">T</code>.</p>
+<p>Combines up to four channels from four inports into a single object of type <code class="param">T</code>. The data format of the resulting container is based on the common numeric type and precision of the input channels.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>underlying datatype </td></tr>
     <tr><td class="paramname">TRAMrep</td><td>RAM representation for <code class="param">T</code> </td></tr>
+    <tr><td class="paramname">channelNormalization</td><td>normalize each channel using its corresponding data range and then renormalize it to the common data format </td></tr>
   </table>
   </dd>
 </dl>

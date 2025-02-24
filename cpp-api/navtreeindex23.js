@@ -1,5 +1,10 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1WebBrowserBase.html#a57bff7e3b9f3d8dba619c12cd7e33ab5":[4,0,1,1320,2],
+"classinviwo_1_1WebBrowserBase.html#a726865c7c209993a0af60a7a91684617":[2,0,0,1313,0],
+"classinviwo_1_1WebBrowserBase.html#a726865c7c209993a0af60a7a91684617":[4,0,1,1320,0],
+"classinviwo_1_1WebBrowserBase.html#aafaaab79286a9b4d0779f195bdb2cd7e":[2,0,0,1313,1],
+"classinviwo_1_1WebBrowserBase.html#aafaaab79286a9b4d0779f195bdb2cd7e":[4,0,1,1320,1],
 "classinviwo_1_1WebBrowserClient.html":[2,0,0,1314],
 "classinviwo_1_1WebBrowserClient.html":[4,0,1,1321],
 "classinviwo_1_1WebBrowserClient.html#a40cce69a26a023a0b9c724969102f5ce":[2,0,0,1314,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1animation_1_1CameraKeyframe.html":[4,0,1,1,25],
 "classinviwo_1_1animation_1_1CameraKeyframe.html#ab8de7aa85348c6ee595b7e8684b71df9":[2,0,0,0,24,0],
 "classinviwo_1_1animation_1_1CameraKeyframe.html#ab8de7aa85348c6ee595b7e8684b71df9":[4,0,1,1,25,0],
-"classinviwo_1_1animation_1_1CameraLinearInterpolation.html":[2,0,0,0,25],
-"classinviwo_1_1animation_1_1CameraLinearInterpolation.html":[4,0,1,1,26],
-"classinviwo_1_1animation_1_1CameraSphericalInterpolation.html":[2,0,0,0,26],
-"classinviwo_1_1animation_1_1CameraSphericalInterpolation.html":[4,0,1,1,27],
-"classinviwo_1_1animation_1_1ConstantInterpolation.html":[2,0,0,0,27],
-"classinviwo_1_1animation_1_1ConstantInterpolation.html":[4,0,1,1,28]
+"classinviwo_1_1animation_1_1CameraLinearInterpolation.html":[2,0,0,0,25]
 };

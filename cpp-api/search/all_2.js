@@ -124,7 +124,7 @@ var searchData=
   ['columnoptionproperty_121',['ColumnOptionProperty',['../classinviwo_1_1ColumnOptionProperty.html',1,'inviwo::ColumnOptionProperty'],['../classinviwo_1_1ColumnOptionProperty.html#a40794fd79a2d272632b3b2470a683be1',1,'inviwo::ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier, std::string_view displayName, AddNoneOption noneOption=AddNoneOption::No, int defaultIndex=0)'],['../classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5',1,'inviwo::ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier, std::string_view displayName, DataFrameInport &amp;port, AddNoneOption noneOption=AddNoneOption::No, int defaultIndex=0)']]],
   ['columnoptiontooptionconverter_122',['ColumnOptionToOptionConverter',['../classinviwo_1_1ColumnOptionToOptionConverter.html',1,'inviwo']]],
   ['combinations_123',['Combinations',['../classinviwo_1_1util_1_1Combinations.html',1,'inviwo::util']]],
-  ['combinechannels_124',['combineChannels',['../namespaceinviwo_1_1util.html#a0aaefd44a8fc7b7156c27f830e98ace1',1,'inviwo::util']]],
+  ['combinechannels_124',['combineChannels',['../namespaceinviwo_1_1util.html#a04708c4c24b525baa5e4fa486b1d4355',1,'inviwo::util']]],
   ['commandlineargholder_125',['CommandLineArgHolder',['../classinviwo_1_1CommandLineArgHolder.html',1,'inviwo']]],
   ['commandlineparser_126',['CommandLineParser',['../classinviwo_1_1CommandLineParser.html',1,'inviwo']]],
   ['commonformatprecision_127',['commonFormatPrecision',['../namespaceinviwo_1_1util.html#a8b656c765eccf8074aa2adde7b031b09',1,'inviwo::util']]],
