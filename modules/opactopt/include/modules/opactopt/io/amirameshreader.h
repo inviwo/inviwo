@@ -54,11 +54,11 @@ public:
     virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
 private:
-    enum AmiraDataType { Lines, Vertices, Importance };
+    enum AmiraDataType { Lines, Vertices, VertexData };
 
     void processLines(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
     void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processImportance(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
+    void processVertexData(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
 };
 
 }  // namespace inviwo

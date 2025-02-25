@@ -95,21 +95,21 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& fil
         } else if (line.substr(0, 9) == "nVertices") {
             std::istringstream v(line.substr(10));
             v >> nVertices;
-        } else if (line.substr(0, 11) == "Lines { int") {
+        } else if (line.contains("Lines { int LineIdx }")) {
             int index;
             std::istringstream i(line.substr(line.find("@") + 1));
             i >> index;
             bufferMap.insert({index, AmiraDataType::Lines});
-        } else if (line.substr(0, 18) == "Vertices { float[3") {
+        } else if (line.contains("Vertices { float[3] Coordinates }")) {
             int index;
             std::istringstream i(line.substr(line.find("@") + 1));
             i >> index;
             bufferMap.insert({index, AmiraDataType::Vertices});
-        } else if (line.substr(0, 17) == "Vertices { float ") {
+        } else if (line.contains("Vertices { float Data")) {
             int index;
             std::istringstream i(line.substr(line.find("@") + 1));
             i >> index;
-            bufferMap.insert({index, AmiraDataType::Importance});
+            bufferMap.insert({index, AmiraDataType::VertexData});
         } else if (line == "# Data section follows") {
             break;
         }
@@ -130,8 +130,8 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& fil
                 processLines(f, mesh);
             else if (at == AmiraDataType::Vertices)
                 processVertices(f, mesh);
-            else if (at == AmiraDataType::Importance)
-                processImportance(f, mesh);
+            else if (at == AmiraDataType::VertexData)
+                processVertexData(f, mesh);
         }
     }
 
@@ -171,17 +171,16 @@ void AmiraMeshReader::processVertices(std::ifstream& fs, std::shared_ptr<Mesh> m
                     util::makeBuffer(std::move(vertices)));
 }
 
-void AmiraMeshReader::processImportance(std::ifstream& fs, std::shared_ptr<Mesh> mesh) {
+void AmiraMeshReader::processVertexData(std::ifstream& fs, std::shared_ptr<Mesh> mesh) {
     std::string line;
-    std::vector<float> importance;
+    std::vector<float> vertexData;
     while (std::getline(fs, line) && !line.empty()) {
         float imp;
         std::istringstream i(line);
         i >> imp;
-        importance.push_back(imp);
+        vertexData.push_back(imp);
     }
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::TexCoordAttrib),
-                    util::makeBuffer(std::move(importance)));
+    mesh->addBuffer(Mesh::BufferInfo(BufferType::Unknown), util::makeBuffer(std::move(vertexData)));
 }
 
 }  // namespace inviwo
