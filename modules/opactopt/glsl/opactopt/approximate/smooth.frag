@@ -40,10 +40,6 @@ uniform layout(size1x32) image2DArray importanceSumCoeffs[2];
 #endif
 
 #ifdef USE_PICK_IMAGE
-#include "utils/structs.glsl"
-
-uniform ImageParameters imageParameters;
-uniform sampler2D imageColor;
 uniform sampler2D imagePicking;
 #endif
 
