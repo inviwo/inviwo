@@ -120,8 +120,8 @@ void InviwoDockWidget::saveState() {
     settings.beginGroup(objectName());
     settings.setValue("sticky", isSticky());
     settings.setValue("floating", isFloating());
-    settings.setValue("size", size());
     settings.setValue("pos", pos());
+    settings.setValue("size", size());
     settings.setValue("visible", isVisible());
     settings.endGroup();
 }
@@ -142,10 +142,6 @@ void InviwoDockWidget::loadState() {
         mainWindow->restoreDockWidget(this);
     }
 
-    if (settings.contains("size")) {
-        resize(settings.value("size").toSize());
-    }
-
     if (settings.contains("pos")) {
         auto pos = settings.value("pos").toPoint();
         auto newPos = utilqt::movePointOntoDesktop(pos, InviwoDockWidget::size(), false);
@@ -155,6 +151,18 @@ void InviwoDockWidget::loadState() {
         auto newPos = ivwMW->pos();
         newPos += utilqt::offsetWidget();
         move(newPos);
+    }
+
+    if (settings.contains("size")) {
+        resize(settings.value("size").toSize());
+    }
+
+    if (auto* screen = QGuiApplication::screenAt(pos())) {
+        const auto w = std::clamp(width(), 0, screen->availableSize().width());
+        const auto h = std::clamp(height(), 0, screen->availableSize().height());
+        if (QSize(w, h) != size()) {
+            resize(w, h);
+        }
     }
 
     if (settings.contains("visible")) {
