@@ -253,7 +253,7 @@ bool NetWorkCefSynchronizer::handleOutport(const json& j, CefRefPtr<CefBrowser>&
 bool NetWorkCefSynchronizer::handleProperty(const json& j, CefRefPtr<CefBrowser>&,
                                             CefRefPtr<Callback>& reponse) {
 
-    const auto command = j.at("command").get<std::string_view>().substr(propertyCommand.size());
+    const auto command = j.at("command").get<std::string_view>().substr(propCommand.size());
 
     auto propertyPath = j.at("path").get<std::string>();
     auto* property = findProperty(propertyPath);
