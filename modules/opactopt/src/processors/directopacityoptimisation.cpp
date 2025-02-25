@@ -220,8 +220,8 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     addPort(importanceVolume_).setOptional(true);
     addPort(outport_);
 
-     imageInport_.onChange([this]() { rebuildShaders = true; });
-     importanceVolume_.onChange([this]() { rebuildShaders = true; });
+    imageInport_.onChange([this]() { rebuildShaders = true; });
+    importanceVolume_.onChange([this]() { rebuildShaders = true; });
 
     addProperties(camera_, q_, r_, lambda_, approximationProperties_, meshProperties_,
                   lineSettings_, pointProperties_, lightingProperty_, trackball_, layers_);
@@ -530,7 +530,6 @@ void DirectOpacityOptimisation::buildShaders() {
             frag->setShaderDefine("COEFF_TEX_FIXED_POINT_FACTOR", true,
                                   std::to_string(coeffTexFixedPointFactor_));
         frag->setShaderDefine("HORIZONTAL", true, std::to_string(int(horizontal)));
-        frag->setShaderDefine("USE_PICK_IMAGE", true);
         shader->build();
 
         horizontal = false;
@@ -548,11 +547,6 @@ void DirectOpacityOptimisation::process() {
     if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
         intermediateImage_.setDimensions(outport_.getDimensions());
     }
-    utilgl::activateAndClearTarget(intermediateImage_);
-
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
-    utilgl::DepthMaskState depthMask(GL_FALSE);
-    utilgl::CullFaceState culling(GL_NONE);
 
     // Bind textures
     importanceSumUnitMain_ = &textureUnits_.emplace_back();
@@ -581,6 +575,12 @@ void DirectOpacityOptimisation::process() {
         utilgl::bindTexture(importanceVolume_, *importanceVolumeUnit_);
     }
 
+    utilgl::activateAndClearTarget(intermediateImage_);
+
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+    utilgl::DepthMaskState depthMask(GL_FALSE);
+    utilgl::CullFaceState culling(GL_NONE);
+
     // clear coefficient buffers
     clear_.activate();
     setUniforms(clear_);
@@ -591,10 +591,6 @@ void DirectOpacityOptimisation::process() {
     renderGeometry(0);
 
     // Optional smoothing of importance coefficients
-    utilgl::activateTarget(
-        intermediateImage_,
-        inviwo::ImageType::ColorOnly);  // bind color only so we can use picking texture
-    // as texture
     if (smoothing_) {
         // smoothing importance
         gaussianKernel_.bindBase(8);
@@ -603,8 +599,6 @@ void DirectOpacityOptimisation::process() {
         smoothH_.activate();
         smoothH_.setUniform("radius", gaussianRadius_);
         setUniforms(smoothH_);
-        utilgl::bindAndSetUniforms(smoothH_, textureUnits_, intermediateImage_, "image",
-                                   ImageType::ColorPicking);
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
@@ -612,8 +606,6 @@ void DirectOpacityOptimisation::process() {
         smoothV_.activate();
         smoothV_.setUniform("radius", gaussianRadius_);
         setUniforms(smoothV_);
-        utilgl::bindAndSetUniforms(smoothV_, textureUnits_, intermediateImage_, "image",
-                                   ImageType::ColorPicking);
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
@@ -631,7 +623,7 @@ void DirectOpacityOptimisation::process() {
 
     normalise_.activate();
     utilgl::bindAndSetUniforms(normalise_, textureUnits_, intermediateImage_, "image",
-                               ImageType::ColorPicking);
+                               ImageType::ColorOnly);
     if (imageInport_.hasData())
         utilgl::bindAndSetUniforms(normalise_, textureUnits_, *imageInport_.getData(), "bg",
                                    ImageType::ColorDepth);
