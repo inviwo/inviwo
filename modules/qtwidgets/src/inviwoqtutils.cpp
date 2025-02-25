@@ -290,18 +290,10 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
     }
 
     // Check if point is within any desktops rect (with some extra padding applied).
-    static constexpr int leftPadding = 0;
-    static constexpr int topPadding = 0;
-    static constexpr int rightPadding = 10;
-    static constexpr int bottomPadding = 10;
     const bool withinAnyDesktop = [&]() {
-        const QList<QScreen*> screens = QGuiApplication::screens();
-        for (QScreen* screen : screens) {
-            auto geom = screen->geometry().marginsRemoved(
-                {leftPadding, topPadding, rightPadding, bottomPadding});
-            if (geom.contains(pos)) {
-                return true;
-            }
+        if (auto* screen = QGuiApplication::screenAt(pos)) {
+            static constexpr QMargins padding{0, 0, 10, 10};
+            return screen->availableGeometry().marginsRemoved(padding).contains(pos);
         }
         return false;
     }();
@@ -641,13 +633,12 @@ void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop) {
     widget->setVisible(visible);
 }
 
-
- QString toQString(const std::filesystem::path& path) {
+QString toQString(const std::filesystem::path& path) {
     auto str = path.generic_u8string();
     return QString::fromUtf8(reinterpret_cast<char*>(str.data()), str.size());
 }
 
- std::filesystem::path toPath(const QString& str) {
+std::filesystem::path toPath(const QString& str) {
     auto buffer = str.toUtf8();
     const std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
                                    static_cast<size_t>(buffer.size())};

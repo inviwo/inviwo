@@ -167,12 +167,6 @@ void PropertyEditorWidgetQt::loadState() {
         }
     }
 
-    if (getProperty()->hasMetaData<IntVec2MetaData>(sizeKey)) {
-        resize(utilqt::toQSize(getProperty()->getMetaData<IntVec2MetaData>(sizeKey, ivec2{0})));
-    } else if (settings.contains("size")) {
-        resize(settings.value("size").toSize());
-    }
-
     if (getProperty()->hasMetaData<IntVec2MetaData>(positionKey)) {
         auto pos =
             utilqt::toQPoint(getProperty()->getMetaData<IntVec2MetaData>(positionKey, ivec2{0}));
@@ -183,6 +177,20 @@ void PropertyEditorWidgetQt::loadState() {
         auto newPos = mainWindow->pos();
         newPos += utilqt::offsetWidget();
         move(newPos);
+    }
+
+    if (getProperty()->hasMetaData<IntVec2MetaData>(sizeKey)) {
+        resize(utilqt::toQSize(getProperty()->getMetaData<IntVec2MetaData>(sizeKey, ivec2{0})));
+    } else if (settings.contains("size")) {
+        resize(settings.value("size").toSize());
+    }
+
+    if (auto* screen = QGuiApplication::screenAt(pos())) {
+        const auto w = std::clamp(width(), 0, screen->availableSize().width());
+        const auto h = std::clamp(height(), 0, screen->availableSize().height());
+        if (QSize(w, h) != size()) {
+            resize(w, h);
+        }
     }
 
     if (getProperty()->hasMetaData<BoolMetaData>(visibleKey)) {
