@@ -525,9 +525,9 @@ void ProcessorGraphicsItem::resetTimeMeasurements() {
     totEvalTime_ = 0.0;
     update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
 }
-#endif
 
 void ProcessorGraphicsItem::setShowCount(bool show) { showCount_ = show; }
+#endif
 
 ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const { return statusItem_; }
 
