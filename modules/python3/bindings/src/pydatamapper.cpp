@@ -50,7 +50,7 @@ namespace inviwo {
 void exposeDataMapper(py::module& m) {
 
     py::classh<Unit>(m, "Unit")
-        .def(py::init([](std::string unit) { return units::unit_from_string(unit); }))
+        .def(py::init([](std::string unit) { return units::unit_from_string(std::move(unit)); }))
         .def("to_string",
              [](const Unit& unit, std::string_view format = "{}") {
                  return fmt::format(fmt::runtime(format), unit);

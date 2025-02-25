@@ -125,10 +125,10 @@ void exposePickingMapper(pybind11::module& m) {
 
     py::classh<PickingMapper>(m, "PickingMapper")
         .def(py::init([](Processor* p, size_t size, pybind11::function callback) {
-            return new PickingMapper(p, size, [callback](PickingEvent* e) {
+            return new PickingMapper(p, size, [c = std::move(callback)](PickingEvent* e) {
                 try {
                     const pybind11::gil_scoped_acquire guard{};
-                    callback(py::cast(e));
+                    c(py::cast(e));
                 } catch (const py::error_already_set& e) {
                     log::exception(e);
                 }

@@ -109,9 +109,9 @@ void exposeProperties(py::module& m) {
         });
 
     py::classh<PropertyFactory>(m, "PropertyFactory")
-        .def("hasKey", [](PropertyFactory* pf, std::string key) { return pf->hasKey(key); })
+        .def("hasKey", [](PropertyFactory* pf, std::string_view key) { return pf->hasKey(key); })
         .def_property_readonly("keys", [](PropertyFactory* pf) { return pf->getKeys(); })
-        .def("create", [](PropertyFactory* pf, std::string key) { return pf->create(key); });
+        .def("create", [](PropertyFactory* pf, std::string_view key) { return pf->create(key); });
 
     py::classh<PropertyWidget>(m, "PropertyWidget", py::multiple_inheritance{})
         .def_property_readonly("property", &PropertyWidget::getProperty,
