@@ -95,8 +95,6 @@ target_link_libraries(inviwo-module-python3 PUBLIC
     pybind11::embed
     Python3::Python
 )
-target_compile_definitions(inviwo-module-python3 PUBLIC PYBIND11_USE_SMART_HOLDER_AS_DEFAULT)
-
 
 add_subdirectory(bindings)
 

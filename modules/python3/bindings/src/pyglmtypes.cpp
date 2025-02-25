@@ -65,12 +65,12 @@ template <typename T, size_t N>
 using ith_T = T;
 
 template <typename V, typename T, std::size_t... I>
-void addInitImpl(py::class_<V>& pyv, std::index_sequence<I...>) {
+void addInitImpl(py::classh<V>& pyv, std::index_sequence<I...>) {
     pyv.def(py::init<ith_T<T, I>...>());
 }
 
 template <typename T, typename V, unsigned C, typename Indices = std::make_index_sequence<C>>
-void addInit(py::class_<V>& pyv) {
+void addInit(py::classh<V>& pyv) {
     addInitImpl<V, T>(pyv, Indices{});
 }
 }  // namespace
@@ -90,7 +90,7 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         return ss.str();
     }();
 
-    py::class_<Vec> pyv(m, classname.c_str(), py::buffer_protocol{});
+    py::classh<Vec> pyv(m, classname.c_str(), py::buffer_protocol{});
     addInit<T, Vec, Dim>(pyv);
     pyv.def(py::init<T>())
         .def(py::init<Vec>())
