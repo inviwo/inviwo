@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <vector>
-#include <cmath>
 
 namespace inviwo {
 namespace util {

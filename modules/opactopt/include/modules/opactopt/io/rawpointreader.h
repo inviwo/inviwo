@@ -30,7 +30,6 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>  // Buffer
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/io/datareader.h>
 

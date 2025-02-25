@@ -30,16 +30,14 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <math.h>
 #include <string>
 #include <map>
-#include <tuple>
-#include <fstream>
 
 #include <modules/opengl/buffer/bufferobject.h>
-#include <inviwo/core/properties/optionproperty.h>        // for OptionProperty
-#include <inviwo/core/properties/optionpropertytraits.h>  // for OptionPropertyTraits
-#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/glmvec.h>
+#include <cmath>
+#include <vector>
 
 namespace inviwo {
 

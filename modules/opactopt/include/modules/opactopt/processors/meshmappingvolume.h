@@ -31,13 +31,14 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <inviwo/core/ports/meshport.h>  // for MeshInport, MeshOutport
-#include <inviwo/core/processors/processor.h>                 // for Processor
-#include <inviwo/core/processors/processorinfo.h>             // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>              // for BoolProperty
-#include <inviwo/core/properties/minmaxproperty.h>            // for DoubleMinMaxProperty
-#include <inviwo/core/properties/optionproperty.h>            // for OptionPropertyInt
-#include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 

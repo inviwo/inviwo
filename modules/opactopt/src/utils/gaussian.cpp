@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/opactopt/utils/gaussian.h>
+#include <cmath>
+#include <vector>
 
 namespace inviwo {
 namespace util {

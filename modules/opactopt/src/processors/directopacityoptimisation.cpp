@@ -29,43 +29,26 @@
 
 #include <modules/opactopt/processors/directopacityoptimisation.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
-#include <inviwo/core/algorithm/markdown.h>            // for operator""_help
-#include <inviwo/core/datastructures/geometry/mesh.h>  // for hasPickIDBuffer, Mesh
-#include <inviwo/core/datastructures/image/image.h>    // for Image
-#include <inviwo/core/datastructures/image/layer.h>    // for Layer
-#include <inviwo/core/ports/imageport.h>               // for ImageOutport, BaseImageInport, Ima...
-#include <inviwo/core/ports/inportiterable.h>          // for InportIterable<>::const_iterator
-#include <inviwo/core/ports/meshport.h>                // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>          // for Processor
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, InvalidationLev...
-#include <inviwo/core/properties/optionproperty.h>     // for OptionPropertyOption, OptionProper...
-#include <inviwo/core/properties/ordinalproperty.h>    // for ordinalColor, FloatVec4Property
-#include <inviwo/core/properties/property.h>           // for Property
-#include <inviwo/core/properties/propertysemantics.h>  // for PropertySemantics, PropertySemanti...
-#include <modules/opengl/geometry/meshgl.h>            // for MeshGL
-#include <modules/opengl/inviwoopengl.h>               // for GL_BACK, GL_DEPTH_TEST, GL_FRONT
-#include <modules/opengl/openglutils.h>                // for BlendModeState, CullFaceState, GlB...
-#include <modules/opengl/rendering/meshdrawergl.h>     // for MeshDrawerGL::DrawObject, MeshDraw...
-#include <modules/opengl/shader/shader.h>              // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>        // for ShaderObject
-#include <modules/opengl/shader/shaderutils.h>         // for addShaderDefines, setShaderUniforms
-#include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
+#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opactopt/utils/gaussian.h>
 
-#include <cstddef>      // for size_t
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr, make_shared, shared_pt...
-#include <string>       // for string
-#include <string_view>  // for string_view
-#include <type_traits>  // for remove_extent_t
-#include <chrono>
+#include <cstddef>
+#include <string>
 
 namespace inviwo {
 
