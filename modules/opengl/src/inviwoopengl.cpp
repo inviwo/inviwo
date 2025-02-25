@@ -71,9 +71,9 @@ std::string_view getGLErrorString(GLenum err) {
                    "effect than to set the error flag.";
         case GL_INVALID_FRAMEBUFFER_OPERATION:
             return "INVALID_FRAMEBUFFER_OPERATION";
-            break;
+        default:
+            return "Undefined error";
     }
-    return "Undefined error";
 }
 
 void LogGLError(std::string_view source, std::string_view fileName, std::string_view functionName,

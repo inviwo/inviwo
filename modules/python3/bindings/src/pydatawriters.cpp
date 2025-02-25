@@ -87,83 +87,131 @@ public:
 #include <warn/pop>
 
 template <typename T>
-void exposeFactoryWriterType(pybind11::classh<DataWriterFactory>& r, std::string_view type) {
+class TypedDataWriterFactoryWrapper {
+public:
+    TypedDataWriterFactoryWrapper() = delete;
+    explicit TypedDataWriterFactoryWrapper(DataWriterFactory& rf) : factory{&rf} {}
+    TypedDataWriterFactoryWrapper(const TypedDataWriterFactoryWrapper&) = default;
+    TypedDataWriterFactoryWrapper(TypedDataWriterFactoryWrapper&&) = default;
+    TypedDataWriterFactoryWrapper& operator=(const TypedDataWriterFactoryWrapper&) = default;
+    TypedDataWriterFactoryWrapper& operator=(TypedDataWriterFactoryWrapper&&) = default;
+
+    std::vector<FileExtension> getExtensions() const { return factory->getExtensionsForType<T>(); }
+    std::unique_ptr<DataWriterType<T>> getWriter(
+        const std::filesystem::path& filePathOrExtension) const {
+        return factory->getWriterForTypeAndExtension<T>(filePathOrExtension);
+    }
+
+    std::unique_ptr<DataWriterType<T>> getWriter(const FileExtension& ext) const {
+        return factory->getWriterForTypeAndExtension<T>(ext);
+    }
+
+    std::unique_ptr<DataWriterType<T>> getWriter(
+        const FileExtension& ext, const std::filesystem::path& fallbackFilePathOrExtension) const {
+        return factory->getWriterForTypeAndExtension<T>(ext, fallbackFilePathOrExtension);
+    }
+
+    bool hasWriter(const std::filesystem::path& filePathOrExtension) const {
+        return factory->hasWriterForTypeAndExtension<T>(filePathOrExtension);
+    }
+
+    bool hasWriter(const FileExtension& ext) const {
+        return factory->hasWriterForTypeAndExtension<T>(ext);
+    }
+
+    bool write(const T* data, const std::filesystem::path& filePath,
+               std::optional<FileExtension> ext = std::nullopt) {
+        return factory->writeDataForTypeAndExtension<T>(data, filePath, ext);
+    }
+
+private:
+    DataWriterFactory* factory;
+};
+
+template <typename T>
+void exposeFactoryWriterType(pybind11::module& m, pybind11::classh<DataWriterFactory>& r,
+                             std::string_view type) {
     namespace py = pybind11;
-    r.def(fmt::format("getExtensionsFor{}", type).c_str(),
-          (std::vector<FileExtension>(DataWriterFactory::*)() const) &
-              DataWriterFactory::getExtensionsForType<T>)
-        .def(fmt::format("get{}Writer", type).c_str(),
-             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(const std::filesystem::path&)
-                  const) &
-                 DataWriterFactory::getWriterForTypeAndExtension<T>)
-        .def(
-            fmt::format("get{}Writer", type).c_str(),
-            (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(const FileExtension&) const) &
-                DataWriterFactory::getWriterForTypeAndExtension<T>)
-        .def(fmt::format("get{}Writer", type).c_str(),
-             (std::unique_ptr<DataWriterType<T>>(DataWriterFactory::*)(
-                 const FileExtension&, const std::filesystem::path&) const) &
-                 DataWriterFactory::getWriterForTypeAndExtension<T>)
-        .def(fmt::format("has{}Writer", type).c_str(),
-             (bool(DataWriterFactory::*)(const std::filesystem::path&) const) &
-                 DataWriterFactory::hasWriterForTypeAndExtension<T>)
-        .def(fmt::format("has{}Writer", type).c_str(),
-             (bool(DataWriterFactory::*)(const FileExtension&) const) &
-                 DataWriterFactory::hasWriterForTypeAndExtension<T>)
-        .def(fmt::format("write{}", type).c_str(),
-             &DataWriterFactory::writeDataForTypeAndExtension<T>);
+
+    using TWF = TypedDataWriterFactoryWrapper<T>;
+    py::classh<TWF>(m, fmt::format("{}WriterFactory", type).c_str())
+        .def("getExtensions", &TWF::getExtensions)
+        .def("getWriter",
+             static_cast<std::unique_ptr<DataWriterType<T>> (TWF::*)(const std::filesystem::path&)
+                             const>(&TWF::getWriter),
+             py::arg("path"))
+        .def("getWriter",
+             static_cast<std::unique_ptr<DataWriterType<T>> (TWF::*)(const FileExtension&) const>(
+                 &TWF::getWriter),
+             py::arg("fileExtension"))
+        .def("getWriter",
+             static_cast<std::unique_ptr<DataWriterType<T>> (TWF::*)(
+                 const FileExtension&, const std::filesystem::path&) const>(&TWF::getWriter),
+             py::arg("fileExtension"), py::arg("fallbackPath"))
+        .def("hasWriter",
+             static_cast<bool (TWF::*)(const std::filesystem::path&) const>(&TWF::hasWriter),
+             py::arg("path"))
+        .def("hasWriter", static_cast<bool (TWF::*)(const FileExtension&) const>(&TWF::hasWriter),
+             py::arg("fileExtension"))
+        .def("write", &TWF::write, py::arg("data"), py::arg("path"),
+             py::arg("fileExtension") = std::nullopt);
+
+    r.def_property_readonly(
+        toLower(type).c_str(), [](DataWriterFactory& rf) { return TWF(rf); },
+        fmt::format("The {} Writer Factory", type).c_str());
 }
 
 template <typename T>
 void exposeWriterType(pybind11::module& m, std::string_view name) {
-    namespace py = pybind11;
-    py::classh<DataWriterType<T>, DataWriter, DataWriterTypeTrampoline<T>>(
+    pybind11::classh<DataWriterType<T>, DataWriter, DataWriterTypeTrampoline<T>>(
         m, fmt::format("{}DataWriter", name).c_str())
         .def("writeData", &DataWriterType<T>::writeData);
 }
 
 void exposeDataWriters(pybind11::module& m) {
-    namespace py = pybind11;
-
-    py::classh<DataWriter>(m, "DataWriter")
+    pybind11::classh<DataWriter>(m, "DataWriter")
         .def("clone", &DataWriter::clone)
         .def_property_readonly("extensions", &DataWriter::getExtensions,
-                               py::return_value_policy::reference_internal)
+                               pybind11::return_value_policy::reference_internal)
         .def("addExtension", &DataWriter::addExtension)
         .def("getOverwrite", &DataWriter::getOverwrite)
         .def("setOverwrite", &DataWriter::setOverwrite)
         .def("setOption", &DataWriter::setOption)
         .def("getOption", &DataWriter::getOption);
 
-    auto fr = py::classh<DataWriterFactory>(m, "DataWriterFactory");
-    fr.def("create",
-           (std::unique_ptr<DataWriter>(DataWriterFactory::*)(const FileExtension&) const) &
-               DataWriterFactory::create)
-        .def("create", (std::unique_ptr<DataWriter>(DataWriterFactory::*)(std::string_view) const) &
-                           DataWriterFactory::create)
-        .def("hasKey",
-             (bool(DataWriterFactory::*)(std::string_view) const) & DataWriterFactory::hasKey)
-        .def("hasKey",
-             (bool(DataWriterFactory::*)(const FileExtension&) const) & DataWriterFactory::hasKey);
+    auto fr = pybind11::classh<DataWriterFactory>(m, "DataWriterFactory");
+    fr.def("create", static_cast<std::unique_ptr<DataWriter> (DataWriterFactory::*)(
+                         const FileExtension&) const>(&DataWriterFactory::create))
+        .def(
+            "create",
+            static_cast<std::unique_ptr<DataWriter> (DataWriterFactory::*)(std::string_view) const>(
+                &DataWriterFactory::create))
+        .def("hasKey", static_cast<bool (DataWriterFactory::*)(std::string_view) const>(
+                           &DataWriterFactory::hasKey))
+        .def("hasKey", static_cast<bool (DataWriterFactory::*)(const FileExtension&) const>(
+                           &DataWriterFactory::hasKey));
 
     // No good way of dealing with template return types so we manually define one for each known
     // type. https://github.com/pybind/pybind11/issues/1667#issuecomment-454348004
     // If your module exposes a new Writer type it will have to bind getXXXWriter.
 
+    exposeWriterType<Layer>(m, "Layer");
+    exposeFactoryWriterType<Layer>(m, fr, "Layer");
+
     exposeWriterType<Image>(m, "Image");
-    exposeFactoryWriterType<Image>(fr, "Image");
+    exposeFactoryWriterType<Image>(m, fr, "Image");
 
     exposeWriterType<Mesh>(m, "Mesh");
-    exposeFactoryWriterType<Mesh>(fr, "Mesh");
+    exposeFactoryWriterType<Mesh>(m, fr, "Mesh");
 
     exposeWriterType<Volume>(m, "Volume");
-    exposeFactoryWriterType<Volume>(fr, "Volume");
+    exposeFactoryWriterType<Volume>(m, fr, "Volume");
 
     exposeWriterType<TransferFunction>(m, "TransferFunction");
-    exposeFactoryWriterType<TransferFunction>(fr, "TransferFunction");
+    exposeFactoryWriterType<TransferFunction>(m, fr, "TransferFunction");
 
     exposeWriterType<IsoValueCollection>(m, "IsoValueCollection");
-    exposeFactoryWriterType<IsoValueCollection>(fr, "IsoValueCollection");
+    exposeFactoryWriterType<IsoValueCollection>(m, fr, "IsoValueCollection");
 }
 
 }  // namespace inviwo
