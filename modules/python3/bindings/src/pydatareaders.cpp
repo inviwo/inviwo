@@ -99,7 +99,7 @@ template <typename T>
 class TypedDataReaderFactoryWrapper {
 public:
     TypedDataReaderFactoryWrapper() = delete;
-    explicit explicitTypedDataReaderFactoryWrapper(DataReaderFactory& rf) : factory{&rf} {}
+    explicit TypedDataReaderFactoryWrapper(DataReaderFactory& rf) : factory{&rf} {}
     TypedDataReaderFactoryWrapper(const TypedDataReaderFactoryWrapper&) = default;
     TypedDataReaderFactoryWrapper(TypedDataReaderFactoryWrapper&&) = default;
     TypedDataReaderFactoryWrapper& operator=(const TypedDataReaderFactoryWrapper&) = default;
