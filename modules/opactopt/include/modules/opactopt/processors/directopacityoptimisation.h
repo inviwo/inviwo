@@ -33,29 +33,29 @@
 #include <modules/opactopt/utils/approximation.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/openglcapabilities.h>
 
-#include <inviwo/core/interaction/cameratrackball.h>         // for CameraTrackball
-#include <inviwo/core/ports/imageport.h>                     // for ImageInport, ImageOutport
-#include <inviwo/core/ports/meshport.h>                      // for MeshFlatMultiInport
-#include <inviwo/core/processors/processor.h>                // for Processor
-#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>           // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>        // for CompositeProperty
-#include <inviwo/core/properties/optionproperty.h>           // for OptionPropertyInt
-#include <inviwo/core/properties/ordinalproperty.h>          // for FloatVec4Property
-#include <inviwo/core/properties/boolcompositeproperty.h>    // for BoolCompositeProperty
-#include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
-#include <modules/opengl/shader/shader.h>                    // for Shader
-#include <modules/basegl/properties/linesettingsproperty.h>  // for LineSettingsProperty
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <string>
 
 namespace inviwo {
 
@@ -141,12 +141,12 @@ protected:
 
     TextureUnitContainer textureUnits_;
     GLFormat imageFormat_ = GLFormats::getGLFormat(
-        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float") ? GL_FLOAT
-                                                                              : GL_INT,
+        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float") ? GL_FLOAT : GL_INT,
         1);
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
-    TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_, *importanceVolumeUnit_;
+    TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_,
+        *importanceVolumeUnit_;
 
     BufferObject gaussianKernel_;
     BoolCompositeProperty smoothing_;

@@ -33,9 +33,9 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/io/datareader.h>
 
-#include <any>          // for any
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
+#include <memory>
+#include <filesystem>
+#include <fstream>
 
 namespace inviwo {
 

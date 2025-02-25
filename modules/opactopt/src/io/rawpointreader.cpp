@@ -29,9 +29,7 @@
 
 #include <modules/opactopt/io/rawpointreader.h>
 
-#include <inviwo/core/io/datareaderexception.h>  // for DataReaderException
 #include <inviwo/core/util/raiiutils.h>
-
 #include <vector>  // for vector
 #include <fstream>
 

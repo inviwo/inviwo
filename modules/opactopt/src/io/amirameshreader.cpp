@@ -29,34 +29,23 @@
 
 #include <modules/opactopt/io/amirameshreader.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, IndexBuffer
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for Vec3BufferRAM
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, DrawType
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // Buffer
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/io/datareader.h>                                  // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                         // for DataReaderException
-#include <inviwo/core/util/fileextension.h>                             // for FileExtension
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
-#include <inviwo/core/util/logcentral.h>                                // for LogVerbosity, Log...
-#include <inviwo/core/util/sourcecontext.h>                             // for IVW_CONTEXT
-#include <inviwo/core/util/stringconversion.h>                          // for splitStringView
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
 #include <modules/opengl/inviwoopengl.h>
 
-#include <algorithm>      // for max
-#include <array>          // for array, array<>::v...
-#include <cstdint>        // for uint32_t
-#include <cstring>        // for strlen
-#include <ctime>          // for size_t, clock
-#include <string>         // for basic_string<>::v...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
-#include <vector>         // for vector
-#include <fmt/format.h>
-#include <fmt/std.h>
+#include <cstdint>
+#include <string>
+#include <type_traits>
+#include <vector>
+#include <fstream>
+#include <map>
+#include <memory>
 
 namespace inviwo {
 

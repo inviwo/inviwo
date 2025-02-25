@@ -30,21 +30,25 @@
 #include <modules/opactopt/io/amiravolumereader.h>
 
 #include <modules/basegl/algorithm/dataminmaxgl.h>
-#include <inviwo/core/io/datareader.h>           // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>  // for DataReaderException
-#include <inviwo/core/util/fileextension.h>      // for FileExtension
-#include <inviwo/core/util/glmvec.h>             // for vec3, vec4
-#include <inviwo/core/util/logcentral.h>         // for LogVerbosity, Log...
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/io/rawvolumeramloader.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/formatconversion.h>
 
-#include <cstring>  // for strlen
+#include <cstring>
 #include <format>
-#include <type_traits>  // for remove_extent_t
-#include <vector>       // for vector
 
-#include <glm/gtx/component_wise.hpp>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/glmvec.h>
+#include <cstdio>
+#include <memory>
+#include <string>
 
 namespace inviwo {
 
@@ -177,7 +181,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     auto loader = std::make_unique<RawVolumeRAMLoader>(path, idxStartData, true);
     utilgl::DataMinMaxGL minmaxGL;
     auto minmax = minmaxGL.minMax(*volume);
-    auto compMinMax = glm::dvec2{glm::compMin(minmax.first), glm::compMax(minmax.second)};
+    auto compMinMax = dvec2{glm::compMin(minmax.first), glm::compMax(minmax.second)};
     volume->dataMap.dataRange = compMinMax;
     volume->dataMap.valueRange = compMinMax;
     LogInfo("Min: " << minmax.first << ", Max: " << minmax.second);
