@@ -48,7 +48,7 @@ namespace inviwo {
  * @param err OpenGL error enum, GLenum err = glGetError();
  * @return Returns "No error" if err == GL_NO_ERROR, otherwise the name of the error.
  */
-IVW_MODULE_OPENGL_API std::string getGLErrorString(GLenum err);
+IVW_MODULE_OPENGL_API std::string_view getGLErrorString(GLenum err);
 
 /**
  * Log the last OpenGL error if there has been an error, i.e. glGetError() != GL_NO_ERROR.

@@ -34,19 +34,12 @@
 
 #include <GL/glew.h>  // for glGetError, GL_NO_ERROR, GLenum, GLuint, GL_INV...
 
-#if defined(_WIN32)
-#include <inviwo/core/util/stringconversion.h>
-#endif
-
 namespace inviwo {
 
-std::string getGLErrorString(GLenum err) {
-    if (err == GL_NO_ERROR) {
-        return "No error";
-    }
-#ifdef GLEW_NO_GLU
-    std::string errorString = "";
+std::string_view getGLErrorString(GLenum err) {
     switch (err) {
+        case GL_NO_ERROR:
+            return "No error";
         case GL_INVALID_ENUM:
             return "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated "
                    "argument. "
@@ -81,16 +74,6 @@ std::string getGLErrorString(GLenum err) {
             break;
     }
     return "Undefined error";
-#else
-#if defined(_WIN32)
-    const auto* errorString = gluErrorUnicodeStringEXT(err);
-    return (errorString ? util::fromWstring(errorString) : "Undefined error");
-#else
-    const auto* errorString = gluErrorString(err);
-    return (errorString ? std::string(reinterpret_cast<const char*>(errorString))
-                        : "Undefined error");
-#endif
-#endif
 }
 
 void LogGLError(std::string_view source, std::string_view fileName, std::string_view functionName,
