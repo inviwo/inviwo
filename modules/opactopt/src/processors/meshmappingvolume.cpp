@@ -29,10 +29,31 @@
 
 #include <modules/opactopt/processors/meshmappingvolume.h>
 
-#include <modules/base/algorithm/dataminmax.h>  // for bufferMinMax
-#include <inviwo/core/util/zip.h>               // for enumerate, zipIte...
-#include <inviwo/core/util/logcentral.h>
+#include <modules/base/algorithm/dataminmax.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/properties/invalidationlevel.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/properties/valuewrapper.h>
+#include <array>
+#include <limits>
+#include <memory>
+#include <type_traits>
+#include <vector>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/glmvec.h>
 
 namespace inviwo {
 
