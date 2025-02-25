@@ -29,6 +29,7 @@
 
 #include <modules/opactopt/io/amiravolumereader.h>
 
+#include <modules/basegl/algorithm/dataminmaxgl.h>
 #include <inviwo/core/io/datareader.h>           // for DataReaderType
 #include <inviwo/core/io/datareaderexception.h>  // for DataReaderException
 #include <inviwo/core/util/fileextension.h>      // for FileExtension
@@ -174,25 +175,8 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     volume->setOffset(offset);
     volume->setWorldMatrix(wtm);
     auto loader = std::make_unique<RawVolumeRAMLoader>(path, idxStartData, true);
-    auto minmax =
-        volume->getRepresentation<VolumeRAM>()->dispatch<std::pair<dvec4, dvec4>>([](auto ram) {
-            using ValueType = util::PrecisionValueType<decltype(ram)>;
-            const size3_t dims = ram->getDimensions();
-            using Res = std::pair<ValueType, ValueType>;
-            // Initialize result with max and min values of given data type
-            Res minmax{DataFormat<ValueType>::max(), DataFormat<ValueType>::lowest()};
-            const ValueType* data = ram->getDataTyped();
-            // Iterate over buffer, accumulating the min and max components
-            minmax = std::accumulate(data, data + glm::compMul(dims) / 2, minmax,
-                                     [](const Res& mm, const ValueType& v) -> Res {
-                                         // Take component-wise min and max
-                                         return {glm::max((ValueType)-100, glm::min(mm.first, v)),
-                                                 glm::min((ValueType)100, glm::max(mm.second, v))};
-                                     });
-            // Return pair of dvec4, as we specified in dispatch's type parameter
-            return std::pair<dvec4, dvec4>{util::glm_convert<dvec4>(minmax.first),
-                                           util::glm_convert<dvec4>(minmax.second)};
-        });
+    utilgl::DataMinMaxGL minmaxGL;
+    auto minmax = minmaxGL.minMax(*volume);
     auto compMinMax = glm::dvec2{glm::compMin(minmax.first), glm::compMax(minmax.second)};
     volume->dataMap.dataRange = compMinMax;
     volume->dataMap.valueRange = compMinMax;
