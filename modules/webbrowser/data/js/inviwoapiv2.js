@@ -37,15 +37,15 @@ export class Property {
 
     set(value) {
         return cefAPIRequest({
-            'command': 'property.set',
+            'command': 'prop.set',
             'path': this.path + "." + this.identifier,
-            'value': value
+            'data': value
         });
     }
 
     get() {
         return cefAPIRequest({
-            'command': 'property.get',
+            'command': 'prop.get',
             'path': this.path + "." + this.identifier
         });
     }
