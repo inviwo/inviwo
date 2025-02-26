@@ -34,8 +34,13 @@ set(SOURCE_FILES
     src/io/json/buttonpropertyjsonconverter.cpp
     src/io/json/directorypropertyjsonconverter.cpp
     src/io/json/filepropertyjsonconverter.cpp
+    src/io/json/glmjsonconverter.cpp
+    src/io/json/minmaxpropertyjsonconverter.cpp
+    src/io/json/optionpropertyjsonconverter.cpp
+    src/io/json/ordinalpropertyjsonconverter.cpp
     src/io/json/ordinalrefpropertyjsonconverter.cpp
     src/io/json/stringpropertyjsonconverter.cpp
+    src/io/json/templatepropertyjsonconverter.cpp
     src/io/jsonreader.cpp
     src/io/jsonwriter.cpp
     src/json.cpp
