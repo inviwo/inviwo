@@ -104,6 +104,7 @@ public:
     TypedDataReaderFactoryWrapper(TypedDataReaderFactoryWrapper&&) = default;
     TypedDataReaderFactoryWrapper& operator=(const TypedDataReaderFactoryWrapper&) = default;
     TypedDataReaderFactoryWrapper& operator=(TypedDataReaderFactoryWrapper&&) = default;
+    ~TypedDataReaderFactoryWrapper() = default;
 
     std::vector<FileExtension> getExtensions() const { return factory->getExtensionsForType<T>(); }
     std::unique_ptr<DataReaderType<T>> getReader(

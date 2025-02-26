@@ -95,6 +95,7 @@ public:
     TypedDataWriterFactoryWrapper(TypedDataWriterFactoryWrapper&&) = default;
     TypedDataWriterFactoryWrapper& operator=(const TypedDataWriterFactoryWrapper&) = default;
     TypedDataWriterFactoryWrapper& operator=(TypedDataWriterFactoryWrapper&&) = default;
+    ~TypedDataWriterFactoryWrapper() = default;
 
     std::vector<FileExtension> getExtensions() const { return factory->getExtensionsForType<T>(); }
     std::unique_ptr<DataWriterType<T>> getWriter(
