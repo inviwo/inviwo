@@ -25,6 +25,7 @@ set(HEADER_FILES
     include/modules/json/jsonport.h
     include/modules/json/jsonpropertyconverter.h
     include/modules/json/jsonsupplier.h
+    include/modules/json/jsontraits.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -46,6 +47,7 @@ set(SOURCE_FILES
     src/jsonport.cpp
     src/jsonpropertyconverter.cpp
     src/jsonsupplier.cpp
+    src/jsontraits.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
