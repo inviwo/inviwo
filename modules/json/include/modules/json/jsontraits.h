@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,25 @@
 #pragma once
 
 #include <modules/json/jsonmoduledefine.h>
-
-#include <nlohmann/json.hpp>
-#include <utility>
+#include <modules/json/json.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
+template <>
+struct DataTraits<json> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.json"; }
+    static constexpr std::string_view dataName() { return "JSON"; }
+    static constexpr uvec3 colorCode() { return uvec3{230, 200, 20}; }
 
-template <typename T>
-concept JSONConvertable = requires(T& t, json& j) {
-    { to_json(j, std::as_const(t)) } -> std::same_as<void>;
-    { from_json(std::as_const(j), t) } -> std::same_as<void>;
+    static Document info(const json& data) {
+        Document doc;
+        doc.append("p", "JSON");
+
+        doc.append("pre", data.dump(2).substr(0, 200));
+
+        return doc;
+    }
 };
 
 }  // namespace inviwo
