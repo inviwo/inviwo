@@ -88,10 +88,10 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbase.io.saveDatVolume" title="ivwbase.io.saveDatVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveDatVolume</span></code></a>(arg0, arg1, arg2)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbase.io.saveDatVolume" title="ivwbase.io.saveDatVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveDatVolume</span></code></a>(arg0, arg1, str, bytes], arg2)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ivwbase.io.saveIvfVolume" title="ivwbase.io.saveIvfVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveIvfVolume</span></code></a>(arg0, arg1, arg2)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbase.io.saveIvfVolume" title="ivwbase.io.saveIvfVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveIvfVolume</span></code></a>(arg0, arg1, str, bytes], arg2)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ivwbase.io.saveIvfVolumeSequence" title="ivwbase.io.saveIvfVolumeSequence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveIvfVolumeSequence</span></code></a>(*args, **kwargs)</p></td>
@@ -101,12 +101,12 @@
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="ivwbase.io.saveDatVolume">
-<span class="sig-prename descclassname"><span class="pre">ivwbase.io.</span></span><span class="sig-name descname"><span class="pre">saveDatVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">inviwopy.data.Volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1:</span> <span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2:</span> <span class="pre">inviwo::Overwrite</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbase.io.saveDatVolume" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ivwbase.io.</span></span><span class="sig-name descname"><span class="pre">saveDatVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arg0:</span> <span class="pre">inviwopy.data.Volume,</span> <span class="pre">arg1:</span> <span class="pre">Union[os.PathLike,</span> <span class="pre">str,</span> <span class="pre">bytes],</span> <span class="pre">arg2:</span> <span class="pre">inviwo::Overwrite</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbase.io.saveDatVolume" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ivwbase.io.saveIvfVolume">
-<span class="sig-prename descclassname"><span class="pre">ivwbase.io.</span></span><span class="sig-name descname"><span class="pre">saveIvfVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">inviwopy.data.Volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1:</span> <span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2:</span> <span class="pre">inviwo::Overwrite</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbase.io.saveIvfVolume" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ivwbase.io.</span></span><span class="sig-name descname"><span class="pre">saveIvfVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arg0:</span> <span class="pre">inviwopy.data.Volume,</span> <span class="pre">arg1:</span> <span class="pre">Union[os.PathLike,</span> <span class="pre">str,</span> <span class="pre">bytes],</span> <span class="pre">arg2:</span> <span class="pre">inviwo::Overwrite</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwbase.io.saveIvfVolume" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -114,8 +114,8 @@
 <span class="sig-prename descclassname"><span class="pre">ivwbase.io.</span></span><span class="sig-name descname"><span class="pre">saveIvfVolumeSequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ivwbase.io.saveIvfVolumeSequence" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
-<li><p>saveIvfVolumeSequence(arg0: inviwopy.data.VolumeSequence, arg1: str, arg2: os.PathLike, arg3: str, arg4: inviwo::Overwrite) -&gt; os.PathLike</p></li>
-<li><p>saveIvfVolumeSequence(arg0: list, arg1: str, arg2: os.PathLike, arg3: str, arg4: bool) -&gt; os.PathLike</p></li>
+<li><p>saveIvfVolumeSequence(arg0: inviwopy.data.VolumeSequence, arg1: str, arg2: Union[os.PathLike, str, bytes], arg3: str, arg4: inviwo::Overwrite) -&gt; pathlib.Path</p></li>
+<li><p>saveIvfVolumeSequence(arg0: list, arg1: str, arg2: Union[os.PathLike, str, bytes], arg3: str, arg4: bool) -&gt; pathlib.Path</p></li>
 </ol>
 </dd></dl>
 

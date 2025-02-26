@@ -33,6 +33,8 @@
       FileLogger
       ImageDataReader
       ImageDataWriter
+      ImageReaderFactory
+      ImageWriterFactory
       Inport
       InportCallbackHolderOutport
       InportCallbackHolderVoid
@@ -43,6 +45,8 @@
       InviwoModuleFactoryObject
       IsoValueCollectionDataReader
       IsoValueCollectionDataWriter
+      IsoValueCollectionReaderFactory
+      IsoValueCollectionWriterFactory
       IvwKey
       KeyModifier
       KeyModifiers
@@ -51,6 +55,10 @@
       KeyStates
       KeyStatesIterator
       KeyboardEvent
+      LayerDataReader
+      LayerDataWriter
+      LayerReaderFactory
+      LayerWriterFactory
       LicenseInfo
       LogAudience
       LogCentral
@@ -59,6 +67,8 @@
       Logger
       MeshDataReader
       MeshDataWriter
+      MeshReaderFactory
+      MeshWriterFactory
       MessageBreakLevel
       ModuleIdentifierWrapper
       ModulePath
@@ -116,12 +126,16 @@
       TouchStatesIterator
       TransferFunctionDataReader
       TransferFunctionDataWriter
+      TransferFunctionReaderFactory
+      TransferFunctionWriterFactory
       Version
       ViewEvent
       ViewEventFitData
       ViewEventFlipUp
       VolumeDataReader
       VolumeDataWriter
+      VolumeReaderFactory
+      VolumeWriterFactory
       WheelEvent
       dmat2VectorFlatMultiInport
       dmat2VectorInport
