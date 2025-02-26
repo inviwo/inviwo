@@ -1509,7 +1509,7 @@ var namespaceinviwo =
     [ "from_json", "namespaceinviwo.html#ab82251dcb8628175f03a80dae31abc08", null ],
     [ "from_json", "namespaceinviwo.html#a939037d5890e313a5a5834e226bc6c26", null ],
     [ "from_json", "namespaceinviwo.html#ad18a0143a8faee15a8c928fbfbf1ca87", null ],
-    [ "getGLErrorString", "namespaceinviwo.html#a9c96a6b82bd29a80377dbb831cb9f1e5", null ],
+    [ "getGLErrorString", "namespaceinviwo.html#a050ff08ae067077e1d015a9d24de27fc", null ],
     [ "getLightTransformationMatrix", "namespaceinviwo.html#a739215c2443025e10bd3f7b4a27d85e5", null ],
     [ "iCaseCmp", "namespaceinviwo.html#a5faa497893ca8cf218056f66cb9a5a40", null ],
     [ "iCaseLess", "namespaceinviwo.html#ab7764b55d4a337cd0597102e3539f63e", null ],

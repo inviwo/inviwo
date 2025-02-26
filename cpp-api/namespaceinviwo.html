@@ -5645,9 +5645,9 @@ IVW_MODULE_JSON_API void&#160;</td><td class="memItemRight" valign="bottom"><b>f
 <tr class="memitem:aed3b63c41ed4dd92d498aed0d1b41bab" id="r_aed3b63c41ed4dd92d498aed0d1b41bab"><td class="memItemLeft" align="right" valign="top"><a id="aed3b63c41ed4dd92d498aed0d1b41bab" name="aed3b63c41ed4dd92d498aed0d1b41bab"></a>
 constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>enumToStr</b> (UseFragmentList val)</td></tr>
 <tr class="separator:aed3b63c41ed4dd92d498aed0d1b41bab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c96a6b82bd29a80377dbb831cb9f1e5" id="r_a9c96a6b82bd29a80377dbb831cb9f1e5"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c96a6b82bd29a80377dbb831cb9f1e5">getGLErrorString</a> (GLenum err)</td></tr>
-<tr class="memdesc:a9c96a6b82bd29a80377dbb831cb9f1e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a readable interpretation of the OpenGL error.  <br /></td></tr>
-<tr class="separator:a9c96a6b82bd29a80377dbb831cb9f1e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050ff08ae067077e1d015a9d24de27fc" id="r_a050ff08ae067077e1d015a9d24de27fc"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a050ff08ae067077e1d015a9d24de27fc">getGLErrorString</a> (GLenum err)</td></tr>
+<tr class="memdesc:a050ff08ae067077e1d015a9d24de27fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a readable interpretation of the OpenGL error.  <br /></td></tr>
+<tr class="separator:a050ff08ae067077e1d015a9d24de27fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3b7871810923d49b7a0af31e6888993" id="r_af3b7871810923d49b7a0af31e6888993"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3b7871810923d49b7a0af31e6888993">LogGLError</a> (std::string_view fileName, std::string_view functionName, int lineNumber)</td></tr>
 <tr class="separator:af3b7871810923d49b7a0af31e6888993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5042483609bd48307453304227395005" id="r_a5042483609bd48307453304227395005"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5042483609bd48307453304227395005">LogGLError</a> (std::string_view source, std::string_view fileName, std::string_view functionName, int lineNumber)</td></tr>
@@ -5663,18 +5663,18 @@ template&lt;typename E&gt; </td></tr>
 template&lt;typename E&gt; </td></tr>
 <tr class="memitem:adf9d150e209e9d32ff0ad33acce3f04b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeFlags</b> (pybind11::module &amp;m, pybind11::enum_&lt; E &gt; &amp;e, std::string_view name)</td></tr>
 <tr class="separator:adf9d150e209e9d32ff0ad33acce3f04b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a777a37f9990895abf2e5b477b10e8446" id="r_a777a37f9990895abf2e5b477b10e8446"><td class="memTemplParams" colspan="2"><a id="a777a37f9990895abf2e5b477b10e8446" name="a777a37f9990895abf2e5b477b10e8446"></a>
+<tr class="memitem:af613fc898e65921439ae2a5906650a5d" id="r_af613fc898e65921439ae2a5906650a5d"><td class="memTemplParams" colspan="2"><a id="af613fc898e65921439ae2a5906650a5d" name="af613fc898e65921439ae2a5906650a5d"></a>
 template&lt;typename Iter&gt; </td></tr>
-<tr class="memitem:a777a37f9990895abf2e5b477b10e8446"><td class="memTemplItemLeft" align="right" valign="top">pybind11::class_&lt; <a class="el" href="structinviwo_1_1util_1_1IterRangeGenerator.html">util::IterRangeGenerator</a>&lt; Iter &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeIterRangeGenerator</b> (pybind11::handle &amp;m, const std::string &amp;name)</td></tr>
-<tr class="separator:a777a37f9990895abf2e5b477b10e8446"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8005be775b394a8149a5d00a8352474" id="r_ae8005be775b394a8149a5d00a8352474"><td class="memTemplParams" colspan="2"><a id="ae8005be775b394a8149a5d00a8352474" name="ae8005be775b394a8149a5d00a8352474"></a>
+<tr class="memitem:af613fc898e65921439ae2a5906650a5d"><td class="memTemplItemLeft" align="right" valign="top">pybind11::classh&lt; <a class="el" href="structinviwo_1_1util_1_1IterRangeGenerator.html">util::IterRangeGenerator</a>&lt; Iter &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeIterRangeGenerator</b> (pybind11::handle &amp;m, const std::string &amp;name)</td></tr>
+<tr class="separator:af613fc898e65921439ae2a5906650a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600a1c22cc9e597b572d5d3f78e3738e" id="r_a600a1c22cc9e597b572d5d3f78e3738e"><td class="memTemplParams" colspan="2"><a id="a600a1c22cc9e597b572d5d3f78e3738e" name="a600a1c22cc9e597b572d5d3f78e3738e"></a>
 template&lt;typename <a class="el" href="classinviwo_1_1Port.html">Port</a>&gt; </td></tr>
-<tr class="memitem:ae8005be775b394a8149a5d00a8352474"><td class="memTemplItemLeft" align="right" valign="top">pybind11::class_&lt; <a class="el" href="classinviwo_1_1Port.html">Port</a>, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeOutport</b> (pybind11::module &amp;m, const std::string &amp;name)</td></tr>
-<tr class="separator:ae8005be775b394a8149a5d00a8352474"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e505a1e55fc5f1c25b9a701961753dc" id="r_a1e505a1e55fc5f1c25b9a701961753dc"><td class="memTemplParams" colspan="2"><a id="a1e505a1e55fc5f1c25b9a701961753dc" name="a1e505a1e55fc5f1c25b9a701961753dc"></a>
+<tr class="memitem:a600a1c22cc9e597b572d5d3f78e3738e"><td class="memTemplItemLeft" align="right" valign="top">pybind11::classh&lt; <a class="el" href="classinviwo_1_1Port.html">Port</a>, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeOutport</b> (pybind11::module &amp;m, const std::string &amp;name)</td></tr>
+<tr class="separator:a600a1c22cc9e597b572d5d3f78e3738e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae581e4c2b7fd3b179277b704f591795e" id="r_ae581e4c2b7fd3b179277b704f591795e"><td class="memTemplParams" colspan="2"><a id="ae581e4c2b7fd3b179277b704f591795e" name="ae581e4c2b7fd3b179277b704f591795e"></a>
 template&lt;typename <a class="el" href="classinviwo_1_1Port.html">Port</a>&gt; </td></tr>
-<tr class="memitem:a1e505a1e55fc5f1c25b9a701961753dc"><td class="memTemplItemLeft" align="right" valign="top">pybind11::class_&lt; <a class="el" href="classinviwo_1_1Port.html">Port</a>, <a class="el" href="classinviwo_1_1Inport.html">Inport</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeInport</b> (pybind11::module &amp;m, const std::string &amp;name)</td></tr>
-<tr class="separator:a1e505a1e55fc5f1c25b9a701961753dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae581e4c2b7fd3b179277b704f591795e"><td class="memTemplItemLeft" align="right" valign="top">pybind11::classh&lt; <a class="el" href="classinviwo_1_1Port.html">Port</a>, <a class="el" href="classinviwo_1_1Inport.html">Inport</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeInport</b> (pybind11::module &amp;m, const std::string &amp;name)</td></tr>
+<tr class="separator:ae581e4c2b7fd3b179277b704f591795e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1243c70f6510588df92464efc13273b" id="r_af1243c70f6510588df92464efc13273b"><td class="memTemplParams" colspan="2"><a id="af1243c70f6510588df92464efc13273b" name="af1243c70f6510588df92464efc13273b"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:af1243c70f6510588df92464efc13273b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>exposeStandardDataPorts</b> (pybind11::module &amp;m, const std::string &amp;name)</td></tr>
@@ -6714,14 +6714,14 @@ template&lt;typename T&gt; </div>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="a9c96a6b82bd29a80377dbb831cb9f1e5" name="a9c96a6b82bd29a80377dbb831cb9f1e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c96a6b82bd29a80377dbb831cb9f1e5">&#9670;&#160;</a></span>getGLErrorString()</h2>
+<a id="a050ff08ae067077e1d015a9d24de27fc" name="a050ff08ae067077e1d015a9d24de27fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a050ff08ae067077e1d015a9d24de27fc">&#9670;&#160;</a></span>getGLErrorString()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">IVW_MODULE_OPENGL_API std::string inviwo::getGLErrorString </td>
+          <td class="memname">IVW_MODULE_OPENGL_API std::string_view inviwo::getGLErrorString </td>
           <td>(</td>
           <td class="paramtype">GLenum</td>          <td class="paramname"><span class="paramname"><em>err</em></span></td><td>)</td>
           <td></td>
