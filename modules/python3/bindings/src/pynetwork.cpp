@@ -54,14 +54,14 @@ namespace py = pybind11;
 namespace inviwo {
 
 void exposeNetwork(py::module& m) {
-    py::class_<PortConnection>(m, "PortConnection")
+    py::classh<PortConnection>(m, "PortConnection")
         .def(py::init<Outport*, Inport*>())
         .def_property_readonly("inport", &PortConnection::getInport,
                                py::return_value_policy::reference)
         .def_property_readonly("outport", &PortConnection::getOutport,
                                py::return_value_policy::reference);
 
-    py::class_<PropertyLink>(m, "PropertyLink")
+    py::classh<PropertyLink>(m, "PropertyLink")
         .def(py::init<Property*, Property*>(), py::arg("src"), py::arg("dst"))
         .def_property_readonly("source", &PropertyLink::getSource,
                                py::return_value_policy::reference)
@@ -72,7 +72,7 @@ void exposeNetwork(py::module& m) {
     using ProcessorVecWrapper = VectorIdentifierWrapper<ProcessorIt, false>;
     exposeVectorIdentifierWrapper<ProcessorIt, false>(m, "ProcessorVecWrapper");
 
-    py::class_<ProcessorNetwork>(m, "ProcessorNetwork")
+    py::classh<ProcessorNetwork>(m, "ProcessorNetwork")
         .def_property_readonly("processors",
                                [](ProcessorNetwork& net) {
                                    auto range = net.processorRange();

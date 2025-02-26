@@ -51,7 +51,7 @@ struct OrdinalPropertyHelper {
 
         auto classname = Defaultvalues<T>::getName() + "Property";
 
-        py::class_<P, Property> prop(m, classname.c_str());
+        py::classh<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, const T& value,
                              const T& min, const T& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {

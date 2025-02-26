@@ -49,22 +49,22 @@ namespace inviwo {
 
 void exposeDataMapper(py::module& m) {
 
-    py::class_<Unit>(m, "Unit")
-        .def(py::init([](std::string unit) { return units::unit_from_string(unit); }))
+    py::classh<Unit>(m, "Unit")
+        .def(py::init([](std::string unit) { return units::unit_from_string(std::move(unit)); }))
         .def("to_string",
              [](const Unit& unit, std::string_view format = "{}") {
                  return fmt::format(fmt::runtime(format), unit);
              })
         .def("__repr__", [](const Unit& unit) { return fmt::format("{}", unit); });
 
-    py::class_<Axis>(m, "Axis")
+    py::classh<Axis>(m, "Axis")
         .def(py::init<std::string, Unit>())
         .def_readwrite("name", &Axis::name)
         .def_readwrite("unit", &Axis::unit)
         .def("__repr__",
              [](const Axis& axis) { return fmt::format("{}{: [}", axis.name, axis.unit); });
 
-    py::class_<DataMapper>(m, "DataMapper")
+    py::classh<DataMapper>(m, "DataMapper")
         .def(py::init())
         .def_readwrite("dataRange", &DataMapper::dataRange)
         .def_readwrite("valueRange", &DataMapper::valueRange)

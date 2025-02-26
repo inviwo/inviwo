@@ -140,7 +140,9 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeDataReaders(m);
     exposeDataWriters(m);
 
-    py::class_<Settings, PropertyOwner>(m, "Settings");
+    py::classh<Settings, PropertyOwner>(m, "Settings")
+        .def("load", &Settings::load)
+        .def("save", &Settings::save);
 
     m.def("debugBreak", []() { util::debugBreak(); });
 

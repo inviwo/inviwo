@@ -73,20 +73,20 @@ struct IterRangeGenerator : iter_range<Iter> {
 }  // namespace util
 
 template <typename Iter>
-pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::handle& m,
+pybind11::classh<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::handle& m,
                                                                           const std::string& name) {
 
-    return pybind11::class_<util::IterRangeGenerator<Iter>>(m,
+    return pybind11::classh<util::IterRangeGenerator<Iter>>(m,
                                                             StrBuffer{"{}Generator", name}.c_str())
         .def("__next__", &util::IterRangeGenerator<Iter>::next);
 }
 
 template <typename Port>
-pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
+pybind11::classh<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
     using T = typename Port::type;
 
-    return pybind11::class_<Port, Outport>(m, StrBuffer{"{}Outport", name}.c_str())
+    return pybind11::classh<Port, Outport>(m, StrBuffer{"{}Outport", name}.c_str())
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
@@ -94,11 +94,11 @@ pybind11::class_<Port, Outport> exposeOutport(pybind11::module& m, const std::st
 }
 
 template <typename Port>
-pybind11::class_<Port, Inport> exposeInport(pybind11::module& m, const std::string& name) {
+pybind11::classh<Port, Inport> exposeInport(pybind11::module& m, const std::string& name) {
 
     namespace py = pybind11;
 
-    pybind11::class_<Port, Inport> pyInport{m, StrBuffer{"{}Inport", name}.c_str()};
+    pybind11::classh<Port, Inport> pyInport{m, StrBuffer{"{}Inport", name}.c_str()};
 
     exposeIterRangeGenerator<typename Port::const_iterator>(pyInport, "Data");
     exposeIterRangeGenerator<typename Port::const_iterator_port>(pyInport, "OutportAndData");

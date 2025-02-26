@@ -93,7 +93,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .value("Relative", TFPrimitiveSetType::Relative)
         .value("Absolute", TFPrimitiveSetType::Absolute);
 
-    py::class_<TFPrimitiveData>(m, "TFPrimitiveData")
+    py::classh<TFPrimitiveData>(m, "TFPrimitiveData")
         .def(py::init())
         .def(py::init<double, vec4>())
         .def(py::init([](double iso, const std::string& color) {
@@ -111,7 +111,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def(py::self == py::self)
         .def(py::self != py::self);
 
-    py::class_<TFPrimitive>(m, "TFPrimitive")
+    py::classh<TFPrimitive>(m, "TFPrimitive")
         .def(py::init([](double pos, const vec4& color) { return new TFPrimitive(pos, color); }),
              py::arg("pos") = 0.0, py::arg("color") = vec4(0.0f))
         .def(py::init([](double iso, const std::string& color) {
@@ -139,7 +139,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def(py::self == py::self)
         .def(py::self != py::self);
 
-    py::class_<TFPrimitiveSet>(m, "TFPrimitiveSet")
+    py::classh<TFPrimitiveSet>(m, "TFPrimitiveSet")
         .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
                  return new TFPrimitiveSet(values, type);
              }),
@@ -187,7 +187,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
             return oss.str();
         });
 
-    py::class_<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
+    py::classh<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
         .def(py::init([]() { return TransferFunction(); }))
         .def(py::init([](const std::vector<TFPrimitiveData>& values) {
                  return new TransferFunction(values);
@@ -223,7 +223,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
             return oss.str();
         });
 
-    py::class_<IsoValueCollection, TFPrimitiveSet>(m, "IsoValueCollection")
+    py::classh<IsoValueCollection, TFPrimitiveSet>(m, "IsoValueCollection")
         .def(py::init([](const std::vector<TFPrimitiveData>& values, TFPrimitiveSetType type) {
                  return new IsoValueCollection(values, type);
              }),

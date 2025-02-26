@@ -57,7 +57,7 @@ struct BitSetIteratorWrapper {
 void exposeBitset(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::class_<BitSetIteratorWrapper>(m, "BitSetIterator")
+    py::classh<BitSetIteratorWrapper>(m, "BitSetIterator")
         .def("__next__", [](BitSetIteratorWrapper& w) {
             if (w.begin != w.end) {
                 auto val = *w.begin;
@@ -68,7 +68,7 @@ void exposeBitset(pybind11::module& m) {
             }
         });
 
-    py::class_<BitSet>(m, "BitSet")
+    py::classh<BitSet>(m, "BitSet")
         .def(py::init<>())
         .def(py::init<const std::vector<bool>&>())
         .def(py::init([](py::list list) {

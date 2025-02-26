@@ -100,7 +100,7 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
         py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 
-    py::class_<CameraProperty, CompositeProperty>(properties, "CameraProperty")
+    py::classh<CameraProperty, CompositeProperty>(properties, "CameraProperty")
         .def(py::init([](const std::string& identifier, const std::string& displayName, vec3 eye,
                          vec3 center, vec3 lookUp, Inport* inport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
