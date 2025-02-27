@@ -55,7 +55,7 @@ namespace inviwo {
  */
 DataFrame::DataFrame(std::uint32_t size) : columns_{} {
     // at the moment, GPUs only support uints up to 32bit
-    auto seq = util::make_sequence<std::uint32_t>(0, static_cast<std::uint32_t>(size));
+    auto seq = util::make_sequence<std::uint32_t>(0, size);
     std::vector<std::uint32_t> indices(seq.begin(), seq.end());
     addColumn(std::make_shared<IndexColumn>("index", std::move(indices)));
 }
