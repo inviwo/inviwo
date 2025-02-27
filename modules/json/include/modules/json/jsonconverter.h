@@ -29,13 +29,11 @@
 #pragma once
 
 #include <modules/json/jsonmoduledefine.h>
+#include <modules/json/json.h>
 
 #include <string>
-#include <nlohmann/json.hpp>
 
 namespace inviwo {
-
-using json = ::nlohmann::json;
 
 template <typename Base>
 class JSONConverter {
