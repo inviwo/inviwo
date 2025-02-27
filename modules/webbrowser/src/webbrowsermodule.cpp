@@ -191,6 +191,27 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // to be processed in CefDoMessageLoopWork() instead of in the Qt application loop.
     settings.external_message_pump = true;
 
+    const auto settingsPath = []() {
+        const auto base = filesystem::getPath(PathType::Settings) / "CEF";
+        for (int i = 0; true; ++i) {
+            auto path = base / fmt::format("{:03}", i);
+#if defined(WIN32)
+            if (!std::filesystem::exists(path / "lockfile")) {
+                std::filesystem::create_directories(path);
+                return path;
+            }
+#elif defined(__APPLE__)
+            if (!std::filesystem::exists(path / "SingletonSocket")) {
+                std::filesystem::create_directories(path);
+                return path;
+            }
+#else
+            return path;
+#endif
+        }
+    }();
+    CefString(&settings.root_cache_path).FromString(settingsPath.generic_string());
+
     CefString(&settings.locale).FromString(locale);
 
     // Optional implementation of the CefApp interface.
