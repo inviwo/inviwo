@@ -114,7 +114,21 @@ struct TemplateColumnReg {
                  })
             .def(
                 "__iter__", [](const C& c) { return py::make_iterator(c.begin(), c.end()); },
-                py::keep_alive<0, 1>());
+                py::keep_alive<0, 1>())
+            .def(
+                "__getitem__",
+                [](const C& c, size_t i) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    return c.get(i);
+                },
+                py::arg("i"))
+            .def(
+                "__setitem__",
+                [](C& c, size_t i, const T& value) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    c.set(i, value);
+                },
+                py::arg("i"), py::arg("value"));
     }
 };
 
