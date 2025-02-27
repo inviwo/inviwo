@@ -46,10 +46,42 @@ TEST(JSONConversion, JSONtoDataFrame) {
     constexpr std::array<std::string_view, 6> headers = {"index",       "sepalLength", "sepalWidth",
                                                          "petalLength", "petalWidth",  "species"};
     const std::string source{IVW_UNINDENT(R"(
-        [ 
-            {"sepalLength" : 5.1, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2, "species" : "setosa"},
-            {"sepalLength" : 4.9, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2, "species" : "setosa"}
-        ]
+        {
+            "columns": [
+                "sepalLength",
+                "sepalWidth",
+                "petalLength",
+                "petalWidth",
+                "species"
+            ],
+            "data": [
+                [
+                    5.1,
+                    3.5,
+                    1.4,
+                    0.2,
+                    "setosa"
+                ],
+                [
+                    4.9,
+                    3.0,
+                    1.4,
+                    0.2,
+                    "setosa"
+                ]
+            ],
+            "index": [
+                0,
+                1
+            ],
+            "types": [
+                "FLOAT64",
+                "FLOAT64",
+                "FLOAT64",
+                "FLOAT64",
+                "CATEGORICAL"
+            ]
+        }
     )")};
 
     DataFrame dataframe;
@@ -66,7 +98,7 @@ TEST(JSONConversion, JSONtoDataFrame) {
 
 TEST(JSONConversion, DataFrameToJSON) {
     constexpr std::string_view refJson(
-        R"([{"sepalLength":5.1,"petalLength":1.4,"petalWidth":0.2,"species":"setosa"},{"sepalLength":4.9,"petalLength":1.4,"petalWidth":0.2,"species":"setosa"}])");
+        R"({"columns":["sepalLength","petalLength","petalWidth","species"],"data":[[5.1,1.4,0.2,"setosa"],[4.9,1.4,0.2,"setosa"]],"index":[0,1],"types":["FLOAT64","FLOAT64","FLOAT64","CATEGORICAL"]})");
 
     DataFrame dataframe;
     dataframe.addColumn("sepalLength", std::vector<double>{5.1, 4.9});
@@ -85,7 +117,7 @@ TEST(JSONConversion, DataFrameToDataFrame) {
     // convert a DataFrame to JSON and back
     const std::vector<double> sepalLength{5.1, 4.9};
     const std::vector<double> petalLength{1.4, 1.4};
-    const std::vector<double> petalWidth{0.2, 0.2};
+    const std::vector<float> petalWidth{0.2f, 0.2f};
     const std::vector<std::string> species{"setosa", "setosa"};
 
     DataFrame dataframe;
@@ -104,6 +136,16 @@ TEST(JSONConversion, DataFrameToDataFrame) {
         << "column count does not match";
     ASSERT_EQ(dataframe.getNumberOfRows(), result.getNumberOfRows()) << "row count does not match";
 
+    constexpr std::array<DataFormatId, 5> expectedFormat = {
+        DataFormatId::UInt32, DataFormatId::Float64, DataFormatId::Float64, DataFormatId::Float32,
+        DataFormatId::UInt32};
+
+    for (auto&& [index, col] : util::enumerate(dataframe)) {
+        EXPECT_EQ(expectedFormat[index], col->getBuffer()->getDataFormat()->getId())
+            << "format mismatch";
+    }
+    EXPECT_EQ(ColumnType::Categorical, dataframe.getColumn("species")->getColumnType());
+
     auto sepalLengthCol = result.getColumn("sepalLength");
     auto petalLengthCol = result.getColumn("petalLength");
     auto petalWidthCol = result.getColumn("petalWidth");
@@ -113,7 +155,8 @@ TEST(JSONConversion, DataFrameToDataFrame) {
     for (auto row : std::ranges::iota_view{size_t{0}, result.getNumberOfRows()}) {
         isMatching &= util::almostEqual(sepalLength[row], sepalLengthCol->getAsDouble(row));
         isMatching &= util::almostEqual(petalLength[row], petalLengthCol->getAsDouble(row));
-        isMatching &= util::almostEqual(petalWidth[row], petalWidthCol->getAsDouble(row));
+        isMatching &=
+            util::almostEqual(petalWidth[row], static_cast<float>(petalWidthCol->getAsDouble(row)));
         isMatching &= species[row] == speciesCol->getAsString(row);
     }
     EXPECT_TRUE(isMatching) << "Converted DataFrame does not match source DataFrame";
