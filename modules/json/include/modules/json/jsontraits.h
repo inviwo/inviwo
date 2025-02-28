@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,48 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/dataframe/io/jsondataframereader.h>
-
-#include <inviwo/core/util/exception.h>                 // for FileException
-#include <inviwo/core/util/fileextension.h>             // for FileExtension
-#include <inviwo/core/util/sourcecontext.h>             // for SourceContext
-#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
-#include <inviwo/dataframe/jsondataframeconversion.h>   // IWYU pragma: keep
+#include <modules/json/jsonmoduledefine.h>
 #include <modules/json/json.h>
-
-#include <fstream>  // for basic_ifstream, ios, istream, str...
-#include <string>   // for operator==, fpos
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
-JSONDataFrameReader::JSONDataFrameReader() {
-    addExtension(FileExtension("json", "DataFrame in JavaScript Object Notation (JSON)"));
-}
+template <>
+struct DataTraits<json> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.json"; }
+    static constexpr std::string_view dataName() { return "JSON"; }
+    static constexpr uvec3 colorCode() { return uvec3{230, 200, 20}; }
 
-JSONDataFrameReader* JSONDataFrameReader::clone() const { return new JSONDataFrameReader(*this); }
+    static Document info(const json& data) {
+        Document doc;
+        doc.append("p", "JSON");
 
-std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::filesystem::path& fileName) {
-    auto file = open(fileName);
+        doc.append("pre", data.dump(2).substr(0, 200));
 
-    file.seekg(0, std::ios::end);
-    std::streampos len = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    if (len == std::streampos(0)) {
-        throw FileException("Empty file, no data");
+        return doc;
     }
-
-    return readData(file);
-}
-
-std::shared_ptr<DataFrame> JSONDataFrameReader::readData(std::istream& stream) const {
-    json j;
-    stream >> j;
-    auto dataFrame = std::make_shared<DataFrame>();
-    *dataFrame = j;
-
-    return dataFrame;
-}
+};
 
 }  // namespace inviwo

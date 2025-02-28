@@ -43,10 +43,10 @@
 #include <include/wrapper/cef_byte_read_handler.h>
 #include <include/base/cef_ref_counted.h>
 
+#include <modules/json/json.h>
 #include <modules/json/jsonmodule.h>
 #include <modules/json/jsonpropertyconverter.h>
 
-#include <nlohmann/json.hpp>
 #include <fmt/format.h>
 
 namespace inviwo {

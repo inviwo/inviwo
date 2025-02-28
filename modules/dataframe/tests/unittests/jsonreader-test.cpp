@@ -52,36 +52,44 @@ TEST(JSONnoData, file) {
 TEST(JSONdata, numRows) {
     // test for correct row count
     std::istringstream ss(IVW_UNINDENT(R"(
-        [ 
-            {"sepalLength" : 5.1, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"},
-            {"sepalLength" : 4.9, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"}
-        ]
+        {
+            "columns": [ "sepalLength", "petalLength", "petalWidth", "species" ],
+            "data": [
+                    [ 5.1, 1.4, 0.2, "setosa" ],
+                    [ 4.9, 1.4, 0.2, "setosa" ]
+                ],
+            "index": [ 0, 1 ],
+            "types": [ "FLOAT64", "FLOAT64", "FLOAT64", "CATEGORICAL" ]
+        }
     )"));
 
     JSONDataFrameReader reader;
 
     auto dataframe = reader.readData(ss);
-    ASSERT_EQ(6, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
 TEST(JSONdata, nullItem) {
     // test for null values, must have at least one were value is not null
     std::istringstream ss(IVW_UNINDENT(R"(
-        [
-            {"sepalLength" : null, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"},
-            {"sepalLength" : 4.9, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"}
-        ]
+        {
+            "columns": [ "sepalLength", "petalLength", "petalWidth", "species" ],
+            "data": [
+                    [ null, 1.4, 0.2, "setosa" ],
+                    [ 4.9, 1.4, 0.2, "setosa" ]
+                ]
+        }
     )"));
 
     JSONDataFrameReader reader;
 
     auto dataframe = reader.readData(ss);
-    ASSERT_EQ(6, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
     // Note that json reorders columns...
-    EXPECT_EQ("nan", dataframe->getColumn(3)->getAsString(0)) << "first item is not nan";
+    EXPECT_EQ("nan", dataframe->getColumn(1)->getAsString(0)) << "first item is not nan";
     EXPECT_EQ(NumericType::Float,
               dataframe->getColumn(3)->getBuffer()->getDataFormat()->getNumericType())
         << "incorrect guessing of data type";
@@ -90,20 +98,24 @@ TEST(JSONdata, nullItem) {
 TEST(JSONdata, nullColumn) {
     // test for column holding only null values, assumed column datatype should be float
     std::istringstream ss(IVW_UNINDENT(R"(
-        [
-            {"sepalLength" : null, "sepalWidth" : 3.5, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"},
-            {"sepalLength" : null, "sepalWidth" : 3.0, "petalLength" : 1.4, "petalWidth" : 0.2,"species" : "setosa"}
-        ]
+        {
+            "columns": [ "sepalLength", "petalLength", "petalWidth", "species" ],
+            "data": [
+                    [ null, 1.4, 0.2, "setosa" ],
+                    [ null, 1.4, 0.2, "setosa" ]
+                ],
+            "index": [ 0, 1 ]
+        }
     )"));
 
     JSONDataFrameReader reader;
 
     auto dataframe = reader.readData(ss);
-    ASSERT_EQ(6, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
     // Note that json reorders columns...
-    EXPECT_EQ("nan", dataframe->getColumn(3)->getAsString(0)) << "first item is not nan";
+    EXPECT_EQ("nan", dataframe->getColumn(1)->getAsString(0)) << "first item is not nan";
     EXPECT_EQ(NumericType::Float,
               dataframe->getColumn(3)->getBuffer()->getDataFormat()->getNumericType())
         << "incorrect guessing of data type";

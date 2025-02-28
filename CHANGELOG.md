@@ -1,5 +1,22 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-02-28 DataFrame to JSON conversion
+The conversion of `DataFrame` to and from JSON was updated. Now, the order of columns is explicitly encoded since the JSON specification does not guarantee the ordering of objects and keys. In addition, the data types of the columns can be specified using Inviwo's data types (`DataFormatBase::get(id)->getString()`).
+
+The new JSON output is based on Pandas [`pandas.DataFrame.to_json(order='split')`](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html) and has the following JSON object layout:
+```json
+{
+    "columns": [ "col1", "col2" ],
+    "data": [
+        [ 5.1, "category A" ],
+        [4.9, "category B" ]
+    ],
+    "index": [ 0, 1 ],
+    "types": [ "FLOAT64", "CATEGORICAL" ]
+}
+```
+When converting from JSON to `DataFrame`, the JSON object must contain the following elements: `"columns"` (list of column headers) and `"data"` (list of rows). The elements `"index"` and `"types"` are optional. If no types are provided, the column types will be derived from JSON types. In case a column only holds `null` values, the inferred data type will be float. Null values are converted to NaN in float columns and 0 in integer columns.
+
 ## 2025-01-17 File Caching
 New file caching processors have been added: 
  * `Volume File Cache` 
