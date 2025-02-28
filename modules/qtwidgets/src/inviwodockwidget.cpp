@@ -42,6 +42,8 @@
 #include <QVariant>     // for QVariant
 #include <QWidget>      // for QWidget
 #include <Qt>           // for qt_getEnumName, RightDockWidgetArea
+#include <QGuiApplication>
+#include <algorithm>
 
 class QCloseEvent;
 class QShowEvent;

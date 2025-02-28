@@ -36,6 +36,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>     // for getApplicationMainWindow, toGLM, toQPoint
 
 #include <utility>  // for move
+#include <algorithm>
 
 #include <QDebug>        // for operator<<
 #include <QMainWindow>   // for QMainWindow
@@ -47,6 +48,9 @@
 #include <QSize>         // for QSize
 #include <QVariant>      // for QVariant
 #include <Qt>            // for DockWidgetArea, operator|, qt_getEnumMet...
+#include <QGuiApplication>
+
+
 
 namespace inviwo {
 
