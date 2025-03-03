@@ -59,14 +59,14 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPACTOPT_API DirectOpacityOptimisation : public Processor {
+class IVW_MODULE_OPACTOPT_API OpacityOptimisation : public Processor {
 public:
-    DirectOpacityOptimisation();
+    OpacityOptimisation();
 
-    DirectOpacityOptimisation(const DirectOpacityOptimisation&) = delete;
-    DirectOpacityOptimisation& operator=(const DirectOpacityOptimisation&) = delete;
+    OpacityOptimisation(const OpacityOptimisation&) = delete;
+    OpacityOptimisation& operator=(const OpacityOptimisation&) = delete;
 
-    virtual ~DirectOpacityOptimisation();
+    virtual ~OpacityOptimisation();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
