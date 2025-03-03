@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2024 Inviwo Foundation
+ * Copyright (c) 2014-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,11 @@
  * 
  *********************************************************************************/
 
+// Owned by the MeshRenderProcessorGL Processor
+
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
-
-#ifdef DEBUG
-uniform ivec2 debugCoords;
-
-struct FragmentInfo {
-    float depth;
-    float importance;
-};
-
-layout(std430, binding = 11) buffer debugFragments {
-    int nFragments;
-    FragmentInfo debugFrags[];
-};
-#endif
-
-uniform float pointSize; // [pixel]
-uniform float borderWidth; // [pixel]
-uniform float antialising = 1.5; // [pixel]
-
-uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
@@ -67,38 +49,32 @@ uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
 #endif
 
-in Point {
-    vec4 color;
-    vec4 pickColor;
-} fragment;
+in vec4 color_;
+
+// Opacity optimisation settings
+uniform float q;
+uniform float r;
+uniform float lambda;
 
 #ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
+    #include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
+    #include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
+    #include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximate/powermoments.glsl"
+    #include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximate/trigmoments.glsl"
+    #include "opactopt/approximation/trigmoments.glsl"
 #endif
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(fragment.color.a == 0) { discard; }
-
-    // calculate normal from texture coordinates
-    vec3 normal;
-    normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
-    float rad = sqrt(dot(normal.xy, normal.xy));
-    if (rad > 1.0) {
-       discard;   // kill pixels outside circle
-    }
+    if(color_.a == 0) { discard; }
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
@@ -115,21 +91,20 @@ void main() {
     vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
     float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
 #else
-    float gi = fragment.color.a;
+    float gi = color_.a;
 #endif
 
     // Project importance
     float gisq = gi * gi;
-    project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
+    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
+    Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
+    float alpha = clamp(1 /
+                    (1 + pow(1 - gi, 2 * lambda)
+                    * (r * max(0, Gd - gisq)
+                    + q * max(0, gtot - Gd))),
+                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+    project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
 
-    #ifdef DEBUG
-        if (ivec2(gl_FragCoord.xy) == debugCoords) {
-            FragmentInfo fi;
-            fi.depth = depth;
-            fi.importance = gi;
-            debugFrags[atomicAdd(nFragments, 1)] = fi;
-        }
-    #endif
-
-    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
+    discard;
 }
