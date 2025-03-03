@@ -59,19 +59,19 @@ uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 
 
 #ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
+    #include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
+    #include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
+    #include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximate/powermoments.glsl"
+    #include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximate/trigmoments.glsl"
+    #include "opactopt/approximation/trigmoments.glsl"
 #endif
 
 void main(void) {
