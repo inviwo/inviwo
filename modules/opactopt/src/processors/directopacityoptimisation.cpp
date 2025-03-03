@@ -100,34 +100,34 @@ OpacityOptimisation::OpacityOptimisation()
     , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)",
                         "Toggle output of view space normals"_help, false,
                         InvalidationLevel::InvalidResources)
-    , meshShaders_{{"meshrendering.vert", "opactopt/direct/mesh/projectimportance.frag",
+    , meshShaders_{{"meshrendering.vert", "opactopt/mesh/projectimportance.frag",
                     Shader::Build::No},
-                   {"meshrendering.vert", "opactopt/direct/mesh/approximportancesum.frag",
+                   {"meshrendering.vert", "opactopt/mesh/approximportancesum.frag",
                     Shader::Build::No},
-                   {"meshrendering.vert", "opactopt/direct/mesh/approxblending.frag",
+                   {"meshrendering.vert", "opactopt/mesh/approxblending.frag",
                     Shader::Build::No}}
-    , lineShaders_{{"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                    "opactopt/direct/line/projectimportance.frag", Shader::Build::No},
-                   {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                    "opactopt/direct/line/approximportancesum.frag", Shader::Build::No},
-                   {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                    "opactopt/direct/line/approxblending.frag", Shader::Build::No}}
-    , lineAdjacencyShaders_{{"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                             "opactopt/direct/line/projectimportance.frag", Shader::Build::No},
-                            {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                             "opactopt/direct/line/approximportancesum.frag", Shader::Build::No},
-                            {"opactopt/direct/line/linerenderer.vert", "linerenderer.geom",
-                             "opactopt/direct/line/approxblending.frag", Shader::Build::No}}
-    , pointShaders_{{"pointrenderer.vert", "opactopt/direct/point/projectimportance.frag",
+    , lineShaders_{{"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                    "opactopt/line/projectimportance.frag", Shader::Build::No},
+                   {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                    "opactopt/line/approximportancesum.frag", Shader::Build::No},
+                   {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                    "opactopt/line/approxblending.frag", Shader::Build::No}}
+    , lineAdjacencyShaders_{{"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/line/projectimportance.frag", Shader::Build::No},
+                            {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/line/approximportancesum.frag", Shader::Build::No},
+                            {"opactopt/line/linerenderer.vert", "linerenderer.geom",
+                             "opactopt/line/approxblending.frag", Shader::Build::No}}
+    , pointShaders_{{"pointrenderer.vert", "opactopt/point/projectimportance.frag",
                      Shader::Build::No},
-                    {"pointrenderer.vert", "opactopt/direct/point/approximportancesum.frag",
+                    {"pointrenderer.vert", "opactopt/point/approximportancesum.frag",
                      Shader::Build::No},
-                    {"pointrenderer.vert", "opactopt/direct/point/approxblending.frag",
+                    {"pointrenderer.vert", "opactopt/point/approxblending.frag",
                      Shader::Build::No}}
-    , smoothH_{"oit/simplequad.vert", "opactopt/approximate/smooth.frag", Shader::Build::No}
-    , smoothV_{"oit/simplequad.vert", "opactopt/approximate/smooth.frag", Shader::Build::No}
-    , clear_{"oit/simplequad.vert", "opactopt/direct/clear.frag", Shader::Build::No}
-    , normalise_{"oit/simplequad.vert", "opactopt/direct/normalise.frag", Shader::Build::No}
+    , smoothH_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
+    , smoothV_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
+    , clear_{"minimal.vert", "opactopt/clear.frag", Shader::Build::No}
+    , normalise_{"minimal.vert", "opactopt/normalise.frag", Shader::Build::No}
     , approximationProperties_{"approximationProperties", "Approximation Properties"}
     , q_{"q",
          "q",

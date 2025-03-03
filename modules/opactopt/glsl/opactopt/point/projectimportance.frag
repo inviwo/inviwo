@@ -31,6 +31,20 @@
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
 
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
+#endif
+
 uniform float pointSize; // [pixel]
 uniform float borderWidth; // [pixel]
 uniform float antialising = 1.5; // [pixel]
@@ -58,27 +72,21 @@ in Point {
     vec4 pickColor;
 } fragment;
 
-// Opacity optimisation settings
-uniform float q;
-uniform float r;
-uniform float lambda;
-
 #ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
+    #include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
+    #include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
+    #include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximate/powermoments.glsl"
+    #include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximate/trigmoments.glsl"
+    #include "opactopt/approximation/trigmoments.glsl"
 #endif
-
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
@@ -112,27 +120,16 @@ void main() {
 
     // Project importance
     float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
-    Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
-    float alpha = clamp(1 /
-                    (1 + pow(1 - gi, 2 * lambda)
-                    * (r * max(0, Gd - gisq)
-                    + q * max(0, gtot - Gd))),
-                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+    project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
+    #ifdef DEBUG
+        if (ivec2(gl_FragCoord.xy) == debugCoords) {
+            FragmentInfo fi;
+            fi.depth = depth;
+            fi.importance = gi;
+            debugFrags[atomicAdd(nFragments, 1)] = fi;
+        }
+    #endif
 
-    float glyphRadius = pointSize * 0.5;
-    rad *= pointSize * 0.5 + borderWidth;
-
-    // pseudo antialiasing with the help of the alpha channel
-    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
-    float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
-
-    float borderAlpha = clamp(mix(1.0, 0.0, (rad - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
-    alpha *= borderAlpha;
-
-    project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
-
-    discard;
+    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
 }
