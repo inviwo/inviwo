@@ -94,6 +94,7 @@
       "dependencies": [
         { 
           "name": "vtk",
+          "default-features": false,
           "features": [
             "opengl",
             "utf8"
