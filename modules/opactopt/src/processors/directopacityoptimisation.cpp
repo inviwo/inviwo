@@ -52,20 +52,20 @@
 
 namespace inviwo {
 
-const ProcessorInfo DirectOpacityOptimisation::processorInfo_{
-    "org.inviwo.DirectOpacityOptimisation",  // Class identifier
-    "Direct Opacity Optimisation",           // Display name
-    "Mesh Rendering",                        // Category
-    CodeState::Experimental,                 // Code state
-    Tags::GL,                                // Tags
+const ProcessorInfo OpacityOptimisation::processorInfo_{
+    "org.inviwo.OpacityOptimisation",  // Class identifier
+    "Opacity Optimisation",            // Display name
+    "Mesh Rendering",                  // Category
+    CodeState::Experimental,           // Code state
+    Tags::GL,                          // Tags
     "Performs approximate opacity optimisation using a direct"
-    " rendering approach.The processor takes a mesh as input,"
+    " rendering approach. The processor takes a mesh as input,"
     " and optionally an importance volume and background"
     "texture. The output is an opacity optimised image."_help};
 
-const ProcessorInfo& DirectOpacityOptimisation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& OpacityOptimisation::getProcessorInfo() const { return processorInfo_; }
 
-DirectOpacityOptimisation::DirectOpacityOptimisation()
+OpacityOptimisation::OpacityOptimisation()
     : Processor()
     , inport_("geometry", "Input meshes"_help)
     , imageInport_("imageInport", "Background image (optional)"_help)
@@ -279,9 +279,9 @@ DirectOpacityOptimisation::DirectOpacityOptimisation()
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
-DirectOpacityOptimisation::~DirectOpacityOptimisation() = default;
+OpacityOptimisation::~OpacityOptimisation() = default;
 
-void DirectOpacityOptimisation::initializeResources() {
+void OpacityOptimisation::initializeResources() {
     for (auto& ist : importanceSumTexture_) ist.initialize(nullptr);
     opticalDepthTexture_.initialize(nullptr);
 
@@ -291,7 +291,7 @@ void DirectOpacityOptimisation::initializeResources() {
     legendreCoefficients_.bindBase(9);
 }
 
-void DirectOpacityOptimisation::buildShaders() {
+void OpacityOptimisation::buildShaders() {
     // Configure all the shaders with correct extensions and defines
     for (auto& shader : meshShaders_) {
         auto vert = shader.getVertexShaderObject();
@@ -519,7 +519,7 @@ void DirectOpacityOptimisation::buildShaders() {
     }
 }
 
-void DirectOpacityOptimisation::process() {
+void OpacityOptimisation::process() {
     resizeBuffers(outport_.getDimensions());
 
     if (rebuildShaders) {
@@ -618,7 +618,7 @@ void DirectOpacityOptimisation::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void DirectOpacityOptimisation::setUniforms(Shader& shader) {
+void OpacityOptimisation::setUniforms(Shader& shader) {
     shader.setUniform("screenSize", ivec2(screenSize_));
     shader.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
 
@@ -639,7 +639,7 @@ void DirectOpacityOptimisation::setUniforms(Shader& shader) {
     }
 }
 
-void DirectOpacityOptimisation::renderGeometry(const int pass) {
+void OpacityOptimisation::renderGeometry(const int pass) {
     // Mesh
     meshShaders_[pass].activate();
     utilgl::setUniforms(meshShaders_[pass], camera_, lightingProperty_, overrideColor_);
@@ -767,7 +767,7 @@ void DirectOpacityOptimisation::renderGeometry(const int pass) {
     LGL_ERROR_CLASS;
 }
 
-void DirectOpacityOptimisation::resizeBuffers(const size2_t screenSize) {
+void OpacityOptimisation::resizeBuffers(const size2_t screenSize) {
     if (screenSize != screenSize_) {
         screenSize_ = screenSize;
         importanceSumTexture_[0].uploadAndResize(
@@ -779,13 +779,13 @@ void DirectOpacityOptimisation::resizeBuffers(const size2_t screenSize) {
     }
 }
 
-void DirectOpacityOptimisation::generateAndUploadGaussianKernel() {
+void OpacityOptimisation::generateAndUploadGaussianKernel() {
     std::vector<float> k = util::generateGaussianKernel(gaussianRadius_, gaussianSigma_);
     gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
     gaussianKernel_.unbind();
 }
 
-void DirectOpacityOptimisation::generateAndUploadLegendreCoefficients() {
+void OpacityOptimisation::generateAndUploadLegendreCoefficients() {
     std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
     legendreCoefficients_.upload(&coeffs[0], coeffs.size() * sizeof(int));
     legendreCoefficients_.unbind();

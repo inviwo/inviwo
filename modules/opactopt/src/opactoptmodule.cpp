@@ -45,7 +45,7 @@ OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "Opac
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Processors
-    registerProcessor<DirectOpacityOptimisation>();
+    registerProcessor<OpacityOptimisation>();
     registerProcessor<MeshMappingVolume>();
 
     // Data readers
