@@ -30,15 +30,22 @@
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
 
-#if defined(ENABLE_ROUND_DEPTH_PROFILE)
-// enable conservative depth writes (supported since GLSL 4.20)
-#   if defined(GLSL_VERSION_450) || defined(GLSL_VERSION_440) || defined(GLSL_VERSION_430) || defined(GLSL_VERSION_420)
-        layout (depth_less) out float gl_FragDepth;
-#   endif
-
 #if !defined M_PI
 #define M_PI 3.14159265358979323846
 #endif
+
+#ifdef DEBUG
+uniform ivec2 debugCoords;
+
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
@@ -81,21 +88,20 @@ uniform float r;
 uniform float lambda;
 
 #ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
+    #include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
+    #include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
+    #include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximate/powermoments.glsl"
+    #include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximate/trigmoments.glsl"
+    #include "opactopt/approximation/trigmoments.glsl"
 #endif
-
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
@@ -114,16 +120,16 @@ void main() {
 
     float d = distance - linewidthHalf + antialiasing;
 
-    #if defined(ENABLE_ROUND_DEPTH_PROFILE)
-        // correct depth for a round profile, i.e. tube like appearance
-        float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
-        float maxDist = (linewidthHalf + antialiasing);
-        // assume circular profile of line
-        float z_v = view_depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5;
-    #else
-        // Get linear depth
-        float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
-    #endif // ENABLE_ROUND_DEPTH_PROFILE
+#if defined(ENABLE_ROUND_DEPTH_PROFILE)
+    // correct depth for a round profile, i.e. tube like appearance
+    float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
+    float maxDist = (linewidthHalf + antialiasing);
+    // assume circular profile of line
+    float z_v = view_depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5;
+#else
+    // Get linear depth
+    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
+#endif // ENABLE_ROUND_DEPTH_PROFILE
 
     float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
 
@@ -140,6 +146,8 @@ void main() {
 #else
     float gi = fragment.color.a;
 #endif
+
+    float alphamul = 1.0;
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
@@ -160,7 +168,6 @@ void main() {
     }
 #endif // ENABLE_STIPPLING
 
-    float alphamul = 1.0;
     // antialiasing around the edges
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
@@ -168,32 +175,19 @@ void main() {
         alphamul = exp(-d*d);
     }
 
-    gi *= alphamul;
-
     // Project importance
+    gi *= alphamul;
     float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
-    Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
-    float alpha = clamp(1 /
-                    (1 + pow(1 - gi, 2 * lambda)
-                    * (r * max(0, Gd - gisq)
-                    + q * max(0, gtot - Gd))),
-                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+    project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-    vec4 c = fragment.color;
-    
-    // apply pseudo lighting
-    #if defined(ENABLE_PSEUDO_LIGHTING)
-        c.rgb *= cos(distance / (linewidthHalf + antialiasing) * 1.2);
+    #ifdef DEBUG
+        if (ivec2(gl_FragCoord.xy) == debugCoords) {
+            FragmentInfo fi;
+            fi.depth = depth;
+            fi.importance = gi;
+            debugFrags[atomicAdd(nFragments, 1)] = fi;
+        }
     #endif
 
-    // find optical depth
-    float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
-    float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
-    c.rgb = weight * c.rgb;
-    c.a = weight; // save sum of weights in alpha channel for later division
-
-    FragData0 = c;
-    PickingData = fragment.pickColor;
+    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
 }
