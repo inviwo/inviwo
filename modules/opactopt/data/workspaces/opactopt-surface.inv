@@ -20,7 +20,7 @@
             </Module>
             <Module name="OpactOpt" version="0">
                 <Processors>
-                    <Processor content="org.inviwo.DirectOpacityOptimisation"/>
+                    <Processor content="org.inviwo.OpacityOptimisation"/>
                     <Processor content="org.inviwo.MeshMappingVolume"/>
                 </Processors>
             </Module>
@@ -29,7 +29,7 @@
     <ProcessorNetwork>
         <ProcessorNetworkVersion content="21"/>
         <Processors>
-            <Processor type="org.inviwo.DirectOpacityOptimisation" identifier="DirectOpacityOptimisation" displayName="Direct Opacity Optimisation">
+            <Processor type="org.inviwo.OpacityOptimisation" identifier="OpacityOptimisation" displayName="Opacity Optimisation">
                 <PortGroups/>
                 <Properties>
                     <Property type="org.inviwo.CameraProperty" identifier="camera">
@@ -142,7 +142,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.DirectOpacityOptimisation" identifier="DirectOpacityOptimisation2" displayName="Direct Opacity Optimisation">
+            <Processor type="org.inviwo.OpacityOptimisation" identifier="OpacityOptimisation2" displayName="Opacity Optimisation">
                 <PortGroups/>
                 <Properties>
                     <Property type="org.inviwo.CameraProperty" identifier="camera">
@@ -1078,29 +1078,29 @@
             </Processor>
         </Processors>
         <Connections>
-            <Connection src="DirectOpacityOptimisation.image" dst="Canvas.inport"/>
-            <Connection src="Background.outport" dst="DirectOpacityOptimisation.imageInport"/>
-            <Connection src="Background.outport" dst="DirectOpacityOptimisation2.imageInport"/>
-            <Connection src="DirectOpacityOptimisation2.image" dst="Canvas2.inport"/>
-            <Connection src="MeshSource.data" dst="DirectOpacityOptimisation2.geometry"/>
-            <Connection src="VolumeSource.data" dst="DirectOpacityOptimisation2.importanceVolume"/>
+            <Connection src="OpacityOptimisation.image" dst="Canvas.inport"/>
+            <Connection src="Background.outport" dst="OpacityOptimisation.imageInport"/>
+            <Connection src="Background.outport" dst="OpacityOptimisation2.imageInport"/>
+            <Connection src="OpacityOptimisation2.image" dst="Canvas2.inport"/>
+            <Connection src="MeshSource.data" dst="OpacityOptimisation2.geometry"/>
+            <Connection src="VolumeSource.data" dst="OpacityOptimisation2.importanceVolume"/>
             <Connection src="MeshSource.data" dst="MeshMappingVolume.meshInport"/>
             <Connection src="VolumeSource.data" dst="MeshMappingVolume.importanceVolume"/>
-            <Connection src="MeshMappingVolume.outport" dst="DirectOpacityOptimisation.geometry"/>
+            <Connection src="MeshMappingVolume.outport" dst="OpacityOptimisation.geometry"/>
         </Connections>
         <PropertyLinks>
             <PropertyLink src="Canvas2.inputSize" dst="Canvas.inputSize"/>
-            <PropertyLink src="DirectOpacityOptimisation.q" dst="DirectOpacityOptimisation2.q"/>
-            <PropertyLink src="DirectOpacityOptimisation.camera" dst="DirectOpacityOptimisation2.camera"/>
-            <PropertyLink src="DirectOpacityOptimisation2.camera" dst="DirectOpacityOptimisation.camera"/>
+            <PropertyLink src="OpacityOptimisation.q" dst="OpacityOptimisation2.q"/>
+            <PropertyLink src="OpacityOptimisation.camera" dst="OpacityOptimisation2.camera"/>
+            <PropertyLink src="OpacityOptimisation2.camera" dst="OpacityOptimisation.camera"/>
             <PropertyLink src="Canvas.inputSize" dst="Canvas2.inputSize"/>
-            <PropertyLink src="DirectOpacityOptimisation.r" dst="DirectOpacityOptimisation2.r"/>
-            <PropertyLink src="DirectOpacityOptimisation2.q" dst="DirectOpacityOptimisation.q"/>
-            <PropertyLink src="DirectOpacityOptimisation2.r" dst="DirectOpacityOptimisation.r"/>
-            <PropertyLink src="DirectOpacityOptimisation.lambda" dst="DirectOpacityOptimisation2.lambda"/>
-            <PropertyLink src="DirectOpacityOptimisation2.lambda" dst="DirectOpacityOptimisation.lambda"/>
-            <PropertyLink src="DirectOpacityOptimisation.approximationProperties" dst="DirectOpacityOptimisation2.approximationProperties"/>
-            <PropertyLink src="DirectOpacityOptimisation2.approximationProperties" dst="DirectOpacityOptimisation.approximationProperties"/>
+            <PropertyLink src="OpacityOptimisation.r" dst="OpacityOptimisation2.r"/>
+            <PropertyLink src="OpacityOptimisation2.q" dst="OpacityOptimisation.q"/>
+            <PropertyLink src="OpacityOptimisation2.r" dst="OpacityOptimisation.r"/>
+            <PropertyLink src="OpacityOptimisation.lambda" dst="OpacityOptimisation2.lambda"/>
+            <PropertyLink src="OpacityOptimisation2.lambda" dst="OpacityOptimisation.lambda"/>
+            <PropertyLink src="OpacityOptimisation.approximationProperties" dst="OpacityOptimisation2.approximationProperties"/>
+            <PropertyLink src="OpacityOptimisation2.approximationProperties" dst="OpacityOptimisation.approximationProperties"/>
         </PropertyLinks>
     </ProcessorNetwork>
     <PortInspectors/>

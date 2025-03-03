@@ -20,7 +20,7 @@
             </Module>
             <Module name="OpactOpt" version="0">
                 <Processors>
-                    <Processor content="org.inviwo.DirectOpacityOptimisation"/>
+                    <Processor content="org.inviwo.OpacityOptimisation"/>
                 </Processors>
             </Module>
         </Modules>
@@ -49,7 +49,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.DirectOpacityOptimisation" identifier="DirectOpacityOptimisation" displayName="Direct Opacity Optimisation">
+            <Processor type="org.inviwo.OpacityOptimisation" identifier="OpacityOptimisation" displayName="Opacity Optimisation">
                 <PortGroups/>
                 <Properties>
                     <Property type="org.inviwo.CameraProperty" identifier="camera">
@@ -923,10 +923,10 @@
             </Processor>
         </Processors>
         <Connections>
-            <Connection src="DirectOpacityOptimisation.image" dst="Canvas.inport"/>
-            <Connection src="Background.outport" dst="DirectOpacityOptimisation.imageInport"/>
+            <Connection src="OpacityOptimisation.image" dst="Canvas.inport"/>
+            <Connection src="Background.outport" dst="OpacityOptimisation.imageInport"/>
             <Connection src="MeshSource.data" dst="MeshMapping.meshInport"/>
-            <Connection src="MeshMapping.outport" dst="DirectOpacityOptimisation.geometry"/>
+            <Connection src="MeshMapping.outport" dst="OpacityOptimisation.geometry"/>
         </Connections>
         <PropertyLinks/>
     </ProcessorNetwork>
