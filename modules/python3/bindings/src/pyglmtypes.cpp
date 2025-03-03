@@ -123,9 +123,17 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         .def(py::self != py::self)
 
         .def(
-            "__getitem__", [](Vec& v, int idx) { return &v[idx]; },
+            "__getitem__",
+            [](Vec& v, int idx) {
+                if (idx >= Dim || idx < 0) throw py::index_error();
+                return &v[idx];
+            },
             py::return_value_policy::reference_internal)
-        .def("__setitem__", [](Vec& v, int idx, T& t) { return v[idx] = t; })
+        .def("__setitem__",
+             [](Vec& v, int idx, T& t) {
+                 if (idx >= Dim || idx < 0) throw py::index_error();
+                 return v[idx] = t;
+             })
 
         .def_property_readonly("array",
                                [](Vec& self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
@@ -254,22 +262,34 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
 
     switch (Dim) {
         case 4:
-            pyv.def_property("w", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
-            pyv.def_property("a", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
-            pyv.def_property("q", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property(
+                "w", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property(
+                "a", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property(
+                "q", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
             [[fallthrough]];
         case 3:
-            pyv.def_property("z", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
-            pyv.def_property("b", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
-            pyv.def_property("p", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property(
+                "z", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property(
+                "b", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property(
+                "p", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
             [[fallthrough]];
         case 2:
-            pyv.def_property("y", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
-            pyv.def_property("g", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
-            pyv.def_property("t", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
-            pyv.def_property("x", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
-            pyv.def_property("r", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
-            pyv.def_property("s", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property(
+                "y", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property(
+                "g", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property(
+                "t", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property(
+                "x", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property(
+                "r", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property(
+                "s", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
             [[fallthrough]];
         default:
             break;

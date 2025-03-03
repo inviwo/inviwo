@@ -151,11 +151,29 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
         .def(pybind11::self /= T())
 
         .def(
-            "__getitem__", [](Mat& v, int idx) { return &v[idx]; },
+            "__getitem__",
+            [](Mat& v, int idx) {
+                if (idx >= Cols || idx < 0) throw pybind11::index_error();
+                return &v[idx];
+            },
             pybind11::return_value_policy::reference_internal)
-        .def("__getitem__", [](Mat& m, int idx, int idy) { return m[idx][idy]; })
-        .def("__setitem__", [](Mat& m, int idx, ColumnVector& t) { return m[idx] = t; })
-        .def("__setitem__", [](Mat& m, int idx, int idy, T& t) { return m[idx][idy] = t; })
+        .def("__getitem__",
+             [](Mat& m, int idx, int idy) {
+                 if (idx >= Cols || idx < 0) throw pybind11::index_error();
+                 if (idy >= Rows || idy < 0) throw pybind11::index_error();
+                 return m[idx][idy];
+             })
+        .def("__setitem__",
+             [](Mat& m, int idx, ColumnVector& t) {
+                 if (idx >= Cols || idx < 0) throw pybind11::index_error();
+                 return m[idx] = t;
+             })
+        .def("__setitem__",
+             [](Mat& m, int idx, int idy, T& t) {
+                 if (idx >= Cols || idx < 0) throw pybind11::index_error();
+                 if (idy >= Rows || idy < 0) throw pybind11::index_error();
+                 return m[idx][idy] = t;
+             })
 
         .def(pybind11::self * RowVector())
         .def(ColumnVector() * pybind11::self)

@@ -38,8 +38,6 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <inviwopy/util/pypropertyhelper.h>
-
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <fmt/format.h>
@@ -88,14 +86,17 @@ struct MinMaxHelper {
                  py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeparation") = 0,
                  py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
                  py::arg("semantics") = PropertySemantics::Default)
+            .def_property(
+                "value", [](P& p) { return p.get(); }, [](P& p, const range_type& t) { p.set(t); })
+
+            .def_property("start", &P::getStart, &P::setStart)
+            .def_property("end", &P::getEnd, &P::setEnd)
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
             .def_property("range", &P::getRange, &P::setRange)
             .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
-
-        pyTemplateProperty<range_type, P>(prop);
 
         return prop;
     }
