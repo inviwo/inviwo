@@ -22,25 +22,24 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
-    glsl/opactopt/approximate/smooth.frag
-    glsl/opactopt/approximate/fourier.glsl
-    glsl/opactopt/approximate/legendre.glsl
-    glsl/opactopt/approximate/piecewise.glsl
-    glsl/opactopt/approximate/powermoments.glsl
-    glsl/opactopt/approximate/trigmoments.glsl
-    glsl/opactopt/direct/clear.frag
-    glsl/opactopt/direct/normalise.frag
-    glsl/opactopt/direct/background.frag
-    glsl/opactopt/direct/line/linerenderer.vert
-    glsl/opactopt/direct/line/projectimportance.frag
-    glsl/opactopt/direct/line/approximportancesum.frag
-    glsl/opactopt/direct/line/approxblending.frag
-    glsl/opactopt/direct/mesh/projectimportance.frag
-    glsl/opactopt/direct/mesh/approximportancesum.frag
-    glsl/opactopt/direct/mesh/approxblending.frag
-    glsl/opactopt/direct/point/projectimportance.frag
-    glsl/opactopt/direct/point/approximportancesum.frag
-    glsl/opactopt/direct/point/approxblending.frag
+    glsl/opactopt/clear.frag
+    glsl/opactopt/normalise.frag
+    glsl/opactopt/smooth.frag
+    glsl/opactopt/approximation/fourier.glsl
+    glsl/opactopt/approximation/legendre.glsl
+    glsl/opactopt/approximation/piecewise.glsl
+    glsl/opactopt/approximation/powermoments.glsl
+    glsl/opactopt/approximation/trigmoments.glsl
+    glsl/opactopt/line/linerenderer.vert
+    glsl/opactopt/line/projectimportance.frag
+    glsl/opactopt/line/approximportancesum.frag
+    glsl/opactopt/line/approxblending.frag
+    glsl/opactopt/mesh/projectimportance.frag
+    glsl/opactopt/mesh/approximportancesum.frag
+    glsl/opactopt/mesh/approxblending.frag
+    glsl/opactopt/point/projectimportance.frag
+    glsl/opactopt/point/approximportancesum.frag
+    glsl/opactopt/point/approxblending.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

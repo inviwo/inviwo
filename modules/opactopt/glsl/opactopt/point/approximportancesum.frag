@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2017-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,15 @@
  * 
  *********************************************************************************/
 
-// Owned by the MeshRenderProcessorGL Processor
-
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
+
+uniform float pointSize; // [pixel]
+uniform float borderWidth; // [pixel]
+uniform float antialising = 1.5; // [pixel]
+
+uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
@@ -49,7 +53,10 @@ uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
 #endif
 
-in vec4 color_;
+in Point {
+    vec4 color;
+    vec4 pickColor;
+} fragment;
 
 // Opacity optimisation settings
 uniform float q;
@@ -57,24 +64,33 @@ uniform float r;
 uniform float lambda;
 
 #ifdef FOURIER
-    #include "opactopt/approximate/fourier.glsl"
+    #include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximate/legendre.glsl"
+    #include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximate/piecewise.glsl"
+    #include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximate/powermoments.glsl"
+    #include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximate/trigmoments.glsl"
+    #include "opactopt/approximation/trigmoments.glsl"
 #endif
+
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if(fragment.color.a == 0) { discard; }
+
+    // calculate normal from texture coordinates
+    vec3 normal;
+    normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
+    float rad = sqrt(dot(normal.xy, normal.xy));
+    if (rad > 1.0) {
+       discard;   // kill pixels outside circle
+    }
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
@@ -91,7 +107,7 @@ void main() {
     vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
     float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
 #else
-    float gi = color_.a;
+    float gi = fragment.color.a;
 #endif
 
     // Project importance
@@ -104,6 +120,18 @@ void main() {
                     * (r * max(0, Gd - gisq)
                     + q * max(0, gtot - Gd))),
                     0.0, 0.9999); // set pixel alpha using opacity optimisation
+
+
+    float glyphRadius = pointSize * 0.5;
+    rad *= pointSize * 0.5 + borderWidth;
+
+    // pseudo antialiasing with the help of the alpha channel
+    // i.e. smooth transition between center and border, and smooth alpha fall-off at the outer rim
+    float outerglyphRadius = glyphRadius + borderWidth - antialising; // used for adjusting the alpha value of the outer rim
+
+    float borderAlpha = clamp(mix(1.0, 0.0, (rad - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
+    alpha *= borderAlpha;
+
     project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
 
     discard;
