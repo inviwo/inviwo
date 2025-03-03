@@ -120,6 +120,7 @@ void TFPrimitiveSet::set(std::span<const TFPrimitiveData> points) {
     auto dend = values_.end();
 
     while (dbegin != dend && sbegin != send) {
+        verifyPoint(*sbegin);
         **dbegin++ = *sbegin++;
     }
     while (sbegin != send) {
@@ -135,6 +136,7 @@ void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
     auto dend = values_.end();
 
     while (dbegin != dend && sbegin != send) {
+        verifyPoint(*sbegin);
         **dbegin++ = *sbegin++;
     }
     while (sbegin != send) {
@@ -297,12 +299,24 @@ bool TFPrimitiveSet::remove(const TFPrimitive& primitive) {
     return remove(it);
 }
 
-TFPrimitive& TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
-    if ((type_ == TFPrimitiveSetType::Relative) &&
-        ((primitive->getPosition() < 0.0f) || (primitive->getPosition() > 1.0f))) {
-        throw RangeException(SourceContext{}, "Adding TFPrimitive at {}  outside of range [0,1]",
-                             primitive->getPosition());
+void TFPrimitiveSet::verifyPoint(double pos) const {
+    if ((type_ == TFPrimitiveSetType::Relative) && (pos < 0.0f || pos > 1.0f)) {
+        throw RangeException(
+            SourceContext{},
+            "TFPrimitive at {} outside of valid range [0,1] for a relative TFPrimitiveSet", pos);
     }
+}
+
+void TFPrimitiveSet::verifyPoint(const TFPrimitiveData& primitive) const {
+    verifyPoint(primitive.pos);
+}
+
+void TFPrimitiveSet::verifyPoint(const TFPrimitive& primitive) const {
+    verifyPoint(primitive.getPosition());
+}
+
+TFPrimitive& TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
+    verifyPoint(*primitive);
 
     primitive->addObserver(this);
     auto it = std::upper_bound(sorted_.begin(), sorted_.end(), primitive.get(), comparePtr{});
@@ -334,6 +348,8 @@ void TFPrimitiveSet::clear() {
 }
 
 void TFPrimitiveSet::setPosition(std::span<TFPrimitive*> primitives, double pos) {
+    verifyPoint(pos);
+
     // selected primitives need to be moved in correct order to maintain overall order of TF
     // That is, TF primitives closest to pos must be moved first
     std::set<TFPrimitive*> primitiveSet(primitives.begin(), primitives.end());
