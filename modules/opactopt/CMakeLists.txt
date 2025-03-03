@@ -34,6 +34,8 @@ set(SHADER_FILES
     glsl/opactopt/approximation/piecewise.glsl
     glsl/opactopt/approximation/powermoments.glsl
     glsl/opactopt/approximation/trigmoments.glsl
+    glsl/opactopt/approximation/powermomentmaths.glsl
+    glsl/opactopt/approximation/trigmomentmaths.glsl
     glsl/opactopt/line/linerenderer.vert
     glsl/opactopt/line/projectimportance.frag
     glsl/opactopt/line/approximportancesum.frag
