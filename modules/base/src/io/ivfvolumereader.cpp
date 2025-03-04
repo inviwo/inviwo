@@ -52,7 +52,7 @@
 #include <array>        // for array
 #include <cstddef>      // for size_t
 #include <functional>   // for __base
-#include <string>       // for string, basic_string<>:...
+#include <string>       // for string, basic_string
 #include <type_traits>  // for remove_extent_t
 #include <memory_resource>
 
@@ -64,9 +64,11 @@ IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>() {
 
 IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
 
-std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& filePath) {
+std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& file) {
+    const auto filePath = downloadAndCacheIfUrl(file);
+
     checkExists(filePath);
-    const auto fileDirectory = filePath.parent_path();
+    const auto fileDirectory = file.parent_path();
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
     Deserializer d{filePath, "InviwoVolume", &mbr};

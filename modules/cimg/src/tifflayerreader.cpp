@@ -50,8 +50,9 @@ TIFFLayerReader::TIFFLayerReader() : DataReaderType<Layer>() {
 TIFFLayerReader* TIFFLayerReader::clone() const { return new TIFFLayerReader(*this); }
 
 std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::filesystem::path& fileName) {
-    checkExists(fileName);
-    return std::make_shared<Layer>(cimgutil::loadLayerTiff(fileName));
+    const auto localPath = downloadAndCacheIfUrl(fileName);
+    checkExists(localPath);
+    return std::make_shared<Layer>(cimgutil::loadLayerTiff(localPath));
 }
 
 }  // namespace inviwo

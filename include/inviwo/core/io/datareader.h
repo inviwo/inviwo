@@ -94,7 +94,7 @@ protected:
      * Verify that @p path exists, and throw DataReaderException if not.
      * @throws DataReaderException if the file is not found
      */
-    void checkExists(const std::filesystem::path& path) const;
+    static void checkExists(const std::filesystem::path& path);
 
     virtual bool canRead(const std::type_index& index) const = 0;
 
@@ -104,8 +104,13 @@ protected:
      * @throws DataReaderException if the file is not found, and FileException if the file can't
      * be opened.
      */
-    std::ifstream open(const std::filesystem::path& path,
-                       std::ios_base::openmode mode = std::ios_base::in) const;
+    static std::ifstream open(const std::filesystem::path& path,
+                              std::ios_base::openmode mode = std::ios_base::in);
+
+    static std::ifstream openAndCacheIfUrl(const std::filesystem::path& path,
+                                           std::ios_base::openmode mode = std::ios_base::in);
+
+    static std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url);
 
     std::vector<FileExtension> extensions_;
 };

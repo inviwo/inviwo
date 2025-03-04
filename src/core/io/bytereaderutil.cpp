@@ -31,6 +31,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/curlutils.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -39,7 +40,9 @@ namespace inviwo {
 
 void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset, size_t bytes,
                                bool littleEndian, size_t elementSize, void* dest) {
-    auto fin = std::ifstream(file, std::ios::in | std::ios::binary);
+    const auto filePath = net::downloadAndCacheIfUrl(file);
+
+    auto fin = std::ifstream(filePath, std::ios::in | std::ios::binary);
     OnScopeExit close([&fin]() { fin.close(); });
 
     if (fin.good()) {
@@ -60,7 +63,7 @@ void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset,
             delete[] temp;
         }
     } else {
-        throw DataReaderException(SourceContext{}, "Error: Could not read from file: ", file);
+        throw DataReaderException(SourceContext{}, "Error: Could not read from file: {:?g}", file);
     }
 }
 

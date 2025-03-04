@@ -69,14 +69,13 @@ MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
 MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(*this); }
 
 std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& filePath) {
-
     auto fileDirectory = filePath.parent_path();
 
     // Read the mpvm file content
     std::string textLine;
     std::vector<std::filesystem::path> files;
     {
-        auto f = open(filePath);
+        auto f = openAndCacheIfUrl(filePath);
         while (!f.eof()) {
             getline(f, textLine);
             textLine = trim(textLine);
