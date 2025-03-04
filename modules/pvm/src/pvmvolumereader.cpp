@@ -70,8 +70,6 @@ PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
 PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*this); }
 
 std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& filePath) {
-    checkExists(filePath);
-
     auto volume = readPVMData(filePath);
     if (!volume) return nullptr;
 
@@ -89,6 +87,9 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& f
 }
 
 std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path& filePath) {
+    const auto localFile = downloadAndCacheIfUrl(filePath);
+    checkExists(localFile);
+
     uvec3 udim{0};
     vec3 spacing(0.0f);
     unsigned int bytesPerVoxel = 0;
@@ -99,7 +100,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    auto file = filePath.string();  // convert to string before changing locale
+    auto file = localFile.string();  // convert to string before changing locale
 
     auto locale = setlocale(LC_ALL, nullptr);  // save current locale
     setlocale(LC_ALL, "C");  // pvm files are always written with a dot as decimal separator
@@ -111,12 +112,12 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     util::OnScopeExit release([&]() { free(pvmdata); });
 
     if (!pvmdata) {
-        throw DataReaderException(SourceContext{}, "Error: Could not read data in PVM file: {}",
+        throw DataReaderException(SourceContext{}, "Error: Could not read data in PVM file: {:?g}",
                                   filePath);
     }
     if (udim == uvec3{0}) {
         throw DataReaderException(SourceContext{},
-                                  "Error: Unable to find dimensions in .pvm file: {}", filePath);
+                                  "Error: Unable to find dimensions in .pvm file: {:?g}", filePath);
     }
     const size_t volsize = glm::compMul(udim) * bytesPerVoxel;
     if (bytesPerVoxel == 2) {
@@ -128,7 +129,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     auto data = std::make_unique<unsigned char[]>(volsize);
     std::copy(pvmdata, pvmdata + volsize, data.get());
 
-    const DataFormatBase* format = [bytesPerVoxel, filePath]() -> const DataFormatBase* {
+    const DataFormatBase* format = [&]() -> const DataFormatBase* {
         switch (bytesPerVoxel) {
             case 1:
                 return DataUInt8::get();
@@ -138,8 +139,8 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
                 return DataVec3UInt8::get();
             default:
                 throw DataReaderException(
-                    SourceContext{}, "Error: Unsupported format (bytes per voxel) in .pvm file: {}",
-                    filePath);
+                    SourceContext{},
+                    "Error: Unsupported format (bytes per voxel) in .pvm file: {:?g}", filePath);
         }
     }();
 

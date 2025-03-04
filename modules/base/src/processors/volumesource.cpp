@@ -29,12 +29,13 @@
 
 #include <modules/base/processors/volumesource.h>
 
-#include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
-#include <inviwo/core/common/factoryutil.h>                     // for getDataReaderFactory, get...
-#include <inviwo/core/datastructures/volume/volume.h>           // for Volume
-#include <inviwo/core/io/datareader.h>                          // for DataReaderType
-#include <inviwo/core/io/datareaderexception.h>                 // for DataReaderException
-#include <inviwo/core/io/datareaderfactory.h>                   // for DataReaderFactory
+#include <inviwo/core/algorithm/markdown.h>            // for operator""_help
+#include <inviwo/core/common/factoryutil.h>            // for getDataReaderFactory, get...
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/io/datareader.h>                 // for DataReaderType
+#include <inviwo/core/io/datareaderexception.h>        // for DataReaderException
+#include <inviwo/core/io/datareaderfactory.h>          // for DataReaderFactory
+#include <inviwo/core/io/curlutils.h>
 #include <inviwo/core/metadata/metadata.h>                      // for StringMetaData
 #include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
 #include <inviwo/core/processors/processor.h>                   // for Processor
@@ -106,6 +107,7 @@ inline void updateReaderFromFileAndType(const FileProperty& filePath,
         extensions.setSelectedValue(filePath.getSelectedExtension());
     }
 }
+
 }  // namespace
 
 const ProcessorInfo VolumeSource::processorInfo_{
@@ -154,7 +156,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
         } else if (file_.get().empty()) {
             static constexpr std::string_view reason{"File not set"};
             return {ProcessorStatus::NotReady, reason};
-        } else if (!std::filesystem::is_regular_file(file_.get())) {
+        } else if (!net::isUrl(file_.get()) && !std::filesystem::is_regular_file(file_.get())) {
             static constexpr std::string_view reason{"Invalid or missing file"};
             return {ProcessorStatus::Error, reason};
         } else if (reader_.getSelectedValue().empty()) {
@@ -195,7 +197,7 @@ void VolumeSource::load(bool deserialize) {
             std::swap(volumes, volumes_);
         } else {
             volumes_.reset();
-            error_ = fmt::format("Could not find a data reader for file: {}", file_.get());
+            error_ = fmt::format("Could not find a data reader for file: {:?g}", file_.get());
             isReady_.update();
             log::report(LogLevel::Error, error_);
         }

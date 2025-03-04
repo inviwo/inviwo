@@ -432,8 +432,9 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
 
     const auto fileDirectory = filePath.parent_path();
 
+    const auto file = downloadAndCacheIfUrl(filePath);
     // Read the dat file content
-    auto f = open(filePath);
+    auto f = open(file);
 
     auto state = parseDatFile(f, filePath);
 
@@ -506,7 +507,8 @@ DatVolumeReader* DatVolumeReader::clone() const { return new DatVolumeReader(*th
 
 std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& filePath) {
     // Read the dat file content
-    auto f = open(filePath);
+    const auto file = downloadAndCacheIfUrl(filePath);
+    auto f = open(file);
     auto state = parseDatFile(f, filePath);
 
     if (!state.datFiles.empty()) {

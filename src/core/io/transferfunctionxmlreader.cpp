@@ -115,7 +115,7 @@ TransferFunctionXMLReader* TransferFunctionXMLReader::clone() const {
 
 std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
     const std::filesystem::path& filePath) {
-    auto in = open(filePath);
+    auto in = openAndCacheIfUrl(filePath);
 
     // determine file size
     in.seekg(0, std::ios::end);

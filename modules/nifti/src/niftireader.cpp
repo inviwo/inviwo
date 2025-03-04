@@ -187,10 +187,11 @@ const DataFormatBase* niftiDataTypeToInviwoDataFormat(const nifti_image* niftiIm
     return DataFormatBase::get(type, components, precision);
 }
 std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::path& filePath) {
-    checkExists(filePath);
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
 
     /* read input dataset, but not data */
-    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.string().c_str(), 0),
+    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(localPath.string().c_str(), 0),
                                             nifti_image_free);
     if (!niftiImage) {
         throw DataReaderException(SourceContext{}, "Error: failed to read NIfTI image in file: {}",

@@ -43,12 +43,13 @@ TransferFunctionITFReader* TransferFunctionITFReader::clone() const {
 
 std::shared_ptr<TransferFunction> TransferFunctionITFReader::readData(
     const std::filesystem::path& filePath) {
-    checkExists(filePath);
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
 
     auto data = std::make_shared<TransferFunction>();
-    Deserializer deserializer(filePath, "InviwoTransferFunction", &mbr);
+    Deserializer deserializer(localPath, "InviwoTransferFunction", &mbr);
     data->deserialize(deserializer);
 
     return data;

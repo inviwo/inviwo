@@ -220,7 +220,7 @@ FileProperty& FileProperty::operator=(const std::filesystem::path& file) {
 FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
 void FileProperty::set(const std::filesystem::path& file) {
-    if (any_of(file_.update(file), updateExtension(file_.value))) {
+    if (any_of(file_.update(file), updateExtension(file))) {
         propertyModified();
     }
 }
