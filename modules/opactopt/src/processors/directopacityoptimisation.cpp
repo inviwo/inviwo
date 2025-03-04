@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/constraintbehavior.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/property.h>
@@ -69,8 +70,7 @@ OpacityOptimisation::OpacityOptimisation()
     : Processor()
     , inport_("geometry", "Input meshes"_help)
     , imageInport_("imageInport", "Background image (optional)"_help)
-    , outport_("image",
-               "Output image containing the rendered mesh and the optional input image"_help)
+    , outport_("image", "Output image containing the opacity optimised mesh"_help)
     , intermediateImage_({0, 0}, inviwo::DataVec4Float32::get())
     , screenSize_{0, 0}
     , camera_("camera", "Camera", util::boundingBox(inport_))
@@ -104,8 +104,7 @@ OpacityOptimisation::OpacityOptimisation()
                     Shader::Build::No},
                    {"meshrendering.vert", "opactopt/mesh/approximportancesum.frag",
                     Shader::Build::No},
-                   {"meshrendering.vert", "opactopt/mesh/approxblending.frag",
-                    Shader::Build::No}}
+                   {"meshrendering.vert", "opactopt/mesh/approxblending.frag", Shader::Build::No}}
     , lineShaders_{{"opactopt/line/linerenderer.vert", "linerenderer.geom",
                     "opactopt/line/projectimportance.frag", Shader::Build::No},
                    {"opactopt/line/linerenderer.vert", "linerenderer.geom",
@@ -122,62 +121,87 @@ OpacityOptimisation::OpacityOptimisation()
                      Shader::Build::No},
                     {"pointrenderer.vert", "opactopt/point/approximportancesum.frag",
                      Shader::Build::No},
-                    {"pointrenderer.vert", "opactopt/point/approxblending.frag",
-                     Shader::Build::No}}
+                    {"pointrenderer.vert", "opactopt/point/approxblending.frag", Shader::Build::No}}
     , smoothH_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
     , smoothV_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
     , clear_{"minimal.vert", "opactopt/clear.frag", Shader::Build::No}
     , normalise_{"minimal.vert", "opactopt/normalise.frag", Shader::Build::No}
-    , approximationProperties_{"approximationProperties", "Approximation Properties"}
+    , approximationProperties_{"approximationProperties", "Approximation Properties",
+                               "Controls approximation method, number of coefficients and "
+                               "smoothing of coefficients"_help}
     , q_{"q",
          "q",
-         1.0f,
+         "Reduces occlusion in front of important data"_help,
          0.0f,
-         10000.0f,
+         std::make_pair(0.0f, ConstraintBehavior::Editable),
+         std::make_pair(10000.0f, ConstraintBehavior::Editable),
          0.01f,
          InvalidationLevel::InvalidOutput,
          PropertySemantics::SpinBox}
     , r_{"r",
          "r",
-         1.0f,
+         "Reduces clutter behind important data"_help,
          0.0f,
-         10000.0f,
+         std::make_pair(0.0f, ConstraintBehavior::Editable),
+         std::make_pair(10000.0f, ConstraintBehavior::Editable),
          0.01f,
          InvalidationLevel::InvalidOutput,
          PropertySemantics::SpinBox}
     , lambda_{"lambda",
               "lambda",
+              "Controls emphasis of important structures"_help,
               1.0f,
-              0.0f,
-              100.0f,
+              std::make_pair(0.01f, ConstraintBehavior::Editable),
+              std::make_pair(100.0f, ConstraintBehavior::Editable),
               0.01f,
               InvalidationLevel::InvalidOutput,
               PropertySemantics::SpinBox}
     , approximationMethod_{"approximationMethod", "Approximation Method",
+                           "Method used to approximate importance sum and optical depth function.\n"
+                           "* Fourier approximation is usually the most balanced between "
+                           "performance "
+                           "and accuracy\n"
+                           "* Piecewise is the fastest method.\n"
+                           "* Different methods may work better on different datasets."_help,
                            Approximations::generateApproximationStringOptions(), 0}
-    , importanceVolume_{"importanceVolume", "Optional scalar field with importance data"_help}
+    , importanceVolume_{"importanceVolume", "Scalar field with importance data(optional)"_help}
     , importanceSumCoefficients_{"importanceSumCoefficients",
                                  "Importance sum coefficients",
+                                 "Number of importance sum coefficents, more importance sum "
+                                 "coefficients optimises opacity more accurately"_help,
                                  5,
-                                 Approximations::approximations.at(approximationMethod_)
-                                     .minCoefficients,
-                                 Approximations::approximations.at(approximationMethod_)
-                                     .maxCoefficients,
+                                 std::make_pair(
+                                     Approximations::approximations.at(approximationMethod_)
+                                         .minCoefficients,
+                                     ConstraintBehavior::Editable),
+                                 std::make_pair(
+                                     Approximations::approximations.at(approximationMethod_)
+                                         .maxCoefficients,
+                                     ConstraintBehavior::Editable),
                                  Approximations::approximations.at(approximationMethod_).increment}
     , opticalDepthCoefficients_{"opticalDepthCoefficients",
                                 "Optical depth coefficients",
+                                "Number of optical depth coefficents, more optical depth "
+                                "coefficients gives more accurate blending"_help,
                                 5,
-                                Approximations::approximations.at(approximationMethod_)
-                                    .minCoefficients,
-                                Approximations::approximations.at(approximationMethod_)
-                                    .maxCoefficients,
+                                std::make_pair(
+                                    Approximations::approximations.at(approximationMethod_)
+                                        .minCoefficients,
+                                    ConstraintBehavior::Editable),
+                                std::make_pair(
+                                    Approximations::approximations.at(approximationMethod_)
+                                        .maxCoefficients,
+                                    ConstraintBehavior::Editable),
                                 Approximations::approximations.at(approximationMethod_).increment}
-    , normalisedBlending_{"normalisedBlending", "Normalised blending", true}
+    , normalisedBlending_{"normalisedBlending", "Normalised blending",
+                          "Normalise the approximate blending, this reduces over and undersaturation"_help,
+                          true}
     , coeffTexFixedPointFactor_{"coeffTexFixedPointFactor",
-                                "Fixed point multiplier",
+                                "Coefficient texture fixed point factor",
+                                "Fixed point multiplier (only used if GL_NV_shader_atomic_float not supported)"_help,
                                 1e6,
-                                32,
-                                1e10,
+                                std::make_pair(32, ConstraintBehavior::Editable),
+                                std::make_pair(1e10, ConstraintBehavior::Editable),
                                 1.0,
                                 InvalidationLevel::InvalidOutput,
                                 PropertySemantics::SpinBox}
@@ -190,7 +214,10 @@ OpacityOptimisation::OpacityOptimisation()
     , gaussianKernel_{128 * sizeof(float),                  // allocate max possible size
                       GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
                       GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
-    , smoothing_{"smoothing", "Smoothing", false}
+    , smoothing_{"smoothing", "Smoothing",
+                 "Smooth the importance sum coefficients, this reduces clutter around important "
+                 "structures"_help,
+                 false}
     , gaussianRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
     , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50}
     , legendreCoefficients_{
