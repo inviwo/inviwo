@@ -30,10 +30,7 @@
 
 #include <modules/json/jsonmoduledefine.h>
 
-#include <inviwo/core/datastructures/datatraits.h>
-
 #include <nlohmann/json.hpp>
-
 #include <utility>
 
 namespace inviwo {
@@ -44,22 +41,6 @@ template <typename T>
 concept JSONConvertable = requires(T& t, json& j) {
     { to_json(j, std::as_const(t)) } -> std::same_as<void>;
     { from_json(std::as_const(j), t) } -> std::same_as<void>;
-};
-
-template <>
-struct DataTraits<json> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.json"; }
-    static constexpr std::string_view dataName() { return "JSON"; }
-    static constexpr uvec3 colorCode() { return uvec3{230, 200, 20}; }
-
-    static Document info(const json& data) {
-        Document doc;
-        doc.append("p", "JSON");
-
-        doc.append("pre", data.dump(2).substr(0, 200));
-
-        return doc;
-    }
 };
 
 }  // namespace inviwo

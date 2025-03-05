@@ -33,37 +33,40 @@
 #include <inviwo/core/io/datareaderexception.h>         // for DataReaderException
 #include <inviwo/core/util/exception.h>                 // for SourceContext
 #include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrame
+#include <modules/json/json.h>
 
 #include <string>  // for string
 
-#include <nlohmann/json.hpp>  // for json
-
 namespace inviwo {
-
-using json = nlohmann::json;
 
 /**
  * \class JSONConversionException
  *
- * \brief This exception is thrown by the to_json(json& j, const DataFrame* df) in case the input is
- * unsupported. This includes empty sources, unmatched quotes, missing headers. \see
- * JSONDataFrameReader
+ * \brief This exception is thrown by from_json(json& j, const DataFrame* df) in case the input is
+ * illformated or unsupported. This includes empty sources, unmatched quotes, missing headers.
+ * \see JSONDataFrameReader
  */
 class IVW_MODULE_DATAFRAME_API JSONConversionException : public DataReaderException {
 public:
-    JSONConversionException(const std::string& message = "",
-                            SourceContext context = SourceContext());
+    using DataReaderException::DataReaderException;
 };
 
 /**
- * Converts a DataFrame to a JSON object. This will not include the index column. NaN floating point
- * values are converted to null.
- * Will write the DataFrame to an JSON object layout:
+ * Converts a DataFrame to a JSON object. NaN floating point values are converted to null.
+ * The output is based on Pandas pandas.DataFrame.to_json(order='split') and has the following JSON
+ * object layout:
  * \code{.json}
- * [ {"Col1": val11, "Col2": val12 },
- *   {"Col1": val21, "Col2": val22 } ]
+ * {
+ *     "columns": [ "col1", "col2" ],
+ *     "data": [
+ *         [ 5.1, "category A" ],
+ *         [4.9, "category B" ]
+ *     ],
+ *     "index": [ 0, 1 ],
+ *     "types": [ "FLOAT64", "CATEGORICAL" ]
+ * }
  * \endcode
- * The example above contains two rows and two columns.
+ * The example above contains two rows and two columns, one with double values and one categorical.
  *
  * Usage example:
  * \code{.cpp}
@@ -74,19 +77,18 @@ public:
 IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 
 /**
- * Converts a JSON object to a DataFrame. Column types will be derived from json types. In case a
- * column only holds null values, the inferred data type will be float.
- * Expects object layout:
- * \code{.json}
- * [ {"Col1": val11, "Col2": val12 },
- *   {"Col1": val21, "Col2": val22 } ]
- * \endcode
- * The example above contains two rows and two columns.
+ * Converts a JSON object to a DataFrame. The JSON object must contain the following elements:
+ * "columns" (list of column headers) and "data" (list of rows). The elements "index" and "types"
+ * are optional. If no types are provided, the column types will be derived from json types. In case
+ * a column only holds null values, the inferred data type will be float. Null values are converted
+ * to NaN in float columns and 0 in integer columns.
  *
  * Usage example:
  * \code{.cpp}
  * auto df = j.get<DataFrame>();
  * \endcode
+ *
+ * \see to_json(json&, const DataFrame&)
  */
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
 

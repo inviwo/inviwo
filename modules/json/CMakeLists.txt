@@ -25,6 +25,7 @@ set(HEADER_FILES
     include/modules/json/jsonport.h
     include/modules/json/jsonpropertyconverter.h
     include/modules/json/jsonsupplier.h
+    include/modules/json/jsontraits.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -33,8 +34,13 @@ set(SOURCE_FILES
     src/io/json/buttonpropertyjsonconverter.cpp
     src/io/json/directorypropertyjsonconverter.cpp
     src/io/json/filepropertyjsonconverter.cpp
+    src/io/json/glmjsonconverter.cpp
+    src/io/json/minmaxpropertyjsonconverter.cpp
+    src/io/json/optionpropertyjsonconverter.cpp
+    src/io/json/ordinalpropertyjsonconverter.cpp
     src/io/json/ordinalrefpropertyjsonconverter.cpp
     src/io/json/stringpropertyjsonconverter.cpp
+    src/io/json/templatepropertyjsonconverter.cpp
     src/io/jsonreader.cpp
     src/io/jsonwriter.cpp
     src/json.cpp
@@ -46,6 +52,7 @@ set(SOURCE_FILES
     src/jsonport.cpp
     src/jsonpropertyconverter.cpp
     src/jsonsupplier.cpp
+    src/jsontraits.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

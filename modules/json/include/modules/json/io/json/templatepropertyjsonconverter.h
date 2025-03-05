@@ -31,11 +31,9 @@
 
 #include <modules/json/io/json/glmjsonconverter.h>
 #include <inviwo/core/properties/templateproperty.h>
-#include <nlohmann/json.hpp>
+#include <modules/json/json.h>
 
 namespace inviwo {
-
-using json = nlohmann::json;
 
 /**
  * Converts an TemplateProperty to a JSON object.

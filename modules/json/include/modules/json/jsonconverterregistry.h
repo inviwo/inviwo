@@ -29,11 +29,9 @@
 #pragma once
 
 #include <modules/json/jsonmoduledefine.h>
-
-#include <inviwo/core/util/factory.h>
+#include <modules/json/json.h>
 #include <modules/json/jsonconverter.h>
-
-#include <nlohmann/json.hpp>
+#include <inviwo/core/util/factory.h>
 
 namespace inviwo {
 
