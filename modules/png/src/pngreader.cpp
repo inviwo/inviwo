@@ -63,9 +63,10 @@ PNGLayerReader::PNGLayerReader() : DataReaderType<Layer>() {
 PNGLayerReader* PNGLayerReader::clone() const { return new PNGLayerReader(*this); }
 
 std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::filesystem::path& filePath) {
-    checkExists(filePath);
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
 
-    auto* fp = filesystem::fopen(filePath, "rb");
+    auto* fp = filesystem::fopen(localPath, "rb");
     if (!fp) {
         throw DataReaderException(SourceContext{}, "Failed to open file for reading, {}", filePath);
     }

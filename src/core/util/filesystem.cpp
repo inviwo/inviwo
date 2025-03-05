@@ -635,6 +635,11 @@ const fs::path& getPath(PathType pathType) {
             case PathType::Settings:
                 result = getInviwoUserSettingsPath();
                 break;
+
+            case PathType::Cache:
+                result = getInviwoUserSettingsPath() / "cache";
+                break;
+
             case PathType::Modules:
                 result = getInviwoUserSettingsPath() / "modules";
                 break;

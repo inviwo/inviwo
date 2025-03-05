@@ -42,6 +42,7 @@ enum class PathType {
     Resources,          // /resources
     TransferFunctions,  // /data/transferfunctions
     Settings,           // path to the current users settings
+    Cache,              // cache folder in the current users settings
     Modules,            // Module libraries folder, i.e. /appdata/inviwo/modules on Windows.
               // Install your module there to make it load when runtime loading is enabled.
     Help,  // /data/help

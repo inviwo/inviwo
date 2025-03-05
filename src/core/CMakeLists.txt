@@ -141,6 +141,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/bytereaderutil.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/curlutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderfactory.h
@@ -539,6 +540,7 @@ set(SOURCE_FILES
     interaction/pickingstate.cpp
     interaction/trackball.cpp
     io/bytereaderutil.cpp
+    io/curlutils.cpp
     io/datareader.cpp
     io/datareaderexception.cpp
     io/datareaderfactory.cpp
@@ -898,6 +900,7 @@ find_package(sml CONFIG REQUIRED)
 find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 find_package(FastFloat CONFIG REQUIRED)
+find_package(curlcpp CONFIG REQUIRED)
 
 if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
@@ -932,6 +935,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         llnl-units::units
         FastFloat::fast_float
+        curlcpp::curlcpp
     PRIVATE
         roaring::roaring
         md4c::md4c

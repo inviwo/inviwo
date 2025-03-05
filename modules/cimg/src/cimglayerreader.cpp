@@ -57,9 +57,10 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
 std::shared_ptr<Layer> CImgLayerReader::readData(const std::filesystem::path& fileName) {
-    checkExists(fileName);
+    const auto localPath = downloadAndCacheIfUrl(fileName);
+    checkExists(localPath);
 
-    auto ram = cimgutil::loadLayer(fileName);
+    auto ram = cimgutil::loadLayer(localPath);
 
     auto layer = std::make_shared<Layer>(ram);
     layer->setModelMatrix(

@@ -32,6 +32,8 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <fmt/format.h>
 
+#include <inviwo/core/io/curlutils.h>
+
 #include <fmt/std.h>
 
 namespace inviwo {
@@ -39,16 +41,31 @@ namespace inviwo {
 const std::vector<FileExtension>& DataReader::getExtensions() const { return extensions_; }
 void DataReader::addExtension(FileExtension ext) { extensions_.push_back(ext); }
 
-void DataReader::checkExists(const std::filesystem::path& path) const {
+void DataReader::checkExists(const std::filesystem::path& path) {
     if (!std::filesystem::is_regular_file(path)) {
         throw DataReaderException(SourceContext{}, "Could not find input file: {}", path);
     }
 }
 
-std::ifstream DataReader::open(const std::filesystem::path& path,
-                               std::ios_base::openmode mode) const {
+std::ifstream DataReader::open(const std::filesystem::path& path, std::ios_base::openmode mode) {
     checkExists(path);
     if (auto file = std::ifstream(path, mode)) {
+        return file;
+    } else {
+        throw FileException(SourceContext{}, "Could not open file: {}", path);
+    }
+}
+
+std::filesystem::path DataReader::downloadAndCacheIfUrl(const std::filesystem::path& url) {
+    return net::downloadAndCacheIfUrl(url);
+}
+
+std::ifstream DataReader::openAndCacheIfUrl(const std::filesystem::path& path,
+                                            std::ios_base::openmode mode) {
+    const auto localPath = net::downloadAndCacheIfUrl(path);
+
+    checkExists(localPath);
+    if (auto file = std::ifstream(localPath, mode)) {
         return file;
     } else {
         throw FileException(SourceContext{}, "Could not open file: {}", path);
