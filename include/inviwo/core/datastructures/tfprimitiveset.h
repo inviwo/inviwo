@@ -271,6 +271,9 @@ public:
     bool contains(const TFPrimitive* primitive) const;
 
 protected:
+    void verifyPoint(double pos) const;
+    void verifyPoint(const TFPrimitiveData& primitive) const;
+    void verifyPoint(const TFPrimitive& primitive) const;
     TFPrimitive& add(std::unique_ptr<TFPrimitive> primitive);
     bool remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
     void sort();

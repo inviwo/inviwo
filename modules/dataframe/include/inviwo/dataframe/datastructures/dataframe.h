@@ -182,6 +182,9 @@ public:
     std::shared_ptr<Column> getColumn(std::string_view name);
     std::shared_ptr<const Column> getColumn(std::string_view name) const;
 
+    std::shared_ptr<CategoricalColumn> getCategoricalColumn(std::string_view name);
+    std::shared_ptr<const CategoricalColumn> getCategoricalColumn(std::string_view name) const;
+
     std::shared_ptr<IndexColumn> getIndexColumn();
     std::shared_ptr<const IndexColumn> getIndexColumn() const;
 
