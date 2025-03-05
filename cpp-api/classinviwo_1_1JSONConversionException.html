@@ -105,13 +105,12 @@ $(function(){initNavTree('classinviwo_1_1JSONConversionException.html',''); init
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classinviwo_1_1JSONConversionException-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::JSONConversionException Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>This exception is thrown by the to_json(json&amp; j, const DataFrame* df) in case the input is unsupported. This includes empty sources, unmatched quotes, missing headers.  
+<p>This exception is thrown by from_json(json&amp; j, const DataFrame* df) in case the input is illformated or unsupported. This includes empty sources, unmatched quotes, missing headers.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;jsondataframeconversion.h&gt;</code></p>
@@ -128,11 +127,8 @@ $(function(){initNavTree('classinviwo_1_1JSONConversionException.html',''); init
   </map>
 </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:a59bba202fc489a9c4faebb81b080b4da" id="r_a59bba202fc489a9c4faebb81b080b4da"><td class="memItemLeft" align="right" valign="top"><a id="a59bba202fc489a9c4faebb81b080b4da" name="a59bba202fc489a9c4faebb81b080b4da"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>JSONConversionException</b> (const std::string &amp;message=&quot;&quot;, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=<a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a>())</td></tr>
-<tr class="separator:a59bba202fc489a9c4faebb81b080b4da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1DataReaderException"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1DataReaderException')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataReaderException.html">inviwo::DataReaderException</a></td></tr>
 <tr class="memitem:a498e89b7aa84ab7508206adb8d08d613 inherit pub_methods_classinviwo_1_1DataReaderException" id="r_a498e89b7aa84ab7508206adb8d08d613"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Exception</b> (std::string_view message=&quot;&quot;, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current())</td></tr>
@@ -172,7 +168,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 <tr class="separator:ad026ab184182ed11322ce516b36eab47 inherit pub_methods_classinviwo_1_1Exception"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This exception is thrown by the to_json(json&amp; j, const DataFrame* df) in case the input is unsupported. This includes empty sources, unmatched quotes, missing headers. </p>
+<div class="textblock"><p>This exception is thrown by from_json(json&amp; j, const DataFrame* df) in case the input is illformated or unsupported. This includes empty sources, unmatched quotes, missing headers. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1JSONDataFrameReader.html">JSONDataFrameReader</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><b>jsondataframeconversion.h</b></li>

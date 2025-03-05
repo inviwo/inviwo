@@ -1252,7 +1252,7 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1JavascriptPropertyWidgetQt.html">JavascriptPropertyWidgetQt</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1JSONConversionException.html">JSONConversionException</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This exception is thrown by the to_json(json&amp; j, const DataFrame* df) in case the input is unsupported. This includes empty sources, unmatched quotes, missing headers.  <a href="classinviwo_1_1JSONConversionException.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This exception is thrown by from_json(json&amp; j, const DataFrame* df) in case the input is illformated or unsupported. This includes empty sources, unmatched quotes, missing headers.  <a href="classinviwo_1_1JSONConversionException.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1JSONConverter.html">JSONConverter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3799,9 +3799,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>DataFrameInport</b> 
 <tr class="memitem:acae0e0604d34799392a9cf67639a2ac9" id="r_acae0e0604d34799392a9cf67639a2ac9"><td class="memItemLeft" align="right" valign="top"><a id="acae0e0604d34799392a9cf67639a2ac9" name="acae0e0604d34799392a9cf67639a2ac9"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>DataFrameMultiInport</b> = <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt;<a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a>, 0&gt;</td></tr>
 <tr class="separator:acae0e0604d34799392a9cf67639a2ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0205c422231fab438e95582acdd1827" id="r_af0205c422231fab438e95582acdd1827"><td class="memItemLeft" align="right" valign="top"><a id="af0205c422231fab438e95582acdd1827" name="af0205c422231fab438e95582acdd1827"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>json</b> = nlohmann::json</td></tr>
-<tr class="separator:af0205c422231fab438e95582acdd1827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa0f8b65f5f9a4b06e1eafee14e9226f" id="r_afa0f8b65f5f9a4b06e1eafee14e9226f"><td class="memItemLeft" align="right" valign="top"><a id="afa0f8b65f5f9a4b06e1eafee14e9226f" name="afa0f8b65f5f9a4b06e1eafee14e9226f"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>FilterTypes</b> = flags::flags&lt;FilterType&gt;</td></tr>
 <tr class="separator:afa0f8b65f5f9a4b06e1eafee14e9226f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3811,6 +3808,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>EigenMatrixOutport</
 <tr class="memitem:aa89e4c7ddc26e1d5640d2cddd292d49d" id="r_aa89e4c7ddc26e1d5640d2cddd292d49d"><td class="memItemLeft" align="right" valign="top"><a id="aa89e4c7ddc26e1d5640d2cddd292d49d" name="aa89e4c7ddc26e1d5640d2cddd292d49d"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>EigenMatrixInport</b> = <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt;Eigen::MatrixXf&gt;</td></tr>
 <tr class="separator:aa89e4c7ddc26e1d5640d2cddd292d49d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a896e5209816b37168b29851c56333dea" id="r_a896e5209816b37168b29851c56333dea"><td class="memItemLeft" align="right" valign="top"><a id="a896e5209816b37168b29851c56333dea" name="a896e5209816b37168b29851c56333dea"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>json</b> = ::nlohmann::json</td></tr>
+<tr class="separator:a896e5209816b37168b29851c56333dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5065235186234363d3188c52c0e9d4db" id="r_a5065235186234363d3188c52c0e9d4db"><td class="memItemLeft" align="right" valign="top"><a id="a5065235186234363d3188c52c0e9d4db" name="a5065235186234363d3188c52c0e9d4db"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>JSONInportConverter</b> = <a class="el" href="classinviwo_1_1JSONConverterRegistry.html">JSONConverterRegistry</a>&lt;<a class="el" href="classinviwo_1_1Inport.html">Inport</a>&gt;</td></tr>
 <tr class="separator:a5065235186234363d3188c52c0e9d4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5553,10 +5553,10 @@ IVW_MODULE_DATAFRAME_API std::string_view&#160;</td><td class="memItemRight" val
 <tr class="memitem:a3d0f0c717b6f497e27b77427afe20cfd" id="r_a3d0f0c717b6f497e27b77427afe20cfd"><td class="memItemLeft" align="right" valign="top"><a id="a3d0f0c717b6f497e27b77427afe20cfd" name="a3d0f0c717b6f497e27b77427afe20cfd"></a>
 IVW_MODULE_DATAFRAME_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, ColumnType type)</td></tr>
 <tr class="separator:a3d0f0c717b6f497e27b77427afe20cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01f7ead45efbb8d8be668377223c4121" id="r_a01f7ead45efbb8d8be668377223c4121"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a01f7ead45efbb8d8be668377223c4121">to_json</a> (nlohmann::json &amp;j, const <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;p)</td></tr>
-<tr class="separator:a01f7ead45efbb8d8be668377223c4121"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad18a0143a8faee15a8c928fbfbf1ca87" id="r_ad18a0143a8faee15a8c928fbfbf1ca87"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad18a0143a8faee15a8c928fbfbf1ca87">from_json</a> (const nlohmann::json &amp;j, <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;p)</td></tr>
-<tr class="separator:ad18a0143a8faee15a8c928fbfbf1ca87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afec3d6c1bfaadda2f9239b42de504083" id="r_afec3d6c1bfaadda2f9239b42de504083"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afec3d6c1bfaadda2f9239b42de504083">to_json</a> (json &amp;j, const <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;p)</td></tr>
+<tr class="separator:afec3d6c1bfaadda2f9239b42de504083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc3474702134da5a97fef684cae0091c" id="r_acc3474702134da5a97fef684cae0091c"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc3474702134da5a97fef684cae0091c">from_json</a> (const json &amp;j, <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;p)</td></tr>
+<tr class="separator:acc3474702134da5a97fef684cae0091c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0b805b7e936956f5c09e4d32c70d126" id="r_af0b805b7e936956f5c09e4d32c70d126"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0b805b7e936956f5c09e4d32c70d126">to_json</a> (json &amp;j, const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;df)</td></tr>
 <tr class="separator:af0b805b7e936956f5c09e4d32c70d126"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8615e9e00c0b4a68ec0a151e8efbbf46" id="r_a8615e9e00c0b4a68ec0a151e8efbbf46"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_DATAFRAME_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8615e9e00c0b4a68ec0a151e8efbbf46">from_json</a> (const json &amp;j, <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &amp;df)</td></tr>
@@ -6414,8 +6414,32 @@ template&lt;class F, class... Args&gt; </div>
 </div><!-- fragment --> 
 </div>
 </div>
+<a id="acc3474702134da5a97fef684cae0091c" name="acc3474702134da5a97fef684cae0091c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc3474702134da5a97fef684cae0091c">&#9670;&#160;</a></span>from_json() <span class="overload">[3/14]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_DATAFRAME_API void inviwo::from_json </td>
+          <td>(</td>
+          <td class="paramtype">const json &amp;</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Converts a JSON object to an <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>. Expects object layout according to the members of <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>: { {"value": val}, {"selectedIndex": selectedIndex}, {"options": [<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a> ... ]} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a></dd></dl>
+<p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> p = j.get&lt;<a class="code hl_class" href="classinviwo_1_1OptionProperty.html">OptionProperty&lt;double&gt;</a>&gt;();</div>
+<div class="ttc" id="aclassinviwo_1_1OptionProperty_html"><div class="ttname"><a href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a></div><div class="ttdef"><b>Definition</b> optionproperty.h:204</div></div>
+</div><!-- fragment --> 
+</div>
+</div>
 <a id="a8615e9e00c0b4a68ec0a151e8efbbf46" name="a8615e9e00c0b4a68ec0a151e8efbbf46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8615e9e00c0b4a68ec0a151e8efbbf46">&#9670;&#160;</a></span>from_json() <span class="overload">[3/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8615e9e00c0b4a68ec0a151e8efbbf46">&#9670;&#160;</a></span>from_json() <span class="overload">[4/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6432,16 +6456,15 @@ template&lt;class F, class... Args&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Converts a JSON object to a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a>. <a class="el" href="classinviwo_1_1Column.html" title="Pure interface for representing a data column with a header, optional units, and data range.">Column</a> types will be derived from json types. In case a column only holds null values, the inferred data type will be float. Expects object layout: </p><div class="fragment"><div class="line">[ {&quot;Col1&quot;: val11, &quot;Col2&quot;: val12 },</div>
-<div class="line">  {&quot;Col1&quot;: val21, &quot;Col2&quot;: val22 } ]</div>
-</div><!-- fragment --><p> The example above contains two rows and two columns.</p>
+<p>Converts a JSON object to a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a>. The JSON object must contain the following elements: "columns" (list of column headers) and "data" (list of rows). The elements "index" and "types" are optional. If no types are provided, the column types will be derived from json types. In case a column only holds null values, the inferred data type will be float. Null values are converted to NaN in float columns and 0 in integer columns.</p>
 <p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> df = j.get&lt;<a class="code hl_class" href="classinviwo_1_1DataFrame.html">DataFrame</a>&gt;();</div>
 <div class="ttc" id="aclassinviwo_1_1DataFrame_html"><div class="ttname"><a href="classinviwo_1_1DataFrame.html">inviwo::DataFrame</a></div><div class="ttdef"><b>Definition</b> dataframe.h:92</div></div>
-</div><!-- fragment --> 
+</div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="#af0b805b7e936956f5c09e4d32c70d126">to_json(json&amp;, const DataFrame&amp;)</a> </dd></dl>
+
 </div>
 </div>
 <a id="a8c1fead4ad14d4950a7ccff5b91c7ae2" name="a8c1fead4ad14d4950a7ccff5b91c7ae2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c1fead4ad14d4950a7ccff5b91c7ae2">&#9670;&#160;</a></span>from_json() <span class="overload">[4/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c1fead4ad14d4950a7ccff5b91c7ae2">&#9670;&#160;</a></span>from_json() <span class="overload">[5/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6465,7 +6488,7 @@ template&lt;class F, class... Args&gt; </div>
 </div>
 </div>
 <a id="a6b12ce78c933ef18516ceab6d64afbf5" name="a6b12ce78c933ef18516ceab6d64afbf5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b12ce78c933ef18516ceab6d64afbf5">&#9670;&#160;</a></span>from_json() <span class="overload">[5/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b12ce78c933ef18516ceab6d64afbf5">&#9670;&#160;</a></span>from_json() <span class="overload">[6/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6489,7 +6512,7 @@ template&lt;class F, class... Args&gt; </div>
 </div>
 </div>
 <a id="a1c63bd1fc251c208f4fe52b5ab5e5224" name="a1c63bd1fc251c208f4fe52b5ab5e5224"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c63bd1fc251c208f4fe52b5ab5e5224">&#9670;&#160;</a></span>from_json() <span class="overload">[6/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c63bd1fc251c208f4fe52b5ab5e5224">&#9670;&#160;</a></span>from_json() <span class="overload">[7/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6513,7 +6536,7 @@ template&lt;class F, class... Args&gt; </div>
 </div>
 </div>
 <a id="a173d82ecd35b28f8611ecb036ccc6639" name="a173d82ecd35b28f8611ecb036ccc6639"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a173d82ecd35b28f8611ecb036ccc6639">&#9670;&#160;</a></span>from_json() <span class="overload">[7/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a173d82ecd35b28f8611ecb036ccc6639">&#9670;&#160;</a></span>from_json() <span class="overload">[8/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6539,7 +6562,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="ac2e090f765253d487be2fd8ac66d30db" name="ac2e090f765253d487be2fd8ac66d30db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2e090f765253d487be2fd8ac66d30db">&#9670;&#160;</a></span>from_json() <span class="overload">[8/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2e090f765253d487be2fd8ac66d30db">&#9670;&#160;</a></span>from_json() <span class="overload">[9/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6560,12 +6583,11 @@ template&lt;typename T&gt; </div>
 </div><div class="memdoc">
 <p>Converts a JSON object to an <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>. Expects object layout according to the members of <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>: { {"value": val}, {"selectedIndex": selectedIndex}, {"options": [<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a> ... ]} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a></dd></dl>
 <p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> p = j.get&lt;<a class="code hl_class" href="classinviwo_1_1OptionProperty.html">OptionProperty&lt;double&gt;</a>&gt;();</div>
-<div class="ttc" id="aclassinviwo_1_1OptionProperty_html"><div class="ttname"><a href="classinviwo_1_1OptionProperty.html">inviwo::OptionProperty</a></div><div class="ttdef"><b>Definition</b> optionproperty.h:204</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
 <a id="a6c6d5c710bf29521cb6bd03194b93183" name="a6c6d5c710bf29521cb6bd03194b93183"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c6d5c710bf29521cb6bd03194b93183">&#9670;&#160;</a></span>from_json() <span class="overload">[9/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c6d5c710bf29521cb6bd03194b93183">&#9670;&#160;</a></span>from_json() <span class="overload">[10/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6591,7 +6613,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="a22a497d7998cd75395b7f306b468cb61" name="a22a497d7998cd75395b7f306b468cb61"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22a497d7998cd75395b7f306b468cb61">&#9670;&#160;</a></span>from_json() <span class="overload">[10/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a22a497d7998cd75395b7f306b468cb61">&#9670;&#160;</a></span>from_json() <span class="overload">[11/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6616,7 +6638,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="ab948af3105736026d52e542ba5e7d5e3" name="ab948af3105736026d52e542ba5e7d5e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab948af3105736026d52e542ba5e7d5e3">&#9670;&#160;</a></span>from_json() <span class="overload">[11/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab948af3105736026d52e542ba5e7d5e3">&#9670;&#160;</a></span>from_json() <span class="overload">[12/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6642,7 +6664,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="ab82251dcb8628175f03a80dae31abc08" name="ab82251dcb8628175f03a80dae31abc08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab82251dcb8628175f03a80dae31abc08">&#9670;&#160;</a></span>from_json() <span class="overload">[12/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab82251dcb8628175f03a80dae31abc08">&#9670;&#160;</a></span>from_json() <span class="overload">[13/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6666,7 +6688,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="a939037d5890e313a5a5834e226bc6c26" name="a939037d5890e313a5a5834e226bc6c26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a939037d5890e313a5a5834e226bc6c26">&#9670;&#160;</a></span>from_json() <span class="overload">[13/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a939037d5890e313a5a5834e226bc6c26">&#9670;&#160;</a></span>from_json() <span class="overload">[14/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6688,29 +6710,6 @@ template&lt;typename T&gt; </div>
 <p>Converts a JSON object to an <a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a>. Expects object layout according to the members of <a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a>: { {"value": val} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a></dd></dl>
 <p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> p = j.get&lt;<a class="code hl_class" href="classinviwo_1_1TemplateProperty.html">TemplateProperty&lt;double&gt;</a>&gt;();</div>
 <div class="ttc" id="aclassinviwo_1_1TemplateProperty_html"><div class="ttname"><a href="classinviwo_1_1TemplateProperty.html">inviwo::TemplateProperty</a></div><div class="ttdef"><b>Definition</b> templateproperty.h:45</div></div>
-</div><!-- fragment --> 
-</div>
-</div>
-<a id="ad18a0143a8faee15a8c928fbfbf1ca87" name="ad18a0143a8faee15a8c928fbfbf1ca87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad18a0143a8faee15a8c928fbfbf1ca87">&#9670;&#160;</a></span>from_json() <span class="overload">[14/14]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IVW_MODULE_DATAFRAME_API void inviwo::from_json </td>
-          <td>(</td>
-          <td class="paramtype">const nlohmann::json &amp;</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Converts a JSON object to an <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>. Expects object layout according to the members of <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>: { {"value": val}, {"selectedIndex": selectedIndex}, {"options": [<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a> ... ]} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a></dd></dl>
-<p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> p = j.get&lt;<a class="code hl_class" href="classinviwo_1_1OptionProperty.html">OptionProperty&lt;double&gt;</a>&gt;();</div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -7227,8 +7226,33 @@ template&lt;typename T, glm::precision P&gt; </div>
 </div><!-- fragment --> 
 </div>
 </div>
+<a id="afec3d6c1bfaadda2f9239b42de504083" name="afec3d6c1bfaadda2f9239b42de504083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afec3d6c1bfaadda2f9239b42de504083">&#9670;&#160;</a></span>to_json() <span class="overload">[3/14]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_DATAFRAME_API void inviwo::to_json </td>
+          <td>(</td>
+          <td class="paramtype">json &amp;</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Converts an <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> to a JSON object. Produces layout according to the members of <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>: { {"value": val}, {"selectedIndex": selectedIndex}, {"options": [<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a> ... ]} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a></dd></dl>
+<p>Usage example: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> p;</div>
+<div class="line">json j = p;</div>
+<div class="ttc" id="aclassinviwo_1_1ColumnOptionProperty_html"><div class="ttname"><a href="classinviwo_1_1ColumnOptionProperty.html">inviwo::ColumnOptionProperty</a></div><div class="ttdef"><b>Definition</b> columnoptionproperty.h:45</div></div>
+</div><!-- fragment --> 
+</div>
+</div>
 <a id="af0b805b7e936956f5c09e4d32c70d126" name="af0b805b7e936956f5c09e4d32c70d126"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0b805b7e936956f5c09e4d32c70d126">&#9670;&#160;</a></span>to_json() <span class="overload">[3/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af0b805b7e936956f5c09e4d32c70d126">&#9670;&#160;</a></span>to_json() <span class="overload">[4/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7245,16 +7269,23 @@ template&lt;typename T, glm::precision P&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Converts a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> to a JSON object. This will not include the index column. NaN floating point values are converted to null. Will write the <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> to an JSON object layout: </p><div class="fragment"><div class="line">[ {&quot;Col1&quot;: val11, &quot;Col2&quot;: val12 },</div>
-<div class="line">  {&quot;Col1&quot;: val21, &quot;Col2&quot;: val22 } ]</div>
-</div><!-- fragment --><p> The example above contains two rows and two columns.</p>
+<p>Converts a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> to a JSON object. NaN floating point values are converted to null. The output is based on Pandas pandas.DataFrame.to_json(order='split') and has the following JSON object layout: </p><div class="fragment"><div class="line">{</div>
+<div class="line">    &quot;columns&quot;: [ &quot;col1&quot;, &quot;col2&quot; ],</div>
+<div class="line">    &quot;data&quot;: [</div>
+<div class="line">        [ 5.1, &quot;category A&quot; ],</div>
+<div class="line">        [4.9, &quot;category B&quot; ]</div>
+<div class="line">    ],</div>
+<div class="line">    &quot;index&quot;: [ 0, 1 ],</div>
+<div class="line">    &quot;types&quot;: [ &quot;FLOAT64&quot;, &quot;CATEGORICAL&quot; ]</div>
+<div class="line">}</div>
+</div><!-- fragment --><p> The example above contains two rows and two columns, one with double values and one categorical.</p>
 <p>Usage example: </p><div class="fragment"><div class="line">Dataframe df;</div>
 <div class="line">json j = df;</div>
 </div><!-- fragment --> 
 </div>
 </div>
 <a id="aafdcbd103a87f596c16e63d32a562369" name="aafdcbd103a87f596c16e63d32a562369"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aafdcbd103a87f596c16e63d32a562369">&#9670;&#160;</a></span>to_json() <span class="overload">[4/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aafdcbd103a87f596c16e63d32a562369">&#9670;&#160;</a></span>to_json() <span class="overload">[5/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7278,7 +7309,7 @@ template&lt;typename T, glm::precision P&gt; </div>
 </div>
 </div>
 <a id="a838f26078e90e1892227113c4835d6f7" name="a838f26078e90e1892227113c4835d6f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a838f26078e90e1892227113c4835d6f7">&#9670;&#160;</a></span>to_json() <span class="overload">[5/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a838f26078e90e1892227113c4835d6f7">&#9670;&#160;</a></span>to_json() <span class="overload">[6/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7302,7 +7333,7 @@ template&lt;typename T, glm::precision P&gt; </div>
 </div>
 </div>
 <a id="a3f05e8e38553c6fe8297f20670c036ca" name="a3f05e8e38553c6fe8297f20670c036ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f05e8e38553c6fe8297f20670c036ca">&#9670;&#160;</a></span>to_json() <span class="overload">[6/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f05e8e38553c6fe8297f20670c036ca">&#9670;&#160;</a></span>to_json() <span class="overload">[7/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7326,7 +7357,7 @@ template&lt;typename T, glm::precision P&gt; </div>
 </div>
 </div>
 <a id="a56d701b1fc6490fb7d069b94e860d152" name="a56d701b1fc6490fb7d069b94e860d152"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56d701b1fc6490fb7d069b94e860d152">&#9670;&#160;</a></span>to_json() <span class="overload">[7/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a56d701b1fc6490fb7d069b94e860d152">&#9670;&#160;</a></span>to_json() <span class="overload">[8/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7352,7 +7383,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="a252824b041e5ddce08bb07baada601e2" name="a252824b041e5ddce08bb07baada601e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a252824b041e5ddce08bb07baada601e2">&#9670;&#160;</a></span>to_json() <span class="overload">[8/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a252824b041e5ddce08bb07baada601e2">&#9670;&#160;</a></span>to_json() <span class="overload">[9/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7378,7 +7409,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="a4abd3aef0a9b7bad30e2767a1c5fde3a" name="a4abd3aef0a9b7bad30e2767a1c5fde3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4abd3aef0a9b7bad30e2767a1c5fde3a">&#9670;&#160;</a></span>to_json() <span class="overload">[9/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4abd3aef0a9b7bad30e2767a1c5fde3a">&#9670;&#160;</a></span>to_json() <span class="overload">[10/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7405,7 +7436,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="acbfe24e9e4e88ed9f554f6420f5dfe8d" name="acbfe24e9e4e88ed9f554f6420f5dfe8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acbfe24e9e4e88ed9f554f6420f5dfe8d">&#9670;&#160;</a></span>to_json() <span class="overload">[10/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#acbfe24e9e4e88ed9f554f6420f5dfe8d">&#9670;&#160;</a></span>to_json() <span class="overload">[11/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7431,7 +7462,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="aab2f76dc62506f4f33c6aea1e0f865e0" name="aab2f76dc62506f4f33c6aea1e0f865e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab2f76dc62506f4f33c6aea1e0f865e0">&#9670;&#160;</a></span>to_json() <span class="overload">[11/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aab2f76dc62506f4f33c6aea1e0f865e0">&#9670;&#160;</a></span>to_json() <span class="overload">[12/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7457,7 +7488,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="a8b0248d46dee30cc58842c5592d6683b" name="a8b0248d46dee30cc58842c5592d6683b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b0248d46dee30cc58842c5592d6683b">&#9670;&#160;</a></span>to_json() <span class="overload">[12/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b0248d46dee30cc58842c5592d6683b">&#9670;&#160;</a></span>to_json() <span class="overload">[13/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7481,7 +7512,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <a id="af741d87ca3af159246c465a8fc093c16" name="af741d87ca3af159246c465a8fc093c16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af741d87ca3af159246c465a8fc093c16">&#9670;&#160;</a></span>to_json() <span class="overload">[13/14]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af741d87ca3af159246c465a8fc093c16">&#9670;&#160;</a></span>to_json() <span class="overload">[14/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7503,31 +7534,6 @@ template&lt;typename T&gt; </div>
 <p>Converts an <a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a> to a JSON object. Produces layout according to the members of <a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a>: { {"value": val} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TemplateProperty.html">TemplateProperty</a></dd></dl>
 <p>Usage example: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classinviwo_1_1TemplateProperty.html">TemplateProperty&lt;double&gt;</a> p;</div>
 <div class="line">json j = p;</div>
-</div><!-- fragment --> 
-</div>
-</div>
-<a id="a01f7ead45efbb8d8be668377223c4121" name="a01f7ead45efbb8d8be668377223c4121"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a01f7ead45efbb8d8be668377223c4121">&#9670;&#160;</a></span>to_json() <span class="overload">[14/14]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IVW_MODULE_DATAFRAME_API void inviwo::to_json </td>
-          <td>(</td>
-          <td class="paramtype">nlohmann::json &amp;</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Converts an <a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> to a JSON object. Produces layout according to the members of <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>: { {"value": val}, {"selectedIndex": selectedIndex}, {"options": [<a class="el" href="classinviwo_1_1OptionPropertyOption.html">OptionPropertyOption</a> ... ]} } </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a></dd></dl>
-<p>Usage example: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classinviwo_1_1ColumnOptionProperty.html">ColumnOptionProperty</a> p;</div>
-<div class="line">json j = p;</div>
-<div class="ttc" id="aclassinviwo_1_1ColumnOptionProperty_html"><div class="ttname"><a href="classinviwo_1_1ColumnOptionProperty.html">inviwo::ColumnOptionProperty</a></div><div class="ttdef"><b>Definition</b> columnoptionproperty.h:45</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

@@ -110,12 +110,12 @@ $(function(){initNavTree('conceptinviwo_1_1JSONConvertable.html',''); initResiza
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1JSONConvertable.html">inviwo::JSONConvertable</a> =  <span class="keyword">requires</span>(T&amp; t, json&amp; j) {</div>
-<div class="line">    { <a class="code hl_function" href="namespaceinviwo.html#a01f7ead45efbb8d8be668377223c4121">to_json</a>(j, std::as_const(t)) } -&gt; std::same_as&lt;void&gt;;</div>
-<div class="line">    { <a class="code hl_function" href="namespaceinviwo.html#ad18a0143a8faee15a8c928fbfbf1ca87">from_json</a>(std::as_const(j), t) } -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line">    { <a class="code hl_function" href="namespaceinviwo.html#afec3d6c1bfaadda2f9239b42de504083">to_json</a>(j, std::as_const(t)) } -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line">    { <a class="code hl_function" href="namespaceinviwo.html#acc3474702134da5a97fef684cae0091c">from_json</a>(std::as_const(j), t) } -&gt; std::same_as&lt;void&gt;;</div>
 <div class="line">}</div>
-<div class="ttc" id="aconceptinviwo_1_1JSONConvertable_html"><div class="ttname"><a href="conceptinviwo_1_1JSONConvertable.html">inviwo::JSONConvertable</a></div><div class="ttdef"><b>Definition</b> json.h:44</div></div>
-<div class="ttc" id="anamespaceinviwo_html_a01f7ead45efbb8d8be668377223c4121"><div class="ttname"><a href="namespaceinviwo.html#a01f7ead45efbb8d8be668377223c4121">inviwo::to_json</a></div><div class="ttdeci">IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json &amp;j, const ColumnOptionProperty &amp;p)</div></div>
-<div class="ttc" id="anamespaceinviwo_html_ad18a0143a8faee15a8c928fbfbf1ca87"><div class="ttname"><a href="namespaceinviwo.html#ad18a0143a8faee15a8c928fbfbf1ca87">inviwo::from_json</a></div><div class="ttdeci">IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::json &amp;j, ColumnOptionProperty &amp;p)</div></div>
+<div class="ttc" id="aconceptinviwo_1_1JSONConvertable_html"><div class="ttname"><a href="conceptinviwo_1_1JSONConvertable.html">inviwo::JSONConvertable</a></div><div class="ttdef"><b>Definition</b> json.h:41</div></div>
+<div class="ttc" id="anamespaceinviwo_html_acc3474702134da5a97fef684cae0091c"><div class="ttname"><a href="namespaceinviwo.html#acc3474702134da5a97fef684cae0091c">inviwo::from_json</a></div><div class="ttdeci">IVW_MODULE_DATAFRAME_API void from_json(const json &amp;j, ColumnOptionProperty &amp;p)</div></div>
+<div class="ttc" id="anamespaceinviwo_html_afec3d6c1bfaadda2f9239b42de504083"><div class="ttname"><a href="namespaceinviwo.html#afec3d6c1bfaadda2f9239b42de504083">inviwo::to_json</a></div><div class="ttdeci">IVW_MODULE_DATAFRAME_API void to_json(json &amp;j, const ColumnOptionProperty &amp;p)</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
