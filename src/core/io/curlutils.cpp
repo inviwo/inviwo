@@ -40,6 +40,11 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+namespace curl::detail_info {
+CURLCPP_DEFINE_INFO(CURLINFO_SIZE_DOWNLOAD_T, long);
+CURLCPP_DEFINE_INFO(CURLINFO_SPEED_DOWNLOAD_T, long);
+}  // namespace curl::detail_info
+
 namespace inviwo::net {
 
 std::string_view format_as(ResponseCode rs) {
@@ -491,14 +496,11 @@ std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url) {
             throw Exception(SourceContext{}, "Error downloading {:?g}: {}: {}", url, response,
                             description(response));
         }
+        const auto downloaded = easy.get_info<CURLINFO_SIZE_DOWNLOAD_T>().get();
+        const auto speed = easy.get_info<CURLINFO_SPEED_DOWNLOAD_T>().get();
+        const auto time = easy.get_info<CURLINFO_TOTAL_TIME>().get();
 
-        auto downloaded = easy.get_info<CURLINFO_SIZE_DOWNLOAD>().get();
-        auto speed = easy.get_info<CURLINFO_SPEED_DOWNLOAD>().get();
-        auto time = easy.get_info<CURLINFO_TOTAL_TIME>().get();
-
-        log::info("Downloaded {} in {}s at {}/s",
-                  util::formatBytesToString(static_cast<size_t>(downloaded)), time,
-                  util::formatBytesToString(static_cast<size_t>(speed)));
+        log::info("Downloaded {} in {}s at {}/s", ByteSize{downloaded}, time, ByteSize{speed});
 
         return file;
 

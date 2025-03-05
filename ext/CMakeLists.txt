@@ -151,6 +151,14 @@ ivw_vcpkg_install(llnl-units MODULE Core EXT)
 find_package(md4c CONFIG REQUIRED)
 ivw_vcpkg_install(md4c MODULE Core EXT)
 
+# FastFloat
+find_package(FastFloat CONFIG REQUIRED)
+ivw_vcpkg_install(fast-float MODULE Core EXT)
+
+# curlcpp
+find_package(curlcpp CONFIG REQUIRED)
+ivw_vcpkg_install(curlcpp MODULE Core EXT)
+
 if(WIN32) # Stackwalker for windows for stack traces in the log
     find_package(stackwalker CONFIG REQUIRED)
     ivw_vcpkg_install(stackwalker MODULE Core EXT)

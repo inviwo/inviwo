@@ -35,7 +35,7 @@
 
 namespace inviwo::net {
 
-enum class ResponseCode {
+enum class ResponseCode : long {
     Continue = 100,
     Switching_Protocols = 101,
     Processing = 102,
