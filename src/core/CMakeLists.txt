@@ -900,6 +900,7 @@ find_package(sml CONFIG REQUIRED)
 find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 find_package(FastFloat CONFIG REQUIRED)
+find_package(curlcpp CONFIG REQUIRED)
 
 if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
@@ -934,6 +935,7 @@ target_link_libraries(inviwo-core
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         llnl-units::units
         FastFloat::fast_float
+        curlcpp::curlcpp
     PRIVATE
         roaring::roaring
         md4c::md4c
