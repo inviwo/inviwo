@@ -1,0 +1,98 @@
+
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2020-2024 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+//http://wili.cc/blog/opengl-cs.html
+
+
+writeonly layout(rgba32f) uniform image3D dest; // Output 3D texture
+
+uniform float sigma;  // Standard deviation for Gaussian
+uniform int zOffset;  // Uniform for the current z-slice being processed
+uniform ivec3 dims;
+uniform ivec3 workGroup;
+uniform sampler2D transferFunction;
+
+
+layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;  // Workgroup size
+
+struct CustomType
+{
+    vec4 p;
+    vec4 coefs;
+};
+
+
+layout(std430, binding = 0) buffer List
+{
+    CustomType data[];  // Points data
+};
+
+#define M_PI 3.14159265359
+
+void main() {
+    // Get the current global invocation position
+    ivec3 storePos = ivec3(gl_GlobalInvocationID.xyz);
+    storePos.z = zOffset;
+    vec3 posFloat = vec3(storePos) / vec3(gl_NumWorkGroups * gl_WorkGroupSize);
+    // Modify the z position using zOffset (we will process one slice at a time)
+    posFloat.z = float(storePos.z)/dims.z;
+
+    float density = 0.0;
+    int d;
+    // Loop over each point in the data buffer
+    for (uint i = 0; i < data.length(); ++i) {
+        CustomType test = data[i];
+
+        float s = sigma;//;*test.p.w;             
+        vec3 dr = test.p.xyz - posFloat;
+        
+        float r2 = dot(dr,dr);
+        
+        float A = 1.0 / (s*sqrt(2*M_PI));
+        float B = pow(abs(dr.x), test.coefs.x) * pow(abs(dr.y), test.coefs.y) * pow(abs(dr.z), test.coefs.z);
+        
+        density += B*exp(-A*r2);
+        
+    }
+
+
+    /*
+    if(storePos.z < 100) {
+        density = 0.0;    
+    } else if( storePos.z > 400) {
+        density = 1.0;
+    } else { 
+        density = data[0].coefs.w / 20;
+    }
+    */
+    
+    // Store the result in the output 3D texture at the position
+    imageStore(dest, storePos, vec4(density, 0.0, 0.0, 0.0)); 
+}

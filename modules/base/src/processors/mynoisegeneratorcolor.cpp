@@ -35,6 +35,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/base/algorithm/randomutils.h>
 
 #include <bit>
@@ -73,28 +74,39 @@ MyNoiseGeneratorColor::MyNoiseGeneratorColor()
     : Processor()
     , points_{"points", "Generated points"_help}
     , pointsLayer_("pointsLayer", "Generated points image"_help)
+    , mesh_("spheremesh", "Positions and radii"_help)
     , size_("size", "Size", "Size of the output image."_help, size_t(256),
             {size_t(1), ConstraintBehavior::Editable}, {size_t(1096), ConstraintBehavior::Editable})
     , radii_{"radii", "radii scale factor"}
-    , seed_{"seed","Seed",
-            "Random seed."_help,size_t(256),{size_t(1), ConstraintBehavior::Editable},{size_t(1096), ConstraintBehavior::Editable}} {
+    , seed_{"seed",
+            "Seed",
+            "Random seed."_help,
+            size_t(256),
+            {size_t(1), ConstraintBehavior::Editable},
+            {size_t(1096), ConstraintBehavior::Editable}} {
 
-    addPort(points_);
-    addPort(pointsLayer_);
-    addProperties(size_, radii_,seed_);
+    addPorts(points_, pointsLayer_, mesh_);
+    addProperties(size_, radii_, seed_);
 }
 
 void MyNoiseGeneratorColor::process() {
 
-    std::vector<dvec4> data(size_.get(), dvec4{0, 0, 0, 0});
-    std::random_device rd;   // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(seed_.get());  // Standard mersenne_twister_engine seeded with rd()
+    std::vector<vec4> data(size_.get(), vec4{0, 0, 0, 0});
+    std::random_device rd;          // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(static_cast<unsigned int>(seed_.get()));  // Standard mersenne_twister_engine seeded with rd()
     std::uniform_real_distribution<float> posDis(0.0, 1.0);
     std::uniform_real_distribution<float> radiiDis(0.1, 0.3);
-    std::transform(std::begin(data), std::end(data), std::begin(data),
-                   [&](const dvec4& point) {
-                       return vec4{posDis(gen), posDis(gen), posDis(gen), radiiDis(gen) * radii_};
-                   });
+    std::transform(std::begin(data), std::end(data), std::begin(data), [&](const dvec4& point) {
+        return vec4{posDis(gen), posDis(gen), posDis(gen), radiiDis(gen) * radii_};
+    });
+
+    std::vector<vec4> positions(data.size());
+    std::transform(data.begin(), data.end(), positions.begin(),
+                   [](auto& v) { return static_cast<vec4>(v); });
+
+    auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+
     points_.setData(std::move(data));
 
     auto ram = std::make_shared<LayerRAMPrecision<vec4>>(
@@ -102,17 +114,16 @@ void MyNoiseGeneratorColor::process() {
                         .type = LayerType::Color,
                         .interpolation = InterpolationType::Nearest});
 
-    
-    std::transform(std::begin(data), std::end(data), std::begin(ram->getView()), [](dvec4 const & point) {
-        return point;
-    });
+    std::transform(std::begin(data), std::end(data), std::begin(ram->getView()),
+                   [](const dvec4& point) { return point; });
     /* std::ranges::for_each(ram->getView(), [&](vec4& point) {
         point = vec4{posDis(gen), posDis(gen), posDis(gen), radiiDis(gen) * radii_};
 
     });*/
-    //fixa outport inport med vector tänk på tincr så att den är oberoende av antalet voxlar osv
+    // fixa outport inport med vector tänk på tincr så att den är oberoende av antalet voxlar osv
     pointsLayer_.setData(std::make_shared<Layer>(ram));
-    
+
+    mesh_.setData(mesh);
 }
 
 }  // namespace inviwo

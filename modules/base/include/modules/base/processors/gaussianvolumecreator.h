@@ -88,7 +88,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    DataInport<std::vector<dvec4>> points_;
+    DataInport<std::vector<vec4>> points_;
     VolumeOutport outport_;
     OptionProperty<Type> type_;
     OptionProperty<DataFormatId> format_;

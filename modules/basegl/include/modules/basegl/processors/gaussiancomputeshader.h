@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,47 +29,44 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/base/properties/layerinformationproperty.h>
-#include <modules/base/properties/basisproperty.h>
-
-#include <random>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
+#include <inviwo/core/util/formats.h>                           // for DataFormatId
+#include <inviwo/core/util/staticstring.h>                      // for operator+
+#include <modules/base/properties/basisproperty.h>              // for BasisProperty
+#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+#include <inviwo/core/ports/layerport.h>                        // for LayerInport
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-/**
- * \brief A processor to generate a noise image
- */
-class IVW_MODULE_BASE_API MyNoiseGeneratorColor : public Processor {
+class IVW_MODULE_BASEGL_API GaussianComputeShader : public Processor {
 public:
-    MyNoiseGeneratorColor();
+    GaussianComputeShader();
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    DataOutport<std::vector<vec4>> points_;
-    LayerOutport pointsLayer_;
-    MeshOutport mesh_;
-    
-    
-    IntSizeTProperty size_;           ///< Size of the output image.
-    FloatProperty radii_;
-    IntSizeTProperty seed_; 
-
 private:
+    // VolumeInport volume_;
+    // LayerInport positionlayer_;
+    DataInport<std::vector<vec4>> points_;
+    VolumeOutport outport_;
+    Shader shaderGaussian_;
+    IntSize3Property dimensions_;
+    IntSize3Property groupSize_;
+    FloatProperty sigma_;
+    
+    
 };
 
 }  // namespace inviwo

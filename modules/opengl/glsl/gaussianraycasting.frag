@@ -74,7 +74,7 @@ uniform int channel;
 
 uniform float sigma;
 
-#define M_PI 3.14159
+#define M_PI 3.14159265359
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
 #if (!defined(INCLUDE_DVR) && !defined(INCLUDE_ISOSURFACES))
@@ -106,15 +106,13 @@ vec4 sumFunction(float sigma, vec3 samplePos, float tIncr, int count){
     float sum = 0;
     for(int i = 0; i < count; ++i) {
         
-        float s = sigma*centerPoints[i].w;
+        float s = sigma;
         vec3 dr = centerPoints[i].xyz - samplePos;
         
         float r2 = dr.x * dr.x + dr.y * dr.y + dr.z * dr.z;
         float A = 1.0 / (s*sqrt(2*M_PI));
         float B = 0.5*r2/(s*s);
-        //float A = pow(10*dr.x,0)*pow(10*dr.y,0)*pow(10*dr.z,1);
         
-        //float B = s;
         float v = A*exp(-B*r2);
         vec3 grad = -2*B*dr*v;
         

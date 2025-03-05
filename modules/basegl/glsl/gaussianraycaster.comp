@@ -1,0 +1,275 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2020-2025 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+//http://wili.cc/blog/opengl-cs.html
+
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/sampler3d.glsl"
+
+
+
+
+#define M_PI 3.14159265359
+uniform float sigma = 1;
+writeonly uniform image2D dest;
+uniform uint numPoints = 1;
+
+uniform vec3 cameraPos; // Camera position (for example, vec3(0.5, 0.5, -3))
+uniform vec3 cameraUp;       // Camera up vector (e.g., vec3(0, 1, 0))
+uniform vec3 cameraRight;    // Camera right vector (e.g., vec3(1, 0, 0))
+uniform mat4 projectionMatrix; // Projection matrix (e.g., perspective projection)
+uniform mat4 viewMatrix;       // View matrix (camera to world transformation)
+
+uniform mat4 projectionMatrixInv; // Projection matrix (e.g., perspective projection)
+uniform mat4 viewMatrixInv;       // View matrix (camera to world transformation)
+uniform sampler2D transferFunction;
+
+layout (local_size_x = 32, local_size_y = 32) in;
+
+struct Ray {
+    vec3 origin;
+    vec3 direction;
+};
+
+struct EntryExit
+{
+    bool hit;
+    vec3 entryPoint;
+    vec3 exitPoint;
+
+};
+
+struct CustomType
+{
+
+    vec4 p;
+    int val;
+
+};
+
+
+layout(std430,set = 0, binding = 1) buffer List
+{
+    CustomType data[];  // Points data
+};
+
+
+vec4 applyTF(sampler2D transferFunction, float density) {
+    return texture(transferFunction, vec2(density, 0.5));
+}
+
+EntryExit intersectRayWithBox(Ray ray) {
+    // Bounding box min and max
+    vec3 boxMin = vec3(0, 0, 0);
+    vec3 boxMax = vec3(1.0, 1.0, 1.0);
+
+    // Initialize t_min and t_max for each axis
+    float tmin = (boxMin.x - ray.origin.x) / ray.direction.x;
+    float tmax = (boxMax.x - ray.origin.x) / ray.direction.x;
+
+    // Handle the case where the direction is negative for X
+    if (ray.direction.x < 0.0) {
+        float temp = tmin;
+        tmin = tmax;
+        tmax = temp;
+    }
+
+    float tymin = (boxMin.y - ray.origin.y) / ray.direction.y;
+    float tymax = (boxMax.y - ray.origin.y) / ray.direction.y;
+
+    // Handle the case where the direction is negative for Y
+    if (ray.direction.y < 0.0) {
+        float temp = tymin;
+        tymin = tymax;
+        tymax = temp;
+    }
+
+    // Update tmin and tmax for the Y axis
+    tmin = max(tmin, tymin);
+    tmax = min(tmax, tymax);
+
+    float tzmin = (boxMin.z - ray.origin.z) / ray.direction.z;
+    float tzmax = (boxMax.z - ray.origin.z) / ray.direction.z;
+
+    // Handle the case where the direction is negative for Z
+    if (ray.direction.z < 0.0) {
+        float temp = tzmin;
+        tzmin = tzmax;
+        tzmax = temp;
+    }
+
+    // Update tmin and tmax for the Z axis
+    tmin = max(tmin, tzmin);
+    tmax = min(tmax, tzmax);
+
+    // Check if there is an intersection
+    EntryExit result;
+    if (tmax < 0.0 || tmin > tmax) {
+        result.hit = false;  // No intersection
+        return result;
+    }
+
+    // Otherwise, calculate the entry and exit points
+    result.hit = true;
+    result.entryPoint = ray.origin + tmin * ray.direction;
+    result.exitPoint = ray.origin + tmax * ray.direction;
+
+    return result;
+}
+vec3 computeFarPlane(vec2 texCoord)
+{
+    // Transform to clip space
+    float clipSpaceX = texCoord.x * 2.0 - 1.0;  // Normalizing to clip space
+    float clipSpaceY = texCoord.y * 2.0 - 1;  // Y-flip for OpenGL
+    vec4 clipSpaceCoord = vec4(clipSpaceX, clipSpaceY, 1.0, 1.0);  // Depth set to 1.0 for proper perspective
+
+    // Convert from clip space to view space
+    vec4 viewSpaceCoord = inverse(projectionMatrix)*clipSpaceCoord;
+    
+    // Perform the division by w to get correct normalized device coordinates
+    viewSpaceCoord /= viewSpaceCoord.w;
+
+    // Convert from view space to world space
+    vec4 worldSpaceCoord = inverse(viewMatrix)*viewSpaceCoord;
+
+    return worldSpaceCoord.xyz;
+}
+
+
+vec3 computeNearPlane(vec2 texCoord)
+{
+    // Transform to clip space
+    float clipSpaceX = texCoord.x * 2.0 - 1.0;  // Normalizing to clip space
+    float clipSpaceY = texCoord.y * 2.0 - 1;  // Y-flip for OpenGL
+    vec4 clipSpaceCoord = vec4(clipSpaceX, clipSpaceY, -1.0, 1.0);  // Depth set to 1.0 for proper perspective
+
+    // Convert from clip space to view space
+    vec4 viewSpaceCoord = inverse(projectionMatrix)*clipSpaceCoord;
+    
+    // Perform the division by w to get correct normalized device coordinates
+    viewSpaceCoord /= viewSpaceCoord.w;
+
+    // Convert from view space to world space
+    vec4 worldSpaceCoord = inverse(viewMatrix)*viewSpaceCoord;
+
+    return worldSpaceCoord.xyz;
+}
+
+float calcDensity(vec3 samplePos)
+{
+    float density = 0.0;
+    float sigma2 = 0.1;
+    for(int i = 0; i < numPoints;++i)
+    {
+        
+        vec4 p = data[i].p;   
+        float s = sigma;                
+        vec3 dr = p.xyz - samplePos;
+        float r2 = dot(dr,dr);
+        float A = 1.0 / (s*sqrt(2*M_PI));
+        float B = 0.5*r2/(s*s);
+        
+        density += A*exp(-B*r2);
+    }
+    return density;
+}
+
+
+// Ray marching function with simplified color accumulation
+float sampleRay(EntryExit points, int nSteps) {
+    
+    
+
+    float density = 0;
+    //int depth = imageSize(dest).x;
+    vec3 rayDirection = points.exitPoint - points.entryPoint;
+    float tEnd = length(rayDirection);
+    
+    
+    float tIncr = tEnd / nSteps;
+    
+    float t = 0.5f * tIncr;
+    rayDirection = normalize(rayDirection);
+    float tDepth = -1.0;
+    
+    vec3 samplePos;
+
+    while(t < tEnd)
+    {
+        samplePos = points.entryPoint + t * rayDirection;
+        density += calcDensity(samplePos);
+        if (density > 0.999999) {
+            t = tEnd;
+        }
+        t += tIncr;
+    }
+    
+    return density;
+}
+
+void main() {
+    ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);   
+    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / vec2(gl_NumWorkGroups.xy * gl_WorkGroupSize.xy);
+    
+    vec2 texCoord2 = vec2(gl_GlobalInvocationID.xy)/imageSize(dest);
+
+    // Camera parameters
+    
+    int nSteps = 100;
+    
+    //vec3 rayOrigin = computeNearPlane(test);
+    vec3 farPlane = computeFarPlane(texCoord2);
+    vec3 nearPlane = computeNearPlane(texCoord2);
+
+    vec3 rayDir = normalize(farPlane - nearPlane);
+    // Setup ray
+    Ray ray;
+    ray.origin = nearPlane;
+    ray.direction = rayDir;
+
+    //vec4 color=vec4(1-texCoord2.y,1-texCoord2.y,1-texCoord2.y,.2);
+    float density = 0;
+    EntryExit points = intersectRayWithBox(ray);
+    if(points.hit)
+    {
+        density = sampleRay(points, nSteps);
+        
+    }
+    vec4 color = applyTF(transferFunction,density);
+
+    // Sample the ray for density
+    
+    
+    // Store result
+    
+
+
+    imageStore(dest, storePos, color);
+}

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,50 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/base/properties/layerinformationproperty.h>
-#include <modules/base/properties/basisproperty.h>
-
-#include <random>
+#include <inviwo/core/common/inviwocoredefine.h>
+//#include <inviwo/core/datastructures/representationfactory.h>
+//#include <inviwo/core/datastructures/representationconverterfactory.h>
+//#include <inviwo/core/datastructures/representationfactorymanager.h>
+//#include <inviwo/core/datastructures/nodata.h>
+//#include <inviwo/core/resourcemanager/resource.h>
 
 namespace inviwo {
 
 /**
- * \brief A processor to generate a noise image
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_BASE_API MyNoiseGeneratorColor : public Processor {
+class IVW_CORE_API GaussianOrbital {
 public:
-    MyNoiseGeneratorColor();
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    DataOutport<std::vector<vec4>> points_;
-    LayerOutport pointsLayer_;
-    MeshOutport mesh_;
     
-    
-    IntSizeTProperty size_;           ///< Size of the output image.
-    FloatProperty radii_;
-    IntSizeTProperty seed_; 
-
-private:
+    GaussianOrbital();
+    virtual ~GaussianOrbital() = default;
 };
 
 }  // namespace inviwo

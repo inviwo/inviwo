@@ -67,6 +67,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/typedmesh.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/gaussianorbital.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogramtools.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
@@ -491,6 +492,7 @@ set(SOURCE_FILES
     datastructures/geometry/plane.cpp
     datastructures/geometry/simplemesh.cpp
     datastructures/geometry/simplemeshcreator.cpp
+    datastructures/gaussianorbital.cpp
     datastructures/histogram.cpp
     datastructures/histogramtools.cpp
     datastructures/image/image.cpp
