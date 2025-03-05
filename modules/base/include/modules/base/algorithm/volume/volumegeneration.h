@@ -155,7 +155,7 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
 
 template <typename T = float>
 std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float sigma_,
-                                           std::vector<dvec4> const& points) {
+                                           std::vector<vec4> const& points) {
     return generateVolume(size, mat3(1.0), [&](size3_t const& ind) {
 
         
@@ -169,7 +169,7 @@ std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float sigma_,
             std::begin(points), std::end(points), 0.0,
             [&s,sigma_,&x](double sum, dvec4 const& p) {
                 dvec3 point{p.x, p.y, p.z};
-                s = p.w * sigma_;
+                s = sigma_;
                 double r2{glm::length2(point - x)};
                 double A{1.0 / (s * sqrt(2 * M_PI))};
                 double B{0.5 * r2 / (s * s)};

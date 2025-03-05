@@ -49,6 +49,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datasequence.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datatraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/gaussianorbital.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrytype.h
@@ -450,6 +451,7 @@ set(SOURCE_FILES
     datastructures/datarepresentation.cpp
     datastructures/datasequence.cpp
     datastructures/datatraits.cpp
+    datastructures/gaussianorbital.cpp
     datastructures/geometry/basicmesh.cpp
     datastructures/geometry/geometrytype.cpp
     datastructures/geometry/mesh.cpp
@@ -994,57 +996,57 @@ if(WIN32)
     list(APPEND packages stackwalker)
 endif()
 
-set(preconfig [=[
-file(GLOB configs LIST_DIRECTORIES true ${IVW_SHARE_DIR}/*)
-list(APPEND CMAKE_PREFIX_PATH ${configs})
+set(preconfig [=[
+file(GLOB configs LIST_DIRECTORIES true ${IVW_SHARE_DIR}/*)
+list(APPEND CMAKE_PREFIX_PATH ${configs})
 ]=]
 )
 
-string(CONFIGURE [=[
-option(IVW_CFG_CMAKE_DEBUG "Print CMake Debug Information" OFF)
-function(ivw_debug_message)
-    if(IVW_CFG_CMAKE_DEBUG)
-        message(${ARGV})
-    endif()
-endfunction()
-
-macro(ivw_setup)
-    set(IVW_VERSION         @IVW_VERSION@)
-    set(IVW_ROOT_DIR        ${IVW_PREFIX})
-    set(IVW_MODULE_DIR      ${IVW_PREFIX}/modules)
-    set(IVW_CMAKE_TEMPLATES ${IVW_PREFIX}/cmake/templates)
-    set(IVW_BINARY_DIR      ${CMAKE_CURRENT_BINARY_DIR})
-
-    include(${IVW_PREFIX}/cmake/globalutils.cmake)
-    include(${IVW_PREFIX}/cmake/coredata.cmake)
-    include(${IVW_PREFIX}/cmake/moduledata.cmake)
-    include(${IVW_PREFIX}/cmake/createmodule.cmake)
-    include(${IVW_PREFIX}/cmake/unittests.cmake)
-    include(${IVW_PREFIX}/cmake/compileoptions.cmake)
-    include(${IVW_PREFIX}/cmake/precompileheaders.cmake)
-    include(${IVW_PREFIX}/cmake/registermodules.cmake)
-    include(${IVW_PREFIX}/cmake/filegeneration.cmake)
-    include(${IVW_PREFIX}/cmake/doc.cmake)
-    include(${IVW_PREFIX}/cmake/licenses.cmake)
-    include(${IVW_PREFIX}/cmake/installutils.cmake)
-
-    set(INVIWOCOREMODULE_name @INVIWOCOREMODULE_name@)
-    set(INVIWOCOREMODULE_dir @INVIWOCOREMODULE_dir@)
-    set(INVIWOCOREMODULE_base @INVIWOCOREMODULE_base@)
-    set(INVIWOCOREMODULE_path @INVIWOCOREMODULE_path@)
-    set(INVIWOCOREMODULE_group @INVIWOCOREMODULE_group@)
-    set(INVIWOCOREMODULE_opt @INVIWOCOREMODULE_opt@)
-    set(INVIWOCOREMODULE_target @INVIWOCOREMODULE_target@)
-    set(INVIWOCOREMODULE_alias @INVIWOCOREMODULE_alias@)
-    set(INVIWOCOREMODULE_class @INVIWOCOREMODULE_class@)
-    set(INVIWOCOREMODULE_modName @INVIWOCOREMODULE_modName@)
-    set(INVIWOCOREMODULE_version @INVIWOCOREMODULE_version@)
-    set(INVIWOCOREMODULE_dependencies @INVIWOCOREMODULE_dependencies@)
-    set(INVIWOCOREMODULE_udependencies @INVIWOCOREMODULE_udependencies@)
-    set(INVIWOCOREMODULE_dependenciesversion @INVIWOCOREMODULE_dependenciesversion@)
-    set(INVIWOCOREMODULE_protected @INVIWOCOREMODULE_protected@)
-    set(INVIWOCOREMODULE_aliases @INVIWOCOREMODULE_aliases@)
-endmacro()
+string(CONFIGURE [=[
+option(IVW_CFG_CMAKE_DEBUG "Print CMake Debug Information" OFF)
+function(ivw_debug_message)
+    if(IVW_CFG_CMAKE_DEBUG)
+        message(${ARGV})
+    endif()
+endfunction()
+
+macro(ivw_setup)
+    set(IVW_VERSION         @IVW_VERSION@)
+    set(IVW_ROOT_DIR        ${IVW_PREFIX})
+    set(IVW_MODULE_DIR      ${IVW_PREFIX}/modules)
+    set(IVW_CMAKE_TEMPLATES ${IVW_PREFIX}/cmake/templates)
+    set(IVW_BINARY_DIR      ${CMAKE_CURRENT_BINARY_DIR})
+
+    include(${IVW_PREFIX}/cmake/globalutils.cmake)
+    include(${IVW_PREFIX}/cmake/coredata.cmake)
+    include(${IVW_PREFIX}/cmake/moduledata.cmake)
+    include(${IVW_PREFIX}/cmake/createmodule.cmake)
+    include(${IVW_PREFIX}/cmake/unittests.cmake)
+    include(${IVW_PREFIX}/cmake/compileoptions.cmake)
+    include(${IVW_PREFIX}/cmake/precompileheaders.cmake)
+    include(${IVW_PREFIX}/cmake/registermodules.cmake)
+    include(${IVW_PREFIX}/cmake/filegeneration.cmake)
+    include(${IVW_PREFIX}/cmake/doc.cmake)
+    include(${IVW_PREFIX}/cmake/licenses.cmake)
+    include(${IVW_PREFIX}/cmake/installutils.cmake)
+
+    set(INVIWOCOREMODULE_name @INVIWOCOREMODULE_name@)
+    set(INVIWOCOREMODULE_dir @INVIWOCOREMODULE_dir@)
+    set(INVIWOCOREMODULE_base @INVIWOCOREMODULE_base@)
+    set(INVIWOCOREMODULE_path @INVIWOCOREMODULE_path@)
+    set(INVIWOCOREMODULE_group @INVIWOCOREMODULE_group@)
+    set(INVIWOCOREMODULE_opt @INVIWOCOREMODULE_opt@)
+    set(INVIWOCOREMODULE_target @INVIWOCOREMODULE_target@)
+    set(INVIWOCOREMODULE_alias @INVIWOCOREMODULE_alias@)
+    set(INVIWOCOREMODULE_class @INVIWOCOREMODULE_class@)
+    set(INVIWOCOREMODULE_modName @INVIWOCOREMODULE_modName@)
+    set(INVIWOCOREMODULE_version @INVIWOCOREMODULE_version@)
+    set(INVIWOCOREMODULE_dependencies @INVIWOCOREMODULE_dependencies@)
+    set(INVIWOCOREMODULE_udependencies @INVIWOCOREMODULE_udependencies@)
+    set(INVIWOCOREMODULE_dependenciesversion @INVIWOCOREMODULE_dependenciesversion@)
+    set(INVIWOCOREMODULE_protected @INVIWOCOREMODULE_protected@)
+    set(INVIWOCOREMODULE_aliases @INVIWOCOREMODULE_aliases@)
+endmacro()
 ]=]
 postconfig @ONLY)
 

@@ -51,7 +51,7 @@ public:
 
 private:
     MeshOutport mesh_;
-
+    
     CameraProperty camera_;
     FloatVec4Property color_;
 };

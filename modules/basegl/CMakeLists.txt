@@ -28,6 +28,8 @@ set(HEADER_FILES
     include/modules/basegl/processors/embeddedvolumeslice.h
     include/modules/basegl/processors/entryexitpointsprocessor.h
     include/modules/basegl/processors/firstivwprocessor.h
+    include/modules/basegl/processors/gaussiancompraycaster.h
+    include/modules/basegl/processors/gaussiancomputeshader.h
     include/modules/basegl/processors/geometryentryexitpoints.h
     include/modules/basegl/processors/heightfieldprocessor.h
     include/modules/basegl/processors/imageprocessing/columnrowlayout.h
@@ -156,7 +158,9 @@ set(SOURCE_FILES
     src/processors/drawpoints.cpp
     src/processors/embeddedvolumeslice.cpp
     src/processors/entryexitpointsprocessor.cpp
-    src/processors/firstivwprocessor.cpp    
+    src/processors/firstivwprocessor.cpp
+    src/processors/gaussiancompraycaster.cpp
+    src/processors/gaussiancomputeshader.cpp
     src/processors/gaussianvolumeraycaster.cpp
     src/processors/geometryentryexitpoints.cpp
     src/processors/heightfieldprocessor.cpp
