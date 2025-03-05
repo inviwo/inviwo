@@ -92,7 +92,13 @@ struct TemplateColumnReg {
             .def("add", py::overload_cast<const T&>(&C::add))
             .def("add", py::overload_cast<std::string_view>(&C::add))
             .def("append", [](C& c, C& src) { c.append(src); })
-            .def("set", &C::set)
+            .def(
+                "set",
+                [](C& c, size_t i, const T& value) {
+                    if (i >= c.getSize()) throw py::index_error();
+                    return c.set(i, value);
+                },
+                py::arg("i"), py::arg("value"))
             .def(
                 "get",
                 [](const C& c, size_t i) {
@@ -165,19 +171,64 @@ void exposeDataFrame(pybind11::module& m) {
         .def("append", [](CategoricalColumn& c, CategoricalColumn& src) { c.append(src); })
         .def("append",
              py::overload_cast<const std::vector<std::string>&>(&CategoricalColumn::append))
-        .def("set", py::overload_cast<size_t, std::uint32_t>(&CategoricalColumn::set))
-        .def("set", py::overload_cast<size_t, std::string_view>(&CategoricalColumn::set))
-        .def("get", &CategoricalColumn::get)
-        .def("getId", &CategoricalColumn::getId)
+        .def(
+            "set",
+            [](CategoricalColumn& c, size_t i, std::uint32_t value) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.set(i, value);
+            },
+            py::arg("i"), py::arg("value"))
+        .def(
+            "set",
+            [](CategoricalColumn& c, size_t i, std::string_view value) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.set(i, value);
+            },
+            py::arg("i"), py::arg("value"))
+        .def(
+            "get",
+            [](const CategoricalColumn& c, size_t i) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.get(i);
+            },
+            py::arg("i"))
+        .def(
+            "getAsString",
+            [](const CategoricalColumn& c, size_t i) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.get(i);
+            },
+            py::arg("i"))
+        .def(
+            "getId",
+            [](const CategoricalColumn& c, size_t i) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.getId(i);
+            },
+            py::arg("i"))
         .def("__repr__",
-             [](CategoricalColumn& c) {
+             [](const CategoricalColumn& c) {
                  return fmt::format("<CategoricalColumn: '{}', {}, {} categories>", c.getHeader(),
                                     c.getSize(), c.getCategories().size());
              })
         .def(
             "__iter__",
             [](const CategoricalColumn& c) { return py::make_iterator(c.begin(), c.end()); },
-            py::keep_alive<0, 1>());
+            py::keep_alive<0, 1>())
+        .def(
+            "__getitem__",
+            [](const CategoricalColumn& c, size_t i) {
+                if (i >= c.getSize()) throw py::index_error();
+                return c.get(i);
+            },
+            py::arg("i"))
+        .def(
+            "__setitem__",
+            [](CategoricalColumn& c, size_t i, std::string_view value) {
+                if (i >= c.getSize()) throw py::index_error();
+                c.set(i, value);
+            },
+            py::arg("i"), py::arg("value"));
 
     py::classh<IndexColumn, TemplateColumn<std::uint32_t>>(m, "IndexColumn")
         .def(py::init<std::string_view>());

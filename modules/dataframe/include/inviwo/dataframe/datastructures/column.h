@@ -133,6 +133,42 @@ public:
     virtual std::shared_ptr<BufferBase> getBuffer() = 0;
     virtual std::shared_ptr<const BufferBase> getBuffer() const = 0;
 
+    template <typename T>
+    const T* getRepresentation() const {
+        return getBuffer()->getRepresentation<T>();
+    }
+    template <typename T>
+    T* getEditableRepresentation() {
+        return getBuffer()->getEditableRepresentation<T>();
+    }
+
+    const BufferRAM* getRAMRepresentation() const {
+        return getBuffer()->getRepresentation<BufferRAM>();
+    }
+    BufferRAM* getEditableRAMRepresentation() {
+        return getBuffer()->getEditableRepresentation<BufferRAM>();
+    }
+    template <typename T>
+    const std::vector<T>& getContainer() const {
+        auto* ram = getBuffer()->getRepresentation<BufferRAM>();
+        if (auto prec = dynamic_cast<const BufferRAMPrecision<T>*>(ram)) {
+            return prec->getDataContainer();
+        } else {
+            throw Exception(SourceContext{}, "Tried to get a '{}' container, but the type was",
+                            DataFormat<T>::str(), ram->getDataFormat()->getString());
+        }
+    }
+    template <typename T>
+    std::vector<T>& getEditableContainer() {
+        auto* ram = getBuffer()->getEditableRepresentation<BufferRAM>();
+        if (auto prec = dynamic_cast<BufferRAMPrecision<T>*>(ram)) {
+            return prec->getDataContainer();
+        } else {
+            throw Exception(SourceContext{}, "Tried to get a '{}' container, but the type was",
+                            DataFormat<T>::str(), ram->getDataFormat()->getString());
+        }
+    }
+
     virtual size_t getSize() const = 0;
 
     virtual double getAsDouble(size_t idx) const = 0;
@@ -219,6 +255,28 @@ public:
 
     std::shared_ptr<Buffer<T>> getTypedBuffer();
     std::shared_ptr<const Buffer<T>> getTypedBuffer() const;
+
+    template <typename Rep>
+    const Rep* getRepresentation() const {
+        return getTypedBuffer()->template getRepresentation<Rep>();
+    }
+    template <typename Rep>
+    Rep* getEditableRepresentation() {
+        return getTypedBuffer()->template getEditableRepresentation<Rep>();
+    }
+
+    const BufferRAMPrecision<T>* getRAMRepresentation() const {
+        return getTypedBuffer()->getRAMRepresentation();
+    }
+    BufferRAMPrecision<T>* getEditableRAMRepresentation() {
+        return getTypedBuffer()->getEditableRAMRepresentation();
+    }
+    const std::vector<T>& getContainer() const {
+        return getRAMRepresentation()->getDataContainer();
+    }
+    std::vector<T>& getEditableContainer() {
+        return getEditableRAMRepresentation()->getDataContainer();
+    }
 
     virtual size_t getSize() const override;
 
