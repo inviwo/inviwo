@@ -175,31 +175,31 @@ std::shared_ptr<CategoricalColumn> DataFrame::getCategoricalColumn(std::string_v
 }
 std::shared_ptr<const CategoricalColumn> DataFrame::getCategoricalColumn(
     std::string_view name) const {
-     return std::dynamic_pointer_cast<const CategoricalColumn>(getColumn(name));
+    return std::dynamic_pointer_cast<const CategoricalColumn>(getColumn(name));
 }
 
 std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
 
 std::shared_ptr<const IndexColumn> DataFrame::getIndexColumn() const {
-     if (columns_[0]->getColumnType() == ColumnType::Index) {
-         return std::static_pointer_cast<const IndexColumn>(columns_[0]);
-     } else {
-         return nullptr;
-     }
+    if (columns_[0]->getColumnType() == ColumnType::Index) {
+        return std::static_pointer_cast<const IndexColumn>(columns_[0]);
+    } else {
+        return nullptr;
+    }
 }
 
 std::shared_ptr<IndexColumn> DataFrame::getIndexColumn() {
-     if (columns_[0]->getColumnType() == ColumnType::Index) {
-         return std::static_pointer_cast<IndexColumn>(columns_[0]);
-     } else {
-         return nullptr;
-     }
+    if (columns_[0]->getColumnType() == ColumnType::Index) {
+        return std::static_pointer_cast<IndexColumn>(columns_[0]);
+    } else {
+        return nullptr;
+    }
 }
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::begin() { return columns_.begin(); }
 
 std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
-     return columns_.begin();
+    return columns_.begin();
 }
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() { return columns_.end(); }

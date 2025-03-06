@@ -216,7 +216,7 @@ void exposeProperties(py::module& m) {
         .def("setValues", [](TransferFunctionProperty& tp,
                              const std::vector<TFPrimitiveData>& values) { tp.get().set(values); })
         .def("setValues",
-             [](TransferFunctionProperty& tp, py::typing::Iterable<TFPrimitiveData> items) {
+             [](TransferFunctionProperty& tp, const py::typing::Iterable<TFPrimitiveData>& items) {
                  std::vector<TFPrimitiveData> points;
                  for (auto item : items) {
                      points.emplace_back(item.cast<TFPrimitiveData>());
@@ -271,7 +271,7 @@ void exposeProperties(py::module& m) {
         .def("setValues", [](IsoValueProperty& ivp,
                              const std::vector<TFPrimitiveData>& values) { ivp.get().set(values); })
         .def("setValues",
-             [](IsoValueProperty& ivp, py::typing::Iterable<TFPrimitiveData> items) {
+             [](IsoValueProperty& ivp, const py::typing::Iterable<TFPrimitiveData>& items) {
                  std::vector<TFPrimitiveData> points;
                  for (auto item : items) {
                      points.emplace_back(item.cast<TFPrimitiveData>());

@@ -105,7 +105,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
                  return TFPrimitiveData{pos, color::hex2rgba(color)};
              }),
              py::arg("pos"), py::arg("colorAndAlpha"))
-        .def(py::init([](py::list list) {
+        .def(py::init([](const py::list& list) {
             TFPrimitiveData data{};
 
             if (list.size() == 2) {
@@ -235,7 +235,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def("add", py::overload_cast<const std::vector<TFPrimitiveData>&>(&TFPrimitiveSet::add))
 
         .def("set",
-             [](TFPrimitiveSet& ps, py::typing::Iterable<TFPrimitiveData> items) {
+             [](TFPrimitiveSet& ps, const py::typing::Iterable<TFPrimitiveData>& items) {
                  std::vector<TFPrimitiveData> points;
                  for (auto item : items) {
                      points.emplace_back(item.cast<TFPrimitiveData>());
