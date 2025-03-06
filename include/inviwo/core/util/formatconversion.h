@@ -31,6 +31,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <string>
+#include <fmt/format.h>
+#include <array>
 
 namespace inviwo {
 
@@ -53,4 +55,61 @@ IVW_CORE_API std::string formatBytesToString(size_t bytes);
 
 }  // namespace util
 
+template <typename T>
+struct ByteSize {
+    T size;
+};
+
 }  // namespace inviwo
+
+template <typename T>
+struct fmt::formatter<inviwo::ByteSize<T>, char> {
+    fmt::formatter<std::string_view> strFormatter;
+    char prefix = 'A';
+
+    template <class ParseContext>
+    constexpr ParseContext::iterator parse(ParseContext& ctx) {
+        auto it = ctx.begin();
+        if (it == ctx.end()) return it;
+
+        if (*it == 'T' || *it == 'G' || *it == 'M' || *it == 'k' || *it == 'O') {
+            prefix = *it;
+            ++it;
+        }
+        if (*it == '}') {
+            return it;
+        }
+
+        return strFormatter.parse(ctx);
+    }
+
+    template <class FmtContext>
+    FmtContext::iterator format(inviwo::ByteSize<T> bs, FmtContext& ctx) const {
+        std::array<char, 20> buff{};
+
+        auto* end = buff.data();
+        if (prefix == 'T' || (prefix == 'A' && bs.size >= 1'000'000'000'000)) {
+            end = fmt::format_to_n(buff.data(), buff.size(), "{:.2f} TB",
+                                   static_cast<double>(bs.size) / 1'000'000'000'000.0)
+                      .out;
+        } else if (prefix == 'G' || (prefix == 'A' && bs.size >= 1'000'000'000)) {
+            end = fmt::format_to_n(buff.data(), buff.size(), "{:.2f} GB",
+                                   static_cast<double>(bs.size) / 1'000'000'000.0)
+                      .out;
+        } else if (prefix == 'M' || (prefix == 'A' && bs.size >= 1'000'000)) {
+            end = fmt::format_to_n(buff.data(), buff.size(), "{:.2f} MB",
+                                   static_cast<double>(bs.size) / 1'000'000.0)
+                      .out;
+        } else if (prefix == 'k' || (prefix == 'A' && bs.size >= 1'000)) {
+            end = fmt::format_to_n(buff.data(), buff.size(), "{:.2f} kB",
+                                   static_cast<double>(bs.size) / 1'000.0)
+                      .out;
+        } else {
+            end = fmt::format_to_n(buff.data(), buff.size(), "{:d} B", bs.size).out;
+        }
+
+        return strFormatter.format(
+            std::string_view{buff.data(), static_cast<size_t>(std::distance(buff.data(), end))},
+            ctx);
+    }
+};

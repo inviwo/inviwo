@@ -241,7 +241,7 @@ std::any CSVReader::getOption(std::string_view key) {
 }
 
 std::shared_ptr<DataFrame> CSVReader::readData(const std::filesystem::path& fileName) {
-    auto file = open(fileName);
+    auto file = openAndCacheIfUrl(fileName);
 
     file.seekg(0, std::ios::end);
     std::streampos len = file.tellg();

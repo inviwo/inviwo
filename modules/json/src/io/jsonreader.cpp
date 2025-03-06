@@ -43,7 +43,7 @@ JSONReader::JSONReader() {
 JSONReader* JSONReader::clone() const { return new JSONReader(*this); }
 
 std::shared_ptr<json> JSONReader::readData(const std::filesystem::path& fileName) {
-    auto file = open(fileName);
+    auto file = openAndCacheIfUrl(fileName);
 
     file.seekg(0, std::ios::end);
     const std::streampos len = file.tellg();

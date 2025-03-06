@@ -54,6 +54,8 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for move
 #include <vector>         // for vector
+#include <ranges>
+#include <algorithm>
 
 #include <glm/fwd.hpp>   // for mat3
 #include <glm/vec3.hpp>  // for operator+, vec<>:...
@@ -68,28 +70,56 @@ MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
 
 MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(*this); }
 
-std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& filePath) {
+namespace {
 
+void gatherVolumes(std::shared_ptr<inviwo::VolumeRAM>& dest,
+                   std::vector<std::shared_ptr<inviwo::Volume>>& volumes) {
+
+    const auto srcPtrs = volumes | std::views::transform([](const auto& vol) {
+                             return static_cast<const unsigned char*>(
+                                 vol->template getRepresentation<VolumeRAM>()->getData());
+                         }) |
+                         std::ranges::to<std::vector>();
+
+    auto* dstPtr = static_cast<unsigned char*>(dest->getData());
+
+    // Copy the data from the other volumes to the new multichannel volume
+    const size_t mbytes = dest->getDataFormat()->getSizeInBytes();
+    const size_t bytes = volumes[0]->getDataFormat()->getSizeInBytes();
+    const size_t dims = glm::compMul(volumes[0]->getDimensions());
+    const size_t vsize = srcPtrs.size();
+    for (size_t i = 0; i < dims; i++) {
+        for (size_t j = 0; j < vsize; j++) {
+            for (size_t b = 0; b < bytes; b++) {
+                dstPtr[i * mbytes + (j * bytes) + b] = srcPtrs[j][i * bytes + b];
+            }
+        }
+    }
+}
+
+}  // namespace
+
+std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& filePath) {
     auto fileDirectory = filePath.parent_path();
 
     // Read the mpvm file content
     std::string textLine;
     std::vector<std::filesystem::path> files;
     {
-        auto f = open(filePath);
+        auto f = openAndCacheIfUrl(filePath);
         while (!f.eof()) {
             getline(f, textLine);
             textLine = trim(textLine);
             files.emplace_back(textLine);
-        };
+        }
     }
 
     if (files.empty()) {
-        throw DataReaderException(SourceContext{}, "Error: No PVM files found in {}", filePath);
+        throw DataReaderException(SourceContext{}, "Error: No PVM files found in {:?g}", filePath);
     }
     if (files.size() > 4) {
-        throw DataReaderException(SourceContext{},
-                                  "Error: Maximum 4 pvm files are supported, file: {}", filePath);
+        throw DataReaderException(
+            SourceContext{}, "Error: Maximum 4 pvm files are supported, file: {:?g}", filePath);
     }
 
     // Read all pvm volumes
@@ -99,12 +129,12 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
         if (newVol) {
             volumes.push_back(newVol);
         } else {
-            log::warn("Could not load {}", fileDirectory / files[i]);
+            log::warn("Could not load {:?g}", fileDirectory / files[i]);
         }
     }
 
     if (volumes.empty()) {
-        throw DataReaderException(SourceContext{}, "No PVM volumes could be read from file: {}",
+        throw DataReaderException(SourceContext{}, "No PVM volumes could be read from file: {:?g}",
                                   filePath);
     }
     if (volumes.size() == 1) {
@@ -147,26 +177,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
     // Create RAM volume
     auto mvolRAM = createVolumeRAM(mdim, mformat);
-    unsigned char* dataPtr = static_cast<unsigned char*>(mvolRAM->getData());
-
-    std::vector<const unsigned char*> volumesDataPtr;
-    for (size_t i = 0; i < volumes.size(); i++) {
-        volumesDataPtr.push_back(static_cast<const unsigned char*>(
-            volumes[i]->getRepresentation<VolumeRAM>()->getData()));
-    }
-
-    // Copy the data from the other volumes to the new multichannel volume
-    size_t mbytes = mformat->getSizeInBytes();
-    size_t bytes = format->getSizeInBytes();
-    size_t dims = mdim.x * mdim.y * mdim.z;
-    size_t vsize = volumesDataPtr.size();
-    for (size_t i = 0; i < dims; i++) {
-        for (size_t j = 0; j < vsize; j++) {
-            for (size_t b = 0; b < bytes; b++) {
-                dataPtr[i * mbytes + (j * bytes) + b] = volumesDataPtr[j][i * bytes + b];
-            }
-        }
-    }
+    gatherVolumes(mvolRAM, volumes);
 
     volume->addRepresentation(mvolRAM);
     printPVMMeta(*volume, filePath);
@@ -175,10 +186,9 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
 void MPVMVolumeReader::printPVMMeta(const Volume& volume,
                                     const std::filesystem::path& fileName) const {
-    size3_t dim = volume.getDimensions();
-    size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
-    std::string size = util::formatBytesToString(bytes);
-    log::info("Loaded volume: '{}' size: {}", fileName, size);
+    const size3_t dim = volume.getDimensions();
+    const size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
+    log::info("Loaded volume: '{:?g}' size: {}", fileName, ByteSize{bytes});
     printMetaInfo(volume, "description");
     printMetaInfo(volume, "courtesy");
     printMetaInfo(volume, "parameter");

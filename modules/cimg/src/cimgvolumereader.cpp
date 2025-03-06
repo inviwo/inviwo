@@ -58,10 +58,11 @@ CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
 CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(*this); }
 
 std::shared_ptr<Volume> CImgVolumeReader::readData(const std::filesystem::path& filePath) {
-    checkExists(filePath);
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
 
-    auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
-    volumeDisk->setLoader(new CImgVolumeRAMLoader(filePath));
+    auto volumeDisk = std::make_shared<VolumeDisk>(localPath);
+    volumeDisk->setLoader(new CImgVolumeRAMLoader(localPath));
     return std::make_shared<Volume>(volumeDisk);
 }
 

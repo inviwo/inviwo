@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>      // for fileExists, getFileNameWithExtension, getFi...
+#include <inviwo/core/io/curlutils.h>
 #include <modules/qtwidgets/inviwoqtutils.h>  // for toQString, fromQString
 #include <modules/qtwidgets/lineeditqt.h>     // for LineEditQt
 
@@ -149,6 +150,7 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
         auto status = std::filesystem::status(path);
         const bool isFile = std::filesystem::is_regular_file(status);
         const bool isDir = std::filesystem::is_directory(status);
+        const bool isUrl = net::isUrl(path);
 
         switch (acceptMode_) {
             case AcceptMode::Open:
@@ -156,6 +158,10 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
                     case FileMode::ExistingFile:
                         [[fallthrough]];
                     case FileMode::ExistingFiles: {
+                        if (isUrl) {
+                            return false;
+                        }
+
                         const bool hasWildcard =
                             (path.string().find_first_of("*?#", 0) != std::string::npos);
                         if (!hasWildcard) {
