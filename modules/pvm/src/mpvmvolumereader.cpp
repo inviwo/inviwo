@@ -54,6 +54,8 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for move
 #include <vector>         // for vector
+#include <ranges>
+#include <algorithm>
 
 #include <glm/fwd.hpp>   // for mat3
 #include <glm/vec3.hpp>  // for operator+, vec<>:...
@@ -73,27 +75,23 @@ namespace {
 void gatherVolumes(std::shared_ptr<inviwo::VolumeRAM>& dest,
                    std::vector<std::shared_ptr<inviwo::Volume>>& volumes) {
 
-    const auto mdim = volumes[0]->getDimensions();
-    const auto format = volumes[0]->getDataFormat();
-    const auto mformat = dest->getDataFormat();
+    const auto srcPtrs = volumes | std::views::transform([](const auto& vol) {
+                             return static_cast<const unsigned char*>(
+                                 vol->getRepresentation<VolumeRAM>()->getData());
+                         }) |
+                         std::ranges::to<std::vector>();
 
-    auto* dataPtr = static_cast<unsigned char*>(dest->getData());
-
-    std::vector<const unsigned char*> volumesDataPtr;
-    for (auto& vol : volumes) {
-        volumesDataPtr.push_back(
-            static_cast<const unsigned char*>(vol->getRepresentation<VolumeRAM>()->getData()));
-    }
+    auto* dstPtr = static_cast<unsigned char*>(dest->getData());
 
     // Copy the data from the other volumes to the new multichannel volume
-    const size_t mbytes = mformat->getSizeInBytes();
-    const size_t bytes = format->getSizeInBytes();
-    const size_t dims = mdim.x * mdim.y * mdim.z;
-    const size_t vsize = volumesDataPtr.size();
+    const size_t mbytes = dest->getDataFormat()->getSizeInBytes();
+    const size_t bytes = volumes[0]->getDataFormat()->getSizeInBytes();
+    const size_t dims = glm::compMul(volumes[0]->getDimensions());
+    const size_t vsize = srcPtrs.size();
     for (size_t i = 0; i < dims; i++) {
         for (size_t j = 0; j < vsize; j++) {
             for (size_t b = 0; b < bytes; b++) {
-                dataPtr[i * mbytes + (j * bytes) + b] = volumesDataPtr[j][i * bytes + b];
+                dstPtr[i * mbytes + (j * bytes) + b] = srcPtrs[j][i * bytes + b];
             }
         }
     }
