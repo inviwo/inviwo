@@ -150,7 +150,7 @@ public:
     }
     template <typename T>
     const std::vector<T>& getContainer() const {
-        auto* ram = getBuffer()->getRepresentation<BufferRAM>();
+        const auto* ram = getBuffer()->getRepresentation<BufferRAM>();
         if (auto prec = dynamic_cast<const BufferRAMPrecision<T>*>(ram)) {
             return prec->getDataContainer();
         } else {

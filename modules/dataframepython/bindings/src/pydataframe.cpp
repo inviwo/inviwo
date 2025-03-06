@@ -175,14 +175,14 @@ void exposeDataFrame(pybind11::module& m) {
             "set",
             [](CategoricalColumn& c, size_t i, std::uint32_t value) {
                 if (i >= c.getSize()) throw py::index_error();
-                return c.set(i, value);
+                c.set(i, value);
             },
             py::arg("i"), py::arg("value"))
         .def(
             "set",
             [](CategoricalColumn& c, size_t i, std::string_view value) {
                 if (i >= c.getSize()) throw py::index_error();
-                return c.set(i, value);
+                c.set(i, value);
             },
             py::arg("i"), py::arg("value"))
         .def(
