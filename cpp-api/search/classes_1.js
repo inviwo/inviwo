@@ -99,5 +99,6 @@ var searchData=
   ['buttonkeyframesequence_96',['ButtonKeyframeSequence',['../classinviwo_1_1animation_1_1ButtonKeyframeSequence.html',1,'inviwo::animation']]],
   ['buttonproperty_97',['ButtonProperty',['../classinviwo_1_1ButtonProperty.html',1,'inviwo']]],
   ['buttonpropertywidget_98',['ButtonPropertyWidget',['../classinviwo_1_1glui_1_1ButtonPropertyWidget.html',1,'inviwo::glui']]],
-  ['buttonpropertywidgetqt_99',['ButtonPropertyWidgetQt',['../classinviwo_1_1ButtonPropertyWidgetQt.html',1,'inviwo']]]
+  ['buttonpropertywidgetqt_99',['ButtonPropertyWidgetQt',['../classinviwo_1_1ButtonPropertyWidgetQt.html',1,'inviwo']]],
+  ['bytesize_100',['ByteSize',['../structinviwo_1_1ByteSize.html',1,'inviwo']]]
 ];

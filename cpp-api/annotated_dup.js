@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "fmt", null, [
+      [ "formatter< inviwo::ByteSize< T >, char >", "structfmt_1_1formatter_3_01inviwo_1_1ByteSize_3_01T_01_4_00_01char_01_4.html", null ],
       [ "is_range< inviwo::flags::flags< T >, Char >", "structfmt_1_1is__range_3_01inviwo_1_1flags_1_1flags_3_01T_01_4_00_01Char_01_4.html", null ]
     ] ],
     [ "inviwo", "namespaceinviwo.html", [
@@ -602,6 +603,7 @@ var annotated_dup =
       [ "ButtonGroupPropertyWidgetQt", "classinviwo_1_1ButtonGroupPropertyWidgetQt.html", null ],
       [ "ButtonProperty", "classinviwo_1_1ButtonProperty.html", "classinviwo_1_1ButtonProperty" ],
       [ "ButtonPropertyWidgetQt", "classinviwo_1_1ButtonPropertyWidgetQt.html", "classinviwo_1_1ButtonPropertyWidgetQt" ],
+      [ "ByteSize", "structinviwo_1_1ByteSize.html", null ],
       [ "CalcNormalsProcessor", "classinviwo_1_1CalcNormalsProcessor.html", "classinviwo_1_1CalcNormalsProcessor" ],
       [ "CallBackList", "classinviwo_1_1CallBackList.html", "classinviwo_1_1CallBackList" ],
       [ "CallbackWithSingleArgument", "classinviwo_1_1CallbackWithSingleArgument.html", null ],

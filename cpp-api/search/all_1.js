@@ -120,5 +120,6 @@ var searchData=
   ['buttonproperty_117',['ButtonProperty',['../classinviwo_1_1ButtonProperty.html',1,'inviwo']]],
   ['buttonpropertywidget_118',['ButtonPropertyWidget',['../classinviwo_1_1glui_1_1ButtonPropertyWidget.html',1,'inviwo::glui']]],
   ['buttonpropertywidgetqt_119',['ButtonPropertyWidgetQt',['../classinviwo_1_1ButtonPropertyWidgetQt.html',1,'inviwo']]],
-  ['buttonstate_120',['buttonState',['../classinviwo_1_1MouseInteractionEvent.html#a09ed6b580f64781d85c79126a7e95831',1,'inviwo::MouseInteractionEvent']]]
+  ['buttonstate_120',['buttonState',['../classinviwo_1_1MouseInteractionEvent.html#a09ed6b580f64781d85c79126a7e95831',1,'inviwo::MouseInteractionEvent']]],
+  ['bytesize_121',['ByteSize',['../structinviwo_1_1ByteSize.html',1,'inviwo']]]
 ];

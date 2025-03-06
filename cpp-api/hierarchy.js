@@ -159,6 +159,7 @@ var hierarchy =
     [ "inviwo::detail::Build", "classinviwo_1_1detail_1_1Build.html", null ],
     [ "inviwo::util::BuildInfo", "structinviwo_1_1util_1_1BuildInfo.html", null ],
     [ "inviwo::ButtonGroupProperty::Button", "structinviwo_1_1ButtonGroupProperty_1_1Button.html", null ],
+    [ "inviwo::ByteSize< T >", "structinviwo_1_1ByteSize.html", null ],
     [ "inviwo::shuntingyard::Calculator", "classinviwo_1_1shuntingyard_1_1Calculator.html", null ],
     [ "inviwo::CallBackList", "classinviwo_1_1CallBackList.html", null ],
     [ "inviwo::CallbackWithSingleArgument", "classinviwo_1_1CallbackWithSingleArgument.html", [
@@ -1230,6 +1231,7 @@ var hierarchy =
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
     ] ],
+    [ "fmt::formatter< inviwo::ByteSize< T >, char >", "structfmt_1_1formatter_3_01inviwo_1_1ByteSize_3_01T_01_4_00_01char_01_4.html", null ],
     [ "inviwo::FragmentListRenderer", "classinviwo_1_1FragmentListRenderer.html", null ],
     [ "inviwo::ffmpeg::Frame", "classinviwo_1_1ffmpeg_1_1Frame.html", null ],
     [ "inviwo::FrameBufferObject", "classinviwo_1_1FrameBufferObject.html", null ],

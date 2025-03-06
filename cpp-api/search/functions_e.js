@@ -37,7 +37,7 @@ var searchData=
   ['onsetsemantics_34',['onSetSemantics',['../classinviwo_1_1PropertyWidgetCEF.html#a9577bad5331b9087772867929cfd9e35',1,'inviwo::PropertyWidgetCEF']]],
   ['onsetvisible_35',['onSetVisible',['../classinviwo_1_1PropertyWidgetCEF.html#ad70437b5baec22a0f1474d62c6d3b58c',1,'inviwo::PropertyWidgetCEF']]],
   ['onwilladdproperty_36',['onWillAddProperty',['../classinviwo_1_1PropertyOwnerObserver.html#a8fda779bbd2dd6c3549ddd58f2d735e2',1,'inviwo::PropertyOwnerObserver::onWillAddProperty()'],['../classinviwo_1_1glui_1_1GLUIProcessor.html#a10a5d025635e1e05954b06587898d4c3',1,'inviwo::glui::GLUIProcessor::onWillAddProperty()']]],
-  ['open_37',['open',['../classinviwo_1_1DataReader.html#a9c1a337b2481488fd247aa64387385b4',1,'inviwo::DataReader::open()'],['../classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6',1,'inviwo::DataWriter::open()']]],
+  ['open_37',['open',['../classinviwo_1_1DataReader.html#af6bcd2fc591b1b70f23ff0a366240631',1,'inviwo::DataReader::open()'],['../classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6',1,'inviwo::DataWriter::open()']]],
   ['openexample_38',['openExample',['../classinviwo_1_1InviwoMainWindow.html#a0b1e770fb72d271330411b194988aab9',1,'inviwo::InviwoMainWindow']]],
   ['openworkspace_39',['openWorkspace',['../classinviwo_1_1InviwoMainWindow.html#a8bc462c1352619d2e7e76506c42f8bd7',1,'inviwo::InviwoMainWindow::openWorkspace(const std::filesystem::path &amp;workspaceFileName)'],['../classinviwo_1_1InviwoMainWindow.html#abadadcf89f5a3a4c028c6c0db72a87bf',1,'inviwo::InviwoMainWindow::openWorkspace()']]],
   ['openworkspaceasktosave_40',['openWorkspaceAskToSave',['../classinviwo_1_1InviwoMainWindow.html#a89b6fb8f57729584bdcb94449245f022',1,'inviwo::InviwoMainWindow']]],

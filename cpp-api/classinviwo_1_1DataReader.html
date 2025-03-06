@@ -107,6 +107,7 @@ $(function(){initNavTree('classinviwo_1_1DataReader.html',''); initResizable(tru
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classinviwo_1_1DataReader-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::DataReader Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span><div class="ingroups"><a class="el" href="group__dataio.html">Data Reader &amp; Writers</a></div></div></div>
@@ -174,13 +175,22 @@ template&lt;typename T&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a2ffa0f2afa77bde51b135da1903822d8" id="r_a2ffa0f2afa77bde51b135da1903822d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ffa0f2afa77bde51b135da1903822d8">checkExists</a> (const std::filesystem::path &amp;path) const</td></tr>
-<tr class="separator:a2ffa0f2afa77bde51b135da1903822d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a074b4b85a44053a92da5afd38d85f623" id="r_a074b4b85a44053a92da5afd38d85f623"><td class="memItemLeft" align="right" valign="top"><a id="a074b4b85a44053a92da5afd38d85f623" name="a074b4b85a44053a92da5afd38d85f623"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>canRead</b> (const std::type_index &amp;index) const =0</td></tr>
 <tr class="separator:a074b4b85a44053a92da5afd38d85f623"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c1a337b2481488fd247aa64387385b4" id="r_a9c1a337b2481488fd247aa64387385b4"><td class="memItemLeft" align="right" valign="top">std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c1a337b2481488fd247aa64387385b4">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in) const</td></tr>
-<tr class="separator:a9c1a337b2481488fd247aa64387385b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:a78af1b14e6fce96d309b5e607eb90a87" id="r_a78af1b14e6fce96d309b5e607eb90a87"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78af1b14e6fce96d309b5e607eb90a87">checkExists</a> (const std::filesystem::path &amp;path)</td></tr>
+<tr class="separator:a78af1b14e6fce96d309b5e607eb90a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6bcd2fc591b1b70f23ff0a366240631" id="r_af6bcd2fc591b1b70f23ff0a366240631"><td class="memItemLeft" align="right" valign="top">static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6bcd2fc591b1b70f23ff0a366240631">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
+<tr class="separator:af6bcd2fc591b1b70f23ff0a366240631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3152fa04bcbd6b376a946ef2df619d5" id="r_ae3152fa04bcbd6b376a946ef2df619d5"><td class="memItemLeft" align="right" valign="top"><a id="ae3152fa04bcbd6b376a946ef2df619d5" name="ae3152fa04bcbd6b376a946ef2df619d5"></a>
+static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><b>openAndCacheIfUrl</b> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
+<tr class="separator:ae3152fa04bcbd6b376a946ef2df619d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addecd9d0240e6cca4dd6a6d8cc32faf0" id="r_addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memItemLeft" align="right" valign="top"><a id="addecd9d0240e6cca4dd6a6d8cc32faf0" name="addecd9d0240e6cca4dd6a6d8cc32faf0"></a>
+static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>downloadAndCacheIfUrl</b> (const std::filesystem::path &amp;url)</td></tr>
+<tr class="separator:addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -192,8 +202,8 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 <div class="textblock"><p>A abstract base class for all file readers. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataReaderFactory.html">DataReaderFactory</a> <a class="el" href="classinviwo_1_1InviwoApplication.html#a60c2ed01cdbc46e39be2ad13601507a8">InviwoApplication::getDataReaderFactory</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2ffa0f2afa77bde51b135da1903822d8" name="a2ffa0f2afa77bde51b135da1903822d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2ffa0f2afa77bde51b135da1903822d8">&#9670;&#160;</a></span>checkExists()</h2>
+<a id="a78af1b14e6fce96d309b5e607eb90a87" name="a78af1b14e6fce96d309b5e607eb90a87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78af1b14e6fce96d309b5e607eb90a87">&#9670;&#160;</a></span>checkExists()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -202,15 +212,15 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void inviwo::DataReader::checkExists </td>
+          <td class="memname">static void inviwo::DataReader::checkExists </td>
           <td>(</td>
           <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel protected">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -259,8 +269,8 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 
 </div>
 </div>
-<a id="a9c1a337b2481488fd247aa64387385b4" name="a9c1a337b2481488fd247aa64387385b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c1a337b2481488fd247aa64387385b4">&#9670;&#160;</a></span>open()</h2>
+<a id="af6bcd2fc591b1b70f23ff0a366240631" name="af6bcd2fc591b1b70f23ff0a366240631"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6bcd2fc591b1b70f23ff0a366240631">&#9670;&#160;</a></span>open()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -269,19 +279,19 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::ifstream inviwo::DataReader::open </td>
+          <td class="memname">static std::ifstream inviwo::DataReader::open </td>
           <td>(</td>
           <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::ios_base::openmode</td>          <td class="paramname"><span class="paramname"><em>mode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::ios_base::in</span>&#160;) const</td>
+          <td class="paramtype">std::ios_base::openmode</td>          <td class="paramname"><span class="paramname"><em>mode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::ios_base::in</span>&#160;)</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel protected">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

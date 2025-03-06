@@ -199,6 +199,7 @@ var namespaceinviwo =
     [ "ButtonGroupPropertyWidgetQt", "classinviwo_1_1ButtonGroupPropertyWidgetQt.html", null ],
     [ "ButtonProperty", "classinviwo_1_1ButtonProperty.html", "classinviwo_1_1ButtonProperty" ],
     [ "ButtonPropertyWidgetQt", "classinviwo_1_1ButtonPropertyWidgetQt.html", "classinviwo_1_1ButtonPropertyWidgetQt" ],
+    [ "ByteSize", "structinviwo_1_1ByteSize.html", null ],
     [ "CalcNormalsProcessor", "classinviwo_1_1CalcNormalsProcessor.html", "classinviwo_1_1CalcNormalsProcessor" ],
     [ "CallBackList", "classinviwo_1_1CallBackList.html", "classinviwo_1_1CallBackList" ],
     [ "CallbackWithSingleArgument", "classinviwo_1_1CallbackWithSingleArgument.html", null ],
