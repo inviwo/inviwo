@@ -77,7 +77,7 @@ void gatherVolumes(std::shared_ptr<inviwo::VolumeRAM>& dest,
 
     const auto srcPtrs = volumes | std::views::transform([](const auto& vol) {
                              return static_cast<const unsigned char*>(
-                                 vol->getRepresentation<VolumeRAM>()->getData());
+                                 vol->template getRepresentation<VolumeRAM>()->getData());
                          }) |
                          std::ranges::to<std::vector>();
 
