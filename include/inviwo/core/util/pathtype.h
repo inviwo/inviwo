@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace inviwo {
 
 enum class PathType {
