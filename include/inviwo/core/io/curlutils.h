@@ -35,8 +35,7 @@
 
 namespace inviwo::net {
 
-enum class ResponseCode : long {  // NOLINT(performance-enum-size): want conversion from curl
-                                  // without narrowing
+enum class ResponseCode : long {  // NOLINT: want conversion from curl without narrowing
     Continue = 100,
     Switching_Protocols = 101,
     Processing = 102,
@@ -126,7 +125,6 @@ enum class ResponseCode : long {  // NOLINT(performance-enum-size): want convers
 
 IVW_CORE_API std::string_view format_as(ResponseCode rs);
 IVW_CORE_API std::string_view description(ResponseCode rs);
-
 
 IVW_CORE_API bool isUrl(const std::filesystem::path& path);
 IVW_CORE_API std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url);

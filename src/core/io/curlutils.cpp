@@ -513,13 +513,13 @@ std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url) {
 }
 
 namespace {
-bool isUrlImpl(std::string_view path) {
+[[maybe_unused]] bool isUrlImpl(std::string_view path) {
     static constexpr std::array<std::string_view, 4> prefixes{"http://", "https://", "ftp://",
                                                               "ftps://"};
     return std::ranges::any_of(prefixes,
                                [&](std::string_view prefix) { return path.starts_with(prefix); });
 }
-bool isUrlImpl(std::wstring_view path) {
+[[maybe_unused]] bool isUrlImpl(std::wstring_view path) {
     static constexpr std::array<std::wstring_view, 4> prefixes{L"http://", L"https://", L"ftp://",
                                                                L"ftps://"};
     return std::ranges::any_of(prefixes,
