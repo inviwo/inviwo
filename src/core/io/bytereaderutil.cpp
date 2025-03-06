@@ -43,7 +43,6 @@ void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset,
     const auto filePath = net::downloadAndCacheIfUrl(file);
 
     auto fin = std::ifstream(filePath, std::ios::in | std::ios::binary);
-    OnScopeExit close([&fin]() { fin.close(); });
 
     if (fin.good()) {
         fin.seekg(offset);

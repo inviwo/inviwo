@@ -40,6 +40,9 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+#include <array>
+#include <algorithm>
+
 namespace curl::detail_info {
 CURLCPP_DEFINE_INFO(CURLINFO_SIZE_DOWNLOAD_T, long);
 CURLCPP_DEFINE_INFO(CURLINFO_SPEED_DOWNLOAD_T, long);
@@ -508,5 +511,22 @@ std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url) {
         throw Exception(SourceContext{}, "Error downloading {:?g}: {}", url, error.what());
     }
 }
+
+namespace {
+bool isUrlImpl(std::string_view path) {
+    static constexpr std::array<std::string_view, 4> prefixes{"http://", "https://", "ftp://",
+                                                              "ftps://"};
+    return std::ranges::any_of(prefixes,
+                               [&](std::string_view prefix) { return path.starts_with(prefix); });
+}
+bool isUrlImpl(std::wstring_view path) {
+    static constexpr std::array<std::wstring_view, 4> prefixes{L"http://", L"https://", L"ftp://",
+                                                               L"ftps://"};
+    return std::ranges::any_of(prefixes,
+                               [&](std::wstring_view prefix) { return path.starts_with(prefix); });
+}
+}  // namespace
+
+bool isUrl(const std::filesystem::path& path) { return isUrlImpl(path.native()); }
 
 }  // namespace inviwo::net

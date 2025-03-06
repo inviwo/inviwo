@@ -191,8 +191,8 @@ std::shared_ptr<VolumeSequence> NiftiReader::readData(const std::filesystem::pat
     checkExists(localPath);
 
     /* read input dataset, but not data */
-    std::shared_ptr<nifti_image> niftiImage(nifti_image_read(localPath.string().c_str(), 0),
-                                            nifti_image_free);
+    const std::shared_ptr<nifti_image> niftiImage(nifti_image_read(localPath.string().c_str(), 0),
+                                                  nifti_image_free);
     if (!niftiImage) {
         throw DataReaderException(SourceContext{}, "Error: failed to read NIfTI image in file: {}",
                                   filePath);

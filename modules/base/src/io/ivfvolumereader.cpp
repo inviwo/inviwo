@@ -64,14 +64,14 @@ IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>() {
 
 IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
 
-std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& file) {
-    const auto filePath = downloadAndCacheIfUrl(file);
+std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& filePath) {
+    const auto localPath = downloadAndCacheIfUrl(filePath);
 
-    checkExists(filePath);
-    const auto fileDirectory = file.parent_path();
+    checkExists(localPath);
+    const auto fileDirectory = filePath.parent_path();
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Deserializer d{filePath, "InviwoVolume", &mbr};
+    Deserializer d{localPath, "InviwoVolume", &mbr};
 
     std::filesystem::path rawFile;
     size3_t dimensions{0u};
@@ -139,8 +139,8 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
 
     volume->getMetaDataMap()->deserialize(d);
     littleEndian = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian);
-    auto vd = std::make_shared<VolumeDisk>(filePath, dimensions, format, swizzleMask, interpolation,
-                                           wrapping);
+    auto vd = std::make_shared<VolumeDisk>(localPath, dimensions, format, swizzleMask,
+                                           interpolation, wrapping);
 
     auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian);
     vd->setLoader(loader.release());

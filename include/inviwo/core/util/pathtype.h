@@ -48,5 +48,6 @@ enum class PathType {
     Help,  // /data/help
     Tests  // /tests
 };
+static constexpr size_t NumberOfPathTypes = 14;
 
 }  // namespace inviwo
