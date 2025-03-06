@@ -85,9 +85,9 @@ struct fmt::formatter<inviwo::ByteSize<T>, char> {
 
     template <class FmtContext>
     FmtContext::iterator format(inviwo::ByteSize<T> bs, FmtContext& ctx) const {
-        std::array<char, 20> buff;
+        std::array<char, 20> buff{};
 
-        auto end = buff.data();
+        auto* end = buff.data();
         if (prefix == 'T' || (prefix == 'A' && bs.size >= 1'000'000'000'000)) {
             end = fmt::format_to_n(buff.data(), buff.size(), "{:.2f} TB",
                                    static_cast<double>(bs.size) / 1'000'000'000'000.0)

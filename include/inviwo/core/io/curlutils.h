@@ -35,7 +35,8 @@
 
 namespace inviwo::net {
 
-enum class ResponseCode : long {
+enum class ResponseCode : long {  // NOLINT(performance-enum-size): want conversion from curl
+                                  // without narrowing
     Continue = 100,
     Switching_Protocols = 101,
     Processing = 102,
@@ -123,21 +124,11 @@ enum class ResponseCode : long {
     Network_Read_Timeout_Error = 598,
 };
 
-template <typename Path>
-bool isUrl(const Path& path) {
-    if constexpr (std::is_same_v<typename Path::value_type, char>) {
-        return path.native().starts_with("http://") || path.native().starts_with("https://");
-    } else if constexpr (std::is_same_v<typename Path::value_type, wchar_t>) {
-        return path.native().starts_with(L"http://") || path.native().starts_with(L"https://");
-    }
-}
-
 IVW_CORE_API std::string_view format_as(ResponseCode rs);
 IVW_CORE_API std::string_view description(ResponseCode rs);
 
+
+IVW_CORE_API bool isUrl(const std::filesystem::path& path);
 IVW_CORE_API std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url);
-
-
-
 
 }  // namespace inviwo::net

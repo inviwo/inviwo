@@ -593,68 +593,69 @@ const fs::path& findBasePath() {
 }
 
 const fs::path& getPath(PathType pathType) {
-    static std::array<fs::path, 13> paths = util::make_array<13>([](auto index) {
-        auto result = findBasePath();
-        switch (static_cast<PathType>(index)) {
-            case PathType::Data:
-                result /= "data";
-                break;
+    static std::array<fs::path, NumberOfPathTypes> paths =
+        util::make_array<NumberOfPathTypes>([](auto index) {
+            auto result = findBasePath();
+            switch (static_cast<PathType>(index)) {
+                case PathType::Data:
+                    result /= "data";
+                    break;
 
-            case PathType::Volumes:
-                result /= "data/volumes";
-                break;
+                case PathType::Volumes:
+                    result /= "data/volumes";
+                    break;
 
-            case PathType::Workspaces:
-                result /= "data/workspaces";
-                break;
+                case PathType::Workspaces:
+                    result /= "data/workspaces";
+                    break;
 
-            case PathType::PortInspectors:
-                result /= "data/workspaces/portinspectors";
-                break;
+                case PathType::PortInspectors:
+                    result /= "data/workspaces/portinspectors";
+                    break;
 
-            case PathType::Scripts:
-                result /= "data/scripts";
-                break;
+                case PathType::Scripts:
+                    result /= "data/scripts";
+                    break;
 
-            case PathType::Images:
-                result /= "data/images";
-                break;
+                case PathType::Images:
+                    result /= "data/images";
+                    break;
 
-            case PathType::Databases:
-                result /= "data/databases";
-                break;
+                case PathType::Databases:
+                    result /= "data/databases";
+                    break;
 
-            case PathType::Resources:
-                result /= "resources";
-                break;
+                case PathType::Resources:
+                    result /= "resources";
+                    break;
 
-            case PathType::TransferFunctions:
-                result /= "data/transferfunctions";
-                break;
+                case PathType::TransferFunctions:
+                    result /= "data/transferfunctions";
+                    break;
 
-            case PathType::Settings:
-                result = getInviwoUserSettingsPath();
-                break;
+                case PathType::Settings:
+                    result = getInviwoUserSettingsPath();
+                    break;
 
-            case PathType::Cache:
-                result = getInviwoUserSettingsPath() / "cache";
-                break;
+                case PathType::Cache:
+                    result = getInviwoUserSettingsPath() / "cache";
+                    break;
 
-            case PathType::Modules:
-                result = getInviwoUserSettingsPath() / "modules";
-                break;
-            case PathType::Help:
-                result /= "data/help";
-                break;
+                case PathType::Modules:
+                    result = getInviwoUserSettingsPath() / "modules";
+                    break;
+                case PathType::Help:
+                    result /= "data/help";
+                    break;
 
-            case PathType::Tests:
-                result /= "tests";
-                break;
-            default:
-                break;
-        }
-        return result.lexically_normal();
-    });
+                case PathType::Tests:
+                    result /= "tests";
+                    break;
+                default:
+                    break;
+            }
+            return result.lexically_normal();
+        });
 
     if (static_cast<size_t>(pathType) < std::size(paths)) {
         return paths[static_cast<size_t>(pathType)];

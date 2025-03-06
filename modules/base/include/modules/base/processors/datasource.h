@@ -197,7 +197,8 @@ DataSource<DataType, PortType, ReaderType>::DataSource(DataReaderFactory* rf,
         } else if (filePath.get().empty()) {
             static constexpr std::string_view reason{"File not set"};
             return {ProcessorStatus::NotReady, reason};
-        } else if (!net::isUrl(filePath.get()) && !std::filesystem::is_regular_file(filePath.get())) {
+        } else if (!net::isUrl(filePath.get()) &&
+                   !std::filesystem::is_regular_file(filePath.get())) {
             static constexpr std::string_view reason{"Invalid or missing file"};
             return {ProcessorStatus::Error, reason};
         } else if (extensions.getSelectedValue().empty()) {
