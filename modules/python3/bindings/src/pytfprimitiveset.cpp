@@ -34,6 +34,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
+#include <pybind11/typing.h>
 
 #include <inviwo/core/datastructures/tfprimitive.h>
 #include <inviwo/core/datastructures/tfprimitiveset.h>
@@ -95,9 +96,64 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
 
     py::classh<TFPrimitiveData>(m, "TFPrimitiveData")
         .def(py::init())
-        .def(py::init<double, vec4>())
-        .def(py::init([](double iso, const std::string& color) {
-            return new TFPrimitiveData{iso, color::hex2rgba(color)};
+        .def(py::init<double, vec4>(), py::arg("pos"), py::arg("colorAndOpacity"))
+        .def(py::init([](double pos, double opacity, vec3 color) {
+                 return TFPrimitiveData{pos, vec4{color, opacity}};
+             }),
+             py::arg("pos"), py::arg("opacity") = 0.0, py::arg("color") = vec3{0, 0, 0})
+        .def(py::init([](double pos, std::string_view color) {
+                 return TFPrimitiveData{pos, color::hex2rgba(color)};
+             }),
+             py::arg("pos"), py::arg("colorAndAlpha"))
+        .def(py::init([](const py::list& list) {
+            TFPrimitiveData data{};
+
+            if (list.size() == 2) {
+                auto first = list[0];
+                auto second = list[1];
+
+                if (py::isinstance<py::float_>(first) && py::isinstance<py::list>(second) &&
+                    second.cast<py::list>().size() == 4) {
+                    auto color = second.cast<py::list>();
+
+                    data.pos = list[0].cast<double>();
+                    data.color.x = color[0].cast<float>();
+                    data.color.y = color[1].cast<float>();
+                    data.color.z = color[2].cast<float>();
+                    data.color.a = color[2].cast<float>();
+                    return data;
+                } else if (py::isinstance<py::list>(first) && first.cast<py::list>().size() == 2 &&
+                           py::isinstance<py::list>(second) &&
+                           second.cast<py::list>().size() == 3) {
+
+                    auto pos = first.cast<py::list>();
+                    auto color = second.cast<py::list>();
+
+                    data.pos = pos[0].cast<double>();
+                    data.color.x = color[0].cast<float>();
+                    data.color.y = color[1].cast<float>();
+                    data.color.z = color[2].cast<float>();
+                    data.color.a = pos[1].cast<float>();
+                    return data;
+                }
+            } else if (list.size() == 3) {
+                auto first = list[0];
+                auto second = list[1];
+                auto third = list[2];
+                if (py::isinstance<py::float_>(first) && py::isinstance<py::float_>(second) &&
+                    py::isinstance<py::list>(third) && third.cast<py::list>().size() == 3) {
+                    auto color = third.cast<py::list>();
+                    data.pos = first.cast<double>();
+                    data.color.x = color[0].cast<float>();
+                    data.color.y = color[1].cast<float>();
+                    data.color.z = color[2].cast<float>();
+                    data.color.a = second.cast<float>();
+                    return data;
+                }
+            }
+            throw std::invalid_argument{
+                "Expected (pos, alpha, (r,b,g)) or ((pos, alpha), (r,b,g)) or "
+                "(pos, (r,b,g,alpha))"};
         }))
         .def_readwrite("pos", &TFPrimitiveData::pos)
         .def_readwrite("color", &TFPrimitiveData::color)
@@ -110,6 +166,8 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         /// Comparisons
         .def(py::self == py::self)
         .def(py::self != py::self);
+
+    py::implicitly_convertible<py::list, TFPrimitiveData>();
 
     py::classh<TFPrimitive>(m, "TFPrimitive")
         .def(py::init([](double pos, const vec4& color) { return new TFPrimitive(pos, color); }),
@@ -175,6 +233,15 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def("add", py::overload_cast<const dvec2&>(&TFPrimitiveSet::add))
         .def("add", py::overload_cast<const TFPrimitiveData&>(&TFPrimitiveSet::add))
         .def("add", py::overload_cast<const std::vector<TFPrimitiveData>&>(&TFPrimitiveSet::add))
+
+        .def("set",
+             [](TFPrimitiveSet& ps, const py::typing::Iterable<TFPrimitiveData>& items) {
+                 std::vector<TFPrimitiveData> points;
+                 for (auto item : items) {
+                     points.emplace_back(item.cast<TFPrimitiveData>());
+                 }
+                 ps.set(points);
+             })
 
         .def("remove", [](TFPrimitiveSet& ps, TFPrimitive& primitive) { ps.remove(primitive); })
         .def("__repr__", [](const TFPrimitiveSet& ps) {

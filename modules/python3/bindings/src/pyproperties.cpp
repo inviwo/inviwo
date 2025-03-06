@@ -33,6 +33,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
+#include <pybind11/typing.h>
 
 #include <inviwopy/pyflags.h>
 #include <inviwopy/util/pypropertyhelper.h>
@@ -212,10 +213,15 @@ void exposeProperties(py::module& m) {
         .def("add", [](TransferFunctionProperty& tp, const TFPrimitiveData& v) { tp.get().add(v); })
         .def("add", [](TransferFunctionProperty& tp,
                        const std::vector<TFPrimitiveData>& values) { tp.get().add(values); })
+        .def("setValues", [](TransferFunctionProperty& tp,
+                             const std::vector<TFPrimitiveData>& values) { tp.get().set(values); })
         .def("setValues",
-             [](TransferFunctionProperty& tp, const std::vector<TFPrimitiveData>& values) {
-                 tp.get().clear();
-                 tp.get().add(values);
+             [](TransferFunctionProperty& tp, const py::typing::Iterable<TFPrimitiveData>& items) {
+                 std::vector<TFPrimitiveData> points;
+                 for (auto item : items) {
+                     points.emplace_back(item.cast<TFPrimitiveData>());
+                 }
+                 tp.get().set(points);
              })
         .def("getValues",
              [](TransferFunctionProperty& tp) -> std::vector<TFPrimitiveData> {
@@ -262,10 +268,15 @@ void exposeProperties(py::module& m) {
         .def("add", [](IsoValueProperty& ivp, const TFPrimitiveData& v) { ivp.get().add(v); })
         .def("add", [](IsoValueProperty& ivp,
                        const std::vector<TFPrimitiveData>& values) { ivp.get().add(values); })
+        .def("setValues", [](IsoValueProperty& ivp,
+                             const std::vector<TFPrimitiveData>& values) { ivp.get().set(values); })
         .def("setValues",
-             [](IsoValueProperty& ivp, const std::vector<TFPrimitiveData>& values) {
-                 ivp.get().clear();
-                 ivp.get().add(values);
+             [](IsoValueProperty& ivp, const py::typing::Iterable<TFPrimitiveData>& items) {
+                 std::vector<TFPrimitiveData> points;
+                 for (auto item : items) {
+                     points.emplace_back(item.cast<TFPrimitiveData>());
+                 }
+                 ivp.get().set(points);
              })
         .def("getValues",
              [](IsoValueProperty& ivp) -> std::vector<TFPrimitiveData> { return ivp.get().get(); })

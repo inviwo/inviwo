@@ -34,12 +34,13 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/ports/inport.h>
-#include <inviwo/core/processors/canvasprocessor.h>
 
 #include <string>
 #include <vector>
 
 namespace inviwo {
+
+class CanvasProcessor;
 
 class IVW_CORE_API PortInspector {
 public:

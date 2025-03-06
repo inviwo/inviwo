@@ -37,6 +37,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/network/networkedge.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 
 #include <fmt/std.h>
 

@@ -123,9 +123,17 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
         .def(py::self != py::self)
 
         .def(
-            "__getitem__", [](Vec& v, int idx) { return &v[idx]; },
+            "__getitem__",
+            [](Vec& v, int idx) {
+                if (idx >= Dim || idx < 0) throw py::index_error();
+                return &v[idx];
+            },
             py::return_value_policy::reference_internal)
-        .def("__setitem__", [](Vec& v, int idx, T& t) { return v[idx] = t; })
+        .def("__setitem__",
+             [](Vec& v, int idx, T& t) {
+                 if (idx >= Dim || idx < 0) throw py::index_error();
+                 return v[idx] = t;
+             })
 
         .def_property_readonly("array",
                                [](Vec& self) { return py::array_t<T>(Dim, glm::value_ptr(self)); })
