@@ -33,6 +33,8 @@
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 
+#include <inviwo/core/io/serialization/ticpp.h>
+
 #include <unordered_set>
 #include <memory_resource>
 
@@ -84,6 +86,26 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::st
             link.getSource()->getPath(nested.addAttribute("src"));
             link.getDestination()->getPath(nested.addAttribute("dst"));
         });
+
+    const auto removeUnwanted = [](TiXmlElement* elem, const auto& self) -> void {
+        TiXmlElement* child = elem->FirstChildElement();
+        while (child) {
+            auto* curr = child;
+            child = child->NextSiblingElement();
+
+            if (curr->Value() == "MetaDataItem" && curr->Attribute("type")
+                                                       .transform([](std::string_view value) {
+                                                           return value ==
+                                                                  "org.inviwo.ProcessorMetaData";
+                                                       })
+                                                       .value_or(false)) {
+                elem->RemoveChild(curr);
+            } else {
+                self(curr, self);
+            }
+        }
+    };
+    removeUnwanted(s.doc().RootElement(), removeUnwanted);
 
     xml.clear();
     s.write(xml);
