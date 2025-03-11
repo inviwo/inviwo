@@ -42,7 +42,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
 #include <modules/base/properties/basisproperty.h>
-
+#include <inviwo/core/datastructures/gaussianorbital.h>
 #include <random>
 
 namespace inviwo {
@@ -50,6 +50,34 @@ namespace inviwo {
 /**
  * \brief A processor to generate a noise image
  */
+
+/* class alignas(16) CustomType {
+public:
+    static constexpr uvec3 colorCode{188, 101, 101};
+    static constexpr std::string_view classIdentifier{"org.inviwo.CustomType"};
+    static constexpr std::string dataName{"CustomType"};
+    CustomType() : p{}, coefs{} {}
+    CustomType(const vec4& p,const vec3& coefs) : p{p}, coefs{coefs} {}
+    CustomType(const CustomType& other) : p{other.p}, coefs{other.coefs} {}
+    CustomType(CustomType&& other)
+        : p{std::move(other.p)}, coefs{std::move(other.coefs)}
+        {}
+    CustomType& operator=(CustomType& other)
+    {
+        std::swap(p, other.p);
+        std::swap(coefs, other.coefs);
+        return *this;
+    }
+    CustomType& operator=(CustomType&& other) {
+        p = std::move(other.p);
+        coefs = std::move(other.coefs);
+        return *this;
+    }
+    ~CustomType() = default;
+    
+    vec4 p;
+    vec3 coefs;
+};*/
 class IVW_MODULE_BASE_API MyNoiseGeneratorColor : public Processor {
 public:
     MyNoiseGeneratorColor();
@@ -60,7 +88,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
+    
     DataOutport<std::vector<vec4>> points_;
+    
+    DataOutport<std::vector<GaussianOrbital>> orbitals_;
     LayerOutport pointsLayer_;
     MeshOutport mesh_;
     

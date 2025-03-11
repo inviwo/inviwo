@@ -37,21 +37,21 @@ uniform float sigma;  // Standard deviation for Gaussian
 uniform int zOffset;  // Uniform for the current z-slice being processed
 uniform ivec3 dims;
 uniform ivec3 workGroup;
-uniform sampler2D transferFunction;
+
 
 
 layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;  // Workgroup size
 
-struct CustomType
+struct Orbital
 {
     vec4 p;
-    vec4 coefs;
+    vec3 coefs;
 };
 
 
 layout(std430, binding = 0) buffer List
 {
-    CustomType data[];  // Points data
+    Orbital data[];  // Points data
 };
 
 #define M_PI 3.14159265359
@@ -68,17 +68,17 @@ void main() {
     int d;
     // Loop over each point in the data buffer
     for (uint i = 0; i < data.length(); ++i) {
-        CustomType test = data[i];
+        Orbital orb = data[i];
 
         float s = sigma;//;*test.p.w;             
-        vec3 dr = test.p.xyz - posFloat;
+        vec3 dr = orb.p.xyz - posFloat;
         
         float r2 = dot(dr,dr);
+        //float A = 1.0 / (s * sqrt(2 * M_PI));
+        float B = 0.5 / (s*s);
+        float A = pow(abs(dr.x), orb.coefs.x) * pow(abs(dr.y), orb.coefs.y) * pow(abs(dr.z), orb.coefs.z);
         
-        float A = 1.0 / (s*sqrt(2*M_PI));
-        float B = pow(abs(dr.x), test.coefs.x) * pow(abs(dr.y), test.coefs.y) * pow(abs(dr.z), test.coefs.z);
-        
-        density += B*exp(-A*r2);
+        density += A*exp(-B*r2);
         
     }
 
@@ -92,7 +92,7 @@ void main() {
         density = data[0].coefs.w / 20;
     }
     */
-    
+    density = density;
     // Store the result in the output 3D texture at the position
     imageStore(dest, storePos, vec4(density, 0.0, 0.0, 0.0)); 
 }

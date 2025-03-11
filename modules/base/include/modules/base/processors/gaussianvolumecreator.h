@@ -43,7 +43,7 @@
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty
 #include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
 #include <inviwo/core/ports/layerport.h>                        // for LayerInport
-
+#include <inviwo/core/datastructures/gaussianorbital.h>
 #include <functional>   // for __base
 #include <memory>       // for shared_ptr
 #include <string>       // for operator==, string
@@ -89,6 +89,7 @@ public:
 
 private:
     DataInport<std::vector<vec4>> points_;
+    DataInport<std::vector<GaussianOrbital>> orbitals_;
     VolumeOutport outport_;
     OptionProperty<Type> type_;
     OptionProperty<DataFormatId> format_;

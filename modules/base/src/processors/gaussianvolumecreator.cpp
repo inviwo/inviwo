@@ -74,6 +74,7 @@ const ProcessorInfo GaussianVolumeCreator::getProcessorInfo() const { return pro
 GaussianVolumeCreator::GaussianVolumeCreator()
     : Processor()
     , points_{"points", "Imported points"_help}
+    , orbitals_{"orbitals", "Imported orbitals"_help}
     , outport_("volume")
     , type_{"type",
             "Type",
@@ -98,8 +99,8 @@ GaussianVolumeCreator::GaussianVolumeCreator()
     , sigma_{"sigma", "Sigma", 0.1,0.0,5.0}
     , nPoints_{"nPoints","Points","Number of points"_help,size_t(256),{size_t(1), ConstraintBehavior::Editable},{size_t(1096), ConstraintBehavior::Editable}}
     , radii_{"radii", "Radii", 1,0.0,100.0} {
-    addPort(points_);
-    addPort(outport_);
+    addPorts(points_,orbitals_,outport_);
+    
     addProperties(type_, format_, dimensions_, index_, information_, basis_,sigma_,nPoints_,radii_);
 
     information_.setChecked(true);
@@ -129,7 +130,7 @@ void GaussianVolumeCreator::process() {
                         case GaussianVolumeCreator::Type::Gaussian: {
                             
                             return std::shared_ptr<Volume>(util::makeGaussianVolume<T>(
-                                dimensions_.get(), sigma_.get(), *points_.getData()));
+                                dimensions_.get(), sigma_.get(), *orbitals_.getData()));
 
                         }
                             

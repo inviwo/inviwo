@@ -44,7 +44,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
 #include <inviwo/core/properties/volumeindicatorproperty.h>  // for VolumeIndicatorProperty
 #include <modules/opengl/shader/shader.h>                    // for Shader
-
+#include <inviwo/core/datastructures/gaussianorbital.h>
 namespace inviwo {
 class Deserializer;
 class Event;
@@ -98,6 +98,7 @@ protected:
     void toggleShading(Event*);
 
     Shader shader_;
+    DataInport<std::vector<GaussianOrbital>> orbitals_;
     VolumeInport volumePort_;
     LayerInport layerPort_;
     ImageInport entryPort_;
@@ -107,6 +108,7 @@ protected:
 
     OptionPropertyInt channel_;
 	FloatProperty sigma_;
+    IntProperty numPoints_;
     RaycastingProperty raycasting_;
     IsoTFProperty isotfComposite_;
 

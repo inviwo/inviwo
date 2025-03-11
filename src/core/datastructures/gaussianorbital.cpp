@@ -31,10 +31,37 @@
 
 namespace inviwo {
 
-GaussianOrbital::GaussianOrbital() {
 
+
+GaussianOrbital::GaussianOrbital() : p{}, coefs{} {}
+GaussianOrbital::GaussianOrbital(const vec4& p, const vec3& coefs)
+    : p{p}, coefs{coefs} {}
+
+GaussianOrbital::GaussianOrbital(const GaussianOrbital& other)
+    : p{other.p}, coefs{other.coefs} {}
+
+GaussianOrbital::GaussianOrbital(GaussianOrbital&& other) noexcept
+    : p{std::move(other.p)}, coefs{std::move(other.coefs)} {}
+
+GaussianOrbital& GaussianOrbital::operator=(GaussianOrbital& other) {
+    
+    std::swap(p, other.p);
+    std::swap(coefs, other.coefs);
+    return *this;
 }
 
+GaussianOrbital& GaussianOrbital::operator=(GaussianOrbital&& other) noexcept {
+    
+    p = std::move(other.p);
+    coefs = std::move(other.coefs);
+    return *this;
+}
+
+const uvec3 GaussianOrbital::colorCode = uvec3(188, 101, 101);
+const std::string GaussianOrbital::classIdentifier = "org.inviwo.GaussianOrbital";
+const std::string GaussianOrbital::dataName = "GaussianOrbital";
+
+    
 
 
 }  // namespace inviwo

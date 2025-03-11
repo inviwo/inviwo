@@ -29,23 +29,53 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-//#include <inviwo/core/datastructures/representationfactory.h>
-//#include <inviwo/core/datastructures/representationconverterfactory.h>
-//#include <inviwo/core/datastructures/representationfactorymanager.h>
-//#include <inviwo/core/datastructures/nodata.h>
-//#include <inviwo/core/resourcemanager/resource.h>
-
+#include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/histogramtools.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/volume/volumeconfig.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationtraits.h>
+#include <inviwo/core/datastructures/datasequence.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include<inviwo/core/util/glmvec.h>
 namespace inviwo {
 
 /**
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_CORE_API GaussianOrbital {
+class IVW_CORE_API alignas(16) GaussianOrbital{
 public:
     
     GaussianOrbital();
-    virtual ~GaussianOrbital() = default;
+    GaussianOrbital(const vec4& p, const vec3& coefs);
+    GaussianOrbital(const GaussianOrbital& other);
+    GaussianOrbital(GaussianOrbital&& other) noexcept;
+
+    GaussianOrbital& operator=(GaussianOrbital& other);
+    GaussianOrbital& operator=(GaussianOrbital&& other) noexcept;
+    ~GaussianOrbital() = default;
+
+    vec4 p;
+    vec3 coefs;
+
+    //static constexpr uvec3 colorCode{188, 101, 101};
+    //static constexpr std::string_view classIdentifier{"org.inviwo.GaussianOrbital"};
+    //static constexpr std::string_view dataName{"GaussianOrbital"};
+    static const uvec3 colorCode;
+    static const std::string classIdentifier;
+    static const std::string dataName;
+
+    
 };
 
 }  // namespace inviwo

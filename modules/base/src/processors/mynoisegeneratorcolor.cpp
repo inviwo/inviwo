@@ -72,7 +72,8 @@ const ProcessorInfo MyNoiseGeneratorColor::getProcessorInfo() const { return pro
 
 MyNoiseGeneratorColor::MyNoiseGeneratorColor()
     : Processor()
-    , points_{"points", "Generated points"_help}
+    , points_{"points", "Generated points"_help}    
+    , orbitals_("orbitals", "Generated orbitals"_help)
     , pointsLayer_("pointsLayer", "Generated points image"_help)
     , mesh_("spheremesh", "Positions and radii"_help)
     , size_("size", "Size", "Size of the output image."_help, size_t(256),
@@ -85,19 +86,30 @@ MyNoiseGeneratorColor::MyNoiseGeneratorColor()
             {size_t(1), ConstraintBehavior::Editable},
             {size_t(1096), ConstraintBehavior::Editable}} {
 
-    addPorts(points_, pointsLayer_, mesh_);
+    addPorts(points_ ,orbitals_,pointsLayer_, mesh_);
     addProperties(size_, radii_, seed_);
 }
 
 void MyNoiseGeneratorColor::process() {
-
+    
+    
     std::vector<vec4> data(size_.get(), vec4{0, 0, 0, 0});
+    std::vector<GaussianOrbital> data2(size_.get(), GaussianOrbital{});
     std::random_device rd;          // Will be used to obtain a seed for the random number engine
     std::mt19937 gen(static_cast<unsigned int>(seed_.get()));  // Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<float> posDis(0.0, 1.0);
-    std::uniform_real_distribution<float> radiiDis(0.1, 0.3);
-    std::transform(std::begin(data), std::end(data), std::begin(data), [&](const dvec4& point) {
+    std::uniform_real_distribution<double> posDis(0.0, 1.0);
+    std::uniform_real_distribution<double> radiiDis(0.1, 0.3);
+    std::uniform_int_distribution<int> quantDis(0, 3);
+
+    std::transform(std::begin(data), std::end(data), std::begin(data), [&](const vec4& point) {
         return vec4{posDis(gen), posDis(gen), posDis(gen), radiiDis(gen) * radii_};
+    });
+
+    std::transform(std::begin(data), std::end(data), std::begin(data2),
+                        [&](const vec4& point) {
+        vec3 coefs{quantDis(gen), quantDis(gen), quantDis(gen)};
+        GaussianOrbital orbital{point, coefs};
+        return orbital;
     });
 
     std::vector<vec4> positions(data.size());
@@ -108,7 +120,7 @@ void MyNoiseGeneratorColor::process() {
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
 
     points_.setData(std::move(data));
-
+    orbitals_.setData(std::move(data2));
     auto ram = std::make_shared<LayerRAMPrecision<vec4>>(
         LayerReprConfig{.dimensions = size2_t{size_.get(), 1},
                         .type = LayerType::Color,

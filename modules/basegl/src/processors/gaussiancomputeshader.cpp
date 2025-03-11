@@ -60,6 +60,7 @@ GaussianComputeShader::GaussianComputeShader()
     : Processor{}  //, volume_{"volume"}
                    //, positionlayer_{"positions"}
     , points_{"points", "Imported points"_help}
+    , orbitals_{"orbitals", "Imported orbitals"_help}
     , outport_{"outport"}
     , shaderGaussian_{{{ShaderType::Compute, "gaussian.comp"}}}
     , dimensions_("dimensions", "Dimensions", size3_t(64), size3_t(1), size3_t(512))
@@ -67,7 +68,7 @@ GaussianComputeShader::GaussianComputeShader()
     , sigma_("sigma", "Sigma", 1.0f, 0.0f, 10.0f) {
 
     addProperties(dimensions_, groupSize_, sigma_);
-    addPorts(points_, outport_);
+    addPorts(points_,orbitals_, outport_);
 
     shaderGaussian_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -97,32 +98,23 @@ void GaussianComputeShader::process() {
     volGL->getTexture()->bind();
 
     shaderGaussian_.setUniform("dest", unit.getUnitNumber());
-    auto ptr = points_.getData();
+    auto ptr = orbitals_.getData();
     auto points = *ptr;
-    struct alignas(16) CustomType {
-        vec4 p;
-        vec4 p2;
-    };
-    std::vector<CustomType> customPoints(points.size());
-    std::transform(std::begin(points), std::end(points), std::begin(customPoints),
-                   [](const vec4& p) {
-                          
-                       CustomType newPoint{p, vec4{1, 2, 3, 16}};
-                       return newPoint;
-                   });
+    
+    
 
     size3_t dims = dimensions_;
     size3_t groupSize = groupSize_;
     shaderGaussian_.setUniform("dims", ivec3(dims));
     shaderGaussian_.setUniform("groupSize", ivec3(groupSize));
 
-    GLuint buffHandle;
+    /* GLuint buffHandle;
     glGenBuffers(1, &buffHandle);
-    size_t bufferSize{points.size() * sizeof(CustomType)};
+    size_t bufferSize{points.size() * sizeof(GaussianOrbital)};
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffHandle);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, customPoints.data(), GL_STATIC_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, points.data(), GL_STATIC_DRAW);
     glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 0, buffHandle, 0, bufferSize);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);*/
 
     uvec3 numWorkGroups{(uvec3(dims) + uvec3(groupSize) - uvec3(1)) /
                         uvec3(groupSize)};  // Divide by work group size (e.g., 4)
@@ -155,7 +147,7 @@ void GaussianComputeShader::process() {
     //auto minmax = util::dataMinMax(data, glm::compMul(dimensions), IgnoreSpecialValues::Yes);
     mat3 basis(1);
     vol->dataMap.dataRange = dvec2 { 0.0, minmax.second.x };
-    vol->dataMap.valueRange = dvec2{0.0, 40.0};
+    vol->dataMap.valueRange = dvec2{0.0, minmax.second.x};
     vol->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
     outport_.setData(vol);
 }

@@ -79,7 +79,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>   // for SimpleLightingProperty
 #include <inviwo/core/properties/volumeindicatorproperty.h>  // for VolumeIndicatorProperty
 #include <modules/base/processors/tfselector.h>
-
+#include <inviwo/core/datastructures/gaussianorbital.h>
 
 namespace inviwo {
 
@@ -93,7 +93,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<std::vector<vec4>> points_;
+    DataInport<std::vector<GaussianOrbital>> orbitals_;
     ImageOutport outport_;
     Shader shaderGaussian_;
     IntSize2Property dimensions_;

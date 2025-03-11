@@ -74,6 +74,19 @@ uniform int channel;
 
 uniform float sigma;
 
+uniform int numPoints;
+
+struct Orbital
+{
+    vec4 p;
+    vec3 coefs;
+};
+
+
+layout(std430, binding = 0) buffer GaussianBuffer {
+    Orbital data[]; // points is an array of GaussianOrbital
+};
+
 #define M_PI 3.14159265359
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
 
@@ -82,7 +95,7 @@ uniform float sigma;
 #endif
 
 vec4 centerPoints[500];
-int count;
+//int count;
 
 int load() {
     ivec2 texCoords = textureSize(layerPort, 0);
@@ -101,19 +114,20 @@ int load() {
 }
 
 
-vec4 sumFunction(float sigma, vec3 samplePos, float tIncr, int count){
+vec4 sumFunction(float sigma, vec3 samplePos, float tIncr){
     vec4 result = vec4(0.0);
     float sum = 0;
-    for(int i = 0; i < count; ++i) {
+    for(int i = 0; i < numPoints; ++i) {
         
         float s = sigma;
-        vec3 dr = centerPoints[i].xyz - samplePos;
+        Orbital orb = data[i]; 
+        vec3 dr = orb.p.xyz - samplePos;
         
-        float r2 = dr.x * dr.x + dr.y * dr.y + dr.z * dr.z;
+        float r2 = dot(dr,dr);
         float A = 1.0 / (s*sqrt(2*M_PI));
-        float B = 0.5*r2/(s*s);
-        
-        float v = A*exp(-B*r2);
+        float B = .5/(s*s);
+        float test = pow(abs(dr.x),orb.coefs.x)*pow(abs(dr.y),orb.coefs.y)*pow(abs(dr.z),orb.coefs.z)*10000;
+        float v = test*exp(-B*r2);
         vec3 grad = -2*B*dr*v;
         
 
@@ -173,7 +187,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         result = DRAW_BACKGROUND(result, t, tIncr, backgroundColor, bgTDepth, tDepth);
 #endif // BACKGROUND_AVAILABLE
         
-        vec4 res = sumFunction(sigma, samplePos, tIncr, count);
+        vec4 res = sumFunction(sigma, samplePos, tIncr);
         //sum = res.w;
 
         vec3 gradient = normalize(res.xyz);
@@ -229,7 +243,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 }
 
 void main() {
-    count = load();
+    //count = load();
     
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec3 entryPoint = texture(entryColor, texCoords).rgb;

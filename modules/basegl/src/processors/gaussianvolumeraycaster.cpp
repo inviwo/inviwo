@@ -95,6 +95,7 @@ const ProcessorInfo GaussianVolumeRaycaster::processorInfo_{
 GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     : PoolProcessor()
     , shader_("gaussianraycasting.frag", Shader::Build::No)
+    , orbitals_("Orbitals", "Imported orbitals"_help)
     , volumePort_("volume")
     , layerPort_("layerPort")
     , entryPort_("entry")
@@ -103,6 +104,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     , outport_("outport")
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , sigma_{"sigma", "Sigma", 0.1, 0.0, 1.0}
+    , numPoints_{"numPoints", "Number of points", 1, 1, 500}
     , raycasting_("raycaster", "Raycasting")
     , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
@@ -113,7 +115,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
 
   
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
+    addPort(orbitals_);
     addPort(volumePort_, "VolumePortGroup");
     addPort(layerPort_);
     addPort(entryPort_, "ImagePortGroup1");
@@ -166,6 +168,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     
     addProperty(channel_);
     addProperty(sigma_);
+    addProperty(numPoints_);
     addProperty(raycasting_);
     addProperty(isotfComposite_);
 
@@ -202,6 +205,8 @@ void GaussianVolumeRaycaster::process() {
 }
 
 void GaussianVolumeRaycaster::raycast(const Volume& volume) {
+
+
     if (!volume.getRep<kind::GL>()) {
         throw Exception("Could not find VolumeGL representation", IVW_CONTEXT);
     }
@@ -214,7 +219,21 @@ void GaussianVolumeRaycaster::raycast(const Volume& volume) {
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
-    
+
+    auto ptr = orbitals_.getData();
+    auto points = *ptr;
+
+    GLuint buffHandle;
+    glGenBuffers(1, &buffHandle);
+    size_t bufferSize{points.size() * sizeof(GaussianOrbital)};
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffHandle);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, points.data(), GL_STATIC_DRAW);
+    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 0, buffHandle, 0, bufferSize);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+
+
+
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
@@ -228,7 +247,7 @@ void GaussianVolumeRaycaster::raycast(const Volume& volume) {
     }
 
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_,sigma_, isotfComposite_);
+                        channel_,sigma_,numPoints_,isotfComposite_);
 
     utilgl::singleDrawImagePlaneRect();
 
