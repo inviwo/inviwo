@@ -44,6 +44,8 @@
 #include <utility>      // for pair
 #include <vector>       // for vector
 #include <filesystem>
+#include <charconv>
+#include <optional>
 
 #include <QByteArray>  // for QByteArray
 #include <QColor>      // for QColor
@@ -62,6 +64,10 @@
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
 #include <glm/vec4.hpp>  // for vec<>::(anonymous), operator*
+
+#if !(defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L)
+#include <fast_float/fast_float.h>
+#endif
 
 class QEvent;
 class QMainWindow;
@@ -126,6 +132,55 @@ inline QString toQString(const std::string& str) {
  * \brief create a UTF8-encoded std::string from a QString
  */
 inline std::string fromQString(const QString& str) { return {str.toUtf8().constData()}; }
+
+/**
+ * \brief Extract a numeric value of type \p T from \p str using the C locale.
+ *
+ * Extract a numeric value of type \p T from \p str using the C locale. For floating point values
+ * '.' and ',' are accepted as decimal point. The string must contain only the value.
+ *
+ * @tparam T   type of returned value
+ * @param str  string containing the numeric value
+ * @return extracted value if conversion was successful, nullopt otherwise
+ */
+template <typename T>
+std::optional<T> numericValueFromString(const QString& str) {
+    QByteArray arrayBuf{str.trimmed().toUtf8()};
+    if constexpr (std::is_floating_point_v<T>) {
+        // replace commas with period, thus accepting both 7.34 and 7,34
+        for (auto& c : arrayBuf) {
+            if (c == ',') {
+                c = '.';
+            }
+        }
+    }
+    T value{0};
+
+#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
+    auto [ptr, ec] = std::from_chars(arrayBuf.constBegin(), arrayBuf.constEnd(), value);
+#else
+    auto [ptr, ec] = fast_float::from_chars(arrayBuf.constBegin(), arrayBuf.constEnd(), value);
+#endif
+    if (ec == std::errc{} && ptr == arrayBuf.constEnd()) {
+        return value;
+    } else {
+        return std::nullopt;
+    }
+}
+
+/**
+ * \brief Formats a floating point number as QString.
+ *
+ * Formats the given floating point number \p value to a QString using the C locale.
+ * The default representation has eight decimals after the decimal point, e.g. a value of
+ * 0.123456789 yields "0.12345679". Each order of magnitude reduces the number of decimals by
+ * one, i.e. 100.12345678 will be represented as "100.123457". Numbers smaller than 1e-6 are
+ * shown in scientific representation.
+ *
+ * @param value   floating point number
+ * @return formatted number string with significant digits, avoiding scientific notation if possible
+ */
+IVW_MODULE_QTWIDGETS_API QString formatAsNonscientific(double value);
 
 IVW_MODULE_QTWIDGETS_API QString toQString(const std::filesystem::path& path);
 IVW_MODULE_QTWIDGETS_API std::filesystem::path toPath(const QString& str);

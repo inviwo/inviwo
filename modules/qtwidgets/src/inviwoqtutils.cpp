@@ -633,6 +633,31 @@ void setFullScreenAndOnTop(QWidget* widget, bool fullScreen, bool onTop) {
     widget->setVisible(visible);
 }
 
+QString formatAsNonscientific(double value) {
+    // QString always uses QLocale::C
+    const int visibleDigits = 8;
+    const double scientificRepThreshold = 1e-6;
+
+    if (std::abs(value) < scientificRepThreshold) {
+        return QString::number(value, 'g', visibleDigits + 1);
+    } else {
+        const int int_digits =
+            static_cast<int>(std::floor(std::log10(std::max(std::abs(value), 1.0)))) + 1;
+
+        QString str = QString::number(value, 'f', std::max(visibleDigits + 1 - int_digits, 1));
+        if (str.contains('.')) {
+            // remove trailing zeros
+            while (*str.rbegin() == '0') {
+                str.chop(1);
+            }
+            if (*str.rbegin() == '.') {
+                str.chop(1);
+            }
+        }
+        return str;
+    }
+}
+
 QString toQString(const std::filesystem::path& path) {
     auto str = path.generic_u8string();
     return QString::fromUtf8(reinterpret_cast<char*>(str.data()), str.size());
