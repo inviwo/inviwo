@@ -16,6 +16,7 @@ set(MOC_FILES
     include/modules/qtwidgets/inviwowidgetsqt.h
     include/modules/qtwidgets/lightpositionwidgetqt.h
     include/modules/qtwidgets/lineeditqt.h
+    include/modules/qtwidgets/numberwidget.h
     include/modules/qtwidgets/ordinaleditorwidget.h
     include/modules/qtwidgets/processors/processordockwidgetqt.h    
     include/modules/qtwidgets/properties/colorlineedit.h
@@ -117,6 +118,7 @@ set(SOURCE_FILES
     src/lineeditqt.cpp
     src/mousecursorutils.cpp
     src/numberlineedit.cpp
+    src/numberwidget.cpp
     src/ordinalbasewidget.cpp
     src/ordinaleditorwidget.cpp
     src/processors/processordockwidgetqt.cpp
