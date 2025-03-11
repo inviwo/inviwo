@@ -68,6 +68,11 @@ Q_IMPORT_PLUGIN(QSvgPlugin)
 
 #include <inviwo/tracy/tracy.h>
 
+#ifdef __APPLE__
+#include <pthread.h>
+#include <sys/qos.h>
+#endif
+
 #ifdef IVW_CFG_TRACY_MENORY_PROFILING
 void* operator new(size_t count) {
     void* ptr = malloc(count);
@@ -82,7 +87,6 @@ void operator delete(void* ptr) noexcept {
 }
 #endif
 
-
 int main(int argc, char** argv) {
     inviwo::util::configureCodePage();
 
@@ -90,6 +94,11 @@ int main(int argc, char** argv) {
     inviwo::LogCentral::init(&logger);
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     logger.registerLogger(logCounter);
+
+#ifdef __APPLE__
+    pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+#endif
+    inviwo::util::setThreadDescription("Inviwo Main");
 
     // Must be set before constructing QApplication
     inviwo::utilqt::configureInviwoQtApp();
@@ -171,8 +180,6 @@ int main(int argc, char** argv) {
         mainWin.exitInviwo(false);
         return 0;
     }
-
-    inviwo::util::setThreadDescription("Inviwo Main");
 
     while (true) {
         try {
