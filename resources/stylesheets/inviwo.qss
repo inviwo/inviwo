@@ -376,6 +376,7 @@ QPushButton:focus, QToolButton:focus {
 QLineEdit#ColorLineEdit[input="valid"] {
     border: 0.0625em solid #1a800d;
 }
+QLineEdit[invalid=true],
 QLineEdit#ColorLineEdit[input="invalid"] {
     border: 0.0625em solid #801717;
 }
