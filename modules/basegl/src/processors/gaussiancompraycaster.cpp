@@ -89,7 +89,7 @@ void GaussianCompRayCaster::initializeResources() {
 
 GaussianCompRayCaster::GaussianCompRayCaster()
     : Processor{}
-    , points_{"points", "Imported points"_help}
+    , orbitals_{"orbitals", "Imported orbitals"_help}
     , outport_{"outport"}
     , shaderGaussian_{{{ShaderType::Compute, "gaussianraycaster.comp"}}}
     , dimensions_("dimensions", "Dimensions", size2_t(64), size2_t(1), size2_t(512))
@@ -102,7 +102,7 @@ GaussianCompRayCaster::GaussianCompRayCaster()
 
     addProperties(dimensions_, groupSize_,sigma_,cam_, trackball_,isotfComposite_);
     
-    addPorts(points_, outport_);
+    addPorts(orbitals_, outport_);
 
     shaderGaussian_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -180,34 +180,21 @@ void GaussianCompRayCaster::process() {
 
     shaderGaussian_.setUniform("dest", 0);
 
-    auto ptr = points_.getData();
+    auto ptr = orbitals_.getData();
     auto points = *ptr;
-    struct alignas(16) CustomType
-    {
-        
-        vec4 p;
-        int val;
-        
-        
-    };
-    std::vector<CustomType> customPoints(points.size());
-    std::transform(std::begin(points), std::end(points), std::begin(customPoints),
-                   [](const vec4& p)
-                    {
-                       CustomType newPoint{p,1};
-                       return newPoint;
-                    });
+    
+    
 
     //std::vector<vec4> points;
     //points.assign(ptr->begin(), ptr->end());
-    shaderGaussian_.setUniform("numPoints", static_cast<unsigned>(customPoints.size()));
+    shaderGaussian_.setUniform("numPoints", static_cast<unsigned>(points.size()));
 
     GLuint buffHandle;
     glGenBuffers(1, &buffHandle);  // (Gives me a free buffer name that is not currently in use)
     // size_t bufferSize{points_.getData()->size() * sizeof(vec4)};
-    size_t bufferSize{customPoints.size() * sizeof(CustomType)};
+    size_t bufferSize{points.size() * sizeof(GaussianOrbital)};
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffHandle);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, customPoints.data(), GL_STATIC_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, points.data(), GL_STATIC_DRAW);
     glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 1, buffHandle, 0, bufferSize);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 1);
 

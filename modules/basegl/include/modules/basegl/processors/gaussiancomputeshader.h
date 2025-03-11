@@ -43,7 +43,7 @@
 #include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
 #include <inviwo/core/ports/layerport.h>                        // for LayerInport
 #include <modules/opengl/shader/shader.h>
-
+#include <inviwo/core/datastructures/gaussianorbital.h>
 namespace inviwo {
 
 class IVW_MODULE_BASEGL_API GaussianComputeShader : public Processor {
@@ -60,6 +60,7 @@ private:
     // VolumeInport volume_;
     // LayerInport positionlayer_;
     DataInport<std::vector<vec4>> points_;
+    DataInport<std::vector<GaussianOrbital>> orbitals_;
     VolumeOutport outport_;
     Shader shaderGaussian_;
     IntSize3Property dimensions_;

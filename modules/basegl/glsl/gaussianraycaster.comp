@@ -66,18 +66,18 @@ struct EntryExit
 
 };
 
-struct CustomType
+struct Orbital
 {
 
     vec4 p;
-    int val;
+    vec3 coefs;
 
 };
 
 
 layout(std430,set = 0, binding = 1) buffer List
 {
-    CustomType data[];  // Points data
+    Orbital data[];  // Points data
 };
 
 
@@ -188,13 +188,14 @@ float calcDensity(vec3 samplePos)
     float sigma2 = 0.1;
     for(int i = 0; i < numPoints;++i)
     {
-        
-        vec4 p = data[i].p;   
+        Orbital orb = data[i];
+        vec4 p = orb.p;   
         float s = sigma;                
         vec3 dr = p.xyz - samplePos;
         float r2 = dot(dr,dr);
-        float A = 1.0 / (s*sqrt(2*M_PI));
-        float B = 0.5*r2/(s*s);
+        //float A = 1.0 / (s*sqrt(2*M_PI));
+        float A = pow(abs(dr.x), orb.coefs.x) * pow(abs(dr.y), orb.coefs.y) * pow(abs(dr.z), orb.coefs.z)*10;
+        float B = 0.5/(s*s);
         
         density += A*exp(-B*r2);
     }
