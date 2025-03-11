@@ -1,0 +1,333 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2025 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+#pragma once
+
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/ordinalbasewidget.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <optional>
+#include <limits>
+
+#include <QLineEdit>
+#include <QByteArray>
+
+class QEvent;
+class QMouseEvent;
+class QPaintEvent;
+
+namespace inviwo {
+
+class IVW_MODULE_QTWIDGETS_API BaseNumberWidget : public QLineEdit {
+    Q_OBJECT
+public:
+    explicit BaseNumberWidget(QWidget* parent = nullptr);
+    BaseNumberWidget(std::string_view prefix, std::string_view postfix, QWidget* parent = nullptr);
+    virtual ~BaseNumberWidget() = default;
+
+    void setPrefix(std::string_view prefix);
+    const QString& getPrefix() const;
+    void setPostfix(std::string_view postfix);
+    const QString& getPostfix() const;
+
+    void setWrapping(bool wrapping);
+    bool getWrapping() const;
+
+    void updateText();
+
+    virtual bool event(QEvent* event) override;
+
+signals:
+    void valueChanged();
+
+protected:
+    virtual void mousePressEvent(QMouseEvent* event) override;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override;
+    virtual void mouseMoveEvent(QMouseEvent* event) override;
+    virtual void paintEvent(QPaintEvent* event) override;
+    virtual void changeEvent(QEvent* event) override;
+
+    virtual bool incrementValue() = 0;
+    virtual bool decrementValue() = 0;
+    virtual bool applyDelta(double deltaSteps) = 0;
+    virtual void initDragValue() = 0;
+    virtual bool valueFromTextValid(const QString& str) = 0;
+    virtual bool updateValueFromText(const QString& str) = 0;
+    virtual QString getTextFromValue(bool precise) const = 0;
+    virtual std::optional<double> getPercentage() const = 0;
+
+private:
+    enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };
+    enum class HoverState : std::uint8_t { Invalid, Center, NegativeInc, PositiveInc };
+
+    QString getPrefixedText() const;
+    void updateState(FocusAction action);
+    HoverState getHoverState(QPoint mousepos) const;
+    void updateHoverState(QPoint mousepos);
+
+    struct InteractionState {
+        QPoint previousPos{};
+        bool dragging = false;
+        HoverState hover = HoverState::Invalid;
+    };
+
+    bool wrapping_;
+    QString prefix_;
+    QString postfix_;
+    InteractionState state_;
+
+    static constexpr Qt::KeyboardModifier increasedStepModifier = Qt::ControlModifier;
+    static constexpr Qt::KeyboardModifier decreasedStepModifier = Qt::ShiftModifier;
+    static constexpr double increasedStepSize = 10.0;
+    static constexpr double decreasedStepSize = 0.1;
+};
+
+template <typename T>
+class IVW_MODULE_QTWIDGETS_API NumberWidget final : public BaseNumberWidget,
+                                                    public OrdinalBaseWidget<T> {
+public:
+    NumberWidget();
+    virtual ~NumberWidget() = default;
+
+    // Implements OrdinalBaseWidget
+    virtual T getValue() const override;
+    virtual void setValue(T value) override;
+    virtual void initValue(T value) override;
+    virtual void setMinValue(T minValue, ConstraintBehavior cb) override;
+    virtual void setMaxValue(T maxValue, ConstraintBehavior cb) override;
+    virtual void setIncrement(T increment) override;
+
+protected:
+    virtual bool incrementValue() override;
+    virtual bool decrementValue() override;
+    virtual bool applyDelta(double deltaSteps) override;
+    virtual void initDragValue() override;
+    virtual bool valueFromTextValid(const QString& str) override;
+    virtual bool updateValueFromText(const QString& str) override;
+    virtual QString getTextFromValue(bool precise) const override;
+    virtual std::optional<double> getPercentage() const override;
+
+    bool updateValue(T value);
+    double getUIIncrement() const;
+
+private:
+    T value_;
+    T minValue_;
+    T maxValue_;
+    T increment_;
+    T initialDragValue_;
+    ConstraintBehavior minCB_;
+    ConstraintBehavior maxCB_;
+};
+
+template <typename T>
+inline NumberWidget<T>::NumberWidget()
+    : OrdinalBaseWidget<T>()
+    , value_{1}
+    , minValue_{0}
+    , maxValue_{2}
+    , increment_{1}
+    , initialDragValue_{0}
+    , minCB_{ConstraintBehavior::Editable}
+    , maxCB_{ConstraintBehavior::Editable} {}
+
+template <typename T>
+T NumberWidget<T>::getValue() const {
+    return value_;
+}
+template <typename T>
+void NumberWidget<T>::setValue(T value) {
+    if (value != value_) {
+        value_ = value;
+        updateText();
+        emit valueChanged();
+    }
+}
+template <typename T>
+void NumberWidget<T>::initValue(T value) {
+    value_ = value;
+    updateText();
+}
+template <typename T>
+void NumberWidget<T>::setMinValue(T minValue, ConstraintBehavior cb) {
+    minValue_ = minValue;
+    minCB_ = cb;
+}
+template <typename T>
+void NumberWidget<T>::setMaxValue(T maxValue, ConstraintBehavior cb) {
+    maxValue_ = maxValue;
+    maxCB_ = cb;
+}
+template <typename T>
+void NumberWidget<T>::setIncrement(T increment) {
+    increment_ = increment;
+}
+
+template <typename T>
+bool NumberWidget<T>::incrementValue() {
+    const T uiIncrement = getUIIncrement();
+    if (maxValue_ - uiIncrement < value_) {
+        if (getWrapping()) {
+            const T delta = maxValue_ - value_;
+            return updateValue(minValue_ + uiIncrement - delta);
+        } else {
+            return updateValue(maxValue_);
+        }
+    } else {
+        return updateValue(value_ + uiIncrement);
+    }
+}
+
+template <typename T>
+bool NumberWidget<T>::decrementValue() {
+    const T uiIncrement = getUIIncrement();
+    if (minValue_ + uiIncrement > value_) {
+        if (getWrapping()) {
+            const T delta = value_ - minValue_;
+            return updateValue(maxValue_ - uiIncrement + delta);
+        } else {
+            return updateValue(minValue_);
+        }
+    } else {
+        return updateValue(value_ - uiIncrement);
+    }
+}
+
+template <typename T>
+bool NumberWidget<T>::applyDelta(double deltaSteps) {
+    if (deltaSteps == 0.0) {
+        return false;
+    }
+
+    T delta = static_cast<T>(deltaSteps * getUIIncrement());
+    if (getWrapping()) {
+        if constexpr (std::is_floating_point_v<T>) {
+            delta = std::fmod(delta, maxValue_ - minValue_);
+        } else {
+            delta = delta % (maxValue_ - minValue_);
+        }
+        if (maxValue_ - delta < initialDragValue_) {
+            delta -= maxValue_ - minValue_;
+        } else if (minValue_ - delta > initialDragValue_) {
+            delta += maxValue_ - minValue_;
+        }
+        return updateValue(initialDragValue_ + delta);
+    }
+
+    if (delta > 0) {
+        if (maxCB_ == ConstraintBehavior::Ignore) {
+            if (std::numeric_limits<T>::max() - delta < initialDragValue_) {
+                return updateValue(std::numeric_limits<T>::max());
+            } else {
+                return updateValue(initialDragValue_ + delta);
+            }
+        } else if (maxValue_ - delta < initialDragValue_) {
+            return updateValue(maxValue_);
+        } else {
+            return updateValue(initialDragValue_ + delta);
+        }
+    } else {
+        if (minCB_ == ConstraintBehavior::Ignore) {
+            if (std::numeric_limits<T>::lowest() - delta > initialDragValue_) {
+                return updateValue(std::numeric_limits<T>::lowest());
+            } else {
+                return updateValue(initialDragValue_ + delta);
+            }
+        } else if (minValue_ - delta > initialDragValue_) {
+            return updateValue(minValue_);
+        } else {
+            return updateValue(initialDragValue_ + delta);
+        }
+    }
+}
+
+template <typename T>
+void NumberWidget<T>::initDragValue() {
+    // Need to keep track of the current value when mouse dragging starts to have an absolute delta.
+    // Otherwise the incremental delta between two events might be too small for updating integer
+    // values.
+    initialDragValue_ = value_;
+}
+
+template <typename T>
+bool NumberWidget<T>::valueFromTextValid(const QString& str) {
+    return utilqt::numericValueFromString<T>(str).has_value();
+}
+
+template <typename T>
+bool NumberWidget<T>::updateValueFromText(const QString& str) {
+    if (auto newValue = utilqt::numericValueFromString<T>(str); newValue && *newValue != value_) {
+        value_ = *newValue;
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+QString NumberWidget<T>::getTextFromValue(bool precise) const {
+    if constexpr (std::is_floating_point_v<T>) {
+        if (precise) {
+            return utilqt::formatAsNonscientific(value_);
+        } else {
+            return QString::number(value_, 'f', utilqt::decimals(increment_));
+        }
+    } else {
+        return QString::number(value_);
+    }
+}
+
+template <typename T>
+std::optional<double> NumberWidget<T>::getPercentage() const {
+    if (minValue_ == std::numeric_limits<T>::lowest() ||
+        maxValue_ == std::numeric_limits<T>::max()) {
+        return std::nullopt;
+    }
+    return static_cast<double>(value_ - minValue_) / static_cast<double>(maxValue_ - minValue_);
+}
+
+template <typename T>
+bool NumberWidget<T>::updateValue(T v) {
+    if (value_ != v) {
+        value_ = v;
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+double NumberWidget<T>::getUIIncrement() const {
+    if (minValue_ == std::numeric_limits<T>::lowest() ||
+        maxValue_ == std::numeric_limits<T>::max()) {
+        return static_cast<double>(increment_);
+    }
+
+    return static_cast<double>(maxValue_ - minValue_) / static_cast<double>(width());
+}
+
+}  // namespace inviwo
