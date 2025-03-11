@@ -55,6 +55,8 @@ SerializeBase& SerializeBase::operator=(SerializeBase&&) noexcept = default;
 
 auto SerializeBase::getAllocator() const -> allocator_type { return doc_->getAllocator(); }
 
+TiXmlDocument& SerializeBase::doc() { return *doc_; }
+
 NodeSwitch::NodeSwitch(NodeSwitch&& rhs) noexcept
     : serializer_{rhs.serializer_}
     , storedNode_{nullptr}
