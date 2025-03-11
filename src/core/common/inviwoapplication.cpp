@@ -394,7 +394,17 @@ void InviwoApplication::setUILocale(const std::locale& locale) { uiLocale_ = loc
 void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
     {
         std::unique_lock<std::mutex> lock(queue_.mutex);
-        queue_.tasks.push(std::move(fun));
+        queue_.tasks.push([f = std::move(fun)]() {
+            try {
+                f();
+            } catch (const Exception& e) {
+                log::exception(e);
+            } catch (const std::exception& e) {
+                log::exception(e);
+            } catch (...) {
+                log::exception();
+            }
+        });
     }
     if (queue_.postEnqueue) queue_.postEnqueue();
 }
