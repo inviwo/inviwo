@@ -366,7 +366,7 @@ DisableEventMatcher::DisableEventMatcher() : EventMatcher() {}
 
 DisableEventMatcher* DisableEventMatcher::clone() const { return new DisableEventMatcher(*this); }
 
-bool DisableEventMatcher::operator()(Event* e) { return false; }
+bool DisableEventMatcher::operator()(Event*) { return false; }
 
 bool DisableEventMatcher::isDefaultState() const { return true; }
 
