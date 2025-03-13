@@ -31,13 +31,15 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/interaction/cameratrackball.h>
+
+#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
+#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
 namespace inviwo {
 
@@ -62,6 +64,7 @@ private:
     FloatProperty axisMargin_;
     BoolProperty antialiasing_;
     CameraProperty camera_;
+    CameraTrackball trackball_;
 
     std::array<plot::AxisRenderer, 2> axisRenderers_;
 };
