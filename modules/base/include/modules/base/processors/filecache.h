@@ -43,6 +43,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <fstream>
 #include <ranges>
@@ -162,8 +163,10 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
     : Processor{}
     , inport_{"inport", "data to cache"_help}
     , outport_{"outport", "cached data"_help}
-
-    , cacheDir_{"cacheDir", "Cache Dir"}
+    , cacheDir_{"cacheDir", "Cache Dir",
+                "Directory to save cached dataset too. "
+                "You might want to manually clear it regularly to save space"_help,
+                filesystem::getPath(PathType::Cache)}
     , extensions_{"readerWriter", "Data Reader And Writer"}
     , rf_{*app->getDataReaderFactory()}
     , wf_{*app->getDataWriterFactory()} {
