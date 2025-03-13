@@ -303,6 +303,7 @@ private:
     WorkspaceManager::ClearHandle visibleWidgetsClearHandle_;
 
     std::shared_ptr<std::function<void()>> moduleLoadedCallback_;
+    std::shared_ptr<std::function<void()>> moduleUnloadCallback_;
 
     DefaultState defaultState_;
 };

@@ -412,19 +412,22 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
 
     utilqt::configurePoolResizeWait(*app_, this);
 
-    moduleLoadedCallback_ =
-        app_->getModuleManager().onModulesDidRegister([this]() { editorSettings_->load(); });
+    moduleLoadedCallback_ = app_->getModuleManager().onModulesDidRegister([this]() {
+        editorSettings_->load();
+        // prevent loading of the window and geometry states when the
+        // reset-window-state command line argument is present. This is
+        // necessary to fix a broken internal state, which is for example
+        // visible in form of a mangled toolbar.
+        if (!resetWindowState_.isSet()) {
+            loadWindowState();
+        }
+    });
+
+    moduleUnloadCallback_ =
+        app_->getModuleManager().onModulesDidRegister([this]() { saveWindowState(); });
 
     // load settings and restore window state
     storeDefaultState();
-
-    // prevent loading of the window and geometry states when the
-    // reset-window-state command line argument is present. This is
-    // necessary to fix a broken internal state, which is for example
-    // visible in form of a mangled toolbar.
-    if (!resetWindowState_.isSet()) {
-        loadWindowState();
-    }
 
     QSettings settings;
     settings.beginGroup(objectName());
