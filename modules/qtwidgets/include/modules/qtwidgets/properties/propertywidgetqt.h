@@ -105,6 +105,9 @@ protected:
     // Create drag event if left button is pressed and moved
     // further than QApplication::startDragDistance()
     virtual void mouseMoveEvent(QMouseEvent* event) override;
+
+    virtual void mouseReleaseEvent(QMouseEvent* event) override;
+
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
     virtual void onSetVisible(Property* property, bool visible) override;

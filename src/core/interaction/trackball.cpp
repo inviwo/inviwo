@@ -57,6 +57,8 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , isMouseBeingPressedAndHold_(false)
     , lastNDC_(vec3(0.0f))
     , gestureStartNDCDepth_(-1)
+    , evaluated_(true)
+    , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }}
     , trackballMethod_("trackballMethod", "Trackball Method",
                        {{"tb_vt", "Virtual Trackball", 0},
                         {"tb_tav", "Two Axis Valuator Trackball", 1},
@@ -117,9 +119,8 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , stepPanRight_("stepPanRight",       "Pan right",     [this](Event* e) { panRight(e); },     IvwKey::D,     KeyState::Press, KeyModifier::Shift)
    
     , touchGesture_("touchGesture",       "Touch",         [this](Event* e) { touchGesture(e); }, std::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
-    // clang-format on
-    , evaluated_(true)
-    , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }} {
+// clang-format on
+{
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, eventprops());
@@ -148,6 +149,8 @@ Trackball::Trackball(const Trackball& rhs)
     , isMouseBeingPressedAndHold_(false)
     , lastNDC_(vec3(0.0))
     , gestureStartNDCDepth_(-1)
+    , evaluated_(true)
+    , timer_(std::chrono::milliseconds{30LL}, [this]() { animate(); })
     , trackballMethod_(rhs.trackballMethod_)
     , sensitivity_(rhs.sensitivity_)
     , movementSpeed_(rhs.movementSpeed_)
@@ -196,10 +199,7 @@ Trackball::Trackball(const Trackball& rhs)
     , stepPanLeft_(rhs.stepPanLeft_)
     , stepPanRight_(rhs.stepPanRight_)
 
-    , touchGesture_(rhs.touchGesture_)
-
-    , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30LL}, [this]() { animate(); }) {
+    , touchGesture_(rhs.touchGesture_) {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, eventprops());

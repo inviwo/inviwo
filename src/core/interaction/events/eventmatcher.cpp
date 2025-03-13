@@ -96,6 +96,15 @@ void KeyboardEventMatcher::deserialize(Deserializer& d) {
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, key_, states_, modifiers_);
 }
 
+bool KeyboardEventMatcher::assign(const EventMatcher* src) {
+    if (auto* m = dynamic_cast<const KeyboardEventMatcher*>(src)) {
+        *this = *m;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 std::string KeyboardEventMatcher::displayString() const {
     if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
         return fmt::format("{}+{}", modifiers_, key_);
@@ -175,18 +184,27 @@ void MouseEventMatcher::deserialize(Deserializer& d) {
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, buttons_, states_, modifiers_);
 }
 
+bool MouseEventMatcher::assign(const EventMatcher* src) {
+    if (auto* m = dynamic_cast<const MouseEventMatcher*>(src)) {
+        *this = *m;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 std::string MouseEventMatcher::displayString() const {
     if (buttons_ == MouseButtons{flags::any}) {
         if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
-            return fmt::format("{}+Any", modifiers_);
+            return fmt::format("{} {}+Any", states_, modifiers_);
         } else {
             return "Any";
         }
     } else {
         if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
-            return fmt::format("{}+{}", modifiers_, buttons_);
+            return fmt::format("{} {}+{}", states_, modifiers_, buttons_);
         } else {
-            return fmt::format("{}", buttons_);
+            return fmt::format("{} {}", states_, buttons_);
         }
     }
 }
@@ -226,6 +244,15 @@ void WheelEventMatcher::serialize(Serializer& s) const {
 void WheelEventMatcher::deserialize(Deserializer& d) {
     EventMatcher::deserialize(d);
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, modifiers_);
+}
+
+bool WheelEventMatcher::assign(const EventMatcher* src) {
+    if (auto* m = dynamic_cast<const WheelEventMatcher*>(src)) {
+        *this = *m;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 std::string WheelEventMatcher::displayString() const {
@@ -299,6 +326,15 @@ void GestureEventMatcher::deserialize(Deserializer& d) {
                             modifiers_);
 }
 
+bool GestureEventMatcher::assign(const EventMatcher* src) {
+    if (auto* m = dynamic_cast<const GestureEventMatcher*>(src)) {
+        *this = *m;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 std::string GestureEventMatcher::displayString() const {
     if (modifiers_ != KeyModifier::None && modifiers_ != KeyModifiers{flags::any}) {
         return fmt::format("{}+{}", modifiers_, types_);
@@ -316,6 +352,27 @@ bool GeneralEventMatcher::operator()(Event* e) { return matcher_(e); }
 
 bool GeneralEventMatcher::isDefaultState() const { return true; }
 
+bool GeneralEventMatcher::assign(const EventMatcher* src) {
+    if (auto* m = dynamic_cast<const GeneralEventMatcher*>(src)) {
+        *this = *m;
+        return true;
+    } else {
+        return false;
+    }
+}
 std::string GeneralEventMatcher::displayString() const { return "Custom trigger"; }
+
+DisableEventMatcher::DisableEventMatcher() : EventMatcher() {}
+
+DisableEventMatcher* DisableEventMatcher::clone() const { return new DisableEventMatcher(*this); }
+
+bool DisableEventMatcher::operator()(Event* e) { return false; }
+
+bool DisableEventMatcher::isDefaultState() const { return true; }
+
+bool DisableEventMatcher::assign(const EventMatcher* src) {
+    return dynamic_cast<const DisableEventMatcher*>(src);
+}
+std::string DisableEventMatcher::displayString() const { return "Disable"; }
 
 }  // namespace inviwo
