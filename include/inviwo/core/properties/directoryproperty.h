@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/fileproperty.h>
 
+#include <filesystem>
+
 namespace inviwo {
 
 /**
@@ -46,12 +48,14 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.DirectoryProperty"};
 
     DirectoryProperty(std::string_view identifier, std::string_view displayName, Document help,
-                      std::string_view value = "", std::string_view contentType = "default",
+                      const std::filesystem::path& value = {},
+                      std::string_view contentType = "default",
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
     DirectoryProperty(std::string_view identifier, std::string_view displayName,
-                      std::string_view value = "", std::string_view contentType = "default",
+                      const std::filesystem::path& value = {},
+                      std::string_view contentType = "default",
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
 
