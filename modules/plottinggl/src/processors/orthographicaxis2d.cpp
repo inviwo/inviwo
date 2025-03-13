@@ -29,6 +29,8 @@
 
 #include <modules/plottinggl/processors/orthographicaxis2d.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/datastructures/camera/orthographiccamera.h>
 
 namespace inviwo {
 
@@ -56,13 +58,33 @@ OrthographicAxis2D::OrthographicAxis2D()
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
     , antialiasing_("antialias", "Antialiasing", true)
     , camera_{"camera", "Camera"}
+    , trackball_{&camera_}
     , axisRenderers_{axis1_, axis2_} {
 
     style_.setCollapsed(true);
     style_.registerProperties(axis1_, axis2_);
 
     addPorts(inport_, mesh_, outport_);
-    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, antialiasing_, camera_);
+    addProperties(style_, axis1_, axis2_, margins_, axisMargin_, antialiasing_, camera_,
+                  trackball_);
+
+    camera_.setCamera(std::make_unique<OrthographicCamera>());
+    camera_.setCurrentStateAsDefault();
+
+    trackball_.allowHorizontalRotation_.set(false);
+    trackball_.allowVerticalRotation_.set(false);
+    trackball_.allowViewDirectionRotation_.set(false);
+
+    trackball_.mouseRotate_.setEventMatcher(std::make_unique<DisableEventMatcher>());
+    trackball_.stepRotateUp_.setEventMatcher(std::make_unique<DisableEventMatcher>());
+    trackball_.stepRotateDown_.setEventMatcher(std::make_unique<DisableEventMatcher>());
+    trackball_.stepRotateLeft_.setEventMatcher(std::make_unique<DisableEventMatcher>());
+    trackball_.stepRotateRight_.setEventMatcher(std::make_unique<DisableEventMatcher>());
+
+    trackball_.mousePan_.setEventMatcher(std::make_unique<MouseEventMatcher>(
+        MouseButton::Left, MouseState::Move, KeyModifiers(flags::none)));
+
+    trackball_.setCurrentStateAsDefault();
 }
 
 void OrthographicAxis2D::process() {
@@ -92,8 +114,10 @@ void OrthographicAxis2D::process() {
     axis1_.setRange(dvec2{wStart.x, wEnd.x});
     axis2_.setRange(dvec2{wStart.y, wEnd.y});
 
-    axis1_.majorTicks_.tickDelta_.set((wEnd.x - wStart.x)/10);
-    axis2_.majorTicks_.tickDelta_.set((wEnd.y - wStart.y)/10);
+    axis1_.majorTicks_.tickDelta_.set(std::abs((wEnd.x - wStart.x) / 10.0));
+    axis2_.majorTicks_.tickDelta_.set(std::abs((wEnd.y - wStart.y) / 10.0));
+
+    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
     // draw horizontally
     axisRenderers_[0].render(dims, xStart, xEnd, antialiasing_.get());
