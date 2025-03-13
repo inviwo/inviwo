@@ -35,7 +35,7 @@ namespace inviwo {
 std::string_view DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
-                                     Document help, std::string_view value,
+                                     Document help, const std::filesystem::path& value,
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
@@ -46,7 +46,8 @@ DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_vi
 }
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
-                                     std::string_view value, std::string_view contentType,
+                                     const std::filesystem::path& value,
+                                     std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : DirectoryProperty(identifier, displayName, Document{}, value, contentType, invalidationLevel,
