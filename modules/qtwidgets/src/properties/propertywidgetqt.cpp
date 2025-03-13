@@ -333,6 +333,17 @@ void PropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
+void PropertyWidgetQt::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::RightButton) {
+        if (auto menu = getContextMenu()) {
+            menu->exec(event->globalPosition().toPoint());
+            event->accept();
+            return;
+        }
+    }
+    QWidget::mouseReleaseEvent(event);
+}
+
 void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app) {
     if (!property_) return;
 
@@ -405,8 +416,10 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             ss << "Save preset in " << type << ". " << type << " presets are local to this "
                << type;
             saveAction->setToolTip(utilqt::toQString(ss.str()));
-            connect(saveAction, &QAction::triggered,
-                    [=]() { while (!savePreset(saveMenu, type)); });
+            connect(saveAction, &QAction::triggered, [=]() {
+                while (!savePreset(saveMenu, type))
+                    ;
+            });
         }
 
         auto clearMenu = presetMenu->addMenu("Clear");
@@ -456,15 +469,6 @@ bool PropertyWidgetQt::event(QEvent* event) {
 
         QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(desc));
         return true;
-    } else if (event->type() == QEvent::MouseButtonRelease) {
-        auto mouseEvent = static_cast<QMouseEvent*>(event);
-        if (mouseEvent->button() == Qt::RightButton) {
-            if (auto menu = getContextMenu()) {
-                menu->exec(mouseEvent->globalPosition().toPoint());
-                mouseEvent->accept();
-                return true;
-            }
-        }
     }
     return QWidget::event(event);
 }

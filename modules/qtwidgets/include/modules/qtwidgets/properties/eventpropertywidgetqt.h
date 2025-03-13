@@ -61,6 +61,9 @@ protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
     virtual void keyReleaseEvent(QKeyEvent* event) override;
     virtual void mousePressEvent(QMouseEvent* event) override;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override;
+    virtual void mouseMoveEvent(QMouseEvent* event) override;
+
 
     virtual void focusOutEvent(QFocusEvent* event) override;
     void clickedSlot();
@@ -68,7 +71,7 @@ protected:
 private:
     void setButtonText();
 
-    EventProperty* eventproperty_;
+    EventProperty* eventProperty_;
     IvwPushButton* button_;
     EditableLabelQt* label_;
 

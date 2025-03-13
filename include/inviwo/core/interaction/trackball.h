@@ -167,6 +167,15 @@ protected:
     double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
 
+    static constexpr float radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
+    static constexpr float stepsize = 0.05f;
+
+    glm::quat lastRot_;
+    std::chrono::system_clock::time_point lastRotTime_;
+    bool evaluated_;
+    Timer timer_;
+
+public:
     OptionPropertyInt trackballMethod_;  /// Chooses which trackball method to use (mouse only,
                                          /// touch always follows finger)
     FloatProperty sensitivity_;          /// Controls the rotation sensitivity
@@ -228,14 +237,6 @@ protected:
     EventProperty stepPanRight_;
 
     EventProperty touchGesture_;
-
-    const float radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
-    const float stepsize = 0.05f;
-
-    glm::quat lastRot_;
-    std::chrono::system_clock::time_point lastRotTime_;
-    bool evaluated_;
-    Timer timer_;
 
 private:
     auto props() {
