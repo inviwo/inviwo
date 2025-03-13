@@ -103,13 +103,15 @@ GestureState getGestureState(const QGesture* gesture) {
     }
 }
 
-KeyModifiers getModifiers(const QInputEvent* e) {
+KeyModifiers getModifiers(const QInputEvent* e) { return getModifiers(e->modifiers()); }
+
+KeyModifiers getModifiers(Qt::KeyboardModifiers m) {
     KeyModifiers res(flags::none);
 
-    if (e->modifiers() & Qt::ShiftModifier) res |= KeyModifier::Shift;
-    if (e->modifiers() & Qt::ControlModifier) res |= KeyModifier::Control;
-    if (e->modifiers() & Qt::AltModifier) res |= KeyModifier::Alt;
-    if (e->modifiers() & Qt::MetaModifier) res |= KeyModifier::Meta;
+    if (m & Qt::ShiftModifier) res |= KeyModifier::Shift;
+    if (m & Qt::ControlModifier) res |= KeyModifier::Control;
+    if (m & Qt::AltModifier) res |= KeyModifier::Alt;
+    if (m & Qt::MetaModifier) res |= KeyModifier::Meta;
 
     return res;
 }

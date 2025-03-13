@@ -51,6 +51,7 @@
 #include <Qt>             // for Key_Enter, Key_Escape, Key_Re...
 #include <flags/flags.h>  // for operator!=, none
 #include <QMenu>
+#include <QApplication>
 
 class QHBoxLayout;
 
@@ -58,9 +59,9 @@ namespace inviwo {
 
 EventPropertyWidgetQt::EventPropertyWidgetQt(EventProperty* eventproperty)
     : PropertyWidgetQt(eventproperty)
-    , eventproperty_(eventproperty)
+    , eventProperty_(eventproperty)
     , button_{new IvwPushButton(this)}
-    , label_{new EditableLabelQt(this, eventproperty_)} {
+    , label_{new EditableLabelQt(this, eventProperty_)} {
 
     setFocusPolicy(button_->focusPolicy());
     setFocusProxy(button_);
@@ -95,8 +96,10 @@ EventPropertyWidgetQt::~EventPropertyWidgetQt() = default;
 void EventPropertyWidgetQt::updateFromProperty() { setButtonText(); }
 
 void EventPropertyWidgetQt::clickedSlot() {
-    matcher_ = std::unique_ptr<EventMatcher>(eventproperty_->getEventMatcher()->clone());
+    auto* em = eventProperty_->getEventMatcher();
+    if (!em) return;
 
+    matcher_ = std::unique_ptr<EventMatcher>(em->clone());
     keyMatcher_ = dynamic_cast<KeyboardEventMatcher*>(matcher_.get());
     mouseMatcher_ = dynamic_cast<MouseEventMatcher*>(matcher_.get());
 
@@ -104,6 +107,7 @@ void EventPropertyWidgetQt::clickedSlot() {
         keyMatcher_->setModifiers(KeyModifiers(flags::none));
         keyMatcher_->setKey(IvwKey::Unknown);
         grabKeyboard();
+        grabMouse();
     } else if (mouseMatcher_) {
         mouseMatcher_->setModifiers(KeyModifiers(flags::none));
         mouseMatcher_->setButtons(MouseButton::None);
@@ -120,62 +124,95 @@ void EventPropertyWidgetQt::clickedSlot() {
 void EventPropertyWidgetQt::keyPressEvent(QKeyEvent* event) {
     if (keyMatcher_ && event->key() != Qt::Key_Enter && event->key() != Qt::Key_Return &&
         event->key() != Qt::Key_Escape) {
-        auto key = utilqt::getKeyButton(event);
-        auto modifers = utilqt::getModifiers(event);
-
-        keyMatcher_->setKey(key);
-        keyMatcher_->setModifiers(modifers);
-
-        std::stringstream ss;
-        if (keyMatcher_->modifiers() != KeyModifier::None) {
-            ss << keyMatcher_->modifiers() << "+";
-        }
-        ss << keyMatcher_->key();
-
-        button_->setText(QString::fromStdString(ss.str()));
+        keyMatcher_->setKey(utilqt::getKeyButton(event));
+        keyMatcher_->setModifiers(utilqt::getModifiers(event));
+        button_->setText(utilqt::toQString(keyMatcher_->displayString()));
+    } else if (mouseMatcher_) {
+        mouseMatcher_->setModifiers(utilqt::getModifiers(QApplication::queryKeyboardModifiers()));
+        button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
+    } else {
+        QWidget::keyPressEvent(event);
     }
-
-    QWidget::keyPressEvent(event);
 }
 
 void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
     if (keyMatcher_ && (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)) {
         releaseKeyboard();
-        eventproperty_->setEventMatcher(std::unique_ptr<EventMatcher>(keyMatcher_->clone()));
+        releaseMouse();
+        eventProperty_->getEventMatcher()->assign(keyMatcher_);
         setButtonText();
         button_->setEnabled(true);
+        keyMatcher_ = nullptr;
+        event->accept();
     } else if (keyMatcher_ && event->key() == Qt::Key_Escape) {
         releaseKeyboard();
+        releaseMouse();
         setButtonText();
         button_->setEnabled(true);
+        keyMatcher_ = nullptr;
+        event->accept();
+    } else if (mouseMatcher_) {
+        mouseMatcher_->setModifiers(utilqt::getModifiers(QApplication::queryKeyboardModifiers()));
+        button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
     } else {
         QWidget::keyReleaseEvent(event);
     }
 }
 
-void EventPropertyWidgetQt::setButtonText() {
-    button_->setText(utilqt::toQString(eventproperty_->getEventMatcher()->displayString()));
+void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
+    if (keyMatcher_) {
+        releaseKeyboard();
+        releaseMouse();
+        setButtonText();
+        button_->setEnabled(true);
+        keyMatcher_ = nullptr;
+        QWidget::mousePressEvent(event);
+    } else if (mouseMatcher_) {
+        mouseMatcher_->setButtons(utilqt::getMouseButtons(event));
+        mouseMatcher_->setModifiers(utilqt::getModifiers(event));
+        button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
+        event->accept();
+    } else {
+        QWidget::mousePressEvent(event);
+    }
+}
+void EventPropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
+    if (mouseMatcher_) {
+        mouseMatcher_->setButtons(utilqt::getMouseButtons(event));
+        mouseMatcher_->setModifiers(utilqt::getModifiers(event));
+        button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
+    } else {
+        QWidget::mouseMoveEvent(event);
+    }
+}
+void EventPropertyWidgetQt::mouseReleaseEvent(QMouseEvent* event) {
+    if (mouseMatcher_) {
+        eventProperty_->getEventMatcher()->assign(mouseMatcher_);
+        setButtonText();
+        button_->setEnabled(true);
+        mouseMatcher_ = nullptr;
+        releaseMouse();
+        event->accept();
+    } else {
+        QWidget::mouseReleaseEvent(event);
+    }
 }
 
 void EventPropertyWidgetQt::focusOutEvent(QFocusEvent*) {
-    releaseKeyboard();
-    setButtonText();
-    button_->setEnabled(true);
+    if (keyMatcher_) {
+        releaseKeyboard();
+        setButtonText();
+        button_->setEnabled(true);
+        keyMatcher_ = nullptr;
+    }
 }
 
-void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
-    if (mouseMatcher_) {
-        auto modifers = utilqt::getModifiers(event);
-
-        mouseMatcher_->setButtons(utilqt::getMouseButtons(event));
-        mouseMatcher_->setModifiers(modifers);
-
-        eventproperty_->setEventMatcher(std::unique_ptr<EventMatcher>(mouseMatcher_->clone()));
+void EventPropertyWidgetQt::setButtonText() {
+    if (auto* ev = eventProperty_->getEventMatcher()) {
+        button_->setText(utilqt::toQString(ev->displayString()));
+    } else {
+        button_->setText("Unset");
     }
-
-    setButtonText();
-    button_->setEnabled(true);
-    releaseMouse();
 }
 
 std::unique_ptr<QMenu> EventPropertyWidgetQt::getContextMenu() {
@@ -184,19 +221,15 @@ std::unique_ptr<QMenu> EventPropertyWidgetQt::getContextMenu() {
     unsetAction->setToolTip(tr("Remove the currently set shortcut."));
 
     QObject::connect(unsetAction, &QAction::triggered, this, [this]() {
-        if (!matcher_) {
-            matcher_ = std::unique_ptr<EventMatcher>(eventproperty_->getEventMatcher()->clone());
-        }
-        keyMatcher_ = dynamic_cast<KeyboardEventMatcher*>(matcher_.get());
-        mouseMatcher_ = dynamic_cast<MouseEventMatcher*>(matcher_.get());
-        if (keyMatcher_) {
-            keyMatcher_->setKey(IvwKey::Undefined);
-            keyMatcher_->setModifiers(KeyModifier::None);
-            eventproperty_->setEventMatcher(std::unique_ptr<EventMatcher>(keyMatcher_->clone()));
-        } else if (mouseMatcher_) {
-            mouseMatcher_->setButtons(MouseButton::None);
-            mouseMatcher_->setModifiers(KeyModifier::None);
-            eventproperty_->setEventMatcher(std::unique_ptr<EventMatcher>(mouseMatcher_->clone()));
+        auto* em = eventProperty_->getEventMatcher();
+
+        if (auto* keyMatcher = dynamic_cast<KeyboardEventMatcher*>(em)) {
+            keyMatcher->setKey(IvwKey::Undefined);
+            keyMatcher->setModifiers(KeyModifier::None);
+        } else if (auto* mouseMatcher = dynamic_cast<MouseEventMatcher*>(em)) {
+            mouseMatcher->setButtons(MouseButton::None);
+            mouseMatcher->setStates(MouseState::Press);
+            mouseMatcher->setModifiers(KeyModifier::None);
         }
         setButtonText();
     });
