@@ -131,7 +131,7 @@ void EventPropertyWidgetQt::keyPressEvent(QKeyEvent* event) {
         mouseMatcher_->setModifiers(utilqt::getModifiers(QApplication::queryKeyboardModifiers()));
         button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
     } else {
-        QWidget::keyPressEvent(event);
+        PropertyWidgetQt::keyPressEvent(event);
     }
 }
 
@@ -155,7 +155,7 @@ void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
         mouseMatcher_->setModifiers(utilqt::getModifiers(QApplication::queryKeyboardModifiers()));
         button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
     } else {
-        QWidget::keyReleaseEvent(event);
+        PropertyWidgetQt::keyReleaseEvent(event);
     }
 }
 
@@ -166,14 +166,14 @@ void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
         setButtonText();
         button_->setEnabled(true);
         keyMatcher_ = nullptr;
-        QWidget::mousePressEvent(event);
+        PropertyWidgetQt::mousePressEvent(event);
     } else if (mouseMatcher_) {
         mouseMatcher_->setButtons(utilqt::getMouseButtons(event));
         mouseMatcher_->setModifiers(utilqt::getModifiers(event));
         button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
         event->accept();
     } else {
-        QWidget::mousePressEvent(event);
+        PropertyWidgetQt::mousePressEvent(event);
     }
 }
 void EventPropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
@@ -182,7 +182,7 @@ void EventPropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
         mouseMatcher_->setModifiers(utilqt::getModifiers(event));
         button_->setText(utilqt::toQString(mouseMatcher_->displayString()));
     } else {
-        QWidget::mouseMoveEvent(event);
+        PropertyWidgetQt::mouseMoveEvent(event);
     }
 }
 void EventPropertyWidgetQt::mouseReleaseEvent(QMouseEvent* event) {
@@ -194,17 +194,18 @@ void EventPropertyWidgetQt::mouseReleaseEvent(QMouseEvent* event) {
         releaseMouse();
         event->accept();
     } else {
-        QWidget::mouseReleaseEvent(event);
+        PropertyWidgetQt::mouseReleaseEvent(event);
     }
 }
 
-void EventPropertyWidgetQt::focusOutEvent(QFocusEvent*) {
+void EventPropertyWidgetQt::focusOutEvent(QFocusEvent* event) {
     if (keyMatcher_) {
         releaseKeyboard();
         setButtonText();
         button_->setEnabled(true);
         keyMatcher_ = nullptr;
     }
+    PropertyWidgetQt::focusOutEvent(event);
 }
 
 void EventPropertyWidgetQt::setButtonText() {

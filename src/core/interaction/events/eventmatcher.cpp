@@ -97,7 +97,7 @@ void KeyboardEventMatcher::deserialize(Deserializer& d) {
 }
 
 bool KeyboardEventMatcher::assign(const EventMatcher* src) {
-    if (auto* m = dynamic_cast<const KeyboardEventMatcher*>(src)) {
+    if (const auto* m = dynamic_cast<const KeyboardEventMatcher*>(src)) {
         *this = *m;
         return true;
     } else {
@@ -185,7 +185,7 @@ void MouseEventMatcher::deserialize(Deserializer& d) {
 }
 
 bool MouseEventMatcher::assign(const EventMatcher* src) {
-    if (auto* m = dynamic_cast<const MouseEventMatcher*>(src)) {
+    if (const auto* m = dynamic_cast<const MouseEventMatcher*>(src)) {
         *this = *m;
         return true;
     } else {
@@ -247,7 +247,7 @@ void WheelEventMatcher::deserialize(Deserializer& d) {
 }
 
 bool WheelEventMatcher::assign(const EventMatcher* src) {
-    if (auto* m = dynamic_cast<const WheelEventMatcher*>(src)) {
+    if (const auto* m = dynamic_cast<const WheelEventMatcher*>(src)) {
         *this = *m;
         return true;
     } else {
@@ -327,7 +327,7 @@ void GestureEventMatcher::deserialize(Deserializer& d) {
 }
 
 bool GestureEventMatcher::assign(const EventMatcher* src) {
-    if (auto* m = dynamic_cast<const GestureEventMatcher*>(src)) {
+    if (const auto* m = dynamic_cast<const GestureEventMatcher*>(src)) {
         *this = *m;
         return true;
     } else {
@@ -353,7 +353,7 @@ bool GeneralEventMatcher::operator()(Event* e) { return matcher_(e); }
 bool GeneralEventMatcher::isDefaultState() const { return true; }
 
 bool GeneralEventMatcher::assign(const EventMatcher* src) {
-    if (auto* m = dynamic_cast<const GeneralEventMatcher*>(src)) {
+    if (const auto* m = dynamic_cast<const GeneralEventMatcher*>(src)) {
         *this = *m;
         return true;
     } else {

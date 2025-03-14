@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>  // for IVW_MODULE_QTWIDGETS_API
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 
-#include <modules/qtwidgets/properties/propertywidgetqt.h>  // for PropertyWidgetQt
+#include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-#include <memory>  // for unique_ptr
+#include <memory>
 
 class QFocusEvent;
 class QKeyEvent;
@@ -63,7 +63,6 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event) override;
     virtual void mouseReleaseEvent(QMouseEvent* event) override;
     virtual void mouseMoveEvent(QMouseEvent* event) override;
-
 
     virtual void focusOutEvent(QFocusEvent* event) override;
     void clickedSlot();

@@ -417,8 +417,9 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                << type;
             saveAction->setToolTip(utilqt::toQString(ss.str()));
             connect(saveAction, &QAction::triggered, [=]() {
-                while (!savePreset(saveMenu, type))
+                while (!savePreset(saveMenu, type)) {
                     ;
+                }
             });
         }
 
