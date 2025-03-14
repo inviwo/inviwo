@@ -35,7 +35,7 @@
 #include <inviwo/core/util/glmutils.h>                              // for is_floating_point
 #include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
 #include <modules/qtwidgets/inviwoqtutils.h>                        // for emToPx, decimals
-#include <modules/qtwidgets/numberlineedit.h>                       // for NumberLineEdit
+#include <modules/qtwidgets/numberwidget.h>                         // for NumberWidget
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for MinMaxPropertySetting...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 #include <modules/qtwidgets/rangesliderqt.h>                        // for RangeSliderQt
@@ -67,8 +67,6 @@ public:
     static T sliderToValue(MinMaxProperty<T>*, int val) { return static_cast<T>(val); };
     static int valueToSlider(MinMaxProperty<T>*, T val) { return static_cast<int>(val); }
     static int sepToSlider(MinMaxProperty<T>*, T sep) { return static_cast<int>(sep); }
-    static T spinboxToValue(MinMaxProperty<T>*, double val) { return static_cast<T>(val); };
-    static double valueToSpinbox(MinMaxProperty<T>*, T val) { return static_cast<double>(val); }
 };
 
 template <typename T>
@@ -85,8 +83,6 @@ public:
     static int sepToSlider(MinMaxProperty<T>* p, T sep) {
         return static_cast<int>(sep / (p->getRangeMax() - p->getRangeMin()) * steps());
     }
-    static T spinboxToValue(MinMaxProperty<T>*, double val) { return static_cast<T>(val); }
-    static double valueToSpinbox(MinMaxProperty<T>*, T val) { return static_cast<double>(val); }
     static T steps() { return 10000; }
 };
 
@@ -103,15 +99,15 @@ public:
 
 private:
     void updateFromSlider(int valMin, int valMax);
-    void updateFromSpinBoxMin(double val);
-    void updateFromSpinBoxMax(double val);
+    void updateFromMin();
+    void updateFromMax();
     int transformIncrementToSpinnerDecimals();
     void showSettings();
 
     MinMaxPropertySettingsWidgetQt<T>* settings_;
     RangeSliderQt* slider_;
-    NumberLineEdit* spinBoxMin_;
-    NumberLineEdit* spinBoxMax_;
+    NumberWidget<T>* min_;
+    NumberWidget<T>* max_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
 };
@@ -127,8 +123,14 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     : PropertyWidgetQt(property)
     , settings_(nullptr)
     , slider_(new RangeSliderQt(Qt::Horizontal, this))
-    , spinBoxMin_(new NumberLineEdit(std::is_integral<T>::value, this))
-    , spinBoxMax_(new NumberLineEdit(std::is_integral<T>::value, this))
+    , min_(new NumberWidget<T>{NumberWidgetConfig{
+          .interaction = NumberWidgetConfig::Interaction::NoDragging,
+          .barVisible = false,
+      }})
+    , max_(new NumberWidget<T>{NumberWidgetConfig{
+          .interaction = NumberWidgetConfig::Interaction::NoDragging,
+          .barVisible = false,
+      }})
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property) {
 
@@ -136,26 +138,24 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
 
-    slider_->handle(0)->setFocusProxy(spinBoxMin_);
-    slider_->handle(1)->setFocusProxy(spinBoxMax_);
+    slider_->handle(0)->setFocusProxy(min_);
+    slider_->handle(1)->setFocusProxy(max_);
 
-    setFocusPolicy(spinBoxMin_->focusPolicy());
-    setFocusProxy(spinBoxMin_);
+    setFocusPolicy(min_->focusPolicy());
+    setFocusProxy(min_);
 
     QHBoxLayout* hSliderLayout = new QHBoxLayout();
     QWidget* sliderWidget = new QWidget();
     sliderWidget->setLayout(hSliderLayout);
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 
-    spinBoxMin_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
-    spinBoxMin_->setFixedWidth(utilqt::emToPx(this, 4.6));
-    hSliderLayout->addWidget(spinBoxMin_);
+    min_->setFixedWidth(utilqt::emToPx(this, 4.6));
+    hSliderLayout->addWidget(min_);
 
     hSliderLayout->addWidget(slider_);
 
-    spinBoxMax_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
-    spinBoxMax_->setFixedWidth(utilqt::emToPx(this, 4.6));
-    hSliderLayout->addWidget(spinBoxMax_);
+    max_->setFixedWidth(utilqt::emToPx(this, 4.6));
+    hSliderLayout->addWidget(max_);
 
     hLayout->addWidget(sliderWidget);
     setLayout(hLayout);
@@ -166,10 +166,10 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
 
     connect(slider_, &RangeSliderQt::valuesChanged, this,
             &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider);
-    connect(spinBoxMin_, static_cast<void (QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
-            this, [this]() { updateFromSpinBoxMin(spinBoxMin_->value()); });
-    connect(spinBoxMax_, static_cast<void (QDoubleSpinBox::*)()>(&QDoubleSpinBox::editingFinished),
-            this, [this]() { updateFromSpinBoxMax(spinBoxMax_->value()); });
+    connect(min_, &NumberWidget<T>::valueChanged, this,
+            &OrdinalMinMaxPropertyWidgetQt<T>::updateFromMin);
+    connect(max_, &NumberWidget<T>::valueChanged, this,
+            &OrdinalMinMaxPropertyWidgetQt<T>::updateFromMax);
 
     updateFromProperty();
 }
@@ -181,22 +181,24 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     const T inc = minMaxProperty_->getIncrement();
     const T sep = minMaxProperty_->getMinSeparation();
 
-    QSignalBlocker minBlock(spinBoxMin_);
-    QSignalBlocker maxBlock(spinBoxMax_);
+    QSignalBlocker minBlock(min_);
+    QSignalBlocker maxBlock(max_);
     QSignalBlocker slideBlock(slider_);
+
+    min_->setMinValue(range.x, ConstraintBehavior::Editable);
+    min_->setMaxValue(range.y - sep, ConstraintBehavior::Editable);
+
+    max_->setMinValue(range.x + sep, ConstraintBehavior::Editable);
+    max_->setMaxValue(range.y, ConstraintBehavior::Editable);
+
+    min_->initValue(val.x);
+    max_->initValue(val.y);
+
+    min_->setIncrement(inc);
+    max_->setIncrement(inc);
 
     using F = Transformer<T>;
     const auto p = minMaxProperty_;
-
-    spinBoxMin_->setRange(F::valueToSpinbox(p, range.x), F::valueToSpinbox(p, range.y - sep));
-    spinBoxMin_->setIncrement(F::valueToSpinbox(p, inc));
-    spinBoxMin_->setValue(F::valueToSpinbox(p, val.x));
-    spinBoxMin_->setDecimals(transformIncrementToSpinnerDecimals());
-
-    spinBoxMax_->setRange(F::valueToSpinbox(p, range.x + sep), F::valueToSpinbox(p, range.y));
-    spinBoxMax_->setIncrement(F::valueToSpinbox(p, inc));
-    spinBoxMax_->setValue(F::valueToSpinbox(p, val.y));
-    spinBoxMax_->setDecimals(transformIncrementToSpinnerDecimals());
 
     slider_->setRange(F::valueToSlider(p, range.x), F::valueToSlider(p, range.y));
     slider_->setMinSeparation(F::sepToSlider(p, sep));
@@ -216,15 +218,15 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
     if (!util::almostEqual(newRange.x, range.x)) {
         modified = true;
         range.x = newRange.x;
-        QSignalBlocker minBlock(spinBoxMin_);
-        spinBoxMin_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, newRange.x));
+        QSignalBlocker minBlock(min_);
+        min_->setValue(newRange.x);
     }
 
     if (!util::almostEqual(newRange.y, range.y)) {
         modified = true;
         range.y = newRange.y;
-        QSignalBlocker maxBlock(spinBoxMax_);
-        spinBoxMax_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, newRange.y));
+        QSignalBlocker maxBlock(max_);
+        max_->setValue(newRange.y);
     }
 
     if (modified) {
@@ -235,23 +237,22 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
 }
 
 template <typename T>
-void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin(double minVal) {
-    const T min = Transformer<T>::spinboxToValue(minMaxProperty_, minVal);
+void OrdinalMinMaxPropertyWidgetQt<T>::updateFromMin() {
+    const T min = min_->getValue();
     const T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
 
     if (!util::almostEqual(min, range.x)) {
         range.x = min;
 
+        const QSignalBlocker slideBlock(slider_);
         if (range.y - range.x < sep) {
             range.y = range.x + sep;
-            QSignalBlocker maxBlock(spinBoxMax_);
-            QSignalBlocker slideBlock(slider_);
-            spinBoxMax_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, range.y));
+            const QSignalBlocker maxBlock(max_);
+            max_->setValue(range.y);
             slider_->setValue(Transformer<T>::valueToSlider(minMaxProperty_, range.x),
                               Transformer<T>::valueToSlider(minMaxProperty_, range.y));
         } else {
-            QSignalBlocker slideBlock(slider_);
             slider_->setMinValue(Transformer<T>::valueToSlider(minMaxProperty_, range.x));
         }
 
@@ -262,23 +263,22 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin(double minVal) {
 }
 
 template <typename T>
-void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax(double maxVal) {
-    const T max = Transformer<T>::spinboxToValue(minMaxProperty_, maxVal);
+void OrdinalMinMaxPropertyWidgetQt<T>::updateFromMax() {
+    const T max = max_->getValue();
     const T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
 
     if (!util::almostEqual(max, range.y)) {
         range.y = max;
 
+        const QSignalBlocker slideBlock(slider_);
         if (range.y - range.x < sep) {
             range.x = range.y - sep;
-            QSignalBlocker minBlock(spinBoxMin_);
-            QSignalBlocker slideBlock(slider_);
-            spinBoxMin_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, range.x));
+            const QSignalBlocker minBlock(min_);
+            min_->setValue(range.x);
             slider_->setValue(Transformer<T>::valueToSlider(minMaxProperty_, range.x),
                               Transformer<T>::valueToSlider(minMaxProperty_, range.y));
         } else {
-            QSignalBlocker slideBlock(slider_);
             slider_->setMaxValue(Transformer<T>::valueToSlider(minMaxProperty_, range.y));
         }
 
