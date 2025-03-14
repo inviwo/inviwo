@@ -34,6 +34,7 @@
 
 #include <optional>
 #include <limits>
+#include <tuple>
 
 #include <QLineEdit>
 #include <QByteArray>
@@ -47,8 +48,14 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API BaseNumberWidget : public QLineEdit {
     Q_OBJECT
 public:
+    enum class PercentageBar : std::uint8_t { Invalid, Regular, Symmetric };
+
     explicit BaseNumberWidget(QWidget* parent = nullptr);
     BaseNumberWidget(std::string_view prefix, std::string_view postfix, QWidget* parent = nullptr);
+    BaseNumberWidget(const BaseNumberWidget&) = default;
+    BaseNumberWidget(BaseNumberWidget&&) = default;
+    BaseNumberWidget& operator=(const BaseNumberWidget&) = default;
+    BaseNumberWidget& operator=(BaseNumberWidget&&) = default;
     virtual ~BaseNumberWidget() = default;
 
     void setPrefix(std::string_view prefix);
@@ -75,12 +82,12 @@ protected:
 
     virtual bool incrementValue() = 0;
     virtual bool decrementValue() = 0;
-    virtual bool applyDelta(double deltaSteps) = 0;
+    virtual bool applyDragDelta(double deltaSteps) = 0;
     virtual void initDragValue() = 0;
     virtual bool valueFromTextValid(const QString& str) = 0;
     virtual bool updateValueFromText(const QString& str) = 0;
     virtual QString getTextFromValue(bool precise) const = 0;
-    virtual std::optional<double> getPercentage() const = 0;
+    virtual std::tuple<std::optional<double>, PercentageBar> getPercentageBar() const = 0;
 
 private:
     enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };
@@ -113,6 +120,10 @@ class IVW_MODULE_QTWIDGETS_API NumberWidget final : public BaseNumberWidget,
                                                     public OrdinalBaseWidget<T> {
 public:
     NumberWidget();
+    NumberWidget(const NumberWidget&) = default;
+    NumberWidget(NumberWidget&&) = default;
+    NumberWidget& operator=(const NumberWidget&) = default;
+    NumberWidget& operator=(NumberWidget&&) = default;
     virtual ~NumberWidget() = default;
 
     // Implements OrdinalBaseWidget
@@ -126,12 +137,12 @@ public:
 protected:
     virtual bool incrementValue() override;
     virtual bool decrementValue() override;
-    virtual bool applyDelta(double deltaSteps) override;
+    virtual bool applyDragDelta(double deltaSteps) override;
     virtual void initDragValue() override;
     virtual bool valueFromTextValid(const QString& str) override;
     virtual bool updateValueFromText(const QString& str) override;
     virtual QString getTextFromValue(bool precise) const override;
-    virtual std::optional<double> getPercentage() const override;
+    virtual std::tuple<std::optional<double>, PercentageBar> getPercentageBar() const override;
 
     bool updateValue(T value);
     double getUIIncrement() const;
@@ -209,8 +220,7 @@ bool NumberWidget<T>::decrementValue() {
     const T uiIncrement = getUIIncrement();
     if (minValue_ + uiIncrement > value_) {
         if (getWrapping()) {
-            const T delta = value_ - minValue_;
-            return updateValue(maxValue_ - uiIncrement + delta);
+            return updateValue(maxValue_ - uiIncrement + value_ - minValue_);
         } else {
             return updateValue(minValue_);
         }
@@ -220,7 +230,7 @@ bool NumberWidget<T>::decrementValue() {
 }
 
 template <typename T>
-bool NumberWidget<T>::applyDelta(double deltaSteps) {
+bool NumberWidget<T>::applyDragDelta(double deltaSteps) {
     if (deltaSteps == 0.0) {
         return false;
     }
@@ -240,30 +250,39 @@ bool NumberWidget<T>::applyDelta(double deltaSteps) {
         return updateValue(initialDragValue_ + delta);
     }
 
-    if (delta > 0) {
+    auto upperBoundedValue = [&](T v) {
+        // precondition: delta > 0
         if (maxCB_ == ConstraintBehavior::Ignore) {
-            if (std::numeric_limits<T>::max() - delta < initialDragValue_) {
-                return updateValue(std::numeric_limits<T>::max());
+            if (std::numeric_limits<T>::max() - delta < v) {  // check for type overflow
+                return std::numeric_limits<T>::max();
             } else {
-                return updateValue(initialDragValue_ + delta);
+                return v + delta;
             }
-        } else if (maxValue_ - delta < initialDragValue_) {
-            return updateValue(maxValue_);
+        } else if (maxValue_ - delta < v) {  // check for maxValue overflow
+            return maxValue_;
         } else {
-            return updateValue(initialDragValue_ + delta);
+            return v + delta;
         }
-    } else {
+    };
+    auto lowerBoundedValue = [&](T v) {
+        // precondition: delta < 0
         if (minCB_ == ConstraintBehavior::Ignore) {
-            if (std::numeric_limits<T>::lowest() - delta > initialDragValue_) {
-                return updateValue(std::numeric_limits<T>::lowest());
+            if (std::numeric_limits<T>::lowest() - delta > v) {  // check for type underflow
+                return std::numeric_limits<T>::lowest();
             } else {
-                return updateValue(initialDragValue_ + delta);
+                return v + delta;
             }
-        } else if (minValue_ - delta > initialDragValue_) {
-            return updateValue(minValue_);
+        } else if (minValue_ - delta > v) {  // check for minValue underflow
+            return minValue_;
         } else {
-            return updateValue(initialDragValue_ + delta);
+            return v + delta;
         }
+    };
+
+    if (delta > 0) {
+        return updateValue(upperBoundedValue(initialDragValue_));
+    } else {
+        return updateValue(lowerBoundedValue(initialDragValue_));
     }
 }
 
@@ -303,12 +322,28 @@ QString NumberWidget<T>::getTextFromValue(bool precise) const {
 }
 
 template <typename T>
-std::optional<double> NumberWidget<T>::getPercentage() const {
-    if (minValue_ == std::numeric_limits<T>::lowest() ||
-        maxValue_ == std::numeric_limits<T>::max()) {
-        return std::nullopt;
+std::tuple<std::optional<double>, BaseNumberWidget::PercentageBar>
+NumberWidget<T>::getPercentageBar() const {
+    const auto state = [&]() {
+        if (minValue_ == std::numeric_limits<T>::lowest() ||
+            maxValue_ == std::numeric_limits<T>::max()) {
+            return PercentageBar::Invalid;
+        }
+        if constexpr (std::is_floating_point_v<T> || std::is_signed_v<T>) {
+            return (maxValue_ == -minValue_) ? PercentageBar::Symmetric : PercentageBar::Regular;
+        } else {
+            return PercentageBar::Regular;
+        }
+    }();
+
+    std::optional<double> percentage;
+    if (state == PercentageBar::Symmetric) {
+        percentage = static_cast<double>(value_) / static_cast<double>(maxValue_);
+    } else if (state == PercentageBar::Regular) {
+        percentage =
+            static_cast<double>(value_ - minValue_) / static_cast<double>(maxValue_ - minValue_);
     }
-    return static_cast<double>(value_ - minValue_) / static_cast<double>(maxValue_ - minValue_);
+    return std::tuple{percentage, state};
 }
 
 template <typename T>
