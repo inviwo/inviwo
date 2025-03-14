@@ -51,13 +51,13 @@ BaseNumberWidget::BaseNumberWidget(std::string_view prefix, std::string_view pos
     , prefix_{utilqt::toQString(prefix)}
     , postfix_{utilqt::toQString(postfix)} {
 
-    QSizePolicy sp = sizePolicy();
-    sp.setHorizontalPolicy(QSizePolicy::Minimum);
-    setSizePolicy(sp);
-
+    setObjectName("NumberWidget");
     updateState(FocusAction::ClearFocus);
     setFocusPolicy(Qt::TabFocus);
     setMouseTracking(true);
+    QSizePolicy sp = sizePolicy();
+    sp.setHorizontalPolicy(QSizePolicy::Minimum);
+    setSizePolicy(sp);
 
     QObject::connect(this, &QLineEdit::textEdited, this, [this](const QString& text) {
         if (valueFromTextValid(text)) {
@@ -91,7 +91,7 @@ bool BaseNumberWidget::getWrapping() const { return wrapping_; }
 bool BaseNumberWidget::event(QEvent* event) {
     if (event->type() == QEvent::ReadOnlyChange) {
         updateHoverState(mapFromGlobal(QCursor::pos()));
-        QSignalBlocker blocker{this};
+        const QSignalBlocker blocker{this};
         updateText();
     } else if (!isReadOnly() && isEnabled()) {
         if (event->type() == QEvent::FocusIn) {
@@ -106,7 +106,7 @@ bool BaseNumberWidget::event(QEvent* event) {
 
             if (keyEvent->key() == Qt::Key_Escape) {
                 // cancel editing
-                QSignalBlocker blocker{this};
+                const QSignalBlocker blocker{this};
                 updateText();
                 clearFocus();
                 return true;
@@ -174,13 +174,13 @@ void BaseNumberWidget::mouseMoveEvent(QMouseEvent* event) {
                 initDragValue();
             }
         } else {
-            double deltaStep = static_cast<double>(delta);
+            auto deltaStep = static_cast<double>(delta);
             if (QGuiApplication::queryKeyboardModifiers().testFlag(increasedStepModifier)) {
                 deltaStep *= increasedStepSize;
             } else if (QGuiApplication::queryKeyboardModifiers().testFlag(decreasedStepModifier)) {
                 deltaStep *= decreasedStepSize;
             }
-            applyDelta(deltaStep);
+            applyDragDelta(deltaStep);
             emit valueChanged();
             update();
         }
@@ -190,7 +190,7 @@ void BaseNumberWidget::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void BaseNumberWidget::paintEvent(QPaintEvent* event) {
-    const int borderWidth = 1;
+    const int borderWidth = utilqt::emToPx(fontMetrics(), 0.0625);
     const int incrementWidth = height() * 2 / 3;
     QStyleOptionFrame panel;
     initStyleOption(&panel);
@@ -202,20 +202,33 @@ void BaseNumberWidget::paintEvent(QPaintEvent* event) {
 
         QPainter painter{this};
         style()->drawPrimitive(QStyle::PE_PanelLineEdit, &panel, &painter, this);
-        QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
+        const QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &panel, this);
         painter.setPen(Qt::NoPen);
         painter.setClipRect(r);
         painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-        QRect interiorRect{rect().adjusted(borderWidth, borderWidth, -borderWidth, -borderWidth)};
+        const QRect interiorRect{
+            rect().adjusted(borderWidth, borderWidth, -borderWidth, -borderWidth)};
 
         // draw percentage bar in the center part
-        if (auto percentage = getPercentage(); percentage.has_value()) {
-            const QRect centerRect{QPoint{borderWidth, borderWidth},
-                                   QPoint{static_cast<int>(interiorRect.width() * *percentage),
-                                          height() - 2 * borderWidth}};
-            const QBrush percentageBrush{hover ? "#1e70a8" : "#103a57"};
-            painter.setBrush(percentageBrush);
+        if (auto [percentage, state] = getPercentageBar();
+            percentage.has_value() && state != PercentageBar::Invalid) {
+            QRect centerRect;
+            if (state == PercentageBar::Regular) {
+                const int barWidth = static_cast<int>(interiorRect.width() * *percentage);
+                centerRect = QRect{QPoint{borderWidth, borderWidth},
+                                   QSize{barWidth, height() - 2 * borderWidth}};
+            } else if (state == PercentageBar::Symmetric) {
+                const int barWidth = static_cast<int>(interiorRect.width() * *percentage * 0.5);
+                const int minBarWidth = utilqt::emToPx(fontMetrics(), 0.0625);
+
+                centerRect =
+                    QRect::span(QPoint(std::min(barWidth, -minBarWidth), borderWidth),
+                                QPoint(std::max(barWidth, minBarWidth), height() - borderWidth));
+                centerRect.translate(interiorRect.width() / 2, 0);
+            }
+            // use regular Inviwo blue on hover, slightly darkened otherwise
+            painter.setBrush(QBrush{hover ? "#1e70a8" : "#103a57"});
             painter.drawRect(centerRect);
         }
 
