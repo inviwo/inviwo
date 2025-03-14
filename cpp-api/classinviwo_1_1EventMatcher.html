@@ -124,12 +124,13 @@ $(function(){initNavTree('classinviwo_1_1EventMatcher.html',''); initResizable(t
  <div class="center">
   <img src="classinviwo_1_1EventMatcher.png" usemap="#inviwo::EventMatcher_map" alt=""/>
   <map id="inviwo::EventMatcher_map" name="inviwo::EventMatcher_map">
-<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="396,0,584,24"/>
-<area href="classinviwo_1_1GeneralEventMatcher.html" alt="inviwo::GeneralEventMatcher" shape="rect" coords="0,112,188,136"/>
-<area href="classinviwo_1_1GestureEventMatcher.html" alt="inviwo::GestureEventMatcher" shape="rect" coords="198,112,386,136"/>
-<area href="classinviwo_1_1KeyboardEventMatcher.html" alt="inviwo::KeyboardEventMatcher" shape="rect" coords="396,112,584,136"/>
-<area href="classinviwo_1_1MouseEventMatcher.html" alt="inviwo::MouseEventMatcher" shape="rect" coords="594,112,782,136"/>
-<area href="classinviwo_1_1WheelEventMatcher.html" alt="inviwo::WheelEventMatcher" shape="rect" coords="792,112,980,136"/>
+<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="495,0,683,24"/>
+<area href="classinviwo_1_1DisableEventMatcher.html" alt="inviwo::DisableEventMatcher" shape="rect" coords="0,112,188,136"/>
+<area href="classinviwo_1_1GeneralEventMatcher.html" alt="inviwo::GeneralEventMatcher" shape="rect" coords="198,112,386,136"/>
+<area href="classinviwo_1_1GestureEventMatcher.html" alt="inviwo::GestureEventMatcher" shape="rect" coords="396,112,584,136"/>
+<area href="classinviwo_1_1KeyboardEventMatcher.html" alt="inviwo::KeyboardEventMatcher" shape="rect" coords="594,112,782,136"/>
+<area href="classinviwo_1_1MouseEventMatcher.html" alt="inviwo::MouseEventMatcher" shape="rect" coords="792,112,980,136"/>
+<area href="classinviwo_1_1WheelEventMatcher.html" alt="inviwo::WheelEventMatcher" shape="rect" coords="990,112,1178,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -154,6 +155,9 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDefaultStat
 <tr class="separator:a5dd28c8c4d7f610cbca207c9aff6d728"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d52a2588050701e7f923240e4ce78f7" id="r_a9d52a2588050701e7f923240e4ce78f7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d52a2588050701e7f923240e4ce78f7">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="separator:a9d52a2588050701e7f923240e4ce78f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c69e84851a3ea4bf5e2845433c77196" id="r_a3c69e84851a3ea4bf5e2845433c77196"><td class="memItemLeft" align="right" valign="top"><a id="a3c69e84851a3ea4bf5e2845433c77196" name="a3c69e84851a3ea4bf5e2845433c77196"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>assign</b> (const <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> *src)=0</td></tr>
+<tr class="separator:a3c69e84851a3ea4bf5e2845433c77196"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e23267064256e540004d6dae47145c6" id="r_a0e23267064256e540004d6dae47145c6"><td class="memItemLeft" align="right" valign="top"><a id="a0e23267064256e540004d6dae47145c6" name="a0e23267064256e540004d6dae47145c6"></a>
 virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>displayString</b> () const =0</td></tr>
 <tr class="separator:a0e23267064256e540004d6dae47145c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,6 +170,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a6b55ffc62b09805dc2252f66f2aee91d" id="r_a6b55ffc62b09805dc2252f66f2aee91d"><td class="memItemLeft" align="right" valign="top"><a id="a6b55ffc62b09805dc2252f66f2aee91d" name="a6b55ffc62b09805dc2252f66f2aee91d"></a>
 <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;)=default</td></tr>
 <tr class="separator:a6b55ffc62b09805dc2252f66f2aee91d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2de4cea753c09473c61aa4294302d8ae" id="r_a2de4cea753c09473c61aa4294302d8ae"><td class="memItemLeft" align="right" valign="top"><a id="a2de4cea753c09473c61aa4294302d8ae" name="a2de4cea753c09473c61aa4294302d8ae"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>EventMatcher</b> (<a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a2de4cea753c09473c61aa4294302d8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac0f71465ca28c0c3e939db5a787643" id="r_a4ac0f71465ca28c0c3e939db5a787643"><td class="memItemLeft" align="right" valign="top"><a id="a4ac0f71465ca28c0c3e939db5a787643" name="a4ac0f71465ca28c0c3e939db5a787643"></a>
+<a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a4ac0f71465ca28c0c3e939db5a787643"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class to represent a event matcher for use in event properties. </p>

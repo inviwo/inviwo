@@ -372,6 +372,7 @@ var namespaceinviwo =
     [ "DirectionalLightSourceProcessor", "classinviwo_1_1DirectionalLightSourceProcessor.html", "classinviwo_1_1DirectionalLightSourceProcessor" ],
     [ "DirectoryProperty", "classinviwo_1_1DirectoryProperty.html", "classinviwo_1_1DirectoryProperty" ],
     [ "DirectoryToStringConverter", "classinviwo_1_1DirectoryToStringConverter.html", null ],
+    [ "DisableEventMatcher", "classinviwo_1_1DisableEventMatcher.html", null ],
     [ "DiscardShortLines", "classinviwo_1_1DiscardShortLines.html", "classinviwo_1_1DiscardShortLines" ],
     [ "DisjointSets", "classinviwo_1_1DisjointSets.html", "classinviwo_1_1DisjointSets" ],
     [ "DiskRepresentation", "classinviwo_1_1DiskRepresentation.html", null ],

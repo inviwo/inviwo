@@ -2,7 +2,7 @@ var searchData=
 [
   ['r2_0',['r2',['../structinviwo_1_1statsutil_1_1RegresionResult.html#a607fa956c5d2416235f2202020e0ed39',1,'inviwo::statsutil::RegresionResult']]],
   ['radiibuffer_1',['RadiiBuffer',['../classinviwo_1_1buffertraits_1_1RadiiBuffer.html',1,'inviwo::buffertraits']]],
-  ['radius_2',['radius',['../classinviwo_1_1Trackball.html#a67757c732fd1a9faeac9534d0d2e5585',1,'inviwo::Trackball']]],
+  ['radius_2',['radius',['../classinviwo_1_1Trackball.html#a6e767d8f1d0474214cc07a65381250a0',1,'inviwo::Trackball']]],
   ['ram_3',['RAM',['../structinviwo_1_1kind_1_1RAM.html',1,'inviwo::kind::RAM'],['../structinviwo_1_1resource_1_1RAM.html',1,'inviwo::resource::RAM']]],
   ['randomcubicalpointgeneration_4',['RandomCubicalPointGeneration',['../structinviwo_1_1util_1_1RandomCubicalPointGeneration.html',1,'inviwo::util']]],
   ['randomlayer_5',['randomLayer',['../namespaceinviwo_1_1util.html#acb28155c56d675b83c5dc803d0a844a1',1,'inviwo::util']]],

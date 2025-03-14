@@ -108,7 +108,7 @@ $(function(){initNavTree('classinviwo_1_1KeyboardEventMatcher.html',''); initRes
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1KeyboardEventMatcher-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::KeyboardEventMatcher Class Reference</div></div>
+  <div class="headertitle"><div class="title">inviwo::KeyboardEventMatcher Class Reference<span class="mlabels"><span class="mlabel final">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
@@ -126,9 +126,9 @@ $(function(){initNavTree('classinviwo_1_1KeyboardEventMatcher.html',''); initRes
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2072b706043fc1dc6d2f702e80bdc183" id="r_a2072b706043fc1dc6d2f702e80bdc183"><td class="memItemLeft" align="right" valign="top"><a id="a2072b706043fc1dc6d2f702e80bdc183" name="a2072b706043fc1dc6d2f702e80bdc183"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>KeyboardEventMatcher</b> (IvwKey key, KeyStates states=KeyState::Press, KeyModifiers modifier=KeyModifiers(flags::none))</td></tr>
-<tr class="separator:a2072b706043fc1dc6d2f702e80bdc183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8043ccc1f20e5b7ba84950dd4d18abc" id="r_ac8043ccc1f20e5b7ba84950dd4d18abc"><td class="memItemLeft" align="right" valign="top"><a id="ac8043ccc1f20e5b7ba84950dd4d18abc" name="ac8043ccc1f20e5b7ba84950dd4d18abc"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeyboardEventMatcher</b> (IvwKey key=IvwKey::Undefined, KeyStates states=KeyState::Press, KeyModifiers modifier=KeyModifiers(flags::none))</td></tr>
+<tr class="separator:ac8043ccc1f20e5b7ba84950dd4d18abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a122bc013dfe45b49a32332f8a68287e0" id="r_a122bc013dfe45b49a32332f8a68287e0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1KeyboardEventMatcher.html">KeyboardEventMatcher</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a122bc013dfe45b49a32332f8a68287e0">clone</a> () const override</td></tr>
 <tr class="separator:a122bc013dfe45b49a32332f8a68287e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fdd501c699c0a3d9f4d93cb52895c08" id="r_a7fdd501c699c0a3d9f4d93cb52895c08"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fdd501c699c0a3d9f4d93cb52895c08">operator()</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *) override</td></tr>
@@ -161,6 +161,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setModifiers</b> (Key
 <tr class="separator:afcbd390ee46f9f3322f733a4bebda515"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c41dfaaf68a13c5a46a19f598d58e57" id="r_a8c41dfaaf68a13c5a46a19f598d58e57"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c41dfaaf68a13c5a46a19f598d58e57">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="separator:a8c41dfaaf68a13c5a46a19f598d58e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c604833d6ea4bb9ea1f1cf286e95f4b" id="r_a4c604833d6ea4bb9ea1f1cf286e95f4b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c604833d6ea4bb9ea1f1cf286e95f4b">assign</a> (const <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> *src) override</td></tr>
+<tr class="separator:a4c604833d6ea4bb9ea1f1cf286e95f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af066c1cc2d80a8ae55c5894c235f8d37" id="r_af066c1cc2d80a8ae55c5894c235f8d37"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af066c1cc2d80a8ae55c5894c235f8d37">displayString</a> () const override</td></tr>
 <tr class="separator:af066c1cc2d80a8ae55c5894c235f8d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -172,6 +174,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a145f64f28d2315fdcc3844e6438b0e93" id="r_a145f64f28d2315fdcc3844e6438b0e93"><td class="memItemLeft" align="right" valign="top"><a id="a145f64f28d2315fdcc3844e6438b0e93" name="a145f64f28d2315fdcc3844e6438b0e93"></a>
 <a class="el" href="classinviwo_1_1KeyboardEventMatcher.html">KeyboardEventMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1KeyboardEventMatcher.html">KeyboardEventMatcher</a> &amp;)=default</td></tr>
 <tr class="separator:a145f64f28d2315fdcc3844e6438b0e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b46b6a1a3d7a53018c61ea8ff84cc34" id="r_a0b46b6a1a3d7a53018c61ea8ff84cc34"><td class="memItemLeft" align="right" valign="top"><a id="a0b46b6a1a3d7a53018c61ea8ff84cc34" name="a0b46b6a1a3d7a53018c61ea8ff84cc34"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeyboardEventMatcher</b> (<a class="el" href="classinviwo_1_1KeyboardEventMatcher.html">KeyboardEventMatcher</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a0b46b6a1a3d7a53018c61ea8ff84cc34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cea8ca0361392adf99b122ecfb70d7b" id="r_a1cea8ca0361392adf99b122ecfb70d7b"><td class="memItemLeft" align="right" valign="top"><a id="a1cea8ca0361392adf99b122ecfb70d7b" name="a1cea8ca0361392adf99b122ecfb70d7b"></a>
+<a class="el" href="classinviwo_1_1KeyboardEventMatcher.html">KeyboardEventMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1KeyboardEventMatcher.html">KeyboardEventMatcher</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a1cea8ca0361392adf99b122ecfb70d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1EventMatcher"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1EventMatcher')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1EventMatcher.html">inviwo::EventMatcher</a></td></tr>
 <tr class="memitem:a72df6d9ca931082c471d4246923d7afb inherit pro_methods_classinviwo_1_1EventMatcher" id="r_a72df6d9ca931082c471d4246923d7afb"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>EventMatcher</b> (const <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;)=default</td></tr>
@@ -179,8 +187,41 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a6b55ffc62b09805dc2252f66f2aee91d inherit pro_methods_classinviwo_1_1EventMatcher" id="r_a6b55ffc62b09805dc2252f66f2aee91d"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;)=default</td></tr>
 <tr class="separator:a6b55ffc62b09805dc2252f66f2aee91d inherit pro_methods_classinviwo_1_1EventMatcher"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2de4cea753c09473c61aa4294302d8ae inherit pro_methods_classinviwo_1_1EventMatcher" id="r_a2de4cea753c09473c61aa4294302d8ae"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>EventMatcher</b> (<a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a2de4cea753c09473c61aa4294302d8ae inherit pro_methods_classinviwo_1_1EventMatcher"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac0f71465ca28c0c3e939db5a787643 inherit pro_methods_classinviwo_1_1EventMatcher" id="r_a4ac0f71465ca28c0c3e939db5a787643"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a4ac0f71465ca28c0c3e939db5a787643 inherit pro_methods_classinviwo_1_1EventMatcher"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4c604833d6ea4bb9ea1f1cf286e95f4b" name="a4c604833d6ea4bb9ea1f1cf286e95f4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c604833d6ea4bb9ea1f1cf286e95f4b">&#9670;&#160;</a></span>assign()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool inviwo::KeyboardEventMatcher::assign </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1EventMatcher.html">EventMatcher</a> *</td>          <td class="paramname"><span class="paramname"><em>src</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1EventMatcher.html">inviwo::EventMatcher</a>.</p>
+
+</div>
+</div>
 <a id="a122bc013dfe45b49a32332f8a68287e0" name="a122bc013dfe45b49a32332f8a68287e0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a122bc013dfe45b49a32332f8a68287e0">&#9670;&#160;</a></span>clone()</h2>
 

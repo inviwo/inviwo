@@ -14,7 +14,6 @@ var classinviwo_1_1Trackball =
     [ "customWorldUp_", "classinviwo_1_1Trackball.html#ab57f66e9c793da117acc921ecb7c3335", null ],
     [ "handleInteractionEvents_", "classinviwo_1_1Trackball.html#aad3a63d4b1d09ca33fe4463419d2c327", null ],
     [ "movementSpeed_", "classinviwo_1_1Trackball.html#a8f317fd0e9cc7c72bf98f59d3ad08195", null ],
-    [ "radius", "classinviwo_1_1Trackball.html#a67757c732fd1a9faeac9534d0d2e5585", null ],
     [ "sensitivity_", "classinviwo_1_1Trackball.html#a3988c2bdb93d018d1ef19ef04a5d46ba", null ],
     [ "verticalAngleLimit_", "classinviwo_1_1Trackball.html#a526ca34ef81a62cd2dda14ab641aac8f", null ],
     [ "worldUp_", "classinviwo_1_1Trackball.html#abc755f7c17fb640427ed4702e80bc674", null ]

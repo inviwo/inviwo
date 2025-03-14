@@ -236,6 +236,10 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>keyReleaseEve
 <tr class="separator:addf30cfb025c3c93a39c9dc5f5403327"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69e0f36a9e96c1dd615bd9d8a3e3cf18" id="r_a69e0f36a9e96c1dd615bd9d8a3e3cf18"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69e0f36a9e96c1dd615bd9d8a3e3cf18">mousePressEvent</a> (QMouseEvent *event) override</td></tr>
 <tr class="separator:a69e0f36a9e96c1dd615bd9d8a3e3cf18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a984916d01d7db8a5505ae477f196ec37" id="r_a984916d01d7db8a5505ae477f196ec37"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a984916d01d7db8a5505ae477f196ec37">mouseReleaseEvent</a> (QMouseEvent *event) override</td></tr>
+<tr class="separator:a984916d01d7db8a5505ae477f196ec37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2649750cc7993548a2f739ee63840164" id="r_a2649750cc7993548a2f739ee63840164"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2649750cc7993548a2f739ee63840164">mouseMoveEvent</a> (QMouseEvent *event) override</td></tr>
+<tr class="separator:a2649750cc7993548a2f739ee63840164"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a172427775ad4f67c5f24215819431658" id="r_a172427775ad4f67c5f24215819431658"><td class="memItemLeft" align="right" valign="top"><a id="a172427775ad4f67c5f24215819431658" name="a172427775ad4f67c5f24215819431658"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>focusOutEvent</b> (QFocusEvent *event) override</td></tr>
 <tr class="separator:a172427775ad4f67c5f24215819431658"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -243,9 +247,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>focusOutEvent
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clickedSlot</b> ()</td></tr>
 <tr class="separator:a0932b2f75fdebf61c4e58233b01462f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1PropertyWidgetQt"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1PropertyWidgetQt')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1PropertyWidgetQt.html">inviwo::PropertyWidgetQt</a></td></tr>
-<tr class="memitem:ae834da2377fb53331cb4a5e9155d5eb8 inherit pro_methods_classinviwo_1_1PropertyWidgetQt" id="r_ae834da2377fb53331cb4a5e9155d5eb8"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>mouseMoveEvent</b> (QMouseEvent *event) override</td></tr>
-<tr class="separator:ae834da2377fb53331cb4a5e9155d5eb8 inherit pro_methods_classinviwo_1_1PropertyWidgetQt"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38a46e3717ec8b2a03084de3c6ffd740 inherit pro_methods_classinviwo_1_1PropertyWidgetQt" id="r_a38a46e3717ec8b2a03084de3c6ffd740"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1PropertyWidgetQt.html#a38a46e3717ec8b2a03084de3c6ffd740">onSetReadOnly</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, bool readonly) override</td></tr>
 <tr class="separator:a38a46e3717ec8b2a03084de3c6ffd740 inherit pro_methods_classinviwo_1_1PropertyWidgetQt"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f5b23a5301806f5b03193ee553e5835 inherit pro_methods_classinviwo_1_1PropertyWidgetQt" id="r_a2f5b23a5301806f5b03193ee553e5835"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1PropertyWidgetQt.html#a2f5b23a5301806f5b03193ee553e5835">onSetVisible</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, bool visible) override</td></tr>
@@ -337,6 +338,33 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
 
 </div>
 </div>
+<a id="a2649750cc7993548a2f739ee63840164" name="a2649750cc7993548a2f739ee63840164"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2649750cc7993548a2f739ee63840164">&#9670;&#160;</a></span>mouseMoveEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::EventPropertyWidgetQt::mouseMoveEvent </td>
+          <td>(</td>
+          <td class="paramtype">QMouseEvent *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidgetQt.html">inviwo::PropertyWidgetQt</a>.</p>
+
+</div>
+</div>
 <a id="a69e0f36a9e96c1dd615bd9d8a3e3cf18" name="a69e0f36a9e96c1dd615bd9d8a3e3cf18"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69e0f36a9e96c1dd615bd9d8a3e3cf18">&#9670;&#160;</a></span>mousePressEvent()</h2>
 
@@ -348,6 +376,33 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
       <table class="memname">
         <tr>
           <td class="memname">virtual void inviwo::EventPropertyWidgetQt::mousePressEvent </td>
+          <td>(</td>
+          <td class="paramtype">QMouseEvent *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidgetQt.html">inviwo::PropertyWidgetQt</a>.</p>
+
+</div>
+</div>
+<a id="a984916d01d7db8a5505ae477f196ec37" name="a984916d01d7db8a5505ae477f196ec37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a984916d01d7db8a5505ae477f196ec37">&#9670;&#160;</a></span>mouseReleaseEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::EventPropertyWidgetQt::mouseReleaseEvent </td>
           <td>(</td>
           <td class="paramtype">QMouseEvent *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
           <td></td>

@@ -3188,6 +3188,7 @@ var hierarchy =
         [ "inviwo::SkewedPerspectiveCamera", "classinviwo_1_1SkewedPerspectiveCamera.html", null ]
       ] ],
       [ "inviwo::EventMatcher", "classinviwo_1_1EventMatcher.html", [
+        [ "inviwo::DisableEventMatcher", "classinviwo_1_1DisableEventMatcher.html", null ],
         [ "inviwo::GeneralEventMatcher", "classinviwo_1_1GeneralEventMatcher.html", null ],
         [ "inviwo::GestureEventMatcher", "classinviwo_1_1GestureEventMatcher.html", null ],
         [ "inviwo::KeyboardEventMatcher", "classinviwo_1_1KeyboardEventMatcher.html", null ],
