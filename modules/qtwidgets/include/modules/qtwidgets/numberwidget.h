@@ -55,8 +55,8 @@ struct IVW_MODULE_QTWIDGETS_API NumberWidgetConfig {
     std::optional<bool> wrapping = std::nullopt;
 
     static constexpr auto defaultInteraction = Interaction::Dragging;
-    static constexpr std::string_view defaultPrefix = "";
-    static constexpr std::string_view defaultPostfix = "";
+    static constexpr std::string_view defaultPrefix;
+    static constexpr std::string_view defaultPostfix;
     static constexpr bool defaultBarVisible = true;
     static constexpr bool defaultWrapping = false;
 
@@ -69,7 +69,7 @@ public:
     enum class PercentageBar : std::uint8_t { Invalid, Regular, Symmetric };
 
     explicit BaseNumberWidget(QWidget* parent = nullptr);
-    BaseNumberWidget(const NumberWidgetConfig& config, QWidget* parent = nullptr);
+    explicit BaseNumberWidget(const NumberWidgetConfig& config, QWidget* parent = nullptr);
     BaseNumberWidget(const BaseNumberWidget&) = default;
     BaseNumberWidget(BaseNumberWidget&&) = default;
     BaseNumberWidget& operator=(const BaseNumberWidget&) = default;
@@ -148,7 +148,7 @@ class IVW_MODULE_QTWIDGETS_API NumberWidget final : public BaseNumberWidget,
                                                     public OrdinalBaseWidget<T> {
 public:
     NumberWidget();
-    NumberWidget(const NumberWidgetConfig& config);
+    explicit NumberWidget(const NumberWidgetConfig& config);
     NumberWidget(const NumberWidget&) = default;
     NumberWidget(NumberWidget&&) = default;
     NumberWidget& operator=(const NumberWidget&) = default;
