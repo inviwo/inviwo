@@ -59,10 +59,20 @@ struct OptionPropertyHelper {
 
         py::classh<O>(m, optionclassname.c_str())
             .def(py::init<>())
-            .def(py::init<std::string_view, std::string_view, const T&>())
+            .def(py::init<std::string_view, std::string_view, const T&>(), py::arg("id"),
+                 py::arg("name"), py::arg("value"))
+            .def(py::init([](const py::tuple& args) {
+                if (args.size() != 3) {
+                    throw pybind11::value_error("Expected a tuple of 3 (id, name, value)");
+                }
+                return O{args[0].cast<std::string_view>(), args[1].cast<std::string_view>(),
+                         args[2].cast<T>()};
+            }))
             .def_readwrite("id", &O::id_)
             .def_readwrite("name", &O::name_)
             .def_readwrite("value", &O::value_);
+
+        py::implicitly_convertible<py::tuple, O>();
 
         py::classh<P, BaseOptionProperty> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,
