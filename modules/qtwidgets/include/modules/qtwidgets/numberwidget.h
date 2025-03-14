@@ -70,10 +70,10 @@ public:
 
     explicit BaseNumberWidget(QWidget* parent = nullptr);
     explicit BaseNumberWidget(const NumberWidgetConfig& config, QWidget* parent = nullptr);
-    BaseNumberWidget(const BaseNumberWidget&) = default;
-    BaseNumberWidget(BaseNumberWidget&&) = default;
-    BaseNumberWidget& operator=(const BaseNumberWidget&) = default;
-    BaseNumberWidget& operator=(BaseNumberWidget&&) = default;
+    BaseNumberWidget(const BaseNumberWidget&) = delete;
+    BaseNumberWidget(BaseNumberWidget&&) = delete;
+    BaseNumberWidget& operator=(const BaseNumberWidget&) = delete;
+    BaseNumberWidget& operator=(BaseNumberWidget&&) = delete;
     virtual ~BaseNumberWidget() = default;
 
     void setPrefix(std::string_view prefix);
@@ -149,10 +149,10 @@ class IVW_MODULE_QTWIDGETS_API NumberWidget final : public BaseNumberWidget,
 public:
     NumberWidget();
     explicit NumberWidget(const NumberWidgetConfig& config);
-    NumberWidget(const NumberWidget&) = default;
-    NumberWidget(NumberWidget&&) = default;
-    NumberWidget& operator=(const NumberWidget&) = default;
-    NumberWidget& operator=(NumberWidget&&) = default;
+    NumberWidget(const NumberWidget&) = delete;
+    NumberWidget(NumberWidget&&) = delete;
+    NumberWidget& operator=(const NumberWidget&) = delete;
+    NumberWidget& operator=(NumberWidget&&) = delete;
     virtual ~NumberWidget() = default;
 
     // Implements OrdinalBaseWidget
