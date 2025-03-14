@@ -61,7 +61,7 @@ struct OptionPropertyHelper {
             .def(py::init<>())
             .def(py::init<std::string_view, std::string_view, const T&>(), py::arg("id"),
                  py::arg("name"), py::arg("value"))
-            .def(py::init([](py::tuple args) {
+            .def(py::init([](const py::tuple& args) {
                 if (args.size() != 3) {
                     throw pybind11::value_error("Expected a tuple of 3 (id, name, value)");
                 }
