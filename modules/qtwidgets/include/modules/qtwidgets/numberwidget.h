@@ -100,6 +100,7 @@ private:
 
     struct InteractionState {
         QPoint previousPos{};
+        Qt::KeyboardModifiers modifiers;
         bool dragging = false;
         HoverState hover = HoverState::Invalid;
     };

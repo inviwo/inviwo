@@ -171,13 +171,20 @@ void BaseNumberWidget::mouseMoveEvent(QMouseEvent* event) {
             if (state_.dragging) {
                 setCursor(Qt::SizeHorCursor);
                 state_.hover = HoverState::Center;
+                state_.modifiers = QGuiApplication::queryKeyboardModifiers();
                 initDragValue();
             }
         } else {
             auto deltaStep = static_cast<double>(delta);
-            if (QGuiApplication::queryKeyboardModifiers().testFlag(increasedStepModifier)) {
+            if (auto modifiers = QGuiApplication::queryKeyboardModifiers(); modifiers != state_.modifiers) {
+                initDragValue();
+                state_.previousPos = event->pos();
+                state_.modifiers = modifiers;
+            }
+
+            if (state_.modifiers.testFlag(increasedStepModifier)) {
                 deltaStep *= increasedStepSize;
-            } else if (QGuiApplication::queryKeyboardModifiers().testFlag(decreasedStepModifier)) {
+            } else if (state_.modifiers.testFlag(decreasedStepModifier)) {
                 deltaStep *= decreasedStepSize;
             }
             applyDragDelta(deltaStep);
