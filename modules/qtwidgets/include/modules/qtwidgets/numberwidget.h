@@ -45,13 +45,31 @@ class QPaintEvent;
 
 namespace inviwo {
 
+struct IVW_MODULE_QTWIDGETS_API NumberWidgetConfig {
+    enum Interaction : std::uint8_t { NoDragging, Dragging };
+
+    std::optional<Interaction> interaction = std::nullopt;
+    std::optional<std::string_view> prefix = std::nullopt;
+    std::optional<std::string_view> postfix = std::nullopt;
+    std::optional<bool> barVisible = std::nullopt;
+    std::optional<bool> wrapping = std::nullopt;
+
+    static constexpr auto defaultInteraction = Interaction::Dragging;
+    static constexpr std::string_view defaultPrefix = "";
+    static constexpr std::string_view defaultPostfix = "";
+    static constexpr bool defaultBarVisible = true;
+    static constexpr bool defaultWrapping = false;
+
+    friend bool operator==(const NumberWidgetConfig&, const NumberWidgetConfig&) = default;
+};
+
 class IVW_MODULE_QTWIDGETS_API BaseNumberWidget : public QLineEdit {
     Q_OBJECT
 public:
     enum class PercentageBar : std::uint8_t { Invalid, Regular, Symmetric };
 
     explicit BaseNumberWidget(QWidget* parent = nullptr);
-    BaseNumberWidget(std::string_view prefix, std::string_view postfix, QWidget* parent = nullptr);
+    BaseNumberWidget(const NumberWidgetConfig& config, QWidget* parent = nullptr);
     BaseNumberWidget(const BaseNumberWidget&) = default;
     BaseNumberWidget(BaseNumberWidget&&) = default;
     BaseNumberWidget& operator=(const BaseNumberWidget&) = default;
@@ -65,6 +83,12 @@ public:
 
     void setWrapping(bool wrapping);
     bool getWrapping() const;
+
+    void setPercentageBarVisibility(bool visible);
+    bool getPercentageBarVisibility() const;
+
+    void setInteractionMode(NumberWidgetConfig::Interaction mode);
+    NumberWidgetConfig::Interaction getInteractionMode() const;
 
     void updateText();
 
@@ -93,6 +117,7 @@ private:
     enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };
     enum class HoverState : std::uint8_t { Invalid, Center, NegativeInc, PositiveInc };
 
+    void drawPercentageBar(QPainter& painter, const QRect& rect, bool hover) const;
     QString getPrefixedText() const;
     void updateState(FocusAction action);
     HoverState getHoverState(QPoint mousepos) const;
@@ -109,6 +134,8 @@ private:
     QString prefix_;
     QString postfix_;
     InteractionState state_;
+    NumberWidgetConfig::Interaction mode_;
+    bool percentageBarVisible_;
 
     static constexpr Qt::KeyboardModifier increasedStepModifier = Qt::ControlModifier;
     static constexpr Qt::KeyboardModifier decreasedStepModifier = Qt::ShiftModifier;
@@ -121,6 +148,7 @@ class IVW_MODULE_QTWIDGETS_API NumberWidget final : public BaseNumberWidget,
                                                     public OrdinalBaseWidget<T> {
 public:
     NumberWidget();
+    NumberWidget(const NumberWidgetConfig& config);
     NumberWidget(const NumberWidget&) = default;
     NumberWidget(NumberWidget&&) = default;
     NumberWidget& operator=(const NumberWidget&) = default;
@@ -160,7 +188,19 @@ private:
 
 template <typename T>
 inline NumberWidget<T>::NumberWidget()
-    : OrdinalBaseWidget<T>()
+    : OrdinalBaseWidget<T>{}
+    , value_{1}
+    , minValue_{0}
+    , maxValue_{2}
+    , increment_{1}
+    , initialDragValue_{0}
+    , minCB_{ConstraintBehavior::Editable}
+    , maxCB_{ConstraintBehavior::Editable} {}
+
+template <typename T>
+inline NumberWidget<T>::NumberWidget(const NumberWidgetConfig& config)
+    : BaseNumberWidget{config}
+    , OrdinalBaseWidget<T>{}
     , value_{1}
     , minValue_{0}
     , maxValue_{2}
