@@ -86,7 +86,7 @@ EventProperty::EventProperty(const EventProperty& rhs)
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
 void EventProperty::invokeEvent(Event* e) {
-    if (enabled_ && (*matcher_)(e)) action_(e);
+    if (enabled_ && matcher_ && (*matcher_)(e)) action_(e);
 }
 
 EventMatcher* EventProperty::getEventMatcher() const { return matcher_.get(); }
@@ -98,6 +98,9 @@ bool EventProperty::isEnabled() const { return enabled_; }
 void EventProperty::setEnabled(bool enabled) { enabled_ = enabled; }
 
 void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
+    if (!matcher) {
+        throw Exception("Matcher should not be nullptr");
+    }
     matcher_ = std::move(matcher);
 }
 
@@ -105,11 +108,13 @@ void EventProperty::setAction(Action action) { action_ = std::move(action); }
 
 EventProperty& EventProperty::setCurrentStateAsDefault() {
     if (matcher_) matcher_->setCurrentStateAsDefault();
+    Property::setCurrentStateAsDefault();
     return *this;
 }
 
 EventProperty& EventProperty::resetToDefaultState() {
     if (matcher_) matcher_->resetToDefaultState();
+    Property::resetToDefaultState();
     return *this;
 }
 
@@ -119,7 +124,9 @@ void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);
     if (this->serializationMode_ == PropertySerializationMode::None) return;
 
-    s.serialize("Event", matcher_);
+    if (matcher_) {
+        s.serialize("Event", matcher_);
+    }
 }
 
 void EventProperty::deserialize(Deserializer& d) {

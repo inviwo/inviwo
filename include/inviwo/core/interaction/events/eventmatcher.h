@@ -59,17 +59,22 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual bool assign(const EventMatcher* src) = 0;
+
     virtual std::string displayString() const = 0;
 
 protected:
     EventMatcher(const EventMatcher&) = default;
     EventMatcher& operator=(const EventMatcher&) = default;
+    EventMatcher(EventMatcher&&) = default;
+    EventMatcher& operator=(EventMatcher&&) = default;
 };
 
-class IVW_CORE_API KeyboardEventMatcher : public EventMatcher {
+class IVW_CORE_API KeyboardEventMatcher final : public EventMatcher {
 public:
-    KeyboardEventMatcher(IvwKey key, KeyStates states = KeyState::Press,
-                         KeyModifiers modifier = KeyModifiers(flags::none));
+    explicit KeyboardEventMatcher(IvwKey key = IvwKey::Undefined,
+                                  KeyStates states = KeyState::Press,
+                                  KeyModifiers modifier = KeyModifiers(flags::none));
 
     virtual ~KeyboardEventMatcher() = default;
     virtual KeyboardEventMatcher* clone() const override;
@@ -92,11 +97,14 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual bool assign(const EventMatcher* src) override;
     virtual std::string displayString() const override;
 
 protected:
     KeyboardEventMatcher(const KeyboardEventMatcher&) = default;
     KeyboardEventMatcher& operator=(const KeyboardEventMatcher&) = default;
+    KeyboardEventMatcher(KeyboardEventMatcher&&) = default;
+    KeyboardEventMatcher& operator=(KeyboardEventMatcher&&) = default;
 
 private:
     ValueWrapper<IvwKey> key_;
@@ -104,10 +112,11 @@ private:
     ValueWrapper<KeyModifiers> modifiers_;
 };
 
-class IVW_CORE_API MouseEventMatcher : public EventMatcher {
+class IVW_CORE_API MouseEventMatcher final : public EventMatcher {
 public:
-    MouseEventMatcher(MouseButtons buttons, MouseStates states = MouseState::Press,
-                      KeyModifiers modifiers = KeyModifiers(flags::none));
+    explicit MouseEventMatcher(MouseButtons buttons = MouseButton::None,
+                               MouseStates states = MouseState::Press,
+                               KeyModifiers modifiers = KeyModifiers(flags::none));
 
     virtual ~MouseEventMatcher() = default;
     virtual MouseEventMatcher* clone() const override;
@@ -130,11 +139,14 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual bool assign(const EventMatcher* src) override;
     virtual std::string displayString() const override;
 
 protected:
     MouseEventMatcher(const MouseEventMatcher&) = default;
     MouseEventMatcher& operator=(const MouseEventMatcher&) = default;
+    MouseEventMatcher(MouseEventMatcher&&) = default;
+    MouseEventMatcher& operator=(MouseEventMatcher&&) = default;
 
 private:
     ValueWrapper<MouseButtons> buttons_;
@@ -142,9 +154,9 @@ private:
     ValueWrapper<KeyModifiers> modifiers_;
 };
 
-class IVW_CORE_API WheelEventMatcher : public EventMatcher {
+class IVW_CORE_API WheelEventMatcher final : public EventMatcher {
 public:
-    WheelEventMatcher(KeyModifiers modifiers = KeyModifiers(flags::none));
+    explicit WheelEventMatcher(KeyModifiers modifiers = KeyModifiers(flags::none));
 
     virtual ~WheelEventMatcher() = default;
     virtual WheelEventMatcher* clone() const override;
@@ -161,20 +173,25 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual bool assign(const EventMatcher* src) override;
     virtual std::string displayString() const override;
 
 protected:
     WheelEventMatcher(const WheelEventMatcher&) = default;
     WheelEventMatcher& operator=(const WheelEventMatcher&) = default;
+    WheelEventMatcher(WheelEventMatcher&&) = default;
+    WheelEventMatcher& operator=(WheelEventMatcher&&) = default;
 
 private:
     ValueWrapper<KeyModifiers> modifiers_;
 };
 
-class IVW_CORE_API GestureEventMatcher : public EventMatcher {
+class IVW_CORE_API GestureEventMatcher final : public EventMatcher {
 public:
-    GestureEventMatcher(GestureTypes types, GestureStates states = GestureStates(flags::any),
-                        int numFingers = -1, KeyModifiers modifiers = KeyModifiers(flags::none));
+    explicit GestureEventMatcher(GestureTypes types,
+                                 GestureStates states = GestureStates(flags::any),
+                                 int numFingers = -1,
+                                 KeyModifiers modifiers = KeyModifiers(flags::none));
 
     virtual ~GestureEventMatcher() = default;
     virtual GestureEventMatcher* clone() const override;
@@ -200,11 +217,14 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual bool assign(const EventMatcher* src) override;
     virtual std::string displayString() const override;
 
 protected:
     GestureEventMatcher(const GestureEventMatcher&) = default;
     GestureEventMatcher& operator=(const GestureEventMatcher&) = default;
+    GestureEventMatcher(GestureEventMatcher&&) = default;
+    GestureEventMatcher& operator=(GestureEventMatcher&&) = default;
 
 private:
     ValueWrapper<GestureTypes> types_;
@@ -213,9 +233,9 @@ private:
     ValueWrapper<KeyModifiers> modifiers_;
 };
 
-class IVW_CORE_API GeneralEventMatcher : public EventMatcher {
+class IVW_CORE_API GeneralEventMatcher final : public EventMatcher {
 public:
-    GeneralEventMatcher(std::function<bool(Event*)> matcher);
+    explicit GeneralEventMatcher(std::function<bool(Event*)> matcher);
     virtual ~GeneralEventMatcher() = default;
     virtual GeneralEventMatcher* clone() const override;
 
@@ -226,11 +246,14 @@ public:
 
     virtual bool isDefaultState() const override;
 
+    virtual bool assign(const EventMatcher* src) override;
     virtual std::string displayString() const override;
 
 protected:
     GeneralEventMatcher(const GeneralEventMatcher&) = default;
     GeneralEventMatcher& operator=(const GeneralEventMatcher&) = default;
+    GeneralEventMatcher(GeneralEventMatcher&&) = default;
+    GeneralEventMatcher& operator=(GeneralEventMatcher&&) = default;
 
 private:
     std::function<bool(Event*)> matcher_;
@@ -241,5 +264,25 @@ std::unique_ptr<GeneralEventMatcher> GeneralEventMatcher::create() {
     return std::make_unique<GeneralEventMatcher>(
         [](Event* e) -> bool { return e->hash() == EventType::chash(); });
 }
+
+class IVW_CORE_API DisableEventMatcher final : public EventMatcher {
+public:
+    DisableEventMatcher();
+    virtual ~DisableEventMatcher() = default;
+    virtual DisableEventMatcher* clone() const override;
+
+    virtual bool operator()(Event*) override;
+
+    virtual bool isDefaultState() const override;
+
+    virtual bool assign(const EventMatcher* src) override;
+    virtual std::string displayString() const override;
+
+protected:
+    DisableEventMatcher(const DisableEventMatcher&) = default;
+    DisableEventMatcher& operator=(const DisableEventMatcher&) = default;
+    DisableEventMatcher(DisableEventMatcher&&) = default;
+    DisableEventMatcher& operator=(DisableEventMatcher&&) = default;
+};
 
 }  // namespace inviwo

@@ -35,6 +35,8 @@
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/mousebuttons.h>
 
+#include <Qt>
+
 class QMouseEvent;
 class QWheelEvent;
 class QInputEvent;
@@ -67,6 +69,7 @@ IVW_MODULE_QTWIDGETS_API MouseButtons getMouseButtons(const QMouseEvent* e);
 IVW_MODULE_QTWIDGETS_API MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
 IVW_MODULE_QTWIDGETS_API MouseButtons getMouseWheelButtons(const QWheelEvent* e);
 IVW_MODULE_QTWIDGETS_API KeyModifiers getModifiers(const QInputEvent* e);
+IVW_MODULE_QTWIDGETS_API KeyModifiers getModifiers(Qt::KeyboardModifiers m);
 IVW_MODULE_QTWIDGETS_API GestureState getGestureState(const QGesture* e);
 
 IVW_MODULE_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
