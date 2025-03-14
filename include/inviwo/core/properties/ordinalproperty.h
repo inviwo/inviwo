@@ -290,7 +290,7 @@ IVW_CORE_API OrdinalPropertyState<vec3> ordinalLight(
 /**
  * A factory function for configuring a OrdinalProperty representing a generic vector, with a
  * symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to
- * InvalidOutput, and the property semantics to SpinBox.
+ * InvalidOutput, and the property semantics to Default.
  * @param value the default value for the property
  * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
  * The constraint behavior will be Ignore.
@@ -306,7 +306,7 @@ OrdinalPropertyState<T> ordinalSymmetricVector(const T& value = {0}, const U& mi
                 ConstraintBehavior::Ignore,
                 T{static_cast<V>(0.1)},
                 InvalidationLevel::InvalidOutput,
-                PropertySemantics::SpinBox};
+                PropertySemantics::Default};
     } else if constexpr (std::is_signed_v<util::value_type_t<T>>) {
         return {value,
                 T{-minMax},
@@ -315,7 +315,7 @@ OrdinalPropertyState<T> ordinalSymmetricVector(const T& value = {0}, const U& mi
                 ConstraintBehavior::Ignore,
                 T{static_cast<V>(1)},
                 InvalidationLevel::InvalidOutput,
-                PropertySemantics::SpinBox};
+                PropertySemantics::Default};
     } else {
         return {value,
                 T{static_cast<V>(0)},
@@ -324,14 +324,14 @@ OrdinalPropertyState<T> ordinalSymmetricVector(const T& value = {0}, const U& mi
                 ConstraintBehavior::Ignore,
                 T{static_cast<V>(1)},
                 InvalidationLevel::InvalidOutput,
-                PropertySemantics::SpinBox};
+                PropertySemantics::Default};
     }
 }
 
 /**
  * A factory function for configuring a OrdinalProperty representing a count. It will have a
  * Immutable min at zero and an upper Ignored max. The increment will be one. The invalidation level
- * defaults to InvalidOutput, and the property semantics to SpinBox.
+ * defaults to InvalidOutput, and the property semantics to Default.
  * @param value the default value for the property
  * @param max used to construct the max value. The max constraint behavior will be Ignore.
 
@@ -346,13 +346,13 @@ OrdinalPropertyState<T> ordinalCount(const T& value = T{0}, const U& max = U{100
             ConstraintBehavior::Ignore,
             T{static_cast<V>(1)},
             InvalidationLevel::InvalidOutput,
-            PropertySemantics::SpinBox};
+            PropertySemantics::Default};
 }
 
 /**
  * A factory function for configuring a OrdinalProperty representing a length. It will have a
  * Immutable min at zero and an upper Ignored max. The invalidation level defaults to InvalidOutput,
- * and the property semantics to SpinBox.
+ * and the property semantics to Default.
  * @param value the default value for the property
  * @param max used to construct the max value. The max constraint behavior will be Ignore.
  */
@@ -366,7 +366,7 @@ OrdinalPropertyState<T> ordinalLength(const T& value = T{0}, const U& max = U{10
             ConstraintBehavior::Ignore,
             T{static_cast<V>(0.1)},
             InvalidationLevel::InvalidOutput,
-            PropertySemantics::SpinBox};
+            PropertySemantics::Default};
 }
 
 /**

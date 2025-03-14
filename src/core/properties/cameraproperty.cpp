@@ -75,18 +75,18 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
           "lookFrom", "Look from", "Position in world space of the camera"_help,
           []() { return vec3{}; }, [](const vec3&) {}, {-vec3(100.0f), ConstraintBehavior::Ignore},
           {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f), InvalidationLevel::InvalidOutput,
-          PropertySemantics{"SphericalSpinBox"})
+          PropertySemantics{"Spherical"})
     , lookTo_(
           "lookTo", "Look to", "Focus point of the camera in world space"_help,
           []() { return vec3{}; }, [](const vec3&) {}, {-vec3(100.0f), ConstraintBehavior::Ignore},
           {vec3(100.0f), ConstraintBehavior::Ignore}, vec3(0.1f), InvalidationLevel::InvalidOutput,
-          PropertySemantics::SpinBox)
+          PropertySemantics::Default)
     , lookUp_(
           "lookUp", "Look up",
           "Up direction for the camera, should be orthogonal to lookTo - LookFrom"_help,
           []() { return vec3(1.0f, 1.0f, 1.0f); }, [](const vec3&) {},
           {-vec3(1.0f), ConstraintBehavior::Immutable}, {vec3(1.0f), ConstraintBehavior::Immutable},
-          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+          vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , aspectRatio_(
           "aspectRatio", "Aspect Ratio",
           "Aspect ratio (width / height) of the camera viewport. This is automatically set "
