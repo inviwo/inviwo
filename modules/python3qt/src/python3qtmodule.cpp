@@ -147,6 +147,19 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             .def(
                 "exit", [](int i) { qApp->exit(i); }, py::arg("exitCode") = 0)
             .def(
+                "exitInviwo",
+                [](InviwoApplication& app, bool saveIfModified) {
+                    if (!saveIfModified) {
+                        app.getWorkspaceManager()->clear();
+                    }
+                    if (auto* win = utilqt::getApplicationMainWindow()) {
+                        win->close();
+                    } else {
+                        qApp->quit();
+                    }
+                },
+                py::arg("inviwoApplication"), py::arg("saveIfModified") = true)
+            .def(
                 "waitForNetwork",
                 [](InviwoApplication* app, int maxJobs) {
                     qApp->processEvents();
