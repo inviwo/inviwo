@@ -34,14 +34,15 @@
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo OrthographicAxis2D::processorInfo_{
     "org.inviwo.OrthographicAxis2D",  // Class identifier
     "Orthographic Axis2D",            // Display name
-    "Undefined",                      // Category
-    CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    "Plotting",                       // Category
+    CodeState::Stable,                // Code state
+    Tags::GL | Tag{"Plotting"},       // Tags
+    R"(This processor draw a pair of axis that are mapped to world space.
+       The use case is for plotting data using a Orthographic Camera.
+       )"_unindentHelp,
 };
 
 const ProcessorInfo& OrthographicAxis2D::getProcessorInfo() const { return processorInfo_; }
@@ -106,7 +107,9 @@ void OrthographicAxis2D::process() {
         2.0f * vec3{dvec2{xStart.x, yStart.y} / dvec2{dims}, 0.5} - vec3{1.0, 1.0, 1.0};
     const auto end = 2.0f * vec3{dvec2{xEnd.x, yEnd.y} / dvec2{dims}, 0.5} - vec3{1.0, 1.0, 1.0};
 
-    auto w2m = mesh_.getData()->getCoordinateTransformer().getWorldToModelMatrix();
+    const auto data = mesh_.getData();
+
+    auto w2m = data->getCoordinateTransformer().getWorldToModelMatrix();
     const auto wStart =
         w2m * vec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(start), 1.0f};
     const auto wEnd = w2m * vec4{camera_.get().getWorldPosFromNormalizedDeviceCoords(end), 1.0f};
@@ -117,7 +120,12 @@ void OrthographicAxis2D::process() {
     axis1_.majorTicks_.tickDelta_.set(std::abs((wEnd.x - wStart.x) / 10.0));
     axis2_.majorTicks_.tickDelta_.set(std::abs((wEnd.y - wStart.y) / 10.0));
 
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    axis1_.captionSettings_.title_.set(
+        fmt::format("{}{: [}", data->getAxis(0)->name, data->getAxis(0)->unit));
+    axis2_.captionSettings_.title_.set(
+        fmt::format("{}{: [}", data->getAxis(1)->name, data->getAxis(1)->unit));
+
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
     // draw horizontally
     axisRenderers_[0].render(dims, xStart, xEnd, antialiasing_.get());

@@ -34,8 +34,8 @@
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
-SphereConfig::SphereConfig()
-    : config{"sphereProperties", "Sphere Properties"}
+SphereConfig::SphereConfig(std::string_view identifier, std::string_view displayName)
+    : config{identifier, displayName}
     , overrideRadius{"overrideRadius", "Override Radius",
                      "enable a fixed user-defined radius for all spheres"_help, false,
                      InvalidationLevel::InvalidResources}

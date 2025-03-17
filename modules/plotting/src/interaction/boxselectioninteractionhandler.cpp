@@ -102,7 +102,8 @@ void BoxSelectionInteractionHandler::invokeEvent(Event* event) {
             }
             dragRect_ = std::nullopt;
             me->setUsed(true);
-        } else if ((me->buttonState() & MouseButton::Left) && (me->state() == MouseState::Move)) {
+        } else if (dragRect_ && (me->buttonState() & MouseButton::Left) &&
+                   (me->state() == MouseState::Move)) {
             // convert position from screen coords to data range
             (*dragRect_)[1] = dvec2{me->pos().x, me->pos().y};
             auto dstart = screenToData_((*dragRect_)[0], me->canvasSize());

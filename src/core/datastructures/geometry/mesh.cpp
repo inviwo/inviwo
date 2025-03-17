@@ -336,6 +336,8 @@ IndexBuffer* Mesh::getIndices(size_t idx) {
 
 Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 
+void Mesh::setDefaultMeshInfo(MeshInfo info) { meshInfo_ = info; }
+
 Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const {
     if (idx >= indices_.size()) {
         throw RangeException("Index out of range");

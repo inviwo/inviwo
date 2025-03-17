@@ -32,6 +32,8 @@
 
 #include <inviwo/core/ports/imageport.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -48,6 +50,9 @@ public:
 
     ImageInport inport;
     int unitNumber;
+
+    BoolCompositeProperty texture;
+    FloatProperty mix;
 };
 
 }  // namespace inviwo

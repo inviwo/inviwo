@@ -49,6 +49,7 @@
 #include <modules/opengl/shader/shader.h>              // for Shader
 #include <modules/opengl/shader/shaderutils.h>         // for setShaderUniforms, setUniforms
 #include <modules/opengl/texture/textureutils.h>       // for activateTargetAndClearOrCopySource
+#include <modules/opengl/texture/textureunit.h>
 
 #include <functional>   // for __base
 #include <memory>       // for shared_ptr, shared_ptr<>::element_...
@@ -65,7 +66,7 @@ const ProcessorInfo PointRenderer::processorInfo_{
     "Point Renderer",            // Display name
     "Mesh Rendering",            // Category
     CodeState::Stable,           // Code state
-    Tags::GL,                    // Tags
+    Tags::GL | Tag{"Plotting"},  // Tags
     R"(This processor renders a set of meshes as 2D points using OpenGL.)"_unindentHelp,
 };
 const ProcessorInfo& PointRenderer::getProcessorInfo() const { return processorInfo_; }
@@ -75,59 +76,110 @@ PointRenderer::PointRenderer()
     , inport_{"geometry"}
     , imageInport_{"imageInport"}
     , outport_{"image"}
-    , pointSize_{"pointSize", "Point Size (pixel)", 1.0f, 0.00001f, 50.0f, 0.1f}
-    , borderWidth_{"borderWidth", "Border Width (pixel)", 2.0f, 0.0f, 50.0f, 0.1f}
-    , borderColor_{"borderColor",
-                   "Border Color",
-                   vec4{0.0f, 0.0f, 0.0f, 1.0f},
-                   vec4{0.0f},
-                   vec4{1.0f},
-                   vec4{0.01f},
-                   InvalidationLevel::InvalidOutput,
-                   PropertySemantics::Color}
-    , antialising_{"antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f}
+    , bnl_{}
+
+    , renderMode_{"renderMode",
+                  "Render Mode",
+                  "render only input meshes marked as points or everything"_help,
+                  {{"entireMesh", "Entire Mesh", RenderMode::EntireMesh},
+                   {"pointsOnly", "Points Only", RenderMode::PointsOnly}}}
     , depthTest_{"depthTest", "Enable Depth Test", "Toggles the depth test during rendering"_help,
                  true}
+
+    , config_{"pointProperties", "Point Properties"}
+    , borderWidth_{"borderWidth", "Border Width (pixel)", util::ordinalLength(2.0f, 10.0f)}
+    , borderColor_{"borderColor", "Border Color", util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f})}
+    , antialising_{"antialising", "Antialising (pixel)",
+                   util::ordinalLength(1.5f, 10.0f)
+                       .set("Width of the antialised point edge (in pixel), this determines the "
+                            "softness along the outer edge of the point"_help)}
+
+    , labels_{}
+    , periodic_{}
+    , texture_{"pointTexture", "Texture to apply to points"_help}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
-    , shader_{"pointrenderer.vert", "pointrenderer.frag"} {
+
+    , shaders_{{{ShaderType::Vertex, std::string{"pointrenderer.vert"}},
+                {ShaderType::Geometry, std::string{"pointrenderer.geom"}},
+                {ShaderType::Fragment, std::string{"pointrenderer.frag"}}},
+
+               {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                {BufferType::IndexAttrib, MeshShaderCache::Optional, "uint"},
+                {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
+                bnl_.getRequirement(),
+                texture_.getRequirement()},
+
+               [&](Shader& shader) -> void {
+                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   configureShader(shader);
+               }} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
+    addPort(texture_.inport, "Textures").setOptional(true);
+    addPort(bnl_.inport);
+    addPort(labels_.strings);
     addPort(outport_);
 
-    addProperties(pointSize_, borderWidth_, borderColor_, antialising_, depthTest_, camera_,
-                  trackball_);
+    config_.config.addProperties(borderWidth_, borderColor_, antialising_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    addProperties(renderMode_, depthTest_, config_.config, labels_.labels, texture_.texture,
+                  bnl_.highlight, bnl_.select, bnl_.filter, periodic_.periodicity, camera_,
+                  trackball_);
+}
+
+void PointRenderer::initializeResources() {
+    for (auto& [state, shader] : shaders_.getShaders()) {
+        configureShader(shader);
+    }
+}
+
+void PointRenderer::configureShader(Shader& shader) {
+    utilgl::addDefines(shader, labels_, periodic_, config_);
+    shader.build();
 }
 
 void PointRenderer::process() {
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
-    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
+    bnl_.update();
+    labels_.update();
 
-    utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    TextureUnitContainer cont;
+    utilgl::bind(cont, bnl_, labels_, config_, texture_);
+
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, depthTest_);
-    shader_.activate();
 
-    utilgl::setUniforms(shader_, camera_, pointSize_, borderWidth_, borderColor_, antialising_);
+    for (const auto& mesh : inport_) {
+        auto& shader = shaders_.getShader(*mesh);
+        shader.activate();
 
-    drawMeshes();
+        utilgl::setUniforms(shader, camera_, config_, bnl_, periodic_, labels_, texture_,
+                            borderWidth_, borderColor_, antialising_);
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
+                                           2.0f / outport_.getDimensions().y));
+        utilgl::setShaderUniforms(shader, *mesh, "geometry");
 
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
-}
-
-void PointRenderer::drawMeshes() {
-    for (const auto& elem : inport_.getVectorData()) {
-        MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-                                        elem->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(shader_, *elem, "geometry");
-        shader_.setUniform("pickingEnabled", elem->hasBuffer(BufferType::PickingAttrib));
-        drawer.draw(MeshDrawerGL::DrawMode::Points);
+        MeshDrawerGL::DrawObject drawer(*mesh);
+        switch (renderMode_) {
+            case RenderMode::PointsOnly: {
+                drawer.drawOnlyInstanced(MeshDrawerGL::DrawMode::Points, periodic_.instances());
+                break;
+            }
+            case RenderMode::EntireMesh: {
+                drawer.drawInstanced(MeshDrawerGL::DrawMode::Points, periodic_.instances());
+                break;
+            }
+        }
+        shader.deactivate();
     }
+
+    utilgl::deactivateCurrentTarget();
 }
 
 }  // namespace inviwo

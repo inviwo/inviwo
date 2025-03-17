@@ -36,7 +36,20 @@
 namespace inviwo {
 
 MeshTexturing::MeshTexturing(std::string_view identifier, Document help)
-    : inport{identifier, std::move(help), OutportDeterminesSize::Yes}, unitNumber{0} {}
+    : inport{identifier, std::move(help), OutportDeterminesSize::Yes}
+    , unitNumber{0}
+    , texture{"texture", "Enable Texture", false}
+    , mix{"textureMixing",
+          "Mixing",
+          "Blending factor for mixing the texture with the item's original color."_help,
+          0.7f,
+          {0.0f, ConstraintBehavior::Immutable},
+          {1.0f, ConstraintBehavior::Immutable},
+          0.001f} {
+
+    texture.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+    texture.addProperty(mix);
+}
 
 void MeshTexturing::bind(TextureUnitContainer& cont) {
     if (inport.hasData()) {
@@ -50,9 +63,12 @@ void MeshTexturing::bind(TextureUnitContainer& cont) {
 
 void MeshTexturing::setUniforms(Shader& shader) const {
     shader.setUniform(inport.getIdentifier(), unitNumber);
+    utilgl::setUniforms(shader, mix);
 }
 MeshShaderCache::Requirement MeshTexturing::getRequirement() const {
-    return {[this](const Mesh&, Mesh::MeshInfo) -> int { return inport.hasData() ? 1 : 0; },
+    return {[this](const Mesh&, Mesh::MeshInfo) -> int {
+                return inport.hasData() && texture.isChecked() ? 1 : 0;
+            },
             [](int mode, Shader& shader) {
                 shader[ShaderType::Fragment]->setShaderDefine("ENABLE_TEXTURING", mode == 1);
             }};
