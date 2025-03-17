@@ -1863,6 +1863,7 @@ var hierarchy =
     [ "inviwo::util::nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
     [ "inviwo::command::Nop", "structinviwo_1_1command_1_1Nop.html", null ],
     [ "inviwo::util::NotificationBlocker", "classinviwo_1_1util_1_1NotificationBlocker.html", null ],
+    [ "inviwo::NumberWidgetConfig", "structinviwo_1_1NumberWidgetConfig.html", null ],
     [ "inviwo::ObservableInterface", "classinviwo_1_1ObservableInterface.html", [
       [ "inviwo::Observable< ActivityIndicatorObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ActivityIndicator", "classinviwo_1_1ActivityIndicator.html", [
@@ -2455,6 +2456,7 @@ var hierarchy =
     [ "inviwo::OrdinalBaseWidget< T >", "classinviwo_1_1OrdinalBaseWidget.html", [
       [ "inviwo::SliderWidgetQt< int >", "classinviwo_1_1SliderWidgetQt.html", null ],
       [ "inviwo::SliderWidgetQt< double >", "classinviwo_1_1SliderWidgetQt.html", null ],
+      [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ],
       [ "inviwo::OrdinalEditorWidget< T >", "classinviwo_1_1OrdinalEditorWidget.html", null ],
       [ "inviwo::OrdinalSpinBoxWidget< T >", "classinviwo_1_1OrdinalSpinBoxWidget.html", null ],
       [ "inviwo::SliderWidgetQt< T >", "classinviwo_1_1SliderWidgetQt.html", null ]
@@ -2897,6 +2899,9 @@ var hierarchy =
       [ "inviwo::VerticalLabel", "classinviwo_1_1VerticalLabel.html", null ]
     ] ],
     [ "QLineEdit", null, [
+      [ "inviwo::BaseNumberWidget", "classinviwo_1_1BaseNumberWidget.html", [
+        [ "inviwo::NumberWidget< T >", "classinviwo_1_1NumberWidget.html", null ]
+      ] ],
       [ "inviwo::ColorLineEdit", "classinviwo_1_1ColorLineEdit.html", [
         [ "inviwo::TFColorEdit", "classinviwo_1_1TFColorEdit.html", null ]
       ] ],

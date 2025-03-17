@@ -222,6 +222,13 @@ QString&#160;</td><td class="memItemRight" valign="bottom"><b>toQString</b> (con
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>fromQString</b> (const QString &amp;str)</td></tr>
 <tr class="memdesc:a717ceef4640ba5f545b9a9683de486b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a UTF8-encoded std::string from a QString <br /></td></tr>
 <tr class="separator:a717ceef4640ba5f545b9a9683de486b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e4f204db5ef145c73f1b6ca2a404e96" id="r_a4e4f204db5ef145c73f1b6ca2a404e96"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a4e4f204db5ef145c73f1b6ca2a404e96"><td class="memTemplItemLeft" align="right" valign="top">std::optional&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a4e4f204db5ef145c73f1b6ca2a404e96">numericValueFromString</a> (const QString &amp;str)</td></tr>
+<tr class="memdesc:a4e4f204db5ef145c73f1b6ca2a404e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a numeric value of type <code class="param">T</code> from <code class="param">str</code> using the C locale.  <br /></td></tr>
+<tr class="separator:a4e4f204db5ef145c73f1b6ca2a404e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa09451ba243f1be606192c27596a8b0f" id="r_aa09451ba243f1be606192c27596a8b0f"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_QTWIDGETS_API QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa09451ba243f1be606192c27596a8b0f">formatAsNonscientific</a> (double value)</td></tr>
+<tr class="memdesc:aa09451ba243f1be606192c27596a8b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats a floating point number as QString.  <br /></td></tr>
+<tr class="separator:aa09451ba243f1be606192c27596a8b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01405bd00de52dddd8cfe132a122fdd5" id="r_a01405bd00de52dddd8cfe132a122fdd5"><td class="memItemLeft" align="right" valign="top"><a id="a01405bd00de52dddd8cfe132a122fdd5" name="a01405bd00de52dddd8cfe132a122fdd5"></a>
 IVW_MODULE_QTWIDGETS_API QString&#160;</td><td class="memItemRight" valign="bottom"><b>toQString</b> (const std::filesystem::path &amp;path)</td></tr>
 <tr class="separator:a01405bd00de52dddd8cfe132a122fdd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -522,6 +529,33 @@ template&lt;typename T&gt; </td></tr>
 
 </div>
 </div>
+<a id="aa09451ba243f1be606192c27596a8b0f" name="aa09451ba243f1be606192c27596a8b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa09451ba243f1be606192c27596a8b0f">&#9670;&#160;</a></span>formatAsNonscientific()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_QTWIDGETS_API QString inviwo::utilqt::formatAsNonscientific </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>value</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Formats a floating point number as QString. </p>
+<p>Formats the given floating point number <code class="param">value</code> to a QString using the C locale. The default representation has eight decimals after the decimal point, e.g. a value of 0.123456789 yields "0.12345679". Each order of magnitude reduces the number of decimals by one, i.e. 100.12345678 will be represented as "100.123457". Numbers smaller than 1e-6 are shown in scientific representation.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>floating point number </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>formatted number string with significant digits, avoiding scientific notation if possible </dd></dl>
+
+</div>
+</div>
 <a id="a29bdcb20eceda58d17346a1fe2df6755" name="a29bdcb20eceda58d17346a1fe2df6755"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a29bdcb20eceda58d17346a1fe2df6755">&#9670;&#160;</a></span>generatePreview() <span class="overload">[1/2]</span></h2>
 
@@ -808,6 +842,41 @@ template&lt;typename T&gt; </td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The adapted point on the screen, same as input point if no adjustment was necessary </dd></dl>
+
+</div>
+</div>
+<a id="a4e4f204db5ef145c73f1b6ca2a404e96" name="a4e4f204db5ef145c73f1b6ca2a404e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e4f204db5ef145c73f1b6ca2a404e96">&#9670;&#160;</a></span>numericValueFromString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; T &gt; inviwo::utilqt::numericValueFromString </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;</td>          <td class="paramname"><span class="paramname"><em>str</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract a numeric value of type <code class="param">T</code> from <code class="param">str</code> using the C locale. </p>
+<p>Extract a numeric value of type <code class="param">T</code> from <code class="param">str</code> using the C locale. For floating point values '.' and ',' are accepted as decimal point. The string must contain only the value.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>type of returned value </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>string containing the numeric value </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>extracted value if conversion was successful, nullopt otherwise </dd></dl>
 
 </div>
 </div>

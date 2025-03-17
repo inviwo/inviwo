@@ -1,5 +1,9 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1glui_1_1Element.html#adb87d0ac3771a0873e34297d5bebf29a":[4,0,1,13,7,13],
+"classinviwo_1_1glui_1_1Element.html#aef43c5784d7fcf2c709cf6e834beea84":[4,0,1,13,7,8],
+"classinviwo_1_1glui_1_1FloatMinMaxPropertyWidget.html":[4,0,1,13,8],
+"classinviwo_1_1glui_1_1FloatMinMaxPropertyWidget.html#aba9a4acb27dfee71b7ca057e231af5f1":[4,0,1,13,8,0],
 "classinviwo_1_1glui_1_1FloatPropertyWidget.html":[4,0,1,13,9],
 "classinviwo_1_1glui_1_1FloatPropertyWidget.html#a9c3c6778cbf53c7c452aa4f0a4741b69":[4,0,1,13,9,0],
 "classinviwo_1_1glui_1_1GLUIProcessor.html":[4,0,1,13,10],
@@ -245,9 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html#ae4ae956ef05f10f9d7ec7602dc8a6746":[2,0,0,14,37,1,0],
 "classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html#ae4ae956ef05f10f9d7ec7602dc8a6746":[4,0,1,19,38,1,0],
 "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html":[1,3,76],
-"classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html#aa4a4149666c9a683e018cd3a3d3e0a43":[1,3,76,0],
-"classinviwo_1_1plot_1_1ScatterPlotProcessor.html":[1,3,77],
-"classinviwo_1_1plot_1_1ScatterPlotProcessor.html#abc85907b5761f93fb4a175fed46ba612":[1,3,77,0],
-"classinviwo_1_1plot_1_1VolumeAxis.html":[2,0,0,14,40],
-"classinviwo_1_1plot_1_1VolumeAxis.html":[4,0,1,19,41]
+"classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html#aa4a4149666c9a683e018cd3a3d3e0a43":[1,3,76,0]
 };

@@ -46,5 +46,8 @@ var searchData=
   ['notifybeforetextureinitialization_43',['notifyBeforeTextureInitialization',['../classinviwo_1_1TextureObserver.html#ad249a53fb5ab3f67099e29a12993b385',1,'inviwo::TextureObserver']]],
   ['noweighting_44',['NoWeighting',['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting'],['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting'],['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting'],['../namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0ac335ee5ec90d22a6584db23c0ff36dda',1,'inviwo::meshutil::NoWeighting']]],
   ['nullpointerexception_45',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
-  ['numberlineedit_46',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]]
+  ['numberlineedit_46',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
+  ['numberwidget_47',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_48',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
+  ['numericvaluefromstring_49',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
 ];

@@ -30,5 +30,7 @@ var searchData=
   ['normalbuffer_27',['NormalBuffer',['../classinviwo_1_1buffertraits_1_1NormalBuffer.html',1,'inviwo::buffertraits']]],
   ['notificationblocker_28',['NotificationBlocker',['../classinviwo_1_1util_1_1NotificationBlocker.html',1,'inviwo::util']]],
   ['nullpointerexception_29',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
-  ['numberlineedit_30',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]]
+  ['numberlineedit_30',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
+  ['numberwidget_31',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_32',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
 ];
