@@ -55,8 +55,8 @@ struct IVW_MODULE_QTWIDGETS_API NumberWidgetConfig {
     std::optional<bool> wrapping = std::nullopt;
 
     static constexpr auto defaultInteraction = Interaction::Dragging;
-    static constexpr std::string_view defaultPrefix;
-    static constexpr std::string_view defaultPostfix;
+    static constexpr std::string_view defaultPrefix{};
+    static constexpr std::string_view defaultPostfix{};
     static constexpr bool defaultBarVisible = true;
     static constexpr bool defaultWrapping = false;
 
