@@ -28,28 +28,86 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
+#include "utils/selectioncolor.glsl"
 
-layout(location = 7) in uint in_PickId;
+struct Config {
+    vec3 color;
+    float alpha;
+    float radius;
+};
+uniform Config config = Config(vec3(1, 0, 0), 1.0, 0.1);
 
-uniform GeometryParameters geometry;
-uniform CameraParameters camera;
+uniform sampler2D metaColor;
 
-uniform float pointSize = 5.0; // [pixel]
-uniform float borderWidth = 1.0; // [pixel]
+#if defined(ENABLE_BNL)
+uniform usamplerBuffer bnl;
+uniform SelectionColor bnlFilter;
+uniform SelectionColor bnlSelect;
+uniform SelectionColor bnlHighlight;
+#endif
 
-uniform bool pickingEnabled = true;
-
-out Point {
+out PointVert {
     vec4 color;
-    vec4 pickColor;
+    flat float radius;
+    flat uint pickID;
+    flat uint index;
+} point;
+
+#if defined(ENABLE_PERIODICITY)
+flat out uint instance;
+#endif
+
+void main(void) {
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR)
+    point.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR)
+    point.color = in_Color;
+#else
+    point.color = vec4(config.color, config.alpha);
+#endif
+
+#if defined(OVERRIDE_COLOR)
+    point.color.rgb = config.color;
+#endif
+
+#if defined(OVERRIDE_ALPHA)
+    point.color.a = config.alpha;
+#endif
+
+#if defined(HAS_RADII) && !defined(OVERRIDE_RADIUS)
+    point.radius = in_Radii;
+#else
+    point.radius = config.radius;
+#endif
+
+#if defined(HAS_INDEX)
+    point.index = in_Index;
+#else
+    point.index = gl_VertexID;
+#endif
+
+#if defined(ENABLE_BNL)
+    int bnlSize = textureSize(bnl);
+    uint flags = point.index < bnlSize ? texelFetch(bnl, int(point.index)).x : uint(0);
+
+    if (flags == 3) {
+        point.color = applySelectionColor(point.color, bnlFilter);
+    } else if (flags == 2) {
+        point.color = applySelectionColor(point.color, bnlHighlight);
+    } else if (flags == 1) {
+        point.color = applySelectionColor(point.color, bnlSelect);
+    }
+#endif
+
+#if defined(HAS_PICKING)
+    point.pickID = in_Picking;
+#else
+    point.pickID = 0;
+#endif
+    
+    gl_Position = vec4(in_Position.xyz, 1.0);
+    
+#if defined(ENABLE_PERIODICITY)
+    instance = gl_InstanceID;
+#endif
 }
-vertex;
-
-void main() {
-    vertex.color = in_Color;
-    vertex.pickColor = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
-
-    gl_PointSize = pointSize + 2 * borderWidth;
-    gl_Position = camera.worldToClip * geometry.dataToWorld * in_Vertex;
-}  

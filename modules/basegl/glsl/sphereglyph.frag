@@ -54,6 +54,7 @@ uniform Label label;
 
 #if defined(ENABLE_TEXTURING)
 uniform sampler2D sphereTexture;
+uniform float textureMixing;
 #endif
 
 vec4 blendBackToFront(vec4 srcColor, vec4 dstColor) {
@@ -111,7 +112,8 @@ void main() {
         float phi =
             sign(normal.y) * acos(normal.x / sqrt(normal.x * normal.x + normal.y * normal.y));
         vec2 uv = vec2(theta / PI, (phi + PI) / 2.0 / PI);
-        glyphColor = blendBackToFront(texture(sphereTexture, uv), glyphColor);
+        vec4 texCol = texture(sphereTexture, uv);
+        glyphColor = mix(glyphColor, texCol, min(texCol.a, textureMixing));
     }
 #endif
 
