@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,20 +31,20 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/bufferport.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
 #include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
 
-#include <vector>
-#include <string>
-
 namespace inviwo {
 
-class IVW_MODULE_DATAFRAME_API DataFrameToVector : public Processor {
+class IVW_MODULE_DATAFRAME_API DataFrameToBuffer : public Processor {
 public:
-    DataFrameToVector();
+    DataFrameToBuffer();
 
     virtual void process() override;
 
@@ -53,11 +53,7 @@ public:
 
 private:
     DataInport<DataFrame> dataFrame_;
-
-    DataOutport<std::vector<uint32_t>> uintOutport_;
-    DataOutport<std::vector<float>> floatOutport_;
-    DataOutport<std::vector<std::string>> stringOutport_;
-
+    BufferOutport outport_;
     ColumnOptionProperty selectedColumn_;
 };
 

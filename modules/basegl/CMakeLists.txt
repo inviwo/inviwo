@@ -316,6 +316,7 @@ set(SHADER_FILES
     glsl/meshrendering.vert
     glsl/multichannelraycaster.frag
     glsl/pointrenderer.frag
+    glsl/pointrenderer.geom
     glsl/pointrenderer.vert
     glsl/raycasting/raycaster-template.frag
     glsl/raycasting/iso.glsl
