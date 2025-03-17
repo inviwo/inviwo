@@ -35,7 +35,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>                  // IWYU pragma: keep
 #include <inviwo/core/util/glm.h>                                   // for almostEqual
 #include <modules/qtwidgets/editablelabelqt.h>                      // for EditableLabelQt
-#include <modules/qtwidgets/ordinaleditorwidget.h>                  // for OrdinalEditorWidget
+#include <modules/qtwidgets/numberwidget.h>                         // for NumberWidget
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for MinMaxPropertySetting...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 
@@ -77,8 +77,8 @@ protected:
     MinMaxPropertySettingsWidgetQt<T>* settings_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
-    OrdinalEditorWidget<T>* min_;
-    OrdinalEditorWidget<T>* max_;
+    NumberWidget<T>* min_;
+    NumberWidget<T>* max_;
 };
 
 using DoubleMinMaxTextPropertyWidgetQt = OrdinalMinMaxTextPropertyWidgetQt<double, double>;
@@ -94,8 +94,14 @@ OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(
     , settings_(nullptr)
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property)
-    , min_{new OrdinalEditorWidget<T>()}
-    , max_{new OrdinalEditorWidget<T>()} {
+    , min_{new NumberWidget<T>{NumberWidgetConfig{
+          .interaction = NumberWidgetConfig::Interaction::NoDragging,
+          .barVisible = false,
+      }}}
+    , max_{new NumberWidget<T>{NumberWidgetConfig{
+          .interaction = NumberWidgetConfig::Interaction::NoDragging,
+          .barVisible = false,
+      }}} {
 
     setFocusPolicy(min_->focusPolicy());
     setFocusProxy(min_);
@@ -127,9 +133,9 @@ OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(
     textsp.setHorizontalStretch(3);
     textWidget->setSizePolicy(textsp);
 
-    connect(min_, &OrdinalEditorWidget<T>::valueChanged, this,
+    connect(min_, &NumberWidget<T>::valueChanged, this,
             &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin);
-    connect(max_, &OrdinalEditorWidget<T>::valueChanged, this,
+    connect(max_, &NumberWidget<T>::valueChanged, this,
             &OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax);
 
     setFixedHeight(sizeHint().height());

@@ -41,6 +41,7 @@
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>  // for OrdinalLikePropertySe...
 #include <modules/qtwidgets/properties/propertywidgetqt.h>          // for PropertyWidgetQt
 #include <modules/qtwidgets/sliderwidgetqt.h>                       // for SliderWidgetQt
+#include <modules/qtwidgets/numberwidget.h>
 
 #include <array>        // for array
 #include <cmath>        // for sin, atan2, cos, M_PI
@@ -159,13 +160,13 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
                 if (col > 0) w->setWrapping(true);
                 return w;
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Text) {
-                return new OrdinalEditorWidget<BT>();
+                return new NumberWidget<BT>();
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
-                auto w = new SliderWidgetQt<BT>();
+                auto w = new NumberWidget<BT>();
                 if (col > 0) w->setWrapping(true);
                 return w;
             } else {
-                return new SliderWidgetQt<BT>();
+                return new NumberWidget<BT>();
             }
         }();
 
@@ -180,8 +181,17 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
         sp.setHorizontalPolicy(QSizePolicy::Expanding);
         editor->setSizePolicy(sp);
 
-        if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox ||
-                      Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
+        if constexpr ((Sem == OrdinalPropertyWidgetQtSemantics::Default ||
+                       Sem == OrdinalPropertyWidgetQtSemantics::Text) &&
+                      util::extent<T, 0>::value > 1 && util::extent<T, 1>::value == 1) {
+            constexpr std::array<const char*, 4> labels{"x", "y", "z", "w"};
+            editor->setPrefix(labels[col]);
+            return editor;
+        } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
+            constexpr std::array<const char*, 3> sphericalLabels{"r", R"(θ)", R"(φ)"};
+            editor->setPrefix(sphericalLabels[col]);
+            return editor;
+        } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox) {
             constexpr std::array<const char*, 3> sphericalLabels{"r", "<html>&theta;</html>",
                                                                  "<html>&phi;</html>"};
             auto* widget = new QWidget(this);
@@ -211,10 +221,6 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
             if constexpr (util::extent<T, 1>::value > 1 &&
                           Sem != OrdinalPropertyWidgetQtSemantics::Default) {
                 std::swap(layoutCol, layoutRow);
-            } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::Default ||
-                                 Sem == OrdinalPropertyWidgetQtSemantics::Spherical) {
-                layoutCol = 1;
-                layoutRow = col + util::extent<T, 1>::value * row;
             }
             gridLayout->addWidget(editor, static_cast<int>(layoutRow), static_cast<int>(layoutCol));
         }
