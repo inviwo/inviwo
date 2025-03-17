@@ -136,8 +136,8 @@ SphereRasterizer::SphereRasterizer()
     addPort(bnl_.inport);
     addPort(labels_.strings);
 
-    addProperties(renderMode_, forceOpaque_, config_.config, labels_.labels, bnl_.highlight,
-                  bnl_.select, bnl_.filter, periodic_.periodicity, clip_.clipping);
+    addProperties(renderMode_, forceOpaque_, config_.config, labels_.labels, texture_.texture,
+                  bnl_.highlight, bnl_.select, bnl_.filter, periodic_.periodicity, clip_.clipping);
 }
 
 void SphereRasterizer::initializeResources() {

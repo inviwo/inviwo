@@ -10,8 +10,8 @@ set(HEADER_FILES
     include/inviwo/dataframe/io/csvreader.h
     include/inviwo/dataframe/io/csvwriter.h
     include/inviwo/dataframe/io/json/dataframepropertyjsonconverter.h
-    include/inviwo/dataframe/io/jsondataframewriter.h
     include/inviwo/dataframe/io/jsondataframereader.h
+    include/inviwo/dataframe/io/jsondataframewriter.h
     include/inviwo/dataframe/io/xmlwriter.h
     include/inviwo/dataframe/jsondataframeconversion.h
     include/inviwo/dataframe/processors/csvsource.h
@@ -21,6 +21,8 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/dataframejoin.h
     include/inviwo/dataframe/processors/dataframemetadata.h
     include/inviwo/dataframe/processors/dataframesource.h
+    include/inviwo/dataframe/processors/dataframetobuffer.h
+    include/inviwo/dataframe/processors/dataframetomesh.h
     include/inviwo/dataframe/processors/dataframetovector.h
     include/inviwo/dataframe/processors/imagetodataframe.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
@@ -46,8 +48,8 @@ set(SOURCE_FILES
     src/io/csvreader.cpp
     src/io/csvwriter.cpp
     src/io/json/dataframepropertyjsonconverter.cpp
-    src/io/jsondataframewriter.cpp
     src/io/jsondataframereader.cpp
+    src/io/jsondataframewriter.cpp
     src/io/xmlwriter.cpp
     src/jsondataframeconversion.cpp
     src/processors/csvsource.cpp
@@ -57,6 +59,8 @@ set(SOURCE_FILES
     src/processors/dataframejoin.cpp
     src/processors/dataframemetadata.cpp
     src/processors/dataframesource.cpp
+    src/processors/dataframetobuffer.cpp
+    src/processors/dataframetomesh.cpp
     src/processors/dataframetovector.cpp
     src/processors/imagetodataframe.cpp
     src/processors/syntheticdataframe.cpp

@@ -58,6 +58,8 @@
 #include <inviwo/dataframe/processors/dataframejoin.h>              // for DataFrameJoin
 #include <inviwo/dataframe/processors/dataframemetadata.h>          // for DataFrameMetaData
 #include <inviwo/dataframe/processors/dataframesource.h>            // for DataFrameSource
+#include <inviwo/dataframe/processors/dataframetobuffer.h>
+#include <inviwo/dataframe/processors/dataframetomesh.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>           // for ImageToDataFrame
 #include <inviwo/dataframe/processors/syntheticdataframe.h>         // for SyntheticDataFrame
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>  // for VolumeSequenceToData...
@@ -106,6 +108,8 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<DataFrameExporter>();
     registerProcessor<DataFrameFloat32Converter>();
     registerProcessor<DataFrameMetaData>();
+    registerProcessor<DataFrameToBuffer>();
+    registerProcessor<DataFrameToMesh>();
     registerProcessor<DataFrameToVector>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SyntheticDataFrame>();
