@@ -402,8 +402,13 @@ double NumberWidget<T>::getUIIncrement() const {
         maxValue_ == std::numeric_limits<T>::max()) {
         return static_cast<double>(increment_);
     }
-
-    return static_cast<double>(maxValue_ - minValue_) / static_cast<double>(width());
+    const double increment =
+        static_cast<double>(maxValue_ - minValue_) / static_cast<double>(width());
+    if constexpr (std::is_integral_v<T>) {
+        return std::max(increment, 1.0);
+    } else {
+        return increment;
+    }
 }
 
 }  // namespace inviwo
