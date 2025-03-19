@@ -148,7 +148,7 @@ void SphereRasterizer::initializeResources() {
 
 void SphereRasterizer::configureShader(Shader& shader) {
     Rasterizer::configureShader(shader);
-    utilgl::addDefines(shader, labels_, periodic_, config_, clip_);
+    utilgl::addDefines(shader, labels_, texture_, periodic_, config_, clip_);
     shader.build();
 }
 
