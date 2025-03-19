@@ -30,6 +30,7 @@
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
 #include "utils/glyphs.glsl"
+#include "utils/blend.glsl"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -56,10 +57,6 @@ uniform Label label;
 uniform sampler2D pointTexture;
 uniform float textureMixing;
 #endif
-
-vec4 blendBackToFront(vec4 srcColor, vec4 dstColor) {
-    return srcColor + dstColor * (1.0 - srcColor.a);
-}
 
 in PointGeom {
     vec4 center;
@@ -98,8 +95,8 @@ void main() {
 #if defined(ENABLE_TEXTURING)
     {
         vec2 uv = (coord.xy + vec2(point.radius)) / vec2(2.0 * point.radius);
-        vec4 texCol = texture(pointTexture, uv);
-        glyphColor = mix(glyphColor, texCol, min(texCol.a, textureMixing));
+        vec4 tex = texture(pointTexture, uv);
+        glyphColor = mix(glyphColor, TEXTURING_BLEND_FUNC(tex, glyphColor), textureMixing);
     }
 #endif
 
@@ -120,7 +117,7 @@ void main() {
             altasUv += vec2(int(point.index / atlasDims.x), point.index % atlasDims.y) / atlasDims;
             vec4 labelColor = label.color * texture(label.tex, altasUv);
             labelColor.a *= point.color.a;
-            glyphColor = blendBackToFront(labelColor, glyphColor);
+            glyphColor = premultipliedAlphaBlend(labelColor, glyphColor);
         }
     }
 #endif
