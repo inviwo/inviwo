@@ -123,7 +123,7 @@ void SphereRenderer::initializeResources() {
 }
 
 void SphereRenderer::configureShader(Shader& shader) {
-    utilgl::addDefines(shader, lighting_, labels_, periodic_, config_, clip_);
+    utilgl::addDefines(shader, lighting_, labels_, texture_, periodic_, config_, clip_);
     shader.build();
 }
 
