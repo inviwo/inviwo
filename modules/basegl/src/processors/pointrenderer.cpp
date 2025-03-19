@@ -139,7 +139,7 @@ void PointRenderer::initializeResources() {
 }
 
 void PointRenderer::configureShader(Shader& shader) {
-    utilgl::addDefines(shader, labels_, periodic_, config_);
+    utilgl::addDefines(shader, labels_, periodic_, config_, texture_);
     shader.build();
 }
 
