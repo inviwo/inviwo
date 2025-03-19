@@ -39,6 +39,20 @@ MeshTexturing::MeshTexturing(std::string_view identifier, Document help)
     : inport{identifier, std::move(help), OutportDeterminesSize::Yes}
     , unitNumber{0}
     , texture{"texture", "Enable Texture", false}
+    , blendMode{"blendMode",
+                "Blend Mode",
+                {{"source", "Source Blending", BlendMode::Source},
+                 {"destination", "Destination Blending", BlendMode::Destination},
+                 {"alpha", "Alpha Blending", BlendMode::Alpha},
+                 {"additive", "Additive Blending", BlendMode::Additive},
+                 {"multiply", "Multiplicative Blending", BlendMode::Multiply},
+                 {"screen", "Screen Blending", BlendMode::Screen},
+                 {"subtractive", "Subtractive Blending", BlendMode::Subtractive},
+                 {"premultiplied", "Premultiplied Alpha Blending", BlendMode::Premultiplied},
+                 {"overlay", "Overlay Blending", BlendMode::Overlay}},
+                2,
+                InvalidationLevel::InvalidResources}
+    , swap{"swap", "Swap src, dst", false, InvalidationLevel::InvalidResources}
     , mix{"textureMixing",
           "Mixing",
           "Blending factor for mixing the texture with the item's original color."_help,
@@ -48,7 +62,7 @@ MeshTexturing::MeshTexturing(std::string_view identifier, Document help)
           0.001f} {
 
     texture.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
-    texture.addProperty(mix);
+    texture.addProperties(blendMode, swap, mix);
 }
 
 void MeshTexturing::bind(TextureUnitContainer& cont) {
@@ -65,6 +79,37 @@ void MeshTexturing::setUniforms(Shader& shader) const {
     shader.setUniform(inport.getIdentifier(), unitNumber);
     utilgl::setUniforms(shader, mix);
 }
+
+void MeshTexturing::addDefines(Shader& shader) const {
+    const auto func = [&]() -> std::string_view {
+        switch (blendMode.get()) {
+            case BlendMode::Source:
+                return "sourceBlend";
+            case BlendMode::Destination:
+                return "destinationBlend";
+            case BlendMode::Alpha:
+                return "alphaBlend";
+            case BlendMode::Additive:
+                return "additiveBlend";
+            case BlendMode::Multiply:
+                return "multiplyBlend";
+            case BlendMode::Screen:
+                return "screenBlend";
+            case BlendMode::Subtractive:
+                return "subtractiveBlend";
+            case BlendMode::Premultiplied:
+                return "premultipliedAlphaBlend";
+            case BlendMode::Overlay:
+                return "overlayBlend";
+            default:
+                throw Exception{SourceContext{}, "Invalid blend mode"};
+        }
+    }();
+    shader.getFragmentShaderObject()->addShaderDefine(
+        "TEXTURING_BLEND_FUNC(src, dst)",
+        fmt::format("{}({}, {})", func, swap.get() ? "dst" : "src", swap.get() ? "src" : "dst"));
+}
+
 MeshShaderCache::Requirement MeshTexturing::getRequirement() const {
     return {[this](const Mesh&, Mesh::MeshInfo) -> int {
                 return inport.hasData() && texture.isChecked() ? 1 : 0;
