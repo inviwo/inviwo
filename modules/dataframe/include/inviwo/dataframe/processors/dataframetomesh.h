@@ -132,21 +132,22 @@ public:
 
     using Types = std::variant<SpatialType, RealType, IntType, PickingType, ColorType>;
 
-    struct IVW_MODULE_DATAFRAME_API Info : public Types {
+    struct IVW_MODULE_DATAFRAME_API Info {
         Info(BufferType bt, Types type);
         glm::dvec2 getDataRange() const;
-        BufferType type;
+        Types type;
+        BufferType bufferType;
         BoolCompositeProperty comp;
         DoubleMinMaxProperty range;
         BoolCompositeProperty doTransform;
 
         template <typename F>
         auto visit(F&& f) {
-            return std::visit(std::forward<F>(f), *this);
+            return std::visit(std::forward<F>(f), type);
         }
         template <typename F>
         auto visit(F&& f) const {
-            return std::visit(std::forward<F>(f), *this);
+            return std::visit(std::forward<F>(f), type);
         }
     };
 
