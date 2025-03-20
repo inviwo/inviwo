@@ -139,7 +139,7 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
             using T = typename Type::ElemType;
             const auto size = df.getNumberOfRows();
             auto buffer = std::make_shared<Buffer<T>>(size);
-            buffers.emplace_back(info.type, buffer);
+            buffers.emplace_back(info.bufferType, buffer);
 
             auto& dst = buffer->getEditableRAMRepresentation()->getDataContainer();
 
@@ -174,8 +174,8 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
 }
 
 ColumnMapper::Info::Info(BufferType bt, Types type)
-    : Types{std::move(type)}
-    , type{bt}
+    : type{std::move(type)}
+    , bufferType{bt}
     , comp{toLower(enumToStr(bt)), enumToStr(bt)}
     , range("range", "Range", "Range of input data, before any transforms"_help, 0.0, 0.0,
             std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.001, 0.0,
@@ -295,7 +295,7 @@ void DataFrameToMesh::process() {
     }
 
     {
-        auto& pos = std::get<SpatialType>(infos_[0]);
+        auto& pos = std::get<SpatialType>(infos_[0].type);
         for (size_t i = 0; i < pos.sources.size(); ++i) {
             if (!pos.sources[i].isNoneSelected()) {
                 const auto col = data->getColumn(pos.sources[i].getSelectedValue());
