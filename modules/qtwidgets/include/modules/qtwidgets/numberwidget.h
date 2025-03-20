@@ -270,60 +270,75 @@ bool NumberWidget<T>::decrementValue() {
     }
 }
 
+namespace detail {
+
+template <typename T>
+T upperBoundedValue(T v, T absDelta, T maxValue, ConstraintBehavior cb) {
+    // precondition: delta > 0
+    if (cb == ConstraintBehavior::Ignore) {
+        if (std::numeric_limits<T>::max() - absDelta < v) {  // check for type overflow
+            return std::numeric_limits<T>::max();
+        } else {
+            return v + absDelta;
+        }
+    } else if (absDelta > maxValue || maxValue - absDelta < v) {  // check for maxValue overflow
+        return maxValue;
+    } else {
+        return v + absDelta;
+    }
+}
+
+template <typename T>
+T lowerBoundedValue(T v, T absDelta, T minValue, ConstraintBehavior cb) {
+    // precondition: delta < 0
+    if (cb == ConstraintBehavior::Ignore) {
+        if (std::numeric_limits<T>::lowest() + absDelta > v) {  // check for type underflow
+            return std::numeric_limits<T>::lowest();
+        } else {
+            return v - absDelta;
+        }
+    } else if (minValue + absDelta > v) {  // check for minValue underflow
+        return minValue;
+    } else {
+        return v - absDelta;
+    }
+}
+
+}  // namespace detail
+
 template <typename T>
 bool NumberWidget<T>::applyDragDelta(double deltaSteps) {
     if (deltaSteps == 0.0) {
         return false;
     }
 
-    T delta = static_cast<T>(deltaSteps * getUIIncrement());
+    const bool positiveDelta = !std::signbit(deltaSteps);
+
+    auto absDelta = static_cast<T>(std::abs(deltaSteps * getUIIncrement()));
     if (getWrapping()) {
         if constexpr (std::is_floating_point_v<T>) {
-            delta = std::fmod(delta, maxValue_ - minValue_);
+            absDelta = std::fmod(absDelta, maxValue_ - minValue_);
         } else {
-            delta = delta % (maxValue_ - minValue_);
+            absDelta = absDelta % (maxValue_ - minValue_);
         }
-        if (maxValue_ - delta < initialDragValue_) {
-            delta -= maxValue_ - minValue_;
-        } else if (minValue_ - delta > initialDragValue_) {
-            delta += maxValue_ - minValue_;
+        if (positiveDelta && maxValue_ - absDelta < initialDragValue_) {
+            absDelta -= maxValue_ - minValue_;
+        } else if (!positiveDelta && minValue_ + absDelta > initialDragValue_) {
+            absDelta = maxValue_ - minValue_ - absDelta;
         }
-        return updateValue(initialDragValue_ + delta);
+        if (positiveDelta) {
+            return updateValue(initialDragValue_ + absDelta);
+        } else {
+            return updateValue(initialDragValue_ - absDelta);
+        }
     }
 
-    auto upperBoundedValue = [&](T v) {
-        // precondition: delta > 0
-        if (maxCB_ == ConstraintBehavior::Ignore) {
-            if (std::numeric_limits<T>::max() - delta < v) {  // check for type overflow
-                return std::numeric_limits<T>::max();
-            } else {
-                return v + delta;
-            }
-        } else if (maxValue_ - delta < v) {  // check for maxValue overflow
-            return maxValue_;
-        } else {
-            return v + delta;
-        }
-    };
-    auto lowerBoundedValue = [&](T v) {
-        // precondition: delta < 0
-        if (minCB_ == ConstraintBehavior::Ignore) {
-            if (std::numeric_limits<T>::lowest() - delta > v) {  // check for type underflow
-                return std::numeric_limits<T>::lowest();
-            } else {
-                return v + delta;
-            }
-        } else if (minValue_ - delta > v) {  // check for minValue underflow
-            return minValue_;
-        } else {
-            return v + delta;
-        }
-    };
-
-    if (delta > 0) {
-        return updateValue(upperBoundedValue(initialDragValue_));
+    if (positiveDelta) {
+        return updateValue(
+            detail::upperBoundedValue(initialDragValue_, absDelta, maxValue_, maxCB_));
     } else {
-        return updateValue(lowerBoundedValue(initialDragValue_));
+        return updateValue(
+            detail::lowerBoundedValue(initialDragValue_, absDelta, minValue_, minCB_));
     }
 }
 
