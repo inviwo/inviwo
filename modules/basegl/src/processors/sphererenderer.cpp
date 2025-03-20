@@ -111,9 +111,9 @@ SphereRenderer::SphereRenderer()
     addPort(labels_.strings);
     addPort(outport_);
 
-    addProperties(renderMode_, config_.config, labels_.labels, bnl_.highlight, bnl_.select,
-                  bnl_.filter, periodic_.periodicity, clip_.clipping, camera_, lighting_,
-                  trackball_);
+    addProperties(renderMode_, config_.config, labels_.labels, texture_.texture, bnl_.highlight,
+                  bnl_.select, bnl_.filter, periodic_.periodicity, clip_.clipping, camera_,
+                  lighting_, trackball_);
 }
 
 void SphereRenderer::initializeResources() {
@@ -123,7 +123,7 @@ void SphereRenderer::initializeResources() {
 }
 
 void SphereRenderer::configureShader(Shader& shader) {
-    utilgl::addDefines(shader, lighting_, labels_, periodic_, config_, clip_);
+    utilgl::addDefines(shader, lighting_, labels_, texture_, periodic_, config_, clip_);
     shader.build();
 }
 

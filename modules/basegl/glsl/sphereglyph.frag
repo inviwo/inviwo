@@ -32,6 +32,7 @@
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
 #include "utils/glyphs.glsl"
+#include "utils/blend.glsl"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -54,11 +55,8 @@ uniform Label label;
 
 #if defined(ENABLE_TEXTURING)
 uniform sampler2D sphereTexture;
+uniform float textureMixing;
 #endif
-
-vec4 blendBackToFront(vec4 srcColor, vec4 dstColor) {
-    return srcColor + dstColor * (1.0 - srcColor.a);
-}
 
 const mat3 rotations[] = mat3[](mat3(1, 0, 0, 0, 1, 0, 0, 0, 1), mat3(0, 0, 1, 0, 1, 0, -1, 0, 0),
                                 mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1), mat3(0, 0, -1, 0, 1, 0, 1, 0, 0),
@@ -111,7 +109,9 @@ void main() {
         float phi =
             sign(normal.y) * acos(normal.x / sqrt(normal.x * normal.x + normal.y * normal.y));
         vec2 uv = vec2(theta / PI, (phi + PI) / 2.0 / PI);
-        glyphColor = blendBackToFront(texture(sphereTexture, uv), glyphColor);
+        vec4 tex = texture(sphereTexture, uv);
+        glyphColor = mix(glyphColor, TEXTURING_BLEND_FUNC(tex, glyphColor), textureMixing);
+
     }
 #endif
 
@@ -137,7 +137,7 @@ void main() {
                 vec2(int(sphere.index / atlasDims.x), sphere.index % atlasDims.y) / atlasDims;
             vec4 labelColor = label.color * texture(label.tex, altasUv);
             labelColor.a *= sphere.color.a;
-            glyphColor = blendBackToFront(labelColor, glyphColor);
+            glyphColor = premultipliedAlphaBlend(labelColor, glyphColor);
         }
     }
 #endif
@@ -145,8 +145,8 @@ void main() {
     vec3 intersectionWorld = intersection + sphere.center.xyz;
     ShadingParameters shadingParams = shading(glyphColor.rgb, normal, intersectionWorld);
 
-    glyphColor.rgb = applyLighting(lighting, shadingParams, 
-                                   normalize(camera.position - intersectionWorld));
+    glyphColor.rgb =
+        applyLighting(lighting, shadingParams, normalize(camera.position - intersectionWorld));
 
     // depth correction for glyph
     float depth = glyphDepth(intersection + sphere.center.xyz, camera.worldToClip);
