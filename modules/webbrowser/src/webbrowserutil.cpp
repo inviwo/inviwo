@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/webbrowserutil.h>
+#include <modules/opengl/openglcapabilities.h> // for OpenGLCapabilities
 
 #include <tuple>  // for tuple
 #include <cmath>
@@ -47,7 +48,10 @@ std::tuple<CefWindowInfo, CefBrowserSettings> getDefaultBrowserSettings() {
 #endif
 
 #if defined(WIN32)
-    windowInfo.shared_texture_enabled = true;
+    if (OpenGLCapabilities::isExtensionSupported("EXT_external_objects_win32")) {
+        // RenderhandlerGL::OnAcceleratedPaint requires this extension for sharing textures
+        windowInfo.shared_texture_enabled = true;
+    }
 #endif
 
     CefBrowserSettings browserSettings;
