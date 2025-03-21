@@ -40,13 +40,17 @@ namespace inviwo {
 
 Serializer::Serializer(const std::filesystem::path& fileName, std::string_view rootElement,
                        allocator_type alloc)
+    : Serializer{fileName, rootElement, SerializeConstants::InviwoWorkspaceVersion, alloc} {}
+
+Serializer::Serializer(const std::filesystem::path& fileName, std::string_view rootElement,
+                       int version, allocator_type alloc)
     : SerializeBase(fileName, alloc) {
     try {
         auto decl = alloc.new_object<TiXmlDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
         doc_->LinkEndChild(decl);
         rootElement_ = alloc.new_object<TiXmlElement>(rootElement);
         auto& attr = rootElement_->AddAttribute(SerializeConstants::VersionAttribute);
-        detail::formatTo(SerializeConstants::InviwoWorkspaceVersion, attr);
+        detail::formatTo(version, attr);
         doc_->LinkEndChild(rootElement_);
 
     } catch (const TiXmlError& e) {
