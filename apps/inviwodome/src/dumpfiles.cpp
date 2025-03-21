@@ -58,8 +58,9 @@ LONG __stdcall generateMiniDump(EXCEPTION_POINTERS* exceptionPointers) {
     exceptionParameter.ExceptionPointers = exceptionPointers;
     exceptionParameter.ClientPointers = TRUE;
 
-    BOOL success = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile,
-                                     MiniDumpWithDataSegs, &exceptionParameter, nullptr, nullptr);
+    [[maybe_unused]] BOOL success =
+        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile,
+                          MiniDumpWithDataSegs, &exceptionParameter, nullptr, nullptr);
 
     CloseHandle(hDumpFile);
 
