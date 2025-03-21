@@ -33,10 +33,29 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/curlutils.h>
 
+#include <bxzstr/bxzstr.hpp>
+
 #include <fmt/format.h>
 #include <fmt/std.h>
 
 namespace inviwo {
+
+namespace {
+
+void convertToLittleEndian(void* dest, size_t bytes, size_t elementSize) {
+    char* temp = new char[elementSize];
+
+    for (std::size_t i = 0; i < bytes; i += elementSize) {
+        for (std::size_t j = 0; j < elementSize; j++) temp[j] = static_cast<char*>(dest)[i + j];
+
+        for (std::size_t j = 0; j < elementSize; j++)
+            static_cast<char*>(dest)[i + j] = temp[elementSize - j - 1];
+    }
+
+    delete[] temp;
+}
+
+}  // namespace
 
 void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset, size_t bytes,
                                bool littleEndian, size_t elementSize, void* dest) {
@@ -49,17 +68,26 @@ void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset,
         fin.read(static_cast<char*>(dest), bytes);
 
         if (!littleEndian && elementSize > 1) {
-            char* temp = new char[elementSize];
+            convertToLittleEndian(dest, bytes, elementSize);
+        }
+    } else {
+        throw DataReaderException(SourceContext{}, "Error: Could not read from file: {:?g}", file);
+    }
+}
 
-            for (std::size_t i = 0; i < bytes; i += elementSize) {
-                for (std::size_t j = 0; j < elementSize; j++)
-                    temp[j] = static_cast<char*>(dest)[i + j];
+void util::readCompressedBytesIntoBuffer(const std::filesystem::path& file, size_t offset,
+                                         size_t bytes, bool littleEndian, size_t elementSize,
+                                         void* dest) {
+    const auto filePath = net::downloadAndCacheIfUrl(file);
 
-                for (std::size_t j = 0; j < elementSize; j++)
-                    static_cast<char*>(dest)[i + j] = temp[elementSize - j - 1];
-            }
+    auto fin = bxz::ifstream{filePath.generic_string(), std::ios::in | std::ios::binary};
 
-            delete[] temp;
+    if (fin.good()) {
+        fin.seekg(offset);
+        fin.read(static_cast<char*>(dest), bytes);
+
+        if (!littleEndian && elementSize > 1) {
+            convertToLittleEndian(dest, bytes, elementSize);
         }
     } else {
         throw DataReaderException(SourceContext{}, "Error: Could not read from file: {:?g}", file);

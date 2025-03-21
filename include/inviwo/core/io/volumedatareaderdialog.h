@@ -51,6 +51,7 @@ public:
     virtual bool getEndianess() const = 0;
     virtual DataMapper getDataMapper() const = 0;
     virtual size_t getByteOffset() const = 0;
+    virtual bool getUseCompression() const = 0;
 
     virtual void setFormat(const DataFormatBase* format) = 0;
     virtual void setDimensions(uvec3 dim) = 0;
@@ -58,6 +59,7 @@ public:
     virtual void setEndianess(bool endian) = 0;
     virtual void setDataMapper(const DataMapper& datamapper) = 0;
     virtual void setByteOffset(size_t offset) = 0;
+    virtual void setUseCompression(bool compressed) = 0;
 };
 
 }  // namespace inviwo
