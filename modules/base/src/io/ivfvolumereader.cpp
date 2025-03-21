@@ -78,6 +78,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
     bool littleEndian = true;
+    bool useCompression = false;
 
     d.registerFactory(util::getMetaDataFactory());
     d.deserialize("RawFile", rawFile);
@@ -139,10 +140,13 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
 
     volume->getMetaDataMap()->deserialize(d);
     littleEndian = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian);
+    useCompression = volume->getMetaData<BoolMetaData>("UseCompression", useCompression);
+
     auto vd = std::make_shared<VolumeDisk>(localPath, dimensions, format, swizzleMask,
                                            interpolation, wrapping);
 
-    auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian);
+    auto loader =
+        std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian, useCompression);
     vd->setLoader(loader.release());
 
     volume->addRepresentation(vd);
