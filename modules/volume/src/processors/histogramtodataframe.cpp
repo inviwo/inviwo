@@ -57,7 +57,7 @@ std::vector<double> scaleHistogram(const Histogram1D& hist, HistogramMode mode) 
             }
         }();
         std::ranges::transform(hist.counts, result.begin(), [percentile](auto& count) {
-            return std::min<double>(count, percentile);
+            return std::min<double>(static_cast<double>(count), percentile);
         });
     }
     return result;

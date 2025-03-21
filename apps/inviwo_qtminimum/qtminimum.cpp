@@ -212,7 +212,7 @@ int main(int argc, char** argv) {
 
     try {
         if (!workspace.empty()) {
-            inviwoApp.getWorkspaceManager()->load(workspace, [&](inviwo::SourceContext ec) {
+            inviwoApp.getWorkspaceManager()->load(workspace, [&](inviwo::SourceContext) {
                 try {
                     throw;
                 } catch (const inviwo::IgnoreException& e) {
