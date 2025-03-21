@@ -51,6 +51,7 @@
 #include <QLocale>           // for QLocale
 #include <QObject>           // for SIGNAL, SLOT
 #include <QSpinBox>          // for QSpinBox
+#include <QCheckBox>         // for QCheckBox
 #include <QString>           // for QString
 #include <QVariant>          // for QVariant
 #include <QWidget>           // for QWidget
@@ -90,12 +91,14 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
                        static_cast<int>(DataFormatId::UInt64));
     bitDepth_->addItem("float (32-bit floating point)", static_cast<int>(DataFormatId::Float32));
     bitDepth_->addItem("double (64-bit floating point)", static_cast<int>(DataFormatId::Float64));
+    bitDepthLabel->setFocusProxy(bitDepth_);
     connect(bitDepth_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             [this](int index) { selectedDataTypeChanged(index); });
     QLabel* channelLabel = new QLabel("Data channels");
     channels_ = new QSpinBox();
     channels_->setRange(1, 4);
     channels_->setValue(1);
+    channelLabel->setFocusProxy(channels_);
 
     QLabel* dataRangeLabel = new QLabel("Data format range");
     dataRangeLabel->setToolTip("Data range refer to the range of the data");
@@ -106,6 +109,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataRangeMax_->setRange(-std::numeric_limits<double>::max(),
                             std::numeric_limits<double>::max());
     dataRangeMax_->setValue(255.0);
+    dataRangeLabel->setFocusProxy(dataRangeMin_);
     QLabel* valueRangeLabel = new QLabel("Value range");
     valueRangeLabel->setToolTip(
         "Value range refer to the physical meaning of the value, i.e. Hounsfield value range for "
@@ -116,8 +120,10 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     valueRangeMax_ = new QDoubleSpinBox();
     valueRangeMax_->setRange(-std::numeric_limits<double>::max(),
                              std::numeric_limits<double>::max());
+    valueRangeLabel->setFocusProxy(valueRangeMin_);
     QLabel* unit = new QLabel("Unit (m/s, HU, W)");
     valueUnit_ = new QLineEdit();  ///< Unit, i.e. Hounsfield/absorption/W.
+    unit->setFocusProxy(valueUnit_);
 
     auto rowCount = 0;
     dataTypeLayout->addWidget(bitDepthLabel, rowCount, 0);
@@ -198,6 +204,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     byteOffset_->setRange(0, std::numeric_limits<int>::max());
     byteOffset_->setValue(0);
     byteOffset_->setSuffix(" Byte");
+    byteOffsetLabel->setFocusProxy(byteOffset_);
     /*
     QLabel* timeStepOffsetLabel = new QLabel("Time step offset");
     timeStepOffset_ = new QSpinBox();
@@ -205,18 +212,26 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     timeStepOffset_->setValue(0);
     timeStepOffset_->setSuffix(" Byte");
     */
-    QLabel* endianessLabel = new QLabel("Endianess");
     endianess_ = new QComboBox();
     endianess_->addItem("Little Endian");
     endianess_->addItem("Big Endian");
+    QLabel* endianessLabel = new QLabel("Endianess");
+    endianessLabel->setFocusProxy(endianess_);
     readOptionsLayout->addWidget(byteOffsetLabel, 0, 0);
     readOptionsLayout->addWidget(byteOffset_, 0, 1);
     /*
     readOptionsLayout->addWidget(timeStepOffsetLabel, 1, 0);
     readOptionsLayout->addWidget(timeStepOffset_, 1, 1);
     */
-    readOptionsLayout->addWidget(endianessLabel, 2, 0);
-    readOptionsLayout->addWidget(endianess_, 2, 1);
+    readOptionsLayout->addWidget(endianessLabel, 1, 0);
+    readOptionsLayout->addWidget(endianess_, 1, 1);
+
+    useCompression_ = new QCheckBox{};
+    QLabel* useCompressionLabel = new QLabel("Compressed Data (bzip, zip, lzma)");
+    useCompressionLabel->setFocusProxy(useCompression_);
+    readOptionsLayout->addWidget(useCompressionLabel, 2, 0);
+    readOptionsLayout->addWidget(useCompression_, 2, 1);
+
     QGroupBox* readOptionsBox = new QGroupBox("Read options", this);
     readOptionsBox->setLayout(readOptionsLayout);
     QDialogButtonBox* buttonBox =
@@ -328,6 +343,12 @@ size_t RawDataReaderDialogQt::getByteOffset() const {
 
 void RawDataReaderDialogQt::setByteOffset(size_t offset) {
     byteOffset_->setValue(static_cast<int>(offset));
+}
+
+bool RawDataReaderDialogQt::getUseCompression() const { return useCompression_->isChecked(); }
+
+void RawDataReaderDialogQt::setUseCompression(bool compressed) {
+    useCompression_->setChecked(compressed);
 }
 
 void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {

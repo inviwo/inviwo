@@ -83,6 +83,7 @@ struct State {
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
     bool littleEndian = true;
+    bool useCompression = false;
 
     std::string formatFlag;
     mat3 basis{2.0f};
@@ -130,6 +131,17 @@ State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
              }
          }},
         {"byteoffset", [](State& state, std::stringstream& ss) { ss >> state.byteOffset; }},
+        {"compressed",
+         [](State& state, std::stringstream& ss) {
+             const auto val = toLower(ss.str());
+             if (val == "true") {
+                 state.useCompression = true;
+             } else if (val == "false") {
+                 state.useCompression = false;
+             } else {
+                 ss.setstate(std::ios_base::failbit);
+             }
+         }},
         {"sequences", [](State& state, std::stringstream& ss) { ss >> state.sequences; }},
         {"resolution",
          [](State& state, std::stringstream& ss) {
@@ -378,7 +390,8 @@ std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
 
     const auto filePos = offset + state.byteOffset;
 
-    auto loader = std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.littleEndian);
+    auto loader = std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.littleEndian,
+                                                       state.useCompression);
     diskRepr->setLoader(loader.release());
 
     return diskRepr;
