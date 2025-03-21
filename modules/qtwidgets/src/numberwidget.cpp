@@ -88,7 +88,7 @@ QSize BaseNumberWidget::minimumSizeHint() const {
 
 QSize BaseNumberWidget::calcMinimumSize() const {
     ensurePolished();
-    QSize hint(minimumWidth_, QLineEdit::minimumSizeHint().height());
+    const QSize hint(minimumWidth_, QLineEdit::minimumSizeHint().height());
     QStyleOptionFrame opt;
     initStyleOption(&opt);
 
