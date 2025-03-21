@@ -150,6 +150,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/inviwofileformattypes.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/isovaluecollectioniivreader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/isovaluecollectioniivwriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
@@ -549,6 +550,7 @@ set(SOURCE_FILES
     io/datawriterfactory.cpp
     io/datawriterutil.cpp
     io/imagewriterutil.cpp
+    io/inviwofileformattypes.cpp
     io/isovaluecollectioniivreader.cpp
     io/isovaluecollectioniivwriter.cpp
     io/rawvolumeramloader.cpp
