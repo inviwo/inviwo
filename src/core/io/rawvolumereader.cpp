@@ -143,6 +143,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
             spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
             dataMapper_ = readerDialog->getDataMapper();
             byteOffset_ = readerDialog->getByteOffset();
+            compressed_ = readerDialog->getUseCompression();
 
             if (metadata) {
                 metadata->setMetaData<IntMetaData>("rawReaderData.formatid",
@@ -157,6 +158,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
                                                       units::to_string(dataMapper_.valueAxis.unit));
 
                 metadata->setMetaData<SizeMetaData>("rawReaderData.byteOffset", byteOffset_);
+                metadata->setMetaData<SizeMetaData>("rawReaderData.compressed", compressed_);
             }
 
         } else {
@@ -180,7 +182,8 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
-        auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, byteOffset_, littleEndian_);
+        auto loader =
+            std::make_unique<RawVolumeRAMLoader>(rawFile_, byteOffset_, littleEndian_, compressed_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
 

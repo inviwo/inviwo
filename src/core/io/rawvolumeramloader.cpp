@@ -36,8 +36,11 @@
 namespace inviwo {
 
 RawVolumeRAMLoader::RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
-                                       bool littleEndian)
-    : rawFile_(rawFile), offset_(offset), littleEndian_(littleEndian) {}
+                                       bool littleEndian, bool useCompression)
+    : rawFile_{rawFile}
+    , offset_{offset}
+    , littleEndian_{littleEndian}
+    , useCompression_{useCompression} {}
 
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
@@ -46,8 +49,13 @@ std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
 
     const auto size = glm::compMul(src.getDimensions()) * src.getDataFormat()->getSizeInBytes();
     auto data = std::make_unique<char[]>(size);
-    util::readBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
-                              src.getDataFormat()->getSizeInBytes(), data.get());
+    if (useCompression_) {
+        util::readCompressedBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
+                                            src.getDataFormat()->getSizeInBytes(), data.get());
+    } else {
+        util::readBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
+                                  src.getDataFormat()->getSizeInBytes(), data.get());
+    }
 
     auto volumeRAM =
         createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
@@ -66,9 +74,15 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
     }
 
     const auto size = glm::compMul(src.getDimensions());
-    util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(),
-                              littleEndian_, src.getDataFormat()->getSizeInBytes(),
-                              volumeDst->getData());
+    if (useCompression_) {
+        util::readCompressedBytesIntoBuffer(
+            rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(), littleEndian_,
+            src.getDataFormat()->getSizeInBytes(), volumeDst->getData());
+    } else {
+        util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(),
+                                  littleEndian_, src.getDataFormat()->getSizeInBytes(),
+                                  volumeDst->getData());
+    }
 
     volumeDst->setSwizzleMask(src.getSwizzleMask());
     volumeDst->setInterpolation(src.getInterpolation());

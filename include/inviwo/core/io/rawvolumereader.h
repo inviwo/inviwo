@@ -73,6 +73,7 @@ private:
     DataMapper dataMapper_;
     size_t byteOffset_;
     bool parametersSet_;
+    bool compressed_;
 };
 
 }  // namespace inviwo
