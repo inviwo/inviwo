@@ -69,6 +69,9 @@ public:
                         std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                         allocator_type alloc = {});
 
+    Serializer(const std::filesystem::path& fileName, std::string_view rootElement, int version,
+               allocator_type alloc = {});
+
     explicit Serializer(allocator_type alloc = {});
 
     Serializer(const Serializer& rhs) = delete;
