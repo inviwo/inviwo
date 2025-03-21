@@ -34,6 +34,7 @@
 #include <inviwo/core/util/formats.h>               // for DataFormatBase, DataFormatId, DataFor...
 #include <inviwo/core/util/glmvec.h>                // for uvec3, dvec2, dvec3
 #include <inviwo/core/util/rendercontext.h>         // for RenderContext
+#include <inviwo/core/util/exception.h>             // for Exception
 #include <modules/qtwidgets/inviwoqtutils.h>        // for emToPx, fromLocalQString, toLocalQString
 
 #include <limits>  // for numeric_limits
@@ -212,11 +213,11 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     timeStepOffset_->setValue(0);
     timeStepOffset_->setSuffix(" Byte");
     */
-    endianess_ = new QComboBox();
-    endianess_->addItem("Little Endian");
-    endianess_->addItem("Big Endian");
-    QLabel* endianessLabel = new QLabel("Endianess");
-    endianessLabel->setFocusProxy(endianess_);
+    byteOrder_ = new QComboBox();
+    byteOrder_->addItem("Little Endian", QVariant::fromValue(iff::ByteOrder::LittleEndian));
+    byteOrder_->addItem("Big Endian", QVariant::fromValue(iff::ByteOrder::BigEndian));
+    QLabel* endianessLabel = new QLabel("Byte order");
+    endianessLabel->setFocusProxy(byteOrder_);
     readOptionsLayout->addWidget(byteOffsetLabel, 0, 0);
     readOptionsLayout->addWidget(byteOffset_, 0, 1);
     /*
@@ -224,10 +225,10 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     readOptionsLayout->addWidget(timeStepOffset_, 1, 1);
     */
     readOptionsLayout->addWidget(endianessLabel, 1, 0);
-    readOptionsLayout->addWidget(endianess_, 1, 1);
+    readOptionsLayout->addWidget(byteOrder_, 1, 1);
 
     useCompression_ = new QCheckBox{};
-    QLabel* useCompressionLabel = new QLabel("Compressed Data (bzip, zip, lzma)");
+    QLabel* useCompressionLabel = new QLabel("Compressed data (bzip, gz, lzma)");
     useCompressionLabel->setFocusProxy(useCompression_);
     readOptionsLayout->addWidget(useCompressionLabel, 2, 0);
     readOptionsLayout->addWidget(useCompression_, 2, 1);
@@ -311,13 +312,16 @@ void RawDataReaderDialogQt::setSpacing(dvec3 spacing) {
     spaceZ_->setText(locale.toString(spacing.z));
 }
 
-bool RawDataReaderDialogQt::getEndianess() const { return endianess_->currentIndex() == 0; }
+iff::ByteOrder RawDataReaderDialogQt::getByteOrder() const {
+    return byteOrder_->currentData().value<iff::ByteOrder>();
+}
 
-void RawDataReaderDialogQt::setEndianess(bool endian) {
-    if (endian) {
-        endianess_->setCurrentIndex(0);
+void RawDataReaderDialogQt::setByteOrder(iff::ByteOrder byteOrder) {
+    if (const int index = byteOrder_->findData(QVariant::fromValue(byteOrder)); index > -1) {
+        byteOrder_->setCurrentIndex(index);
     } else {
-        endianess_->setCurrentIndex(1);
+        throw Exception{SourceContext{}, "ByteOrder enum value '{}' cannot be set",
+                        std::to_underlying(byteOrder)};
     }
 }
 
@@ -345,10 +349,16 @@ void RawDataReaderDialogQt::setByteOffset(size_t offset) {
     byteOffset_->setValue(static_cast<int>(offset));
 }
 
-bool RawDataReaderDialogQt::getUseCompression() const { return useCompression_->isChecked(); }
+iff::Compression RawDataReaderDialogQt::getCompression() const {
+    if (useCompression_->isChecked()) {
+        return iff::Compression::Enabled;
+    } else {
+        return iff::Compression::Off;
+    }
+}
 
-void RawDataReaderDialogQt::setUseCompression(bool compressed) {
-    useCompression_->setChecked(compressed);
+void RawDataReaderDialogQt::setCompression(iff::Compression compression) {
+    useCompression_->setChecked(compression == iff::Compression::Enabled);
 }
 
 void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {
