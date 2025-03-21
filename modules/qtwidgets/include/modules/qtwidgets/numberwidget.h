@@ -243,7 +243,7 @@ void NumberWidget<T>::setIncrement(T increment) {
 
 template <typename T>
 bool NumberWidget<T>::incrementValue() {
-    const T uiIncrement = getUIIncrement();
+    const auto uiIncrement = static_cast<T>(getUIIncrement());
     if (maxValue_ - uiIncrement < value_) {
         if (getWrapping()) {
             const T delta = maxValue_ - value_;
@@ -258,7 +258,7 @@ bool NumberWidget<T>::incrementValue() {
 
 template <typename T>
 bool NumberWidget<T>::decrementValue() {
-    const T uiIncrement = getUIIncrement();
+    const auto uiIncrement = static_cast<T>(getUIIncrement());
     if (minValue_ + uiIncrement > value_) {
         if (getWrapping()) {
             return updateValue(maxValue_ - uiIncrement + value_ - minValue_);
