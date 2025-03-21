@@ -50,7 +50,8 @@ BaseNumberWidget::BaseNumberWidget(const NumberWidgetConfig& config, QWidget* pa
     , prefix_{utilqt::toQString(config.prefix.value_or(NumberWidgetConfig::defaultPrefix))}
     , postfix_{utilqt::toQString(config.postfix.value_or(NumberWidgetConfig::defaultPostfix))}
     , mode_{config.interaction.value_or(NumberWidgetConfig::defaultInteraction)}
-    , percentageBarVisible_{config.barVisible.value_or(NumberWidgetConfig::defaultBarVisible)} {
+    , percentageBarVisible_{config.barVisible.value_or(NumberWidgetConfig::defaultBarVisible)}
+    , minimumWidth_{utilqt::emToPx(this, 4)} {
 
     setObjectName("NumberWidget");
     updateState(FocusAction::ClearFocus);
@@ -69,6 +70,29 @@ BaseNumberWidget::BaseNumberWidget(const NumberWidgetConfig& config, QWidget* pa
         style()->unpolish(this);
         style()->polish(this);
     });
+}
+
+QSize BaseNumberWidget::sizeHint() const {
+    if (cachedMinimumSizeHint_.isEmpty()) {
+        cachedMinimumSizeHint_ = calcMinimumSize();
+    }
+    return cachedMinimumSizeHint_;
+}
+
+QSize BaseNumberWidget::minimumSizeHint() const {
+    if (cachedMinimumSizeHint_.isEmpty()) {
+        cachedMinimumSizeHint_ = calcMinimumSize();
+    }
+    return cachedMinimumSizeHint_;
+}
+
+QSize BaseNumberWidget::calcMinimumSize() const {
+    ensurePolished();
+    QSize hint(minimumWidth_, QLineEdit::minimumSizeHint().height());
+    QStyleOptionFrame opt;
+    initStyleOption(&opt);
+
+    return style()->sizeFromContents(QStyle::CT_LineEdit, &opt, hint, this);
 }
 
 void BaseNumberWidget::setPrefix(std::string_view prefix) {

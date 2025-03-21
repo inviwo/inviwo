@@ -76,6 +76,10 @@ public:
     BaseNumberWidget& operator=(BaseNumberWidget&&) = delete;
     virtual ~BaseNumberWidget() = default;
 
+    virtual QSize sizeHint() const override;
+
+    virtual QSize minimumSizeHint() const override;
+
     void setPrefix(std::string_view prefix);
     const QString& getPrefix() const;
     void setPostfix(std::string_view postfix);
@@ -117,6 +121,7 @@ private:
     enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };
     enum class HoverState : std::uint8_t { Invalid, Center, NegativeInc, PositiveInc };
 
+    QSize calcMinimumSize() const;
     void drawPercentageBar(QPainter& painter, const QRect& rect, bool hover) const;
     QString getPrefixedText() const;
     void updateState(FocusAction action);
@@ -136,6 +141,8 @@ private:
     InteractionState state_;
     NumberWidgetConfig::Interaction mode_;
     bool percentageBarVisible_;
+    mutable QSize cachedMinimumSizeHint_;
+    int minimumWidth_;
 
     static constexpr Qt::KeyboardModifier increasedStepModifier = Qt::ControlModifier;
     static constexpr Qt::KeyboardModifier decreasedStepModifier = Qt::ShiftModifier;
