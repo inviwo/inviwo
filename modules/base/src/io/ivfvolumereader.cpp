@@ -37,10 +37,13 @@
 #include <inviwo/core/datastructures/volume/volume.h>      // for Volume, DataReaderType
 #include <inviwo/core/datastructures/volume/volumedisk.h>  // for VolumeDisk
 #include <inviwo/core/datastructures/unitsystem.h>
-#include <inviwo/core/io/datareader.h>                            // for DataReaderType
-#include <inviwo/core/io/rawvolumeramloader.h>                    // for RawVolumeRAMLoader
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/rawvolumeramloader.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
 #include <inviwo/core/io/serialization/deserializer.h>            // for Deserializer
 #include <inviwo/core/io/serialization/serializationexception.h>  // for SerializationException
+#include <inviwo/core/io/serialization/versionconverter.h>        // for VersionConverter
+#include <inviwo/core/io/serialization/ticpp.h>                   // for TxElement
 #include <inviwo/core/metadata/metadata.h>                        // for BoolMetaData
 #include <inviwo/core/metadata/metadatafactory.h>                 // for MetaDataFactory
 #include <inviwo/core/metadata/metadatamap.h>                     // for MetaDataMap
@@ -56,7 +59,91 @@
 #include <type_traits>  // for remove_extent_t
 #include <memory_resource>
 
+#include <fmt/base.h>
+
 namespace inviwo {
+
+namespace {
+
+constexpr std::string_view InviwoVolume = "InviwoVolume";
+
+class Converter : public VersionConverter {
+public:
+    explicit Converter(int version);
+    virtual bool convert(TxElement* root) override;
+
+private:
+    void updateByteOrder(TxElement* root) const;
+
+    int version_;
+};
+
+Converter::Converter(int version) : version_(version) {}
+
+void Converter::updateByteOrder(TxElement* root) const {
+    auto metaDataMap = xml::getElement(root, "MetaDataMap");
+
+    if (metaDataMap) {
+        if (auto littleEndianNode =
+                xml::getElement(metaDataMap, "MetaDataItem&key=LittleEndian/MetaData")) {
+            // move byteorder to own tag
+            TxElement byteOrder{"ByteOrder"};
+
+            if (auto content = littleEndianNode->Attribute("content")) {
+                byteOrder.SetAttribute("content", content == "1" ? "LittleEndian" : "BigEndian");
+            } else {
+                byteOrder.SetAttribute("content", "LittleEndian");
+            }
+            root->InsertBeforeChild(metaDataMap, byteOrder);
+            metaDataMap->RemoveChild(littleEndianNode->Parent());
+        }
+    }
+}
+
+bool Converter::convert(TxElement* root) {
+    if (root->Value() != InviwoVolume) {
+        // ignore version number if the root node is not already an InviwoVolume, but for example an
+        // InviwoWorkspace
+        version_ = 1;
+    }
+
+    switch (version_) {
+        case 0:
+        case 1: {
+            auto metaDataMap = xml::getElement(root, "MetaDataMap");
+
+            if (metaDataMap) {
+                if (auto littleEndianNode =
+                        xml::getElement(metaDataMap, "MetaDataItem&key=LittleEndian/MetaData")) {
+                    // move endianness to own tag
+                    TxElement byteOrder{"ByteOrder"};
+
+                    auto content = littleEndianNode->Attribute("content").value_or("1");
+                    byteOrder.SetAttribute(
+                        "content",
+                        fmt::format("{}", content == "1"
+                                              ? std::to_underlying(iff::ByteOrder::LittleEndian)
+                                              : std::to_underlying(iff::ByteOrder::BigEndian)));
+
+                    root->InsertBeforeChild(metaDataMap, byteOrder);
+                    metaDataMap->RemoveChild(littleEndianNode->Parent());
+                }
+            }
+            if (auto rawFile = xml::getElement(root, "RawFile"); rawFile && metaDataMap) {
+                // move metadata map to RawFile
+                rawFile->InsertEndChild(*metaDataMap);
+                root->RemoveChild(metaDataMap);
+            }
+
+            return true;
+        }
+
+        default:
+            return false;  // No changes
+    }
+}
+
+}  // namespace
 
 IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("ivf", "Inviwo ivf file format"));
@@ -73,20 +160,26 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
     Deserializer d{localPath, "InviwoVolume", &mbr};
 
+    Converter converter{d.getVersion()};
+    d.convertVersion(&converter);
+
     std::filesystem::path rawFile;
     size3_t dimensions{0u};
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
-    bool littleEndian = true;
-    bool useCompression = false;
+    iff::ByteOrder byteOrder = iff::ByteOrder::LittleEndian;
+    iff::Compression compression = iff::Compression::Off;
 
     d.registerFactory(util::getMetaDataFactory());
-    d.deserialize("RawFile", rawFile);
-    rawFile = fileDirectory / rawFile;
+
     d.deserialize("ByteOffset", byteOffset);
+    d.deserialize("ByteOrder", byteOrder);
+    d.deserialize("Compression", compression);
+
     std::string formatFlag;
     d.deserialize("Format", formatFlag);
     format = DataFormatBase::get(formatFlag);
+
     d.deserialize("Dimension", dimensions);
 
     SwizzleMask swizzleMask{swizzlemasks::rgba};
@@ -96,6 +189,9 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     d.deserialize("SwizzleMask", swizzleMask);
     d.deserialize("Interpolation", interpolation);
     d.deserialize("Wrapping", wrapping);
+
+    d.deserialize("RawFile", rawFile);
+    rawFile = fileDirectory / rawFile;
 
     auto volume =
         std::make_shared<Volume>(dimensions, format, swizzleMask, interpolation, wrapping);
@@ -138,15 +234,16 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     d.deserialize("Axis2Name", volume->axes[1].name);
     d.deserialize("Axis3Name", volume->axes[2].name);
 
-    volume->getMetaDataMap()->deserialize(d);
-    littleEndian = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian);
-    useCompression = volume->getMetaData<BoolMetaData>("UseCompression", useCompression);
+    {
+        if (const NodeSwitch ns{d, "RawFile", true}) {
+            volume->getMetaDataMap()->deserialize(d);
+        }
+    }
 
     auto vd = std::make_shared<VolumeDisk>(localPath, dimensions, format, swizzleMask,
                                            interpolation, wrapping);
 
-    auto loader =
-        std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, littleEndian, useCompression);
+    auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, byteOrder, compression);
     vd->setLoader(loader.release());
 
     volume->addRepresentation(vd);

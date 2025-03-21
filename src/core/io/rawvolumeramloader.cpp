@@ -36,11 +36,8 @@
 namespace inviwo {
 
 RawVolumeRAMLoader::RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
-                                       bool littleEndian, bool useCompression)
-    : rawFile_{rawFile}
-    , offset_{offset}
-    , littleEndian_{littleEndian}
-    , useCompression_{useCompression} {}
+                                       iff::ByteOrder byteOrder, iff::Compression compression)
+    : rawFile_{rawFile}, offset_{offset}, byteOrder_{byteOrder}, compression_{compression} {}
 
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
@@ -49,11 +46,11 @@ std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
 
     const auto size = glm::compMul(src.getDimensions()) * src.getDataFormat()->getSizeInBytes();
     auto data = std::make_unique<char[]>(size);
-    if (useCompression_) {
-        util::readCompressedBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
+    if (compression_ == iff::Compression::Enabled) {
+        util::readCompressedBytesIntoBuffer(rawFile_, offset_, size, byteOrder_,
                                             src.getDataFormat()->getSizeInBytes(), data.get());
     } else {
-        util::readBytesIntoBuffer(rawFile_, offset_, size, littleEndian_,
+        util::readBytesIntoBuffer(rawFile_, offset_, size, byteOrder_,
                                   src.getDataFormat()->getSizeInBytes(), data.get());
     }
 
@@ -74,13 +71,13 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
     }
 
     const auto size = glm::compMul(src.getDimensions());
-    if (useCompression_) {
+    if (compression_ == iff::Compression::Enabled) {
         util::readCompressedBytesIntoBuffer(
-            rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(), littleEndian_,
+            rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(), byteOrder_,
             src.getDataFormat()->getSizeInBytes(), volumeDst->getData());
     } else {
         util::readBytesIntoBuffer(rawFile_, offset_, size * src.getDataFormat()->getSizeInBytes(),
-                                  littleEndian_, src.getDataFormat()->getSizeInBytes(),
+                                  byteOrder_, src.getDataFormat()->getSizeInBytes(),
                                   volumeDst->getData());
     }
 

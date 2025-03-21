@@ -32,6 +32,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
 
 #include <filesystem>
 
@@ -48,18 +49,18 @@ public:
     virtual const DataFormatBase* getFormat() const = 0;
     virtual uvec3 getDimensions() const = 0;
     virtual dvec3 getSpacing() const = 0;
-    virtual bool getEndianess() const = 0;
+    virtual iff::ByteOrder getByteOrder() const = 0;
     virtual DataMapper getDataMapper() const = 0;
     virtual size_t getByteOffset() const = 0;
-    virtual bool getUseCompression() const = 0;
+    virtual iff::Compression getCompression() const = 0;
 
     virtual void setFormat(const DataFormatBase* format) = 0;
     virtual void setDimensions(uvec3 dim) = 0;
     virtual void setSpacing(dvec3 spacing) = 0;
-    virtual void setEndianess(bool endian) = 0;
+    virtual void setByteOrder(iff::ByteOrder byteOrder) = 0;
     virtual void setDataMapper(const DataMapper& datamapper) = 0;
     virtual void setByteOffset(size_t offset) = 0;
-    virtual void setUseCompression(bool compressed) = 0;
+    virtual void setCompression(iff::Compression compression) = 0;
 };
 
 }  // namespace inviwo

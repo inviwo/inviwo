@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>                   // for Volume, DataWrite...
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
 #include <inviwo/core/io/datawriter.h>                // for DataWriterType
 #include <inviwo/core/io/datawriterexception.h>       // for DataWriterException
 #include <inviwo/core/io/serialization/serializer.h>  // for Serializer
@@ -56,6 +57,9 @@
 #include <memory_resource>
 
 namespace inviwo {
+
+constexpr std::string_view InviwoVolume = "InviwoVolume";
+constexpr int InviwoVolumeVersion = 2;
 
 IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
     addExtension(FileExtension("ivf", "Inviwo ivf file format"));
@@ -83,10 +87,16 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer s{filePath, "InviwoVolume", &mbr};
-    s.serialize("RawFile", fmt::format("{}.raw", fileName));
+    Serializer s{filePath, InviwoVolume, InviwoVolumeVersion, &mbr};
+    {
+        const auto nodeSwitch = s.switchToNewNode("RawFile");
+        s.serialize("content", fmt::format("{}.raw", fileName), SerializationTarget::Attribute);
+        data.getMetaDataMap()->serialize(s);
+    }
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("ByteOffset", 0u);
+    s.serialize("ByteOrder", iff::ByteOrder::LittleEndian);
+    s.serialize("Compression", iff::Compression::Off);
     s.serialize("BasisAndOffset", data.getModelMatrix());
     s.serialize("WorldTransform", data.getWorldMatrix());
     s.serialize("Dimension", data.getDimensions());
@@ -108,7 +118,6 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     s.serialize("Interpolation", vr->getInterpolation());
     s.serialize("Wrapping", vr->getWrapping());
 
-    data.getMetaDataMap()->serialize(s);
     s.writeFile();
 
     if (auto fout = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {

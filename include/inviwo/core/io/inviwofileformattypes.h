@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/bytereaderutil.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/io/inviwofileformattypes.h>
-#include <inviwo/core/datastructures/diskrepresentation.h>
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
-#include <string>
-#include <memory>
+#include <string_view>
+#include <fmt/base.h>
 
-namespace inviwo {
+namespace inviwo::iff {
 
-/**
- * \class RawVolumeRAMLoader
- * \brief A loader of raw files. Used to create VolumeRAM representations.
- * This class us used by the DatVolumeSequenceReader, IvfVolumeReader and RawVolumeReader.
- */
+enum class ByteOrder : int { LittleEndian, BigEndian };
+enum class Compression : int { Off, Enabled };
 
-class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
-public:
-    RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
-                       iff::ByteOrder byteOrder, iff::Compression compression);
-    virtual RawVolumeRAMLoader* clone() const override;
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation& src) const override;
+IVW_CORE_API std::string_view enumToStr(ByteOrder byteOrder);
+IVW_CORE_API std::string_view enumToStr(Compression compression);
 
-private:
-    std::filesystem::path rawFile_;
-    size_t offset_;
-    iff::ByteOrder byteOrder_;
-    iff::Compression compression_;
-};
+inline std::string_view format_as(ByteOrder byteOrder) { return enumToStr(byteOrder); }
+inline std::string_view format_as(Compression compression) { return enumToStr(compression); }
 
-}  // namespace inviwo
+}  // namespace inviwo::iff
