@@ -39,6 +39,7 @@
 #include <inviwo/core/io/datareader.h>                // for DataReaderType
 #include <inviwo/core/io/datareaderexception.h>       // for DataReaderException
 #include <inviwo/core/io/rawvolumeramloader.h>        // for RawVolumeRAMLoader
+#include <inviwo/core/io/inviwofileformattypes.h>     // for iff::ByteOrder, iff::Compression
 #include <inviwo/core/metadata/metadata.h>            // for StringMetaData
 #include <inviwo/core/util/fileextension.h>           // for FileExtension
 #include <inviwo/core/util/filesystem.h>              // for getFileDirectory, isAbsolutePath
@@ -82,7 +83,8 @@ struct State {
     size3_t dimensions{0u};
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
-    bool littleEndian = true;
+    iff::ByteOrder byteOrder = iff::ByteOrder::LittleEndian;
+    iff::Compression compression = iff::Compression::Off;
 
     std::string formatFlag;
     mat3 basis{2.0f};
@@ -122,14 +124,25 @@ State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
          [](State& state, std::stringstream& ss) {
              const auto val = toLower(ss.str());
              if (val == "bigendian") {
-                 state.littleEndian = false;
+                 state.byteOrder = iff::ByteOrder::BigEndian;
              } else if (val == "littleendian") {
-                 state.littleEndian = true;
+                 state.byteOrder = iff::ByteOrder::LittleEndian;
              } else {
                  ss.setstate(std::ios_base::failbit);
              }
          }},
         {"byteoffset", [](State& state, std::stringstream& ss) { ss >> state.byteOffset; }},
+        {"compressed",
+         [](State& state, std::stringstream& ss) {
+             const auto val = toLower(ss.str());
+             if (val == "enabled") {
+                 state.compression= iff::Compression::Enabled;
+             } else if (val == "off") {
+                 state.compression= iff::Compression::Off;
+             } else {
+                 ss.setstate(std::ios_base::failbit);
+             }
+         }},
         {"sequences", [](State& state, std::stringstream& ss) { ss >> state.sequences; }},
         {"resolution",
          [](State& state, std::stringstream& ss) {
@@ -378,7 +391,8 @@ std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
 
     const auto filePos = offset + state.byteOffset;
 
-    auto loader = std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.littleEndian);
+    auto loader =
+        std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.byteOrder, state.compression);
     diskRepr->setLoader(loader.release());
 
     return diskRepr;
