@@ -31,7 +31,7 @@
 
 #include <inviwo/core/util/exception.h>
 
-namespace inviwo::iff {
+namespace inviwo {
 
 std::string_view enumToStr(ByteOrder byteOrder) {
     switch (byteOrder) {
@@ -41,18 +41,18 @@ std::string_view enumToStr(ByteOrder byteOrder) {
             return "BigEndian";
     }
     throw Exception{SourceContext{}, "Found invalid ByteOrder enum value '{}'",
-                    std::to_underlying(byteOrder)};
+                    static_cast<int>(byteOrder)};
 }
 
 std::string_view enumToStr(Compression compression) {
     switch (compression) {
-        case Compression::Off:
-            return "Off";
+        case Compression::Disabled:
+            return "Disabled";
         case Compression::Enabled:
             return "Enabled";
     }
     throw Exception{SourceContext{}, "Found invalid Compression enum value '{}'",
-                    std::to_underlying(compression)};
+                    static_cast<int>(compression)};
 }
 
-}  // namespace inviwo::iff
+}  // namespace inviwo

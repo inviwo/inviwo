@@ -38,7 +38,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
 #include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
 #include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
-#include <inviwo/core/io/inviwofileformattypes.h>                       // for iff::ByteOrder...
+#include <inviwo/core/io/inviwofileformattypes.h>                       // for ByteOrder...
 #include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
 #include <inviwo/core/metadata/metadatamap.h>                           // for MetaDataMap
 #include <inviwo/core/util/fileextension.h>                             // for FileExtension
@@ -95,9 +95,6 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     glm::mat4 wtm = glm::transpose(data.getWorldMatrix());
 
     auto print = util::overloaded{
-        [&ss](std::string_view key, const std::string& val) {
-            fmt::print(ss, "{}: {}\n", key, val);
-        },
         [&ss](std::string_view key, std::string_view val) { fmt::print(ss, "{}: {}\n", key, val); },
         [&ss](std::string_view key, InterpolationType val) {
             fmt::print(ss, "{}: {}\n", key, val);
@@ -109,10 +106,10 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
             fmt::print(ss, "{}: {} {} {}\n", key, wrapping[0], wrapping[1], wrapping[2]);
         },
         [&ss](std::string_view key, const Unit& unit) { fmt::print(ss, "{}: {}\n", key, unit); },
-        [&ss](std::string_view key, iff::ByteOrder byteOrder) {
+        [&ss](std::string_view key, ByteOrder byteOrder) {
             fmt::print(ss, "{}: {}\n", key, byteOrder);
         },
-        [&ss](std::string_view key, iff::Compression compression) {
+        [&ss](std::string_view key, Compression compression) {
             fmt::print(ss, "{}: {}\n", key, compression);
         },
         [&ss](std::string_view key, const auto& vec) {
@@ -122,9 +119,9 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     print("RawFile", fmt::format("{}.raw", fileName));
     print("Resolution", vr->getDimensions());
     print("Format", vr->getDataFormatString());
-    print("ByteOrder", iff::ByteOrder::LittleEndian);
+    print("ByteOrder", ByteOrder::LittleEndian);
     print("ByteOffset", std::string("0"));
-    print("Compression", iff::Compression::Off);
+    print("Compression", Compression::Disabled);
     print("BasisVector1", basis[0]);
     print("BasisVector2", basis[1]);
     print("BasisVector3", basis[2]);

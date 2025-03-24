@@ -65,18 +65,18 @@ public:
     virtual const DataFormatBase* getFormat() const override;
     virtual uvec3 getDimensions() const override;
     virtual dvec3 getSpacing() const override;
-    virtual iff::ByteOrder getByteOrder() const override;
+    virtual ByteOrder getByteOrder() const override;
     virtual DataMapper getDataMapper() const override;
     virtual size_t getByteOffset() const override;
-    virtual iff::Compression getCompression() const override;
+    virtual Compression getCompression() const override;
 
     virtual void setFormat(const DataFormatBase* format) override;
     virtual void setDimensions(uvec3 dim) override;
     virtual void setSpacing(dvec3 spacing) override;
-    virtual void setByteOrder(iff::ByteOrder byteOrder) override;
+    virtual void setByteOrder(ByteOrder byteOrder) override;
     virtual void setDataMapper(const DataMapper& datamapper) override;
     virtual void setByteOffset(size_t offset) override;
-    virtual void setCompression(iff::Compression compressed) override;
+    virtual void setCompression(Compression compressed) override;
 
 private:
     QLabel* fileName_;

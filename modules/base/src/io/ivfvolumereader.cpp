@@ -73,14 +73,14 @@ public:
     virtual bool convert(TxElement* root) override;
 
 private:
-    void updateByteOrder(TxElement* root) const;
+    static void updateByteOrder(TxElement* root);
 
     int version_;
 };
 
 Converter::Converter(int version) : version_(version) {}
 
-void Converter::updateByteOrder(TxElement* root) const {
+void Converter::updateByteOrder(TxElement* root) {
     auto metaDataMap = xml::getElement(root, "MetaDataMap");
 
     if (metaDataMap) {
@@ -121,9 +121,8 @@ bool Converter::convert(TxElement* root) {
                     auto content = littleEndianNode->Attribute("content").value_or("1");
                     byteOrder.SetAttribute(
                         "content",
-                        fmt::format("{}", content == "1"
-                                              ? std::to_underlying(iff::ByteOrder::LittleEndian)
-                                              : std::to_underlying(iff::ByteOrder::BigEndian)));
+                        fmt::format("{}", content == "1" ? static_cast<int>(ByteOrder::LittleEndian)
+                                                         : static_cast<int>(ByteOrder::BigEndian)));
 
                     root->InsertBeforeChild(metaDataMap, byteOrder);
                     metaDataMap->RemoveChild(littleEndianNode->Parent());
@@ -167,8 +166,8 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     size3_t dimensions{0u};
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
-    iff::ByteOrder byteOrder = iff::ByteOrder::LittleEndian;
-    iff::Compression compression = iff::Compression::Off;
+    ByteOrder byteOrder = ByteOrder::LittleEndian;
+    Compression compression = Compression::Disabled;
 
     d.registerFactory(util::getMetaDataFactory());
 
