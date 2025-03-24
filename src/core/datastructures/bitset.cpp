@@ -39,6 +39,8 @@
 
 namespace inviwo {
 
+BitSet::BitSetIterator::BitSetIterator() = default;
+
 BitSet::BitSetIterator::BitSetIterator(const BitSetIterator& rhs)
     : it_(std::make_unique<RoaringIt>(*rhs.it_)) {}
 
