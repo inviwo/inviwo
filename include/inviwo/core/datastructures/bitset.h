@@ -68,7 +68,7 @@ public:
         using pointer = const uint32_t*;
         using reference = const uint32_t&;
 
-        BitSetIterator() = default;
+        BitSetIterator();
         BitSetIterator(const BitSetIterator& rhs);
         BitSetIterator& operator=(const BitSetIterator& rhs);
         ~BitSetIterator();
