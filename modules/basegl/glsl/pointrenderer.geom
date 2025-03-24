@@ -39,6 +39,8 @@ uniform ivec3 repeat = ivec3(1, 1, 1);
 uniform vec3 shift = vec3(0.0, 0.0, 0.0);
 uniform mat4 basis = mat4(1.0);
 uniform float duplicateCutoff = 0.0;
+uniform float borderWidth = 0.0;  // [pixel]
+uniform float antialising = 1.5;  // [pixel]
 
 struct Cam {
     vec3 pos;
@@ -57,10 +59,10 @@ struct Point {
 layout(points) in;
 
 #if defined(ENABLE_DUPLICATE)
-// account for potential duplication of the point billboard (4 vertices) along each axis
-layout(triangle_strip, max_vertices = 32) out;
+// account for potential duplication of the point along each axis
+layout(points, max_vertices = 9) out;
 #else
-layout(triangle_strip, max_vertices = 4) out;
+layout(points, max_vertices = 1) out;
 #endif
 
 in PointVert {
@@ -68,8 +70,7 @@ in PointVert {
     flat float radius;
     flat uint pickID;
     flat uint index;
-}
-inPoint[];
+} inPoint[];
 
 #if defined(ENABLE_PERIODICITY)
 flat in uint instance[];
@@ -82,14 +83,15 @@ out PointGeom {
     vec3 camPos;
     float radius;
     flat uint index;
-}
-outPoint;
+} outPoint;
 
-void emit(in vec3 pos, in Point point, in vec3 camPos) {
-    vec4 projPos = camera.worldToClip * vec4(pos, 1.0);
+void emitQuad(in Point point, in vec3 camPos) {
+
+    vec4 projPos = camera.worldToClip * vec4(point.center.xyz, 1.0);
     projPos /= projPos.w;
 
     gl_Position = vec4(projPos.xyz, 1.0);
+    gl_PointSize = 2.0 * point.radius;
 
     outPoint.radius = point.radius;
     outPoint.camPos = camPos;
@@ -99,17 +101,6 @@ void emit(in vec3 pos, in Point point, in vec3 camPos) {
     outPoint.index = point.index;
 
     EmitVertex();
-}
-
-void emitQuad(in Point point, in Cam cam) {
-    cam.right *= point.radius * 1.41421356;
-    cam.up *= point.radius * 1.41421356;
-
-    emit(point.center.xyz + cam.right - cam.up, point, cam.pos);
-    emit(point.center.xyz - cam.right - cam.up, point, cam.pos);
-    emit(point.center.xyz + cam.right + cam.up, point, cam.pos);
-    emit(point.center.xyz - cam.right + cam.up, point, cam.pos);
-
     EndPrimitive();
 }
 
@@ -165,12 +156,8 @@ void main(void) {
     point.index = inPoint[0].index;
 
     // TODO handle orthographic cam...
-    Cam cam;
     vec3 camDir = normalize((camera.viewToWorld[2]).xyz);
     vec3 camPosWorld = camera.viewToWorld[3].xyz;
-    // camera coordinate system in object space
-    cam.right = normalize(cross(camDir, camera.viewToWorld[1].xyz));
-    cam.up = normalize(cross(camDir, cam.right));
     
 #if defined(ENABLE_DUPLICATE)
     vec4 pos = shiftFractional(gl_in[0].gl_Position);
@@ -194,9 +181,9 @@ void main(void) {
                     all(lessThan(newPos, vec3(1.0 + duplicateCutoff)))) {
                     point.center = data2World(vec4(newPos, pos.w));
                      // calculate cam position (in model space of the point)
-                    cam.pos = camPosWorld - point.center.xyz;
-                    if (!outOfView(cam.pos, camDir, point.radius)) {
-                        emitQuad(point, cam);
+                    vec3 camPos = camPosWorld - point.center.xyz;
+                    if (!outOfView(camPos, camDir, point.radius)) {
+                        emitQuad(point, camPos);
                     }
                 }
             }
@@ -207,11 +194,11 @@ void main(void) {
 
     point.center = data2World(shiftFractional(gl_in[0].gl_Position));
     // calculate cam position (in model space of the point)
-    cam.pos = camPosWorld - point.center.xyz;
-    if (outOfView(cam.pos, camDir, point.radius)) {
+    vec3 camPos = camPosWorld - point.center.xyz;
+    if (outOfView(camPos, camDir, point.radius)) {
         EndPrimitive();
     } else {
-        emitQuad(point, cam);
+        emitQuad(point, camPos);
     }
 #endif
 }
