@@ -32,14 +32,12 @@
 #include "utils/glyphs.glsl"
 #include "utils/blend.glsl"
 
-#define PI 3.1415926535897932384626433832795
-
 uniform CameraParameters camera;
 
 // holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
 uniform vec4 viewport;
 
-uniform float borderWidth;        // [pixel]
+uniform float borderWidth = 0.0;  // [pixel]
 uniform float antialising = 1.5;  // [pixel]
 uniform vec4 borderColor = vec4(1.0, 0.0, 0.0, 1.0);
 
@@ -68,49 +66,36 @@ in PointGeom {
 }
 point;
 
-float pxToView(float px) {
-    vec4 tmp = camera.clipToView * vec4(px * viewport.z, 0, gl_FragCoord.z, 1);
-    tmp /= tmp.w;
-    return tmp.x;
-}
-
 void main() {
     vec4 pixelPos = gl_FragCoord;
     pixelPos.xy -= viewport.xy;
-    // transform fragment coordinates from window coordinates to view coordinates.
-    vec4 coord = pixelPos * vec4(viewport.z, viewport.w, 2.0, 0.0) + vec4(vec3(-1.0), 1.0);
-    // transform fragment coord into object space
-    coord = camera.clipToWorld * coord;
-    coord /= coord.w;
-    coord -= point.center;
 
-    float va = pxToView(antialising);
+    // gl_PointCoord [0,1] within the point
+    vec2 coord = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
+    float r = length(coord);
+    if (r > 1.0) discard;
 
-    float r = length(coord.xy);
-    if (r > point.radius + va) discard;
+    r *= point.radius;
 
     // shading
     vec4 glyphColor = point.color;
 
 #if defined(ENABLE_TEXTURING)
     {
-        vec2 uv = (coord.xy + vec2(point.radius)) / vec2(2.0 * point.radius);
+        vec2 uv = vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y);
         vec4 tex = texture(pointTexture, uv);
         glyphColor = mix(glyphColor, TEXTURING_BLEND_FUNC(tex, glyphColor), textureMixing);
     }
 #endif
 
 #if defined(ENABLE_LABELS)
-    const vec2 labelSpherePos = vec2(0.0, 0.0);
-    vec2 labelSphereSize = 2.0 * point.radius * vec2(label.size, label.size * label.aspect);
-    const ivec2 atlasDims = ivec2(30, 30);
-
-    vec2 labelSphereStart = labelSpherePos - 0.5 * labelSphereSize;
-    vec2 labelSphereEnd = labelSpherePos + 0.5 * labelSphereSize;
-    vec2 sphereToTexture = 1.0 / (labelSphereSize * atlasDims);
-
     {
-        vec2 uv = coord.xy;
+        const ivec2 atlasDims = ivec2(30, 30);
+        vec2 labelSphereSize = 2.0 * vec2(label.size, label.size * label.aspect);
+        vec2 labelSphereStart = -0.5 * labelSphereSize;
+        vec2 labelSphereEnd = +0.5 * labelSphereSize;
+        vec2 sphereToTexture = 1.0 / (labelSphereSize * atlasDims);
+        vec2 uv = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
 
         if (all(lessThan(labelSphereStart, uv)) && all(lessThan(uv, labelSphereEnd))) {
             vec2 altasUv = (uv - labelSphereStart) * sphereToTexture;
@@ -122,11 +107,25 @@ void main() {
     }
 #endif
 
-    float vb = pxToView(borderWidth);
-
-    float mixing = clamp(mix(0.0, 1.0, (r - (point.radius - vb - va)) / va), 0.0, 1.0);
-    glyphColor = mix(glyphColor, borderColor, mixing);
-    glyphColor.a = clamp(mix(glyphColor.a, 0.0, (r - point.radius) / va), 0.0, 1.0);
+    if (antialising > 0.0 && borderWidth > 0.0) {
+        if (r > point.radius - antialising) {
+            glyphColor = borderColor;
+            glyphColor.a = mix(glyphColor.a, 0.0, (r - point.radius + antialising) / antialising);
+        } else if (r > point.radius - borderWidth - antialising) {
+            glyphColor = borderColor;
+        } else if (r > point.radius - borderWidth - 2.0 * antialising) {
+            glyphColor = mix(glyphColor, borderColor,
+                             (r - (point.radius - borderWidth - 2.0 * antialising)) / antialising);
+        }
+    } else if (antialising > 0.0) {
+        if (r > point.radius - antialising) {
+            glyphColor.a = mix(glyphColor.a, 0.0, (r - point.radius + antialising) / antialising);
+        }
+    } else if (borderWidth > 0.0) {
+        if (r > point.radius - borderWidth) {
+            glyphColor = borderColor;
+        }
+    }
 
     FragData0 = glyphColor;
     gl_FragDepth = glyphDepth(point.center.xyz, camera.worldToClip);

@@ -90,7 +90,7 @@ PointRenderer::PointRenderer()
     , borderWidth_{"borderWidth", "Border Width (pixel)", util::ordinalLength(2.0f, 10.0f)}
     , borderColor_{"borderColor", "Border Color", util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f})}
     , antialising_{"antialising", "Antialising (pixel)",
-                   util::ordinalLength(1.5f, 10.0f)
+                   util::ordinalLength(1.5f, 5.0f)
                        .set("Width of the antialised point edge (in pixel), this determines the "
                             "softness along the outer edge of the point"_help)}
 
@@ -126,6 +126,9 @@ PointRenderer::PointRenderer()
     addPort(outport_);
 
     config_.config.addProperties(borderWidth_, borderColor_, antialising_);
+    config_.radius.setMaxValue(32);
+    config_.radius.set(8);
+    config_.radius.setCurrentStateAsDefault();
 
     addProperties(renderMode_, depthTest_, config_.config, labels_.labels, texture_.texture,
                   bnl_.highlight, bnl_.select, bnl_.filter, periodic_.periodicity, camera_,
@@ -153,6 +156,7 @@ void PointRenderer::process() {
     TextureUnitContainer cont;
     utilgl::bind(cont, bnl_, labels_, config_, texture_);
 
+    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, depthTest_);
 
     for (const auto& mesh : inport_) {
