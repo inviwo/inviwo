@@ -95,8 +95,8 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     }
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("ByteOffset", 0u);
-    s.serialize("ByteOrder", iff::ByteOrder::LittleEndian);
-    s.serialize("Compression", iff::Compression::Off);
+    s.serialize("ByteOrder", ByteOrder::LittleEndian);
+    s.serialize("Compression", Compression::Enabled);
     s.serialize("BasisAndOffset", data.getModelMatrix());
     s.serialize("WorldTransform", data.getWorldMatrix());
     s.serialize("Dimension", data.getDimensions());
