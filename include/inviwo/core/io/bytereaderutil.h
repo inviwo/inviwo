@@ -38,10 +38,10 @@
 namespace inviwo::util {
 
 void IVW_CORE_API readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
-                                      size_t bytes, iff::ByteOrder byteOrder, size_t elementSize,
+                                      size_t bytes, ByteOrder byteOrder, size_t elementSize,
                                       void* dest);
 
 void IVW_CORE_API readCompressedBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
-                                                size_t bytes, iff::ByteOrder byteOrder,
+                                                size_t bytes, ByteOrder byteOrder,
                                                 size_t elementSize, void* dest);
 }  // namespace inviwo::util

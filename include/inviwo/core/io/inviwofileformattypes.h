@@ -33,10 +33,10 @@
 #include <string_view>
 #include <fmt/base.h>
 
-namespace inviwo::iff {
+namespace inviwo {
 
-enum class ByteOrder : int { LittleEndian, BigEndian };
-enum class Compression : int { Off, Enabled };
+enum class ByteOrder : std::uint8_t { LittleEndian, BigEndian };
+enum class Compression : std::uint8_t { Disabled, Enabled };
 
 IVW_CORE_API std::string_view enumToStr(ByteOrder byteOrder);
 IVW_CORE_API std::string_view enumToStr(Compression compression);
@@ -44,4 +44,4 @@ IVW_CORE_API std::string_view enumToStr(Compression compression);
 inline std::string_view format_as(ByteOrder byteOrder) { return enumToStr(byteOrder); }
 inline std::string_view format_as(Compression compression) { return enumToStr(compression); }
 
-}  // namespace inviwo::iff
+}  // namespace inviwo

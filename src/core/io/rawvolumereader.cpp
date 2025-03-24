@@ -44,13 +44,13 @@ namespace inviwo {
 RawVolumeReader::RawVolumeReader()
     : DataReaderType<Volume>()
     , rawFile_("")
-    , byteOrder_(iff::ByteOrder::LittleEndian)
+    , byteOrder_(ByteOrder::LittleEndian)
     , dimensions_(0)
     , spacing_(0.01f)
     , format_(nullptr)
     , byteOffset_(0u)
     , parametersSet_(false)
-    , compression_{iff::Compression::Off} {
+    , compression_{Compression::Disabled} {
     addExtension(FileExtension("raw", "Raw binary file"));
 }
 
@@ -83,18 +83,6 @@ RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
 
 RawVolumeReader* RawVolumeReader::clone() const { return new RawVolumeReader(*this); }
 
-void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensions,
-                                    iff::ByteOrder byteOrder, DataMapper dataMapper,
-                                    size_t byteOffset, iff::Compression compression) {
-    parametersSet_ = true;
-    format_ = format;
-    dimensions_ = dimensions;
-    byteOrder_ = byteOrder;
-    dataMapper_ = dataMapper;
-    byteOffset_ = byteOffset;
-    compression_ = compression;
-}
-
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& filePath) {
     return readData(filePath, nullptr);
 }
@@ -122,10 +110,10 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
                 "rawReaderData.dimensions", readerDialog->getDimensions()));
 
             readerDialog->setByteOrder(
-                static_cast<iff::ByteOrder>(metadata->getMetaData<IntMetaData>(
+                static_cast<ByteOrder>(metadata->getMetaData<IntMetaData>(
                     "rawReaderData.byteOrder", static_cast<int>(readerDialog->getByteOrder()))));
             readerDialog->setCompression(
-                static_cast<iff::Compression>(metadata->getMetaData<IntMetaData>(
+                static_cast<Compression>(metadata->getMetaData<IntMetaData>(
                     "rawReaderData.compression",
                     static_cast<int>(readerDialog->getCompression()))));
 

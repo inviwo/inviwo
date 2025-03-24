@@ -54,11 +54,6 @@ public:
     virtual RawVolumeReader* clone() const override;
     virtual ~RawVolumeReader() = default;
 
-    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions,
-                               iff::ByteOrder byteOrder, DataMapper dataMapper,
-                               size_t byteOffset = 0u,
-                               iff::Compression compression = iff::Compression::Off);
-
     virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
     virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath,
                                              MetaDataOwner* metadata) override;
@@ -67,14 +62,14 @@ public:
 
 private:
     std::filesystem::path rawFile_;
-    iff::ByteOrder byteOrder_;
+    ByteOrder byteOrder_;
     size3_t dimensions_;
     vec3 spacing_;
     const DataFormatBase* format_;
     DataMapper dataMapper_;
     size_t byteOffset_;
     bool parametersSet_;
-    iff::Compression compression_;
+    Compression compression_;
 };
 
 }  // namespace inviwo
