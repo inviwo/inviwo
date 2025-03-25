@@ -187,21 +187,33 @@ function(ivw_register_modules)
                 list(APPEND new_dependencies ${dependency})
             endif()
         endforeach()
+
         # Validate that there only are module dependencies
         ivw_private_filter_dependency_list(new_dependencies ${${mod}_name} ${new_dependencies})
-        #ivw_private_check_dependency_list(new_dependencies modules ${${mod}_name} ${new_dependencies})
-        
+
+        set(existing_dependencies "")
         foreach(dep IN LISTS new_dependencies)
             string(TOUPPER ${dep} udep)
             list(FIND modules ${udep} found)
             if(${found} EQUAL -1)
                 ivw_mod_name_to_target_name(target ${dep})
-                find_package(${target} CONFIG REQUIRED)
+                find_package(${target} CONFIG QUIET)
+                if(NOT ${target}_FOUND)
+                    message(WARNING "${${mod}_name} disabled due to a dependency toward ${target} which was not found")
+                    set("${mod}_disabled" ON)
+                    set("${mod}_disabledReason"
+                        "Disabled due to a dependency toward ${target} which was not found"
+                    )
+                else()
+                    list(APPEND existing_dependencies ${dep})
+                endif()
+            else()
+                list(APPEND existing_dependencies ${dep})
             endif()
         endforeach()
 
-        set("${mod}_dependencies" ${new_dependencies} CACHE INTERNAL "Module dependencies")
-        ivw_mod_name_to_mod_dep(udependencies ${new_dependencies})
+        set("${mod}_dependencies" ${existing_dependencies} CACHE INTERNAL "Module dependencies")
+        ivw_mod_name_to_mod_dep(udependencies ${existing_dependencies})
         set("${mod}_udependencies" ${udependencies} CACHE INTERNAL "Module uppercase dependencies")
     endforeach()
     
