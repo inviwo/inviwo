@@ -281,6 +281,11 @@ public:
     auto connectionRange() const { return util::as_range(connections_); }
 
     /**
+     * Returns a range of all connections (PortConnection&).
+     */
+    auto connectionVecRange() const { return util::as_range(connectionsVec_); }
+
+    /**
      * @brief Check if @p port is owned by a processor in this ProcessorNetwork
      *
      * This will retrieve the identifier of the @p ports owner and see if this network has a

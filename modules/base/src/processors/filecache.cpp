@@ -63,7 +63,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::st
 
     s.serializeRange(
         "Connections",
-        net.connectionRange() | std::views::filter([&](const PortConnection& connection) {
+        net.connectionVecRange() | std::views::filter([&](const PortConnection& connection) {
             return util::contains(processors, connection.getInport()->getProcessor()) &&
                    util::contains(processors, connection.getOutport()->getProcessor());
         }),
@@ -110,7 +110,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::st
     xml.clear();
     s.write(xml);
 
-    return {fmt::format("{}", std::hash<std::string_view>{}(xml))};
+    return {fmt::format("{:016X}", std::hash<std::string_view>{}(xml))};
 }
 
 }  // namespace inviwo::detail
