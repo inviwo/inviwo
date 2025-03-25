@@ -184,15 +184,16 @@ void Processor::accept(NetworkVisitor& visitor) {
 }
 
 void Processor::addPortToGroup(Port* port, std::string_view portGroup) {
-    portGroups_[port] = portGroup;
+    portGroups_[port->getIdentifier()] = portGroup;
     groupPorts_[std::string(portGroup)].push_back(port);
 }
 
 void Processor::removePortFromGroups(Port* port) {
-    auto group = portGroups_[port];
-    std::erase(groupPorts_[group], port);
-    if (groupPorts_[group].empty()) groupPorts_.erase(group);
-    portGroups_.erase(port);
+    if (auto groupIt = portGroups_.find(port->getIdentifier()); groupIt != portGroups_.end()) {
+        std::erase(groupPorts_[groupIt->second], port);
+        if (groupPorts_[groupIt->second].empty()) groupPorts_.erase(groupIt->second);
+        portGroups_.erase(groupIt);
+    }
 }
 
 const std::string& Processor::getClassIdentifier() const {
@@ -273,7 +274,7 @@ const std::vector<Inport*>& Processor::getInports() const { return inports_; }
 const std::vector<Outport*>& Processor::getOutports() const { return outports_; }
 
 const std::string& Processor::getPortGroup(Port* port) const {
-    auto it = portGroups_.find(port);
+    auto it = portGroups_.find(port->getIdentifier());
     if (it != portGroups_.end()) {
         return it->second;
     } else {
@@ -291,7 +292,7 @@ std::vector<std::string> Processor::getPortGroups() const {
 }
 
 const std::vector<Port*>& Processor::getPortsInGroup(std::string_view portGroup) const {
-    auto it = groupPorts_.find(std::string(portGroup));
+    auto it = groupPorts_.find(portGroup);
     if (it != groupPorts_.end()) {
         return it->second;
     } else {
@@ -354,15 +355,15 @@ void Processor::serialize(Serializer& s) const {
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);
     s.serialize("displayName", displayName_, SerializationTarget::Attribute);
 
-    s.serialize(
-        "PortGroups", portGroups_, "PortGroup",
-        [&](const auto& pair) {
-            return util::contains_if(ownedInports_,
-                                     [&](const auto& p) { return p.get() == pair.first; }) ||
-                   util::contains_if(ownedOutports_,
-                                     [&](const auto& p) { return p.get() == pair.first; });
-        },
-        util::identifier{});
+    s.serialize("PortGroups", portGroups_, "PortGroup", [&](const auto& pair) {
+        return util::contains_if(ownedInports_,
+                                 [&](const std::unique_ptr<Inport>& p) {
+                                     return p->getIdentifier() == pair.first;
+                                 }) ||
+               util::contains_if(ownedOutports_, [&](const std::unique_ptr<Outport>& p) {
+                   return p->getIdentifier() == pair.first;
+               });
+    });
 
     s.serialize("OwnedInportIdentifiers", ownedInports_, "InportIdentifier", util::alwaysTrue{},
                 util::identifier{});
