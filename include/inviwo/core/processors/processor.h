@@ -469,7 +469,7 @@ private:
     std::vector<InteractionHandler*> interactionHandlers_;
 
     UnorderedStringMap<std::vector<Port*>> groupPorts_;
-    std::unordered_map<Port*, std::string> portGroups_;
+    UnorderedStringMap<std::string> portGroups_;
 
     ProcessorNetwork* network_;
 
