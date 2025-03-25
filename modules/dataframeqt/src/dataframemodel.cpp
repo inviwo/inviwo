@@ -175,6 +175,7 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
 
     switch (role) {
         case Qt::DisplayRole: {
+            if (index.column() >= std::ssize(valueFuncs_)) return {};
             QVariant val = valueFuncs_[index.column()](index.row());
             switch (val.typeId()) {
                 case QMetaType::Double:
@@ -187,8 +188,10 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
             }
         }
         case Roles::Data:
+            if (index.column() >= std::ssize(valueFuncs_)) return {};
             return valueFuncs_[index.column()](index.row());
         case Qt::ToolTipRole:
+            if (index.column() >= std::ssize(tooltipFuncs_)) return {};
             return tooltipFuncs_[index.column()](index.row());
         case Qt::BackgroundRole: {
             const auto& indexCol = data_->getIndexColumn()
@@ -196,6 +199,7 @@ QVariant DataFrameModel::data(const QModelIndex& index, int role) const {
                                        ->getRAMRepresentation()
                                        ->getDataContainer();
 
+            if (index.row() >= std::ssize(indexCol)) return {};
             const bool highlighted =
                 manager_ ? (manager_->isHighlighted(indexCol[index.row()]) ||
                             manager_->isHighlighted(index.column(), BrushingTarget::Column))
