@@ -60,6 +60,7 @@
 #include <inviwo/dataframe/processors/dataframesource.h>            // for DataFrameSource
 #include <inviwo/dataframe/processors/dataframetobuffer.h>
 #include <inviwo/dataframe/processors/dataframetomesh.h>
+#include <inviwo/dataframe/processors/filelist.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>           // for ImageToDataFrame
 #include <inviwo/dataframe/processors/syntheticdataframe.h>         // for SyntheticDataFrame
 #include <inviwo/dataframe/processors/tffromdataframecolumn.h>
@@ -112,6 +113,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<DataFrameToBuffer>();
     registerProcessor<DataFrameToMesh>();
     registerProcessor<DataFrameToVector>();
+    registerProcessor<FileList>();
     registerProcessor<ImageToDataFrame>();
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<TFFromDataFrameColumn>();
