@@ -58,8 +58,7 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(
     auto volumes = std::make_shared<VolumeSequence>();
     for (const auto& filename : filenames) {
         auto abs = dir / filename;
-        auto sequence = reader_.readData(abs);
-        volumes->push_back(sequence->front());
+        volumes->push_back(reader_.readData(abs));
     }
 
     return volumes;

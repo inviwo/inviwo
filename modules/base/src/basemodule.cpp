@@ -327,6 +327,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataReader(std::make_unique<DatVolumeReader>());
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfVolumeReader>());
+    registerDataReader(std::make_unique<IvfVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfSequenceVolumeReader>());
     // Register Data writers
     registerDataWriter(std::make_unique<DatVolumeWriter>());

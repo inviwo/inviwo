@@ -194,22 +194,11 @@ struct VolumeMetaData {
     MetaDataMap metaData;
 };
 
-}  // namespace
-
-IvfVolumeReader::IvfVolumeReader() : DataReaderType<VolumeSequence>{} {
-    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
-}
-
-IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
-
-std::shared_ptr<VolumeSequence> IvfVolumeReader::readData(const std::filesystem::path& filePath) {
-    const auto localPath = downloadAndCacheIfUrl(filePath);
-
-    checkExists(localPath);
+std::shared_ptr<VolumeSequence> readIvfFile(std::filesystem::path filePath) {
     const auto fileDirectory = filePath.parent_path();
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Deserializer d{localPath, "InviwoVolume", &mbr};
+    Deserializer d{filePath, "InviwoVolume", &mbr};
 
     Converter converter{d.getVersion()};
     d.convertVersion(&converter);
@@ -267,8 +256,8 @@ std::shared_ptr<VolumeSequence> IvfVolumeReader::readData(const std::filesystem:
         volume->axes = axes;
         *(volume->getMetaDataMap()) = metaData;
 
-        auto volumeDisk = std::make_shared<VolumeDisk>(localPath, dimensions, format, swizzleMask,
-                                                       interpolation, wrapping);
+        auto volumeDisk = std::make_shared<VolumeDisk>(fileDirectory / path, dimensions, format,
+                                                       swizzleMask, interpolation, wrapping);
         auto loader = std::make_unique<RawVolumeRAMLoader>(fileDirectory / path, byteOffset,
                                                            byteOrder, compression);
         volumeDisk->setLoader(loader.release());
@@ -276,6 +265,47 @@ std::shared_ptr<VolumeSequence> IvfVolumeReader::readData(const std::filesystem:
     }
 
     return sequence;
+}
+
+}  // namespace
+
+IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>{} {
+    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
+}
+
+IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
+
+std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& filePath) {
+
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
+
+    auto sequence = readIvfFile(localPath);
+    if (sequence->size() != 1) {
+        throw DataReaderException{
+            SourceContext{},
+            "Volume sequences are not handled by the IvfVolumeReader, use the "
+            "IvfVolumeSequenceReader"};
+    }
+
+    return sequence->front();
+}
+
+IvfVolumeSequenceReader::IvfVolumeSequenceReader() : DataReaderType<VolumeSequence>{} {
+    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
+}
+
+IvfVolumeSequenceReader* IvfVolumeSequenceReader::clone() const {
+    return new IvfVolumeSequenceReader(*this);
+}
+
+std::shared_ptr<VolumeSequence> IvfVolumeSequenceReader::readData(
+    const std::filesystem::path& filePath) {
+
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
+
+    return readIvfFile(localPath);
 }
 
 }  // namespace inviwo
