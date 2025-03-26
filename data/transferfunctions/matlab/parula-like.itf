@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<InviwoWorkspace version="3">
+<InviwoTransferFunction version="1">
     <maskMin content="0" />
     <maskMax content="1" />
     <type content="0" />
@@ -65,4 +65,4 @@
             <rgba x="0.9764706" y="0.9843137" z="0.08235294" w="1" />
         </Point>
     </Points>
-</InviwoWorkspace>
+</InviwoTransferFunction>
