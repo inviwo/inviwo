@@ -141,6 +141,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/bytereaderutil.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/bytewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/curlutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
@@ -541,6 +542,7 @@ set(SOURCE_FILES
     interaction/pickingstate.cpp
     interaction/trackball.cpp
     io/bytereaderutil.cpp
+    io/bytewriterutil.cpp
     io/curlutils.cpp
     io/datareader.cpp
     io/datareaderexception.cpp
