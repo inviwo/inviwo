@@ -56,9 +56,10 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(
     std::pmr::vector<std::pmr::string> filenames{&mbr};
     d.deserialize("volumes", filenames, "volume");
     auto volumes = std::make_shared<VolumeSequence>();
-    for (auto filename : filenames) {
+    for (const auto& filename : filenames) {
         auto abs = dir / filename;
-        volumes->push_back(reader_.readData(abs));
+        auto sequence = reader_.readData(abs);
+        volumes->push_back(sequence->front());
     }
 
     return volumes;

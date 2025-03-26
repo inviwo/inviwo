@@ -35,9 +35,7 @@
 #include <vector>
 #include <memory>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IVW_CORE_API bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly = true);
 
@@ -52,6 +50,5 @@ getVolumesForTimestep(const VolumeSequence& seq, double t, bool sorted = true);
 
 bool IVW_CORE_API hasTimestamp(const std::shared_ptr<const Volume>& vol);
 double IVW_CORE_API getTimestamp(const std::shared_ptr<const Volume>& vol);
-}  // namespace util
 
-}  // namespace inviwo
+}  // namespace inviwo::util

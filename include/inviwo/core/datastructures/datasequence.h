@@ -75,12 +75,12 @@ public:
 
     DataSequence() = default;
 
-    DataSequence(std::span<std::shared_ptr<Data>> data) {
+    explicit DataSequence(std::span<std::shared_ptr<Data>> data) {
         for (auto item : data) {
             data_.emplace_back(item);
         }
     }
-    DataSequence(std::span<std::shared_ptr<const Data>> data) {
+    explicit DataSequence(std::span<std::shared_ptr<const Data>> data) {
         for (auto item : data) {
             data_.emplace_back(item);
         }
