@@ -33,6 +33,33 @@
 </style>
 </head>
 <body>
+<h2>2025-03-25 Updated Inviwo Volume File Format (IVF)</h2>
+<p>The Inviwo Volume File format (.ivf) was revised and updated. It now also supports reading compressed binary/raw data using either ZLib, libBZ2, libLZMA, or libZstd (.gz, .bz2, .xz, and .zst). When exporting volume data to .ivf the data is compressed with ZLib.</p>
+<p>Support for time series was also added to the .ivf format. It is now possible to refer to multiple raw files, each with its own, optional metadata as depicted below. The premise for this is that all datasets share the same format, dimensions, and transformations. If this is not the case, the .ivfs format (Inviwo Volume File Sequence) has to be used instead.</p>
+<div class="highlight highlight-text-xml"><pre class="notranslate">?xml version="1.0" ?&gt;
+&lt;<span class="pl-ent">InviwoVolume</span> <span class="pl-e">version</span>=<span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">RawFiles</span>&gt;
+        &lt;<span class="pl-ent">RawFile</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>../data/CLOUDf01.bin.gz<span class="pl-pds">"</span></span>&gt;
+            &lt;<span class="pl-ent">MetaDataMap</span>&gt;
+                &lt;<span class="pl-ent">MetaDataItem</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>org.inviwo.DoubleMetaData<span class="pl-pds">"</span></span> <span class="pl-e">key</span>=<span class="pl-s"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span>&gt;
+                    &lt;<span class="pl-ent">MetaData</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span> /&gt;
+                &lt;/<span class="pl-ent">MetaDataItem</span>&gt;
+            &lt;/<span class="pl-ent">MetaDataMap</span>&gt;
+        &lt;/<span class="pl-ent">RawFile</span>&gt;
+        &lt;<span class="pl-ent">RawFile</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>../data/CLOUDf02.bin.gz<span class="pl-pds">"</span></span>&gt;
+            &lt;<span class="pl-ent">MetaDataMap</span>&gt;
+                &lt;<span class="pl-ent">MetaDataItem</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>org.inviwo.DoubleMetaData<span class="pl-pds">"</span></span> <span class="pl-e">key</span>=<span class="pl-s"><span class="pl-pds">"</span>timestamp<span class="pl-pds">"</span></span>&gt;
+                    &lt;<span class="pl-ent">MetaData</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span> /&gt;
+                &lt;/<span class="pl-ent">MetaDataItem</span>&gt;
+            &lt;/<span class="pl-ent">MetaDataMap</span>&gt;
+        &lt;/<span class="pl-ent">RawFile</span>&gt;
+        ...
+    &lt;/<span class="pl-ent">RawFiles</span>&gt;
+    &lt;<span class="pl-ent">ByteOrder</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span> /&gt;
+    &lt;<span class="pl-ent">Compression</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span> /&gt;
+    &lt;<span class="pl-ent">Format</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>FLOAT32<span class="pl-pds">"</span></span> /&gt;
+    ...
+&lt;/<span class="pl-ent">InviwoVolume</span>&gt;</pre></div>
 <h2>2025-02-28 DataFrame to JSON conversion</h2>
 <p>The conversion of <code class="notranslate">DataFrame</code> to and from JSON was updated. Now, the order of columns is explicitly encoded since the JSON specification does not guarantee the ordering of objects and keys. In addition, the data types of the columns can be specified using Inviwo's data types (<code class="notranslate">DataFormatBase::get(id)-&gt;getString()</code>).</p>
 <p>The new JSON output is based on Pandas <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html" rel="nofollow"><code class="notranslate">pandas.DataFrame.to_json(order='split')</code></a> and has the following JSON object layout:</p>
