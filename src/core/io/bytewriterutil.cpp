@@ -63,7 +63,7 @@ void writeCompressedBytes(const std::filesystem::path& path, const void* source,
     if (fout.good()) {
         try {
             fout.write(static_cast<const char*>(source), static_cast<std::streamsize>(bytes));
-        } catch (const std::ios_base::failure& e) {
+        } catch (const std::ios_base::failure&) {
             throw DataReaderException(SourceContext{}, "Could not write to file: {:?g}", path);
         }
     } else {
