@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025 Inviwo Foundation
+ * Copyright (c) 2015-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,33 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
 
 #include <string_view>
+#include <filesystem>
 #include <cstdint>
 
-namespace inviwo {
-
-enum class ByteOrder : std::uint8_t { LittleEndian, BigEndian };
-enum class Compression : std::uint8_t { Disabled, Enabled };
-
-IVW_CORE_API std::string_view enumToStr(ByteOrder byteOrder);
-IVW_CORE_API std::string_view enumToStr(Compression compression);
-
-inline std::string_view format_as(ByteOrder byteOrder) { return enumToStr(byteOrder); }
-inline std::string_view format_as(Compression compression) { return enumToStr(compression); }
-
-namespace util {
+namespace inviwo::util {
 
 /**
- * Check whether compression with zlib, that is bxz::z, is available
- *
- * @return true if zlib compression is enabled
+ * Write \p bytes bytes of the data \p source to the given filepath \p path. The data is compressed
+ * if \p compression is enabled and supported.
+*
+ * @throw DataReaderException if the file cannot be created or written to
+ * \see util::isCompressionSupported
  */
-IVW_CORE_API bool isCompressionSupported();
+IVW_CORE_API void writeBytes(const std::filesystem::path& path, const void* source, size_t bytes,
+                             Compression compression);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -28,8 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/inviwofileformattypes.h>
-
 #include <inviwo/core/util/exception.h>
+
+#include <bxzstr/bxzstr.hpp>
 
 namespace inviwo {
 
@@ -53,6 +54,14 @@ std::string_view enumToStr(Compression compression) {
     }
     throw Exception{SourceContext{}, "Found invalid Compression enum value '{}'",
                     static_cast<int>(compression)};
+}
+
+bool util::isCompressionSupported() {
+#ifdef BXZSTR_Z_STREAM_WRAPPER_HPP
+    return true;
+#else
+    return false;
+#endif
 }
 
 }  // namespace inviwo
