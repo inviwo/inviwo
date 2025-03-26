@@ -534,13 +534,13 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
     if (!state.datFiles.empty()) {
         throw DataReaderException{
             SourceContext{},
-            "Volume sequences are not handled in the DatVolumeReader, use the "
+            "Volume sequences are not handled by the DatVolumeReader, use the "
             "DatVolumeSequenceReader"};
     }
     if (state.sequences != 1) {
         throw DataReaderException{
             SourceContext{},
-            "Volume sequences are not handled in the DatVolumeReader, use the "
+            "Volume sequences are not handled by the DatVolumeReader, use the "
             "DatVolumeSequenceReader"};
     }
 
