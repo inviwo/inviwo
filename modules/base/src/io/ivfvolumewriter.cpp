@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/io/inviwofileformattypes.h>
+#include <inviwo/core/io/bytewriterutil.h>
 #include <inviwo/core/io/datawriter.h>                // for DataWriterType
 #include <inviwo/core/io/datawriterexception.h>       // for DataWriterException
 #include <inviwo/core/io/serialization/serializer.h>  // for Serializer
@@ -76,6 +77,7 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::filesystem::pat
 }
 
 namespace util {
+
 void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
                     Overwrite overwrite) {
     const auto rawPath = filesystem::replaceFileExtension(filePath, "raw");
@@ -96,7 +98,11 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("ByteOffset", 0u);
     s.serialize("ByteOrder", ByteOrder::LittleEndian);
-    s.serialize("Compression", Compression::Enabled);
+    if (util::isCompressionSupported()) {
+        s.serialize("Compression", Compression::Enabled);
+    } else {
+        s.serialize("Compression", Compression::Disabled);
+    }
     s.serialize("BasisAndOffset", data.getModelMatrix());
     s.serialize("WorldTransform", data.getWorldMatrix());
     s.serialize("Dimension", data.getDimensions());
@@ -120,13 +126,12 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
 
     s.writeFile();
 
-    if (auto fout = std::ofstream(rawPath, std::ios::out | std::ios::binary)) {
-        fout.write(static_cast<const char*>(vr->getData()),
-                   glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSizeInBytes());
-    } else {
-        throw DataWriterException(SourceContext{}, "Could not write to raw file: {}", rawPath);
-    }
+    const size_t bytes = glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSizeInBytes();
+    const Compression compression =
+        util::isCompressionSupported() ? Compression::Enabled : Compression::Disabled;
+    util::writeBytes(rawPath, vr->getData(), bytes, compression);
 }
+
 }  // namespace util
 
 }  // namespace inviwo
