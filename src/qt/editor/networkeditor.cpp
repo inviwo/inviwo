@@ -117,6 +117,9 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     , backgroundVisible_(true)
     , adjustSceneToChange_(true) {
 
+    setBspTreeDepth(5);
+    //setItemIndexMethod(QGraphicsScene::NoIndex);
+
     setObjectName(name);
 
     mainWindow->getInviwoApplication()->getProcessorNetworkEvaluator()->setExceptionHandler(
