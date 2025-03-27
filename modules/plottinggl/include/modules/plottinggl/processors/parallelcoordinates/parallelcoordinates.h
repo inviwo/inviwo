@@ -234,6 +234,7 @@ private:
     int hoveredAxis_ = -1;
 
     bool brushingDirty_;
+    bool rangesDirty_;
     bool updating_ = false;
 };
 
