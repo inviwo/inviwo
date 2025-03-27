@@ -66,21 +66,24 @@ const ProcessorInfo DataFrameTable::processorInfo_{
     "Data Output",                 // Category
     CodeState::Stable,             // Code state
     Tags::CPU | Tag{"DataFrame"},  // Tags
-};
+    "Shows the content of a DataFrame in a tabular view."_help};
+
 const ProcessorInfo& DataFrameTable::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameTable::DataFrameTable()
     : Processor()
-    , inport_("inport")
-    , brushLinkPort_("brushingAndLinking")
+    , inport_("inport", "DataFrame contents to be shown in the processor widget"_help)
+    , brushLinkPort_("brushingAndLinking", "Inport for brushing & linking interactions"_help)
 
     , dimensions_("dimensions", "Canvas Size", size2_t(512, 300), size2_t(1, 1),
                   size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid)
     , position_("position", "Canvas Position", ivec2(128, 128),
                 ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
                 ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
-    , showIndexColumn_("showIndexColumn", "Show Index Column", false, InvalidationLevel::Valid)
-    , showCategoryIndices_("showCategoryIndices", "Show Category Indices", false)
+    , showIndexColumn_("showIndexColumn", "Show Index Column",
+                       "show/hide index column in table"_help, false, InvalidationLevel::Valid)
+    , showCategoryIndices_("showCategoryIndices", "Show Category Indices",
+                           "show integral category indices for categorical columns"_help, false)
     , showFilteredRowCols_("showFilteredItems", "Show Filtered Items", true)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier)} {
