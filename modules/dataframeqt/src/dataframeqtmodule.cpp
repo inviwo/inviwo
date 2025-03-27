@@ -33,6 +33,7 @@
 #include <inviwo/core/rendering/datavisualizer.h>                        // for DataVisualizer
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>            // for DataFrameTablePr...
 #include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>  // for DataFrameTableVi...
+#include <inviwo/dataframeqt/processors/dataframedocktable.h>
 #include <inviwo/dataframeqt/processors/dataframetable.h>                // for DataFrameTable
 
 #include <memory>  // for make_unique, uni...
@@ -41,8 +42,13 @@ namespace inviwo {
 class InviwoApplication;
 
 DataFrameQtModule::DataFrameQtModule(InviwoApplication* app) : InviwoModule(app, "DataFrameQt") {
+    registerProcessor<DataFrameDockTable>();
     registerProcessor<DataFrameTable>();
+
     registerProcessorWidget<DataFrameTableProcessorWidget, DataFrameTable>();
+    registerProcessorWidget<DataFrameDockTableWidget, DataFrameDockTable>();
+
+
     registerDataVisualizer(std::make_unique<DataFrameTableVisualizer>(app));
 }
 
