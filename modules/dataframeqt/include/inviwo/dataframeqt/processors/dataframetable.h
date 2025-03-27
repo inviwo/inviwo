@@ -54,21 +54,6 @@ class DataFrameTableProcessorWidget;
 class FileExtension;
 class ProcessorWidget;
 
-/** \docpage{org.inviwo.DataFrameTable, DataFrame Table}
- * ![](org.inviwo.DataFrameTable.png?classIdentifier=org.inviwo.DataFrameTable)
- * Shows the content of a DataFrame in a tabular view.
- *
- * ### Inports
- *   * __inport__               DataFrame contents to be shown in the processor widget
- *   * __brushingAndLinking__   inport for brushing & linking interactions
- *
- * ### Properties
- *   * __Show Index Column__             show/hide index column in table
- *   * __Show Category Indices__         show interal category indices for categorical columns
- *   * __Vector Components as Columns__  print glm::vec components in separate columns
- *
- */
-
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
                                                   public ProcessorWidgetMetaDataObserver,
                                                   public Exporter {
