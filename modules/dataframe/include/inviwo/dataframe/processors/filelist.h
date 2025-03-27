@@ -33,6 +33,9 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
@@ -50,8 +53,14 @@ public:
 
 private:
     DataOutport<DataFrame> outport_;
-    BrushingAndLinkingInport bnl_;
+    BrushingAndLinkingInport bnlInport_;
+    BrushingAndLinkingOutport bnlOutport_;
     DirectoryProperty directory_;
+    ButtonProperty refresh_;
+    StringProperty filter_;
+    IntSizeTProperty selectedIndex_;
+    IntSizeTProperty highlightIndex_;
+    std::vector<std::filesystem::directory_entry> files_;
 
     FileProperty selected_;
     FileProperty highlight_;
