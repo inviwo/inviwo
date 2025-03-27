@@ -56,29 +56,32 @@ class QWidget;
 namespace inviwo {
 
 ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title, QWidget* parent)
-    : InviwoDockWidget(title, parent), ProcessorWidget(p) {
-    this->setObjectName("ProcessorDockWidgetQt");
+    : InviwoDockWidget(title, parent, "ProcessorDockWidgetQt")
+    , ProcessorWidget(p)
+    , idChange_{p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
+        setWindowTitle(utilqt::toQString(newName));
+    })} {
+
     setDimensions(ivec2(200, 150));
 
-    ivec2 dim = ProcessorWidget::getDimensions();
-    ivec2 pos = ProcessorWidget::getPosition();
+    const ivec2 dim = ProcessorWidget::getDimensions();
+    const ivec2 pos = ProcessorWidget::getPosition();
 
     setWindowTitle(utilqt::toQString(p->getDisplayName()));
     // make the widget to float and not sticky by default
     this->setFloating(true);
     this->setSticky(false);
 
-    setDimensions(dim);
-
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
-
-        // set default docking area to the right side
-        mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
         // Move widget relative to main window to make sure that it is visible on screen.
         QPoint newPos =
-            utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
+            utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
+            util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+            // prevent move events, since this will automatically save the "adjusted" position.
+            // The processor widget already has its correct pos, i.e. the one de-serialized from
+            // file.
             InviwoDockWidget::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
             newPos = mainWindow->pos();
@@ -87,42 +90,87 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
         }
     }
 
-    idChange_ = p->onDisplayNameChange([this](std::string_view newName, std::string_view) {
-        setWindowTitle(utilqt::toQString(newName));
-    });
+    {
+        // Trigger both resize event and move event by showing and hiding the widget
+        // in order to set the correct, i.e. the de-serialized, size and position.
+        //
+        // Otherwise, a spontaneous event will be triggered which will set the widget
+        // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        InviwoDockWidget::setVisible(true);
+        InviwoDockWidget::resize(dim.x, dim.y);
+        InviwoDockWidget::setVisible(false);
+    }
+    {
+        // ignore internal state updates, i.e. position, when showing the widget
+        // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the
+        // decoration offset, i.e. the "adjusted" position.
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        InviwoDockWidget::setVisible(ProcessorWidget::isVisible());
+    }
+
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(),
+                                  ProcessorWidget::isOnTop());
 }
 
 void ProcessorDockWidgetQt::setPosition(glm::ivec2 pos) {
-    InviwoDockWidget::move(pos.x, pos.y);  // This will trigger a move event.
+    if (pos != utilqt::toGLM(QWidget::pos())) {
+        // This will trigger a move event.
+        InviwoDockWidget::move(pos.x, pos.y);
+    }
 }
 
 void ProcessorDockWidgetQt::setDimensions(ivec2 dimensions) {
-    InviwoDockWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
+    // This will trigger a resize event.
+    InviwoDockWidget::resize(dimensions.x, dimensions.y);
 }
 
 void ProcessorDockWidgetQt::resizeEvent(QResizeEvent* event) {
-    ivec2 dim(event->size().width(), event->size().height());
-    if (event->spontaneous()) {
-        ProcessorDockWidgetQt::setDimensions(dim);
-        return;
-    }
-    ProcessorDockWidgetQt::setDimensions(dim);
+    if (ignoreEvents_) return;
+
     InviwoDockWidget::resizeEvent(event);
+    util::KeepTrueWhileInScope ignore(&resizeOngoing_);
+    ProcessorWidget::setDimensions(utilqt::toGLM(event->size()));
 }
 
 void ProcessorDockWidgetQt::moveEvent(QMoveEvent* event) {
-    ProcessorDockWidgetQt::setPosition(ivec2(event->pos().x(), event->pos().y()));
+    if (ignoreEvents_) return;
+    ProcessorWidget::setPosition(utilqt::toGLM(event->pos()));
     InviwoDockWidget::moveEvent(event);
 }
 
 void ProcessorDockWidgetQt::showEvent(QShowEvent* event) {
+    if (ignoreEvents_) return;
     ProcessorWidget::setVisible(true);
     InviwoDockWidget::showEvent(event);
 }
 
 void ProcessorDockWidgetQt::hideEvent(QHideEvent* event) {
+    if (ignoreEvents_) return;
     ProcessorWidget::setVisible(false);
     InviwoDockWidget::hideEvent(event);
+}
+
+void ProcessorDockWidgetQt::updateVisible(bool visible) {
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    InviwoDockWidget::setVisible(visible);
+}
+void ProcessorDockWidgetQt::updateDimensions(ivec2 dim) {
+    if (resizeOngoing_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    InviwoDockWidget::move(dim.x, dim.y);
+}
+void ProcessorDockWidgetQt::updatePosition(ivec2 pos) {
+    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    InviwoDockWidget::move(pos.x, pos.y);
+}
+
+void ProcessorDockWidgetQt::updateFullScreen(bool fullScreen) {
+    utilqt::setFullScreenAndOnTop(this, fullScreen, ProcessorWidget::isOnTop());
+}
+
+void ProcessorDockWidgetQt::updateOnTop(bool onTop) {
+    utilqt::setFullScreenAndOnTop(this, ProcessorWidget::isFullScreen(), onTop);
 }
 
 }  // namespace inviwo
