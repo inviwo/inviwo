@@ -270,7 +270,7 @@ std::shared_ptr<VolumeSequence> readIvfFile(std::filesystem::path filePath) {
 }  // namespace
 
 IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>{} {
-    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
+    addExtension(FileExtension("ivf", "Inviwo Volume Format"));
 }
 
 IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
@@ -292,7 +292,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
 }
 
 IvfVolumeSequenceReader::IvfVolumeSequenceReader() : DataReaderType<VolumeSequence>{} {
-    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
+    addExtension(FileExtension("ivf", "Inviwo Volume Sequence Format"));
 }
 
 IvfVolumeSequenceReader* IvfVolumeSequenceReader::clone() const {
