@@ -257,16 +257,16 @@ State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
     State state{};
 
     while (!f.eof()) {
-        std::string textLine;
-        getline(f, textLine);
-        textLine = trim(std::move(textLine));
+        std::string line;
+        getline(f, line);
+        const auto textLine = util::trim(line);
 
-        if (textLine == "" || textLine[0] == '#' || textLine[0] == '/') continue;
+        if (textLine.empty() || textLine.starts_with('#') || textLine.starts_with('/')) continue;
         const auto [keyPart, valuePart] =
             util::splitByFirst(util::splitByFirst(textLine, '#').first, ':');
         if (valuePart.empty()) continue;
 
-        const auto key = toLower(std::string{util::trim(keyPart)});
+        const auto key = toLower(util::trim(keyPart));
         const auto value = util::trim(valuePart);
 
         std::stringstream ss;
