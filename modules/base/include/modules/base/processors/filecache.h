@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -44,6 +45,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/transparentmaps.h>
 
 #include <fstream>
 #include <ranges>
@@ -74,10 +76,19 @@ public:
     virtual void onProcessorNetworkEvaluationBegin() override;
 
 private:
+    struct RamCache {
+        std::chrono::system_clock::time_point used;
+        std::shared_ptr<const DataType> data;
+    };
+
+    void addToRamCache(std::string_view key, std::shared_ptr<const DataType> data);
+
     InportType inport_;
     OutportType outport_;
     DirectoryProperty cacheDir_;
     OptionProperty<FileExtension> extensions_;
+
+    IntProperty ramCacheSize_;
 
     const DataReaderFactory& rf_;
     const DataWriterFactory& wf_;
@@ -89,6 +100,8 @@ private:
     std::optional<Cache> cache_ = std::nullopt;
     bool isCached_ = false;
     std::string loadedKey_;
+
+    UnorderedStringMap<RamCache> ramCache_;
 };
 
 namespace detail {
@@ -168,11 +181,13 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
                 "You might want to manually clear it regularly to save space"_help,
                 filesystem::getPath(PathType::Cache)}
     , extensions_{"readerWriter", "Data Reader And Writer"}
+    , ramCacheSize_{"ramCacheSize", "Number of items to cache in RAM", util::ordinalCount(0, 100)}
     , rf_{*app->getDataReaderFactory()}
-    , wf_{*app->getDataWriterFactory()} {
+    , wf_{*app->getDataWriterFactory()}
+    , ramCache_{} {
 
     addPorts(inport_, outport_);
-    addProperties(cacheDir_, extensions_);
+    addProperties(cacheDir_, extensions_, ramCacheSize_);
 
     detail::updateFilenameFilters<DataType>(rf_, wf_, extensions_);
     extensions_.setCurrentStateAsDefault();
@@ -196,7 +211,7 @@ void FileCache<DataType, InportType, OutportType>::onProcessorNetworkEvaluationB
 
     const auto cf =
         cacheDir_.get() / fmt::format("{}.{}", key, extensions_.getSelectedValue().extension_);
-    const auto isCached = std::filesystem::exists(cf);
+    const auto isCached = std::filesystem::exists(cf) || ramCache_.contains(key);
 
     if (isCached_ != isCached) {
         isCached_ = isCached;
@@ -230,8 +245,14 @@ void FileCache<DataType, InportType, OutportType>::process() {
     if (cache_ && loadedKey_ == cache_->key) {
         return;
     } else if (cache_ && isCached_) {
-        if (auto reader = rf_.template getReaderForTypeAndExtension<DataType>(sext, cache_->file)) {
-            outport_.setData(reader->readData(cache_->file));
+        if (auto it = ramCache_.find(cache_->key); it != ramCache_.end()) {
+            outport_.setData(it->second.data);
+            loadedKey_ = cache_->key;
+        } else if (auto reader =
+                       rf_.template getReaderForTypeAndExtension<DataType>(sext, cache_->file)) {
+            auto data = reader->readData(cache_->file);
+            addToRamCache(cache_->key, data);
+            outport_.setData(data);
             loadedKey_ = cache_->key;
         } else {
             throw Exception("No reader found");
@@ -252,6 +273,7 @@ void FileCache<DataType, InportType, OutportType>::process() {
                                 cacheDir_.get(), cache_->key);
             }
 
+            addToRamCache(cache_->key, data);
             outport_.setData(data);
             loadedKey_ = cache_->key;
         } else {
@@ -260,6 +282,13 @@ void FileCache<DataType, InportType, OutportType>::process() {
     } else {
         outport_.setData(inport_.getData());
     }
+}
+
+template <typename DataType, typename InportType, typename OutportType>
+void FileCache<DataType, InportType, OutportType>::addToRamCache(
+    std::string_view key, std::shared_ptr<const DataType> data) {
+
+    ramCache_.try_emplace(std::string{key}, RamCache{std::chrono::system_clock::now(), data});
 }
 
 }  // namespace inviwo
