@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
@@ -53,11 +54,15 @@ private:
     DataInport<DataFrame> dataFrame_;
     BrushingAndLinkingInport bnl_;
     ColumnOptionProperty column_;
+    BoolProperty lock_;
     TransferFunctionProperty tf_;
     DoubleProperty alpha_;
     DoubleProperty delta_;
     DoubleProperty shift_;
     DoubleMinMaxProperty range_;
+
+    std::vector<double> pos_;
+
 };
 
 }  // namespace inviwo
