@@ -142,12 +142,6 @@ void ProcessorWidgetQt::showEvent(QShowEvent* event) {
     QWidget::showEvent(event);
 }
 
-void ProcessorWidgetQt::closeEvent(QCloseEvent* event) {
-    if (ignoreEvents_) return;
-    ProcessorWidget::setVisible(false);
-    QWidget::closeEvent(event);
-}
-
 void ProcessorWidgetQt::hideEvent(QHideEvent* event) {
     if (ignoreEvents_) return;
     ProcessorWidget::setVisible(false);
@@ -158,6 +152,12 @@ void ProcessorWidgetQt::moveEvent(QMoveEvent* event) {
     if (ignoreEvents_) return;
     ProcessorWidget::setPosition(utilqt::toGLM(event->pos()));
     QWidget::moveEvent(event);
+}
+
+void ProcessorWidgetQt::closeEvent(QCloseEvent* event) {
+    if (ignoreEvents_) return;
+    ProcessorWidget::setVisible(false);
+    QWidget::closeEvent(event);
 }
 
 void ProcessorWidgetQt::updateVisible(bool visible) {
