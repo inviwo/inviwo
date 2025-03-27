@@ -32,8 +32,28 @@
 #include <filesystem>
 #include <ranges>
 #include <vector>
+#include <regex>
+#include <chrono>
 
+#include <fmt/format.h>
+#include <fmt/std.h>
 #include <fmt/chrono.h>
+
+template <>
+struct fmt::formatter<std::filesystem::file_time_type, char> {
+    fmt::formatter<std::chrono::sys_time<std::filesystem::file_time_type::duration>> formatter;
+
+    template <class ParseContext>
+    constexpr ParseContext::iterator parse(ParseContext& ctx) {
+        return formatter.parse(ctx);
+    }
+
+    template <class FmtContext>
+    constexpr FmtContext::iterator format(std::filesystem::file_time_type time,
+                                          FmtContext& ctx) const {
+        return formatter.format(std::filesystem::file_time_type::clock::to_sys(time), ctx);
+    }
+};
 
 namespace inviwo {
 
@@ -52,56 +72,79 @@ const ProcessorInfo& FileList::getProcessorInfo() const { return processorInfo_;
 FileList::FileList()
     : Processor{}
     , outport_{"outport", "<description of the generated outport data>"_help}
-    , bnl_{"bnl"}
+    , bnlInport_{"bnlInport"}
+    , bnlOutport_{"bnlOutport"}
     , directory_{"directory", "Directory"}
+    , refresh_{"refresh", "Refresh"}
+    , filter_{"filter", "Filter",
+              "Set a regexp filter to match filenames to include in the list"_help}
+    , selectedIndex_{"selectedIndex", "Selected Index", util::ordinalCount(size_t{0}, size_t{100})}
+    , highlightIndex_{"highlightIndex", "Highlight Index",
+                      util::ordinalCount(size_t{0}, size_t{100})}
     , selected_{"selected", "Selected"}
     , highlight_{"highlight", "Highlight"} {
 
-    addPorts(outport_, bnl_);
-    addProperties(directory_, selected_, highlight_);
+    addPorts(outport_, bnlInport_, bnlOutport_);
+    addProperties(directory_, refresh_, filter_, selectedIndex_, selected_, highlightIndex_,
+                  highlight_);
 
     selected_.setReadOnly(true);
     highlight_.setReadOnly(true);
+
+    bnlOutport_.getManager().setParent(&bnlInport_.getManager());
+    bnlOutport_.getManager().onBrush([this](BrushingAction action, BrushingTarget target,
+                                            const BitSet& indices, std::string_view source) {
+        if (action == BrushingAction::Select && target == BrushingTarget::Row) {
+            if (files_.empty() || indices.empty()) {
+                selected_.set("");
+            } else {
+                selectedIndex_.set(indices.min());
+                selected_.set(files_.at(indices.min()).path());
+            }
+        } else if (action == BrushingAction::Highlight && target == BrushingTarget::Row) {
+            if (files_.empty() || indices.empty()) {
+                highlight_.set("");
+            } else {
+                highlightIndex_.set(indices.min());
+                highlight_.set(files_.at(indices.min()).path());
+            }
+        }
+    });
+
+    selectedIndex_.onChange([this]() { selected_.set(files_.at(selectedIndex_.get()).path()); });
+    highlightIndex_.onChange([this]() { highlight_.set(files_.at(highlightIndex_.get()).path()); });
 }
 
 void FileList::process() {
-    auto files = std::filesystem::directory_iterator(directory_.get()) |
-                 std::views::filter([](auto& item) { return item.is_regular_file(); }) |
-                 std::ranges::to<std::vector>();
-    std::ranges::sort(files);
+
+    std::optional<std::regex> regex;
+    if (!filter_.get().empty()) {
+        regex.emplace(filter_.get());
+    }
+
+    files_ = std::filesystem::directory_iterator(directory_.get()) |
+             std::views::filter([](auto& item) { return item.is_regular_file(); }) |
+             std::views::filter([&](auto& item) {
+                 return regex ? std::regex_search(item.path().generic_string(), *regex) : true;
+             }) |
+             std::ranges::to<std::vector>();
+    std::ranges::sort(files_);
 
     auto df = std::make_shared<DataFrame>();
 
-    df->addCategoricalColumn("Name", files | std::views::transform([](auto& item) {
+    df->addCategoricalColumn("Name", files_ | std::views::transform([](auto& item) {
                                          return item.path().filename().generic_string();
                                      }) | std::ranges::to<std::vector>());
-    df->addColumn("Size", files | std::views::transform([](auto& item) {
+    df->addColumn("Size", files_ | std::views::transform([](auto& item) {
                               return static_cast<int>(item.file_size());
                           }) | std::ranges::to<std::vector>());
 
-    /*
-    df->addCategoricalColumn("Modified", files | std::views::transform([](auto& item) {
-                                             return fmt::format("{:%Y-%m-%d %H:%M:%S}",
-                                                                item.last_write_time());
+    df->addCategoricalColumn("Modified", files_ | std::views::transform([](auto& item) {
+                                             return fmt::format("{}", item.last_write_time());
                                          }) | std::ranges::to<std::vector>());
-    */
 
     df->updateIndexBuffer();
     outport_.setData(df);
-
-    auto& sel = bnl_.getSelectedIndices();
-    if (sel.empty()) {
-        selected_.set("");
-    } else {
-        selected_.set(files.at(sel.min()).path());
-    }
-
-    auto& high = bnl_.getHighlightedIndices();
-    if (high.empty()) {
-        highlight_.set("");
-    } else {
-        highlight_.set(files.at(high.min()).path());
-    }
 }
 
 }  // namespace inviwo
