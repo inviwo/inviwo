@@ -53,6 +53,7 @@ TFFromDataFrameColumn::TFFromDataFrameColumn()
     , dataFrame_{"dataFrame", ""_help}
     , bnl_{"brushingAndLinking"}
     , column_{"column", "Column"}
+    , lock_{"lock", "Lock", false}
     , tf_{"tf", "Transferfunction"}
     , alpha_{"alpha", "Alpha", util::ordinalLength(1.0, 1.0).setInc(0.001)}
     , delta_{"delta", "Delta", util::ordinalScale(0.01, 1.0).setInc(0.001)}
@@ -70,25 +71,32 @@ TFFromDataFrameColumn::TFFromDataFrameColumn()
              PropertySemantics::Text} {
 
     addPorts(dataFrame_, bnl_);
-    addProperties(column_, tf_, alpha_, delta_, shift_, range_);
+    addProperties(column_, lock_, tf_, alpha_, delta_, shift_, range_);
+
+    tf_.setReadOnly(true);
 }
 
 void TFFromDataFrameColumn::process() {
-    auto df = dataFrame_.getData();
-    column_.setOptions(*df);
+    if (!lock_.get()) {
 
-    auto col = df->getColumn(column_.getSelectedValue());
+        auto df = dataFrame_.getData();
+        column_.setOptions(*df);
 
-    const auto range = col->getRange();
-    range_.set(range);
-    const auto normalize = [&](double pos) { return (pos - range.x) / (range.y - range.x); };
+        auto col = df->getColumn(column_.getSelectedValue());
+
+        const auto range = col->getRange();
+        range_.set(range);
+
+        pos_.assign_range(bnl_.getSelectedIndices() |
+                          std::views::transform([&](auto i) { return col->getAsDouble(i); }));
+    }
+
     static constexpr auto clamp = [](double pos) { return std::clamp(pos, 0.0, 1.0); };
-
     auto shift = [s = shift_.get()](double pos) { return pos + s; };
-
-    auto points = bnl_.getSelectedIndices() |
-                  std::views::transform([&](auto i) { return col->getAsDouble(i); }) |
-                  std::views::transform(shift) | std::views::transform(normalize) |
+    const auto normalize = [range = range_.get()](double pos) {
+        return (pos - range.x) / (range.y - range.x);
+    };
+    auto points = pos_ | std::views::transform(shift) | std::views::transform(normalize) |
                   std::views::transform(clamp) | std::ranges::to<std::vector>();
 
     std::ranges::sort(points);
