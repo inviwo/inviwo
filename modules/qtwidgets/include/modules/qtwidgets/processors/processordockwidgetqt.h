@@ -72,11 +72,21 @@ public:
     virtual void setDimensions(ivec2 dimensions) override;
 
 protected:
+    // Implement ProcessorWidget
+    virtual void updateVisible(bool visible) override;
+    virtual void updateDimensions(ivec2 size) override;
+    virtual void updatePosition(ivec2 pos) override;
+    virtual void updateFullScreen(bool) override;
+    virtual void updateOnTop(bool) override;
+
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
     virtual void moveEvent(QMoveEvent*) override;
     virtual void showEvent(QShowEvent*) override;
     virtual void hideEvent(QHideEvent*) override;
+
+    bool ignoreEvents_{false};
+    bool resizeOngoing_{false};
 
     Processor::NameDispatcherHandle idChange_;
 };
