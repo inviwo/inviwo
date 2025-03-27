@@ -63,7 +63,7 @@ constexpr std::string_view InviwoVolume = "InviwoVolume";
 constexpr int InviwoVolumeVersion = 2;
 
 IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
-    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
+    addExtension(FileExtension("ivf", "Inviwo Volume Format"));
 }
 
 IvfVolumeWriter::IvfVolumeWriter(const IvfVolumeWriter& rhs) = default;
@@ -80,7 +80,10 @@ namespace util {
 
 void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
                     Overwrite overwrite) {
-    const auto rawPath = filesystem::replaceFileExtension(filePath, "raw");
+    const Compression compression =
+        util::isCompressionSupported() ? Compression::Enabled : Compression::Disabled;
+    const std::string_view extension = compression == Compression::Enabled ? "raw.gz" : "raw";
+    const auto rawPath = filesystem::replaceFileExtension(filePath, extension);
 
     DataWriter::checkOverwrite(filePath, overwrite);
     DataWriter::checkOverwrite(rawPath, overwrite);
@@ -92,17 +95,14 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     Serializer s{filePath, InviwoVolume, InviwoVolumeVersion, &mbr};
     {
         const auto nodeSwitch = s.switchToNewNode("RawFile");
-        s.serialize("content", fmt::format("{}.raw", fileName), SerializationTarget::Attribute);
+        s.serialize("content", fmt::format("{}.{}", fileName, extension),
+                    SerializationTarget::Attribute);
         data.getMetaDataMap()->serialize(s);
     }
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("ByteOffset", 0u);
     s.serialize("ByteOrder", ByteOrder::LittleEndian);
-    if (util::isCompressionSupported()) {
-        s.serialize("Compression", Compression::Enabled);
-    } else {
-        s.serialize("Compression", Compression::Disabled);
-    }
+    s.serialize("Compression", compression);
     s.serialize("BasisAndOffset", data.getModelMatrix());
     s.serialize("WorldTransform", data.getWorldMatrix());
     s.serialize("Dimension", data.getDimensions());
@@ -127,8 +127,6 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     s.writeFile();
 
     const size_t bytes = glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSizeInBytes();
-    const Compression compression =
-        util::isCompressionSupported() ? Compression::Enabled : Compression::Disabled;
     util::writeBytes(rawPath, vr->getData(), bytes, compression);
 }
 
