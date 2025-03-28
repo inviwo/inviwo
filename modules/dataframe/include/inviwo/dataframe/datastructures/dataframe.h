@@ -53,6 +53,7 @@
 #include <unordered_map>  // for unordered_map
 #include <utility>        // for move, pair
 #include <vector>         // for vector, vector<>::const_iterator
+#include <span>
 
 #include <fmt/core.h>      // for format, basic_string_view
 #include <fmt/format.h>    // for to_string
@@ -94,8 +95,14 @@ public:
     using LookupTable = std::unordered_map<glm::u64, std::string>;
 
     DataFrame(std::uint32_t size = 0);
+
+    DataFrame(std::vector<std::shared_ptr<Column>> columns);
+
     DataFrame(const DataFrame& df);
-    DataFrame(const DataFrame& df, const std::vector<std::uint32_t>& rowSelection);
+    DataFrame(const DataFrame& df, std::span<const std::uint32_t> rowSelection);
+    DataFrame(const DataFrame& df, std::span<const std::string> columnSelection);
+    DataFrame(const DataFrame& df, std::span<const std::string> columnSelection,
+              std::span<const std::uint32_t> rowSelection);
     DataFrame& operator=(const DataFrame& df);
     DataFrame(DataFrame&& df);
     DataFrame& operator=(DataFrame&& df);
@@ -250,6 +257,8 @@ public:
     void updateIndexBuffer();
 
 private:
+    void createIndexBuffer(size_t rows);
+
     std::vector<std::shared_ptr<Column>> columns_;
 };
 
