@@ -29,10 +29,7 @@
 
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
 
-#include <modules/base/io/datvolumewriter.h>
-#include <modules/base/io/ivfvolumewriter.h>
-#include <modules/base/io/ivfsequencevolumewriter.h>
-
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/base/algorithm/volume/volumecurl.h>
 #include <modules/base/algorithm/volume/volumedivergence.h>
 
@@ -45,9 +42,10 @@ namespace inviwo {
 
 void exposeVolumeOperations(pybind11::module& m) {
 
-    m.def("curlVolume", [](Volume& vol) { return std::shared_ptr<Volume>(util::curlVolume(vol)); });
+    m.def("curlVolume",
+          [](const Volume& vol) { return std::shared_ptr<Volume>(util::curlVolume(vol)); });
     m.def("divergenceVolume",
-          [](Volume& vol) { return std::shared_ptr<Volume>(util::divergenceVolume(vol)); });
+          [](const Volume& vol) { return std::shared_ptr<Volume>(util::divergenceVolume(vol)); });
 }
 
 }  // namespace inviwo
