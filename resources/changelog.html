@@ -33,10 +33,10 @@
 </style>
 </head>
 <body>
-<h2>2025-03-25 Updated Inviwo Volume File Format (IVF)</h2>
+<h2>2025-03-25 Updated Inviwo Volume File Formats (.ivf and .ivfs)</h2>
 <p>The Inviwo Volume File format (.ivf) was revised and updated. It now also supports reading compressed binary/raw data using either ZLib, libBZ2, libLZMA, or libZstd (.gz, .bz2, .xz, and .zst). When exporting volume data to .ivf the data is compressed with ZLib.</p>
-<p>Support for time series was also added to the .ivf format. It is now possible to refer to multiple raw files, each with its own, optional metadata as depicted below. The premise for this is that all datasets share the same format, dimensions, and transformations. If this is not the case, the .ivfs format (Inviwo Volume File Sequence) has to be used instead.</p>
-<div class="highlight highlight-text-xml"><pre class="notranslate">?xml version="1.0" ?&gt;
+<p>The .ivfs format was also revised to match the structure of .ivf. It is now possible to refer to multiple raw files, each with its own, optional metadata.</p>
+<div class="highlight highlight-text-xml"><pre class="notranslate">&lt;?<span class="pl-ent">xml</span><span class="pl-e"> version</span>=<span class="pl-s"><span class="pl-pds">"</span>1.0<span class="pl-pds">"</span></span> ?&gt;
 &lt;<span class="pl-ent">InviwoVolume</span> <span class="pl-e">version</span>=<span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>&gt;
     &lt;<span class="pl-ent">RawFiles</span>&gt;
         &lt;<span class="pl-ent">RawFile</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>../data/CLOUDf01.bin.gz<span class="pl-pds">"</span></span>&gt;
@@ -58,6 +58,7 @@
     &lt;<span class="pl-ent">ByteOrder</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span> /&gt;
     &lt;<span class="pl-ent">Compression</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span> /&gt;
     &lt;<span class="pl-ent">Format</span> <span class="pl-e">content</span>=<span class="pl-s"><span class="pl-pds">"</span>FLOAT32<span class="pl-pds">"</span></span> /&gt;
+    &lt;<span class="pl-ent">Dimension</span> <span class="pl-e">x</span>=<span class="pl-s"><span class="pl-pds">"</span>500<span class="pl-pds">"</span></span> <span class="pl-e">y</span>=<span class="pl-s"><span class="pl-pds">"</span>500<span class="pl-pds">"</span></span> <span class="pl-e">z</span>=<span class="pl-s"><span class="pl-pds">"</span>100<span class="pl-pds">"</span></span> /&gt;
     ...
 &lt;/<span class="pl-ent">InviwoVolume</span>&gt;</pre></div>
 <h2>2025-02-28 DataFrame to JSON conversion</h2>
