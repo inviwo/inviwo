@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -76,6 +77,7 @@ public:
 private:
     InportType inport_;
     OutportType outport_;
+    BoolProperty enabled_;
     DirectoryProperty cacheDir_;
     OptionProperty<FileExtension> extensions_;
 
@@ -163,6 +165,7 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
     : Processor{}
     , inport_{"inport", "data to cache"_help}
     , outport_{"outport", "cached data"_help}
+    , enabled_{"enabled", "Enabled", "Toggles the usage of the file cache"_help, true}
     , cacheDir_{"cacheDir", "Cache Dir",
                 "Directory to save cached dataset too. "
                 "You might want to manually clear it regularly to save space"_help,
@@ -172,7 +175,7 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
     , wf_{*app->getDataWriterFactory()} {
 
     addPorts(inport_, outport_);
-    addProperties(cacheDir_, extensions_);
+    addProperties(enabled_, cacheDir_, extensions_);
 
     detail::updateFilenameFilters<DataType>(rf_, wf_, extensions_);
     extensions_.setCurrentStateAsDefault();
@@ -218,6 +221,11 @@ bool FileCache<DataType, InportType, OutportType>::isConnectionActive(Inport* in
 
 template <typename DataType, typename InportType, typename OutportType>
 void FileCache<DataType, InportType, OutportType>::process() {
+    if (!enabled_) {
+        outport_.setData(inport_.getData());
+        return;
+    }
+
     if (extensions_.empty()) {
         throw Exception("No reader and writer found");
     }
