@@ -139,4 +139,24 @@ double getTimestamp(const std::shared_ptr<const Volume>& vol) {
     return vol->getMetaData<DoubleMetaData>("timestamp")->get();
 }
 
+SharedSequenceData::SharedSequenceData(const VolumeSequence& seq) {
+    if (!seq.empty()) {
+        const auto referenceFormat = seq.front()->getDataFormat();
+        const auto referenceBasis = seq.front()->getBasis();
+        const auto referenceTransform = seq.front()->getWorldMatrix();
+        const auto referenceDims = seq.front()->getDimensions();
+        const auto& referenceDataMap = seq.front()->dataMap;
+        const auto& referenceAxes = seq.front()->axes;
+
+        for (const auto& volume : seq) {
+            format &= volume->getDataFormat() == referenceFormat;
+            basis &= volume->getBasis() == referenceBasis;
+            worldTransform &= volume->getWorldMatrix() == referenceTransform;
+            dimensions &= volume->getDimensions() == referenceDims;
+            dataMap &= volume->dataMap == referenceDataMap;
+            axes &= volume->axes == referenceAxes;
+        }
+    }
+}
+
 }  // namespace inviwo::util

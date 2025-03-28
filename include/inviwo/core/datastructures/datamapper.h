@@ -186,6 +186,8 @@ public:
         return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                              valueRange);
     }
+
+    bool operator==(const DataMapper&) const = default;
 };
 
 }  // namespace inviwo

@@ -48,7 +48,22 @@ VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence& seq);
 IVW_CORE_API std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>>
 getVolumesForTimestep(const VolumeSequence& seq, double t, bool sorted = true);
 
-bool IVW_CORE_API hasTimestamp(const std::shared_ptr<const Volume>& vol);
-double IVW_CORE_API getTimestamp(const std::shared_ptr<const Volume>& vol);
+IVW_CORE_API bool hasTimestamp(const std::shared_ptr<const Volume>& vol);
+IVW_CORE_API double getTimestamp(const std::shared_ptr<const Volume>& vol);
+
+/**
+ * Convenience data structure for checking whether all volumes within a VolumeSequence share the
+ * same format, basis, worldTransform, ...
+ */
+struct IVW_CORE_API SharedSequenceData {
+    explicit SharedSequenceData(const VolumeSequence& seq);
+
+    bool format = true;
+    bool basis = true;
+    bool worldTransform = true;
+    bool dimensions = true;
+    bool dataMap = true;
+    bool axes = true;
+};
 
 }  // namespace inviwo::util
