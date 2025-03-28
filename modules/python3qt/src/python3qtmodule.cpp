@@ -161,15 +161,17 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
                 py::arg("inviwoApplication"), py::arg("saveIfModified") = true)
             .def(
                 "waitForNetwork",
-                [](InviwoApplication* app, int maxJobs) {
+                [](InviwoApplication* app, int maxJobs, bool waitForPool) {
                     qApp->processEvents();
-                    app->waitForPool();
+                    if (waitForPool) {
+                        app->waitForPool();
+                    }
                     do {
                         qApp->processEvents();
                         app->processFront();
                     } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
                 },
-                py::arg("inviwoApplication"), py::arg("maxJobs") = 0)
+                py::arg("inviwoApplication"), py::arg("maxJobs") = 0, py::arg("waitForPool") = true)
 
             .def("address",
                  [](ProcessorWidget* w) {
