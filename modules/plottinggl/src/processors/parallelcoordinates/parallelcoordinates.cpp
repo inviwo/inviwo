@@ -349,7 +349,7 @@ void ParallelCoordinates::process() {
     }();
 
     if (brushingDirty_) updateBrushing();
-    if (rangesDirty_ || colormap_.isModified() || dataFrame_.isChanged()) {
+    if (rangesDirty_ || colormap_.isModified() || dataFrame_.isChanged()) {
         buildLineMesh();
     } else if (enabledAxesModified_) {
         buildLineIndices();
