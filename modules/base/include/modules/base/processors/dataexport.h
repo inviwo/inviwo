@@ -92,7 +92,8 @@ DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, const std::fil
     , port_{"data", "The data to export"_help}
     , file_{"file", "File name", "The file path to save data to"_help, file, contentType}
     , export_{"export", "Export", "Save data to disk"_help}
-    , overwrite_{"overwrite", "Overwrite", "Overwrite any existing data in file"_help, false} {
+    , overwrite_{"overwrite", "Overwrite", "Overwrite any existing data in file"_help, false,
+                 InvalidationLevel::Valid} {
 
     for (auto& ext : wf_->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());
