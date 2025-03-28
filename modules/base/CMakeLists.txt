@@ -48,8 +48,6 @@ set(HEADER_FILES
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
-    include/modules/base/io/ivfsequencevolumereader.h
-    include/modules/base/io/ivfsequencevolumewriter.h
     include/modules/base/io/ivfvolumereader.h
     include/modules/base/io/ivfvolumewriter.h
     include/modules/base/io/stlwriter.h
@@ -198,8 +196,6 @@ set(SOURCE_FILES
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp
-    src/io/ivfsequencevolumereader.cpp
-    src/io/ivfsequencevolumewriter.cpp
     src/io/ivfvolumereader.cpp
     src/io/ivfvolumewriter.cpp
     src/io/stlwriter.cpp
