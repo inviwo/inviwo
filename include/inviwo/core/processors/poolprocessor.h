@@ -39,6 +39,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <atomic>
 #include <chrono>
@@ -390,14 +391,17 @@ inline void PoolProcessor::callDone(
                 for (auto& res : state->futures) {
                     res.get();
                 }
+                NetworkLock netlock{&p};
                 state->done();
             } else if constexpr (std::is_invocable_v<Done, Result>) {
+                NetworkLock netlock{&p};
                 state->done(state->futures.front().get());
             } else {
                 std::vector<Result> results;
                 for (auto& res : state->futures) {
                     results.push_back(res.get());
                 }
+                NetworkLock netlock{&p};
                 state->done(results);
             }
         } catch (...) {
