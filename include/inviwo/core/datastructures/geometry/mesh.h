@@ -256,6 +256,7 @@ public:
     IndexBuffer* getIndices(size_t idx);
 
     MeshInfo getDefaultMeshInfo() const;
+    void setDefaultMeshInfo(MeshInfo);
     MeshInfo getIndexMeshInfo(size_t idx) const;
 
     size_t getNumberOfBuffers() const;

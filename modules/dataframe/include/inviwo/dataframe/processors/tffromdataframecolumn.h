@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,20 +31,18 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
-
-#include <vector>
-#include <string>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
-class IVW_MODULE_DATAFRAME_API DataFrameToVector : public Processor {
+class IVW_MODULE_DATAFRAME_API TFFromDataFrameColumn : public Processor {
 public:
-    DataFrameToVector();
+    TFFromDataFrameColumn();
 
     virtual void process() override;
 
@@ -53,12 +51,13 @@ public:
 
 private:
     DataInport<DataFrame> dataFrame_;
-
-    DataOutport<std::vector<uint32_t>> uintOutport_;
-    DataOutport<std::vector<float>> floatOutport_;
-    DataOutport<std::vector<std::string>> stringOutport_;
-
-    ColumnOptionProperty selectedColumn_;
+    BrushingAndLinkingInport bnl_;
+    ColumnOptionProperty column_;
+    TransferFunctionProperty tf_;
+    DoubleProperty alpha_;
+    DoubleProperty delta_;
+    DoubleProperty shift_;
+    DoubleMinMaxProperty range_;
 };
 
 }  // namespace inviwo

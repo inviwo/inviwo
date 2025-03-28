@@ -141,38 +141,4 @@ void TFPrimitive::deserialize(Deserializer& d) {
     setData({pos, color});
 }
 
-bool operator==(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
-    return lhs.pos == rhs.pos && lhs.color == rhs.color;
-}
-
-bool operator!=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
-    return !operator==(lhs, rhs);
-}
-
-bool operator<(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
-    return lhs.pos == rhs.pos ? lhs.color.a < rhs.color.a : lhs.pos < rhs.pos;
-}
-
-bool operator>(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { return rhs < lhs; }
-
-bool operator<=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { return !(rhs < lhs); }
-
-bool operator>=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { return !(lhs < rhs); }
-
-bool operator==(const TFPrimitive& lhs, const TFPrimitive& rhs) {
-    return lhs.getData() == rhs.getData();
-}
-
-bool operator!=(const TFPrimitive& lhs, const TFPrimitive& rhs) { return !operator==(lhs, rhs); }
-
-bool operator<(const TFPrimitive& lhs, const TFPrimitive& rhs) {
-    return lhs.getData() < rhs.getData();
-}
-
-bool operator>(const TFPrimitive& lhs, const TFPrimitive& rhs) { return rhs < lhs; }
-
-bool operator<=(const TFPrimitive& lhs, const TFPrimitive& rhs) { return !(rhs < lhs); }
-
-bool operator>=(const TFPrimitive& lhs, const TFPrimitive& rhs) { return !(lhs < rhs); }
-
 }  // namespace inviwo

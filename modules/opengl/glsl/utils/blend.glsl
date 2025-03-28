@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,31 @@
  *
  *********************************************************************************/
 
-#pragma once
+vec4 sourceBlend(vec4 src, vec4 dst) { return src; }
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+vec4 destinationBlend(vec4 src, vec4 dst) { return dst; }
 
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
+// Standard alpha blending
+vec4 alphaBlend(vec4 src, vec4 dst) { return src * src.a + dst * (1.0 - src.a); }
 
-#include <vector>
-#include <string>
+// Glowing effects (fire, lights)
+vec4 additiveBlend(vec4 src, vec4 dst) { return src * src.a + dst; }
 
-namespace inviwo {
+// Darkening effects (shadows)
+vec4 multiplyBlend(vec4 src, vec4 dst) { return src * dst; }
 
-class IVW_MODULE_DATAFRAME_API DataFrameToVector : public Processor {
-public:
-    DataFrameToVector();
+// Lightening effects (highlights)
+vec4 screenBlend(vec4 src, vec4 dst) { return 1.0 - (1.0 - src) * (1.0 - dst); }
 
-    virtual void process() override;
+// Removing light (dark smoke, dirt)
+vec4 subtractiveBlend(vec4 src, vec4 dst) { return max(dst - src, 0.0); }
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+// Correct alpha blending (HDR)
+vec4 premultipliedAlphaBlend(vec4 src, vec4 dst) { return src + dst * (1.0 - src.a); }
 
-private:
-    DataInport<DataFrame> dataFrame_;
-
-    DataOutport<std::vector<uint32_t>> uintOutport_;
-    DataOutport<std::vector<float>> floatOutport_;
-    DataOutport<std::vector<std::string>> stringOutport_;
-
-    ColumnOptionProperty selectedColumn_;
-};
-
-}  // namespace inviwo
+// Overlay Blending (Contrast Enhancement)
+vec4 overlayBlend(vec4 src, vec4 dst) {
+    vec3 result = mix(2.0 * src.rgb * dst.rgb, 1.0 - 2.0 * (1.0 - src.rgb) * (1.0 - dst.rgb),
+                      step(0.5, dst.rgb));
+    return vec4(result, src.a);
+}

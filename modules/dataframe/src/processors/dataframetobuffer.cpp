@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,34 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
-
-#include <vector>
-#include <string>
+#include <inviwo/dataframe/processors/dataframetobuffer.h>
 
 namespace inviwo {
 
-class IVW_MODULE_DATAFRAME_API DataFrameToVector : public Processor {
-public:
-    DataFrameToVector();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo DataFrameToBuffer::processorInfo_{
+    "org.inviwo.DataFrameToBuffer",  // Class identifier
+    "Data Frame To Buffer",          // Display name
+    "DataFrame",                     // Category
+    CodeState::Stable,               // Code state
+    Tags::CPU,                       // Tags
+    R"(Extract a column from a dataframe)"_unindentHelp};
 
-    virtual void process() override;
+const ProcessorInfo& DataFrameToBuffer::getProcessorInfo() const { return processorInfo_; }
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+DataFrameToBuffer::DataFrameToBuffer()
+    : Processor{}
+    , dataFrame_{"dataFrame", ""_help}
+    , outport_{"outport", "column buffer"_help}
+    , selectedColumn_{"selectedColumn", "Selected Column", dataFrame_} {
 
-private:
-    DataInport<DataFrame> dataFrame_;
+    addPorts(dataFrame_, outport_);
+    addProperties(selectedColumn_);
+}
 
-    DataOutport<std::vector<uint32_t>> uintOutport_;
-    DataOutport<std::vector<float>> floatOutport_;
-    DataOutport<std::vector<std::string>> stringOutport_;
-
-    ColumnOptionProperty selectedColumn_;
-};
+void DataFrameToBuffer::process() {
+    const auto col = dataFrame_.getData()->getColumn(selectedColumn_.getSelectedValue());
+    outport_.setData(col->getBuffer());
+}
 
 }  // namespace inviwo

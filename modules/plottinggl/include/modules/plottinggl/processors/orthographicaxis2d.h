@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,22 +29,23 @@
 
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/interaction/cameratrackball.h>
 
-#include <inviwo/dataframe/datastructures/dataframe.h>         // for DataFrame
-#include <inviwo/dataframe/properties/columnoptionproperty.h>  // for ColumnOptionProperty
-
-#include <vector>
-#include <string>
+#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
+#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
 namespace inviwo {
 
-class IVW_MODULE_DATAFRAME_API DataFrameToVector : public Processor {
+class IVW_MODULE_PLOTTINGGL_API OrthographicAxis2D : public Processor {
 public:
-    DataFrameToVector();
+    OrthographicAxis2D();
 
     virtual void process() override;
 
@@ -52,13 +53,20 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<DataFrame> dataFrame_;
+    ImageInport inport_;
+    MeshInport mesh_;
+    ImageOutport outport_;
 
-    DataOutport<std::vector<uint32_t>> uintOutport_;
-    DataOutport<std::vector<float>> floatOutport_;
-    DataOutport<std::vector<std::string>> stringOutport_;
+    plot::AxisStyleProperty style_;
+    plot::AxisProperty axis1_;
+    plot::AxisProperty axis2_;
+    MarginProperty margins_;
+    FloatProperty axisMargin_;
+    BoolProperty antialiasing_;
+    CameraProperty camera_;
+    CameraTrackball trackball_;
 
-    ColumnOptionProperty selectedColumn_;
+    std::array<plot::AxisRenderer, 2> axisRenderers_;
 };
 
 }  // namespace inviwo
