@@ -130,6 +130,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
     include/modules/base/processors/volumesequenceelementselectorprocessor.h
+    include/modules/base/processors/volumesequenceexport.h
     include/modules/base/processors/volumesequencesingletimestepsampler.h
     include/modules/base/processors/volumesequencesource.h
     include/modules/base/processors/volumesequencetospatial4dsampler.h
@@ -275,6 +276,7 @@ set(SOURCE_FILES
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
     src/processors/volumesequenceelementselectorprocessor.cpp
+    src/processors/volumesequenceexport.cpp
     src/processors/volumesequencesingletimestepsampler.cpp
     src/processors/volumesequencesource.cpp
     src/processors/volumesequencetospatial4dsampler.cpp
