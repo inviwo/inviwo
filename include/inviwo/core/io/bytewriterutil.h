@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2015-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,25 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumeexport.h>
+#pragma once
 
-#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
 
-namespace inviwo {
+#include <string_view>
+#include <filesystem>
+#include <cstdint>
 
-const ProcessorInfo VolumeExport::processorInfo_{
-    "org.inviwo.VolumeExport",  // Class identifier
-    "Volume Export",            // Display name
-    "Data Output",              // Category
-    CodeState::Stable,          // Code state
-    Tags::CPU,                  // Tags
-    "Exports a Volume to disk"_help,
-};
+namespace inviwo::util {
 
-VolumeExport::VolumeExport(InviwoApplication* app)
-    : DataExport<Volume, VolumeInport>{util::getDataWriterFactory(app), "", "volume"} {}
+/**
+ * Write \p bytes bytes of the data \p source to the given filepath \p path. The data is compressed
+ * if \p compression is enabled and supported.
+*
+ * @throw DataReaderException if the file cannot be created or written to
+ * \see util::isCompressionSupported
+ */
+IVW_CORE_API void writeBytes(const std::filesystem::path& path, const void* source, size_t bytes,
+                             Compression compression);
 
-const ProcessorInfo& VolumeExport::getProcessorInfo() const { return processorInfo_; }
-
-const Volume* VolumeExport::getData() { return port_.getData().get(); }
-
-}  // namespace inviwo
+}  // namespace inviwo::util

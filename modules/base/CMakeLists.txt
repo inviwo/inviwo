@@ -48,8 +48,6 @@ set(HEADER_FILES
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
-    include/modules/base/io/ivfsequencevolumereader.h
-    include/modules/base/io/ivfsequencevolumewriter.h
     include/modules/base/io/ivfvolumereader.h
     include/modules/base/io/ivfvolumewriter.h
     include/modules/base/io/stlwriter.h
@@ -132,6 +130,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
     include/modules/base/processors/volumesequenceelementselectorprocessor.h
+    include/modules/base/processors/volumesequenceexport.h
     include/modules/base/processors/volumesequencesingletimestepsampler.h
     include/modules/base/processors/volumesequencesource.h
     include/modules/base/processors/volumesequencetospatial4dsampler.h
@@ -198,8 +197,6 @@ set(SOURCE_FILES
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp
-    src/io/ivfsequencevolumereader.cpp
-    src/io/ivfsequencevolumewriter.cpp
     src/io/ivfvolumereader.cpp
     src/io/ivfvolumewriter.cpp
     src/io/stlwriter.cpp
@@ -279,6 +276,7 @@ set(SOURCE_FILES
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
     src/processors/volumesequenceelementselectorprocessor.cpp
+    src/processors/volumesequenceexport.cpp
     src/processors/volumesequencesingletimestepsampler.cpp
     src/processors/volumesequencesource.cpp
     src/processors/volumesequencetospatial4dsampler.cpp

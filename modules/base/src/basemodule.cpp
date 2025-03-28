@@ -63,7 +63,6 @@
 #include <modules/base/io/binarystlwriter.h>          // for BinarySTLWriter
 #include <modules/base/io/datvolumesequencereader.h>  // for DatVolumeSeq...
 #include <modules/base/io/datvolumewriter.h>          // for DatVolumeWriter
-#include <modules/base/io/ivfsequencevolumereader.h>  // for IvfSequenceV...
 #include <modules/base/io/ivfvolumereader.h>          // for IvfVolumeReader
 #include <modules/base/io/ivfvolumewriter.h>          // for IvfVolumeWriter
 #include <modules/base/io/stlwriter.h>                // for StlWriter
@@ -143,6 +142,7 @@
 #include <modules/base/processors/volumeinformation.h>                       // for VolumeInform...
 #include <modules/base/processors/volumelaplacianprocessor.h>                // for VolumeLaplac...
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>  // for VolumeSequen...
+#include <modules/base/processors/volumesequenceexport.h>
 #include <modules/base/processors/volumesequencesingletimestepsampler.h>     // for VolumeSequen...
 #include <modules/base/processors/volumesequencesource.h>                    // for VolumeSequen...
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>        // for VolumeSequen...
@@ -279,6 +279,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeInformation>();
     registerProcessor<VolumeLaplacianProcessor>();
     registerProcessor<VolumeSequenceElementSelectorProcessor>();
+    registerProcessor<VolumeSequenceExport>();
     registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
     registerProcessor<VolumeSequenceSource>();
     registerProcessor<VolumeSequenceToSpatial4DSampler>();
@@ -327,10 +328,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataReader(std::make_unique<DatVolumeReader>());
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfVolumeReader>());
-    registerDataReader(std::make_unique<IvfSequenceVolumeReader>());
+    registerDataReader(std::make_unique<IvfVolumeSequenceReader>());
     // Register Data writers
     registerDataWriter(std::make_unique<DatVolumeWriter>());
     registerDataWriter(std::make_unique<IvfVolumeWriter>());
+    registerDataWriter(std::make_unique<IvfVolumeSequenceWriter>());
     registerDataWriter(std::make_unique<StlWriter>());
     registerDataWriter(std::make_unique<BinarySTLWriter>());
     registerDataWriter(std::make_unique<WaveFrontWriter>());

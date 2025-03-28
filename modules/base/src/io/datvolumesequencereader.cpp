@@ -39,6 +39,7 @@
 #include <inviwo/core/io/datareader.h>                // for DataReaderType
 #include <inviwo/core/io/datareaderexception.h>       // for DataReaderException
 #include <inviwo/core/io/rawvolumeramloader.h>        // for RawVolumeRAMLoader
+#include <inviwo/core/io/inviwofileformattypes.h>     // for ByteOrder, Compression
 #include <inviwo/core/metadata/metadata.h>            // for StringMetaData
 #include <inviwo/core/util/fileextension.h>           // for FileExtension
 #include <inviwo/core/util/filesystem.h>              // for getFileDirectory, isAbsolutePath
@@ -82,7 +83,8 @@ struct State {
     size3_t dimensions{0u};
     size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
-    bool littleEndian = true;
+    ByteOrder byteOrder = ByteOrder::LittleEndian;
+    Compression compression = Compression::Disabled;
 
     std::string formatFlag;
     mat3 basis{2.0f};
@@ -110,151 +112,168 @@ struct State {
     std::vector<std::filesystem::path> datFiles;
 };
 
+namespace {
+
+using parser = void (*)(State&, std::stringstream&);
+
+std::unordered_map<std::string_view, parser> getParsers() {
+    return std::unordered_map<std::string_view, parser>{
+        {{"objectfilename", [](State& state, std::stringstream& ss) { ss >> state.rawFile; }},
+         {"rawfile", [](State& state, std::stringstream& ss) { ss >> state.rawFile; }},
+         {"datfile",
+          [](State& state, std::stringstream& ss) { state.datFiles.emplace_back(ss.str()); }},
+         {"byteorder",
+          [](State& state, std::stringstream& ss) {
+              const auto val = toLower(ss.str());
+              if (val == "bigendian") {
+                  state.byteOrder = ByteOrder::BigEndian;
+              } else if (val == "littleendian") {
+                  state.byteOrder = ByteOrder::LittleEndian;
+              } else {
+                  ss.setstate(std::ios_base::failbit);
+              }
+          }},
+         {"byteoffset", [](State& state, std::stringstream& ss) { ss >> state.byteOffset; }},
+         {"compression",
+          [](State& state, std::stringstream& ss) {
+              const auto val = toLower(ss.str());
+              if (val == toLower(format_as(Compression::Enabled))) {
+                  state.compression = Compression::Enabled;
+              } else if (val == toLower(format_as(Compression::Disabled))) {
+                  state.compression = Compression::Disabled;
+              } else {
+                  ss.setstate(std::ios_base::failbit);
+              }
+          }},
+         {"sequences", [](State& state, std::stringstream& ss) { ss >> state.sequences; }},
+         {"resolution",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.dimensions.x >> state.dimensions.y >> state.dimensions.z;
+          }},
+         {"dimensions",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.dimensions.x >> state.dimensions.y >> state.dimensions.z;
+          }},
+         {"spacing",
+          [](State& state, std::stringstream& ss) {
+              state.spacing.emplace();
+              ss >> state.spacing->x >> state.spacing->y >> state.spacing->z;
+          }},
+         {"slicethickness",
+          [](State& state, std::stringstream& ss) {
+              state.spacing.emplace();
+              ss >> state.spacing->x >> state.spacing->y >> state.spacing->z;
+          }},
+         {"basisvector1",
+          [](State& state, std::stringstream& ss) {
+              state.a.emplace();
+              ss >> state.a->x >> state.a->y >> state.a->z;
+          }},
+         {"basisvector2",
+          [](State& state, std::stringstream& ss) {
+              state.b.emplace();
+              ss >> state.b->x >> state.b->y >> state.b->z;
+          }},
+         {"basisvector3",
+          [](State& state, std::stringstream& ss) {
+              state.c.emplace();
+              ss >> state.c->x >> state.c->y >> state.c->z;
+          }},
+         {"offset",
+          [](State& state, std::stringstream& ss) {
+              state.offset.emplace();
+              ss >> state.offset->x >> state.offset->y >> state.offset->z;
+          }},
+         {"worldvector1",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.wtm[0][0] >> state.wtm[1][0] >> state.wtm[2][0] >> state.wtm[3][0];
+          }},
+         {"worldvector2",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.wtm[0][1] >> state.wtm[1][1] >> state.wtm[2][1] >> state.wtm[3][1];
+          }},
+         {"worldvector3",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.wtm[0][2] >> state.wtm[1][2] >> state.wtm[2][2] >> state.wtm[3][2];
+          }},
+         {"worldvector4",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.wtm[0][3] >> state.wtm[1][3] >> state.wtm[2][3] >> state.wtm[3][3];
+          }},
+         {"format",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.formatFlag;
+              // Backward support for USHORT_12 key
+              if (state.formatFlag == "USHORT_12") {
+                  state.format = DataUInt16::get();
+                  if (!state.dataRange) {  // Check so that data range has not been set before
+                      state.dataRange = dvec2(0.0, 4095.0);
+                  }
+              } else {
+                  state.format = DataFormatBase::get(state.formatFlag);
+              }
+          }},
+         {"datarange",
+          [](State& state, std::stringstream& ss) {
+              state.dataRange.emplace();
+              ss >> state.dataRange->x >> state.dataRange->y;
+          }},
+         {"valuerange",
+          [](State& state, std::stringstream& ss) {
+              state.valueRange.emplace();
+              ss >> state.valueRange->x >> state.valueRange->y;
+          }},
+         {"valueunit",
+          [](State& state, std::stringstream& ss) {
+              state.valueUnit = units::unit_from_string(ss.str());
+          }},
+         {"valuename", [](State& state, std::stringstream& ss) { state.valueName = ss.str(); }},
+         {"swizzlemask", [](State& state, std::stringstream& ss) { ss >> state.swizzleMask; }},
+         {"interpolation", [](State& state, std::stringstream& ss) { ss >> state.interpolation; }},
+         {"wrapping", [](State& state, std::stringstream& ss) { ss >> state.wrapping; }},
+         {"axisnames",
+          [](State& state, std::stringstream& ss) {
+              ss >> state.axes[0].name >> state.axes[1].name >> state.axes[2].name;
+          }},
+         {"axis1name", [](State& state, std::stringstream& ss) { ss >> state.axes[0].name; }},
+         {"axis2name", [](State& state, std::stringstream& ss) { ss >> state.axes[1].name; }},
+         {"axis3name", [](State& state, std::stringstream& ss) { ss >> state.axes[2].name; }},
+
+         {"axisunits",
+          [](State& state, std::stringstream& ss) {
+              std::string unit;
+              ss >> unit;
+              state.axes[0].unit = units::unit_from_string(unit);
+              ss >> unit;
+              state.axes[1].unit = units::unit_from_string(unit);
+              ss >> unit;
+              state.axes[2].unit = units::unit_from_string(unit);
+          }},
+         {"axis1unit",
+          [](State& state, std::stringstream& ss) {
+              std::string unit;
+              ss >> unit;
+              state.axes[0].unit = units::unit_from_string(unit);
+          }},
+
+         {"axis2unit",
+          [](State& state, std::stringstream& ss) {
+              std::string unit;
+              ss >> unit;
+              state.axes[1].unit = units::unit_from_string(unit);
+          }},
+         {"axis3unit", [](State& state, std::stringstream& ss) {
+              std::string unit;
+              ss >> unit;
+              state.axes[2].unit = units::unit_from_string(unit);
+          }}}};
+}
+
+}  // namespace
+
 State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
-    using parser = void (*)(State&, std::stringstream&);
-
-    const std::unordered_map<std::string, parser> parsers = {
-        {"objectfilename", [](State& state, std::stringstream& ss) { ss >> state.rawFile; }},
-        {"rawfile", [](State& state, std::stringstream& ss) { ss >> state.rawFile; }},
-        {"datfile",
-         [](State& state, std::stringstream& ss) { state.datFiles.push_back(ss.str()); }},
-        {"byteorder",
-         [](State& state, std::stringstream& ss) {
-             const auto val = toLower(ss.str());
-             if (val == "bigendian") {
-                 state.littleEndian = false;
-             } else if (val == "littleendian") {
-                 state.littleEndian = true;
-             } else {
-                 ss.setstate(std::ios_base::failbit);
-             }
-         }},
-        {"byteoffset", [](State& state, std::stringstream& ss) { ss >> state.byteOffset; }},
-        {"sequences", [](State& state, std::stringstream& ss) { ss >> state.sequences; }},
-        {"resolution",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.dimensions.x >> state.dimensions.y >> state.dimensions.z;
-         }},
-        {"dimensions",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.dimensions.x >> state.dimensions.y >> state.dimensions.z;
-         }},
-        {"spacing",
-         [](State& state, std::stringstream& ss) {
-             state.spacing.emplace();
-             ss >> state.spacing->x >> state.spacing->y >> state.spacing->z;
-         }},
-        {"slicethickness",
-         [](State& state, std::stringstream& ss) {
-             state.spacing.emplace();
-             ss >> state.spacing->x >> state.spacing->y >> state.spacing->z;
-         }},
-        {"basisvector1",
-         [](State& state, std::stringstream& ss) {
-             state.a.emplace();
-             ss >> state.a->x >> state.a->y >> state.a->z;
-         }},
-        {"basisvector2",
-         [](State& state, std::stringstream& ss) {
-             state.b.emplace();
-             ss >> state.b->x >> state.b->y >> state.b->z;
-         }},
-        {"basisvector3",
-         [](State& state, std::stringstream& ss) {
-             state.c.emplace();
-             ss >> state.c->x >> state.c->y >> state.c->z;
-         }},
-        {"offset",
-         [](State& state, std::stringstream& ss) {
-             state.offset.emplace();
-             ss >> state.offset->x >> state.offset->y >> state.offset->z;
-         }},
-        {"worldvector1",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.wtm[0][0] >> state.wtm[1][0] >> state.wtm[2][0] >> state.wtm[3][0];
-         }},
-        {"worldvector2",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.wtm[0][1] >> state.wtm[1][1] >> state.wtm[2][1] >> state.wtm[3][1];
-         }},
-        {"worldvector3",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.wtm[0][2] >> state.wtm[1][2] >> state.wtm[2][2] >> state.wtm[3][2];
-         }},
-        {"worldvector4",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.wtm[0][3] >> state.wtm[1][3] >> state.wtm[2][3] >> state.wtm[3][3];
-         }},
-        {"format",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.formatFlag;
-             // Backward support for USHORT_12 key
-             if (state.formatFlag == "USHORT_12") {
-                 state.format = DataUInt16::get();
-                 if (!state.dataRange) {  // Check so that data range has not been set before
-                     state.dataRange = dvec2(0.0, 4095.0);
-                 }
-             } else {
-                 state.format = DataFormatBase::get(state.formatFlag);
-             }
-         }},
-        {"datarange",
-         [](State& state, std::stringstream& ss) {
-             state.dataRange.emplace();
-             ss >> state.dataRange->x >> state.dataRange->y;
-         }},
-        {"valuerange",
-         [](State& state, std::stringstream& ss) {
-             state.valueRange.emplace();
-             ss >> state.valueRange->x >> state.valueRange->y;
-         }},
-        {"valueunit",
-         [](State& state, std::stringstream& ss) {
-             state.valueUnit = units::unit_from_string(ss.str());
-         }},
-        {"valuename", [](State& state, std::stringstream& ss) { state.valueName = ss.str(); }},
-        {"swizzlemask", [](State& state, std::stringstream& ss) { ss >> state.swizzleMask; }},
-        {"interpolation", [](State& state, std::stringstream& ss) { ss >> state.interpolation; }},
-        {"wrapping", [](State& state, std::stringstream& ss) { ss >> state.wrapping; }},
-        {"axisnames",
-         [](State& state, std::stringstream& ss) {
-             ss >> state.axes[0].name >> state.axes[1].name >> state.axes[2].name;
-         }},
-        {"axis1name", [](State& state, std::stringstream& ss) { ss >> state.axes[0].name; }},
-        {"axis2name", [](State& state, std::stringstream& ss) { ss >> state.axes[1].name; }},
-        {"axis3name", [](State& state, std::stringstream& ss) { ss >> state.axes[2].name; }},
-
-        {"axisunits",
-         [](State& state, std::stringstream& ss) {
-             std::string unit;
-             ss >> unit;
-             state.axes[0].unit = units::unit_from_string(unit);
-             ss >> unit;
-             state.axes[1].unit = units::unit_from_string(unit);
-             ss >> unit;
-             state.axes[2].unit = units::unit_from_string(unit);
-         }},
-        {"axis1unit",
-         [](State& state, std::stringstream& ss) {
-             std::string unit;
-             ss >> unit;
-             state.axes[0].unit = units::unit_from_string(unit);
-         }},
-
-        {"axis2unit",
-         [](State& state, std::stringstream& ss) {
-             std::string unit;
-             ss >> unit;
-             state.axes[1].unit = units::unit_from_string(unit);
-         }},
-
-        {"axis3unit", [](State& state, std::stringstream& ss) {
-            std::string unit;
-            ss >> unit;
-            state.axes[2].unit = units::unit_from_string(unit);
-         }}};
-
     State state{};
+    auto parsers = getParsers();
 
     while (!f.eof()) {
         std::string textLine;
@@ -266,7 +285,7 @@ State parseDatFile(std::ifstream& f, const std::filesystem::path& filePath) {
             util::splitByFirst(util::splitByFirst(textLine, '#').first, ':');
         if (valuePart.empty()) continue;
 
-        const auto key = toLower(std::string{util::trim(keyPart)});
+        const auto key = toLower(util::trim(keyPart));
         const auto value = util::trim(valuePart);
 
         std::stringstream ss;
@@ -378,7 +397,8 @@ std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
 
     const auto filePos = offset + state.byteOffset;
 
-    auto loader = std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.littleEndian);
+    auto loader =
+        std::make_unique<RawVolumeRAMLoader>(rawPath, filePos, state.byteOrder, state.compression);
     diskRepr->setLoader(loader.release());
 
     return diskRepr;
@@ -514,13 +534,13 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
     if (!state.datFiles.empty()) {
         throw DataReaderException{
             SourceContext{},
-            "Volume sequences are not handled in the DatVolumeReader, use the "
+            "Volume sequences are not handled by the DatVolumeReader, use the "
             "DatVolumeSequenceReader"};
     }
     if (state.sequences != 1) {
         throw DataReaderException{
             SourceContext{},
-            "Volume sequences are not handled in the DatVolumeReader, use the "
+            "Volume sequences are not handled by the DatVolumeReader, use the "
             "DatVolumeSequenceReader"};
     }
 
