@@ -53,11 +53,11 @@ IndexColumn::IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::ui
 IndexColumn::IndexColumn(std::string_view header, std::vector<std::uint32_t> data)
     : TemplateColumn<std::uint32_t>(header, data) {}
 
-IndexColumn::IndexColumn(const IndexColumn& rhs, const std::vector<std::uint32_t>& rowSelection)
+IndexColumn::IndexColumn(const IndexColumn& rhs, std::span<const std::uint32_t> rowSelection)
     : TemplateColumn<std::uint32_t>(rhs, rowSelection) {}
 
 IndexColumn* IndexColumn::clone() const { return new IndexColumn(*this); }
-IndexColumn* IndexColumn::clone(const std::vector<std::uint32_t>& rowSelection) const {
+IndexColumn* IndexColumn::clone(std::span<const std::uint32_t> rowSelection) const {
     return new IndexColumn(*this, rowSelection);
 }
 
@@ -96,7 +96,7 @@ CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs)
     , lookupMap_{rhs.lookupMap_} {}
 
 CategoricalColumn::CategoricalColumn(const CategoricalColumn& rhs,
-                                     const std::vector<std::uint32_t>& rowSelection)
+                                     std::span<const std::uint32_t> rowSelection)
     : header_{rhs.header_}
     , unit_{rhs.unit_}
     , range_{rhs.range_}
@@ -137,7 +137,7 @@ CategoricalColumn& CategoricalColumn::operator=(CategoricalColumn&& rhs) {
 
 CategoricalColumn* CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
-CategoricalColumn* CategoricalColumn::clone(const std::vector<std::uint32_t>& rowSelection) const {
+CategoricalColumn* CategoricalColumn::clone(std::span<const std::uint32_t> rowSelection) const {
     return new CategoricalColumn(*this, rowSelection);
 }
 
