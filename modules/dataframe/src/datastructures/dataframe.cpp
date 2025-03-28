@@ -170,12 +170,43 @@ std::shared_ptr<const Column> DataFrame::getColumn(std::string_view name) const 
     return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
+Column& DataFrame::getColumnRef(std::string_view name) {
+    if (auto col = getColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No Column with name '{}' found", name);
+    }
+}
+
+const Column& DataFrame::getColumnRef(std::string_view name) const {
+    if (auto col = getColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No Column with name '{}' found", name);
+    }
+}
+
 std::shared_ptr<CategoricalColumn> DataFrame::getCategoricalColumn(std::string_view name) {
     return std::dynamic_pointer_cast<CategoricalColumn>(getColumn(name));
 }
 std::shared_ptr<const CategoricalColumn> DataFrame::getCategoricalColumn(
     std::string_view name) const {
     return std::dynamic_pointer_cast<const CategoricalColumn>(getColumn(name));
+}
+
+CategoricalColumn& DataFrame::getCategoricalColumnRef(std::string_view name) {
+    if (auto col = getCategoricalColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No CategoricalColumn with name '{}' found", name);
+    }
+}
+const CategoricalColumn& DataFrame::getCategoricalColumnRef(std::string_view name) const {
+    if (auto col = getCategoricalColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No CategoricalColumn with name '{}' found", name);
+    }
 }
 
 std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
@@ -193,6 +224,22 @@ std::shared_ptr<IndexColumn> DataFrame::getIndexColumn() {
         return std::static_pointer_cast<IndexColumn>(columns_[0]);
     } else {
         return nullptr;
+    }
+}
+
+const IndexColumn& DataFrame::getIndexColumnRef() const {
+    if (auto col = getIndexColumn()) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No IndexColumn found");
+    }
+}
+
+IndexColumn& DataFrame::getIndexColumnRef() {
+    if (auto col = getIndexColumn()) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No IndexColumn found");
     }
 }
 

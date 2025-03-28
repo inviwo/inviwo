@@ -182,11 +182,53 @@ public:
     std::shared_ptr<Column> getColumn(std::string_view name);
     std::shared_ptr<const Column> getColumn(std::string_view name) const;
 
+    /**
+     * Fetch the first Column where the header matches @p name.
+     * @throw throws an Exception if no matching column was found.
+     * @return reference to the column with header matching @p name.
+     */
+    const Column& getColumnRef(std::string_view name) const;
+
+    /**
+     * Fetch the first Column where the header matches @p name.
+     * @throw throws an Exception if no matching column was found.
+     * @return reference to the column with header matching @p name.
+     */
+    Column& getColumnRef(std::string_view name);
+
     std::shared_ptr<CategoricalColumn> getCategoricalColumn(std::string_view name);
     std::shared_ptr<const CategoricalColumn> getCategoricalColumn(std::string_view name) const;
 
+    /**
+     * Fetch the first CategoricalColumn where the header matches @p name.
+     * @throw throws an Exception if no matching column was found.
+     * @return reference to the column with header matching @p name.
+     */
+    CategoricalColumn& getCategoricalColumnRef(std::string_view name);
+
+    /**
+     * Fetch the first CategoricalColumn where the header matches @p name.
+     * @throw throws an Exception if no matching column was found.
+     * @return reference to the column with header matching @p name.
+     */
+    const CategoricalColumn& getCategoricalColumnRef(std::string_view name) const;
+
     std::shared_ptr<IndexColumn> getIndexColumn();
     std::shared_ptr<const IndexColumn> getIndexColumn() const;
+
+    /**
+     * Fetch the IndexColumn
+     * @throw throws an Exception if no IndexColumn was found.
+     * @return reference to the IndexColumn
+     */
+    IndexColumn& getIndexColumnRef();
+
+    /**
+     * Fetch the IndexColumn
+     * @throw throws an Exception if no IndexColumn was found.
+     * @return reference to the IndexColumn
+     */
+    const IndexColumn& getIndexColumnRef() const;
 
     size_t getNumberOfColumns() const;
     /**
