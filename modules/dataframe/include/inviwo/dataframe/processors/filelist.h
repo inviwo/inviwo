@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
@@ -52,6 +53,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void cycleFiles();
     DataOutport<DataFrame> outport_;
     BrushingAndLinkingInport bnlInport_;
     BrushingAndLinkingOutport bnlOutport_;
@@ -64,6 +66,8 @@ private:
 
     FileProperty selected_;
     FileProperty highlight_;
+
+    ButtonProperty cycleFiles_;
 };
 
 }  // namespace inviwo

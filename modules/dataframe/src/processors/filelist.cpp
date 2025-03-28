@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/filelist.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <filesystem>
 #include <ranges>
@@ -82,11 +85,15 @@ FileList::FileList()
     , highlightIndex_{"highlightIndex", "Highlight Index",
                       util::ordinalCount(size_t{0}, size_t{100})}
     , selected_{"selected", "Selected"}
-    , highlight_{"highlight", "Highlight"} {
+    , highlight_{"highlight", "Highlight"}
+    , cycleFiles_{"cycleFiles", "Cycle throw all files",
+                  "This will each files a the selected one and wait for the network to evaluate "
+                  "before setting the next one"_help,
+                  [this]() { cycleFiles(); }} {
 
     addPorts(outport_, bnlInport_, bnlOutport_);
     addProperties(directory_, refresh_, filter_, selectedIndex_, selected_, highlightIndex_,
-                  highlight_);
+                  highlight_, cycleFiles_);
 
     selected_.setReadOnly(true);
     highlight_.setReadOnly(true);
@@ -98,21 +105,46 @@ FileList::FileList()
             if (files_.empty() || indices.empty()) {
                 selected_.set("");
             } else {
+                Property::OnChangeBlocker block{selectedIndex_};
                 selectedIndex_.set(indices.min());
-                selected_.set(files_.at(indices.min()).path());
+                selected_.set(files_[std::min(files_.size() - 1, size_t{indices.min()})].path());
             }
         } else if (action == BrushingAction::Highlight && target == BrushingTarget::Row) {
             if (files_.empty() || indices.empty()) {
                 highlight_.set("");
             } else {
+                Property::OnChangeBlocker block{highlightIndex_};
                 highlightIndex_.set(indices.min());
-                highlight_.set(files_.at(indices.min()).path());
+                highlight_.set(files_[std::min(files_.size() - 1, size_t{indices.min()})].path());
             }
         }
     });
 
-    selectedIndex_.onChange([this]() { selected_.set(files_.at(selectedIndex_.get()).path()); });
-    highlightIndex_.onChange([this]() { highlight_.set(files_.at(highlightIndex_.get()).path()); });
+    selectedIndex_.onChange([this]() {
+        bnlOutport_.getManager().brush(BrushingAction::Select, BrushingTarget::Row,
+                                       {selectedIndex_.get()});
+    });
+    highlightIndex_.onChange([this]() {
+        bnlOutport_.getManager().brush(BrushingAction::Highlight, BrushingTarget::Row,
+                                       {highlightIndex_.get()});
+    });
+}
+
+void FileList::cycleFiles() {
+    auto* net = getNetwork();
+    auto* app = net->getApplication();
+
+    app->dispatchFrontAndForget([app, net, this]() {
+        for (size_t i = 0; i < files_.size(); ++i) {
+            log::info("Loading: {} {:?g}", i, files_[i].path());
+            selectedIndex_.set(i);
+
+            do {
+                app->processFront();
+                app->processEvents();
+            } while (net->runningBackgroundJobs() > 0);
+        }
+    });
 }
 
 void FileList::process() {
