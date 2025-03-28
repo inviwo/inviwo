@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,26 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumeexport.h>
+#pragma once
 
-#include <inviwo/core/common/factoryutil.h>
+#include <modules/base/basemoduledefine.h>
+
+#include <inviwo/core/ports/volumeport.h>        // for VolumeInport
+#include <modules/base/processors/dataexport.h>  // for DataExport
+
 
 namespace inviwo {
 
-const ProcessorInfo VolumeExport::processorInfo_{
-    "org.inviwo.VolumeExport",  // Class identifier
-    "Volume Export",            // Display name
-    "Data Output",              // Category
-    CodeState::Stable,          // Code state
-    Tags::CPU,                  // Tags
-    "Exports a Volume to disk"_help,
+class IVW_MODULE_BASE_API VolumeSequenceExport : public DataExport<VolumeSequence, VolumeSequenceInport> {
+public:
+    explicit VolumeSequenceExport(InviwoApplication* app);
+    virtual ~VolumeSequenceExport() = default;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    virtual const VolumeSequence* getData() override;
 };
-
-VolumeExport::VolumeExport(InviwoApplication* app)
-    : DataExport<Volume, VolumeInport>{util::getDataWriterFactory(app), "", "volume"} {}
-
-const ProcessorInfo& VolumeExport::getProcessorInfo() const { return processorInfo_; }
-
-const Volume* VolumeExport::getData() { return port_.getData().get(); }
 
 }  // namespace inviwo

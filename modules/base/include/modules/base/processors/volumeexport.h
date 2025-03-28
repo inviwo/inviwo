@@ -31,36 +31,16 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/volume/volume.h>  // for DataInport, Volume
-#include <inviwo/core/io/datawriter.h>                 // for DataWriterType
-#include <inviwo/core/io/datawriterexception.h>        // for DataWriterException
-#include <inviwo/core/ports/volumeport.h>              // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
-#include <modules/base/processors/dataexport.h>        // for DataExport
-
-#include <functional>  // for __base
-#include <map>         // for map, operator!=
-#include <vector>      // for vector
+#include <inviwo/core/ports/volumeport.h>        // for VolumeInport
+#include <modules/base/processors/dataexport.h>  // for DataExport
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeExport, Volume Export}
- * ![](org.inviwo.VolumeExport.png?classIdentifier=org.inviwo.VolumeExport)
- *
- * Export volumes
- *
- * ### Inports
- *   * __Volume__ Volume to export
- *
- * ### Properties
- *   * __Volume file name__ File to export to
- *   * __Export Volume__ Button to execute export
- *   * __Overwrite__ Should existing files be overwritten
- *
- */
+class Volume;
+
 class IVW_MODULE_BASE_API VolumeExport : public DataExport<Volume, VolumeInport> {
 public:
-    VolumeExport(InviwoApplication* app);
+    explicit VolumeExport(InviwoApplication* app);
     virtual ~VolumeExport() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
