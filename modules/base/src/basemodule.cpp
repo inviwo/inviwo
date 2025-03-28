@@ -63,7 +63,6 @@
 #include <modules/base/io/binarystlwriter.h>          // for BinarySTLWriter
 #include <modules/base/io/datvolumesequencereader.h>  // for DatVolumeSeq...
 #include <modules/base/io/datvolumewriter.h>          // for DatVolumeWriter
-#include <modules/base/io/ivfsequencevolumereader.h>  // for IvfSequenceV...
 #include <modules/base/io/ivfvolumereader.h>          // for IvfVolumeReader
 #include <modules/base/io/ivfvolumewriter.h>          // for IvfVolumeWriter
 #include <modules/base/io/stlwriter.h>                // for StlWriter
@@ -328,10 +327,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
     registerDataReader(std::make_unique<IvfVolumeReader>());
     registerDataReader(std::make_unique<IvfVolumeSequenceReader>());
-    registerDataReader(std::make_unique<IvfSequenceVolumeReader>());
     // Register Data writers
     registerDataWriter(std::make_unique<DatVolumeWriter>());
     registerDataWriter(std::make_unique<IvfVolumeWriter>());
+    registerDataWriter(std::make_unique<IvfVolumeSequenceWriter>());
     registerDataWriter(std::make_unique<StlWriter>());
     registerDataWriter(std::make_unique<BinarySTLWriter>());
     registerDataWriter(std::make_unique<WaveFrontWriter>());
