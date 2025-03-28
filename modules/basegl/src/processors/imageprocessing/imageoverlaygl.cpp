@@ -80,8 +80,9 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
             InvalidationLevel::Valid)
     , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1),
                    InvalidationLevel::Valid)
-    , absoluteSize_("absoluteSize", "Size (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1),
-                    InvalidationLevel::Valid)
+    , absoluteSize_(
+          "absoluteSize", "Size (absolute)",
+          util::ordinalCount(ivec2(10), ivec2(2048)).setMin(ivec2(1)).set(InvalidationLevel::Valid))
     , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f),
                  InvalidationLevel::Valid)
     , blendMode_("blendMode", "Blending Mode",
