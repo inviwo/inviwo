@@ -340,7 +340,7 @@ var hierarchy =
       ] ],
       [ "inviwo::DataReaderType< VolumeSequence >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
-        [ "inviwo::IvfSequenceVolumeReader", "classinviwo_1_1IvfSequenceVolumeReader.html", null ],
+        [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],
         [ "inviwo::NiftiReader", "classinviwo_1_1NiftiReader.html", null ]
       ] ],
       [ "inviwo::DataReaderType< IsoValueCollection >", "classinviwo_1_1DataReaderType.html", [
@@ -458,7 +458,7 @@ var hierarchy =
         [ "inviwo::IsoValueCollectionIIVWriter", "classinviwo_1_1IsoValueCollectionIIVWriter.html", null ]
       ] ],
       [ "inviwo::DataWriterType< VolumeSequence >", "classinviwo_1_1DataWriterType.html", [
-        [ "inviwo::IvfSequenceVolumeWriter", "classinviwo_1_1IvfSequenceVolumeWriter.html", null ]
+        [ "inviwo::IvfVolumeSequenceWriter", "classinviwo_1_1IvfVolumeSequenceWriter.html", null ]
       ] ],
       [ "inviwo::DataWriterType< json >", "classinviwo_1_1DataWriterType.html", [
         [ "inviwo::JSONWriter", "classinviwo_1_1JSONWriter.html", null ]
@@ -559,6 +559,9 @@ var hierarchy =
         ] ],
         [ "inviwo::DataExport< Volume, VolumeInport >", "classinviwo_1_1DataExport.html", [
           [ "inviwo::VolumeExport", "classinviwo_1_1VolumeExport.html", null ]
+        ] ],
+        [ "inviwo::DataExport< VolumeSequence, VolumeSequenceInport >", "classinviwo_1_1DataExport.html", [
+          [ "inviwo::VolumeSequenceExport", "classinviwo_1_1VolumeSequenceExport.html", null ]
         ] ],
         [ "inviwo::DataSource< DataFrame, DataFrameOutport >", "classinviwo_1_1DataSource.html", [
           [ "inviwo::DataFrameSource", "classinviwo_1_1DataFrameSource.html", null ]
@@ -3388,6 +3391,7 @@ var hierarchy =
     [ "inviwo::ShaderSegment", "structinviwo_1_1ShaderSegment.html", null ],
     [ "inviwo::ShaderType", "classinviwo_1_1ShaderType.html", null ],
     [ "inviwo::SharedLibrary", "classinviwo_1_1SharedLibrary.html", null ],
+    [ "inviwo::util::SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
     [ "inviwo::util::detail::Shower", "structinviwo_1_1util_1_1detail_1_1Shower.html", null ],
     [ "inviwo::SimpleMeshCreator", "classinviwo_1_1SimpleMeshCreator.html", null ],
     [ "inviwo::utilgl::SimpleState< T1, T2, Entity,,, Validator >", "structinviwo_1_1utilgl_1_1SimpleState.html", null ],

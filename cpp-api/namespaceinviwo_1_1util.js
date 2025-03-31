@@ -56,6 +56,7 @@ var namespaceinviwo_1_1util =
     [ "rank< const T >", "structinviwo_1_1util_1_1rank_3_01const_01T_01_4.html", null ],
     [ "same_extent", "structinviwo_1_1util_1_1same__extent.html", null ],
     [ "sequence", "structinviwo_1_1util_1_1sequence.html", "structinviwo_1_1util_1_1sequence" ],
+    [ "SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
     [ "TempFileHandle", "classinviwo_1_1util_1_1TempFileHandle.html", null ],
     [ "TextureAtlas", "classinviwo_1_1util_1_1TextureAtlas.html", null ],
     [ "TransformIterator", "structinviwo_1_1util_1_1TransformIterator.html", null ],
@@ -296,6 +297,7 @@ var namespaceinviwo_1_1util =
     [ "volumeRAMDistanceTransform", "namespaceinviwo_1_1util.html#a21094bd4eae6e9a668b25cf52d70fa2c", null ],
     [ "voronoiSegmentation", "namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9", null ],
     [ "voxelVolume", "namespaceinviwo_1_1util.html#a4fde21434664ba9e965614cfdf7890fc", null ],
-    [ "writeIvfVolumeSequence", "namespaceinviwo_1_1util.html#a366b7461e603c7bb7bf6dd161a6ddd8e", null ],
+    [ "writeBytes", "namespaceinviwo_1_1util.html#ab874e412b1a96d66859a3cb627d6d5ca", null ],
+    [ "writeIvfVolumeSequence", "namespaceinviwo_1_1util.html#a0a2ff2f08d1ce596fad9f3dc6f81e70b", null ],
     [ "zip", "namespaceinviwo_1_1util.html#a2ec11e63479fff3c005d159414687d4e", null ]
 ];

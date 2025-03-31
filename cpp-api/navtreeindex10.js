@@ -1,15 +1,13 @@
 var NAVTREEINDEX10 =
 {
-"classinviwo_1_1LightingRaycaster.html#a9fd42ce674285e476a342aaeff813dd7":[1,3,41,0],
-"classinviwo_1_1LineEditEventFilter.html":[2,0,0,584],
 "classinviwo_1_1LineEditEventFilter.html":[4,0,1,591],
 "classinviwo_1_1LineEditQt.html":[2,0,0,585],
 "classinviwo_1_1LineEditQt.html":[4,0,1,592],
-"classinviwo_1_1LineRasterizer.html":[1,3,103],
-"classinviwo_1_1LineRasterizer.html#a604be929ba4f22b91fc30d0c58359d5f":[1,3,103,2],
-"classinviwo_1_1LineRasterizer.html#a8256f960e1d7705c7081d88e6c369419":[1,3,103,3],
-"classinviwo_1_1LineRasterizer.html#acb41175019193720ac10bc820de4e6ad":[1,3,103,0],
-"classinviwo_1_1LineRasterizer.html#aea3e88d62e9a97866c79cec04a347f3e":[1,3,103,1],
+"classinviwo_1_1LineRasterizer.html":[1,3,102],
+"classinviwo_1_1LineRasterizer.html#a604be929ba4f22b91fc30d0c58359d5f":[1,3,102,2],
+"classinviwo_1_1LineRasterizer.html#a8256f960e1d7705c7081d88e6c369419":[1,3,102,3],
+"classinviwo_1_1LineRasterizer.html#acb41175019193720ac10bc820de4e6ad":[1,3,102,0],
+"classinviwo_1_1LineRasterizer.html#aea3e88d62e9a97866c79cec04a347f3e":[1,3,102,1],
 "classinviwo_1_1LineRendererProcessor.html":[2,0,0,588],
 "classinviwo_1_1LineRendererProcessor.html":[4,0,1,595],
 "classinviwo_1_1LineRendererProcessor.html#a8280d1b49c0eed99bc7359e55de485c5":[2,0,0,588,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1MeshInformationProperty.html#aa58707f9614a03fd3eedb1cda2bf3a97":[1,4,32,0],
 "classinviwo_1_1MeshInformationVisualizer.html":[2,0,0,633],
 "classinviwo_1_1MeshInformationVisualizer.html":[4,0,1,640],
-"classinviwo_1_1MeshInformationVisualizer.html#a2f585edd39367b34bc5c093447f3cd57":[2,0,0,633,5]
+"classinviwo_1_1MeshInformationVisualizer.html#a2f585edd39367b34bc5c093447f3cd57":[2,0,0,633,5],
+"classinviwo_1_1MeshInformationVisualizer.html#a2f585edd39367b34bc5c093447f3cd57":[4,0,1,640,5],
+"classinviwo_1_1MeshInformationVisualizer.html#a39e524942849bbff78e91aec24971f3a":[2,0,0,633,0]
 };

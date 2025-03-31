@@ -254,6 +254,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1sequence.html">sequence</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1SharedSequenceData.html">SharedSequenceData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1TempFileHandle.html">TempFileHandle</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII interface for providing a file handle and file name to a temporary file.  <a href="classinviwo_1_1util_1_1TempFileHandle.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -599,9 +601,14 @@ IVW_CORE_API std::back_insert_iterator&lt; fmt::memory_buffer &gt;&#160;</td><td
 template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a18afcb89dd78c0d803b13b0715a01d8b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>printEvent</b> (std::ostream &amp;os, const std::string &amp;event, Args... args)</td></tr>
 <tr class="separator:a18afcb89dd78c0d803b13b0715a01d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a8db32f8dec48d42fd34e07e10456ca" id="r_a3a8db32f8dec48d42fd34e07e10456ca"><td class="memItemLeft" align="right" valign="top"><a id="a3a8db32f8dec48d42fd34e07e10456ca" name="a3a8db32f8dec48d42fd34e07e10456ca"></a>
-void IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesIntoBuffer</b> (const std::filesystem::path &amp;file, size_t offset, size_t bytes, bool littleEndian, size_t elementSize, void *dest)</td></tr>
-<tr class="separator:a3a8db32f8dec48d42fd34e07e10456ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c89ec6b8d6dc676621530bdd578aa4c" id="r_a6c89ec6b8d6dc676621530bdd578aa4c"><td class="memItemLeft" align="right" valign="top"><a id="a6c89ec6b8d6dc676621530bdd578aa4c" name="a6c89ec6b8d6dc676621530bdd578aa4c"></a>
+void IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesIntoBuffer</b> (const std::filesystem::path &amp;path, size_t offset, size_t bytes, ByteOrder byteOrder, size_t elementSize, void *dest)</td></tr>
+<tr class="separator:a6c89ec6b8d6dc676621530bdd578aa4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4996ac8048726af49f305468ed61fcbe" id="r_a4996ac8048726af49f305468ed61fcbe"><td class="memItemLeft" align="right" valign="top"><a id="a4996ac8048726af49f305468ed61fcbe" name="a4996ac8048726af49f305468ed61fcbe"></a>
+void IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>readCompressedBytesIntoBuffer</b> (const std::filesystem::path &amp;path, size_t offset, size_t bytes, ByteOrder byteOrder, size_t elementSize, void *dest)</td></tr>
+<tr class="separator:a4996ac8048726af49f305468ed61fcbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab874e412b1a96d66859a3cb627d6d5ca" id="r_ab874e412b1a96d66859a3cb627d6d5ca"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab874e412b1a96d66859a3cb627d6d5ca">writeBytes</a> (const std::filesystem::path &amp;path, const void *source, size_t bytes, Compression compression)</td></tr>
+<tr class="separator:ab874e412b1a96d66859a3cb627d6d5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a4d4e6fe612ca06641d9354787759eb" id="r_a8a4d4e6fe612ca06641d9354787759eb"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a8a4d4e6fe612ca06641d9354787759eb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8a4d4e6fe612ca06641d9354787759eb">saveData</a> (const T &amp;data, const std::filesystem::path &amp;filePath, const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;extension, Overwrite overwrite)</td></tr>
 <tr class="separator:a8a4d4e6fe612ca06641d9354787759eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1481,12 +1488,12 @@ IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSorted
 <tr class="memitem:a27b8f74c672f9e9e089d7acbfd5fcc7d" id="r_a27b8f74c672f9e9e089d7acbfd5fcc7d"><td class="memItemLeft" align="right" valign="top"><a id="a27b8f74c672f9e9e089d7acbfd5fcc7d" name="a27b8f74c672f9e9e089d7acbfd5fcc7d"></a>
 IVW_CORE_API std::pair&lt; std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;, std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getVolumesForTimestep</b> (const <a class="el" href="classinviwo_1_1DataSequence.html">VolumeSequence</a> &amp;seq, double t, bool sorted=true)</td></tr>
 <tr class="separator:a27b8f74c672f9e9e089d7acbfd5fcc7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7900b05fb6df45e1763810596feeeb3" id="r_ad7900b05fb6df45e1763810596feeeb3"><td class="memItemLeft" align="right" valign="top"><a id="ad7900b05fb6df45e1763810596feeeb3" name="ad7900b05fb6df45e1763810596feeeb3"></a>
-bool IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>hasTimestamp</b> (const std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;vol)</td></tr>
-<tr class="separator:ad7900b05fb6df45e1763810596feeeb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59d5b92c4c6a3d17f5d860517d98cb7e" id="r_a59d5b92c4c6a3d17f5d860517d98cb7e"><td class="memItemLeft" align="right" valign="top"><a id="a59d5b92c4c6a3d17f5d860517d98cb7e" name="a59d5b92c4c6a3d17f5d860517d98cb7e"></a>
-double IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>getTimestamp</b> (const std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;vol)</td></tr>
-<tr class="separator:a59d5b92c4c6a3d17f5d860517d98cb7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e525e58e44c548e8e95392c07c361de" id="r_a5e525e58e44c548e8e95392c07c361de"><td class="memItemLeft" align="right" valign="top"><a id="a5e525e58e44c548e8e95392c07c361de" name="a5e525e58e44c548e8e95392c07c361de"></a>
+IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasTimestamp</b> (const std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;vol)</td></tr>
+<tr class="separator:a5e525e58e44c548e8e95392c07c361de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a858eb99df51526f90a71c5e175de721d" id="r_a858eb99df51526f90a71c5e175de721d"><td class="memItemLeft" align="right" valign="top"><a id="a858eb99df51526f90a71c5e175de721d" name="a858eb99df51526f90a71c5e175de721d"></a>
+IVW_CORE_API double&#160;</td><td class="memItemRight" valign="bottom"><b>getTimestamp</b> (const std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;vol)</td></tr>
+<tr class="separator:a858eb99df51526f90a71c5e175de721d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4f6fe2283af95ca86e331a61dba4d69" id="r_af4f6fe2283af95ca86e331a61dba4d69"><td class="memItemLeft" align="right" valign="top"><a id="af4f6fe2283af95ca86e331a61dba4d69" name="af4f6fe2283af95ca86e331a61dba4d69"></a>
 bool IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>hasMargins</b> (const std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;volume)</td></tr>
 <tr class="separator:af4f6fe2283af95ca86e331a61dba4d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1715,12 +1722,12 @@ IVW_MODULE_BASE_API size_t&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:a0bcff2c39824635da98bc8944a01ce1a" id="r_a0bcff2c39824635da98bc8944a01ce1a"><td class="memItemLeft" align="right" valign="top"><a id="a0bcff2c39824635da98bc8944a01ce1a" name="a0bcff2c39824635da98bc8944a01ce1a"></a>
 IVW_MODULE_BASE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>writeDatVolume</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;data, const std::filesystem::path &amp;filePath, Overwrite overwrite=Overwrite::No)</td></tr>
 <tr class="separator:a0bcff2c39824635da98bc8944a01ce1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a366b7461e603c7bb7bf6dd161a6ddd8e" id="r_a366b7461e603c7bb7bf6dd161a6ddd8e"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a366b7461e603c7bb7bf6dd161a6ddd8e">writeIvfVolumeSequence</a> (const <a class="el" href="classinviwo_1_1DataSequence.html">VolumeSequence</a> &amp;volumes, std::string_view name, const std::filesystem::path &amp;path, std::string_view relativePathToElements=&quot;&quot;, Overwrite overwrite=Overwrite::Yes)</td></tr>
-<tr class="memdesc:a366b7461e603c7bb7bf6dd161a6ddd8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a volume sequence to disk.  <br /></td></tr>
-<tr class="separator:a366b7461e603c7bb7bf6dd161a6ddd8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab06301c3bfc8c4686b656864c8c1439d" id="r_ab06301c3bfc8c4686b656864c8c1439d"><td class="memItemLeft" align="right" valign="top"><a id="ab06301c3bfc8c4686b656864c8c1439d" name="ab06301c3bfc8c4686b656864c8c1439d"></a>
-IVW_MODULE_BASE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>writeIvfVolume</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;data, const std::filesystem::path &amp;filePath, Overwrite overwrite=Overwrite::No)</td></tr>
-<tr class="separator:ab06301c3bfc8c4686b656864c8c1439d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe90ce1e7170ebe066e96a05bda3c2b0" id="r_afe90ce1e7170ebe066e96a05bda3c2b0"><td class="memItemLeft" align="right" valign="top"><a id="afe90ce1e7170ebe066e96a05bda3c2b0" name="afe90ce1e7170ebe066e96a05bda3c2b0"></a>
+IVW_MODULE_BASE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>writeIvfVolume</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;data, const std::filesystem::path &amp;filePath, Overwrite overwrite=Overwrite::Yes)</td></tr>
+<tr class="separator:afe90ce1e7170ebe066e96a05bda3c2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2ff2f08d1ce596fad9f3dc6f81e70b" id="r_a0a2ff2f08d1ce596fad9f3dc6f81e70b"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a2ff2f08d1ce596fad9f3dc6f81e70b">writeIvfVolumeSequence</a> (const <a class="el" href="classinviwo_1_1DataSequence.html">VolumeSequence</a> &amp;data, std::string_view name, const std::filesystem::path &amp;parentFolder, const std::filesystem::path &amp;relativePathToElements={}, Overwrite overwrite=Overwrite::Yes)</td></tr>
+<tr class="memdesc:a0a2ff2f08d1ce596fad9f3dc6f81e70b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a volume sequence to disk.  <br /></td></tr>
+<tr class="separator:a0a2ff2f08d1ce596fad9f3dc6f81e70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a851de99b7e0ac552532a3aaeed25e3d9" id="r_a851de99b7e0ac552532a3aaeed25e3d9"><td class="memItemLeft" align="right" valign="top"><a id="a851de99b7e0ac552532a3aaeed25e3d9" name="a851de99b7e0ac552532a3aaeed25e3d9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateReaderFromFile</b> (const <a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a> &amp;filePath, <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;extensions)</td></tr>
 <tr class="separator:a851de99b7e0ac552532a3aaeed25e3d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -8040,8 +8047,47 @@ template&lt;typename T, typename U, typename Predicate, typename ValueTransform,
 
 </div>
 </div>
-<a id="a366b7461e603c7bb7bf6dd161a6ddd8e" name="a366b7461e603c7bb7bf6dd161a6ddd8e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a366b7461e603c7bb7bf6dd161a6ddd8e">&#9670;&#160;</a></span>writeIvfVolumeSequence()</h2>
+<a id="ab874e412b1a96d66859a3cb627d6d5ca" name="ab874e412b1a96d66859a3cb627d6d5ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab874e412b1a96d66859a3cb627d6d5ca">&#9670;&#160;</a></span>writeBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_CORE_API void inviwo::util::writeBytes </td>
+          <td>(</td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *</td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>bytes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Compression</td>          <td class="paramname"><span class="paramname"><em>compression</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Write <code class="param">bytes</code> bytes of the data <code class="param">source</code> to the given filepath <code class="param">path</code>. The data is compressed if <code class="param">compression</code> is enabled and supported.</p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classinviwo_1_1DataReaderException.html">DataReaderException</a></td><td>if the file cannot be created or written to </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>util::isCompressionSupported </dd></dl>
+
+</div>
+</div>
+<a id="a0a2ff2f08d1ce596fad9f3dc6f81e70b" name="a0a2ff2f08d1ce596fad9f3dc6f81e70b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2ff2f08d1ce596fad9f3dc6f81e70b">&#9670;&#160;</a></span>writeIvfVolumeSequence()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8049,7 +8095,7 @@ template&lt;typename T, typename U, typename Predicate, typename ValueTransform,
         <tr>
           <td class="memname">IVW_MODULE_BASE_API std::filesystem::path inviwo::util::writeIvfVolumeSequence </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataSequence.html">VolumeSequence</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>volumes</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataSequence.html">VolumeSequence</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8059,12 +8105,12 @@ template&lt;typename T, typename U, typename Predicate, typename ValueTransform,
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>parentFolder</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>relativePathToElements</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>, </td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>relativePathToElements</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8075,21 +8121,19 @@ template&lt;typename T, typename U, typename Predicate, typename ValueTransform,
 </div><div class="memdoc">
 
 <p>Writes a volume sequence to disk. </p>
-<p>Writes a volume sequence to disk. Will create one main file ([name].ivfs) and a series of ivf volumes ([name]xx.ivf), one for each element in the sequence.</p>
+<p>Supports writing a volume sequence to disk. Creates one main file (<code>[name].ivfs</code>) and a series of raw files (<code>[name]xx.raw</code> or <code>[name]xx.raw.gz</code> if zlib compression is available), one for each volume. The raw files are</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">volumes</td><td>The volume sequence to export </td></tr>
-    <tr><td class="paramname">name</td><td>the name of the dataset, will be used for to name the output files [name].ivfs and [name]xx.ivf </td></tr>
-    <tr><td class="paramname">path</td><td>path to the folder to put the main file </td></tr>
-    <tr><td class="paramname">relativePathToElements</td><td>relative path (from the path to the main file) to where the sequence elements will be written </td></tr>
+    <tr><td class="paramname">data</td><td>the volume sequence to export </td></tr>
+    <tr><td class="paramname">name</td><td>file name of the dataset and raw files, that is [name].ivfs and [name]xx.raw </td></tr>
+    <tr><td class="paramname">parentFolder</td><td>parent folder </td></tr>
+    <tr><td class="paramname">relativePathToElements</td><td>path of raw files relative to <code class="param">path</code> </td></tr>
     <tr><td class="paramname">overwrite</td><td>whether or not to overwrite existing files. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>path to the created main-file </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1IvfSequenceVolumeWriter.html" title="Writter for *.ivfs sequnce files.">inviwo::IvfSequenceVolumeWriter</a> </dd>
-<dd>
-<a class="el" href="classinviwo_1_1IvfSequenceVolumeReader.html" title="Reader for *.ivfs sequnce files.">inviwo::IvfSequenceVolumeReader</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>path to the created main file</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1IvfVolumeSequenceWriter.html" title="Writer for *.ivfs volume sequence files.">inviwo::IvfVolumeSequenceWriter</a> <a class="el" href="classinviwo_1_1IvfVolumeSequenceReader.html">inviwo::IvfVolumeSequenceReader</a> </dd></dl>
 
 </div>
 </div>

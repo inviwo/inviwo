@@ -86,7 +86,6 @@ var group__processors =
     [ "inviwo::VolumeCurlCPUProcessor", "classinviwo_1_1VolumeCurlCPUProcessor.html", [
       [ "process", "classinviwo_1_1VolumeCurlCPUProcessor.html#ab2387aaac506d22a3c11d7db86d448c6", null ]
     ] ],
-    [ "inviwo::VolumeExport", "classinviwo_1_1VolumeExport.html", null ],
     [ "inviwo::VolumeGradientCPUProcessor", "classinviwo_1_1VolumeGradientCPUProcessor.html", [
       [ "process", "classinviwo_1_1VolumeGradientCPUProcessor.html#ab22f14da2fc5e71130bb884d6c0fd2aa", null ]
     ] ],

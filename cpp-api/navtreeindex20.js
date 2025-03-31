@@ -1,7 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"classinviwo_1_1TestMatrix.html":[1,3,68],
-"classinviwo_1_1TestMatrix.html#aac016495376e2c83afa9d983018c3f7b":[1,3,68,0],
 "classinviwo_1_1TetraMesh.html":[1,1,37],
 "classinviwo_1_1TetraMesh.html#a30eee0cb8da04c164b144336da062020":[1,1,37,0],
 "classinviwo_1_1TetraMesh.html#a5cffd83b9a73015ded6808b144800e60":[1,1,37,2],
@@ -31,8 +29,8 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1TextFileReader.html#aaf0c5d25218422413b74567840764bad":[1,0,5,1],
 "classinviwo_1_1TextLabelOverlay.html":[2,0,0,1127],
 "classinviwo_1_1TextLabelOverlay.html":[4,0,1,1134],
-"classinviwo_1_1TextOverlayGL.html":[1,3,69],
-"classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806":[1,3,69,0],
+"classinviwo_1_1TextOverlayGL.html":[1,3,68],
+"classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806":[1,3,68,0],
 "classinviwo_1_1TextOverlayProperty.html":[2,0,0,1129],
 "classinviwo_1_1TextOverlayProperty.html":[4,0,1,1136],
 "classinviwo_1_1TextOverlayProperty.html#a0ee1816270dc30ea3ba4eebe04c60a35":[2,0,0,1129,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1TransferFunction.html#a6aaddd89f896f50c183ca555e5e32ec9":[1,1,42,1],
 "classinviwo_1_1TransferFunction.html#aa52a0aa0e806e39476707bb9aafab91d":[1,1,42,2],
 "classinviwo_1_1TransferFunction.html#ab547a36f7dac37fe1ca702673aab042b":[1,1,42,0],
-"classinviwo_1_1TransferFunctionITFReader.html":[2,0,0,1193]
+"classinviwo_1_1TransferFunctionITFReader.html":[2,0,0,1193],
+"classinviwo_1_1TransferFunctionITFReader.html":[4,0,1,1200],
+"classinviwo_1_1TransferFunctionITFWriter.html":[2,0,0,1194]
 };

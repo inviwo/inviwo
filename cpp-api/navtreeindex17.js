@@ -1,7 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"classinviwo_1_1ShaderComponent.html#aa7e45d4add69d9197aa5e32b97d41bd9":[2,0,0,1018,2],
-"classinviwo_1_1ShaderComponent.html#aa7e45d4add69d9197aa5e32b97d41bd9":[4,0,1,1025,2],
 "classinviwo_1_1ShaderComponentProcessorBase.html":[2,0,0,1019],
 "classinviwo_1_1ShaderComponentProcessorBase.html":[4,0,1,1026],
 "classinviwo_1_1ShaderComponentProcessorBase.html#a0828727ba0d33c385b11a05b16357a06":[2,0,0,1019,0],
@@ -248,6 +246,8 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1SphericalComponent.html#ada7b8843039e78c823a2f6d71153bf6d":[4,0,1,1062,2],
 "classinviwo_1_1SphericalComponent.html#ae924d3a150ff89b0f5bbb29f7e432eac":[2,0,0,1055,1],
 "classinviwo_1_1SphericalComponent.html#ae924d3a150ff89b0f5bbb29f7e432eac":[4,0,1,1062,1],
-"classinviwo_1_1SphericalVolumeRaycaster.html":[1,3,47],
-"classinviwo_1_1SplitImage.html":[1,3,96]
+"classinviwo_1_1SphericalVolumeRaycaster.html":[1,3,46],
+"classinviwo_1_1SplitImage.html":[1,3,95],
+"classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[1,3,95,0],
+"classinviwo_1_1SplitterProperty.html":[1,4,35]
 };

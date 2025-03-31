@@ -1,7 +1,5 @@
 var NAVTREEINDEX15 =
 {
-"classinviwo_1_1ProgressBarObserver.html#a6e5f5e2eab8d24f92e0a66ac2b37f19d":[2,0,0,867,0],
-"classinviwo_1_1ProgressBarObserver.html#a6e5f5e2eab8d24f92e0a66ac2b37f19d":[4,0,1,874,0],
 "classinviwo_1_1ProgressBarObserver.html#abd9f653dfac1f2ad1efccb2772fe9a1e":[2,0,0,867,1],
 "classinviwo_1_1ProgressBarObserver.html#abd9f653dfac1f2ad1efccb2772fe9a1e":[4,0,1,874,1],
 "classinviwo_1_1ProgressBarObserverCEF.html":[2,0,0,868],
@@ -249,5 +247,7 @@ var NAVTREEINDEX15 =
 "classinviwo_1_1Rasterization.html":[4,0,1,955],
 "classinviwo_1_1Rasterization.html#a254be5a108130725bb310a2dd5da771b":[2,0,0,948,0],
 "classinviwo_1_1Rasterization.html#a254be5a108130725bb310a2dd5da771b":[4,0,1,955,0],
-"classinviwo_1_1Rasterization.html#ad0e01a92feab10ab61e333837e4d8ae9":[2,0,0,948,1]
+"classinviwo_1_1Rasterization.html#ad0e01a92feab10ab61e333837e4d8ae9":[2,0,0,948,1],
+"classinviwo_1_1Rasterization.html#ad0e01a92feab10ab61e333837e4d8ae9":[4,0,1,955,1],
+"classinviwo_1_1Rasterization.html#adf0e25d6aed145f6fc9c3d548e635160":[2,0,0,948,2]
 };

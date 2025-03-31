@@ -1,7 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[1,3,96,0],
-"classinviwo_1_1SplitterProperty.html":[1,4,35],
 "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf":[1,4,35,0],
 "classinviwo_1_1SplitterRenderer.html":[2,0,0,1059],
 "classinviwo_1_1SplitterRenderer.html":[4,0,1,1066],
@@ -40,7 +38,7 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f":[1,3,16,1],
 "classinviwo_1_1StandardFactory.html":[2,0,0,1066],
 "classinviwo_1_1StandardFactory.html":[4,0,1,1073],
-"classinviwo_1_1StandardVolumeRaycaster.html":[1,3,48],
+"classinviwo_1_1StandardVolumeRaycaster.html":[1,3,47],
 "classinviwo_1_1StateCoordinator.html":[2,0,0,1068],
 "classinviwo_1_1StateCoordinator.html":[4,0,1,1075],
 "classinviwo_1_1StateCoordinator.html#a1b81aef5bfbd0ace825ba98ec3fd5be8":[2,0,0,1068,3],
@@ -59,8 +57,8 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1StdUnorderedMapMetaData.html":[4,0,1,1078],
 "classinviwo_1_1StdVectorMetaData.html":[2,0,0,1072],
 "classinviwo_1_1StdVectorMetaData.html":[4,0,1,1079],
-"classinviwo_1_1StereoCameraSyncer.html":[1,3,83],
-"classinviwo_1_1StereoCameraSyncer.html#a983519e9eae01ca8cbaf6b81fd26bccc":[1,3,83,0],
+"classinviwo_1_1StereoCameraSyncer.html":[1,3,82],
+"classinviwo_1_1StereoCameraSyncer.html#a983519e9eae01ca8cbaf6b81fd26bccc":[1,3,82,0],
 "classinviwo_1_1StipplingProperty.html":[2,0,0,1074],
 "classinviwo_1_1StipplingProperty.html":[4,0,1,1081],
 "classinviwo_1_1StipplingProperty.html#a66ac42568f5a59d01393aa62c0e10653":[2,0,0,1074,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae2063d24561c8c4875b43411ed1d96d4":[2,0,0,1096,8],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae2063d24561c8c4875b43411ed1d96d4":[4,0,1,1103,8],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae68274ee049c7e57f972d4eaa7e29dc5":[2,0,0,1096,27],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae68274ee049c7e57f972d4eaa7e29dc5":[4,0,1,1103,27]
+"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae68274ee049c7e57f972d4eaa7e29dc5":[4,0,1,1103,27],
+"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[2,0,0,1096,29],
+"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[4,0,1,1103,29]
 };

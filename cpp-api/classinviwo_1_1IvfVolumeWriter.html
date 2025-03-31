@@ -110,6 +110,11 @@ $(function(){initNavTree('classinviwo_1_1IvfVolumeWriter.html',''); initResizabl
   <div class="headertitle"><div class="title">inviwo::IvfVolumeWriter Class Reference<div class="ingroups"><a class="el" href="group__dataio.html">Data Reader &amp; Writers</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Writer for *.ivf volume files.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;ivfvolumewriter.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::IvfVolumeWriter:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -128,9 +133,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5e8e6351e361e6de4d33ba430403f2cf" id="r_a5e8e6351e361e6de4d33ba430403f2cf"><td class="memItemLeft" align="right" valign="top"><a id="a5e8e6351e361e6de4d33ba430403f2cf" name="a5e8e6351e361e6de4d33ba430403f2cf"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>IvfVolumeWriter</b> (const <a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> &amp;rhs)</td></tr>
 <tr class="separator:a5e8e6351e361e6de4d33ba430403f2cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0d5c81412df784e5de31a2aef27315a" id="r_ac0d5c81412df784e5de31a2aef27315a"><td class="memItemLeft" align="right" valign="top"><a id="ac0d5c81412df784e5de31a2aef27315a" name="ac0d5c81412df784e5de31a2aef27315a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>IvfVolumeWriter</b> (<a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> &amp;&amp;rhs) noexcept</td></tr>
+<tr class="separator:ac0d5c81412df784e5de31a2aef27315a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4212265495767922e8ccba2f21e5a02a" id="r_a4212265495767922e8ccba2f21e5a02a"><td class="memItemLeft" align="right" valign="top"><a id="a4212265495767922e8ccba2f21e5a02a" name="a4212265495767922e8ccba2f21e5a02a"></a>
 <a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> &amp;that)</td></tr>
 <tr class="separator:a4212265495767922e8ccba2f21e5a02a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b7aec4732f363bc16512a8abf3256ec" id="r_a3b7aec4732f363bc16512a8abf3256ec"><td class="memItemLeft" align="right" valign="top"><a id="a3b7aec4732f363bc16512a8abf3256ec" name="a3b7aec4732f363bc16512a8abf3256ec"></a>
+<a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> &amp;&amp;that) noexcept</td></tr>
+<tr class="separator:a3b7aec4732f363bc16512a8abf3256ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c4725fb18cba678c6b6ad7edb12abd0" id="r_a3c4725fb18cba678c6b6ad7edb12abd0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1IvfVolumeWriter.html">IvfVolumeWriter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c4725fb18cba678c6b6ad7edb12abd0">clone</a> () const</td></tr>
 <tr class="separator:a3c4725fb18cba678c6b6ad7edb12abd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10a1e22c28128510beb4be63447fe565" id="r_a10a1e22c28128510beb4be63447fe565"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10a1e22c28128510beb4be63447fe565">writeData</a> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> *data, const std::filesystem::path &amp;filePath) const</td></tr>
@@ -209,7 +220,45 @@ Overwrite&#160;</td><td class="memItemRight" valign="bottom"><b>overwrite_</b></
 std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>extensions_</b></td></tr>
 <tr class="separator:a62d340b19550bb20b92fb66501cf6e82 inherit pro_attribs_classinviwo_1_1DataWriter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Writer for *.ivf volume files. </p>
+<p>Supports writing a single volume to disk. Creates one main file ([name].ivf) and one raw file ([name].raw or [name]xx.raw.gz if zlib compression is available).</p>
+<p>The output structure of the ivf file is: </p><pre class="fragment">&lt;?xml version="1.0" ?&gt;
+&lt;InviwoVolume version="2"&gt;
+    &lt;RawFiles&gt;
+        &lt;RawFile content="../data/CLOUDf01.bin.gz"&gt;
+            &lt;MetaDataMap&gt;
+                &lt;MetaDataItem type="org.inviwo.DoubleMetaData" key="timestamp"&gt;
+                    &lt;MetaData content="1" /&gt;
+                &lt;/MetaDataItem&gt;
+                &lt;MetaDataItem type="org.inviwo.IntMetaData" key="index"&gt;
+                    &lt;MetaData content="1" /&gt;
+                &lt;/MetaDataItem&gt;
+            &lt;/MetaDataMap&gt;
+        &lt;/RawFile&gt;
+    &lt;/RawFiles&gt;
+    &lt;ByteOrder content="1" /&gt;
+    &lt;Compression content="1" /&gt;
+    &lt;Format content="FLOAT32" /&gt;
+    &lt;BasisAndOffset&gt;
+        &lt;col0 x="1941.7" y="0" z="0" w="0" /&gt;
+        &lt;col1 x="0" y="1996.25" z="0" w="0" /&gt;
+        &lt;col2 x="0" y="0" z="990.0" w="0" /&gt;
+        &lt;col3 x="-970.85" y="-998.125" z="1.75" w="1" /&gt;
+    &lt;/BasisAndOffset&gt;
+    &lt;WorldTransform&gt;
+        &lt;col0 x="1" y="0" z="0" w="0" /&gt;
+        &lt;col1 x="0" y="1" z="0" w="0" /&gt;
+        &lt;col2 x="0" y="0" z="1" w="0" /&gt;
+        &lt;col3 x="0" y="0" z="0" w="1" /&gt;
+    &lt;/WorldTransform&gt;
+    &lt;Dimension x="500" y="500" z="100" /&gt;
+    &lt;DataRange x="0" y="0.00332" /&gt;
+    &lt;ValueRange x="0" y="0.00332" /&gt;
+    &lt;ValueUnit content="kg/kg" /&gt;
+&lt;/InviwoVolume&gt;
+ * </pre><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1IvfVolumeReader.html">inviwo::IvfVolumeReader</a> inviwo::util::writeIvfVolume </dd></dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3c4725fb18cba678c6b6ad7edb12abd0" name="a3c4725fb18cba678c6b6ad7edb12abd0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3c4725fb18cba678c6b6ad7edb12abd0">&#9670;&#160;</a></span>clone()</h2>
 

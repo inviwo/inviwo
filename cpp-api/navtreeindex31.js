@@ -1,5 +1,7 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1command_1_1RemoveProcessor.html":[4,0,1,5,6],
+"structinviwo_1_1command_1_1Stats.html":[4,0,1,5,7],
 "structinviwo_1_1command_1_1Update.html":[4,0,1,5,8],
 "structinviwo_1_1comparePtr.html":[2,0,0,148],
 "structinviwo_1_1comparePtr.html":[4,0,1,155],
@@ -192,8 +194,10 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html":[4,0,1,27,54],
 "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html":[2,0,0,19,51],
 "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html":[4,0,1,27,55],
-"structinviwo_1_1util_1_1TransformIterator.html":[2,0,0,19,58],
-"structinviwo_1_1util_1_1TransformIterator.html":[4,0,1,27,62],
+"structinviwo_1_1util_1_1SharedSequenceData.html":[2,0,0,19,56],
+"structinviwo_1_1util_1_1SharedSequenceData.html":[4,0,1,27,60],
+"structinviwo_1_1util_1_1TransformIterator.html":[2,0,0,19,59],
+"structinviwo_1_1util_1_1TransformIterator.html":[4,0,1,27,63],
 "structinviwo_1_1util_1_1alwaysTrue.html":[2,0,0,19,0],
 "structinviwo_1_1util_1_1alwaysTrue.html":[4,0,1,27,4],
 "structinviwo_1_1util_1_1detail_1_1Hideer.html":[4,0,1,27,0,12],
@@ -245,9 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1util_1_1extent_3_01const_01T_00_01N_01_4.html":[4,0,1,27,15],
 "structinviwo_1_1util_1_1flat__extent.html":[2,0,0,19,12],
 "structinviwo_1_1util_1_1flat__extent.html":[4,0,1,27,16],
-"structinviwo_1_1util_1_1for__each__type.html":[2,0,0,19,13],
-"structinviwo_1_1util_1_1for__each__type.html":[4,0,1,27,17],
-"structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_00_01Types_8_8_8_01_4_01_4.html":[2,0,0,19,15],
-"structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_00_01Types_8_8_8_01_4_01_4.html":[4,0,1,27,19],
-"structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_01_4_01_4.html":[2,0,0,19,14]
+"structinviwo_1_1util_1_1for__each__type.html":[2,0,0,19,13]
 };

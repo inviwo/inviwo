@@ -1,7 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[2,0,0,1096,29],
-"classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#ae98d399d44bd7c607fffb308e5cecc30":[4,0,1,1103,29],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#aeb90477208f4882cab4af99f859a3203":[2,0,0,1096,19],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#aeb90477208f4882cab4af99f859a3203":[4,0,1,1103,19],
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#af0b74f782fa6397321e88f0fecf42ffc":[2,0,0,1096,18],
@@ -86,8 +84,8 @@ var NAVTREEINDEX19 =
 "classinviwo_1_1SyncedListProperty.html":[4,0,1,1110],
 "classinviwo_1_1SyntaxHighlighter.html":[2,0,0,1104],
 "classinviwo_1_1SyntaxHighlighter.html":[4,0,1,1111],
-"classinviwo_1_1SyntheticDataFrame.html":[1,3,64],
-"classinviwo_1_1SyntheticDataFrame.html#a43c5e315a4d27220646a498405f18537":[1,3,64,0],
+"classinviwo_1_1SyntheticDataFrame.html":[1,3,63],
+"classinviwo_1_1SyntheticDataFrame.html#a43c5e315a4d27220646a498405f18537":[1,3,63,0],
 "classinviwo_1_1SystemSettings.html":[2,0,0,1106],
 "classinviwo_1_1SystemSettings.html":[4,0,1,1113],
 "classinviwo_1_1TFColorEdit.html":[2,0,0,1144],
@@ -201,8 +199,8 @@ var NAVTREEINDEX19 =
 "classinviwo_1_1TFSelectionWatcher.html#abcdff5ac0df4d6a1565c154e11dcf534":[4,0,1,1181,0],
 "classinviwo_1_1TFSelectionWatcher.html#ae25b2e5ed93ed68856ed124e81c26c35":[2,0,0,1174,2],
 "classinviwo_1_1TFSelectionWatcher.html#ae25b2e5ed93ed68856ed124e81c26c35":[4,0,1,1181,2],
-"classinviwo_1_1TFSelector.html":[1,3,84],
-"classinviwo_1_1TFSelector.html#afce75521ab1516f6272308486f700054":[1,3,84,0],
+"classinviwo_1_1TFSelector.html":[1,3,83],
+"classinviwo_1_1TFSelector.html#afce75521ab1516f6272308486f700054":[1,3,83,0],
 "classinviwo_1_1TIFFLayerReader.html":[2,0,0,1177],
 "classinviwo_1_1TIFFLayerReader.html":[4,0,1,1184],
 "classinviwo_1_1TIFFStackVolumeRAMLoader.html":[2,0,0,1178],
@@ -249,5 +247,7 @@ var NAVTREEINDEX19 =
 "classinviwo_1_1TemplatePropertyConverter.html#a26ef0b312d9c615577b068ad1dff4ba9":[2,0,0,1113,0],
 "classinviwo_1_1TemplatePropertyConverter.html#a26ef0b312d9c615577b068ad1dff4ba9":[4,0,1,1120,0],
 "classinviwo_1_1TemplateVolumeSampler.html":[2,0,0,1114],
-"classinviwo_1_1TemplateVolumeSampler.html":[4,0,1,1121]
+"classinviwo_1_1TemplateVolumeSampler.html":[4,0,1,1121],
+"classinviwo_1_1TestMatrix.html":[1,3,67],
+"classinviwo_1_1TestMatrix.html#aac016495376e2c83afa9d983018c3f7b":[1,3,67,0]
 };

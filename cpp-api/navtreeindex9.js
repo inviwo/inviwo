@@ -1,7 +1,5 @@
 var NAVTREEINDEX9 =
 {
-"classinviwo_1_1LayerCombiner.html#a314d8093bbc7a8a811ed8cee6f6c8c2e":[4,0,1,539,0],
-"classinviwo_1_1LayerContour.html":[2,0,0,534],
 "classinviwo_1_1LayerContour.html":[4,0,1,541],
 "classinviwo_1_1LayerContour.html#afbe8a54912fbad81a20e26414c536062":[2,0,0,534,0],
 "classinviwo_1_1LayerContour.html#afbe8a54912fbad81a20e26414c536062":[4,0,1,541,0],
@@ -244,10 +242,12 @@ var NAVTREEINDEX9 =
 "classinviwo_1_1LightVolumeComponent.html#acba5e48c0fccc5fdf5fa852ba9229c0d":[4,0,1,588,0],
 "classinviwo_1_1LightVolumeComponent.html#ae7fbee0ea5c7159405e4b8a87a513cdc":[2,0,0,581,1],
 "classinviwo_1_1LightVolumeComponent.html#ae7fbee0ea5c7159405e4b8a87a513cdc":[4,0,1,588,1],
-"classinviwo_1_1LightVolumeGL.html":[1,3,42],
-"classinviwo_1_1LightVolumeGL.html#ad31b5c9438c1227ba8e9a3b771bac365":[1,3,42,1],
+"classinviwo_1_1LightVolumeGL.html":[1,3,41],
+"classinviwo_1_1LightVolumeGL.html#ad31b5c9438c1227ba8e9a3b771bac365":[1,3,41,1],
 "classinviwo_1_1LightVolumeRaycaster.html":[2,0,0,583],
 "classinviwo_1_1LightVolumeRaycaster.html":[4,0,1,590],
-"classinviwo_1_1LightingRaycaster.html":[1,3,41],
-"classinviwo_1_1LightingRaycaster.html#a42010f84185ccb1cd60a973529bc35d9":[1,3,41,1]
+"classinviwo_1_1LightingRaycaster.html":[1,3,40],
+"classinviwo_1_1LightingRaycaster.html#a42010f84185ccb1cd60a973529bc35d9":[1,3,40,1],
+"classinviwo_1_1LightingRaycaster.html#a9fd42ce674285e476a342aaeff813dd7":[1,3,40,0],
+"classinviwo_1_1LineEditEventFilter.html":[2,0,0,584]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX14 =
 {
-"classinviwo_1_1PositionProperty.html#a7719067b2d8d719e3b8c8a00bf9dac6a":[1,4,17,2],
-"classinviwo_1_1PositionProperty.html#a7fd8428eef4be23cb826a0717f0cbacc":[1,4,17,1],
 "classinviwo_1_1PositionProperty.html#a8c125ccc65d07d1559c59e8e0ebb7f7a":[1,4,17,4],
 "classinviwo_1_1PositionProperty.html#a960d4eac8c4bf3ab1ceadab5aab7b7f3":[1,4,17,0],
 "classinviwo_1_1PositionProperty.html#aa03c07aba9c351324d45afc15405f1d6":[1,4,17,5],
@@ -11,8 +9,8 @@ var NAVTREEINDEX14 =
 "classinviwo_1_1PostProcessingModule.html#a08b722da783967e17b490446cf5934bd":[4,0,1,809,1],
 "classinviwo_1_1PostProcessingModule.html#ad1769729a77760238599d79e92ae68bb":[2,0,0,802,0],
 "classinviwo_1_1PostProcessingModule.html#ad1769729a77760238599d79e92ae68bb":[4,0,1,809,0],
-"classinviwo_1_1PresentationProcessor.html":[1,3,117],
-"classinviwo_1_1PresentationProcessor.html#aa60a38545ffb11858ba9e1928d5aedd1":[1,3,117,0],
+"classinviwo_1_1PresentationProcessor.html":[1,3,116],
+"classinviwo_1_1PresentationProcessor.html#aa60a38545ffb11858ba9e1928d5aedd1":[1,3,116,0],
 "classinviwo_1_1Processor.html":[1,3,0],
 "classinviwo_1_1Processor.html#a06088cebce8b3d454b56abf70458b62e":[1,3,0,1],
 "classinviwo_1_1Processor.html#a1bc3af8dcfabb8599f4ff0f8c769bebf":[1,3,0,25],
@@ -249,5 +247,7 @@ var NAVTREEINDEX14 =
 "classinviwo_1_1ProgressBarObservable.html":[2,0,0,866],
 "classinviwo_1_1ProgressBarObservable.html":[4,0,1,873],
 "classinviwo_1_1ProgressBarObserver.html":[2,0,0,867],
-"classinviwo_1_1ProgressBarObserver.html":[4,0,1,874]
+"classinviwo_1_1ProgressBarObserver.html":[4,0,1,874],
+"classinviwo_1_1ProgressBarObserver.html#a6e5f5e2eab8d24f92e0a66ac2b37f19d":[2,0,0,867,0],
+"classinviwo_1_1ProgressBarObserver.html#a6e5f5e2eab8d24f92e0a66ac2b37f19d":[4,0,1,874,0]
 };

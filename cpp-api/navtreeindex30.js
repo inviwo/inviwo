@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"structinviwo_1_1ProcessorInfo.html#a3dfc6e6eead4089b0b87e4d91800a56c":[2,0,0,813,5],
+"structinviwo_1_1ProcessorInfo.html#a3dfc6e6eead4089b0b87e4d91800a56c":[4,0,1,820,5],
 "structinviwo_1_1ProcessorInfo.html#a73ee300447fec6bf02343fe794da5b20":[2,0,0,813,1],
 "structinviwo_1_1ProcessorInfo.html#a73ee300447fec6bf02343fe794da5b20":[4,0,1,820,1],
 "structinviwo_1_1ProcessorInfo.html#a883e93e6920c6efb56e63f8c75901300":[2,0,0,813,3],
@@ -218,12 +220,12 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1VolumeConfig.html":[4,0,1,1256],
 "structinviwo_1_1VolumeReprConfig.html":[2,0,0,1295],
 "structinviwo_1_1VolumeReprConfig.html":[4,0,1,1302],
-"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[2,0,0,1328,0],
-"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[4,0,1,1335,0],
-"structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[2,0,0,1327,0],
-"structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[4,0,1,1334,0],
-"structinviwo_1_1WorkspaceInfo.html":[2,0,0,1330],
-"structinviwo_1_1WorkspaceInfo.html":[4,0,1,1337],
+"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[2,0,0,1329,0],
+"structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[4,0,1,1336,0],
+"structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[2,0,0,1328,0],
+"structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[4,0,1,1335,0],
+"structinviwo_1_1WorkspaceInfo.html":[2,0,0,1331],
+"structinviwo_1_1WorkspaceInfo.html":[4,0,1,1338],
 "structinviwo_1_1animation_1_1AnimationTimeState.html":[2,0,0,0,13],
 "structinviwo_1_1animation_1_1AnimationTimeState.html":[4,0,1,1,14],
 "structinviwo_1_1animation_1_1FindDivisionsResult.html":[2,0,0,0,37],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1command_1_1AddProcessor.html":[4,0,1,5,2],
 "structinviwo_1_1command_1_1Nop.html":[4,0,1,5,3],
 "structinviwo_1_1command_1_1RemoveConnection.html":[4,0,1,5,4],
-"structinviwo_1_1command_1_1RemoveLink.html":[4,0,1,5,5],
-"structinviwo_1_1command_1_1RemoveProcessor.html":[4,0,1,5,6],
-"structinviwo_1_1command_1_1Stats.html":[4,0,1,5,7]
+"structinviwo_1_1command_1_1RemoveLink.html":[4,0,1,5,5]
 };

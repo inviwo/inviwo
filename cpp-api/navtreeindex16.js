@@ -1,7 +1,5 @@
 var NAVTREEINDEX16 =
 {
-"classinviwo_1_1Rasterization.html#ad0e01a92feab10ab61e333837e4d8ae9":[4,0,1,955,1],
-"classinviwo_1_1Rasterization.html#adf0e25d6aed145f6fc9c3d548e635160":[2,0,0,948,2],
 "classinviwo_1_1Rasterization.html#adf0e25d6aed145f6fc9c3d548e635160":[4,0,1,955,2],
 "classinviwo_1_1RasterizationInport.html":[2,0,0,949],
 "classinviwo_1_1RasterizationInport.html":[4,0,1,956],
@@ -59,8 +57,8 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1RaycastingComponent.html#add286218e2b8d8a34c00e4175b32e669":[4,0,1,966,3],
 "classinviwo_1_1RaycastingProperty.html":[1,4,42],
 "classinviwo_1_1RaycastingProperty.html#af3f2651d919b32b073e91b221851ebc8":[1,4,42,0],
-"classinviwo_1_1RedGreenProcessor.html":[1,3,49],
-"classinviwo_1_1RedGreenProcessor.html#a630b4772f1ad706385e33e2ccf90660d":[1,3,49,0],
+"classinviwo_1_1RedGreenProcessor.html":[1,3,48],
+"classinviwo_1_1RedGreenProcessor.html#a630b4772f1ad706385e33e2ccf90660d":[1,3,48,0],
 "classinviwo_1_1RenderBufferObject.html":[2,0,0,965],
 "classinviwo_1_1RenderBufferObject.html":[4,0,1,972],
 "classinviwo_1_1RenderContext.html":[2,0,0,966],
@@ -121,7 +119,7 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1ResourceManagerObservable.html":[4,0,1,995],
 "classinviwo_1_1ResourceManagerObserver.html":[2,0,0,989],
 "classinviwo_1_1ResourceManagerObserver.html":[4,0,1,996],
-"classinviwo_1_1RowLayout.html":[1,3,35],
+"classinviwo_1_1RowLayout.html":[1,3,34],
 "classinviwo_1_1SGCTCamera.html":[2,0,0,1014],
 "classinviwo_1_1SGCTCamera.html":[4,0,1,1021],
 "classinviwo_1_1SGCTCamera.html#a65525e987a8cd35ceea33f3a6050fd34":[2,0,0,1014,0],
@@ -130,9 +128,9 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1SGCTModule.html":[4,0,1,1022],
 "classinviwo_1_1SGCTSettings.html":[2,0,0,1016],
 "classinviwo_1_1SGCTSettings.html":[4,0,1,1023],
-"classinviwo_1_1SSAO.html":[1,3,115],
-"classinviwo_1_1SSAO.html#a5c064716bebc60b676f028f2737d87ac":[1,3,115,0],
-"classinviwo_1_1SSAO.html#aa5ffd58f317ea3d3dd5e0c4856569eb6":[1,3,115,1],
+"classinviwo_1_1SSAO.html":[1,3,114],
+"classinviwo_1_1SSAO.html#a5c064716bebc60b676f028f2737d87ac":[1,3,114,0],
+"classinviwo_1_1SSAO.html#aa5ffd58f317ea3d3dd5e0c4856569eb6":[1,3,114,1],
 "classinviwo_1_1SafeCStr.html":[2,0,0,993],
 "classinviwo_1_1SafeCStr.html":[4,0,1,1000],
 "classinviwo_1_1SampleTransformComponent.html":[2,0,0,994],
@@ -249,5 +247,7 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1ShaderComponent.html#a6a0ef88f495235ccc3f08f08138042ae":[2,0,0,1018,1],
 "classinviwo_1_1ShaderComponent.html#a6a0ef88f495235ccc3f08f08138042ae":[4,0,1,1025,1],
 "classinviwo_1_1ShaderComponent.html#a6f8bcb38ab9d323724626be3d2d21cc5":[2,0,0,1018,3],
-"classinviwo_1_1ShaderComponent.html#a6f8bcb38ab9d323724626be3d2d21cc5":[4,0,1,1025,3]
+"classinviwo_1_1ShaderComponent.html#a6f8bcb38ab9d323724626be3d2d21cc5":[4,0,1,1025,3],
+"classinviwo_1_1ShaderComponent.html#aa7e45d4add69d9197aa5e32b97d41bd9":[2,0,0,1018,2],
+"classinviwo_1_1ShaderComponent.html#aa7e45d4add69d9197aa5e32b97d41bd9":[4,0,1,1025,2]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX13 =
 {
-"classinviwo_1_1PCPDataFrameVisualizer.html#a9351ad7d768466191a0e58c6a8651e2d":[4,0,1,761,8],
-"classinviwo_1_1PCPDataFrameVisualizer.html#a9dadd58df5eae127befd2a76a0f9cdf3":[2,0,0,754,2],
 "classinviwo_1_1PCPDataFrameVisualizer.html#a9dadd58df5eae127befd2a76a0f9cdf3":[4,0,1,761,2],
 "classinviwo_1_1PCPDataFrameVisualizer.html#aa4946a1b71a7247e7fb4983e28110ee5":[2,0,0,754,4],
 "classinviwo_1_1PCPDataFrameVisualizer.html#aa4946a1b71a7247e7fb4983e28110ee5":[4,0,1,761,4],
@@ -180,8 +178,8 @@ var NAVTREEINDEX13 =
 "classinviwo_1_1PointLightSourceProcessor.html#abd465745d5edd07d42c3517203f50c33":[1,3,13,1],
 "classinviwo_1_1PointLightTrackball.html":[2,0,0,777],
 "classinviwo_1_1PointLightTrackball.html":[4,0,1,784],
-"classinviwo_1_1PointRenderer.html":[1,3,95],
-"classinviwo_1_1PointRenderer.html#aaec9784f5309f0976dea8797f7e5a55b":[1,3,95,0],
+"classinviwo_1_1PointRenderer.html":[1,3,94],
+"classinviwo_1_1PointRenderer.html#aaec9784f5309f0976dea8797f7e5a55b":[1,3,94,0],
 "classinviwo_1_1Polygon.html":[2,0,0,779],
 "classinviwo_1_1Polygon.html":[4,0,1,786],
 "classinviwo_1_1PoolProcessor.html":[2,0,0,780],
@@ -249,5 +247,7 @@ var NAVTREEINDEX13 =
 "classinviwo_1_1PositionProperty.html":[1,4,17],
 "classinviwo_1_1PositionProperty.html#a06b8ec0b92f96688e882d426a2d1c2e8":[1,4,17,7],
 "classinviwo_1_1PositionProperty.html#a30bff98a7269e0b7c8527d0fac282402":[1,4,17,6],
-"classinviwo_1_1PositionProperty.html#a444a62b25bbf1e8d66f0191a3c301def":[1,4,17,3]
+"classinviwo_1_1PositionProperty.html#a444a62b25bbf1e8d66f0191a3c301def":[1,4,17,3],
+"classinviwo_1_1PositionProperty.html#a7719067b2d8d719e3b8c8a00bf9dac6a":[1,4,17,2],
+"classinviwo_1_1PositionProperty.html#a7fd8428eef4be23cb826a0717f0cbacc":[1,4,17,1]
 };
