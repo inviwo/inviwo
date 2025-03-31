@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/modules/plottinggl/processors/imageplotprocessor.h
     include/modules/plottinggl/processors/layeraxis.h
     include/modules/plottinggl/processors/meshaxis.h
+    include/modules/plottinggl/processors/orthographicaxis2d.h
     include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h
     include/modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h
     include/modules/plottinggl/processors/persistencediagramplotprocessor.h
@@ -39,6 +40,7 @@ set(SOURCE_FILES
     src/processors/imageplotprocessor.cpp
     src/processors/layeraxis.cpp
     src/processors/meshaxis.cpp
+    src/processors/orthographicaxis2d.cpp
     src/processors/parallelcoordinates/parallelcoordinates.cpp
     src/processors/parallelcoordinates/pcpaxissettings.cpp
     src/processors/persistencediagramplotprocessor.cpp

@@ -32,11 +32,55 @@
 
 #include <inviwo/core/ports/imageport.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+#include <cstddef>
 
 namespace inviwo {
 
 class Shader;
 class TextureUnitContainer;
+
+// Define an enum for blend modes
+enum class BlendMode : std::uint8_t {
+    Source,         // Use source
+    Destination,    // Use destination
+    Alpha,          // Standard alpha blending
+    Additive,       // Glowing effects (fire, lights)
+    Multiply,       // Darkening effects (shadows)
+    Screen,         // Lightening effects (highlights)
+    Subtractive,    // Removing light (dark smoke, dirt)
+    Premultiplied,  // Correct alpha blending (HDR)
+    Overlay         // Contrast enhancement
+};
+
+// Convert BlendMode to string for logging/debugging
+constexpr std::string_view format_as(BlendMode mode) {
+    switch (mode) {
+        case BlendMode::Source:
+            return "Source Blending";
+        case BlendMode::Destination:
+            return "Destination Blending";
+        case BlendMode::Alpha:
+            return "Alpha Blending";
+        case BlendMode::Additive:
+            return "Additive Blending";
+        case BlendMode::Multiply:
+            return "Multiplicative Blending";
+        case BlendMode::Screen:
+            return "Screen Blending";
+        case BlendMode::Subtractive:
+            return "Subtractive Blending";
+        case BlendMode::Premultiplied:
+            return "Premultiplied Alpha Blending";
+        case BlendMode::Overlay:
+            return "Overlay Blending";
+        default:
+            return "Unknown Blend Mode";
+    }
+}
 
 class IVW_MODULE_BASEGL_API MeshTexturing {
 public:
@@ -46,8 +90,15 @@ public:
     void setUniforms(Shader& shader) const;
     MeshShaderCache::Requirement getRequirement() const;
 
+    void addDefines(Shader& shader) const;
+
     ImageInport inport;
     int unitNumber;
+
+    BoolCompositeProperty texture;
+    OptionProperty<BlendMode> blendMode;
+    BoolProperty swap;
+    FloatProperty mix;
 };
 
 }  // namespace inviwo

@@ -47,9 +47,9 @@ const ProcessorInfo& DataFrameToVector::getProcessorInfo() const { return proces
 DataFrameToVector::DataFrameToVector()
     : Processor{}
     , dataFrame_{"dataFrame", ""_help}
-    , uintOutport_{"uintOutport", "<description of the generated outport data>"_help}
-    , floatOutport_{"floatOutport", "<description of the generated outport data>"_help}
-    , stringOutport_{"stringOutport", "<description of the generated outport data>"_help}
+    , uintOutport_{"uintOutport", "uint column data"_help}
+    , floatOutport_{"floatOutport", "float column data"_help}
+    , stringOutport_{"stringOutport", "string column data"_help}
     , selectedColumn_("selectedColumn", "Selected Column", dataFrame_) {
 
     addPorts(dataFrame_, uintOutport_, floatOutport_, stringOutport_);

@@ -42,6 +42,7 @@
 #include <modules/plottinggl/processors/imageplotprocessor.h>                  // for Image...
 #include <modules/plottinggl/processors/layeraxis.h>
 #include <modules/plottinggl/processors/meshaxis.h>
+#include <modules/plottinggl/processors/orthographicaxis2d.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>  // for Paral...
 #include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>      // for PCPAx...
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>          // for Persi...
@@ -62,6 +63,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
 
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
+    registerProcessor<OrthographicAxis2D>();
     registerProcessor<plot::AxisRenderProcessor>();
     registerProcessor<plot::ColorScaleLegend>();
     registerProcessor<plot::ImagePlotProcessor>();

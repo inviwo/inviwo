@@ -39,28 +39,20 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/opengl/shader/shader.h>
 
-namespace inviwo {
+#include <modules/basegl/util/sphereconfig.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/basegl/util/meshbnlgl.h>
+#include <modules/basegl/util/uniformlabelatlasgl.h>
+#include <modules/basegl/util/periodicitygl.h>
+#include <modules/basegl/util/sphereconfig.h>
+#include <modules/basegl/util/meshtexturing.h>
 
-/** \docpage{org.inviwo.PointRenderer, Point Renderer}
- * ![](org.inviwo.PointRenderer.png?classIdentifier=org.inviwo.PointRenderer)
- * This processor renders a set of meshes as points using OpenGL.
- *
- * ### Inports
- *   * __geometry__ Input meshes
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __image__ output image containing the rendered mesh and the optional input image
- *
- * ### Properties
- *   * __Point Size__  size of the rendered points (in pixel)
- *   * __Border Width__  width of the border
- *   * __Border Color__  color of the border
- *   * __Antialising__ width of the antialised point edge (in pixel), this determines the
- *                     softness along the outer edge of the point
- */
+#include <cstddef>
+
+namespace inviwo {
 
 /**
  * \class PointRenderer
@@ -71,28 +63,41 @@ public:
     PointRenderer();
     virtual ~PointRenderer() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    void drawMeshes();
+    void configureShader(Shader& shader);
+
+    enum class RenderMode : std::uint8_t {
+        EntireMesh,  //!< render all vertices of the input mesh as glyphs
+        PointsOnly,  //!< render only parts of mesh with DrawType::Points
+    };
 
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
+    MeshBnLGL bnl_;
 
-    FloatProperty pointSize_;
+    OptionProperty<RenderMode> renderMode_;
+    BoolProperty depthTest_;
+
+    SphereConfig config_;
     FloatProperty borderWidth_;
     FloatVec4Property borderColor_;
     FloatProperty antialising_;
-    BoolProperty depthTest_;
+
+    UniformLabelAtlasGL labels_;
+    PeriodicityGL periodic_;
+    MeshTexturing texture_;
 
     CameraProperty camera_;
     CameraTrackball trackball_;
 
-    Shader shader_;
+    MeshShaderCache shaders_;
 };
 
 }  // namespace inviwo

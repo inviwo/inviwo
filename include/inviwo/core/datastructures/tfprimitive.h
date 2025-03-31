@@ -46,6 +46,11 @@ public:
 struct IVW_CORE_API TFPrimitiveData {
     double pos;
     vec4 color;
+
+    constexpr auto operator<=>(const TFPrimitiveData& other) const {
+        return std::tie(pos, color.a) <=> std::tie(other.pos, other.color.a);
+    }
+    constexpr bool operator==(const TFPrimitiveData& other) const = default;
 };
 
 /**
@@ -91,6 +96,9 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    constexpr auto operator<=>(const TFPrimitive& other) const { return data_ <=> other.data_; }
+    constexpr bool operator==(const TFPrimitive& other) const { return data_ == other.data_; }
+
 private:
     TFPrimitiveData data_;
 };
@@ -99,19 +107,5 @@ inline const TFPrimitiveData& TFPrimitive::getData() const { return data_; }
 inline double TFPrimitive::getPosition() const { return data_.pos; }
 inline float TFPrimitive::getAlpha() const { return data_.color.a; }
 inline const vec4& TFPrimitive::getColor() const { return data_.color; }
-
-IVW_CORE_API bool operator==(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs);
-IVW_CORE_API bool operator!=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs);
-IVW_CORE_API bool operator<(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs);
-IVW_CORE_API bool operator>(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs);
-IVW_CORE_API bool operator<=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs);
-IVW_CORE_API bool operator>=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs);
-
-IVW_CORE_API bool operator==(const TFPrimitive& lhs, const TFPrimitive& rhs);
-IVW_CORE_API bool operator!=(const TFPrimitive& lhs, const TFPrimitive& rhs);
-IVW_CORE_API bool operator<(const TFPrimitive& lhs, const TFPrimitive& rhs);
-IVW_CORE_API bool operator>(const TFPrimitive& lhs, const TFPrimitive& rhs);
-IVW_CORE_API bool operator<=(const TFPrimitive& lhs, const TFPrimitive& rhs);
-IVW_CORE_API bool operator>=(const TFPrimitive& lhs, const TFPrimitive& rhs);
 
 }  // namespace inviwo
