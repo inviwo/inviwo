@@ -109,7 +109,8 @@ public:
     struct Type {
         using ElemType = T;
 
-        explicit Type(Transform transform, std::optional<std::array<std::string, N>> defaults = std::nullopt)
+        explicit Type(Transform transform,
+                      std::optional<std::array<std::string, N>> defaults = std::nullopt)
             : sources{util::make_array<N>([](auto i) {
                 static constexpr std::array<std::string_view, 4> labels = {"x", "y", "z", "w"};
                 return ColumnOptionProperty{fmt::format("source{}", i),
