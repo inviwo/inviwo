@@ -890,8 +890,11 @@ target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
 )
 
+find_package(BZip2 REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(liblzma CONFIG REQUIRED)
 find_path(BXZSTR_INCLUDE_DIRS "bxzstr.hpp" PATH_SUFFIXES "include/bxzstr")
-target_include_directories(inviwo-core PRIVATE ${BXZSTR_INCLUDE_DIRS})
+target_include_directories(inviwo-core SYSTEM PRIVATE ${BXZSTR_INCLUDE_DIRS})
 
 # Add core dependencies to this list
 find_package(fmt REQUIRED)

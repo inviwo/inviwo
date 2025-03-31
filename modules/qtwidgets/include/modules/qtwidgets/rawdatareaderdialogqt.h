@@ -76,7 +76,7 @@ public:
     virtual void setByteOrder(ByteOrder byteOrder) override;
     virtual void setDataMapper(const DataMapper& datamapper) override;
     virtual void setByteOffset(size_t offset) override;
-    virtual void setCompression(Compression compressed) override;
+    virtual void setCompression(Compression compression) override;
 
 private:
     QLabel* fileName_;
