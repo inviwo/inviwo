@@ -108,7 +108,7 @@ $(function(){initNavTree('classinviwo_1_1PointRenderer.html',''); initResizable(
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classinviwo_1_1PointRenderer-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::PointRenderer Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::PointRenderer Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -141,6 +141,8 @@ $(function(){initNavTree('classinviwo_1_1PointRenderer.html',''); initResizable(
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a783f0706eca6bf987b30557aea38cdd7" id="r_a783f0706eca6bf987b30557aea38cdd7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a783f0706eca6bf987b30557aea38cdd7">initializeResources</a> () override</td></tr>
+<tr class="separator:a783f0706eca6bf987b30557aea38cdd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaec9784f5309f0976dea8797f7e5a55b" id="r_aaec9784f5309f0976dea8797f7e5a55b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaec9784f5309f0976dea8797f7e5a55b">process</a> () override</td></tr>
 <tr class="separator:aaec9784f5309f0976dea8797f7e5a55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9606fea9969808472ef0049301069fb1" id="r_a9606fea9969808472ef0049301069fb1"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9606fea9969808472ef0049301069fb1">getProcessorInfo</a> () const override</td></tr>
@@ -188,8 +190,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setNetwork</b
 <tr class="memitem:a31d20498bc1abc4098b748be368a1295 inherit pub_methods_classinviwo_1_1Processor" id="r_a31d20498bc1abc4098b748be368a1295"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getNetwork</b> () const</td></tr>
 <tr class="separator:a31d20498bc1abc4098b748be368a1295 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ca0ca1407ee6e9f0c5e3a9b1a453dd1 inherit pub_methods_classinviwo_1_1Processor" id="r_a9ca0ca1407ee6e9f0c5e3a9b1a453dd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">initializeResources</a> ()</td></tr>
-<tr class="separator:a9ca0ca1407ee6e9f0c5e3a9b1a453dd1 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a698177a3b7376f51b8053c85b68f82c7 inherit pub_methods_classinviwo_1_1Processor" id="r_a698177a3b7376f51b8053c85b68f82c7"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1Port.html">Port</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPort</b> (std::string_view identifier) const</td></tr>
 <tr class="separator:a698177a3b7376f51b8053c85b68f82c7 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -660,26 +660,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Renders input geometry with 2D points. </p>
-<p><img src="org.inviwo.PointRenderer.png?classIdentifier=org.inviwo.PointRenderer" alt="" class="inline"/> This processor renders a set of meshes as points using OpenGL.</p>
-<h3><a class="anchor" id="autotoc_md171"></a>
-Inports</h3>
-<ul>
-<li><b>geometry</b> Input meshes</li>
-<li><b>imageInport</b> Optional background image</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md172"></a>
-Outports</h3>
-<ul>
-<li><b>image</b> output image containing the rendered mesh and the optional input image</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md173"></a>
-Properties</h3>
-<ul>
-<li><b>Point Size</b> size of the rendered points (in pixel)</li>
-<li><b>Border Width</b> width of the border</li>
-<li><b>Border Color</b> color of the border</li>
-<li><b>Antialising</b> width of the antialised point edge (in pixel), this determines the softness along the outer edge of the point </li>
-</ul>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a9606fea9969808472ef0049301069fb1" name="a9606fea9969808472ef0049301069fb1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9606fea9969808472ef0049301069fb1">&#9670;&#160;</a></span>getProcessorInfo()</h2>
@@ -705,6 +685,34 @@ Properties</h3>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
+
+</div>
+</div>
+<a id="a783f0706eca6bf987b30557aea38cdd7" name="a783f0706eca6bf987b30557aea38cdd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a783f0706eca6bf987b30557aea38cdd7">&#9670;&#160;</a></span>initializeResources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::PointRenderer::initializeResources </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>InitializeResources is called whenever a property with InvalidationLevel::InvalidResources is changes. </p>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">inviwo::Processor</a>.</p>
 
 </div>
 </div>

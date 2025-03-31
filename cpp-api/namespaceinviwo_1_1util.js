@@ -5,6 +5,7 @@ var namespaceinviwo_1_1util =
     [ "BufferDispatcher", "structinviwo_1_1util_1_1BufferDispatcher.html", null ],
     [ "BuildInfo", "structinviwo_1_1util_1_1BuildInfo.html", null ],
     [ "cloneable_ptr", "classinviwo_1_1util_1_1cloneable__ptr.html", null ],
+    [ "ColumnMapper", "classinviwo_1_1util_1_1ColumnMapper.html", "classinviwo_1_1util_1_1ColumnMapper" ],
     [ "Combinations", "classinviwo_1_1util_1_1Combinations.html", null ],
     [ "DefaultColorRepresentation", "structinviwo_1_1util_1_1DefaultColorRepresentation.html", null ],
     [ "DefaultColorRepresentation< ivec3 >", "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html", null ],

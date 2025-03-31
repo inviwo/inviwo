@@ -233,6 +233,7 @@ var hierarchy =
     [ "inviwo::utilgl::ColorMaski", "structinviwo_1_1utilgl_1_1ColorMaski.html", null ],
     [ "inviwo::utilgl::ColorMaskiState", "structinviwo_1_1utilgl_1_1ColorMaskiState.html", null ],
     [ "inviwo::utilgl::ColorMaskState", "structinviwo_1_1utilgl_1_1ColorMaskState.html", null ],
+    [ "inviwo::util::ColumnMapper", "classinviwo_1_1util_1_1ColumnMapper.html", null ],
     [ "inviwo::util::Combinations< T >", "classinviwo_1_1util_1_1Combinations.html", null ],
     [ "inviwo::CommandLineArgHolder", "classinviwo_1_1CommandLineArgHolder.html", null ],
     [ "inviwo::CommandLineParser", "classinviwo_1_1CommandLineParser.html", null ],
@@ -623,6 +624,8 @@ var hierarchy =
         [ "inviwo::DataFrameJoin", "classinviwo_1_1DataFrameJoin.html", null ],
         [ "inviwo::DataFrameMetaData", "classinviwo_1_1DataFrameMetaData.html", null ],
         [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", null ],
+        [ "inviwo::DataFrameToBuffer", "classinviwo_1_1DataFrameToBuffer.html", null ],
+        [ "inviwo::DataFrameToMesh", "classinviwo_1_1DataFrameToMesh.html", null ],
         [ "inviwo::DataFrameToVector", "classinviwo_1_1DataFrameToVector.html", null ],
         [ "inviwo::DataSource< DataType, PortType, ReaderType >", "classinviwo_1_1DataSource.html", null ],
         [ "inviwo::DepthDarkening", "classinviwo_1_1DepthDarkening.html", null ],
@@ -739,6 +742,7 @@ var hierarchy =
         [ "inviwo::NoiseGenerator3D", "classinviwo_1_1NoiseGenerator3D.html", null ],
         [ "inviwo::OrdinalPropertyAnimator", "classinviwo_1_1OrdinalPropertyAnimator.html", null ],
         [ "inviwo::OrientationIndicator", "classinviwo_1_1OrientationIndicator.html", null ],
+        [ "inviwo::OrthographicAxis2D", "classinviwo_1_1OrthographicAxis2D.html", null ],
         [ "inviwo::PathLinesDeprecated", "classinviwo_1_1PathLinesDeprecated.html", null ],
         [ "inviwo::PixelToBufferProcessor", "classinviwo_1_1PixelToBufferProcessor.html", null ],
         [ "inviwo::PixelValue", "classinviwo_1_1PixelValue.html", null ],
@@ -796,6 +800,7 @@ var hierarchy =
         [ "inviwo::StreamParticles", "classinviwo_1_1StreamParticles.html", null ],
         [ "inviwo::StreamRibbonsDeprecated", "classinviwo_1_1StreamRibbonsDeprecated.html", null ],
         [ "inviwo::SyntheticDataFrame", "classinviwo_1_1SyntheticDataFrame.html", null ],
+        [ "inviwo::TFFromDataFrameColumn", "classinviwo_1_1TFFromDataFrameColumn.html", null ],
         [ "inviwo::TFSelector", "classinviwo_1_1TFSelector.html", null ],
         [ "inviwo::TMIP", "classinviwo_1_1TMIP.html", null ],
         [ "inviwo::TestMatrix", "classinviwo_1_1TestMatrix.html", null ],
@@ -1332,6 +1337,7 @@ var hierarchy =
     [ "inviwo::util::IndexMapper< 3, IndexType >", "structinviwo_1_1util_1_1IndexMapper_3_013_00_01IndexType_01_4.html", null ],
     [ "inviwo::util::IndexProduct< T >", "classinviwo_1_1util_1_1IndexProduct.html", null ],
     [ "inviwo::util::IndirectIterator< Iter, PropagateConst >", "structinviwo_1_1util_1_1IndirectIterator.html", null ],
+    [ "inviwo::util::ColumnMapper::Info", "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html", null ],
     [ "inviwo::log::info< Args >", "structinviwo_1_1log_1_1info.html", null ],
     [ "inviwo::InportFactoryObject", "classinviwo_1_1InportFactoryObject.html", [
       [ "inviwo::InportFactoryObjectTemplate< T >", "classinviwo_1_1InportFactoryObjectTemplate.html", null ]
@@ -1775,6 +1781,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< Location >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Positioning >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColoringMethod >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< RenderMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< CoordinateOffset >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< RenderingType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Classification >", "classinviwo_1_1OptionProperty.html", null ],
@@ -1782,7 +1789,6 @@ var hierarchy =
           [ "inviwo::OptionProperty< GradientComputation >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< SamplingDomain >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Generator >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< RenderMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< splitter::Direction >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< splitter::Style >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< StipplingSettingsInterface::Mode >", "classinviwo_1_1OptionProperty.html", null ],
@@ -2449,6 +2455,7 @@ var hierarchy =
         [ "inviwo::animation::PropertySequenceEditor", "classinviwo_1_1animation_1_1PropertySequenceEditor.html", null ]
       ] ]
     ] ],
+    [ "inviwo::util::ColumnMapper::OffsetAndPicking", "structinviwo_1_1util_1_1ColumnMapper_1_1OffsetAndPicking.html", null ],
     [ "inviwo::Property::OnChangeBlocker", "classinviwo_1_1Property_1_1OnChangeBlocker.html", null ],
     [ "inviwo::util::OnScopeExit", "structinviwo_1_1util_1_1OnScopeExit.html", null ],
     [ "inviwo::OptionPropertyState< T >", "structinviwo_1_1OptionPropertyState.html", null ],
@@ -3076,6 +3083,7 @@ var hierarchy =
     [ "inviwo::SafeCStr< N >", "classinviwo_1_1SafeCStr.html", null ],
     [ "inviwo::util::same_extent< T, U >", "structinviwo_1_1util_1_1same__extent.html", null ],
     [ "inviwo::utilqt::Save< T >", "structinviwo_1_1utilqt_1_1Save.html", null ],
+    [ "inviwo::util::ColumnMapper::ScaleAndOffset", "structinviwo_1_1util_1_1ColumnMapper_1_1ScaleAndOffset.html", null ],
     [ "inviwo::utilgl::ScissorBox", "structinviwo_1_1utilgl_1_1ScissorBox.html", null ],
     [ "inviwo::utilgl::ScissorState", "structinviwo_1_1utilgl_1_1ScissorState.html", null ],
     [ "inviwo::SearchDSL< Ts >", "classinviwo_1_1SearchDSL.html", null ],
@@ -3151,6 +3159,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< Location >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Positioning >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColoringMethod >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< RenderMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< CoordinateOffset >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< RenderingType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Classification >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3158,7 +3167,6 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< GradientComputation >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< SamplingDomain >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Generator >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< RenderMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< splitter::Direction >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< splitter::Style >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< StipplingSettingsInterface::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3562,6 +3570,7 @@ var hierarchy =
       [ "inviwo::util::overloaded< Ts >", "structinviwo_1_1util_1_1overloaded.html", null ]
     ] ],
     [ "std::tuple_element< N, ::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", null ],
+    [ "inviwo::util::ColumnMapper::Type< N, T, Transform >", "structinviwo_1_1util_1_1ColumnMapper_1_1Type.html", null ],
     [ "inviwo::buffertraits::TypedMeshBufferBase< T, DIM, attrib, location >", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", null ],
     [ "inviwo::buffertraits::TypedMeshBufferBase< float, 1, static_cast< int >(BufferType::CurvatureAttrib)>", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", [
       [ "inviwo::buffertraits::CurvatureBuffer", "classinviwo_1_1buffertraits_1_1CurvatureBuffer.html", null ]
