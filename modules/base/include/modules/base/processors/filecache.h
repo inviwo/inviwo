@@ -107,13 +107,9 @@ void updateFilenameFilters(const DataReaderFactory& rf, const DataWriterFactory&
 
 class IVW_MODULE_BASE_API CacheBase : public Processor, public ProcessorNetworkEvaluationObserver {
 public:
-    CacheBase(InviwoApplication* app);
+    explicit CacheBase(InviwoApplication* app);
     virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
     virtual void onProcessorNetworkEvaluationBegin() override;
-
-    struct Cache {
-        std::string key;
-    };
 
     virtual bool hasCache(std::string_view key) = 0;
 
@@ -132,12 +128,12 @@ protected:
 
 template <typename DataType>
 struct ReaderWriter {
-    ReaderWriter(InviwoApplication* app)
+    explicit ReaderWriter(InviwoApplication* app)
         : extensions{"readerWriter", "Data Reader And Writer"}
-        , rf{*app->getDataReaderFactory()}
-        , wf{*app->getDataWriterFactory()} {
+        , rf{app->getDataReaderFactory()}
+        , wf{app->getDataWriterFactory()} {
 
-        detail::updateFilenameFilters<DataType>(rf, wf, extensions);
+        detail::updateFilenameFilters<DataType>(*rf, *wf, extensions);
         extensions.setCurrentStateAsDefault();
     }
 
@@ -145,18 +141,20 @@ struct ReaderWriter {
         if (extensions.empty()) return nullptr;
 
         const auto& sext = extensions.getSelectedValue().extension_;
-        return rf.template getReaderForTypeAndExtension<DataType>(sext);
+        return rf->template getReaderForTypeAndExtension<DataType>(sext);
     }
     std::unique_ptr<DataWriterType<DataType>> getWriter() {
         if (extensions.empty()) return nullptr;
 
         const auto& sext = extensions.getSelectedValue().extension_;
-        return wf.template getWriterForTypeAndExtension<DataType>(sext);
+        return wf->template getWriterForTypeAndExtension<DataType>(sext);
     }
 
     OptionProperty<FileExtension> extensions;
-    const DataReaderFactory& rf;
-    const DataWriterFactory& wf;
+
+private:
+    const DataReaderFactory* rf;
+    const DataWriterFactory* wf;
 };
 
 template <typename DataType>
@@ -210,7 +208,7 @@ public:
     FileCache(FileCache&&) = delete;
     FileCache& operator=(const FileCache&) = delete;
     FileCache& operator=(FileCache&&) = delete;
-
+    ~FileCache() = default;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

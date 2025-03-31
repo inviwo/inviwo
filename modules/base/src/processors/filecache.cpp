@@ -113,7 +113,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
     };
     remove(
         s.doc().RootElement(),
-        [](TiXmlElement* current, TiXmlElement* parent) -> bool {
+        [](TiXmlElement* current, TiXmlElement*) -> bool {
             return current->Value() == "MetaDataItem" &&
                    current->Attribute("type")
                        .transform([](std::string_view value) {
@@ -126,7 +126,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
     // remove all ivwdataRelativePath paths
     remove(
         s.doc().RootElement(),
-        [](TiXmlElement* current, TiXmlElement* parent) -> bool {
+        [](TiXmlElement* current, TiXmlElement*) -> bool {
             return current->Value() == "ivwdataRelativePath";
         },
         remove);
