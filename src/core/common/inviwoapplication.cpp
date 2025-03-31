@@ -411,7 +411,6 @@ void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
 
 size_t InviwoApplication::processFront() {
     {
-        NetworkLock netlock(processorNetwork_.get());
         std::function<void()> task;
         while (true) {
             {

@@ -202,8 +202,8 @@ ParallelCoordinates::ParallelCoordinates()
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", Shader::Build::No)
     , lines_{}
     , marginsInternal_(0.0f, 0.0f)
-    , brushingDirty_(true)  // needs to be true after deserialization
-{
+    , brushingDirty_{true}  // needs to be true after deserialization
+    , rangesDirty_{true} {
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
     addPort(imageInport_);
@@ -349,7 +349,7 @@ void ParallelCoordinates::process() {
     }();
 
     if (brushingDirty_) updateBrushing();
-    if (colormap_.isModified() || dataFrame_.isChanged()) {
+    if (rangesDirty_ || colormap_.isModified() || dataFrame_.isChanged()) {
         buildLineMesh();
     } else if (enabledAxesModified_) {
         buildLineIndices();
@@ -455,6 +455,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
 }
 
 void ParallelCoordinates::buildLineMesh() {
+    rangesDirty_ = false;
     auto& mesh = lines_.mesh;
 
     for (auto& item : mesh.getBuffers()) {
@@ -820,7 +821,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
     }
 }
 
-void ParallelCoordinates::updateAxisRange(PCPAxisSettings&) { buildLineMesh(); }
+void ParallelCoordinates::updateAxisRange(PCPAxisSettings&) { rangesDirty_ = true; }
 
 void ParallelCoordinates::updateBrushing(PCPAxisSettings&) { updateBrushing(); }
 

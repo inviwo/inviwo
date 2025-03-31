@@ -31,6 +31,7 @@
 
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/rendering/datavisualizer.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/util/filesystem.h>
@@ -107,6 +108,8 @@ public:
 void util::insertNetworkForData(const std::filesystem::path& dataFile, ProcessorNetwork* net,
                                 bool alwaysFirst, bool onlySource, QWidget* parent) {
     auto app = net->getApplication();
+
+    const NetworkLock lock{net};
 
     auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForFile(dataFile);
 

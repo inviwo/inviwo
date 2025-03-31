@@ -35,9 +35,7 @@ export function createPivotTable(table) {
 }
 
 
-export function plot(holder, data, dataRange, size, margin, colorScale = d3.interpolateInferno) {
-  // adjust spacing between blocks [0, 1]
-  const spacing = 0.1;
+export function plot(holder, data, dataRange, size, margin, colorScale = d3.interpolateInferno, spacing = 0.1) {
 
   const width = size.width - margin.left - margin.right;
   const height = size.height - margin.top - margin.bottom;

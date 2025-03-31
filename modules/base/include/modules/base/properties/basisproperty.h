@@ -82,6 +82,7 @@ public:
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 
+    void updateForNewEntity(const mat4& modelMatrix, size3_t dims, bool deserialize);
     void updateForNewEntity(const SpatialEntity& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<2>& volume, bool deserialize);
@@ -119,8 +120,6 @@ private:
         return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntry_, size_, a_, b_, c_,
                         autoCenter_, offset_, resetOverride_);
     }
-
-    void update(const SpatialEntity& volume, bool deserialize);
     void load();
     void save();
     void onModeChange();

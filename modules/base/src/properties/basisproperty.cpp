@@ -137,27 +137,14 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
 
 BasisProperty* BasisProperty::clone() const { return new BasisProperty(*this); }
 
-void BasisProperty::updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize) {
-    dimensions_ = static_cast<vec3>(volume.getDimensions());
-    update(volume, deserialize);
-}
+void BasisProperty::updateForNewEntity(const mat4& modelMatrix, size3_t dims, bool deserialize) {
+    dimensions_ = static_cast<vec3>(dims);
 
-void BasisProperty::updateForNewEntity(const StructuredGridEntity<2>& layer, bool deserialize) {
-    dimensions_ = static_cast<vec3>(size3_t{layer.getDimensions(), 1});
-    update(layer, deserialize);
-}
-
-void BasisProperty::updateForNewEntity(const SpatialEntity& entity, bool deserialize) {
-    dimensions_ = vec3(1.0f);
-    update(entity, deserialize);
-}
-
-void BasisProperty::update(const SpatialEntity& entity, bool deserialize) {
-    // Set basis properties to the values from the new volume
-    model_ = entity.getModelMatrix();
+    // Set basis properties to the values from the new entity
+    model_ = modelMatrix;
 
     const auto org = overrideModel_.value;
-    overrideModel_.value = entity.getModelMatrix();
+    overrideModel_.value = modelMatrix;
     overrideModel_.setAsDefault();
     load();
     util::for_each_argument([&](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_, c_,
@@ -167,6 +154,18 @@ void BasisProperty::update(const SpatialEntity& entity, bool deserialize) {
         overrideModel_.value = org;
         load();
     }
+}
+
+void BasisProperty::updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize) {
+    updateForNewEntity(volume.getModelMatrix(), volume.getDimensions(), deserialize);
+}
+
+void BasisProperty::updateForNewEntity(const StructuredGridEntity<2>& layer, bool deserialize) {
+    updateForNewEntity(layer.getModelMatrix(), size3_t{layer.getDimensions(), 1}, deserialize);
+}
+
+void BasisProperty::updateForNewEntity(const SpatialEntity& entity, bool deserialize) {
+    updateForNewEntity(entity.getModelMatrix(), size3_t{1, 1, 1}, deserialize);
 }
 
 void BasisProperty::load() {
