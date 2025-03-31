@@ -124,6 +124,10 @@ PortInspectorManager::PortInspectorManager(InviwoApplication* app) : app_(app) {
     app_->getProcessorNetwork()->addObserver(this);
 }
 
+PortInspectorManager::PortInspectorManager(PortInspectorManager&&) = default;
+
+PortInspectorManager& PortInspectorManager::operator=(PortInspectorManager&& that) = default;
+
 PortInspectorManager::~PortInspectorManager() { clear(); }
 
 bool PortInspectorManager::hasPortInspector(Outport* outport) const {

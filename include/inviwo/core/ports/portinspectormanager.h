@@ -60,9 +60,9 @@ public:
     virtual ~PortInspectorManager();
 
     PortInspectorManager(const PortInspectorManager&) = delete;
-    PortInspectorManager(PortInspectorManager&&) = default;
+    PortInspectorManager(PortInspectorManager&&);
     PortInspectorManager& operator=(const PortInspectorManager& that) = delete;
-    PortInspectorManager& operator=(PortInspectorManager&& that) = default;
+    PortInspectorManager& operator=(PortInspectorManager&& that);
 
     bool isPortInspectorSupported(const Outport* outport);
 
