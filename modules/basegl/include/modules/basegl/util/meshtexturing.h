@@ -36,13 +36,15 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
+#include <cstddef>
+
 namespace inviwo {
 
 class Shader;
 class TextureUnitContainer;
 
 // Define an enum for blend modes
-enum class BlendMode {
+enum class BlendMode : std::uint8_t {
     Source,         // Use source
     Destination,    // Use destination
     Alpha,          // Standard alpha blending

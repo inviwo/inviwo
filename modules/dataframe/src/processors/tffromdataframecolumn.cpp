@@ -41,7 +41,9 @@ const ProcessorInfo TFFromDataFrameColumn::processorInfo_{
     "DataFrame",                         // Category
     CodeState::Stable,                   // Code state
     Tags::CPU | Tag{"TF"},               // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    R"(Construct a transfer function with a peak at each selected column row value.
+        The heights and width can be controlled with @p alpha and @p delta.
+        The @p shift parameter can be used to offset the positions.)"_unindentHelp,
 };
 
 const ProcessorInfo& TFFromDataFrameColumn::getProcessorInfo() const { return processorInfo_; }

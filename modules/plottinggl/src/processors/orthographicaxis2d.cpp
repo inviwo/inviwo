@@ -40,7 +40,7 @@ const ProcessorInfo OrthographicAxis2D::processorInfo_{
     "Plotting",                       // Category
     CodeState::Stable,                // Code state
     Tags::GL | Tag{"Plotting"},       // Tags
-    R"(This processor draw a pair of axis that are mapped to world space.
+    R"(This processor draws a pair of axes that are mapped to world space.
        The use case is for plotting data using a Orthographic Camera.
        )"_unindentHelp,
 };

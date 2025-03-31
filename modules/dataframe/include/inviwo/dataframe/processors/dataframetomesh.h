@@ -70,7 +70,7 @@ class IVW_MODULE_DATAFRAME_API ColumnMapper {
 public:
     struct Info;
 
-    ColumnMapper(std::span<Info> infos);
+    explicit ColumnMapper(std::span<Info> infos);
 
     /**
      * Query the isModified() status of all nested composite properties
@@ -109,7 +109,7 @@ public:
     struct Type {
         using ElemType = T;
 
-        Type(Transform transform, std::optional<std::array<std::string, N>> defaults = std::nullopt)
+        explicit Type(Transform transform, std::optional<std::array<std::string, N>> defaults = std::nullopt)
             : sources{util::make_array<N>([](auto i) {
                 static constexpr std::array<std::string_view, 4> labels = {"x", "y", "z", "w"};
                 return ColumnOptionProperty{fmt::format("source{}", i),

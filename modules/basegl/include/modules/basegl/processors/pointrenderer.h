@@ -50,6 +50,8 @@
 #include <modules/basegl/util/sphereconfig.h>
 #include <modules/basegl/util/meshtexturing.h>
 
+#include <cstddef>
+
 namespace inviwo {
 
 /**
@@ -70,7 +72,7 @@ public:
 private:
     void configureShader(Shader& shader);
 
-    enum class RenderMode {
+    enum class RenderMode : std::uint8_t {
         EntireMesh,  //!< render all vertices of the input mesh as glyphs
         PointsOnly,  //!< render only parts of mesh with DrawType::Points
     };
