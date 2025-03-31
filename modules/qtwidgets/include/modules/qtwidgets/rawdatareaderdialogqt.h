@@ -45,6 +45,7 @@ class QDoubleSpinBox;
 class QLabel;
 class QLineEdit;
 class QSpinBox;
+class QCheckBox;
 
 namespace inviwo {
 
@@ -64,16 +65,18 @@ public:
     virtual const DataFormatBase* getFormat() const override;
     virtual uvec3 getDimensions() const override;
     virtual dvec3 getSpacing() const override;
-    virtual bool getEndianess() const override;
+    virtual ByteOrder getByteOrder() const override;
     virtual DataMapper getDataMapper() const override;
     virtual size_t getByteOffset() const override;
+    virtual Compression getCompression() const override;
 
     virtual void setFormat(const DataFormatBase* format) override;
     virtual void setDimensions(uvec3 dim) override;
     virtual void setSpacing(dvec3 spacing) override;
-    virtual void setEndianess(bool endian) override;
+    virtual void setByteOrder(ByteOrder byteOrder) override;
     virtual void setDataMapper(const DataMapper& datamapper) override;
     virtual void setByteOffset(size_t offset) override;
+    virtual void setCompression(Compression compression) override;
 
 private:
     QLabel* fileName_;
@@ -97,7 +100,8 @@ private:
     QSpinBox* timeSteps_;
     QSpinBox* timeStepOffset_;
     */
-    QComboBox* endianess_;
+    QComboBox* byteOrder_;
+    QCheckBox* useCompression_;
 };
 
 }  // namespace inviwo

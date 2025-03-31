@@ -31,7 +31,6 @@
 
 #include <modules/base/io/datvolumewriter.h>
 #include <modules/base/io/ivfvolumewriter.h>
-#include <modules/base/io/ivfsequencevolumewriter.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -47,14 +46,15 @@ void exposeVolumeWriteMethods(pybind11::module& m) {
     m.def("saveIvfVolume", &util::writeIvfVolume);
     m.def("saveIvfVolumeSequence", &util::writeIvfVolumeSequence);
     m.def("saveIvfVolumeSequence",
-          [](pybind11::list list, const std::string_view name, const std::filesystem::path& path,
-             std::string relativePathToTimeSteps, bool overwrite) {
+          [](const pybind11::list& list, std::string_view name,
+             const std::filesystem::path& parentFolder,
+             const std::filesystem::path& relativePathToTimeSteps, bool overwrite) {
               VolumeSequence seq;
               for (auto&& v : list) {
                   seq.push_back(v.cast<std::shared_ptr<Volume>>());
               }
 
-              return util::writeIvfVolumeSequence(seq, name, path, relativePathToTimeSteps,
+              return util::writeIvfVolumeSequence(seq, name, parentFolder, relativePathToTimeSteps,
                                                   overwrite ? Overwrite::Yes : Overwrite::No);
           });
 }

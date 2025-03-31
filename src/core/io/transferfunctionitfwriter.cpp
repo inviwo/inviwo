@@ -36,6 +36,8 @@
 
 namespace inviwo {
 
+constexpr int transferFunctionVersion = 1;
+
 TransferFunctionITFWriter::TransferFunctionITFWriter() {
     addExtension({"itf", "Inviwo Transfer Function"});
 }
@@ -47,7 +49,7 @@ TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
 void TransferFunctionITFWriter::writeData(const TransferFunction* data,
                                           const std::filesystem::path& filePath) const {
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer(filePath, "InviwoTransferFunction", &mbr);
+    Serializer serializer(filePath, "InviwoTransferFunction", transferFunctionVersion, &mbr);
     data->serialize(serializer);
     serializer.writeFile();
 };
@@ -56,7 +58,7 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeData
     const TransferFunction* data, std::string_view) const {
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Serializer serializer{{}, "InviwoTransferFunction", &mbr};
+    Serializer serializer{{}, "InviwoTransferFunction", transferFunctionVersion, &mbr};
     data->serialize(serializer);
 
     std::pmr::string xml{&mbr};

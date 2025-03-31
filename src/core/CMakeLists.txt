@@ -141,6 +141,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/trackballobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/bytereaderutil.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/bytewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/curlutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
@@ -150,6 +151,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/inviwofileformattypes.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/isovaluecollectioniivreader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/isovaluecollectioniivwriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
@@ -540,6 +542,7 @@ set(SOURCE_FILES
     interaction/pickingstate.cpp
     interaction/trackball.cpp
     io/bytereaderutil.cpp
+    io/bytewriterutil.cpp
     io/curlutils.cpp
     io/datareader.cpp
     io/datareaderexception.cpp
@@ -549,6 +552,7 @@ set(SOURCE_FILES
     io/datawriterfactory.cpp
     io/datawriterutil.cpp
     io/imagewriterutil.cpp
+    io/inviwofileformattypes.cpp
     io/isovaluecollectioniivreader.cpp
     io/isovaluecollectioniivwriter.cpp
     io/rawvolumeramloader.cpp
@@ -886,6 +890,12 @@ target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
 )
 
+find_package(BZip2 REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(liblzma CONFIG REQUIRED)
+find_path(BXZSTR_INCLUDE_DIRS "bxzstr.hpp" PATH_SUFFIXES "include/bxzstr")
+target_include_directories(inviwo-core SYSTEM PRIVATE ${BXZSTR_INCLUDE_DIRS})
+
 # Add core dependencies to this list
 find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
@@ -901,6 +911,9 @@ find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 find_package(FastFloat CONFIG REQUIRED)
 find_package(curlcpp CONFIG REQUIRED)
+find_package(BZip2 REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(liblzma CONFIG REQUIRED)
 
 if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
@@ -940,6 +953,9 @@ target_link_libraries(inviwo-core
         roaring::roaring
         md4c::md4c
         utf8cpp::utf8cpp
+        BZip2::BZip2
+        ZLIB::ZLIB
+        liblzma::liblzma
 )
 
 # Core header files used in PCH file
@@ -1009,7 +1025,7 @@ install(DIRECTORY ${IVW_ROOT_DIR}/cmake/templates
 )
 
 
-set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml flags tracywrap FastFloat)
+set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml flags tracywrap FastFloat bzip2 zlib liblzma)
 if(WIN32)
     list(APPEND packages stackwalker)
 endif()

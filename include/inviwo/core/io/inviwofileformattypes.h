@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/base/io/ivfsequencevolumereader.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>   // for VolumeSequence
-#include <inviwo/core/io/datareader.h>                  // for DataReaderType
-#include <inviwo/core/io/serialization/deserializer.h>  // for Deserializer
-#include <inviwo/core/util/filesystem.h>                // for cleanupPath, getFileDirectory
-#include <modules/base/io/ivfvolumereader.h>            // for IvfVolumeReader
-
-#include <functional>   // for __base
-#include <string>       // for string, basic_string<>::value_type
-#include <type_traits>  // for remove_extent_t
-#include <vector>       // for vector
-#include <memory_resource>
+#include <string_view>
+#include <cstdint>
 
 namespace inviwo {
-IvfSequenceVolumeReader::IvfSequenceVolumeReader() {
-    addExtension({"ivfs", "Sequence of Inviwo ivf volumes"});
-}
 
-std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(
-    const std::filesystem::path& filePath) {
-    checkExists(filePath);
+enum class ByteOrder : std::uint8_t { LittleEndian, BigEndian };
+enum class Compression : std::uint8_t { Disabled, Enabled };
 
-    auto dir = filePath.parent_path();
-    std::pmr::monotonic_buffer_resource mbr{1024 * 4};
-    Deserializer d{filePath, "InviwoVolumeSequence", &mbr};
-    std::pmr::vector<std::pmr::string> filenames{&mbr};
-    d.deserialize("volumes", filenames, "volume");
-    auto volumes = std::make_shared<VolumeSequence>();
-    for (auto filename : filenames) {
-        auto abs = dir / filename;
-        volumes->push_back(reader_.readData(abs));
-    }
+IVW_CORE_API std::string_view enumToStr(ByteOrder byteOrder);
+IVW_CORE_API std::string_view enumToStr(Compression compression);
 
-    return volumes;
-}
+inline std::string_view format_as(ByteOrder byteOrder) { return enumToStr(byteOrder); }
+inline std::string_view format_as(Compression compression) { return enumToStr(compression); }
 
 }  // namespace inviwo

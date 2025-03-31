@@ -27,41 +27,59 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/bytereaderutil.h>
+#include <inviwo/core/io/bytewriterutil.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/curlutils.h>
 #include <inviwo/core/io/inviwofileformattypes.h>
-#include <inviwo/core/datastructures/diskrepresentation.h>
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
-#include <string>
+#include <bxzstr/bxzstr.hpp>
+
+#include <fmt/format.h>
+#include <fmt/std.h>
+
 #include <memory>
 
 namespace inviwo {
 
-/**
- * \class RawVolumeRAMLoader
- * \brief A loader of raw files. Used to create VolumeRAM representations.
- * This class us used by the DatVolumeSequenceReader, IvfVolumeReader and RawVolumeReader.
- */
+namespace {
 
-class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
-public:
-    RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
-                       ByteOrder byteOrder, Compression compression);
-    virtual RawVolumeRAMLoader* clone() const override;
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation& src) const override;
+void writeUncompressedBytes(const std::filesystem::path& path, const void* source, size_t bytes) {
+    FILE* file = filesystem::fopen(path, "wb");
+    if (!file) {
+        throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
+    }
+    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
-private:
-    std::filesystem::path rawFile_;
-    size_t offset_;
-    ByteOrder byteOrder_;
-    Compression compression_;
-};
+    if (std::fwrite(source, bytes, 1, file) != 1) {
+        throw DataReaderException(SourceContext{}, "Could not write to file: {:?g}", path);
+    }
+}
+
+void writeCompressedBytes(const std::filesystem::path& path, const void* source, size_t bytes) {
+    auto fout = bxz::ofstream{path.generic_string(), bxz::z};
+
+    if (fout.good()) {
+        try {
+            fout.write(static_cast<const char*>(source), static_cast<std::streamsize>(bytes));
+        } catch (const std::ios_base::failure&) {
+            throw DataReaderException(SourceContext{}, "Could not write to file: {:?g}", path);
+        }
+    } else {
+        throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
+    }
+}
+
+}  // namespace
+
+void util::writeBytes(const std::filesystem::path& path, const void* source, size_t bytes,
+                      Compression compression) {
+    if (compression == Compression::Enabled) {
+        writeCompressedBytes(path, source, bytes);
+    } else {
+        writeUncompressedBytes(path, source, bytes);
+    }
+}
 
 }  // namespace inviwo

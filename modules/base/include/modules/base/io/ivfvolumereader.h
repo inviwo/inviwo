@@ -38,6 +38,7 @@
 #include <string_view>  // for string_view
 
 namespace inviwo {
+
 /**
  * \ingroup dataio
  */
@@ -45,11 +46,30 @@ class IVW_MODULE_BASE_API IvfVolumeReader : public DataReaderType<Volume> {
 public:
     IvfVolumeReader();
     IvfVolumeReader(const IvfVolumeReader& rhs) = default;
+    IvfVolumeReader(IvfVolumeReader&& rhs) = default;
     IvfVolumeReader& operator=(const IvfVolumeReader& that) = default;
+    IvfVolumeReader& operator=(IvfVolumeReader&& that) = default;
     virtual IvfVolumeReader* clone() const override;
     virtual ~IvfVolumeReader() = default;
 
     virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
+};
+
+/**
+ * \ingroup dataio
+ */
+class IVW_MODULE_BASE_API IvfVolumeSequenceReader : public DataReaderType<VolumeSequence> {
+public:
+    IvfVolumeSequenceReader();
+    IvfVolumeSequenceReader(const IvfVolumeSequenceReader& rhs) = default;
+    IvfVolumeSequenceReader(IvfVolumeSequenceReader&& rhs) = default;
+    IvfVolumeSequenceReader& operator=(const IvfVolumeSequenceReader& that) = default;
+    IvfVolumeSequenceReader& operator=(IvfVolumeSequenceReader&& that) = default;
+    virtual IvfVolumeSequenceReader* clone() const override;
+    virtual ~IvfVolumeSequenceReader() = default;
+
+    virtual std::shared_ptr<VolumeSequence> readData(
+        const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo

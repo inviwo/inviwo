@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAM
 #include <inviwo/core/io/datawriter.h>                                  // for DataWriterType
 #include <inviwo/core/io/datawriterexception.h>                         // for DataWriterException
+#include <inviwo/core/io/inviwofileformattypes.h>                       // for ByteOrder...
 #include <inviwo/core/metadata/metadata.h>                              // for StringMetaData
 #include <inviwo/core/metadata/metadatamap.h>                           // for MetaDataMap
 #include <inviwo/core/util/fileextension.h>                             // for FileExtension
@@ -76,6 +77,7 @@ void DatVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
 }
 
 namespace util {
+
 void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
                     Overwrite overwrite) {
     auto rawPath = filePath;
@@ -93,24 +95,33 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     glm::mat4 wtm = glm::transpose(data.getWorldMatrix());
 
     auto print = util::overloaded{
-        [&](std::string_view key, const std::string& val) { fmt::print(ss, "{}: {}\n", key, val); },
-        [&](std::string_view key, std::string_view val) { fmt::print(ss, "{}: {}\n", key, val); },
-        [&](std::string_view key, InterpolationType val) { fmt::print(ss, "{}: {}\n", key, val); },
-        [&](std::string_view key, const SwizzleMask& mask) {
+        [&ss](std::string_view key, std::string_view val) { fmt::print(ss, "{}: {}\n", key, val); },
+        [&ss](std::string_view key, InterpolationType val) {
+            fmt::print(ss, "{}: {}\n", key, val);
+        },
+        [&ss](std::string_view key, const SwizzleMask& mask) {
             fmt::print(ss, "{}: {}{}{}{}\n", key, mask[0], mask[1], mask[2], mask[3]);
         },
-        [&](std::string_view key, const Wrapping3D& wrapping) {
+        [&ss](std::string_view key, const Wrapping3D& wrapping) {
             fmt::print(ss, "{}: {} {} {}\n", key, wrapping[0], wrapping[1], wrapping[2]);
         },
-        [&](std::string_view key, const Unit& unit) { fmt::print(ss, "{}: {}\n", key, unit); },
-        [&](std::string_view key, const auto& vec) {
+        [&ss](std::string_view key, const Unit& unit) { fmt::print(ss, "{}: {}\n", key, unit); },
+        [&ss](std::string_view key, ByteOrder byteOrder) {
+            fmt::print(ss, "{}: {}\n", key, byteOrder);
+        },
+        [&ss](std::string_view key, Compression compression) {
+            fmt::print(ss, "{}: {}\n", key, compression);
+        },
+        [&ss](std::string_view key, const auto& vec) {
             fmt::print(ss, "{}: {}\n", key, fmt::join(begin(vec), end(vec), " "));
         }};
 
     print("RawFile", fmt::format("{}.raw", fileName));
     print("Resolution", vr->getDimensions());
     print("Format", vr->getDataFormatString());
+    print("ByteOrder", ByteOrder::LittleEndian);
     print("ByteOffset", std::string("0"));
+    print("Compression", Compression::Disabled);
     print("BasisVector1", basis[0]);
     print("BasisVector2", basis[1]);
     print("BasisVector3", basis[2]);
@@ -136,9 +147,9 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     print("Interpolation", vr->getInterpolation());
     print("Wrapping", vr->getWrapping());
 
-    for (auto& key : data.getMetaDataMap()->getKeys()) {
-        auto m = data.getMetaDataMap()->get(key);
-        if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
+    for (const auto& key : data.getMetaDataMap()->getKeys()) {
+        const auto* m = data.getMetaDataMap()->get(key);
+        if (const auto* sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 
     if (auto f = std::ofstream(filePath)) {
@@ -153,6 +164,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
         throw DataWriterException(SourceContext{}, "Could not write to raw file: {}", rawPath);
     }
 }
+
 }  // namespace util
 
 }  // namespace inviwo

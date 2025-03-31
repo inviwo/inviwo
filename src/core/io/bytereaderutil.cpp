@@ -32,37 +32,70 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/curlutils.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
+
+#include <bxzstr/bxzstr.hpp>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+#include <memory>
+
 namespace inviwo {
 
-void util::readBytesIntoBuffer(const std::filesystem::path& file, size_t offset, size_t bytes,
-                               bool littleEndian, size_t elementSize, void* dest) {
-    const auto filePath = net::downloadAndCacheIfUrl(file);
+namespace {
 
-    auto fin = std::ifstream(filePath, std::ios::in | std::ios::binary);
+void convertToLittleEndian(void* dest, size_t bytes, size_t elementSize) {
+    auto temp = std::make_unique<char[]>(elementSize);
+
+    for (std::size_t i = 0; i < bytes; i += elementSize) {
+        for (std::size_t j = 0; j < elementSize; j++) {
+            temp[j] = static_cast<char*>(dest)[i + j];
+        }
+
+        for (std::size_t j = 0; j < elementSize; j++) {
+            static_cast<char*>(dest)[i + j] = temp[elementSize - j - 1];
+        }
+    }
+}
+
+}  // namespace
+
+void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset, size_t bytes,
+                               ByteOrder byteOrder, size_t elementSize, void* dest) {
+    const auto filePath = net::downloadAndCacheIfUrl(path);
+
+    FILE* file = filesystem::fopen(filePath, "rb");
+    if (!file) {
+        throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
+    }
+    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+
+    std::fseek(file, static_cast<long>(offset), SEEK_SET);
+    if (std::fread(static_cast<char*>(dest), bytes, 1, file) != 1) {
+        throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
+    }
+    if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
+        convertToLittleEndian(dest, bytes, elementSize);
+    }
+}
+
+void util::readCompressedBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
+                                         size_t bytes, ByteOrder byteOrder, size_t elementSize,
+                                         void* dest) {
+    const auto filePath = net::downloadAndCacheIfUrl(path);
+
+    auto fin = bxz::ifstream{filePath.generic_string(), std::ios::in | std::ios::binary};
 
     if (fin.good()) {
-        fin.seekg(offset);
-        fin.read(static_cast<char*>(dest), bytes);
+        fin.seekg(static_cast<std::streamoff>(offset));
+        fin.read(static_cast<char*>(dest), static_cast<std::streamsize>(bytes));
 
-        if (!littleEndian && elementSize > 1) {
-            char* temp = new char[elementSize];
-
-            for (std::size_t i = 0; i < bytes; i += elementSize) {
-                for (std::size_t j = 0; j < elementSize; j++)
-                    temp[j] = static_cast<char*>(dest)[i + j];
-
-                for (std::size_t j = 0; j < elementSize; j++)
-                    static_cast<char*>(dest)[i + j] = temp[elementSize - j - 1];
-            }
-
-            delete[] temp;
+        if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
+            convertToLittleEndian(dest, bytes, elementSize);
         }
     } else {
-        throw DataReaderException(SourceContext{}, "Error: Could not read from file: {:?g}", file);
+        throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
     }
 }
 

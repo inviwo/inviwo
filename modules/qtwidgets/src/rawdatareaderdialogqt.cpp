@@ -34,6 +34,7 @@
 #include <inviwo/core/util/formats.h>               // for DataFormatBase, DataFormatId, DataFor...
 #include <inviwo/core/util/glmvec.h>                // for uvec3, dvec2, dvec3
 #include <inviwo/core/util/rendercontext.h>         // for RenderContext
+#include <inviwo/core/util/exception.h>             // for Exception
 #include <modules/qtwidgets/inviwoqtutils.h>        // for emToPx, fromLocalQString, toLocalQString
 
 #include <limits>  // for numeric_limits
@@ -51,6 +52,7 @@
 #include <QLocale>           // for QLocale
 #include <QObject>           // for SIGNAL, SLOT
 #include <QSpinBox>          // for QSpinBox
+#include <QCheckBox>         // for QCheckBox
 #include <QString>           // for QString
 #include <QVariant>          // for QVariant
 #include <QWidget>           // for QWidget
@@ -64,15 +66,15 @@ namespace inviwo {
 
 RawDataReaderDialogQt::RawDataReaderDialogQt() {
     setWindowTitle("Importing Raw Data");
-    QGridLayout* mainLayout = new QGridLayout(this);
+    auto* mainLayout = new QGridLayout(this);
     {
         const auto space = utilqt::emToPx(this, 15.0 / 9.0);
         mainLayout->setContentsMargins(space, space, space, space);
     }
-    QLabel* fileNameLabel = new QLabel("Importing file:");
+    auto* fileNameLabel = new QLabel("Importing file:");
     fileName_ = new QLabel();
-    QGridLayout* dataTypeLayout = new QGridLayout();
-    QLabel* bitDepthLabel = new QLabel("Data format");
+    auto* dataTypeLayout = new QGridLayout();
+    auto* bitDepthLabel = new QLabel("Data format");
     bitDepth_ = new QComboBox();
     bitDepth_->addItem("char (8-bit signed integer)", static_cast<int>(DataFormatId::Int8));
     bitDepth_->addItem("unsigned char (8-bit unsigned integer)",
@@ -90,14 +92,16 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
                        static_cast<int>(DataFormatId::UInt64));
     bitDepth_->addItem("float (32-bit floating point)", static_cast<int>(DataFormatId::Float32));
     bitDepth_->addItem("double (64-bit floating point)", static_cast<int>(DataFormatId::Float64));
+    bitDepthLabel->setFocusProxy(bitDepth_);
     connect(bitDepth_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             [this](int index) { selectedDataTypeChanged(index); });
-    QLabel* channelLabel = new QLabel("Data channels");
+    auto* channelLabel = new QLabel("Data channels");
     channels_ = new QSpinBox();
     channels_->setRange(1, 4);
     channels_->setValue(1);
+    channelLabel->setFocusProxy(channels_);
 
-    QLabel* dataRangeLabel = new QLabel("Data format range");
+    auto* dataRangeLabel = new QLabel("Data format range");
     dataRangeLabel->setToolTip("Data range refer to the range of the data");
     dataRangeMin_ = new QDoubleSpinBox();
     dataRangeMin_->setRange(-std::numeric_limits<double>::max(),
@@ -106,7 +110,8 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataRangeMax_->setRange(-std::numeric_limits<double>::max(),
                             std::numeric_limits<double>::max());
     dataRangeMax_->setValue(255.0);
-    QLabel* valueRangeLabel = new QLabel("Value range");
+    dataRangeLabel->setFocusProxy(dataRangeMin_);
+    auto* valueRangeLabel = new QLabel("Value range");
     valueRangeLabel->setToolTip(
         "Value range refer to the physical meaning of the value, i.e. Hounsfield value range for "
         "human tissue [-1000 3000]");
@@ -116,8 +121,10 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     valueRangeMax_ = new QDoubleSpinBox();
     valueRangeMax_->setRange(-std::numeric_limits<double>::max(),
                              std::numeric_limits<double>::max());
-    QLabel* unit = new QLabel("Unit (m/s, HU, W)");
+    valueRangeLabel->setFocusProxy(valueRangeMin_);
+    auto* unit = new QLabel("Unit (m/s, HU, W)");
     valueUnit_ = new QLineEdit();  ///< Unit, i.e. Hounsfield/absorption/W.
+    unit->setFocusProxy(valueUnit_);
 
     auto rowCount = 0;
     dataTypeLayout->addWidget(bitDepthLabel, rowCount, 0);
@@ -140,10 +147,10 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataTypeLayout->addWidget(channelLabel, rowCount, 0);
     dataTypeLayout->addWidget(channels_, rowCount++, 1);
 
-    QGroupBox* dataTypeBox = new QGroupBox("Data type", this);
+    auto* dataTypeBox = new QGroupBox("Data type", this);
     dataTypeBox->setLayout(dataTypeLayout);
-    QGridLayout* dataSizeLayout = new QGridLayout();
-    QLabel* dimensionLabel = new QLabel("Dimensions");
+    auto* dataSizeLayout = new QGridLayout();
+    auto* dimensionLabel = new QLabel("Dimensions");
     dimX_ = new QSpinBox();
     dimX_->setRange(0, 4096);
     dimX_->setValue(256);
@@ -153,14 +160,14 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dimZ_ = new QSpinBox();
     dimZ_->setRange(0, 4096);
     dimZ_->setValue(256);
-    QWidget* dimensions = new QWidget(this);
-    QHBoxLayout* dimensionsLayout = new QHBoxLayout();
+    auto* dimensions = new QWidget(this);
+    auto* dimensionsLayout = new QHBoxLayout();
     dimensionsLayout->addWidget(dimX_);
     dimensionsLayout->addWidget(dimY_);
     dimensionsLayout->addWidget(dimZ_);
     dimensions->setLayout(dimensionsLayout);
 
-    QLabel* spaceLabel = new QLabel("Spacing");
+    auto* spaceLabel = new QLabel("Spacing");
     spaceX_ = new QLineEdit(this);
     QLocale locale(spaceX_->locale());
     spaceX_->setText(locale.toString(0.01));
@@ -171,15 +178,15 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     spaceZ_ = new QLineEdit(this);
     spaceZ_->setText(locale.toString(0.01));
     spaceZ_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceZ_));
-    QWidget* space = new QWidget(this);
-    QHBoxLayout* spaceLayout = new QHBoxLayout();
+    auto* space = new QWidget(this);
+    auto* spaceLayout = new QHBoxLayout();
     spaceLayout->addWidget(spaceX_);
     spaceLayout->addWidget(spaceY_);
     spaceLayout->addWidget(spaceZ_);
     space->setLayout(spaceLayout);
 
     /*
-    QLabel* timeStepLabel = new QLabel("Time steps");
+    auto timeStepLabel = new QLabel("Time steps");
     timeSteps_ = new QSpinBox();
     */
 
@@ -189,35 +196,44 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataSizeLayout->addWidget(space, 1, 1);
     // dataSizeLayout->addWidget(timeStepLabel, 2, 0);
     // dataSizeLayout->addWidget(timeSteps_, 2, 1);
-    QGroupBox* dataSizeBox = new QGroupBox("Data size", this);
+    auto* dataSizeBox = new QGroupBox("Data size", this);
     dataSizeBox->setLayout(dataSizeLayout);
 
-    QGridLayout* readOptionsLayout = new QGridLayout();
-    QLabel* byteOffsetLabel = new QLabel("Byte offset");
+    auto* readOptionsLayout = new QGridLayout();
+    auto* byteOffsetLabel = new QLabel("Byte offset");
     byteOffset_ = new QSpinBox();
     byteOffset_->setRange(0, std::numeric_limits<int>::max());
     byteOffset_->setValue(0);
     byteOffset_->setSuffix(" Byte");
+    byteOffsetLabel->setFocusProxy(byteOffset_);
     /*
-    QLabel* timeStepOffsetLabel = new QLabel("Time step offset");
+    auto timeStepOffsetLabel = new QLabel("Time step offset");
     timeStepOffset_ = new QSpinBox();
     timeStepOffset_->setRange(0, 4096);
     timeStepOffset_->setValue(0);
     timeStepOffset_->setSuffix(" Byte");
     */
-    QLabel* endianessLabel = new QLabel("Endianess");
-    endianess_ = new QComboBox();
-    endianess_->addItem("Little Endian");
-    endianess_->addItem("Big Endian");
+    byteOrder_ = new QComboBox();
+    byteOrder_->addItem("Little Endian", QVariant::fromValue(ByteOrder::LittleEndian));
+    byteOrder_->addItem("Big Endian", QVariant::fromValue(ByteOrder::BigEndian));
+    auto* endianessLabel = new QLabel("Byte order");
+    endianessLabel->setFocusProxy(byteOrder_);
     readOptionsLayout->addWidget(byteOffsetLabel, 0, 0);
     readOptionsLayout->addWidget(byteOffset_, 0, 1);
     /*
     readOptionsLayout->addWidget(timeStepOffsetLabel, 1, 0);
     readOptionsLayout->addWidget(timeStepOffset_, 1, 1);
     */
-    readOptionsLayout->addWidget(endianessLabel, 2, 0);
-    readOptionsLayout->addWidget(endianess_, 2, 1);
-    QGroupBox* readOptionsBox = new QGroupBox("Read options", this);
+    readOptionsLayout->addWidget(endianessLabel, 1, 0);
+    readOptionsLayout->addWidget(byteOrder_, 1, 1);
+
+    useCompression_ = new QCheckBox{};
+    auto* useCompressionLabel = new QLabel("Compressed data (bzip, gz, lzma)");
+    useCompressionLabel->setFocusProxy(useCompression_);
+    readOptionsLayout->addWidget(useCompressionLabel, 2, 0);
+    readOptionsLayout->addWidget(useCompression_, 2, 1);
+
+    auto* readOptionsBox = new QGroupBox("Read options", this);
     readOptionsBox->setLayout(readOptionsLayout);
     QDialogButtonBox* buttonBox =
         new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -296,13 +312,16 @@ void RawDataReaderDialogQt::setSpacing(dvec3 spacing) {
     spaceZ_->setText(locale.toString(spacing.z));
 }
 
-bool RawDataReaderDialogQt::getEndianess() const { return endianess_->currentIndex() == 0; }
+ByteOrder RawDataReaderDialogQt::getByteOrder() const {
+    return byteOrder_->currentData().value<ByteOrder>();
+}
 
-void RawDataReaderDialogQt::setEndianess(bool endian) {
-    if (endian) {
-        endianess_->setCurrentIndex(0);
+void RawDataReaderDialogQt::setByteOrder(ByteOrder byteOrder) {
+    if (const int index = byteOrder_->findData(QVariant::fromValue(byteOrder)); index > -1) {
+        byteOrder_->setCurrentIndex(index);
     } else {
-        endianess_->setCurrentIndex(1);
+        throw Exception{SourceContext{}, "ByteOrder enum value '{}' cannot be set",
+                        static_cast<int>(byteOrder)};
     }
 }
 
@@ -328,6 +347,18 @@ size_t RawDataReaderDialogQt::getByteOffset() const {
 
 void RawDataReaderDialogQt::setByteOffset(size_t offset) {
     byteOffset_->setValue(static_cast<int>(offset));
+}
+
+Compression RawDataReaderDialogQt::getCompression() const {
+    if (useCompression_->isChecked()) {
+        return Compression::Enabled;
+    } else {
+        return Compression::Disabled;
+    }
+}
+
+void RawDataReaderDialogQt::setCompression(Compression compression) {
+    useCompression_->setChecked(compression == Compression::Enabled);
 }
 
 void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {

@@ -1,5 +1,37 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-03-25 Updated Inviwo Volume File Formats (.ivf and .ivfs)
+The Inviwo Volume File format (.ivf) was revised and updated. It now also supports reading compressed binary/raw data using either ZLib, libBZ2, libLZMA, or libZstd (.gz, .bz2, .xz, and .zst). When exporting volume data to .ivf the data is compressed with ZLib.
+
+The .ivfs format was also revised to match the structure of .ivf. It is now possible to refer to multiple raw files, each with its own, optional metadata.
+```xml
+<?xml version="1.0" ?>
+<InviwoVolume version="2">
+    <RawFiles>
+        <RawFile content="../data/CLOUDf01.bin.gz">
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.DoubleMetaData" key="timestamp">
+                    <MetaData content="1" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </RawFile>
+        <RawFile content="../data/CLOUDf02.bin.gz">
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.DoubleMetaData" key="timestamp">
+                    <MetaData content="2" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </RawFile>
+        ...
+    </RawFiles>
+    <ByteOrder content="0" />
+    <Compression content="1" />
+    <Format content="FLOAT32" />
+    <Dimension x="500" y="500" z="100" />
+    ...
+</InviwoVolume>
+```
+
 ## 2025-02-28 DataFrame to JSON conversion
 The conversion of `DataFrame` to and from JSON was updated. Now, the order of columns is explicitly encoded since the JSON specification does not guarantee the ordering of objects and keys. In addition, the data types of the columns can be specified using Inviwo's data types (`DataFormatBase::get(id)->getString()`).
 

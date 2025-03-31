@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,31 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumeexport.h>
-
-#include <inviwo/core/common/factoryutil.h>
+#include <inviwo/core/io/inviwofileformattypes.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-const ProcessorInfo VolumeExport::processorInfo_{
-    "org.inviwo.VolumeExport",  // Class identifier
-    "Volume Export",            // Display name
-    "Data Output",              // Category
-    CodeState::Stable,          // Code state
-    Tags::CPU,                  // Tags
-    "Exports a Volume to disk"_help,
-};
+std::string_view enumToStr(ByteOrder byteOrder) {
+    switch (byteOrder) {
+        case ByteOrder::LittleEndian:
+            return "LittleEndian";
+        case ByteOrder::BigEndian:
+            return "BigEndian";
+    }
+    throw Exception{SourceContext{}, "Found invalid ByteOrder enum value '{}'",
+                    static_cast<int>(byteOrder)};
+}
 
-VolumeExport::VolumeExport(InviwoApplication* app)
-    : DataExport<Volume, VolumeInport>{util::getDataWriterFactory(app), "", "volume"} {}
-
-const ProcessorInfo& VolumeExport::getProcessorInfo() const { return processorInfo_; }
-
-const Volume* VolumeExport::getData() { return port_.getData().get(); }
+std::string_view enumToStr(Compression compression) {
+    switch (compression) {
+        case Compression::Disabled:
+            return "Disabled";
+        case Compression::Enabled:
+            return "Enabled";
+    }
+    throw Exception{SourceContext{}, "Found invalid Compression enum value '{}'",
+                    static_cast<int>(compression)};
+}
 
 }  // namespace inviwo

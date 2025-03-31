@@ -54,25 +54,22 @@ public:
     virtual RawVolumeReader* clone() const override;
     virtual ~RawVolumeReader() = default;
 
-    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian,
-                               DataMapper dataMapper, size_t byteOffset = 0u);
-
     virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
     virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath,
                                              MetaDataOwner* metadata) override;
 
-    bool haveReadLittleEndian() const { return littleEndian_; }
     const DataFormatBase* getFormat() const { return format_; }
 
 private:
     std::filesystem::path rawFile_;
-    bool littleEndian_;
+    ByteOrder byteOrder_;
     size3_t dimensions_;
     vec3 spacing_;
     const DataFormatBase* format_;
     DataMapper dataMapper_;
     size_t byteOffset_;
     bool parametersSet_;
+    Compression compression_;
 };
 
 }  // namespace inviwo
