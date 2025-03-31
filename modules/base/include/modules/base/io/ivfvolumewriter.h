@@ -89,9 +89,9 @@ class IVW_MODULE_BASE_API IvfVolumeWriter : public DataWriterType<Volume> {
 public:
     IvfVolumeWriter();
     IvfVolumeWriter(const IvfVolumeWriter& rhs);
-    IvfVolumeWriter(IvfVolumeWriter&& rhs);
+    IvfVolumeWriter(IvfVolumeWriter&& rhs) noexcept;
     IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
-    IvfVolumeWriter& operator=(IvfVolumeWriter&& that);
+    IvfVolumeWriter& operator=(IvfVolumeWriter&& that) noexcept;
     virtual IvfVolumeWriter* clone() const;
     virtual ~IvfVolumeWriter() = default;
 
@@ -140,9 +140,9 @@ class IVW_MODULE_BASE_API IvfVolumeSequenceWriter : public DataWriterType<Volume
 public:
     IvfVolumeSequenceWriter();
     IvfVolumeSequenceWriter(const IvfVolumeSequenceWriter& rhs);
-    IvfVolumeSequenceWriter(IvfVolumeSequenceWriter&& rhs);
+    IvfVolumeSequenceWriter(IvfVolumeSequenceWriter&& rhs) noexcept;
     IvfVolumeSequenceWriter& operator=(const IvfVolumeSequenceWriter& that);
-    IvfVolumeSequenceWriter& operator=(IvfVolumeSequenceWriter&& that);
+    IvfVolumeSequenceWriter& operator=(IvfVolumeSequenceWriter&& that) noexcept;
     virtual IvfVolumeSequenceWriter* clone() const;
     virtual ~IvfVolumeSequenceWriter() = default;
 

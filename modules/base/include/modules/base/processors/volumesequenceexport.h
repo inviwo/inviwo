@@ -40,10 +40,10 @@ class IVW_MODULE_BASE_API VolumeSequenceExport
     : public DataExport<VolumeSequence, VolumeSequenceInport> {
 public:
     explicit VolumeSequenceExport(InviwoApplication* app);
-    VolumeSequenceExport(const VolumeSequenceExport&) = default;
-    VolumeSequenceExport(VolumeSequenceExport&&) = default;
-    VolumeSequenceExport& operator=(const VolumeSequenceExport&) = default;
-    VolumeSequenceExport& operator=(VolumeSequenceExport&&) = default;
+    VolumeSequenceExport(const VolumeSequenceExport&) = delete;
+    VolumeSequenceExport(VolumeSequenceExport&&) = delete;
+    VolumeSequenceExport& operator=(const VolumeSequenceExport&) = delete;
+    VolumeSequenceExport& operator=(VolumeSequenceExport&&) = delete;
     virtual ~VolumeSequenceExport() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

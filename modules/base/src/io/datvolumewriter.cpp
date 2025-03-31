@@ -149,7 +149,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
 
     for (const auto& key : data.getMetaDataMap()->getKeys()) {
         const auto* m = data.getMetaDataMap()->get(key);
-        if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
+        if (const auto* sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 
     if (auto f = std::ofstream(filePath)) {
