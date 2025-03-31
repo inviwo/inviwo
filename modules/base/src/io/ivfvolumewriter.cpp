@@ -71,11 +71,11 @@ IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
 
 IvfVolumeWriter::IvfVolumeWriter(const IvfVolumeWriter& rhs) = default;
 
-IvfVolumeWriter::IvfVolumeWriter(IvfVolumeWriter&& rhs) = default;
+IvfVolumeWriter::IvfVolumeWriter(IvfVolumeWriter&& rhs) noexcept = default;
 
 IvfVolumeWriter& IvfVolumeWriter::operator=(const IvfVolumeWriter& that) = default;
 
-IvfVolumeWriter& IvfVolumeWriter::operator=(IvfVolumeWriter&& that) = default;
+IvfVolumeWriter& IvfVolumeWriter::operator=(IvfVolumeWriter&& that) noexcept = default;
 
 IvfVolumeWriter* IvfVolumeWriter::clone() const { return new IvfVolumeWriter(*this); }
 
@@ -89,13 +89,13 @@ IvfVolumeSequenceWriter::IvfVolumeSequenceWriter() : DataWriterType<VolumeSequen
 
 IvfVolumeSequenceWriter::IvfVolumeSequenceWriter(const IvfVolumeSequenceWriter& rhs) = default;
 
-IvfVolumeSequenceWriter::IvfVolumeSequenceWriter(IvfVolumeSequenceWriter&& rhs) = default;
+IvfVolumeSequenceWriter::IvfVolumeSequenceWriter(IvfVolumeSequenceWriter&& rhs) noexcept = default;
 
 IvfVolumeSequenceWriter& IvfVolumeSequenceWriter::operator=(const IvfVolumeSequenceWriter& that) =
     default;
 
-IvfVolumeSequenceWriter& IvfVolumeSequenceWriter::operator=(IvfVolumeSequenceWriter&& that) =
-    default;
+IvfVolumeSequenceWriter& IvfVolumeSequenceWriter::operator=(
+    IvfVolumeSequenceWriter&& that) noexcept = default;
 
 IvfVolumeSequenceWriter* IvfVolumeSequenceWriter::clone() const {
     return new IvfVolumeSequenceWriter(*this);
@@ -215,17 +215,17 @@ void serializeDissimilarVolumeData(Serializer& s, const SharedSequenceData& shar
 }
 
 struct VolumeMetaData {
-    VolumeMetaData(const SharedSequenceData& shared, std::filesystem::path relativePath,
+    VolumeMetaData(const SharedSequenceData* shared, std::filesystem::path relativePath,
                    std::shared_ptr<const Volume> volume)
         : shared{shared}, relativePath{std::move(relativePath)}, volume{std::move(volume)} {}
 
     void serialize(Serializer& s) const {
         s.serialize("content", relativePath, SerializationTarget::Attribute);
-        serializeDissimilarVolumeData(s, shared, *volume);
+        serializeDissimilarVolumeData(s, *shared, *volume);
         volume->getMetaDataMap()->serialize(s);
     }
 
-    const SharedSequenceData& shared;
+    const SharedSequenceData* shared;
     std::filesystem::path relativePath;
     std::shared_ptr<const Volume> volume;
 };
@@ -259,7 +259,7 @@ std::filesystem::path writeIvfVolumeSequence(const VolumeSequence& data, std::st
         rawFile.replace("{}{:0{}}.{}", rawBaseName, index, numDigits, extension);
         const auto relativePath =
             std::filesystem::path{"."} / relativePathToElements / rawFile.view();
-        volumeData.emplace_back(sharedData, relativePath, volume);
+        volumeData.emplace_back(&sharedData, relativePath, volume);
     }
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};

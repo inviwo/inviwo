@@ -179,7 +179,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     spaceZ_->setText(locale.toString(0.01));
     spaceZ_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceZ_));
     auto* space = new QWidget(this);
-    auto spaceLayout = new QHBoxLayout();
+    auto* spaceLayout = new QHBoxLayout();
     spaceLayout->addWidget(spaceX_);
     spaceLayout->addWidget(spaceY_);
     spaceLayout->addWidget(spaceZ_);
