@@ -71,7 +71,11 @@ IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
 
 IvfVolumeWriter::IvfVolumeWriter(const IvfVolumeWriter& rhs) = default;
 
+IvfVolumeWriter::IvfVolumeWriter(IvfVolumeWriter&& rhs) = default;
+
 IvfVolumeWriter& IvfVolumeWriter::operator=(const IvfVolumeWriter& that) = default;
+
+IvfVolumeWriter& IvfVolumeWriter::operator=(IvfVolumeWriter&& that) = default;
 
 IvfVolumeWriter* IvfVolumeWriter::clone() const { return new IvfVolumeWriter(*this); }
 
@@ -85,7 +89,12 @@ IvfVolumeSequenceWriter::IvfVolumeSequenceWriter() : DataWriterType<VolumeSequen
 
 IvfVolumeSequenceWriter::IvfVolumeSequenceWriter(const IvfVolumeSequenceWriter& rhs) = default;
 
+IvfVolumeSequenceWriter::IvfVolumeSequenceWriter(IvfVolumeSequenceWriter&& rhs) = default;
+
 IvfVolumeSequenceWriter& IvfVolumeSequenceWriter::operator=(const IvfVolumeSequenceWriter& that) =
+    default;
+
+IvfVolumeSequenceWriter& IvfVolumeSequenceWriter::operator=(IvfVolumeSequenceWriter&& that) =
     default;
 
 IvfVolumeSequenceWriter* IvfVolumeSequenceWriter::clone() const {
@@ -102,8 +111,7 @@ namespace util {
 
 void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
                     Overwrite overwrite) {
-    const Compression compression =
-        util::isCompressionSupported() ? Compression::Enabled : Compression::Disabled;
+    const Compression compression = Compression::Enabled;
     const std::string_view extension = compression == Compression::Enabled ? "raw.gz" : "raw";
     const auto rawPath = filesystem::replaceFileExtension(filePath, extension);
 
@@ -209,7 +217,7 @@ void serializeDissimilarVolumeData(Serializer& s, const SharedSequenceData& shar
 struct VolumeMetaData {
     VolumeMetaData(const SharedSequenceData& shared, std::filesystem::path relativePath,
                    std::shared_ptr<const Volume> volume)
-        : shared{shared}, relativePath{std::move(relativePath)}, volume{volume} {}
+        : shared{shared}, relativePath{std::move(relativePath)}, volume{std::move(volume)} {}
 
     void serialize(Serializer& s) const {
         s.serialize("content", relativePath, SerializationTarget::Attribute);
@@ -239,11 +247,10 @@ std::filesystem::path writeIvfVolumeSequence(const VolumeSequence& data, std::st
     DataWriter::checkOverwrite(filePath, overwrite);
 
     const auto rawBaseName = name.ends_with(".ivfs") ? name.substr(0, name.size() - 5) : name;
-    const Compression compression =
-        util::isCompressionSupported() ? Compression::Enabled : Compression::Disabled;
+    const Compression compression = Compression::Enabled;
     const std::string_view extension = compression == Compression::Enabled ? "raw.gz" : "raw";
 
-    util::SharedSequenceData sharedData{data};
+    const util::SharedSequenceData sharedData{data};
 
     std::vector<VolumeMetaData> volumeData;
     StrBuffer rawFile;
@@ -273,7 +280,7 @@ std::filesystem::path writeIvfVolumeSequence(const VolumeSequence& data, std::st
         const auto rawFilePath = parentFolder / v.relativePath;
         DataWriter::checkOverwrite(rawFilePath, overwrite);
 
-        const VolumeRAM* vr = v.volume->getRepresentation<VolumeRAM>();
+        const auto* vr = v.volume->getRepresentation<VolumeRAM>();
         const size_t bytes =
             glm::compMul(vr->getDimensions()) * vr->getDataFormat()->getSizeInBytes();
         util::writeBytes(rawFilePath, vr->getData(), bytes, compression);

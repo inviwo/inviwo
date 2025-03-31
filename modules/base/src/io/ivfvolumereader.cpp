@@ -81,10 +81,10 @@ private:
 Converter::Converter(int version) : version_(version) {}
 
 void Converter::updateByteOrder(TxElement* root) {
-    auto metaDataMap = xml::getElement(root, "MetaDataMap");
+    auto* metaDataMap = xml::getElement(root, "MetaDataMap");
 
     if (metaDataMap) {
-        if (auto littleEndianNode =
+        if (auto* littleEndianNode =
                 xml::getElement(metaDataMap, "MetaDataItem&key=LittleEndian/MetaData")) {
             // move byteorder to own tag
             TxElement byteOrder{"ByteOrder"};
@@ -110,10 +110,10 @@ bool Converter::convert(TxElement* root) {
     switch (version_) {
         case 0:
         case 1: {
-            auto metaDataMap = xml::getElement(root, "MetaDataMap");
+            auto* metaDataMap = xml::getElement(root, "MetaDataMap");
 
             if (metaDataMap) {
-                if (auto littleEndianNode =
+                if (auto* littleEndianNode =
                         xml::getElement(metaDataMap, "MetaDataItem&key=LittleEndian/MetaData")) {
                     // move endianness to own tag
                     TxElement byteOrder{"ByteOrder"};
@@ -128,7 +128,7 @@ bool Converter::convert(TxElement* root) {
                     metaDataMap->RemoveChild(littleEndianNode->Parent());
                 }
             }
-            if (auto rawFile = xml::getElement(root, "RawFile"); rawFile && metaDataMap) {
+            if (auto* rawFile = xml::getElement(root, "RawFile"); rawFile && metaDataMap) {
                 // move metadata map to RawFile
                 rawFile->InsertEndChild(*metaDataMap);
                 root->RemoveChild(metaDataMap);
@@ -161,21 +161,15 @@ std::array<Axis, 3> deserializeAxes(Deserializer& d) {
     std::array<Axis, 3> axes;
     std::string tmp;
     d.deserialize("Axis1Unit", tmp);
-    if (!tmp.empty()) {
-        axes[0].unit = units::unit_from_string(tmp);
-    }
+    axes[0].unit = units::unit_from_string(tmp);
 
     tmp.clear();
     d.deserialize("Axis2Unit", tmp);
-    if (!tmp.empty()) {
-        axes[1].unit = units::unit_from_string(tmp);
-    }
+    axes[1].unit = units::unit_from_string(tmp);
 
     tmp.clear();
     d.deserialize("Axis2Unit", tmp);
-    if (!tmp.empty()) {
-        axes[2].unit = units::unit_from_string(tmp);
-    }
+    axes[2].unit = units::unit_from_string(tmp);
 
     d.deserialize("Axis1Name", axes[0].name);
     d.deserialize("Axis2Name", axes[1].name);
@@ -194,7 +188,7 @@ struct VolumeMetaData {
     MetaDataMap metaData;
 };
 
-std::shared_ptr<VolumeSequence> readIvfFile(std::filesystem::path filePath) {
+std::shared_ptr<VolumeSequence> readIvfFile(const std::filesystem::path& filePath) {
     const auto fileDirectory = filePath.parent_path();
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};

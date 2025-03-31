@@ -49,10 +49,13 @@ void convertToLittleEndian(void* dest, size_t bytes, size_t elementSize) {
     auto temp = std::make_unique<char[]>(elementSize);
 
     for (std::size_t i = 0; i < bytes; i += elementSize) {
-        for (std::size_t j = 0; j < elementSize; j++) temp[j] = static_cast<char*>(dest)[i + j];
+        for (std::size_t j = 0; j < elementSize; j++) {
+            temp[j] = static_cast<char*>(dest)[i + j];
+        }
 
-        for (std::size_t j = 0; j < elementSize; j++)
+        for (std::size_t j = 0; j < elementSize; j++) {
             static_cast<char*>(dest)[i + j] = temp[elementSize - j - 1];
+        }
     }
 }
 

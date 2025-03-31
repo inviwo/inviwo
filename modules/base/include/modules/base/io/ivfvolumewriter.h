@@ -89,7 +89,9 @@ class IVW_MODULE_BASE_API IvfVolumeWriter : public DataWriterType<Volume> {
 public:
     IvfVolumeWriter();
     IvfVolumeWriter(const IvfVolumeWriter& rhs);
+    IvfVolumeWriter(IvfVolumeWriter&& rhs);
     IvfVolumeWriter& operator=(const IvfVolumeWriter& that);
+    IvfVolumeWriter& operator=(IvfVolumeWriter&& that);
     virtual IvfVolumeWriter* clone() const;
     virtual ~IvfVolumeWriter() = default;
 
@@ -138,7 +140,9 @@ class IVW_MODULE_BASE_API IvfVolumeSequenceWriter : public DataWriterType<Volume
 public:
     IvfVolumeSequenceWriter();
     IvfVolumeSequenceWriter(const IvfVolumeSequenceWriter& rhs);
+    IvfVolumeSequenceWriter(IvfVolumeSequenceWriter&& rhs);
     IvfVolumeSequenceWriter& operator=(const IvfVolumeSequenceWriter& that);
+    IvfVolumeSequenceWriter& operator=(IvfVolumeSequenceWriter&& that);
     virtual IvfVolumeSequenceWriter* clone() const;
     virtual ~IvfVolumeSequenceWriter() = default;
 
@@ -155,7 +159,7 @@ IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::filesyste
  *
  * Supports writing a volume sequence to disk. Creates one main file (<tt>[name].ivfs</tt>) and a
  * series of raw files (<tt>[name]xx.raw</tt> or <tt>[name]xx.raw.gz</tt> if zlib compression is
- * available), one for each volume. The raw files are 
+ * available), one for each volume. The raw files are
  *
  * @param data    the volume sequence to export
  * @param name    file name of the dataset and raw files, that is [name].ivfs and [name]xx.raw

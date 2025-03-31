@@ -34,12 +34,16 @@
 #include <inviwo/core/ports/volumeport.h>        // for VolumeInport
 #include <modules/base/processors/dataexport.h>  // for DataExport
 
-
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeSequenceExport : public DataExport<VolumeSequence, VolumeSequenceInport> {
+class IVW_MODULE_BASE_API VolumeSequenceExport
+    : public DataExport<VolumeSequence, VolumeSequenceInport> {
 public:
     explicit VolumeSequenceExport(InviwoApplication* app);
+    VolumeSequenceExport(const VolumeSequenceExport&) = default;
+    VolumeSequenceExport(VolumeSequenceExport&&) = default;
+    VolumeSequenceExport& operator=(const VolumeSequenceExport&) = default;
+    VolumeSequenceExport& operator=(VolumeSequenceExport&&) = default;
     virtual ~VolumeSequenceExport() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

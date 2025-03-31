@@ -141,7 +141,7 @@ double getTimestamp(const std::shared_ptr<const Volume>& vol) {
 
 SharedSequenceData::SharedSequenceData(const VolumeSequence& seq) {
     if (!seq.empty()) {
-        const auto referenceFormat = seq.front()->getDataFormat();
+        const auto* referenceFormat = seq.front()->getDataFormat();
         const auto referenceBasis = seq.front()->getBasis();
         const auto referenceTransform = seq.front()->getWorldMatrix();
         const auto referenceDims = seq.front()->getDimensions();

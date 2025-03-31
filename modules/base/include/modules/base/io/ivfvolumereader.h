@@ -46,7 +46,9 @@ class IVW_MODULE_BASE_API IvfVolumeReader : public DataReaderType<Volume> {
 public:
     IvfVolumeReader();
     IvfVolumeReader(const IvfVolumeReader& rhs) = default;
+    IvfVolumeReader(IvfVolumeReader&& rhs) = default;
     IvfVolumeReader& operator=(const IvfVolumeReader& that) = default;
+    IvfVolumeReader& operator=(IvfVolumeReader&& that) = default;
     virtual IvfVolumeReader* clone() const override;
     virtual ~IvfVolumeReader() = default;
 
@@ -60,7 +62,9 @@ class IVW_MODULE_BASE_API IvfVolumeSequenceReader : public DataReaderType<Volume
 public:
     IvfVolumeSequenceReader();
     IvfVolumeSequenceReader(const IvfVolumeSequenceReader& rhs) = default;
+    IvfVolumeSequenceReader(IvfVolumeSequenceReader&& rhs) = default;
     IvfVolumeSequenceReader& operator=(const IvfVolumeSequenceReader& that) = default;
+    IvfVolumeSequenceReader& operator=(IvfVolumeSequenceReader&& that) = default;
     virtual IvfVolumeSequenceReader* clone() const override;
     virtual ~IvfVolumeSequenceReader() = default;
 

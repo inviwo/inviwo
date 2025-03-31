@@ -148,7 +148,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     print("Wrapping", vr->getWrapping());
 
     for (const auto& key : data.getMetaDataMap()->getKeys()) {
-        auto m = data.getMetaDataMap()->get(key);
+        const auto* m = data.getMetaDataMap()->get(key);
         if (auto sm = dynamic_cast<const StringMetaData*>(m)) print(key, sm->get());
     }
 

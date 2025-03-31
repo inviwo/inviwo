@@ -41,6 +41,10 @@ class Volume;
 class IVW_MODULE_BASE_API VolumeExport : public DataExport<Volume, VolumeInport> {
 public:
     explicit VolumeExport(InviwoApplication* app);
+    VolumeExport(const VolumeExport&) = default;
+    VolumeExport(VolumeExport&&) = default;
+    VolumeExport& operator=(const VolumeExport&) = default;
+    VolumeExport& operator=(VolumeExport&&) = default;
     virtual ~VolumeExport() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

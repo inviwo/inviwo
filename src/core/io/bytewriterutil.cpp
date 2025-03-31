@@ -75,7 +75,7 @@ void writeCompressedBytes(const std::filesystem::path& path, const void* source,
 
 void util::writeBytes(const std::filesystem::path& path, const void* source, size_t bytes,
                       Compression compression) {
-    if (compression == Compression::Enabled && util::isCompressionSupported()) {
+    if (compression == Compression::Enabled) {
         writeCompressedBytes(path, source, bytes);
     } else {
         writeUncompressedBytes(path, source, bytes);

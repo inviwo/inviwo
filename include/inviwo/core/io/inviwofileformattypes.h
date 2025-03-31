@@ -44,15 +44,4 @@ IVW_CORE_API std::string_view enumToStr(Compression compression);
 inline std::string_view format_as(ByteOrder byteOrder) { return enumToStr(byteOrder); }
 inline std::string_view format_as(Compression compression) { return enumToStr(compression); }
 
-namespace util {
-
-/**
- * Check whether compression with zlib, that is bxz::z, is available
- *
- * @return true if zlib compression is enabled
- */
-IVW_CORE_API bool isCompressionSupported();
-
-}  // namespace util
-
 }  // namespace inviwo
