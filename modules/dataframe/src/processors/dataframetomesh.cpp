@@ -152,7 +152,7 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
                                 const auto& src = brprecision->getDataContainer();
                                 for (size_t i = 0; i < size; ++i) {
                                     util::glmcomp(dst[i], comp) =
-                                        static_cast<util::value_type_t<T>>(src[i]);
+                                        static_cast<util::value_type_t<T>>(src[i]);  // NOLINT
                                 }
                             });
                 }
@@ -232,7 +232,7 @@ ColumnMapper::OffsetAndPicking::OffsetAndPicking(Processor* p, size_t size,
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameToMesh::processorInfo_{
     "org.inviwo.DataFrameToMesh",  // Class identifier
-    "Data Frame To Mesh",          // Display name
+    "DataFrame To Mesh",           // Display name
     "DataFrame",                   // Category
     CodeState::Stable,             // Code state
     Tags::CPU,                     // Tags
@@ -312,13 +312,13 @@ void DataFrameToMesh::process() {
 }
 
 void DataFrameToMesh::picking(PickingEvent* event) {
-    const uint32_t id = static_cast<uint32_t>(event->getPickedId());
+    const auto id = static_cast<uint32_t>(event->getPickedId());
 
     // Show tooltip for current item
     if (event->getHoverState() == PickingHoverState::Enter) {
         event->setToolTip(fmt::format("{}", event->getPickedId()));
 
-        BitSet highlight{id};
+        const BitSet highlight{id};
         bnl_.highlight(highlight);
     } else if (event->getHoverState() == PickingHoverState::Exit) {
         // unset tooltip at all times in case one was set prior disabling tooltips

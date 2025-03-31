@@ -147,8 +147,8 @@ void PointRenderer::configureShader(Shader& shader) {
 }
 
 void PointRenderer::process() {
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     bnl_.update();
     labels_.update();
@@ -156,8 +156,8 @@ void PointRenderer::process() {
     TextureUnitContainer cont;
     utilgl::bind(cont, bnl_, labels_, config_, texture_);
 
-    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, depthTest_);
+    const utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, depthTest_);
 
     for (const auto& mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
@@ -170,7 +170,7 @@ void PointRenderer::process() {
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
 
         MeshDrawerGL::DrawObject drawer(*mesh);
-        switch (renderMode_) {
+        switch (renderMode_.get()) {
             case RenderMode::PointsOnly: {
                 drawer.drawOnlyInstanced(MeshDrawerGL::DrawMode::Points, periodic_.instances());
                 break;

@@ -34,7 +34,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameToBuffer::processorInfo_{
     "org.inviwo.DataFrameToBuffer",  // Class identifier
-    "Data Frame To Buffer",          // Display name
+    "DataFrame To Buffer",          // Display name
     "DataFrame",                     // Category
     CodeState::Stable,               // Code state
     Tags::CPU,                       // Tags
