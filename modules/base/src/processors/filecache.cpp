@@ -158,6 +158,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
 
 CacheBase::CacheBase(InviwoApplication* app)
     : Processor()
+    , enabled_{"enabled", "Enabled", "Toggles the usage of the file cache"_help, true}
     , cacheDir_{"cacheDir", "Cache Dir",
                 "Directory to save cached dataset too. "
                 "You might want to manually clear it regularly to save space"_help,
@@ -188,7 +189,7 @@ void CacheBase::onProcessorNetworkEvaluationBegin() {
     key_ = detail::cacheState(this, *getNetwork(), refDir_.get(), xml_);
     currentKey_.set(key_);
 
-    const auto isCached = hasCache(key_);
+    const auto isCached = hasCache(key_) && enabled_;
 
     if (isCached_ != isCached) {
         isCached_ = isCached;

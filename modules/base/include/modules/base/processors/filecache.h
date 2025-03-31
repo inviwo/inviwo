@@ -31,6 +31,7 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -119,6 +120,7 @@ public:
 protected:
     void writeXML() const;
 
+    BoolProperty enabled_;
     DirectoryProperty cacheDir_;
     DirectoryProperty refDir_;
     StringProperty currentKey_;
@@ -268,7 +270,7 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
     , ram_{} {
 
     addPorts(inport_, outport_);
-    addProperties(cacheDir_, refDir_, currentKey_, rw_.extensions, ram_.size);
+    addProperties(enabled_, cacheDir_, refDir_, currentKey_, rw_.extensions, ram_.size);
 }
 
 template <typename DataType, typename InportType, typename OutportType>
