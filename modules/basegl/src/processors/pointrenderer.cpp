@@ -148,7 +148,7 @@ void PointRenderer::configureShader(Shader& shader) {
 
 void PointRenderer::process() {
     const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    const utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     bnl_.update();
     labels_.update();

@@ -43,7 +43,7 @@ class TextureUnitContainer;
 class IVW_MODULE_BASEGL_API SphereConfig {
 public:
     explicit SphereConfig(std::string_view identifier = "sphereProperties",
-                 std::string_view displayName = "Sphere Properties");
+                          std::string_view displayName = "Sphere Properties");
 
     void bind(TextureUnitContainer& cont);
 
