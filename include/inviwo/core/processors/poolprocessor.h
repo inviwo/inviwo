@@ -391,17 +391,17 @@ inline void PoolProcessor::callDone(
                 for (auto& res : state->futures) {
                     res.get();
                 }
-                NetworkLock netlock{&p};
+                const NetworkLock netlock{&p};
                 state->done();
             } else if constexpr (std::is_invocable_v<Done, Result>) {
-                NetworkLock netlock{&p};
+                const NetworkLock netlock{&p};
                 state->done(state->futures.front().get());
             } else {
                 std::vector<Result> results;
                 for (auto& res : state->futures) {
                     results.push_back(res.get());
                 }
-                NetworkLock netlock{&p};
+                const NetworkLock netlock{&p};
                 state->done(results);
             }
         } catch (...) {

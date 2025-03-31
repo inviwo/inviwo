@@ -109,7 +109,7 @@ void util::insertNetworkForData(const std::filesystem::path& dataFile, Processor
                                 bool alwaysFirst, bool onlySource, QWidget* parent) {
     auto app = net->getApplication();
 
-    NetworkLock lock{net};
+    const NetworkLock lock{net};
 
     auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForFile(dataFile);
 
