@@ -159,11 +159,6 @@ ivw_vcpkg_install(fast-float MODULE Core EXT)
 find_package(curlcpp CONFIG REQUIRED)
 ivw_vcpkg_install(curlcpp MODULE Core EXT)
 
-if(WIN32) # Stackwalker for windows for stack traces in the log
-    find_package(stackwalker CONFIG REQUIRED)
-    ivw_vcpkg_install(stackwalker MODULE Core EXT)
-endif()
-
 if(IVW_ENABLE_PYTHON)
     find_package(pybind11 CONFIG REQUIRED)
     ivw_vcpkg_install(pybind11 MODULE Core EXT)
