@@ -61,13 +61,13 @@ protected:
     virtual ~ShaderComponentProcessorBase();
 
     /**
-     * Register a `ShaderComponent`s. The Inport and Properties of each compnents will be
+     * Register a `ShaderComponent`s. The Inport and Properties of each components will be
      * added to this in the order registered.
      */
     void registerComponent(ShaderComponent& comps);
 
     /**
-     * Register a set of `ShaderComponent`s. The Inport and Properties of each compnents will be
+     * Register a set of `ShaderComponent`s. The Inport and Properties of each components will be
      * added to this in the order registered.
      *
      */

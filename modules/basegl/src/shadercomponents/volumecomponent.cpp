@@ -39,9 +39,6 @@
 #include <fmt/format.h>  // for compile_string_to_view, FMT...
 
 namespace inviwo {
-class Inport;
-class Shader;
-class TextureUnitContainer;
 
 VolumeComponent::VolumeComponent(std::string_view name, Gradients gradients, Document help)
     : ShaderComponent(), volumePort{name, std::move(help)}, gradients{gradients} {}
