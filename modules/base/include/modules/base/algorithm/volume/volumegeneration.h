@@ -192,11 +192,11 @@ std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float sigma_,
             s = sigma_;//orb.p.w;
             double r2{glm::length2(dr)};
             double B{0.5 / (s * s)};
-            double A{1.0 / (s * sqrt(2 * M_PI))};
+            //double A{1.0 / (s * sqrt(2 * M_PI))};
             
             //double A{pow(point.x, 1) * pow(point.y, 1) * pow(point.z, 1)};
-            float test = pow(abs(dr.x), 1) * pow(abs(dr.y), 1) * pow(abs(dr.z), 1) * 1000000;
-            density += test*exp(-B*r2);
+            double A {pow(abs(dr.x), orb.coefs.x) * pow(abs(dr.y), orb.coefs.y) * pow(abs(dr.z), orb.coefs.z)};
+            density += A*exp(-B*r2);
         }
         
         return glm_convert_normalized<T>(density);

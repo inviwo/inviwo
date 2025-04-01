@@ -44,6 +44,7 @@
 #include <inviwo/core/util/glmcomp.h>           // for compMul
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include <modules/opengl/image/imagegl.h>                      // for ImageGL
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/image/layergl.h>
 
@@ -163,23 +164,35 @@ void GaussianCompRayCaster::process() {
     // image dims from Canvas
     const size2_t outputDims = outport_.getDimensions();
     
-    glActiveTexture(GL_TEXTURE0);
+   glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE1);
+   ;
+    auto img = std::make_shared<Image>(outputDims, DataFormat<vec4>::get());
 
-    auto img = std::make_shared<Image>(dimensions_, DataFormat<vec4>::get());
-
-    auto layerGL = img->getColorLayer()->getEditableRepresentation<LayerGL>();
+    auto layerGL = img->getColorLayer()->getEditableRepresentation<LayerGL>();   
+    //auto depthGL = img->getDepthLayer()->getEditableRepresentation<LayerGL>();
+       
+    
     auto texHandle = layerGL->getTexture()->getID();
+    
+    //GL_DEPTH_COMPONENT32F
     glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-
     layerGL->setSwizzleMask(swizzlemasks::rgba);
+
+
+    //auto depthLayerGL = img->getDepthLayer()->getEditableRepresentation<LayerGL>();
+    //auto depthTexHandle = depthLayerGL->getTexture()->getID();
+    //glBindImageTexture(1, depthTexHandle, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_DEPTH_COMPONENT32F);
 
     shaderGaussian_.activate();
     utilgl::setUniforms(shaderGaussian_, sigma_);
 
     layerGL->getTexture()->bind();
+    //depthGL->getTexture()->bind();
 
     shaderGaussian_.setUniform("dest", 0);
-
+    //shaderGaussian_.setUniform("depthdest", 1);
+    
     auto ptr = orbitals_.getData();
     auto points = *ptr;
     
@@ -188,16 +201,16 @@ void GaussianCompRayCaster::process() {
     //std::vector<vec4> points;
     //points.assign(ptr->begin(), ptr->end());
     shaderGaussian_.setUniform("numPoints", static_cast<unsigned>(points.size()));
-
+    
     GLuint buffHandle;
     glGenBuffers(1, &buffHandle);  // (Gives me a free buffer name that is not currently in use)
     // size_t bufferSize{points_.getData()->size() * sizeof(vec4)};
     size_t bufferSize{points.size() * sizeof(GaussianOrbital)};
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffHandle);
     glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, points.data(), GL_STATIC_DRAW);
-    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 1, buffHandle, 0, bufferSize);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 1);
-
+    glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 2, buffHandle, 0, bufferSize);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER,2);
+    
     
 
 
@@ -217,11 +230,11 @@ void GaussianCompRayCaster::process() {
     shaderGaussian_.setUniform("cameraUp", cameraUp);
     shaderGaussian_.setUniform("projectionMatrix", pMatrix);
     shaderGaussian_.setUniform("viewMatrix", vMatrix);
-
+    
     shaderGaussian_.setUniform("cameraPos", cameraPos);
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shaderGaussian_, units, isotfComposite_);
-    utilgl::setUniforms(shaderGaussian_, isotfComposite_);
+    utilgl::setUniforms(shaderGaussian_, isotfComposite_,cam_);
     //shaderGaussian_.setUniform("projectionMatrixInv", pMatrixInv);
     //shaderGaussian_.setUniform("viewMatrixInv", vMatrixInv);
 
