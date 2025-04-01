@@ -89,6 +89,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                 util::ordinalSymmetricVector(ivec2(128, 128), 10000)
                     .set(InvalidationLevel::Valid)
                     .set("Position of the canvas on the screen"_help)}
+    , visible_{"visible", "Visible", true, InvalidationLevel::Valid}
     , visibleLayer_{"visibleLayer",
                     "Visible Layer",
                     "Select which image layer that should be shown in the canvas. defaults to "
@@ -178,10 +179,12 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     position_.setSerializationMode(PropertySerializationMode::None);
+    visible_.setSerializationMode(PropertySerializationMode::None);
     fullScreen_.setSerializationMode(PropertySerializationMode::None);
 
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
+    visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
     fullScreen_.onChange([this]() { widgetMetaData_->setFullScreen(fullScreen_.get()); });
 
     enableCustomInputDimensions_.onChange([this]() { sizeChanged(); });
@@ -210,7 +213,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
 
     imageTypeExt_.setSerializationMode(PropertySerializationMode::None);
 
-    addProperties(inputSize_, position_, visibleLayer_, colorLayer_, saveLayerDirectory_,
+    addProperties(inputSize_, position_, visible_, visibleLayer_, colorLayer_, saveLayerDirectory_,
                   imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
                   fullScreenEvent_, saveLayerEvent_, allowContextMenu_, evaluateWhenHidden_);
 
@@ -255,6 +258,10 @@ void CanvasProcessor::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*)
 }
 
 void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+    if (widgetMetaData_->isVisible() != visible_.get()) {
+        Property::OnChangeBlocker blocker{visible_};
+        visible_.set(widgetMetaData_->isVisible());
+    }
     isSink_.update();
     isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);

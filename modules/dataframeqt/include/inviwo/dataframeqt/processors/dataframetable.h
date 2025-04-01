@@ -91,6 +91,7 @@ private:
 
     IntSize2Property dimensions_;
     IntVec2Property position_;
+    BoolProperty visible_;
     BoolProperty showIndexColumn_;
     BoolProperty showCategoryIndices_;
     BoolProperty showFilteredRowCols_;

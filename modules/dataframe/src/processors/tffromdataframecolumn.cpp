@@ -73,7 +73,7 @@ TFFromDataFrameColumn::TFFromDataFrameColumn()
     addPorts(dataFrame_, bnl_);
     addProperties(column_, lock_, tf_, alpha_, delta_, shift_, range_);
 
-    tf_.setReadOnly(true);
+    tf_.setInvalidationLevel(InvalidationLevel::Valid);
 }
 
 void TFFromDataFrameColumn::process() {
