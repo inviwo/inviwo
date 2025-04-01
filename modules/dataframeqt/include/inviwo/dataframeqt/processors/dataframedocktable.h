@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>                          // for Processor
 #include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
 #include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>                    // for IntSize2Property
 #include <inviwo/core/util/glmvec.h>                                   // for size2_t
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
@@ -91,6 +92,9 @@ private:
 
     IntSize2Property dimensions_;
     IntVec2Property position_;
+    BoolProperty visible_;
+    StringProperty parent_;
+
     BoolProperty showIndexColumn_;
     BoolProperty showCategoryIndices_;
     BoolProperty showFilteredRowCols_;

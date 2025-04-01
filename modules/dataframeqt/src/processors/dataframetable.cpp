@@ -80,6 +80,7 @@ DataFrameTable::DataFrameTable()
     , position_("position", "Canvas Position", ivec2(128, 128),
                 ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
                 ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
+    , visible_{"visible", "Visible", true}
     , showIndexColumn_("showIndexColumn", "Show Index Column",
                        "show/hide index column in table"_help, false, InvalidationLevel::Valid)
     , showCategoryIndices_("showCategoryIndices", "Show Category Indices",
@@ -91,15 +92,17 @@ DataFrameTable::DataFrameTable()
 
     addPort(inport_);
     addPort(brushLinkPort_);
-    addProperties(dimensions_, position_, showIndexColumn_, showCategoryIndices_,
+    addProperties(dimensions_, position_, visible_, showIndexColumn_, showCategoryIndices_,
                   showFilteredRowCols_);
 
     // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     position_.setSerializationMode(PropertySerializationMode::None);
+    visible_.setSerializationMode(PropertySerializationMode::None);
 
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
+    visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
 
     showIndexColumn_.onChange([this]() {
         if (auto w = getWidget()) {
@@ -161,6 +164,10 @@ void DataFrameTable::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) 
 }
 
 void DataFrameTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+    if (widgetMetaData_->isVisible() != visible_.get()) {
+        Property::OnChangeBlocker blocker{visible_};
+        visible_.set(widgetMetaData_->isVisible());
+    }
     isSink_.update();
     isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);

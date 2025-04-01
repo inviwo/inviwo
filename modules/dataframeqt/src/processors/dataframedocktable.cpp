@@ -139,7 +139,7 @@ void DataFrameDockTableWidget::brushingUpdate() { tableview_->brushingUpdate(); 
 const ProcessorInfo DataFrameDockTable::processorInfo_{
     "org.inviwo.DataFrameDockTable",  // Class identifier
     "Data Frame Dock Table",          // Display name
-    "Undefined",                      // Category
+    "Data Output",                    // Category
     CodeState::Stable,                // Code state
     Tags::CPU | Tag{"DataFrame"},     // Tags
     "Shows the content of a DataFrame in a tabular view."_help};
@@ -151,11 +151,18 @@ DataFrameDockTable::DataFrameDockTable()
     , inport_("inport", "DataFrame contents to be shown in the processor widget"_help)
     , brushLinkPort_("brushingAndLinking", "Inport for brushing & linking interactions"_help)
 
-    , dimensions_("dimensions", "Canvas Size", size2_t(512, 300), size2_t(1, 1),
-                  size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid)
-    , position_("position", "Canvas Position", ivec2(128, 128),
-                ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
-                ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
+    , dimensions_{"dimensions",          "Canvas Size", size2_t(512, 300),       size2_t(1, 1),
+                  size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid}
+    , position_{"position",
+                "Canvas Position",
+                ivec2(128, 128),
+                ivec2(std::numeric_limits<int>::lowest()),
+                ivec2(std::numeric_limits<int>::max()),
+                ivec2(1, 1),
+                InvalidationLevel::Valid,
+                PropertySemantics::Text}
+    , visible_{"visible", "Visible", true}
+    , parent_{"parent", "Widget Parent", ""}
     , showIndexColumn_("showIndexColumn", "Show Index Column",
                        "show/hide index column in table"_help, false, InvalidationLevel::Valid)
     , showCategoryIndices_("showCategoryIndices", "Show Category Indices",
@@ -167,15 +174,17 @@ DataFrameDockTable::DataFrameDockTable()
 
     addPort(inport_);
     addPort(brushLinkPort_);
-    addProperties(dimensions_, position_, showIndexColumn_, showCategoryIndices_,
+    addProperties(dimensions_, position_, visible_, parent_, showIndexColumn_, showCategoryIndices_,
                   showFilteredRowCols_);
 
     // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     position_.setSerializationMode(PropertySerializationMode::None);
+    visible_.setSerializationMode(PropertySerializationMode::None);
 
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
+    visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
 
     showIndexColumn_.onChange([this]() {
         if (auto w = getWidget()) {
@@ -185,6 +194,21 @@ DataFrameDockTable::DataFrameDockTable()
     showFilteredRowCols_.onChange([this]() {
         if (auto w = getWidget()) {
             w->setFilteredRowsVisible(showFilteredRowCols_);
+        }
+    });
+
+    parent_.onChange([this]() {
+        if (auto* widget = getWidget()) {
+            if (auto* p = getNetwork()->getProcessorByIdentifier(parent_.get())) {
+                if (auto* parent = dynamic_cast<QMainWindow*>(p->getProcessorWidget())) {
+                    widget->setParent(parent);
+                    parent->addDockWidget(Qt::LeftDockWidgetArea, widget);
+                }
+            } else if (auto mw = utilqt::getApplicationMainWindow()) {
+                widget->setParent(mw);
+                mw->addDockWidget(Qt::LeftDockWidgetArea, widget);
+                widget->setFloating(true);
+            }
         }
     });
 }
@@ -237,6 +261,10 @@ void DataFrameDockTable::onProcessorWidgetDimensionChange(ProcessorWidgetMetaDat
 }
 
 void DataFrameDockTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+    if (widgetMetaData_->isVisible() != visible_.get()) {
+        Property::OnChangeBlocker blocker{visible_};
+        visible_.set(widgetMetaData_->isVisible());
+    }
     isSink_.update();
     isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);

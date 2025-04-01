@@ -70,7 +70,7 @@ public:
     void setDimensions(const size2_t& dim, const ProcessorWidgetMetaDataObserver* source = nullptr);
     size2_t getDimensions() const;
 
-    void setVisibile(bool visibility, const ProcessorWidgetMetaDataObserver* source = nullptr);
+    void setVisible(bool visible, const ProcessorWidgetMetaDataObserver* source = nullptr);
     bool isVisible() const;
 
     void setFullScreen(bool fullscreen, const ProcessorWidgetMetaDataObserver* source = nullptr);
@@ -84,7 +84,7 @@ public:
 private:
     ivec2 position_;
     size2_t dimensions_;
-    bool visibility_;
+    bool visible_;
     bool fullScreen_;
     bool onTop_;
 };
