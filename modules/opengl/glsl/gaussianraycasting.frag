@@ -254,6 +254,7 @@ void main() {
     float backgroundDepth = 1;
 #ifdef BACKGROUND_AVAILABLE
     color = texture(bgColor, texCoords);
+
     gl_FragDepth = backgroundDepth = texture(bgDepth, texCoords).x;
     PickingData = texture(bgPicking, texCoords);
 #else // BACKGROUND_AVAILABLE

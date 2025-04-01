@@ -32,13 +32,14 @@
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 #include "utils/sampler3d.glsl"
-
+#include "utils/depth.glsl";
 
 
 
 #define M_PI 3.14159265359
 uniform float sigma = 1;
-writeonly uniform image2D dest;
+layout(binding = 0) writeonly uniform image2D dest;
+layout(binding = 1) writeonly uniform image2D depthdest;
 uniform uint numPoints = 1;
 
 uniform vec3 cameraPos; // Camera position (for example, vec3(0.5, 0.5, -3))
@@ -50,8 +51,20 @@ uniform mat4 viewMatrix;       // View matrix (camera to world transformation)
 uniform mat4 projectionMatrixInv; // Projection matrix (e.g., perspective projection)
 uniform mat4 viewMatrixInv;       // View matrix (camera to world transformation)
 uniform sampler2D transferFunction;
+uniform CameraParameters camera;
 
+
+#define ERT_THRESHOLD 0.99      // threshold for early ray termination
+#define DEPTH_THRESHOLD 0.0001  // threshold for depth value
 layout (local_size_x = 32, local_size_y = 32) in;
+
+struct Color
+{
+    bool isHit;
+    vec4 color;
+    vec4 depth;
+
+};
 
 struct Ray {
     vec3 origin;
@@ -61,9 +74,12 @@ struct Ray {
 struct EntryExit
 {
     bool hit;
+    float entryDepth;
+    float exitDepth;
     vec3 entryPoint;
     vec3 exitPoint;
 
+    
 };
 
 struct Orbital
@@ -75,7 +91,7 @@ struct Orbital
 };
 
 
-layout(std430,set = 0, binding = 1) buffer List
+layout(std430,set = 0, binding = 2) buffer List
 {
     Orbital data[];  // Points data
 };
@@ -87,6 +103,10 @@ vec4 applyTF(sampler2D transferFunction, float density) {
 
 EntryExit intersectRayWithBox(Ray ray) {
     // Bounding box min and max
+    float factor = length(ray.direction);
+    ray.direction = normalize(ray.direction);
+
+
     vec3 boxMin = vec3(0, 0, 0);
     vec3 boxMax = vec3(1.0, 1.0, 1.0);
 
@@ -133,6 +153,8 @@ EntryExit intersectRayWithBox(Ray ray) {
     EntryExit result;
     if (tmax < 0.0 || tmin > tmax) {
         result.hit = false;  // No intersection
+        result.entryDepth = 0;
+        result.exitDepth = 1;
         return result;
     }
 
@@ -140,7 +162,8 @@ EntryExit intersectRayWithBox(Ray ray) {
     result.hit = true;
     result.entryPoint = ray.origin + tmin * ray.direction;
     result.exitPoint = ray.origin + tmax * ray.direction;
-
+    result.entryDepth = calculateDepthValue(camera,tmin/factor,0,1);
+    result.exitDepth = calculateDepthValue(camera,tmax/factor,0,1);
     return result;
 }
 vec3 computeFarPlane(vec2 texCoord)
@@ -204,36 +227,91 @@ float calcDensity(vec3 samplePos)
 
 
 // Ray marching function with simplified color accumulation
-float sampleRay(EntryExit points, int nSteps) {
+Color sampleRay(EntryExit points, int nSteps) {
+    Color result;
+    result.isHit = false;
+    result.color = vec4(0);
+    result.depth = vec4(1);
     
-    
-
-    float density = 0;
     //int depth = imageSize(dest).x;
     vec3 rayDirection = points.exitPoint - points.entryPoint;
     float tEnd = length(rayDirection);
-    
-    
+
+
     float tIncr = tEnd / nSteps;
-    
+
     float t = 0.5f * tIncr;
     rayDirection = normalize(rayDirection);
     float tDepth = -1.0;
-    
-    vec3 samplePos;
 
-    while(t < tEnd)
-    {
+    vec3 samplePos;
+    vec4 accumulated_color = vec4(0.0); // initialize with black (transparent)
+
+    vec4 backgroundColor = vec4(1);
+     
+
+
+    while (t < tEnd) {
+        float bgTDepth = calculateTValueFromDepthValue(
+        camera, t, points.entryDepth, points.exitDepth);
+
+
+         
+        tDepth = calculateDepthValue(camera, t / tEnd, points.entryDepth, points.exitDepth);
+
+        
+        // Calculate the position of the current sample
         samplePos = points.entryPoint + t * rayDirection;
-        density += calcDensity(samplePos);
-        if (density > 0.999999) {
+        
+        // Compute density at the current position
+        float density = calcDensity(samplePos);
+        
+        // Apply the transfer function to get color and alpha
+        vec4 color = applyTF(transferFunction, density * 10.0);
+        float alpha = color.a;
+
+        // Accumulate color using the standard alpha compositing formula
+        accumulated_color = vec4(
+            accumulated_color.r * (1.0 - alpha) + color.r * alpha,
+            accumulated_color.g * (1.0 - alpha) + color.g * alpha,
+            accumulated_color.b * (1.0 - alpha) + color.b * alpha,
+            min(1.0, accumulated_color.w + (1.0 - accumulated_color.w) * alpha) // Clamp alpha
+        );
+
+        result.color = accumulated_color;
+        /*if(accumulated_color.w > 0.0001 && !result.isHit)
+        {
+            result.isHit = true;
+            result.depth = vec4(tDepth);
+            //return vec4(tDepth);
+        }*/
+
+        float isHitCondition = step(DEPTH_THRESHOLD, accumulated_color.w) * float(!result.isHit);
+        result.isHit = result.isHit || (isHitCondition > 0.0);
+        result.depth = mix(result.depth, vec4(tDepth), isHitCondition);
+
+        // Early termination if the accumulated alpha is sufficiently close to 1
+        t = mix(t, tEnd, step(ERT_THRESHOLD, accumulated_color.w));
+        /*
+        if (accumulated_color.w > 0.999) {
             t = tEnd;
         }
+        */
+
+        // Increment t by the step size (tIncr)
+        tDepth +=tIncr;
         t += tIncr;
     }
-    
-    return density;
+
+
+    return result;
 }
+
+
+
+
+
+
 
 void main() {
     ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);   
@@ -249,28 +327,37 @@ void main() {
     vec3 farPlane = computeFarPlane(texCoord2);
     vec3 nearPlane = computeNearPlane(texCoord2);
 
-    vec3 rayDir = normalize(farPlane - nearPlane);
+    vec3 rayDir = farPlane - nearPlane; //normalize(farPlane - nearPlane);
     // Setup ray
     Ray ray;
     ray.origin = nearPlane;
     ray.direction = rayDir;
 
     //vec4 color=vec4(1-texCoord2.y,1-texCoord2.y,1-texCoord2.y,.2);
-    float density = 0;
+    
     EntryExit points = intersectRayWithBox(ray);
+
+    Color result;// = vec4(points.exitDepth);
+    result.color = vec4(0);
+    result.depth = vec4(points.exitDepth);
     if(points.hit)
     {
-        density = sampleRay(points, nSteps);
-        
+        //vec4(calculateDepthValue(camera,0.0,0,1));
+        result = sampleRay(points, nSteps);
+        //color = vec4(points.entryDepth,points.entryDepth,points.entryDepth,1);
     }
-    vec4 color = applyTF(transferFunction,density);
+
+    
+    //vec4 color = applyTF(transferFunction,density);
 
     // Sample the ray for density
     
     
     // Store result
     
-
-
-    imageStore(dest, storePos, color);
+    //vec4 testcolor = vec4(0.2);
+    
+    imageStore(dest, storePos, result.color);
+    //imageStore(depthdest, storePos, vec4(0.5));
+    //imageStore(depthdest,storePos,testcolor);
 }

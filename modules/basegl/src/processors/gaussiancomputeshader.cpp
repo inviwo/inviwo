@@ -108,13 +108,13 @@ void GaussianComputeShader::process() {
     shaderGaussian_.setUniform("dims", ivec3(dims));
     shaderGaussian_.setUniform("groupSize", ivec3(groupSize));
 
-    /* GLuint buffHandle;
+    GLuint buffHandle;
     glGenBuffers(1, &buffHandle);
     size_t bufferSize{points.size() * sizeof(GaussianOrbital)};
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffHandle);
     glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, points.data(), GL_STATIC_DRAW);
     glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 0, buffHandle, 0, bufferSize);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);*/
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
     uvec3 numWorkGroups{(uvec3(dims) + uvec3(groupSize) - uvec3(1)) /
                         uvec3(groupSize)};  // Divide by work group size (e.g., 4)
@@ -146,9 +146,13 @@ void GaussianComputeShader::process() {
     
     //auto minmax = util::dataMinMax(data, glm::compMul(dimensions), IgnoreSpecialValues::Yes);
     mat3 basis(1);
-    vol->dataMap.dataRange = dvec2 { 0.0, minmax.second.x };
-    vol->dataMap.valueRange = dvec2{0.0, minmax.second.x};
+    /* vol->dataMap.dataRange = dvec2{0.0, minmax.second.x};
+    vol->dataMap.valueRange = dvec2{0.0, minmax.second.x};*/
     vol->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
+
+    vol->dataMap.dataRange.x = glm::compMin(minmax.first);
+    vol->dataMap.dataRange.y = glm::compMax(minmax.second);
+    vol->dataMap.valueRange = vol->dataMap.dataRange;
     outport_.setData(vol);
 }
 
