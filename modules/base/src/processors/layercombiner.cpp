@@ -75,7 +75,8 @@ LayerCombiner::LayerCombiner()
                          "using the data ranges of their corresponding input volumes. Otherwise, "
                          "the Data Range of the first input volume is used."_help,
                          false}
-    , dataRange_{"dataRange", "Data Range", source_[0], true} {
+    , dataRange_{"dataRange", "Data Range", source_[0], true}
+    , valueAxis_{"valueAxis", "Value Axis", source_[0], true} {
 
     addPorts(source_[0], source_[1], source_[2], source_[3], outport_);
     for (auto& port : std::span(source_.begin() + 1, 3)) {
@@ -83,7 +84,7 @@ LayerCombiner::LayerCombiner()
     }
 
     addProperties(channel_[0], channel_[1], channel_[2], channel_[3], normalizeChannels_,
-                  dataRange_);
+                  dataRange_, valueAxis_);
 }
 
 void LayerCombiner::process() {
@@ -96,6 +97,8 @@ void LayerCombiner::process() {
             source_, {{channel_[0], channel_[1], channel_[2], channel_[3]}});
         layer->dataMap.dataRange = dataRange_.getDataRange();
         layer->dataMap.valueRange = dataRange_.getValueRange();
+        layer->dataMap.valueAxis.name = valueAxis_.getValueName();
+        layer->dataMap.valueAxis.unit = valueAxis_.getValueUnit();
     }
 
     outport_.setData(layer);
