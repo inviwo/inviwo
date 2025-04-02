@@ -129,7 +129,7 @@ protected:
 template <typename DataType>
 struct ReaderWriter {
     explicit ReaderWriter(InviwoApplication* app)
-        : extensions{"readerWriter", "Data Reader And Writer"}
+        : extensions{"readerWriter", "Reader/Writer"}
         , rf{app->getDataReaderFactory()}
         , wf{app->getDataWriterFactory()} {
 
@@ -158,16 +158,22 @@ private:
 };
 
 template <typename DataType>
-struct RamCache {
-    RamCache()
-        : size{"size", "Max items to cache in RAM", util::ordinalCount(size_t{0}, size_t{100})} {}
+struct RAMCache {
+    RAMCache()
+        : capacity{"capacity", "RAM Cache Capacity",
+                   util::ordinalCount(size_t{3}, size_t{100})
+                       .set("Max number of items to cache, "
+                            "0 means that no ram caching will be used"_help)} {
+
+        capacity.onChange([this]() { trim(capacity); });
+    }
 
     struct Item {
         std::chrono::system_clock::time_point used;
         DataType data;
     };
 
-    IntSizeTProperty size;
+    IntSizeTProperty capacity;
     UnorderedStringMap<Item> cache;
 
     void trim(size_t maxSize) {
@@ -179,9 +185,12 @@ struct RamCache {
     }
 
     void add(std::string_view key, DataType data) {
-        if (size.get() == 0) return;
+        if (capacity.get() == 0) {
+            cache.clear();
+            return;
+        }
 
-        trim(size.get() - 1);
+        trim(capacity.get() - 1);
 
         const auto now = std::chrono::system_clock::now();
         cache.try_emplace(std::string{key}, Item{now, std::move(data)});
@@ -232,7 +241,7 @@ private:
     InportType inport_;
     OutportType outport_;
     ReaderWriter<DataType> rw_;
-    RamCache<std::shared_ptr<const DataType>> ram_;
+    RAMCache<std::shared_ptr<const DataType>> ram_;
 
     std::string loadedKey_;
 };
@@ -268,7 +277,7 @@ FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
     , ram_{} {
 
     addPorts(inport_, outport_);
-    addProperties(enabled_, cacheDir_, refDir_, currentKey_, rw_.extensions, ram_.size);
+    addProperties(enabled_, cacheDir_, refDir_, currentKey_, rw_.extensions, ram_.capacity);
 }
 
 template <typename DataType, typename InportType, typename OutportType>
@@ -304,7 +313,7 @@ void FileCache<DataType, InportType, OutportType>::process() {
         outport_.setData(data);
         loadedKey_ = key_;
     } else {
-        throw Exception("Port had no data");
+        throw Exception("Port has no data");
     }
 }
 

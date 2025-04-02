@@ -55,7 +55,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
     std::ranges::sort(processors, std::less<>{},
                       [](const Processor* p) { return p->getIdentifier(); });
 
-    // Skip the cache processor it self.
+    // Skip the caching processor it self.
     std::erase(processors, processor);
 
     Serializer s{refPath, SerializeConstants::InviwoWorkspace, &mbr};
@@ -67,8 +67,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
         nested.serialize("Processor", *item);
     });
 
-
-    // We want to serialize the connection the cacheProcessor;
+    // We want to serialize the connection to the cacheProcessor;
     processors.push_back(processor);
 
     s.serializeRange(
@@ -161,10 +160,10 @@ CacheBase::CacheBase(InviwoApplication* app)
     , enabled_{"enabled", "Enabled", "Toggles the usage of the file cache"_help, true}
     , cacheDir_{"cacheDir", "Cache Dir",
                 "Directory to save cached dataset too. "
-                "You might want to manually clear it regularly to save space"_help,
+                "You need to manually clear it regularly to save space"_help,
                 filesystem::getPath(PathType::Cache)}
     , refDir_{"refDir", "Reference Dir",
-              "Any paths are hashed relative to this path,"
+              "Any paths are hashed relative to this path, "
               "instead of the absolute path, if set"_help}
     , currentKey_{"key", "Hashed State", "", InvalidationLevel::Valid} {
 
