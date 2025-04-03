@@ -54,7 +54,8 @@ struct fmt::formatter<std::filesystem::file_time_type, char> {
     template <class FmtContext>
     constexpr FmtContext::iterator format(std::filesystem::file_time_type time,
                                           FmtContext& ctx) const {
-        return formatter.format(std::filesystem::file_time_type::clock::to_sys(time), ctx);
+        const auto systime = std::chrono::clock_cast<std::chrono::system_clock>(time);
+        return formatter.format(systime, ctx);
     }
 };
 
