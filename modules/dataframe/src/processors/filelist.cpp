@@ -54,7 +54,11 @@ struct fmt::formatter<std::filesystem::file_time_type, char> {
     template <class FmtContext>
     constexpr FmtContext::iterator format(std::filesystem::file_time_type time,
                                           FmtContext& ctx) const {
+#ifdef WIN32
         const auto systime = std::chrono::clock_cast<std::chrono::system_clock>(time);
+#else
+        const auto systime = std::filesystem::file_time_type::clock::to_sys(time);
+#endif
         return formatter.format(systime, ctx);
     }
 };
@@ -100,13 +104,13 @@ FileList::FileList()
     highlight_.setReadOnly(true);
 
     bnlOutport_.getManager().setParent(&bnlInport_.getManager());
-    bnlOutport_.getManager().onBrush([this](BrushingAction action, BrushingTarget target,
+    bnlOutport_.getManager().onBrush([this](BrushingAction action, const BrushingTarget& target,
                                             const BitSet& indices, std::string_view source) {
         if (action == BrushingAction::Select && target == BrushingTarget::Row) {
             if (files_.empty() || indices.empty()) {
                 selected_.set("");
             } else {
-                Property::OnChangeBlocker block{selectedIndex_};
+                const Property::OnChangeBlocker block{selectedIndex_};
                 selectedIndex_.set(indices.min());
                 selected_.set(files_[std::min(files_.size() - 1, size_t{indices.min()})].path());
             }
@@ -114,7 +118,7 @@ FileList::FileList()
             if (files_.empty() || indices.empty()) {
                 highlight_.set("");
             } else {
-                Property::OnChangeBlocker block{highlightIndex_};
+                const Property::OnChangeBlocker block{highlightIndex_};
                 highlightIndex_.set(indices.min());
                 highlight_.set(files_[std::min(files_.size() - 1, size_t{indices.min()})].path());
             }
@@ -140,7 +144,7 @@ void FileList::cycleFiles() {
             log::info("Loading: {} {:?g}", i, files_[i].path());
             selectedIndex_.set(i);
 
-            do {
+            do {  // NOLINT
                 app->processFront();
                 app->processEvents();
             } while (net->runningBackgroundJobs() > 0);
@@ -149,7 +153,6 @@ void FileList::cycleFiles() {
 }
 
 void FileList::process() {
-
     std::optional<std::regex> regex;
     if (!filter_.get().empty()) {
         regex.emplace(filter_.get());

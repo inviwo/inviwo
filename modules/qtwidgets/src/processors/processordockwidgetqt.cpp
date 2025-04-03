@@ -62,8 +62,6 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
         setWindowTitle(utilqt::toQString(newName));
     })} {
 
-    setDimensions(ivec2(200, 150));
-
     const ivec2 dim = ProcessorWidget::getDimensions();
     const ivec2 pos = ProcessorWidget::getPosition();
 
@@ -78,7 +76,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
-            util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+            const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
             // file.
@@ -96,7 +94,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
         //
         // Otherwise, a spontaneous event will be triggered which will set the widget
         // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
-        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
         InviwoDockWidget::setVisible(true);
         InviwoDockWidget::resize(dim.x, dim.y);
         InviwoDockWidget::setVisible(false);
@@ -105,7 +103,7 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
         // ignore internal state updates, i.e. position, when showing the widget
         // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the
         // decoration offset, i.e. the "adjusted" position.
-        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
         InviwoDockWidget::setVisible(ProcessorWidget::isVisible());
     }
 
@@ -129,7 +127,7 @@ void ProcessorDockWidgetQt::resizeEvent(QResizeEvent* event) {
     if (ignoreEvents_) return;
 
     InviwoDockWidget::resizeEvent(event);
-    util::KeepTrueWhileInScope ignore(&resizeOngoing_);
+    const util::KeepTrueWhileInScope ignore(&resizeOngoing_);
     ProcessorWidget::setDimensions(utilqt::toGLM(event->size()));
 }
 
@@ -152,16 +150,16 @@ void ProcessorDockWidgetQt::hideEvent(QHideEvent* event) {
 }
 
 void ProcessorDockWidgetQt::updateVisible(bool visible) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     InviwoDockWidget::setVisible(visible);
 }
 void ProcessorDockWidgetQt::updateDimensions(ivec2 dim) {
     if (resizeOngoing_) return;
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     InviwoDockWidget::move(dim.x, dim.y);
 }
 void ProcessorDockWidgetQt::updatePosition(ivec2 pos) {
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+    const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     InviwoDockWidget::move(pos.x, pos.y);
 }
 

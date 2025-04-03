@@ -78,7 +78,6 @@ TFFromDataFrameColumn::TFFromDataFrameColumn()
 
 void TFFromDataFrameColumn::process() {
     if (!lock_.get()) {
-
         auto df = dataFrame_.getData();
         column_.setOptions(*df);
 
@@ -87,8 +86,9 @@ void TFFromDataFrameColumn::process() {
         const auto range = col->getRange();
         range_.set(range);
 
-        pos_.assign_range(bnl_.getSelectedIndices() |
-                          std::views::transform([&](auto i) { return col->getAsDouble(i); }));
+        auto newPos = bnl_.getSelectedIndices() |
+                      std::views::transform([&](auto i) { return col->getAsDouble(i); });
+        pos_.assign(std::begin(newPos), std::end(newPos));
     }
 
     static constexpr auto clamp = [](double pos) { return std::clamp(pos, 0.0, 1.0); };

@@ -151,21 +151,21 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
 
 void DataFrameTable::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
-        Property::OnChangeBlocker blocker{position_};
+        const Property::OnChangeBlocker blocker{position_};
         position_.set(widgetMetaData_->getPosition());
     }
 }
 
 void DataFrameTable::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getDimensions() != dimensions_.get()) {
-        Property::OnChangeBlocker blocker{dimensions_};
+        const Property::OnChangeBlocker blocker{dimensions_};
         dimensions_.set(widgetMetaData_->getDimensions());
     }
 }
 
 void DataFrameTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->isVisible() != visible_.get()) {
-        Property::OnChangeBlocker blocker{visible_};
+        const Property::OnChangeBlocker blocker{visible_};
         visible_.set(widgetMetaData_->isVisible());
     }
     isSink_.update();
@@ -174,7 +174,7 @@ void DataFrameTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*)
 }
 
 DataFrameTableProcessorWidget* DataFrameTable::getWidget() const {
-    if (auto widget = static_cast<DataFrameTableProcessorWidget*>(processorWidget_.get())) {
+    if (auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget_.get())) {
         return widget;
     } else {
         return nullptr;
@@ -182,7 +182,7 @@ DataFrameTableProcessorWidget* DataFrameTable::getWidget() const {
 }
 
 void DataFrameTable::setWidgetSize(size2_t dim) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     dimensions_.set(dim);
 }
 
