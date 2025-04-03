@@ -43,14 +43,17 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/timer.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <vector>
 
 namespace inviwo {
 
@@ -67,6 +70,7 @@ class PickingEvent;
 class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor {
 public:
     enum class Interaction { HorizontalRotation, VerticalRotation, FreeRotation, Roll, Zoom, None };
+    enum class AnimationType { Yaw, Pitch, Roll };
 
     CameraWidget();
     ~CameraWidget();
@@ -79,6 +83,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    using ms = typename Timer::Milliseconds;
     void updateWidgetTexture(const ivec2& widgetSize);
     void drawWidgetTexture();
 
@@ -101,6 +106,8 @@ private:
     vec3 getObjectRotationAxis(const vec3& rotAxis) const;
 
     std::vector<ButtonGroupProperty::Button> buttons();
+
+    void animate();
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -127,6 +134,11 @@ private:
     FloatVec4Property userColor_;
     FloatVec4Property cubeColor_;
 
+    BoolCompositeProperty animate_;
+    IntProperty fps_;
+    OptionProperty<AnimationType> type_;
+    BoolProperty direction_;
+
     CompositeProperty outputProps_;
     CameraProperty camera_;
     FloatMat4Property rotMatrix_;
@@ -139,6 +151,7 @@ private:
     Shader shader_;
     Shader cubeShader_;
     Shader overlayShader_;
+
 
     // number of available interaction elements. Each interaction widget has two trigger areas to
     // distinguish the direction of rotation when clicked
@@ -182,6 +195,8 @@ private:
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
+
+    Timer timer_;
 };
 
 }  // namespace inviwo
