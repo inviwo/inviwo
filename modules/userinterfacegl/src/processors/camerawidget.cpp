@@ -38,42 +38,44 @@
 #include <inviwo/core/datastructures/image/image.h>               // for Image
 #include <inviwo/core/datastructures/image/imagetypes.h>          // for ImageType, ImageType::C...
 #include <inviwo/core/interaction/events/pickingevent.h>          // for PickingEvent
-#include <inviwo/core/interaction/pickingmapper.h>                // for PickingMapper
-#include <inviwo/core/interaction/pickingstate.h>                 // for PickingPressItem, Picki...
-#include <inviwo/core/io/datareader.h>                            // for DataReaderType
-#include <inviwo/core/io/datareaderfactory.h>                     // for DataReaderFactory
-#include <inviwo/core/network/processornetwork.h>                 // for ProcessorNetwork
-#include <inviwo/core/ports/imageport.h>                          // for ImageInport, ImageOutport
-#include <inviwo/core/processors/processor.h>                     // for Processor
-#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                // for CodeState, CodeState::E...
-#include <inviwo/core/processors/processortags.h>                 // for Tags
-#include <inviwo/core/properties/boolcompositeproperty.h>         // for BoolCompositeProperty
-#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
-#include <inviwo/core/properties/cameraproperty.h>                // for CameraProperty
-#include <inviwo/core/properties/compositeproperty.h>             // for CompositeProperty
-#include <inviwo/core/properties/constraintbehavior.h>            // for ConstraintBehavior, Con...
-#include <inviwo/core/properties/invalidationlevel.h>             // for InvalidationLevel, Inva...
-#include <inviwo/core/properties/ordinalproperty.h>               // for ordinalColor, FloatProp...
-#include <inviwo/core/properties/simplelightingproperty.h>        // for SimpleLightingProperty
-#include <inviwo/core/util/exception.h>                           // for Exception
-#include <inviwo/core/util/glm.h>                                 // for filled
-#include <inviwo/core/util/glmmat.h>                              // for mat4, mat3
-#include <inviwo/core/util/glmvec.h>                              // for vec3, vec2, dvec2, vec4
-#include <inviwo/core/util/logcentral.h>                          // for LogVerbosity, LogVerbos...
-#include <inviwo/core/util/sourcecontext.h>                       // for SourceContext
-#include <modules/base/algorithm/meshutils.h>                     // for cube
-#include <modules/opengl/image/imagegl.h>                         // for ImageGL
-#include <modules/opengl/image/layergl.h>                         // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                          // for GL_ALWAYS, GL_DEPTH_TEST
-#include <modules/opengl/openglutils.h>                           // for BlendModeState, DepthFu...
-#include <modules/opengl/rendering/meshdrawergl.h>                // for MeshDrawerGL
-#include <modules/opengl/shader/shader.h>                         // for Shader, Shader::Build
-#include <modules/opengl/shader/shaderobject.h>                   // for ShaderObject
-#include <modules/opengl/shader/shaderutils.h>                    // for setShaderUniforms, addS...
-#include <modules/opengl/texture/textureunit.h>                   // for TextureUnit
-#include <modules/opengl/texture/textureutils.h>                  // for activateAndClearTarget
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/pickingmapper.h>          // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>           // for PickingPressItem, Picki...
+#include <inviwo/core/io/datareader.h>                      // for DataReaderType
+#include <inviwo/core/io/datareaderfactory.h>               // for DataReaderFactory
+#include <inviwo/core/network/processornetwork.h>           // for ProcessorNetwork
+#include <inviwo/core/ports/imageport.h>                    // for ImageInport, ImageOutport
+#include <inviwo/core/processors/processor.h>               // for Processor
+#include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>          // for CodeState, CodeState::E...
+#include <inviwo/core/processors/processortags.h>           // for Tags
+#include <inviwo/core/properties/boolcompositeproperty.h>   // for BoolCompositeProperty
+#include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>          // for ButtonProperty
+#include <inviwo/core/properties/cameraproperty.h>          // for CameraProperty
+#include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
+#include <inviwo/core/properties/constraintbehavior.h>      // for ConstraintBehavior, Con...
+#include <inviwo/core/properties/invalidationlevel.h>       // for InvalidationLevel, Inva...
+#include <inviwo/core/properties/ordinalproperty.h>         // for ordinalColor, FloatProp...
+#include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
+#include <inviwo/core/util/exception.h>                     // for Exception
+#include <inviwo/core/util/glm.h>                           // for filled
+#include <inviwo/core/util/glmmat.h>                        // for mat4, mat3
+#include <inviwo/core/util/glmvec.h>                        // for vec3, vec2, dvec2, vec4
+#include <inviwo/core/util/logcentral.h>                    // for LogVerbosity, LogVerbos...
+#include <inviwo/core/util/sourcecontext.h>                 // for SourceContext
+#include <inviwo/core/util/zip.h>
+#include <modules/base/algorithm/meshutils.h>       // for cube
+#include <modules/opengl/image/imagegl.h>           // for ImageGL
+#include <modules/opengl/image/layergl.h>           // for LayerGL
+#include <modules/opengl/inviwoopengl.h>            // for GL_ALWAYS, GL_DEPTH_TEST
+#include <modules/opengl/openglutils.h>             // for BlendModeState, DepthFu...
+#include <modules/opengl/rendering/meshdrawergl.h>  // for MeshDrawerGL
+#include <modules/opengl/shader/shader.h>           // for Shader, Shader::Build
+#include <modules/opengl/shader/shaderobject.h>     // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>      // for setShaderUniforms, addS...
+#include <modules/opengl/texture/textureunit.h>     // for TextureUnit
+#include <modules/opengl/texture/textureutils.h>    // for activateAndClearTarget
 
 #include <algorithm>    // for max
 #include <cmath>        // for tan
@@ -85,6 +87,7 @@
 #include <type_traits>  // for enable_if<>::type
 #include <typeinfo>     // for bad_cast
 #include <vector>       // for vector, vector<>::value...
+#include <cmath>
 
 #include <flags/flags.h>                 // for operator&, flags
 #include <fmt/core.h>                    // for format
@@ -94,12 +97,13 @@
 #include <glm/geometric.hpp>             // for normalize, cross, length
 #include <glm/gtc/matrix_inverse.hpp>    // for inverseTranspose
 #include <glm/gtx/transform.hpp>         // for rotate, scale
-#include <glm/mat3x3.hpp>                // for operator*, mat
-#include <glm/mat4x4.hpp>                // for mat, operator+, operator*
-#include <glm/trigonometric.hpp>         // for radians
-#include <glm/vec2.hpp>                  // for operator*, vec<>::(anon...
-#include <glm/vec3.hpp>                  // for operator*, vec<>::(anon...
-#include <glm/vec4.hpp>                  // for operator*, operator+
+#include <glm/gtx/easing.hpp>
+#include <glm/mat3x3.hpp>         // for operator*, mat
+#include <glm/mat4x4.hpp>         // for mat, operator+, operator*
+#include <glm/trigonometric.hpp>  // for radians
+#include <glm/vec2.hpp>           // for operator*, vec<>::(anon...
+#include <glm/vec3.hpp>           // for operator*, vec<>::(anon...
+#include <glm/vec4.hpp>           // for operator*, operator+
 
 namespace inviwo {
 
@@ -130,7 +134,7 @@ CameraWidget::CameraWidget()
                "Enables mouse and touch interactions with the widget"_help, true)
     , invertDirections_("invertDirections", "Invert Directions",
                         "Inverts the rotation directions"_help, false, InvalidationLevel::Valid)
-    , useObjectRotAxis_("useObjectRotationAxis", "Use Vertical Object Axis for Rotation", false)
+    , useObjectRotAxis_("useObjectRotationAxis", "Use Closest Object Axis for Rotation", false)
     , showRollWidget_("showRollWidget", "Camera Roll",
                       "Shows an additional widget for rolling the camera"_help, true)
     , showDollyWidget_("showDolly", "Camera Dolly",
@@ -197,14 +201,13 @@ CameraWidget::CameraWidget()
                         },
                         nullptr)
 
-    , picking_(this, numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
+    , picking_(this, widgets_.size(), [&](PickingEvent* p) { objectPicked(p); })
     , shader_("widgetrenderer.vert", "geometryrendering.frag", Shader::Build::No)
     , cubeShader_("geometryrendering.vert", "geometryrendering.frag", Shader::Build::No)
     , overlayShader_("img_identity.vert", "widgettexture.frag")
-    , isMouseBeingPressedAndHold_(false)
-    , mouseWasMoved_(false)
-    , currentPickingID_(-1)
-    , widgetImageGL_{nullptr} {
+    , pickingState_{}
+    , widgetImageGL_{nullptr}
+    , animate_{*this} {
 
     addPort(inport_).setOptional(true);
     addPort(outport_);
@@ -217,6 +220,7 @@ CameraWidget::CameraWidget()
     customColorComposite_.addProperties(axisColoring_, userColor_);
     appearance_.addProperties(position_, anchorPos_, scaling_, showCube_, cubeColor_,
                               customColorComposite_);
+
     // output properties
     camera_.setCollapsed(true);
     outputProps_.addProperties(camera_, rotMatrix_);
@@ -226,23 +230,14 @@ CameraWidget::CameraWidget()
     lightingProperty_.setCollapsed(true);
     internalProps_.addProperty(lightingProperty_);
 
-    addProperties(cameraActions_, visible_, settings_, appearance_, outputProps_, internalProps_);
+    addProperties(cameraActions_, visible_, settings_, appearance_, animate_.props, outputProps_,
+                  internalProps_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     cubeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     camera_.setHelp("Camera affected by the widget interaction"_help);
-
-    // update internal picking IDs. The mesh consists of 5 elements, each of them has a clockwise
-    // and a counter clockwise / zoom in and zoom out part.
-    std::array<Interaction, 5> dir = {Interaction::HorizontalRotation,
-                                      Interaction::VerticalRotation, Interaction::FreeRotation,
-                                      Interaction::Roll, Interaction::Zoom};
-
-    for (int i = 0; i < numInteractionWidgets; ++i) {
-        pickingIDs_[i] = {picking_.getPickingId(i), dir[i / 2], ((i % 2) == 0)};
-    }
 }
 
 CameraWidget::~CameraWidget() = default;
@@ -270,7 +265,6 @@ void CameraWidget::process() {
     if (visible_) {
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
         drawWidgetTexture();
     }
 
@@ -290,14 +284,14 @@ void CameraWidget::initializeResources() {
     cubeShader_.getVertexShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     cubeShader_.build();
 
-    // initialize shader uniform containing all picking colors, the mesh will fetch the appropriate
-    // one using the object ID stored in the second texture coordinate set
-    shader_.activate();
-    std::vector<vec3> colors;
-    colors.resize(numInteractionWidgets);
-    // fill vector with picking colors
-    for (int i = 0; i < numInteractionWidgets; ++i) {
-        colors[i] = picking_.getColor(i);
+    // initialize shader uniform containing all picking colors, the mesh will fetch the
+    // appropriate one using the object ID stored in the second texture coordinate set¨
+    const utilgl::Activate as{&shader_};
+
+    // fill array with picking colors
+    std::array<vec3, widgets_.size()> colors;
+    for (auto&& [i, color] : util::enumerate(colors)) {
+        color = picking_.getColor(i);
     }
     shader_.setUniform("pickColors", colors);
 
@@ -307,8 +301,6 @@ void CameraWidget::initializeResources() {
                                  vec4(vec3(0.5f), 1.0f), vec4(0.4f, 0.5f, 0.8f, 1.0f),
                                  vec4(vec3(0.5f), 1.0f)};
     shader_.setUniform("meshColors_", color);
-
-    shader_.deactivate();
 }
 
 std::tuple<std::unique_ptr<Image>, ImageGL*> CameraWidget::createWidgetImage(
@@ -327,7 +319,7 @@ void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
     widgetImageGL_->activateBuffer(ImageType::ColorDepthPicking);
     utilgl::clearCurrentTarget();
 
-    shader_.activate();
+    const utilgl::Activate as{&shader_};
 
     utilgl::setShaderUniforms(shader_, internalCamera_, "camera");
     utilgl::setShaderUniforms(shader_, lightingProperty_, "lighting");
@@ -352,8 +344,8 @@ void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
 
         // apply custom transformation
         mat4 worldMatrix(camera_.viewMatrix());
-        // consider only the camera rotation and overwrite the translation by moving the cube back a
-        // bit
+        // consider only the camera rotation and overwrite the translation by moving the cube
+        // back a bit
         worldMatrix[3] = vec4(0.0f, 0.0f, -8.0f, 1.0f);
         mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
@@ -384,28 +376,29 @@ void CameraWidget::drawWidgetTexture() {
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
     TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
-    overlayShader_.activate();
+    const utilgl::Activate as{&overlayShader_};
+
     overlayShader_.setUniform("color_", colorTexUnit);
     overlayShader_.setUniform("depth_", depthTexUnit);
     overlayShader_.setUniform("picking_", pickingTexUnit);
 
-    if (auto layer = widgetImageGL_->getColorLayerGL()) {
+    if (auto* layer = widgetImageGL_->getColorLayerGL()) {
         layer->bindTexture(colorTexUnit);
     }
-    if (auto layer = widgetImageGL_->getDepthLayerGL()) {
+    if (auto* layer = widgetImageGL_->getDepthLayerGL()) {
         layer->bindTexture(depthTexUnit);
     }
-    if (auto layer = widgetImageGL_->getPickingLayerGL()) {
+    if (auto* layer = widgetImageGL_->getPickingLayerGL()) {
         layer->bindTexture(pickingTexUnit);
     }
     utilgl::singleDrawImagePlaneRect();
-
-    overlayShader_.deactivate();
 }
 
-void CameraWidget::objectPicked(PickingEvent* e) {
+void CameraWidget::objectPicked(PickingEvent* e) { pickingState_.objectPicked(e, *this); }
+
+void CameraWidget::Picking::objectPicked(PickingEvent* e, CameraWidget& cameraWidget) {
     const auto pickedID = static_cast<int>(e->getPickedId());
-    if (pickedID >= static_cast<int>(pickingIDs_.size())) {
+    if (pickedID >= static_cast<int>(widgets_.size())) {
         return;
     }
 
@@ -416,71 +409,65 @@ void CameraWidget::objectPicked(PickingEvent* e) {
         if (e->getPressState() == PickingPressState::Press &&
             e->getPressItem() & PickingPressItem::Primary) {
             // initial activation with button press
-            isMouseBeingPressedAndHold_ = true;
-            mouseWasMoved_ = false;
-            currentPickingID_ = static_cast<int>(e->getPickedId());
-            saveInitialCameraState();
+            isMouseBeingPressedAndHold = true;
+            mouseWasMoved = false;
+            currentPickingID = static_cast<int>(e->getPickedId());
+            cameraWidget.initialState_ = cameraState(cameraWidget.camera_);
         } else if (e->getPressState() == PickingPressState::Move &&
                    e->getPressItems() & PickingPressItem::Primary) {
             // check whether mouse has been moved for more than 1 pixel
-            if (!mouseWasMoved_) {
+            if (!mouseWasMoved) {
                 const dvec2 delta(e->getDeltaPressedPosition() * dvec2(e->getCanvasSize()));
                 const double squaredDist = delta.x * delta.x + delta.y * delta.y;
-                mouseWasMoved_ = (squaredDist > 1.0);
+                mouseWasMoved = (squaredDist > 1.0);
             }
             triggerMoveEvent = true;
         } else if (e->getPressState() == PickingPressState::Release &&
                    e->getPressItem() & PickingPressItem::Primary) {
             triggerSingleEvent =
-                (isMouseBeingPressedAndHold_ && (currentPickingID_ >= 0) && !mouseWasMoved_);
-            isMouseBeingPressedAndHold_ = false;
-            if (currentPickingID_ >= 0) {
-                currentPickingID_ = -1;
-                invalidate(InvalidationLevel::InvalidOutput);
+                (isMouseBeingPressedAndHold && (currentPickingID >= 0) && !mouseWasMoved);
+            isMouseBeingPressedAndHold = false;
+            if (currentPickingID >= 0) {
+                currentPickingID = -1;
+                cameraWidget.invalidate(InvalidationLevel::InvalidOutput);
             }
         }
         e->markAsUsed();
     }
 
     if (triggerMoveEvent) {
-        interaction(pickingIDs_[currentPickingID_].dir,
-                    e->getDeltaPosition() * dvec2(e->getCanvasSize()));
-
+        cameraWidget.dragInteraction(widgets_[currentPickingID].dir,
+                                     e->getDeltaPosition() * dvec2(e->getCanvasSize()));
     } else if (triggerSingleEvent) {
-        singleStepInteraction(pickingIDs_[pickedID].dir, pickingIDs_[pickedID].clockwise);
+        cameraWidget.stepInteraction(widgets_[pickedID].dir, widgets_[pickedID].clockwise);
     }
 }
 
-void CameraWidget::saveInitialCameraState() {
+void CameraWidget::invokeEvent(Event* event) {
+    animate_.invokeEvent(event);
+    Processor::invokeEvent(event);
+}
+
+CameraWidget::CameraState CameraWidget::cameraState(const Camera& cam) {
     // save current camera vectors (direction, up, and right) to be able to do absolute
     // rotations
-    auto& cam = camera_.get();
-    vec3 camDir(glm::normalize(cam.getDirection()));
-    vec3 camUp(glm::normalize(cam.getLookUp()));
-    vec3 camRight(glm::cross(camDir, camUp));
-    // make sure, up is orthogonal to both, dir and right
-    camUp = glm::cross(camRight, camDir);
-    // update camera
-    camera_.setLookUp(camUp);
+    const vec3 camDir = glm::normalize(cam.getDirection());
+    const vec3 camUp = glm::normalize(cam.getLookUp());
+    const vec3 camRight = glm::cross(camDir, camUp);
 
-    initialState_.camDir = camDir;
-    initialState_.camUp = camUp;
-    initialState_.camRight = camRight;
-    try {
-        auto& perspCam = dynamic_cast<PerspectiveCamera&>(cam);
-        double fovy = perspCam.getFovy();
-        initialState_.zoom_ = 1.0 / std::tan(fovy * glm::pi<double>() / 360.0);
-    } catch (std::bad_cast&) {
-        // camera is not a PerspectiveCamera
-        initialState_.zoom_ = 1.0;
+    double zoom = 1.0;
+    if (auto* perspCam = dynamic_cast<const PerspectiveCamera*>(&cam)) {
+        double fovy = perspCam->getFovy();
+        zoom = 1.0 / std::tan(fovy * glm::pi<double>() / 360.0);
     }
+    return {.dir = camDir, .up = camUp, .right = camRight, .zoom = zoom};
 }
 
 void CameraWidget::loadMesh() {
     auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
-        auto app = getInviwoApplication();
-        auto module = app->getModuleByIdentifier("UserInterfaceGL");
-        if (!module) {
+        auto* app = getInviwoApplication();
+        auto* uiModule = app->getModuleByIdentifier("UserInterfaceGL");
+        if (!uiModule) {
             throw Exception("Could not locate module 'UserInterfaceGL'");
         }
 
@@ -491,7 +478,7 @@ void CameraWidget::loadMesh() {
         reader->setOption("FixInvalidData", false);
         reader->setOption("LogLevel", LogVerbosity::Error);
 
-        return reader->readData(module->getPath(ModulePath::Data) / "meshes" / file);
+        return reader->readData(uiModule->getPath(ModulePath::Data) / "meshes" / file);
     };
 
     auto cache = [](std::weak_ptr<const Mesh>& cache, auto func,
@@ -528,16 +515,22 @@ void CameraWidget::loadMesh() {
     }
 }
 
-void CameraWidget::interaction(Interaction dir, dvec2 mouseDelta) {
+void CameraWidget::dragInteraction(Interaction dir, dvec2 mouseDelta) {
     switch (dir) {
-        case Interaction::HorizontalRotation:
-        case Interaction::VerticalRotation:
-        case Interaction::FreeRotation:
+        case Interaction::Yaw:
+            axisRotation(RotationAxis::Yaw, mouseDelta);
+            break;
+        case Interaction::Pitch:
+            axisRotation(RotationAxis::Pitch, mouseDelta);
+            break;
         case Interaction::Roll:
-            rotation(dir, mouseDelta);
+            axisRotation(RotationAxis::Roll, mouseDelta);
+            break;
+        case Interaction::FreeRotation:
+            freeRotation(mouseDelta);
             break;
         case Interaction::Zoom:
-            zoom(mouseDelta);
+            dragZoom(mouseDelta);
             break;
         case Interaction::None:
         default:
@@ -545,123 +538,90 @@ void CameraWidget::interaction(Interaction dir, dvec2 mouseDelta) {
     }
 }
 
-void CameraWidget::singleStepInteraction(Interaction dir, bool clockwise) {
+void CameraWidget::stepInteraction(Interaction dir, bool clockwise) {
     switch (dir) {
-        case Interaction::HorizontalRotation:
-        case Interaction::VerticalRotation:
-        case Interaction::FreeRotation:
+        case Interaction::Yaw:
+            stepRotation(RotationAxis::Yaw, clockwise);
+            break;
+        case Interaction::Pitch:
+            stepRotation(RotationAxis::Pitch, clockwise);
+            break;
         case Interaction::Roll:
-            saveInitialCameraState();
-            singleStepRotation(dir, clockwise);
+            stepRotation(RotationAxis::Roll, clockwise);
             break;
+
         case Interaction::Zoom:
-            saveInitialCameraState();
-            singleStepZoom(clockwise);
+            stepZoom(clockwise);
             break;
+
+        case Interaction::FreeRotation:
         case Interaction::None:
         default:
             break;
     }
 }
 
-void CameraWidget::rotation(Interaction dir, dvec2 mouseDelta) {
-    // use delta between initial mouse position and current position for rotation around the
-    // corresponding axis
-    float distance = 0.0f;
-    vec3 rotAxis(0.0f);
-    switch (dir) {
-        case Interaction::HorizontalRotation:
-            distance = static_cast<float>(mouseDelta.x);
-            rotAxis = initialState_.camUp;
-            if (useObjectRotAxis_.get()) {
-                rotAxis = getObjectRotationAxis(rotAxis);
-            }
-            break;
-        case Interaction::VerticalRotation:
-            distance = static_cast<float>(-mouseDelta.y);
-            rotAxis = initialState_.camRight;
-            break;
-        case Interaction::FreeRotation: {
-            vec2 delta(mouseDelta);
-            distance = glm::length(delta);
-            const auto& cam = camera_.get();
-            rotAxis = glm::normalize(
-                -delta.y * glm::normalize(glm::cross(cam.getDirection(), cam.getLookUp())) +
-                delta.x * cam.getLookUp());
-            break;
+void CameraWidget::axisRotation(RotationAxis dir, dvec2 mouseDelta) {
+    const auto rotAxis = rotationAxis(dir, useObjectRotAxis_, initialState_);
+    const auto distance = static_cast<float>([&]() {
+        switch (dir) {
+            case RotationAxis::Yaw:
+                return mouseDelta.x;
+            case RotationAxis::Pitch:
+                return -mouseDelta.y;
+            case RotationAxis::Roll:
+                return mouseDelta.x;
         }
-        case Interaction::Roll:
-            distance = static_cast<float>(mouseDelta.x);
-            rotAxis = initialState_.camDir;
-            break;
-        case Interaction::Zoom:
-        case Interaction::None:
-            return;
-        default:
-            return;
-    }
-    if (std::abs(distance) < glm::epsilon<float>()) {
-        // practically no change
+    }());
+    rotation(rotAxis, distance);
+}
+
+void CameraWidget::freeRotation(dvec2 mouseDelta) {
+    const auto distance = static_cast<float>(glm::length(mouseDelta));
+    const auto& cam = camera_.get();
+    const auto rotAxis =
+        glm::normalize(-static_cast<float>(mouseDelta.y) *
+                           glm::normalize(glm::cross(cam.getDirection(), cam.getLookUp())) +
+                       static_cast<float>(mouseDelta.x) * cam.getLookUp());
+    rotation(rotAxis, distance);
+}
+
+void CameraWidget::rotation(vec3 rotAxis, float distance) {
+    if (std::abs(distance) < glm::epsilon<float>()) {  // practically no change
         return;
     }
 
-    float angle = glm::radians(distance) * speed_.get();
-    if (invertDirections_.get()) {
-        angle = -angle;
-    }
-
-    mat4 rotMatrix(glm::rotate(-angle, rotAxis));
+    const auto angle =
+        glm::radians(distance) * speed_.get() * (invertDirections_.get() ? -1.0f : 1.0f);
+    const auto rotMatrix = glm::rotate(-angle, rotAxis);
     updateOutput(rotMatrix);
 }
 
-void CameraWidget::singleStepRotation(Interaction dir, bool clockwise) {
-    vec3 rotAxis(0.0f);
-    switch (dir) {
-        case Interaction::HorizontalRotation:
-            rotAxis = initialState_.camUp;
-            if (useObjectRotAxis_.get()) {
-                rotAxis = getObjectRotationAxis(rotAxis);
-            }
-            break;
-        case Interaction::VerticalRotation:
-            rotAxis = initialState_.camRight;
-            break;
-        case Interaction::Roll:
-            rotAxis = initialState_.camDir;
-            break;
-        case Interaction::FreeRotation:
-        case Interaction::Zoom:
-        case Interaction::None:
-            return;
-        default:
-            return;
-    }
-
-    float angle = glm::radians(angleIncrement_.get()) * (clockwise ? -1.0f : 1.0f);
-    if (invertDirections_.get()) {
-        angle = -angle;
-    }
-
-    mat4 rotMatrix(glm::rotate(-angle, rotAxis));
+void CameraWidget::stepRotation(RotationAxis dir, bool clockwise) {
+    const auto rotAxis = rotationAxis(dir, useObjectRotAxis_, cameraState(camera_));
+    const auto angle = glm::radians(angleIncrement_.get()) * (clockwise ? -1.0f : 1.0f) *
+                       (invertDirections_.get() ? -1.0f : 1.0f);
+    const auto rotMatrix = glm::rotate(-angle, rotAxis);
     updateOutput(rotMatrix);
 }
 
-void CameraWidget::zoom(dvec2 delta) {
+void CameraWidget::dragZoom(dvec2 delta) {
     double f = -delta.y / 50.0;
 
     auto& cam = camera_.get();
     double focalLength = glm::length(cam.getDirection());
-    focalLength = std::max(0.01, focalLength + f * initialState_.zoom_);
+    focalLength = std::max(0.01, focalLength + f * initialState_.zoom);
 
     // update camera look from position
-    vec3 campos(camera_.getLookTo() - initialState_.camDir * static_cast<float>(focalLength));
+    vec3 campos(camera_.getLookTo() - initialState_.dir * static_cast<float>(focalLength));
     camera_.setLookFrom(campos);
 }
 
-void CameraWidget::singleStepZoom(bool zoomIn) {
+void CameraWidget::stepZoom(bool zoomIn) {
     // adjust zoom direction
     dvec2 delta(angleIncrement_.get() * (zoomIn ? -1.0f : 1.0f));
-    zoom(delta);
+    initialState_ = cameraState(camera_);
+    dragZoom(delta);
 }
 
 void CameraWidget::updateOutput(const mat4& rotation) {
@@ -675,49 +635,139 @@ void CameraWidget::updateOutput(const mat4& rotation) {
     rotMatrix_.set(rotation * rotMatrix_.get());
 }
 
-int CameraWidget::interactionDirectionToInt(Interaction dir) { return static_cast<int>(dir); }
-
-CameraWidget::Interaction CameraWidget::intToInteractionDirection(int dir) {
-    switch (dir) {
-        case static_cast<int>(Interaction::HorizontalRotation):
-            return Interaction::HorizontalRotation;
-        case static_cast<int>(Interaction::VerticalRotation):
-            return Interaction::VerticalRotation;
-        case static_cast<int>(Interaction::FreeRotation):
-            return Interaction::FreeRotation;
-        default:
-            return Interaction::None;
-    }
-}
-
-vec3 CameraWidget::getObjectRotationAxis(const vec3& rotAxis) const {
-    vec3 axis(glm::abs(rotAxis));
-    // use closest object axis for horizontal rotation
-    if ((axis.x > axis.y) && (axis.x > axis.z)) {
-        axis = vec3(rotAxis.x, 0.0f, 0.0f);
-    } else if ((axis.y > axis.x) && (axis.y > axis.z)) {
-        axis = vec3(0.0f, rotAxis.y, 0.0f);
-    } else {
-        axis = vec3(0.0f, 0.0f, rotAxis.z);
-    }
-    return glm::normalize(axis);
-}
-
 std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
     return {{
         {std::nullopt, ":svgicons/camera-left.svg", "Rotate camera to the left",
-         [this] { singleStepInteraction(Interaction::HorizontalRotation, true); }},
+         [this] { stepInteraction(Interaction::Yaw, true); }},
         {std::nullopt, ":svgicons/camera-up.svg", "Rotate camera upward",
-         [this] { singleStepInteraction(Interaction::VerticalRotation, true); }},
+         [this] { stepInteraction(Interaction::Pitch, true); }},
         {std::nullopt, ":svgicons/camera-down.svg", "Rotate camera downward",
-         [this] { singleStepInteraction(Interaction::VerticalRotation, false); }},
+         [this] { stepInteraction(Interaction::Pitch, false); }},
         {std::nullopt, ":svgicons/camera-right.svg", "Rotate camera to the right",
-         [this] { singleStepInteraction(Interaction::HorizontalRotation, false); }},
+         [this] { stepInteraction(Interaction::Yaw, false); }},
         {std::nullopt, ":svgicons/camera-dolly-closer.svg", "Dolly closer",
-         [this] { singleStepInteraction(Interaction::Zoom, false); }},
+         [this] { stepInteraction(Interaction::Zoom, false); }},
         {std::nullopt, ":svgicons/camera-dolly-away.svg", "Dolly away",
-         [this] { singleStepInteraction(Interaction::Zoom, true); }},
+         [this] { stepInteraction(Interaction::Zoom, true); }},
     }};
+}
+vec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam) {
+    const auto camAxis = [&]() {
+        switch (rot) {
+            case RotationAxis::Yaw:
+                return cam.up;
+            case RotationAxis::Pitch:
+                return cam.right;
+            case RotationAxis::Roll:
+                return cam.dir;
+            default:
+                return cam.up;
+        }
+    }();
+
+    if (alignToObject) {
+        std::array<size_t, 3> order{0, 1, 2};
+        const auto ind = std::ranges::max(order, std::ranges::less{},
+                                          [&](size_t i) { return std::abs(camAxis[i]); });
+
+        static constexpr std::array axes{vec3{1.0f, 0.0f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
+                                         vec3{0.0f, 0.0f, 1.0f}};
+        return axes[ind] * std::copysignf(1.0f, glm::dot(camAxis, axes[ind]));
+    } else {
+        return camAxis;
+    }
+}
+
+CameraWidget::Animate::Animate(CameraWidget& aWidget)
+    : widget{&aWidget}
+    , props{"animate", "Animate"}
+    , fps{"fps", "FPS", util::ordinalLength(30, 120).set(InvalidationLevel::Valid)}
+    , type{"type",
+           "Type",
+           {{"yaw", "Yaw", CameraWidget::RotationAxis::Yaw},
+            {"pitch", "Pitch", CameraWidget::RotationAxis::Pitch},
+            {"roll", "Roll", CameraWidget::RotationAxis::Roll}},
+           0,
+           InvalidationLevel::Valid}
+    , mode{"mode",
+           "Mode",
+           {{"continuous", "Continuous", CameraWidget::Animate::Mode::Continuous},
+            {"swing", "Swing", CameraWidget::Animate::Mode::Swing}},
+           0,
+           InvalidationLevel::Valid}
+    , increment{"increment", "Angle (deg) per frame",
+                util::ordinalSymmetricVector(1.0f, 5.0f)
+                    .set(InvalidationLevel::Valid)
+                    .setInc(0.01f)
+                    .set("Rotation angle in degrees per frame"_help)}
+    , amplitude{"amplitude", "Angle max",
+                util::ordinalLength(45.0f, 360.0f)
+                    .set(InvalidationLevel::Valid)
+                    .set("Max Rotation angle in degrees"_help)}
+    , playPause{"playPause", "Play/Pause",
+                [this](Event* e) { props.getBoolProperty()->set(!props.getBoolProperty()->get()); },
+                IvwKey::Space, KeyState::Press}
+    , axis{1.0f, 0.0f, 0.0f}
+    , timer{ms{0}, [this]() { animate(); }}
+    , paused{false}
+    , currentDirection{1.0}
+    , counter{0.0f}
+    , viewDir{}
+    , lookTo{}
+    , lookUp{} {
+
+    props.addProperties(fps, type, mode, increment, amplitude, playPause);
+
+    props.getBoolProperty()->onChange(
+        [this]() { startStopAnimation(props.getBoolProperty()->get()); });
+    fps.onChange([this]() { timer.setInterval(ms{fps.get()}); });
+    type.onChange([this]() { startStopAnimation(props.getBoolProperty()->get()); });
+}
+
+void CameraWidget::Animate::startStopAnimation(bool startAni) {
+    if (startAni) {
+        axis = rotationAxis(type.get(), widget->useObjectRotAxis_, cameraState(widget->camera_));
+        counter = 0.0f;
+        currentDirection = 1.0f;
+        viewDir = widget->camera_.get().getDirection();
+        lookTo = widget->camera_.getLookTo();
+        lookUp = widget->camera_.getLookUp();
+        timer.start(ms{fps.get()});
+    } else {
+        timer.stop();
+    }
+}
+
+void CameraWidget::Animate::animate() {
+    if (mode == Mode::Swing) {
+        if (counter > amplitude.get() || counter < -amplitude.get()) {
+            currentDirection *= -1.0f;
+        }
+        counter += currentDirection * increment.get();
+
+        const auto angle = std::copysignf(amplitude.get(), counter) *
+                           glm::quadraticEaseOut(std::clamp(
+                               std::abs(counter) / std::abs(amplitude.get()), 0.0f, 1.0f));
+
+        const auto rotation = glm::rotate(-glm::radians(angle), axis);
+        mat3 m(rotation);
+        widget->camera_.setLook(lookTo - m * viewDir, lookTo, m * lookUp);
+    } else {
+        widget->updateOutput(glm::rotate(-glm::radians(increment.get()), axis));
+    }
+}
+
+void CameraWidget::Animate::invokeEvent(Event* e) {
+    if (auto* me = e->getAs<MouseEvent>()) {
+        if (timer.isRunning() && me->state() == MouseState::Press) {
+            startStopAnimation(false);
+            paused = true;
+        } else if (paused && me->state() == MouseState::Release &&
+                   me->buttonState() == MouseButton::None) {
+            startStopAnimation(true);
+            paused = false;
+        }
+    }
 }
 
 }  // namespace inviwo

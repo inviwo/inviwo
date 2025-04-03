@@ -43,14 +43,18 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/timer.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <vector>
 
 namespace inviwo {
 
@@ -66,7 +70,8 @@ class PickingEvent;
  */
 class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor {
 public:
-    enum class Interaction { HorizontalRotation, VerticalRotation, FreeRotation, Roll, Zoom, None };
+    enum class Interaction { Yaw, Pitch, Roll, FreeRotation, Zoom, None };
+    enum class RotationAxis { Yaw, Pitch, Roll };
 
     CameraWidget();
     ~CameraWidget();
@@ -78,29 +83,42 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void invokeEvent(Event* event) override;
+
 private:
+    // initial state of camera when an interaction is triggered to keep the rotation axis consistent
+    struct CameraState {
+        vec3 dir = vec3(0.0f, 0.0f, -1.0f);
+        vec3 up = vec3(0.0f, 1.0f, 0.0f);
+        vec3 right = vec3(1.0f, 0.0f, 0.0f);
+        double zoom = 1.0f;
+    };
+
     void updateWidgetTexture(const ivec2& widgetSize);
     void drawWidgetTexture();
 
     void objectPicked(PickingEvent* p);
-    void saveInitialCameraState();
+    static CameraState cameraState(const Camera& cam);
     void loadMesh();
 
-    void interaction(Interaction dir, dvec2 mouseDelta);
-    void singleStepInteraction(Interaction dir, bool clockwise);
+    void dragInteraction(Interaction dir, dvec2 mouseDelta);
+    void stepInteraction(Interaction dir, bool clockwise);
 
-    void rotation(Interaction dir, dvec2 mouseDelta);
-    void singleStepRotation(Interaction dir, bool clockwise);
-    void zoom(dvec2 delta);
-    void singleStepZoom(bool zoomIn);
+    void freeRotation(dvec2 mouseDelta);
+    void axisRotation(RotationAxis dir, dvec2 mouseDelta);
+    void rotation(vec3 axis, float distance);
+    void stepRotation(RotationAxis dir, bool clockwise);
+    void dragZoom(dvec2 delta);
+    void stepZoom(bool zoomIn);
 
     void updateOutput(const mat4& rotation);
 
-    static int interactionDirectionToInt(Interaction dir);
-    static Interaction intToInteractionDirection(int dir);
-    vec3 getObjectRotationAxis(const vec3& rotAxis) const;
-
     std::vector<ButtonGroupProperty::Button> buttons();
+
+    static vec3 rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam);
+
+    void startStopAnimation(bool start);
+    void animate();
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -140,12 +158,6 @@ private:
     Shader cubeShader_;
     Shader overlayShader_;
 
-    // number of available interaction elements. Each interaction widget has two trigger areas to
-    // distinguish the direction of rotation when clicked
-    static const int numInteractionWidgets = 10;  //!< horizontal (left, right), vertical (up,
-                                                  //!< down), center (2), roll (left, right), zoom
-                                                  //!< (out, in)
-
     // meshes of the interaction widgets.
     // 1) camera widget
     // 2) camera widget including widget for "camera roll"
@@ -154,25 +166,32 @@ private:
     std::array<std::unique_ptr<MeshDrawerGL>, 4> meshDrawers_;
     std::array<std::shared_ptr<const Mesh>, 4> meshes_;
 
-    struct PickIDs {
-        std::size_t id;
+    struct Widget {
         Interaction dir;
         bool clockwise;
     };
-    std::array<PickIDs, numInteractionWidgets> pickingIDs_;
+
+    // Each interaction widget has two trigger areas to
+    // distinguish the direction of rotation when clicked.
+    static constexpr std::array widgets_ = {
+        Widget{Interaction::Yaw, true},          Widget{Interaction::Yaw, false},
+        Widget{Interaction::Pitch, true},        Widget{Interaction::Pitch, false},
+        Widget{Interaction::FreeRotation, true}, Widget{Interaction::FreeRotation, false},
+        Widget{Interaction::Roll, true},         Widget{Interaction::Roll, false},
+        Widget{Interaction::Zoom, true},         Widget{Interaction::Zoom, false}};
 
     // UI state and textures
-    bool isMouseBeingPressedAndHold_;
-    bool mouseWasMoved_;
-    int currentPickingID_;
+    struct Picking {
+        void objectPicked(PickingEvent* e, CameraWidget& camera);
 
-    // initial state of camera when an interaction is triggered to keep the rotation axis consistent
-    struct InitialState {
-        vec3 camDir = vec3(0.0f, 0.0f, -1.0f);
-        vec3 camUp = vec3(0.0f, 1.0f, 0.0f);
-        vec3 camRight = vec3(1.0f, 0.0f, 0.0f);
-        double zoom_ = 1.0f;
-    } initialState_;
+    private:
+        bool isMouseBeingPressedAndHold{false};
+        bool mouseWasMoved{false};
+        int currentPickingID{-1};
+    };
+    Picking pickingState_;
+
+    CameraState initialState_;
 
     // Ensure that the Image and ImageGL are always in sync.
     // By returning a pair we ensure we can never return an Image and a nullptr ImageGL,
@@ -182,6 +201,36 @@ private:
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
+
+    struct Animate {
+        Animate(CameraWidget& cameraWidget);
+
+        enum class Mode { Continuous, Swing };
+
+        using ms = typename Timer::Milliseconds;
+        CameraWidget* widget;
+        BoolCompositeProperty props;
+        IntProperty fps;
+        OptionProperty<RotationAxis> type;
+        OptionProperty<Mode> mode;
+        FloatProperty increment;
+        FloatProperty amplitude;
+        EventProperty playPause;
+        vec3 axis;
+        Timer timer;
+        bool paused;
+        float currentDirection;
+        float counter;
+        vec3 viewDir;
+        vec3 lookTo;
+        vec3 lookUp;
+
+        void startStopAnimation(bool start);
+        void animate();
+        void invokeEvent(Event* e);
+    };
+
+    Animate animate_;
 };
 
 }  // namespace inviwo
