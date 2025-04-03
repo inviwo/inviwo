@@ -1,5 +1,9 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80":[2,0,0,0,18,5],
+"classinviwo_1_1animation_1_1BaseTrack.html#a5724a3b5389a98ae2717e0b24eb70b80":[4,0,1,1,19,5],
+"classinviwo_1_1animation_1_1BaseTrack.html#ac8f3a9dbe977a8c1d886a755698179c1":[2,0,0,0,18,1],
+"classinviwo_1_1animation_1_1BaseTrack.html#ac8f3a9dbe977a8c1d886a755698179c1":[4,0,1,1,19,1],
 "classinviwo_1_1animation_1_1BaseTrack.html#ae467a594b5e0e9018162b75470f59d7c":[2,0,0,0,18,2],
 "classinviwo_1_1animation_1_1BaseTrack.html#ae467a594b5e0e9018162b75470f59d7c":[4,0,1,1,19,2],
 "classinviwo_1_1animation_1_1BaseTrack.html#af236d4ee6400789f1eec04dce3118a4f":[2,0,0,0,18,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1ffmpeg_1_1SwScale.html":[4,0,1,11,10],
 "classinviwo_1_1glui_1_1AbstractButton.html":[4,0,1,13,0],
 "classinviwo_1_1glui_1_1BoolPropertyWidget.html":[4,0,1,13,1],
-"classinviwo_1_1glui_1_1BoolPropertyWidget.html#a19e50a20ed754305f6ab2290057efdeb":[4,0,1,13,1,0],
-"classinviwo_1_1glui_1_1BoxLayout.html":[4,0,1,13,2],
-"classinviwo_1_1glui_1_1BoxLayout.html#a1d6af84a8fbeb869b058426b98d33a21":[4,0,1,13,2,4],
-"classinviwo_1_1glui_1_1BoxLayout.html#a9e505c51f5dd092c4aa343546bc08c92":[4,0,1,13,2,0],
-"classinviwo_1_1glui_1_1BoxLayout.html#a9efb31a0c4cebcb041d780a9f0144f95":[4,0,1,13,2,2]
+"classinviwo_1_1glui_1_1BoolPropertyWidget.html#a19e50a20ed754305f6ab2290057efdeb":[4,0,1,13,1,0]
 };

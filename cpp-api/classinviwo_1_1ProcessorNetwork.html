@@ -208,6 +208,8 @@ const std::vector&lt; <a class="el" href="classinviwo_1_1PortConnection.html">Po
 <tr class="separator:a9a9601a7be6c15a7663cd8142085186a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a165a7049f48f967c92a2c762cb56b087" id="r_a165a7049f48f967c92a2c762cb56b087"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a165a7049f48f967c92a2c762cb56b087">connectionRange</a> () const</td></tr>
 <tr class="separator:a165a7049f48f967c92a2c762cb56b087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc315b63486b3cbfb2f2302032b58ba6" id="r_adc315b63486b3cbfb2f2302032b58ba6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc315b63486b3cbfb2f2302032b58ba6">connectionVecRange</a> () const</td></tr>
+<tr class="separator:adc315b63486b3cbfb2f2302032b58ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3361b72f1d3ece18bf5dcf8adfae4321" id="r_a3361b72f1d3ece18bf5dcf8adfae4321"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3361b72f1d3ece18bf5dcf8adfae4321">isPortInNetwork</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port) const</td></tr>
 <tr class="memdesc:a3361b72f1d3ece18bf5dcf8adfae4321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if <code class="param">port</code> is owned by a processor in this <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a>.  <br /></td></tr>
 <tr class="separator:a3361b72f1d3ece18bf5dcf8adfae4321"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -713,6 +715,32 @@ template&lt;typename T, class = typename std::enable_if_t&lt;std::is_base_of_v&l
 </table>
 </div><div class="memdoc">
 <p>Returns a range of all connections (<a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a>&amp;), in unspecified order. </p>
+
+</div>
+</div>
+<a id="adc315b63486b3cbfb2f2302032b58ba6" name="adc315b63486b3cbfb2f2302032b58ba6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc315b63486b3cbfb2f2302032b58ba6">&#9670;&#160;</a></span>connectionVecRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto inviwo::ProcessorNetwork::connectionVecRange </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns a range of all connections (<a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a>&amp;). </p>
 
 </div>
 </div>

@@ -1,5 +1,9 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1glui_1_1BoxLayout.html":[4,0,1,13,2],
+"classinviwo_1_1glui_1_1BoxLayout.html#a1d6af84a8fbeb869b058426b98d33a21":[4,0,1,13,2,4],
+"classinviwo_1_1glui_1_1BoxLayout.html#a9e505c51f5dd092c4aa343546bc08c92":[4,0,1,13,2,0],
+"classinviwo_1_1glui_1_1BoxLayout.html#a9efb31a0c4cebcb041d780a9f0144f95":[4,0,1,13,2,2],
 "classinviwo_1_1glui_1_1BoxLayout.html#aceeb694fc8caa89cbe817cff8f5e8e56":[4,0,1,13,2,3],
 "classinviwo_1_1glui_1_1BoxLayout.html#af9bcfbcd948201e8bdeadd027cdd1a81":[4,0,1,13,2,1],
 "classinviwo_1_1glui_1_1Button.html":[4,0,1,13,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1PlotTextProperty.html#aad9f91cc2fecb8edbc0db220cc227720":[4,0,1,19,36,3],
 "classinviwo_1_1plot_1_1PlotTextProperty.html#ace8c309ba238ea691b6559711d585e7d":[2,0,0,14,35,0],
 "classinviwo_1_1plot_1_1PlotTextProperty.html#ace8c309ba238ea691b6559711d585e7d":[4,0,1,19,36,0],
-"classinviwo_1_1plot_1_1PlotTextSettings.html":[2,0,0,14,36],
-"classinviwo_1_1plot_1_1PlotTextSettings.html":[4,0,1,19,37],
-"classinviwo_1_1plot_1_1PlotTextSettings.html#a2b5c504876e54af9c5380cc1f940903d":[2,0,0,14,36,1],
-"classinviwo_1_1plot_1_1PlotTextSettings.html#a2b5c504876e54af9c5380cc1f940903d":[4,0,1,19,37,1],
-"classinviwo_1_1plot_1_1PlotTextSettings.html#a5a6598c6257ec5cd998ed2c4a15bd31a":[2,0,0,14,36,2]
+"classinviwo_1_1plot_1_1PlotTextSettings.html":[2,0,0,14,36]
 };

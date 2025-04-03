@@ -599,6 +599,9 @@ var hierarchy =
         [ "inviwo::BrushingAndLinkingProcessor", "classinviwo_1_1BrushingAndLinkingProcessor.html", null ],
         [ "inviwo::BufferToMeshProcessor", "classinviwo_1_1BufferToMeshProcessor.html", null ],
         [ "inviwo::CSVSource", "classinviwo_1_1CSVSource.html", null ],
+        [ "inviwo::CacheBase", "classinviwo_1_1CacheBase.html", [
+          [ "inviwo::FileCache< DataType, InportType, OutportType >", "classinviwo_1_1FileCache.html", null ]
+        ] ],
         [ "inviwo::CalcNormalsProcessor", "classinviwo_1_1CalcNormalsProcessor.html", null ],
         [ "inviwo::CameraFrustum", "classinviwo_1_1CameraFrustum.html", null ],
         [ "inviwo::CameraWidget", "classinviwo_1_1CameraWidget.html", null ],
@@ -641,7 +644,6 @@ var hierarchy =
         [ "inviwo::EmbeddedVolumeSlice", "classinviwo_1_1EmbeddedVolumeSlice.html", null ],
         [ "inviwo::EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", null ],
         [ "inviwo::FXAA", "classinviwo_1_1FXAA.html", null ],
-        [ "inviwo::FileCache< DataType, InportType, OutportType >", "classinviwo_1_1FileCache.html", null ],
         [ "inviwo::FirstIvwProcessor", "classinviwo_1_1FirstIvwProcessor.html", null ],
         [ "inviwo::Fog", "classinviwo_1_1Fog.html", null ],
         [ "inviwo::GLUITestProcessor", "classinviwo_1_1GLUITestProcessor.html", null ],
@@ -1553,6 +1555,7 @@ var hierarchy =
       [ "inviwo::util::is_floating_point< T >", "structinviwo_1_1util_1_1is__floating__point.html", null ]
     ] ],
     [ "inviwo::util::is_stream_insertable< T >", "classinviwo_1_1util_1_1is__stream__insertable.html", null ],
+    [ "inviwo::RAMCache< DataType >::Item", "structinviwo_1_1RAMCache_1_1Item.html", null ],
     [ "inviwo::SearchDSL< Ts >::Item", "structinviwo_1_1SearchDSL_1_1Item.html", null ],
     [ "inviwo::filters::ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", null ],
     [ "inviwo::util::sequence< T >::iterator", "structinviwo_1_1util_1_1sequence_1_1iterator.html", null ],
@@ -2232,7 +2235,7 @@ var hierarchy =
         [ "inviwo::ProcessorNetwork", "classinviwo_1_1ProcessorNetwork.html", null ]
       ] ],
       [ "inviwo::ProcessorNetworkEvaluationObserver", "classinviwo_1_1ProcessorNetworkEvaluationObserver.html", [
-        [ "inviwo::FileCache< DataType, InportType, OutportType >", "classinviwo_1_1FileCache.html", null ],
+        [ "inviwo::CacheBase", "classinviwo_1_1CacheBase.html", null ],
         [ "inviwo::GLFWModule", "classinviwo_1_1GLFWModule.html", null ],
         [ "inviwo::NetworkDebugObserver", "structinviwo_1_1NetworkDebugObserver.html", null ],
         [ "inviwo::OpenGLQtModule", "classinviwo_1_1OpenGLQtModule.html", null ]
@@ -3034,6 +3037,7 @@ var hierarchy =
     ] ],
     [ "inviwo::kind::RAM", "structinviwo_1_1kind_1_1RAM.html", null ],
     [ "inviwo::resource::RAM", "structinviwo_1_1resource_1_1RAM.html", null ],
+    [ "inviwo::RAMCache< DataType >", "structinviwo_1_1RAMCache.html", null ],
     [ "inviwo::util::RandomCubicalPointGeneration", "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html", null ],
     [ "inviwo::util::detail::RandomNumberRangeValues", "structinviwo_1_1util_1_1detail_1_1RandomNumberRangeValues.html", null ],
     [ "inviwo::util::RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],
@@ -3050,6 +3054,7 @@ var hierarchy =
     ] ],
     [ "inviwo::RasterizeHandle", "classinviwo_1_1RasterizeHandle.html", null ],
     [ "inviwo::RaycastingState", "structinviwo_1_1RaycastingState.html", null ],
+    [ "inviwo::ReaderWriter< DataType >", "structinviwo_1_1ReaderWriter.html", null ],
     [ "inviwo::animation::Recorder", "classinviwo_1_1animation_1_1Recorder.html", null ],
     [ "inviwo::ffmpeg::Recorder", "classinviwo_1_1ffmpeg_1_1Recorder.html", null ],
     [ "inviwo::animation::RecorderFactory", "classinviwo_1_1animation_1_1RecorderFactory.html", [
