@@ -31,10 +31,10 @@
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 
-#include <inviwo/core/metadata/processorwidgetmetadata.h>              // for ProcessorWidgetMet...
-#include <inviwo/core/processors/processor.h>                          // for Processor
-#include <inviwo/core/processors/processorinfo.h>                      // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>                       // for BoolProperty
+#include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
+#include <inviwo/core/processors/processor.h>              // for Processor
+#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>                    // for IntSize2Property
 #include <inviwo/core/util/glmvec.h>                                   // for size2_t
@@ -49,7 +49,11 @@ class DataFrameTableView;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameDockTableWidget : public ProcessorDockWidgetQt {
 public:
-    DataFrameDockTableWidget(Processor* p);
+    explicit DataFrameDockTableWidget(Processor* p);
+    DataFrameDockTableWidget(const DataFrameDockTableWidget&) = delete;
+    DataFrameDockTableWidget(DataFrameDockTableWidget&&) = delete;
+    DataFrameDockTableWidget& operator=(const DataFrameDockTableWidget&) = delete;
+    DataFrameDockTableWidget& operator=(DataFrameDockTableWidget&&) = delete;
     virtual ~DataFrameDockTableWidget();
 
     void setManager(BrushingAndLinkingManager& manager);
@@ -66,6 +70,10 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameDockTable : public Processor,
                                                       public ProcessorWidgetMetaDataObserver {
 public:
     DataFrameDockTable();
+    DataFrameDockTable(const DataFrameDockTable&) = delete;
+    DataFrameDockTable(DataFrameDockTable&&) = delete;
+    DataFrameDockTable& operator=(const DataFrameDockTable&) = delete;
+    DataFrameDockTable& operator=(DataFrameDockTable&&) = delete;
 
     virtual ~DataFrameDockTable();
 

@@ -62,7 +62,6 @@ private:
     DoubleMinMaxProperty range_;
 
     std::vector<double> pos_;
-
 };
 
 }  // namespace inviwo

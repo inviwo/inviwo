@@ -73,20 +73,20 @@ DataFrame::DataFrame(std::vector<std::shared_ptr<Column>> columns) : columns_{st
     }
 }
 
-DataFrame::DataFrame(const DataFrame& rhs) : columns_{} {
+DataFrame::DataFrame(const DataFrame& rhs) : MetaDataOwner{rhs}, columns_{} {
     for (const auto& col : rhs.columns_) {
         columns_.emplace_back(col->clone());
     }
 }
 DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::uint32_t> rowSelection)
-    : columns_{} {
+    : MetaDataOwner{rhs}, columns_{} {
     for (const auto& col : rhs.columns_) {
         columns_.emplace_back(col->clone(rowSelection));
     }
 }
 
 DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::string> columnSelection)
-    : columns_{} {
+    : MetaDataOwner{rhs}, columns_{} {
     for (const auto& col : columnSelection) {
         columns_.emplace_back(rhs.getColumnRef(col).clone());
     }
@@ -99,7 +99,7 @@ DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::string> columnSe
 
 DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::string> columnSelection,
                      std::span<const std::uint32_t> rowSelection)
-    : columns_{} {
+    : MetaDataOwner{rhs}, columns_{} {
     for (const auto& col : columnSelection) {
         columns_.emplace_back(rhs.getColumnRef(col).clone(rowSelection));
     }
@@ -109,6 +109,7 @@ DataFrame& DataFrame::operator=(const DataFrame& that) {
     if (this != &that) {
         DataFrame tmp(that);
         std::swap(tmp.columns_, columns_);
+        std::swap(tmp.metaData_, metaData_);
     }
     return *this;
 }

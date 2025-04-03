@@ -245,21 +245,21 @@ void CanvasProcessor::setProcessorWidget(std::unique_ptr<ProcessorWidget> proces
 
 void CanvasProcessor::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
-        Property::OnChangeBlocker blocker{position_};
+        const Property::OnChangeBlocker blocker{position_};
         position_.set(widgetMetaData_->getPosition());
     }
 }
 
 void CanvasProcessor::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getDimensions() != dimensions_.get()) {
-        Property::OnChangeBlocker blocker{dimensions_};
+        const Property::OnChangeBlocker blocker{dimensions_};
         dimensions_.set(widgetMetaData_->getDimensions());
     }
 }
 
 void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->isVisible() != visible_.get()) {
-        Property::OnChangeBlocker blocker{visible_};
+        const Property::OnChangeBlocker blocker{visible_};
         visible_.set(widgetMetaData_->isVisible());
     }
     isSink_.update();
@@ -268,7 +268,7 @@ void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*
 }
 
 void CanvasProcessor::setCanvasSize(size2_t dim) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     dimensions_.set(dim);
     sizeChanged();
 }
@@ -279,7 +279,7 @@ bool CanvasProcessor::getUseCustomDimensions() const { return enableCustomInputD
 size2_t CanvasProcessor::getCustomDimensions() const { return customInputDimensions_; }
 
 void CanvasProcessor::sizeChanged() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     customInputDimensions_.setVisible(enableCustomInputDimensions_);
@@ -382,7 +382,7 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
 
     if (auto resizeEvent = event->getAs<ResizeEvent>()) {
         // Avoid continues evaluation when port dimensions changes
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         dimensions_.set(resizeEvent->size());
         if (enableCustomInputDimensions_) {
             sizeChanged();

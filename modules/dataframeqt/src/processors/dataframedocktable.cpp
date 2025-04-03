@@ -89,13 +89,13 @@ QMainWindow* findParent(Processor* p) {
 }  // namespace
 
 DataFrameDockTableWidget::DataFrameDockTableWidget(Processor* p)
-    : ProcessorDockWidgetQt(p, utilqt::toQString(p->getDisplayName()), findParent(p)) {
+    : ProcessorDockWidgetQt(p, utilqt::toQString(p->getDisplayName()), findParent(p))
+    , tableview_{new DataFrameTableView(this)} {
 
     setAllowedAreas(Qt::AllDockWidgetAreas);
     auto* mw = findParent(p);
     mw->addDockWidget(Qt::LeftDockWidgetArea, this);
 
-    tableview_ = new DataFrameTableView(this);
     tableview_->setMouseTracking(true);
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
 
@@ -125,7 +125,7 @@ void DataFrameDockTableWidget::setManager(BrushingAndLinkingManager& manager) {
 }
 void DataFrameDockTableWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                             bool categoryIndices) {
-    tableview_->setDataFrame(dataframe, categoryIndices);
+    tableview_->setDataFrame(std::move(dataframe), categoryIndices);
 }
 void DataFrameDockTableWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
@@ -248,21 +248,21 @@ void DataFrameDockTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> pro
 
 void DataFrameDockTable::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
-        Property::OnChangeBlocker blocker{position_};
+        const Property::OnChangeBlocker blocker{position_};
         position_.set(widgetMetaData_->getPosition());
     }
 }
 
 void DataFrameDockTable::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getDimensions() != dimensions_.get()) {
-        Property::OnChangeBlocker blocker{dimensions_};
+        const Property::OnChangeBlocker blocker{dimensions_};
         dimensions_.set(widgetMetaData_->getDimensions());
     }
 }
 
 void DataFrameDockTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->isVisible() != visible_.get()) {
-        Property::OnChangeBlocker blocker{visible_};
+        const Property::OnChangeBlocker blocker{visible_};
         visible_.set(widgetMetaData_->isVisible());
     }
     isSink_.update();
@@ -271,7 +271,7 @@ void DataFrameDockTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaDa
 }
 
 DataFrameDockTableWidget* DataFrameDockTable::getWidget() const {
-    if (auto widget = static_cast<DataFrameDockTableWidget*>(processorWidget_.get())) {
+    if (auto widget = dynamic_cast<DataFrameDockTableWidget*>(processorWidget_.get())) {
         return widget;
     } else {
         return nullptr;
@@ -279,7 +279,7 @@ DataFrameDockTableWidget* DataFrameDockTable::getWidget() const {
 }
 
 void DataFrameDockTable::setWidgetSize(size2_t dim) {
-    NetworkLock lock(this);
+    const NetworkLock lock{this};
     dimensions_.set(dim);
 }
 
