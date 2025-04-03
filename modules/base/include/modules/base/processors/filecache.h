@@ -31,10 +31,12 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -45,57 +47,22 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/transparentmaps.h>
 
 #include <fstream>
 #include <ranges>
 
 #include <filesystem>
+#include <optional>
 
 #include <fmt/std.h>
 
 namespace inviwo {
 
-template <typename DataType, typename InportType = DataInport<DataType>,
-          typename OutportType = DataOutport<DataType>>
-class FileCache : public Processor, public ProcessorNetworkEvaluationObserver {
-public:
-    explicit FileCache(InviwoApplication* app);
-    FileCache(const FileCache&) = delete;
-    FileCache(FileCache&&) = delete;
-    FileCache& operator=(const FileCache&) = delete;
-    FileCache& operator=(FileCache&&) = delete;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-    virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
-
-    virtual void onProcessorNetworkEvaluationBegin() override;
-
-private:
-    InportType inport_;
-    OutportType outport_;
-    BoolProperty enabled_;
-    DirectoryProperty cacheDir_;
-    OptionProperty<FileExtension> extensions_;
-
-    const DataReaderFactory& rf_;
-    const DataWriterFactory& wf_;
-    struct Cache {
-        std::string key;
-        std::filesystem::path file;
-    };
-    std::pmr::string xml_;
-    std::optional<Cache> cache_ = std::nullopt;
-    bool isCached_ = false;
-    std::string loadedKey_;
-};
-
 namespace detail {
 
 IVW_MODULE_BASE_API std::string cacheState(Processor* p, ProcessorNetwork& net,
+                                           const std::filesystem::path& refPath,
                                            std::pmr::string& xml);
 
 template <typename... Types>
@@ -138,6 +105,147 @@ void updateFilenameFilters(const DataReaderFactory& rf, const DataWriterFactory&
 
 }  // namespace detail
 
+class IVW_MODULE_BASE_API CacheBase : public Processor, public ProcessorNetworkEvaluationObserver {
+public:
+    explicit CacheBase(InviwoApplication* app);
+    virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
+    virtual void onProcessorNetworkEvaluationBegin() override;
+
+    virtual bool hasCache(std::string_view key) = 0;
+
+protected:
+    void writeXML() const;
+
+    BoolProperty enabled_;
+    DirectoryProperty cacheDir_;
+    DirectoryProperty refDir_;
+    StringProperty currentKey_;
+
+    bool isCached_ = false;
+    std::string key_;
+    std::pmr::string xml_;
+};
+
+template <typename DataType>
+struct ReaderWriter {
+    explicit ReaderWriter(InviwoApplication* app)
+        : extensions{"readerWriter", "Reader/Writer"}
+        , rf{app->getDataReaderFactory()}
+        , wf{app->getDataWriterFactory()} {
+
+        detail::updateFilenameFilters<DataType>(*rf, *wf, extensions);
+        extensions.setCurrentStateAsDefault();
+    }
+
+    std::unique_ptr<DataReaderType<DataType>> getReader() {
+        if (extensions.empty()) return nullptr;
+
+        const auto& sext = extensions.getSelectedValue().extension_;
+        return rf->template getReaderForTypeAndExtension<DataType>(sext);
+    }
+    std::unique_ptr<DataWriterType<DataType>> getWriter() {
+        if (extensions.empty()) return nullptr;
+
+        const auto& sext = extensions.getSelectedValue().extension_;
+        return wf->template getWriterForTypeAndExtension<DataType>(sext);
+    }
+
+    OptionProperty<FileExtension> extensions;
+
+private:
+    const DataReaderFactory* rf;
+    const DataWriterFactory* wf;
+};
+
+template <typename DataType>
+struct RAMCache {
+    RAMCache()
+        : capacity{"capacity", "RAM Cache Capacity",
+                   util::ordinalCount(size_t{3}, size_t{100})
+                       .set("Max number of items to cache, "
+                            "0 means that no ram caching will be used"_help)} {
+
+        capacity.onChange([this]() { trim(capacity); });
+    }
+
+    struct Item {
+        std::chrono::system_clock::time_point used;
+        DataType data;
+    };
+
+    IntSizeTProperty capacity;
+    UnorderedStringMap<Item> cache;
+
+    void trim(size_t maxSize) {
+        while (cache.size() > maxSize) {
+            const auto it = std::ranges::min_element(
+                cache, std::ranges::less{}, [](const auto& pair) { return pair.second.used; });
+            cache.erase(it);
+        }
+    }
+
+    void add(std::string_view key, DataType data) {
+        if (capacity.get() == 0) {
+            cache.clear();
+            return;
+        }
+
+        trim(capacity.get() - 1);
+
+        const auto now = std::chrono::system_clock::now();
+        cache.try_emplace(std::string{key}, Item{now, std::move(data)});
+    }
+
+    bool has(std::string_view key) const { return cache.contains(key); }
+
+    std::optional<DataType> get(std::string_view key) {
+        if (auto it = cache.find(key); it != cache.end()) {
+            it->second.used = std::chrono::system_clock::now();
+            return it->second.data;
+        } else {
+            return std::nullopt;
+        }
+    }
+};
+
+template <typename DataType, typename InportType = DataInport<DataType>,
+          typename OutportType = DataOutport<DataType>>
+class FileCache : public CacheBase {
+public:
+    explicit FileCache(InviwoApplication* app);
+    FileCache(const FileCache&) = delete;
+    FileCache(FileCache&&) = delete;
+    FileCache& operator=(const FileCache&) = delete;
+    FileCache& operator=(FileCache&&) = delete;
+    ~FileCache() = default;
+    virtual void process() override;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    std::optional<std::filesystem::path> pathForKey(std::string_view key) {
+        if (rw_.extensions.empty() || cacheDir_.get().empty()) return std::nullopt;
+        return cacheDir_.get() /
+               fmt::format("{}.{}", key, rw_.extensions.getSelectedValue().extension_);
+    }
+
+    virtual bool hasCache(std::string_view key) override {
+        return ram_.has(key) || pathForKey(key)
+                                    .transform([](const std::filesystem::path& path) -> bool {
+                                        return std::filesystem::exists(path);
+                                    })
+                                    .value_or(false);
+    }
+
+    InportType inport_;
+    OutportType outport_;
+    ReaderWriter<DataType> rw_;
+    RAMCache<std::shared_ptr<const DataType>> ram_;
+
+    std::string loadedKey_;
+};
+
 template <typename DataType, typename InportType, typename OutportType>
 struct ProcessorTraits<FileCache<DataType, InportType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
@@ -162,111 +270,50 @@ const ProcessorInfo& FileCache<DataType, InportType, OutportType>::getProcessorI
 
 template <typename DataType, typename InportType, typename OutportType>
 FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
-    : Processor{}
+    : CacheBase{app}
     , inport_{"inport", "data to cache"_help}
     , outport_{"outport", "cached data"_help}
-    , enabled_{"enabled", "Enabled", "Toggles the usage of the file cache"_help, true}
-    , cacheDir_{"cacheDir", "Cache Dir",
-                "Directory to save cached dataset too. "
-                "You might want to manually clear it regularly to save space"_help,
-                filesystem::getPath(PathType::Cache)}
-    , extensions_{"readerWriter", "Data Reader And Writer"}
-    , rf_{*app->getDataReaderFactory()}
-    , wf_{*app->getDataWriterFactory()} {
+    , rw_{app}
+    , ram_{} {
 
     addPorts(inport_, outport_);
-    addProperties(enabled_, cacheDir_, extensions_);
-
-    detail::updateFilenameFilters<DataType>(rf_, wf_, extensions_);
-    extensions_.setCurrentStateAsDefault();
-
-    isReady_.setUpdate([this]() {
-        return isCached_ ||
-               (inport_.isConnected() && util::all_of(inport_.getConnectedOutports(),
-                                                      [](Outport* p) { return p->isReady(); }));
-    });
-
-    app->getProcessorNetworkEvaluator()->addObserver(this);
-}
-
-template <typename DataType, typename InportType, typename OutportType>
-void FileCache<DataType, InportType, OutportType>::onProcessorNetworkEvaluationBegin() {
-    if (extensions_.empty()) return;
-
-    if (isValid()) return;
-
-    const auto key = detail::cacheState(this, *getNetwork(), xml_);
-
-    const auto cf =
-        cacheDir_.get() / fmt::format("{}.{}", key, extensions_.getSelectedValue().extension_);
-    const auto isCached = std::filesystem::exists(cf);
-
-    if (isCached_ != isCached) {
-        isCached_ = isCached;
-        isReady_.update();
-        notifyObserversActiveConnectionsChange(this);
-    }
-    cache_ = Cache{std::move(key), std::move(cf)};
-}
-
-template <typename DataType, typename InportType, typename OutportType>
-bool FileCache<DataType, InportType, OutportType>::isConnectionActive(Inport* inport,
-                                                                      Outport*) const {
-    if (inport == &inport_) {
-        return !isCached_;
-    } else {
-        return true;
-    }
+    addProperties(enabled_, cacheDir_, refDir_, currentKey_, rw_.extensions, ram_.capacity);
 }
 
 template <typename DataType, typename InportType, typename OutportType>
 void FileCache<DataType, InportType, OutportType>::process() {
-    if (!enabled_) {
-        outport_.setData(inport_.getData());
-        return;
-    }
+    if (loadedKey_ == key_) return;
 
-    if (extensions_.empty()) {
-        throw Exception("No reader and writer found");
-    }
-    if (cacheDir_.get().empty()) {
-        throw Exception("No cache dir set");
-    }
-
-    const auto sext = extensions_.getSelectedValue();
-
-    if (cache_ && loadedKey_ == cache_->key) {
-        return;
-    } else if (cache_ && isCached_) {
-        if (auto reader = rf_.template getReaderForTypeAndExtension<DataType>(sext, cache_->file)) {
-            outport_.setData(reader->readData(cache_->file));
-            loadedKey_ = cache_->key;
+    if (isCached_) {
+        if (auto ramData = ram_.get(key_)) {
+            outport_.setData(*ramData);
+            loadedKey_ = key_;
+        } else if (auto reader = rw_.getReader()) {
+            if (auto maybePath = pathForKey(key_)) {
+                auto diskData = reader->readData(*maybePath);
+                ram_.add(key_, diskData);
+                outport_.setData(diskData);
+                loadedKey_ = key_;
+            } else {
+                throw Exception("No file found");
+            }
         } else {
             throw Exception("No reader found");
         }
-    } else if (cache_ && !isCached_) {
-        if (auto data = inport_.getData()) {
-
-            if (auto writer =
-                    wf_.template getWriterForTypeAndExtension<DataType>(sext, cache_->file)) {
-                writer->writeData(data.get(), cache_->file);
+    } else if (auto data = inport_.getData()) {
+        if (auto maybePath = pathForKey(key_)) {
+            if (auto writer = rw_.getWriter()) {
+                writer->writeData(data.get(), *maybePath);
             } else {
                 throw Exception("No writer found");
             }
-            if (auto f = std::ofstream(cacheDir_.get() / fmt::format("{}.inv", cache_->key))) {
-                f << xml_;
-            } else {
-                throw Exception(SourceContext{}, "Could not write to xml file: {}/{}.inv",
-                                cacheDir_.get(), cache_->key);
-            }
-
-            outport_.setData(data);
-            loadedKey_ = cache_->key;
-        } else {
-            throw Exception("Port had no data");
         }
+        writeXML();
+        ram_.add(key_, data);
+        outport_.setData(data);
+        loadedKey_ = key_;
     } else {
-        outport_.setData(inport_.getData());
+        throw Exception("Port has no data");
     }
 }
 

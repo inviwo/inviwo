@@ -102,6 +102,8 @@ public:
 
     allocator_type getAllocator() const;
 
+    TiXmlDocument& doc();
+
 protected:
     friend class NodeSwitch;
 

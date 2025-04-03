@@ -33,12 +33,17 @@
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/links/propertylink.h>
 
+#include <inviwo/core/io/serialization/ticpp.h>
+
 #include <unordered_set>
 #include <memory_resource>
 
-namespace inviwo::detail {
+namespace inviwo {
 
-std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::string& xml) {
+namespace detail {
+
+std::string cacheState(Processor* processor, ProcessorNetwork& net,
+                       const std::filesystem::path& refPath, std::pmr::string& xml) {
     std::pmr::monotonic_buffer_resource mbr{1024 * 32};
 
     std::pmr::vector<Processor*> processors(&mbr);
@@ -50,7 +55,10 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::st
     std::ranges::sort(processors, std::less<>{},
                       [](const Processor* p) { return p->getIdentifier(); });
 
-    Serializer s{"", SerializeConstants::InviwoWorkspace, &mbr};
+    // Skip the caching processor it self.
+    std::erase(processors, processor);
+
+    Serializer s{refPath, SerializeConstants::InviwoWorkspace, &mbr};
     s.setWorkspaceSaveMode(WorkspaceSaveMode::Undo);  // don't same any "metadata"
     const auto ns = s.switchToNewNode("ProcessorNetwork");
     s.serialize("ProcessorNetworkVersion", ProcessorNetwork::processorNetworkVersion());
@@ -59,11 +67,15 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::st
         nested.serialize("Processor", *item);
     });
 
+    // We want to serialize the connection to the cacheProcessor;
+    processors.push_back(processor);
+
     s.serializeRange(
         "Connections",
-        net.connectionRange() | std::views::filter([&](const PortConnection& connection) {
-            return util::contains(processors, connection.getInport()->getProcessor()) &&
-                   util::contains(processors, connection.getOutport()->getProcessor());
+        net.connectionVecRange() | std::views::filter([&](const PortConnection& connection) {
+            auto* in = connection.getInport()->getProcessor();
+            auto* out = connection.getOutport()->getProcessor();
+            return util::contains(processors, in) && util::contains(processors, out);
         }),
         [](Serializer& nested, const PortConnection& connection) {
             const auto nodeSwitch = nested.switchToNewNode("Connection");
@@ -85,10 +97,123 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net, std::pmr::st
             link.getDestination()->getPath(nested.addAttribute("dst"));
         });
 
+    const auto remove = [](TiXmlElement* elem, const auto& check, const auto& self) -> void {
+        TiXmlElement* child = elem->FirstChildElement();
+        while (child) {
+            auto* curr = child;
+            child = child->NextSiblingElement();
+
+            if (check(curr, elem)) {
+                elem->RemoveChild(curr);
+            } else {
+                self(curr, check, self);
+            }
+        }
+    };
+    remove(
+        s.doc().RootElement(),
+        [](TiXmlElement* current, TiXmlElement*) -> bool {
+            return current->Value() == "MetaDataItem" &&
+                   current->Attribute("type")
+                       .transform([](std::string_view value) {
+                           return value == "org.inviwo.ProcessorMetaData";
+                       })
+                       .value_or(false);
+        },
+        remove);
+
+    // remove all ivwdataRelativePath paths
+    remove(
+        s.doc().RootElement(),
+        [](TiXmlElement* current, TiXmlElement*) -> bool {
+            return current->Value() == "ivwdataRelativePath";
+        },
+        remove);
+
+    if (!refPath.empty()) {
+        // remove absolutePath if we have workspaceRelativePaths
+        remove(
+            s.doc().RootElement(),
+            [](TiXmlElement* current, TiXmlElement* parent) -> bool {
+                if (current->Value() == "absolutePath") {
+                    if (auto* rp = parent->FirstChildElement("workspaceRelativePath")) {
+                        return rp->Attribute("content")
+                            .transform([](std::string_view value) { return !value.empty(); })
+                            .value_or(false);
+                    }
+                }
+                return false;
+            },
+            remove);
+    }
+
     xml.clear();
     s.write(xml);
 
-    return {fmt::format("{}", std::hash<std::string_view>{}(xml))};
+    return {fmt::format("{:016X}", std::hash<std::string_view>{}(xml))};
 }
 
-}  // namespace inviwo::detail
+}  // namespace detail
+
+CacheBase::CacheBase(InviwoApplication* app)
+    : Processor()
+    , enabled_{"enabled", "Enabled", "Toggles the usage of the file cache"_help, true}
+    , cacheDir_{"cacheDir", "Cache Dir",
+                "Directory to save cached dataset too. "
+                "You need to manually clear it regularly to save space"_help,
+                filesystem::getPath(PathType::Cache)}
+    , refDir_{"refDir", "Reference Dir",
+              "Any paths are hashed relative to this path, "
+              "instead of the absolute path, if set"_help}
+    , currentKey_{"key", "Hashed State", "", InvalidationLevel::Valid} {
+
+    isReady_.setUpdate([this]() {
+        if (getInports().empty()) return true;
+
+        auto* inport = getInports().front();
+        return isCached_ ||
+               (inport->isConnected() && util::all_of(inport->getConnectedOutports(),
+                                                      [](Outport* p) { return p->isReady(); }));
+    });
+
+    currentKey_.setReadOnly(true);
+    currentKey_.setSerializationMode(PropertySerializationMode::None);
+
+    app->getProcessorNetworkEvaluator()->addObserver(this);
+}
+
+void CacheBase::onProcessorNetworkEvaluationBegin() {
+    if (isValid()) return;
+
+    key_ = detail::cacheState(this, *getNetwork(), refDir_.get(), xml_);
+    currentKey_.set(key_);
+
+    const auto isCached = hasCache(key_) && enabled_;
+
+    if (isCached_ != isCached) {
+        isCached_ = isCached;
+        isReady_.update();
+        notifyObserversActiveConnectionsChange(this);
+    }
+}
+
+bool CacheBase::isConnectionActive(Inport* inport, Outport*) const {
+    if (inport == getInports().front()) {
+        return !isCached_;
+    } else {
+        return true;
+    }
+}
+
+void CacheBase::writeXML() const {
+    if (!cacheDir_.get().empty()) {
+        if (auto f = std::ofstream(cacheDir_.get() / fmt::format("{}.inv", key_))) {
+            f << xml_;
+        } else {
+            throw Exception(SourceContext{}, "Could not write to xml file: {}/{}.inv",
+                            cacheDir_.get(), key_);
+        }
+    }
+}
+
+}  // namespace inviwo
