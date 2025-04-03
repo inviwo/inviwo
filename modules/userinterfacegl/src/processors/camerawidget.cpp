@@ -175,6 +175,16 @@ CameraWidget::CameraWidget()
     , cubeColor_{"cubeColor", "Cube Color",
                  util::ordinalColor(0.11f, 0.42f, 0.63f).set("Custom color for the cube"_help)}
 
+    , animate_{"animate", "Animate"}
+    , fps_{"fps", "FPS", util::ordinalLength(30, 120)}
+    , type_{"type",
+            "Type",
+            {{"yaw", "Yaw", CameraWidget::AnimationType::Yaw},
+             {"pitch", "Pitch", CameraWidget::AnimationType::Pitch},
+             {"roll ", "Roll ", CameraWidget::AnimationType::Roll}},
+            0}
+    , direction_{"direction", "Direction"}
+
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
     , rotMatrix_{"rotMatrix",
@@ -204,7 +214,8 @@ CameraWidget::CameraWidget()
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
     , currentPickingID_(-1)
-    , widgetImageGL_{nullptr} {
+    , widgetImageGL_{nullptr}
+    , timer_{ms{0}, [this]() { animate(); }} {
 
     addPort(inport_).setOptional(true);
     addPort(outport_);
@@ -217,6 +228,9 @@ CameraWidget::CameraWidget()
     customColorComposite_.addProperties(axisColoring_, userColor_);
     appearance_.addProperties(position_, anchorPos_, scaling_, showCube_, cubeColor_,
                               customColorComposite_);
+
+    animate_.addProperties(fps_, type_, direction_);
+
     // output properties
     camera_.setCollapsed(true);
     outputProps_.addProperties(camera_, rotMatrix_);
@@ -226,7 +240,8 @@ CameraWidget::CameraWidget()
     lightingProperty_.setCollapsed(true);
     internalProps_.addProperty(lightingProperty_);
 
-    addProperties(cameraActions_, visible_, settings_, appearance_, outputProps_, internalProps_);
+    addProperties(cameraActions_, visible_, settings_, appearance_, animate_, outputProps_,
+                  internalProps_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     cubeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -234,8 +249,8 @@ CameraWidget::CameraWidget()
 
     camera_.setHelp("Camera affected by the widget interaction"_help);
 
-    // update internal picking IDs. The mesh consists of 5 elements, each of them has a clockwise
-    // and a counter clockwise / zoom in and zoom out part.
+    // update internal picking IDs. The mesh consists of 5 elements, each of them has a
+    // clockwise and a counter clockwise / zoom in and zoom out part.
     std::array<Interaction, 5> dir = {Interaction::HorizontalRotation,
                                       Interaction::VerticalRotation, Interaction::FreeRotation,
                                       Interaction::Roll, Interaction::Zoom};
@@ -243,6 +258,15 @@ CameraWidget::CameraWidget()
     for (int i = 0; i < numInteractionWidgets; ++i) {
         pickingIDs_[i] = {picking_.getPickingId(i), dir[i / 2], ((i % 2) == 0)};
     }
+
+    animate_.getBoolProperty()->onChange([this]() {
+        if (animate_.getBoolProperty()->get()) {
+            timer_.start(ms{fps_.get()});
+        } else {
+            timer_.stop();
+        }
+    });
+    fps_.onChange([this]() { timer_.setInterval(ms{fps_.get()}); });
 }
 
 CameraWidget::~CameraWidget() = default;
@@ -290,8 +314,8 @@ void CameraWidget::initializeResources() {
     cubeShader_.getVertexShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
     cubeShader_.build();
 
-    // initialize shader uniform containing all picking colors, the mesh will fetch the appropriate
-    // one using the object ID stored in the second texture coordinate set
+    // initialize shader uniform containing all picking colors, the mesh will fetch the
+    // appropriate one using the object ID stored in the second texture coordinate set
     shader_.activate();
     std::vector<vec3> colors;
     colors.resize(numInteractionWidgets);
@@ -352,8 +376,8 @@ void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
 
         // apply custom transformation
         mat4 worldMatrix(camera_.viewMatrix());
-        // consider only the camera rotation and overwrite the translation by moving the cube back a
-        // bit
+        // consider only the camera rotation and overwrite the translation by moving the cube
+        // back a bit
         worldMatrix[3] = vec4(0.0f, 0.0f, -8.0f, 1.0f);
         mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
@@ -718,6 +742,20 @@ std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
         {std::nullopt, ":svgicons/camera-dolly-away.svg", "Dolly away",
          [this] { singleStepInteraction(Interaction::Zoom, true); }},
     }};
+}
+
+void CameraWidget::animate() {
+    switch (type_.get()) {
+        case AnimationType::Yaw:
+            singleStepRotation(Interaction::VerticalRotation, direction_.get());
+            break;
+        case AnimationType::Pitch:
+            singleStepRotation(Interaction::HorizontalRotation, direction_.get());
+            break;
+        case AnimationType::Roll:
+            singleStepRotation(Interaction::Roll, direction_.get());
+            break;
+    }
 }
 
 }  // namespace inviwo
