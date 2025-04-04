@@ -225,7 +225,7 @@ void DataFrameDockTable::process() {
 }
 
 void DataFrameDockTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    auto* widget = getWidget();
+    auto* widget = dynamic_cast<DataFrameDockTableWidget*>(processorWidget.get());
     if (processorWidget && !widget) {
         throw Exception(
             "Expected DataFrameDockTableWidget in DataFrameDockTable::setProcessorWidget");
