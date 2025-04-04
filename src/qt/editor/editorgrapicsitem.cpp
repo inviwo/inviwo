@@ -88,6 +88,12 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
 }
 
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
+    if (!scene() || scene()->views().empty()) return;
+    QGraphicsView* view = scene()->views().first();
+    QRectF rect = this->mapRectToScene(this->rect());
+    QRect viewRect = view->mapFromScene(rect).boundingRect();
+    e->accept();
+
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     bool inspector = settings->enablePortInspectors_.get();
     size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
@@ -190,7 +196,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     // otherwise we might loose focus and the tooltip will go away...
     qApp->processEvents();
 
-    showToolTipHelper(e, utilqt::toLocalQString(desc));
+    // don't use showToolTipHelper here, since this might have been deleted in processEvents.
+    QToolTip::showText(e->screenPos(), utilqt::toLocalQString(desc), view, viewRect);
 }
 
 }  // namespace inviwo

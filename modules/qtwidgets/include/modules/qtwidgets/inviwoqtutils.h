@@ -270,6 +270,8 @@ IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string_view menuName, bool createIf
 
 IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
 
+IVW_MODULE_QTWIDGETS_API std::shared_ptr<Layer> toLayer(const QImage& image);
+
 /*
  * \brief save the given QImage \p image as base64-encoded string using the image file format \p
  * format and image \p quality.

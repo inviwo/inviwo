@@ -29,19 +29,20 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-#include <inviwo/core/algorithm/camerautils.h>                // for Side, Side::XNegative, Side...
-#include <inviwo/core/datastructures/image/image.h>           // for Image
-#include <inviwo/core/datastructures/image/imagetypes.h>      // for LayerType, LayerType::Color
-#include <inviwo/core/datastructures/image/layer.h>           // for Layer
-#include <inviwo/core/datastructures/isovaluecollection.h>    // for IsoValueCollection
-#include <inviwo/core/datastructures/tfprimitive.h>           // for TFPrimitive
-#include <inviwo/core/datastructures/tfprimitiveset.h>        // for TFPrimitiveSet
-#include <inviwo/core/datastructures/transferfunction.h>      // for TransferFunction
-#include <inviwo/core/interaction/events/eventpropagator.h>   // for EventPropagator
-#include <inviwo/core/interaction/events/viewevent.h>         // for ViewEvent, ViewEvent::FitData
-#include <inviwo/core/io/imagewriterutil.h>                   // for saveLayer
-#include <inviwo/core/network/processornetwork.h>             // for ProcessorNetwork
-#include <inviwo/core/processors/canvasprocessor.h>           // for CanvasProcessor
+#include <inviwo/core/algorithm/camerautils.h>            // for Side, Side::XNegative, Side...
+#include <inviwo/core/datastructures/image/image.h>       // for Image
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType, LayerType::Color
+#include <inviwo/core/datastructures/image/layer.h>       // for Layer
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/isovaluecollection.h>   // for IsoValueCollection
+#include <inviwo/core/datastructures/tfprimitive.h>          // for TFPrimitive
+#include <inviwo/core/datastructures/tfprimitiveset.h>       // for TFPrimitiveSet
+#include <inviwo/core/datastructures/transferfunction.h>     // for TransferFunction
+#include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
+#include <inviwo/core/interaction/events/viewevent.h>        // for ViewEvent, ViewEvent::FitData
+#include <inviwo/core/io/imagewriterutil.h>                  // for saveLayer
+#include <inviwo/core/network/processornetwork.h>            // for ProcessorNetwork
+#include <inviwo/core/processors/exporter.h>
 #include <inviwo/core/properties/isovalueproperty.h>          // for IsoValueProperty
 #include <inviwo/core/properties/transferfunctionproperty.h>  // for TransferFunctionProperty
 #include <inviwo/core/properties/isotfproperty.h>
@@ -384,6 +385,26 @@ QImage layerToQImage(const Layer& layer) {
     return QImage::fromData(data->data(), static_cast<int>(data->size()), "png");
 }
 
+std::shared_ptr<Layer> toLayer(const QImage& image) {
+    // Note: it is critical that the QImage format "Format_RGBA8888" is binary compatible with
+    // our "LayerRAMPrecision<glm::u8vec4>".
+    const auto qImage = image.convertToFormat(QImage::Format_RGBA8888).mirrored(false, true);
+    auto ram = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(utilqt::toGLM(qImage.size()));
+    const auto ramMemSize =
+        glm::compMul(ram->getDimensions()) * ram->getDataFormat()->getSizeInBytes();
+
+    if (static_cast<size_t>(qImage.sizeInBytes()) != ramMemSize) {
+        throw Exception(
+            SourceContext{},
+            "Expected the Qt image byte size {}, and Inviwo Layer byte size {}, to be equal",
+            qImage.sizeInBytes(), ramMemSize);
+    }
+
+    std::memcpy(ram->getData(), qImage.bits(), qImage.sizeInBytes());
+
+    return std::make_shared<Layer>(ram);
+}
+
 void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
     QMenu* copy = menu.addMenu(QIcon(":svgicons/edit-copy.svg"), "Copy");
     QMenu* save = menu.addMenu(QIcon(":svgicons/save-as.svg"), "Save");
@@ -462,12 +483,19 @@ QIcon fromBase64ToIcon(std::string_view base64, std::string_view format) {
 
 std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network, bool alpha) {
     std::vector<std::pair<std::string, QImage>> images;
-    for (auto* p : network->getProcessorsByType<CanvasProcessor>()) {
-        if (p->isSink() && p->isReady()) {
-            auto img = utilqt::layerToQImage(*p->getVisibleLayer()).scaledToHeight(256);
-            images.emplace_back(p->getDisplayName(), img);
+
+    network->forEachProcessor([&](Processor* p) {
+        if (auto exporter = dynamic_cast<const ImageExporter*>(p)) {
+            if (p->isSink() && p->isReady()) {
+                if (auto img = exporter->getImage()) {
+                    if (auto layer = img->getColorLayer()) {
+                        auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
+                        images.emplace_back(p->getDisplayName(), qimg);
+                    }
+                }
+            }
         }
-    }
+    });
 
     if (!alpha) {
         for (auto& elem : images) {

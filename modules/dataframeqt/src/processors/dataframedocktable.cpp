@@ -33,6 +33,7 @@
 #include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
 #include <inviwo/core/network/networklock.h>               // for NetworkLock
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeSta...
 #include <inviwo/core/processors/processortags.h>      // for Tags, Tag, Tags::CPU
@@ -64,37 +65,14 @@
 #include <QObject>       // for Q_OBJECT
 #include <QVBoxLayout>
 #include <QMainWindow>
+#include <QImage>
 
 namespace inviwo {
 
-namespace {
-QMainWindow* findParent(Processor* p) {
-    auto* net = p->getNetwork();
-
-    std::vector<std::pair<Processor*, QMainWindow*>> candidates;
-    net->forEachProcessor([&](Processor* processor) {
-        auto* widget = processor->getProcessorWidget();
-        if (auto* mw = dynamic_cast<QMainWindow*>(widget)) {
-            candidates.emplace_back(processor, mw);
-        }
-    });
-
-    if (!candidates.empty()) {
-        return candidates.front().second;
-    }
-
-    return utilqt::getApplicationMainWindow();
-}
-
-}  // namespace
-
 DataFrameDockTableWidget::DataFrameDockTableWidget(Processor* p)
-    : ProcessorDockWidgetQt(p, utilqt::toQString(p->getDisplayName()), findParent(p))
+    : ProcessorDockWidgetQt(p, utilqt::toQString(p->getDisplayName()),
+                            utilqt::getApplicationMainWindow())
     , tableview_{new DataFrameTableView(this)} {
-
-    setAllowedAreas(Qt::AllDockWidgetAreas);
-    auto* mw = findParent(p);
-    mw->addDockWidget(Qt::LeftDockWidgetArea, this);
 
     tableview_->setMouseTracking(true);
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -163,19 +141,29 @@ DataFrameDockTable::DataFrameDockTable()
                 PropertySemantics::Text}
     , visible_{"visible", "Visible", true}
     , parent_{"parent", "Widget Parent", ""}
+    , dockArea_{"dockArea",
+                "Dock Area",
+                {{"NoDockWidgetArea", "No Dock Area", Qt::NoDockWidgetArea},
+                 {"LeftDockWidgetArea", "Left Dock Area", Qt::LeftDockWidgetArea},
+                 {"RightDockWidgetArea", "Right Dock Area", Qt::RightDockWidgetArea},
+                 {"TopDockWidgetArea", "Top Dock Area", Qt::TopDockWidgetArea},
+                 {"BottomDockWidgetArea", "Bottom Dock Area", Qt::BottomDockWidgetArea}},
+                1}
     , showIndexColumn_("showIndexColumn", "Show Index Column",
                        "show/hide index column in table"_help, false, InvalidationLevel::Valid)
     , showCategoryIndices_("showCategoryIndices", "Show Category Indices",
                            "show integral category indices for categorical columns"_help, false)
     , showFilteredRowCols_("showFilteredItems", "Show Filtered Items", true)
-    , widgetMetaData_{
-          createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier)} {
+    , widgetMetaData_{createMetaData<ProcessorWidgetMetaData>(
+          ProcessorWidgetMetaData::classIdentifier)}
+    , currentParent_{} {
+
     widgetMetaData_->addObserver(this);
 
     addPort(inport_);
     addPort(brushLinkPort_);
-    addProperties(dimensions_, position_, visible_, parent_, showIndexColumn_, showCategoryIndices_,
-                  showFilteredRowCols_);
+    addProperties(dimensions_, position_, visible_, parent_, dockArea_, showIndexColumn_,
+                  showCategoryIndices_, showFilteredRowCols_);
 
     // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
@@ -199,16 +187,13 @@ DataFrameDockTable::DataFrameDockTable()
 
     parent_.onChange([this]() {
         if (auto* widget = getWidget()) {
-            if (auto* p = getNetwork()->getProcessorByIdentifier(parent_.get())) {
-                if (auto* parent = dynamic_cast<QMainWindow*>(p->getProcessorWidget())) {
-                    widget->setParent(parent);
-                    parent->addDockWidget(Qt::LeftDockWidgetArea, widget);
-                }
-            } else if (auto mw = utilqt::getApplicationMainWindow()) {
-                widget->setParent(mw);
-                mw->addDockWidget(Qt::LeftDockWidgetArea, widget);
-                widget->setFloating(true);
-            }
+            setWidgetParent(widget, parent_.get());
+        }
+    });
+
+    dockArea_.onChange([this]() {
+        if (auto* widget = getWidget()) {
+            setDockArea(widget, dockArea_.get());
         }
     });
 }
@@ -219,8 +204,17 @@ DataFrameDockTable::~DataFrameDockTable() {
     }
 }
 
+void DataFrameDockTable::setNetwork(ProcessorNetwork* network) {
+    Processor::setNetwork(network);
+    if (network) {
+        network->addObserver(this);
+    }
+}
+
 void DataFrameDockTable::process() {
     if (auto w = getWidget()) {
+        setWidgetParent(w, parent_.get());
+
         if (inport_.isChanged() || showCategoryIndices_.isModified()) {
             w->setDataFrame(inport_.getData(), showCategoryIndices_);
         }
@@ -239,11 +233,51 @@ void DataFrameDockTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> pro
         widget->setManager(brushLinkPort_.getManager());
         widget->setIndexColumnVisible(showIndexColumn_);
         widget->setFilteredRowsVisible(showFilteredRowCols_);
+
+        setWidgetParent(widget, parent_.get());
     }
 
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
     isReady_.update();
+}
+
+void DataFrameDockTable::setWidgetParent(DataFrameDockTableWidget* widget,
+                                         std::string_view processorId) {
+    if (processorId != currentParent_) {
+        if (processorId.empty()) {
+            currentParent_.clear();
+            if (auto* mw = utilqt::getApplicationMainWindow()) {
+                widget->setParent(mw);
+                mw->addDockWidget(Qt::LeftDockWidgetArea, widget);
+                widget->setFloating(true);
+            } else {
+                widget->setParent(nullptr);
+                widget->setFloating(true);
+            }
+        } else if (auto* p = getNetwork()->getProcessorByIdentifier(processorId)) {
+            if (auto* parent = dynamic_cast<QMainWindow*>(p->getProcessorWidget())) {
+                widget->setParent(parent);
+                setDockArea(widget, dockArea_.get());
+                currentParent_ = processorId;
+            }
+        }
+    }
+}
+
+void DataFrameDockTable::setDockArea(DataFrameDockTableWidget* widget, Qt::DockWidgetArea area) {
+    if (auto* mw = dynamic_cast<QMainWindow*>(widget->parent())) {
+        mw->addDockWidget(area, widget);
+        widget->setFloating(area == Qt::NoDockWidgetArea);
+
+        if (area == Qt::LeftDockWidgetArea || area == Qt::RightDockWidgetArea) {
+            mw->resizeDocks({widget}, {static_cast<int>(widgetMetaData_->getDimensions().x)},
+                            Qt::Horizontal);
+        } else if (area == Qt::TopDockWidgetArea || area == Qt::BottomDockWidgetArea) {
+            mw->resizeDocks({widget}, {static_cast<int>(widgetMetaData_->getDimensions().y)},
+                            Qt::Vertical);
+        }
+    }
 }
 
 void DataFrameDockTable::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
@@ -270,6 +304,21 @@ void DataFrameDockTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaDa
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
+void DataFrameDockTable::onProcessorNetworkDidAddProcessor(Processor* p) {
+    if (parent_.get() != currentParent_ && p->getIdentifier() == parent_.get()) {
+        if (auto w = getWidget()) {
+            setWidgetParent(w, parent_.get());
+        }
+    }
+}
+void DataFrameDockTable::onProcessorNetworkWillRemoveProcessor(Processor* p) {
+    if (p->getIdentifier() == parent_.get()) {
+        if (auto w = getWidget()) {
+            setWidgetParent(w, "");
+        }
+    }
+}
+
 DataFrameDockTableWidget* DataFrameDockTable::getWidget() const {
     if (auto widget = dynamic_cast<DataFrameDockTableWidget*>(processorWidget_.get())) {
         return widget;
@@ -284,5 +333,27 @@ void DataFrameDockTable::setWidgetSize(size2_t dim) {
 }
 
 size2_t DataFrameDockTable::getWidgetSize() const { return dimensions_; }
+
+std::optional<std::filesystem::path> DataFrameDockTable::exportFile(
+    const std::filesystem::path& path, std::string_view name,
+    const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
+
+    if (auto data = inport_.getData()) {
+        return util::saveData(*data, path, name, candidateExtensions, overwrite);
+    }
+
+    throw Exception("Inport has no data");
+}
+
+std::shared_ptr<const Image> DataFrameDockTable::getImage() const {
+    if (auto w = getWidget()) {
+        QPixmap pm(w->size());
+        w->render(&pm);
+
+        return std::make_shared<Image>(utilqt::toLayer(pm.toImage()));
+    }
+
+    return nullptr;
+}
 
 }  // namespace inviwo

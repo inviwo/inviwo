@@ -29,9 +29,10 @@
 
 #include <inviwo/dataframeqt/processors/dataframetable.h>
 
-#include <inviwo/core/io/datawriterutil.h>                             // for saveData
-#include <inviwo/core/metadata/processorwidgetmetadata.h>              // for ProcessorWidgetMet...
-#include <inviwo/core/network/networklock.h>                           // for NetworkLock
+#include <inviwo/core/io/datawriterutil.h>                 // for saveData
+#include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
+#include <inviwo/core/network/networklock.h>               // for NetworkLock
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/processors/processor.h>                          // for Processor
 #include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
 #include <inviwo/core/processors/processortags.h>                      // for Tags, Tag, Tags::CPU
@@ -48,6 +49,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>          // for DataFrameTableProc...
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <functional>  // for __base
 #include <limits>      // for numeric_limits
@@ -197,6 +199,17 @@ std::optional<std::filesystem::path> DataFrameTable::exportFile(
     }
 
     throw Exception("Inport has no data");
+}
+
+std::shared_ptr<const Image> DataFrameTable::getImage() const {
+    if (auto w = getWidget()) {
+        QPixmap pm(w->size());
+        w->render(&pm);
+
+        return std::make_shared<Image>(utilqt::toLayer(pm.toImage()));
+    }
+
+    return nullptr;
 }
 
 }  // namespace inviwo

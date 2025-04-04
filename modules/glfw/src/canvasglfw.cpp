@@ -115,10 +115,8 @@ CanvasGLFW::CanvasGLFW(const std::string& title, uvec2 dimensions)
     , eventManager_{glWindow_,
                     [this](Event* event) {
                         if (!propagator_) return;
-                        NetworkLock lock;
+                        const NetworkLock lock;
                         pickingController_.propagateEvent(event, propagator_);
-                        if (event->hasBeenUsed()) return;
-                        propagator_->propagateEvent(event, nullptr);
                     },
                     [this](dvec2 pos) -> double { return getDepthValueAtNormalizedCoord(pos); }} {
 

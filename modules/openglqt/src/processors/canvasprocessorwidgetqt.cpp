@@ -68,8 +68,8 @@ class Canvas;
 
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     : CanvasProcessorWidget(p)
-    , QWidget{utilqt::getApplicationMainWindow(),
-              CanvasProcessorWidget::isOnTop() ? Qt::Tool : Qt::Window}
+    , QMainWindow{utilqt::getApplicationMainWindow(),
+                  CanvasProcessorWidget::isOnTop() ? Qt::Tool : Qt::Window}
     , canvas_{std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>>(
           new CanvasQOpenGLWidget(nullptr, p->getDisplayName()),
           [](CanvasQOpenGLWidget* c) {
@@ -84,6 +84,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     })} {
 
     setWindowTitle(utilqt::toQString(p->getDisplayName()));
+    setDockNestingEnabled(true);
 
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
@@ -94,12 +95,10 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
 
     const auto dpr = window()->devicePixelRatio();
     const ivec2 logicalDim = pysicalDim / dpr;
-    canvas_->setEventPropagator(p);
+    canvas_->setEventPropagator(this);
     canvas_->onContextMenu([this](QMenu& menu) { return contextMenu(menu); });
 
-    QGridLayout* gridLayout = new QGridLayout(this);
-    gridLayout->setContentsMargins(0, 0, 0, 0);
-    gridLayout->addWidget(canvas_.get(), 0, 0);
+    setCentralWidget(canvas_.get());
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         // Move widget relative to main window to make sure that it is visible on screen.
@@ -179,24 +178,17 @@ void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
 
 Canvas* CanvasProcessorWidgetQt::getCanvas() const { return canvas_.get(); }
 
-void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
-    Super::resizeEvent(event);
-    util::KeepTrueWhileInScope ignore(&resizeOngoing_);
-    propagateResizeEvent();
+void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) { Super::resizeEvent(event); }
+
+void CanvasProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
+    if (auto re = event->getAs<ResizeEvent>()) {
+        CanvasProcessorWidget::setDimensions(re->size());
+    }
+
+    getProcessor()->propagateEvent(event, source);
 }
 
-void CanvasProcessorWidgetQt::propagateResizeEvent() {
-    auto previousCanvasDimensions = canvasDimensions_;
-
-    const auto dpr = window()->devicePixelRatio();
-    canvasDimensions_ = dpr * utilqt::toGLM(canvas_->size());
-    CanvasProcessorWidget::setDimensions(canvasDimensions_);
-
-    NetworkLock lock;
-    RenderContext::getPtr()->activateDefaultRenderContext();
-    ResizeEvent resizeEvent(canvasDimensions_, previousCanvasDimensions);
-    getProcessor()->propagateEvent(&resizeEvent, nullptr);
-}
+void CanvasProcessorWidgetQt::propagateResizeEvent() { canvas_->triggerResizeEventPropagation(); }
 
 bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu) {
     if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
@@ -248,7 +240,6 @@ void CanvasProcessorWidgetQt::updateVisible(bool visible) {
     setVisible(visible);
 }
 void CanvasProcessorWidgetQt::updateDimensions(ivec2 dim) {
-    if (resizeOngoing_) return;
     util::KeepTrueWhileInScope ignore(&ignoreEvents_);
     setDimensions(dim);
 }

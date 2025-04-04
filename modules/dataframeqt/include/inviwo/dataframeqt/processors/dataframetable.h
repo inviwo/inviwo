@@ -56,7 +56,8 @@ class ProcessorWidget;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
                                                   public ProcessorWidgetMetaDataObserver,
-                                                  public Exporter {
+                                                  public Exporter,
+                                                  public ImageExporter {
 public:
     DataFrameTable();
     virtual ~DataFrameTable();
@@ -77,6 +78,11 @@ public:
     virtual std::optional<std::filesystem::path> exportFile(
         const std::filesystem::path& path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
+
+    /**
+     * @see ImageExporter::getImage
+     */
+    virtual std::shared_ptr<const Image> getImage() const override;
 
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
