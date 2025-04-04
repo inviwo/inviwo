@@ -203,8 +203,8 @@ void Background::process() {
 
     if (inport_.hasData()) {
         // Check data format, make sure we always have 4 channels
-        const auto inDataFormat = inport_.getData()->getDataFormat();
-        const auto format =
+        const auto* inDataFormat = inport_.getData()->getDataFormat();
+        const auto* format =
             DataFormatBase::get(inDataFormat->getNumericType(), 4, inDataFormat->getPrecision());
 
         if (outport_.getData()->getDataFormat() != format ||

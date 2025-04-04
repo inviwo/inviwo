@@ -178,6 +178,10 @@ public:
 
 protected:
     Column() = default;
+    Column(const Column&) = default;
+    Column(Column&&) = default;  // NOLINT
+    Column& operator=(const Column&) = default;
+    Column& operator=(Column&&) = default;  // NOLINT
 };
 
 /**
@@ -202,7 +206,7 @@ public:
 
     TemplateColumn(const TemplateColumn<T>& rhs);
     TemplateColumn(const TemplateColumn<T>& rhs, std::span<const std::uint32_t> rowSelection);
-    TemplateColumn(TemplateColumn<T>&& rhs);
+    TemplateColumn(TemplateColumn<T>&& rhs);  // NOLINT
 
     TemplateColumn<T>& operator=(const TemplateColumn<T>& rhs);
     TemplateColumn<T>& operator=(TemplateColumn<T>&& rhs);
@@ -300,7 +304,7 @@ public:
     IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
     IndexColumn(const IndexColumn& rhs) = default;
     IndexColumn(const IndexColumn& rhs, std::span<const std::uint32_t> rowSelection);
-    IndexColumn(IndexColumn&& rhs) = default;
+    IndexColumn(IndexColumn&& rhs) = default;  // NOLINT
     IndexColumn& operator=(const IndexColumn& rhs) = default;
     IndexColumn& operator=(IndexColumn&& rhs) = default;
 

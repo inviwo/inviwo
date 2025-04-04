@@ -41,12 +41,18 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
+#include <atomic>
+
 namespace inviwo {
 
 class IVW_MODULE_DATAFRAME_API FileList : public Processor {
 public:
     FileList();
-    ~FileList();
+    FileList(const FileList&) = delete;
+    FileList(FileList&&) = delete;
+    FileList& operator=(const FileList&) = delete;
+    FileList& operator=(FileList&&) = delete;
+    virtual ~FileList();
 
     virtual void process() override;
 
@@ -55,6 +61,10 @@ public:
 
 private:
     void cycleFiles();
+    static bool running(std::weak_ptr<Processor> pw);
+    static std::vector<std::filesystem::directory_entry> getFiles(std::weak_ptr<Processor> pw);
+    static void setIndex(std::weak_ptr<Processor> pw, size_t i, const std::filesystem::path& path);
+
     DataOutport<DataFrame> outport_;
     BrushingAndLinkingInport bnlInport_;
     BrushingAndLinkingOutport bnlOutport_;

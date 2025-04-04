@@ -40,7 +40,12 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public ProcessorWidget, public QMainWindow {
 public:
     ProcessorWidgetQt(Processor* p);
+    ProcessorWidgetQt(const ProcessorWidgetQt&) = delete;
+    ProcessorWidgetQt(ProcessorWidgetQt&&) = delete;
+    ProcessorWidgetQt& operator=(const ProcessorWidgetQt&) = delete;
+    ProcessorWidgetQt& operator=(ProcessorWidgetQt&&) = delete;
     virtual ~ProcessorWidgetQt() = default;
+    
     using Super = QMainWindow;
     using QMainWindow::setVisible;
     virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget

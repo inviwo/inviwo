@@ -87,6 +87,42 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
     return qobject_cast<NetworkEditor*>(scene());
 }
 
+namespace {
+std::vector<std::pair<std::string, const Layer*>> getLayersForImagePort(
+    const std::shared_ptr<const Image>& image, const std::shared_ptr<const Image>& imageData) {
+    std::vector<std::pair<std::string, const Layer*>> layers;
+    for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
+        const auto* layerData = imageData->getColorLayer(i);
+        const auto* layer = image->getColorLayer(i);
+        layers.emplace_back(
+            fmt::format("Color Layer {} {}", i, layerData->getDataFormat()->getString()), layer);
+    }
+
+    // register picking layer
+    layers.emplace_back(
+        fmt::format("Picking Layer {}", imageData->getPickingLayer()->getDataFormat()->getString()),
+        image->getPickingLayer());
+    // register depth layer
+    layers.emplace_back(
+        fmt::format("Depth Layer {}", imageData->getDepthLayer()->getDataFormat()->getString()),
+        image->getDepthLayer());
+
+    return layers;
+}
+
+std::string layerToString(const Layer& layer) {
+    const auto imgbuf = layer.getAsCodedBuffer("png");
+    // imgbuf might be null, if we don't have a data writer factory function to save
+    // the layer. Happens if cimg not used, and no other data writer is registered.
+    if (!imgbuf) return {};
+
+    QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()), static_cast<int>(imgbuf->size()));
+
+    return std::string(byteArray.toBase64().data());
+}
+
+}  // namespace
+
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
     if (!scene() || scene()->views().empty()) return;
     QGraphicsView* view = scene()->views().first();
@@ -95,7 +131,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     e->accept();
 
     auto* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    bool inspector = settings->enablePortInspectors_.get();
+    const bool inspector = settings->enablePortInspectors_.get();
     size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
     Document desc{};
@@ -130,31 +166,14 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
         if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
 
             std::vector<std::pair<std::string, const Layer*>> layers;
-            if (auto imageOutport = dynamic_cast<ImageOutport*>(outport)) {
+            if (auto* imageOutport = dynamic_cast<ImageOutport*>(outport)) {
                 if (auto imageData = imageOutport->getData()) {
                     // register all color layers
-                    for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
-                        const auto layerData = imageData->getColorLayer(i);
-                        const auto layer = image->getColorLayer(i);
-                        layers.push_back({fmt::format("Color Layer {} {}", i,
-                                                      layerData->getDataFormat()->getString()),
-                                          layer});
-                    }
-
-                    // register picking layer
-                    layers.push_back(
-                        {fmt::format("Picking Layer {}",
-                                     imageData->getPickingLayer()->getDataFormat()->getString()),
-                         image->getPickingLayer()});
-                    // register depth layer
-                    layers.push_back(
-                        {fmt::format("Depth Layer {}",
-                                     imageData->getDepthLayer()->getDataFormat()->getString()),
-                         image->getDepthLayer()});
+                    layers = getLayersForImagePort(image, imageData);
                 }
             } else {
                 // outport is not an ImageOutport, show only first color layer
-                layers.push_back({"", image->getColorLayer(0)});
+                layers.emplace_back("", image->getColorLayer(0));
             }
 
             auto p = body.append("p");
@@ -169,13 +188,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                     tableRow = t.append("tr");
                 }
 
-                const auto imgbuf = layer->getAsCodedBuffer("png");
-                // imgbuf might be null, if we don't have a data writer factory function to save
-                // the layer. Happens if cimg not used, and no other data writer is registered.
-                if (!imgbuf) continue;
-
-                QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()),
-                                     static_cast<int>(imgbuf->size()));
+                const auto layerStr = layerToString(*layer);
+                if (layerStr.empty()) continue;
 
                 auto table = tableRow.append("td").append("table");
 
@@ -183,7 +197,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                     "img", "",
                     {{"width", std::to_string(portInspectorSize)},
                      {"height", std::to_string(portInspectorSize)},
-                     {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
+                     {"src", "data:image/png;base64," + layerStr}});
                 if (!name.empty()) {
                     table.append("tr").append("td", name);
                 }

@@ -123,7 +123,7 @@ void ProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
     if (ignoreEvents_) return;
 
     Super::resizeEvent(event);
-    util::KeepTrueWhileInScope ignore(&resizeOngoing_);
+    const util::KeepTrueWhileInScope ignore(&resizeOngoing_);
     ProcessorWidget::setDimensions(utilqt::toGLM(event->size()));
 }
 

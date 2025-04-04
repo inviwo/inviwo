@@ -113,8 +113,8 @@ DataFrame& DataFrame::operator=(const DataFrame& that) {
     }
     return *this;
 }
-DataFrame& DataFrame::operator=(DataFrame&&) = default;
-DataFrame::DataFrame(DataFrame&&) = default;
+DataFrame& DataFrame::operator=(DataFrame&&) noexcept = default;
+DataFrame::DataFrame(DataFrame&&) noexcept = default;
 
 void DataFrame::createIndexBuffer(size_t rows) {
     // at the moment, GPUs only support uints up to 32bit
