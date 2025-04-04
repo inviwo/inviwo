@@ -171,7 +171,7 @@ public:
     template <typename... Ts,
               typename = std::enable_if_t<std::conjunction_v<std::is_convertible<Ts, uint32_t>...>>>
     void add(Ts&&... values) {
-        (addSingle(values), ...);
+        (addSingle(static_cast<uint32_t>(values)), ...);
     }
 
     /**

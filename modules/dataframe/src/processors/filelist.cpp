@@ -140,6 +140,14 @@ FileList::FileList()
 
 FileList::~FileList() { running_ = false; }
 
+namespace {
+
+auto getSelf(std::weak_ptr<Processor> pw) -> std::shared_ptr<FileList> {
+    return std::dynamic_pointer_cast<FileList>(pw.lock());
+}
+
+}  // namespace
+
 void FileList::cycleFiles() {
     auto* net = getNetwork();
     auto* app = net->getApplication();
@@ -148,44 +156,43 @@ void FileList::cycleFiles() {
     const bool desired = true;
     if (running_.compare_exchange_strong(expected, desired)) {
         app->dispatchFrontAndForget([pw = weak_from_this(), app, net]() {
-            const auto getSelf = [&]() -> std::shared_ptr<FileList> {
-                if (auto p = pw.lock()) {
-                    return std::dynamic_pointer_cast<FileList>(p);
-                }
-                return nullptr;
-            };
-
-            auto running = [&]() -> bool {
-                if (auto self = getSelf()) return self->running_;
-                return false;
-            };
-
             const util::OnScopeExit stopRunning{[&]() {
-                if (auto self = getSelf()) self->running_ = false;
+                if (auto self = getSelf(pw)) self->running_ = false;
             }};
 
-            const auto files = [&]() -> std::vector<std::filesystem::directory_entry> {
-                if (auto self = getSelf()) {
-                    return self->files_;
-                } else {
-                    return {};
-                }
-            }();
-
-            for (size_t i = 0; running() && i < files.size(); ++i) {
-                if (auto self = getSelf()) {
-                    log::info("Loading: {} {:?g}", i, files[i].path());
-                    self->selectedIndex_.set(i);
-                }
+            const auto files = getFiles(pw);
+            for (size_t i = 0; running(pw) && i < files.size(); ++i) {
+                setIndex(pw, i, files[i].path());
 
                 do {  // NOLINT
                     app->processFront();
                     app->processEvents();
-                } while (running() && net->runningBackgroundJobs() > 0);
+                } while (running(pw) && net->runningBackgroundJobs() > 0);
             }
         });
     } else {
         running_ = false;
+    }
+}
+
+bool FileList::running(std::weak_ptr<Processor> pw) {
+    if (auto self = getSelf(pw)) return self->running_;
+    return false;
+}
+
+auto FileList::getFiles(std::weak_ptr<Processor> pw)
+    -> std::vector<std::filesystem::directory_entry> {
+    if (auto self = getSelf(pw)) {
+        return self->files_;
+    } else {
+        return {};
+    }
+}
+
+void FileList::setIndex(std::weak_ptr<Processor> pw, size_t i, const std::filesystem::path& path) {
+    if (auto self = getSelf(pw)) {
+        log::info("Loading: {} {:?g}", i, path);
+        self->selectedIndex_.set(i);
     }
 }
 

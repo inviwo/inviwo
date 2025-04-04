@@ -105,6 +105,7 @@
 #include <QApplication>
 
 #include <fmt/std.h>
+#include <fmt/chrono.h>
 
 #include <algorithm>
 
@@ -454,20 +455,28 @@ void InviwoMainWindow::showWindow() {
 }
 
 void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::string_view fileName) {
-    repaint();
-    qApp->processEvents();
-    app_->waitForPool();
-
-    while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+    try {
+        repaint();
         qApp->processEvents();
-        app_->processFront();
-    }
+        app_->waitForPool();
 
-    rendercontext::activateDefault();
-    util::exportAllFiles(
-        *app_->getProcessorNetwork(), path, fileName,
-        {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
-        Overwrite::Yes);
+        while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+            qApp->processEvents();
+            app_->processFront();
+        }
+
+        rendercontext::activateDefault();
+        util::exportAllFiles(
+            *app_->getProcessorNetwork(), path, fileName,
+            {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
+            Overwrite::Yes);
+    } catch (const Exception& e) {
+        log::exception(e);
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception();
+    }
 }
 
 void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::string_view fileName) {
@@ -592,7 +601,19 @@ void InviwoMainWindow::addActions() {
         });
         fileMenuItem->addAction(appendAction);
     }
+    {
+        auto snapshot = fileMenuItem->addAction("Save Snapshots ...");
+        connect(snapshot, &QAction::triggered, [this](bool /*state*/) {
+            InviwoFileDialog saveFileDialog(nullptr, "Save Snapshots ...", "images");
+            saveFileDialog.setFileMode(FileMode::Directory);
+            saveFileDialog.setAcceptMode(AcceptMode::Open);
 
+            if (saveFileDialog.exec()) {
+                std::filesystem::path path = utilqt::toPath(saveFileDialog.selectedFiles().at(0));
+                saveSnapshots(path, fmt::format("{:%Y-%m-%d_%H-%M-%S}_UPN", std::chrono::system_clock::now()));
+            }
+        });
+    }
     {
         auto exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
 
@@ -992,7 +1013,6 @@ void InviwoMainWindow::addActions() {
             }
         });
     }
-
 #if IVW_PROFILING
     {
         networkMenuItem->addSeparator();
