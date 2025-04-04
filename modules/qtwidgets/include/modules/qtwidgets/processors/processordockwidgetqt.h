@@ -74,7 +74,7 @@ public:
 protected:
     // Implement ProcessorWidget
     virtual void updateVisible(bool visible) override;
-    virtual void updateDimensions(ivec2 size) override;
+    virtual void updateDimensions(ivec2 dimensions) override;
     virtual void updatePosition(ivec2 pos) override;
     virtual void updateFullScreen(bool) override;
     virtual void updateOnTop(bool) override;

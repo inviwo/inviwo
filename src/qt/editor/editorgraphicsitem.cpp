@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
@@ -90,11 +90,11 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
     if (!scene() || scene()->views().empty()) return;
     QGraphicsView* view = scene()->views().first();
-    QRectF rect = this->mapRectToScene(this->rect());
-    QRect viewRect = view->mapFromScene(rect).boundingRect();
+    const QRectF rect = this->mapRectToScene(this->rect());
+    const QRect viewRect = view->mapFromScene(rect).boundingRect();
     e->accept();
 
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    auto* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     bool inspector = settings->enablePortInspectors_.get();
     size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
@@ -129,29 +129,29 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     if (inspector && outport) {
         if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
 
-            bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr ||
-                                dynamic_cast<ImageInport*>(port) != nullptr);
-
             std::vector<std::pair<std::string, const Layer*>> layers;
-            if (isImagePort) {
-                // register all color layers
-                for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
-                    const auto layer = image->getColorLayer(i);
-                    layers.push_back(
-                        {fmt::format("Color Layer {} {}", i, layer->getDataFormat()->getString()),
-                         layer});
-                }
+            if (auto imageOutport = dynamic_cast<ImageOutport*>(outport)) {
+                if (auto imageData = imageOutport->getData()) {
+                    // register all color layers
+                    for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
+                        const auto layerData = imageData->getColorLayer(i);
+                        const auto layer = image->getColorLayer(i);
+                        layers.push_back({fmt::format("Color Layer {} {}", i,
+                                                      layerData->getDataFormat()->getString()),
+                                          layer});
+                    }
 
-                // register picking layer
-                layers.push_back(
-                    {fmt::format("Picking Layer {}",
-                                 image->getPickingLayer()->getDataFormat()->getString()),
-                     image->getPickingLayer()});
-                // register depth layer
-                layers.push_back(
-                    {fmt::format("Depth Layer {}",
-                                 image->getPickingLayer()->getDataFormat()->getString()),
-                     image->getDepthLayer()});
+                    // register picking layer
+                    layers.push_back(
+                        {fmt::format("Picking Layer {}",
+                                     imageData->getPickingLayer()->getDataFormat()->getString()),
+                         image->getPickingLayer()});
+                    // register depth layer
+                    layers.push_back(
+                        {fmt::format("Depth Layer {}",
+                                     imageData->getDepthLayer()->getDataFormat()->getString()),
+                         image->getDepthLayer()});
+                }
             } else {
                 // outport is not an ImageOutport, show only first color layer
                 layers.push_back({"", image->getColorLayer(0)});

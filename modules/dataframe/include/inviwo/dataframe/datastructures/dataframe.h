@@ -97,14 +97,14 @@ public:
     explicit DataFrame(std::uint32_t size = 0);
     explicit DataFrame(std::vector<std::shared_ptr<Column>> columns);
 
-    DataFrame(const DataFrame& df);
-    DataFrame(const DataFrame& df, std::span<const std::uint32_t> rowSelection);
-    DataFrame(const DataFrame& df, std::span<const std::string> columnSelection);
-    DataFrame(const DataFrame& df, std::span<const std::string> columnSelection,
+    DataFrame(const DataFrame& rhs);
+    DataFrame(const DataFrame& rhs, std::span<const std::uint32_t> rowSelection);
+    DataFrame(const DataFrame& rhs, std::span<const std::string> columnSelection);
+    DataFrame(const DataFrame& rhs, std::span<const std::string> columnSelection,
               std::span<const std::uint32_t> rowSelection);
-    DataFrame& operator=(const DataFrame& df);
-    DataFrame(DataFrame&& df);
-    DataFrame& operator=(DataFrame&& df);
+    DataFrame& operator=(const DataFrame& that);
+    DataFrame(DataFrame&& rhs);
+    DataFrame& operator=(DataFrame&& that);
     ~DataFrame() = default;
 
     /**

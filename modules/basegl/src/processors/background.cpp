@@ -203,12 +203,23 @@ void Background::process() {
 
     if (inport_.hasData()) {
         // Check data format, make sure we always have 4 channels
-        auto inDataFormat = inport_.getData()->getDataFormat();
-        auto format =
+        const auto inDataFormat = inport_.getData()->getDataFormat();
+        const auto format =
             DataFormatBase::get(inDataFormat->getNumericType(), 4, inDataFormat->getPrecision());
 
-        if (outport_.getData()->getDataFormat() != format) {
-            outport_.setData(std::make_shared<Image>(outport_.getDimensions(), format));
+        if (outport_.getData()->getDataFormat() != format ||
+            inport_.getData()->getNumberOfColorLayers() !=
+                outport_.getData()->getNumberOfColorLayers()) {
+
+            auto dst = std::make_shared<Image>(outport_.getDimensions(), format);
+            for (size_t i = 1; i < inport_.getData()->getNumberOfColorLayers(); ++i) {
+                if (i >= dst->getNumberOfColorLayers()) {
+                    dst->addColorLayer(
+                        std::make_shared<Layer>(*inport_.getData()->getColorLayer(i), noData));
+                }
+            }
+
+            outport_.setData(dst);
         }
     }
     utilgl::activateTarget(outport_, ImageType::AllLayers);
@@ -251,20 +262,25 @@ void Background::updateShaderInputs() {
         size_t outputLocation = 2;
 
         StrBuffer buff;
-        buff.append("\n");
-        for (size_t i = 1; i < numColorLayers; ++i) {
-            buff.append("layout(location = {}) out vec4 FragData{};\n", outputLocation++, i);
+        for (size_t i = 1; i < numColorLayers - 1; ++i) {
+            buff.append("layout(location = {}) out vec4 FragData{}; \\\n", outputLocation++, i);
         }
-        for (size_t i = 1; i < numColorLayers; ++i) {
-            buff.append("uniform sampler2D color{};\n", i);
+        for (size_t i = 1; i < numColorLayers - 1; ++i) {
+            buff.append("uniform sampler2D color{}; \\\n", i);
         }
+        buff.append("layout(location = {}) out vec4 FragData{}; \\\n", outputLocation++,
+                    numColorLayers - 1);
+        buff.append("uniform sampler2D color{};\n", numColorLayers - 1);
+
         fs->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS", buff);
 
         buff.clear();
         for (size_t i = 1; i < numColorLayers - 1; ++i) {
-            buff.append("FragData{0} = texture(color{0}, texCoord.xy); \\\n", i);
+            buff.append("FragData{0} = BLENDFUNC(texture(color{0}, texCoord.xy), bgColor); \\\n",
+                        i);
         }
-        buff.append("FragData{0} = texture(color{0}, texCoord.xy); \n", numColorLayers - 1);
+        buff.append("FragData{0} = BLENDFUNC(texture(color{0}, texCoord.xy), bgColor); \n",
+                    numColorLayers - 1);
         fs->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE", buff);
 
     } else {

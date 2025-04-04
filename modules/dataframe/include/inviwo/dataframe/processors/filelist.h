@@ -46,6 +46,7 @@ namespace inviwo {
 class IVW_MODULE_DATAFRAME_API FileList : public Processor {
 public:
     FileList();
+    ~FileList();
 
     virtual void process() override;
 
@@ -68,6 +69,7 @@ private:
     FileProperty highlight_;
 
     ButtonProperty cycleFiles_;
+    std::atomic<bool> running_;
 };
 
 }  // namespace inviwo

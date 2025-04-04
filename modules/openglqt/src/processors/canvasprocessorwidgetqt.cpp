@@ -123,20 +123,11 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
                                   CanvasProcessorWidget::isOnTop());
 
     {
-        // Trigger both resize event and move event by showing and hiding the widget
-        // in order to set the correct, i.e. the de-serialized, size and position.
-        // Otherwise, a spontaneous event will be triggered which will set the widget
-        // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
-        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
-        Super::setVisible(true);
-        resize(static_cast<int>(logicalDim.x), static_cast<int>(logicalDim.y));
-        Super::setVisible(false);
-    }
-    {
         // ignore internal state updates, i.e. position, when showing the widget
         // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the
         // decoration offset, i.e. the "adjusted" position.
-        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        resize(logicalDim.x, logicalDim.y);
         Super::setVisible(ProcessorWidget::isVisible());
     }
     RenderContext::getPtr()->activateDefaultRenderContext();
@@ -181,7 +172,7 @@ Canvas* CanvasProcessorWidgetQt::getCanvas() const { return canvas_.get(); }
 void CanvasProcessorWidgetQt::resizeEvent(QResizeEvent* event) { Super::resizeEvent(event); }
 
 void CanvasProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
-    if (auto re = event->getAs<ResizeEvent>()) {
+    if (auto* re = event->getAs<ResizeEvent>()) {
         CanvasProcessorWidget::setDimensions(re->size());
     }
 

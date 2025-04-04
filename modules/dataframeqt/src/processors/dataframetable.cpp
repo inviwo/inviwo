@@ -107,12 +107,12 @@ DataFrameTable::DataFrameTable()
     visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
 
     showIndexColumn_.onChange([this]() {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             w->setIndexColumnVisible(showIndexColumn_);
         }
     });
     showFilteredRowCols_.onChange([this]() {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             w->setFilteredRowsVisible(showFilteredRowCols_);
         }
     });
@@ -125,7 +125,7 @@ DataFrameTable::~DataFrameTable() {
 }
 
 void DataFrameTable::process() {
-    if (auto w = getWidget()) {
+    if (auto* w = getWidget()) {
         if (inport_.isChanged() || showCategoryIndices_.isModified()) {
             w->setDataFrame(inport_.getData(), showCategoryIndices_);
         }
@@ -134,7 +134,7 @@ void DataFrameTable::process() {
 }
 
 void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get());
+    auto* widget = getWidget();
     if (processorWidget && !widget) {
         throw Exception(
             "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget");
@@ -176,11 +176,7 @@ void DataFrameTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*)
 }
 
 DataFrameTableProcessorWidget* DataFrameTable::getWidget() const {
-    if (auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget_.get())) {
-        return widget;
-    } else {
-        return nullptr;
-    }
+    return dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget_.get());
 }
 
 void DataFrameTable::setWidgetSize(size2_t dim) {
@@ -202,7 +198,7 @@ std::optional<std::filesystem::path> DataFrameTable::exportFile(
 }
 
 std::shared_ptr<const Image> DataFrameTable::getImage() const {
-    if (auto w = getWidget()) {
+    if (auto* w = getWidget()) {
         QPixmap pm(w->size());
         w->render(&pm);
 

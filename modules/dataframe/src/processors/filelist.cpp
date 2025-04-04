@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/filelist.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -91,10 +92,11 @@ FileList::FileList()
                       util::ordinalCount(size_t{0}, size_t{100})}
     , selected_{"selected", "Selected"}
     , highlight_{"highlight", "Highlight"}
-    , cycleFiles_{"cycleFiles", "Cycle throw all files",
-                  "This will each files a the selected one and wait for the network to evaluate "
-                  "before setting the next one"_help,
-                  [this]() { cycleFiles(); }} {
+    , cycleFiles_{"cycleFiles", "Cycle through all files",
+                  "When enabled, the processor will iterate over the list of files where the "
+                  "network is evaluated once for each file before continuing."_help,
+                  [this]() { cycleFiles(); }}
+    , running_{false} {
 
     addPorts(outport_, bnlInport_, bnlOutport_);
     addProperties(directory_, refresh_, filter_, selectedIndex_, selected_, highlightIndex_,
@@ -105,7 +107,8 @@ FileList::FileList()
 
     bnlOutport_.getManager().setParent(&bnlInport_.getManager());
     bnlOutport_.getManager().onBrush([this](BrushingAction action, const BrushingTarget& target,
-                                            const BitSet& indices, std::string_view source) {
+                                            const BitSet& indices,
+                                            [[maybe_unused]] std::string_view source) {
         if (action == BrushingAction::Select && target == BrushingTarget::Row) {
             if (files_.empty() || indices.empty()) {
                 selected_.set("");
@@ -135,21 +138,55 @@ FileList::FileList()
     });
 }
 
+FileList::~FileList() { running_ = false; }
+
 void FileList::cycleFiles() {
     auto* net = getNetwork();
     auto* app = net->getApplication();
 
-    app->dispatchFrontAndForget([app, net, this]() {
-        for (size_t i = 0; i < files_.size(); ++i) {
-            log::info("Loading: {} {:?g}", i, files_[i].path());
-            selectedIndex_.set(i);
+    bool expected = false;
+    const bool desired = true;
+    if (running_.compare_exchange_strong(expected, desired)) {
+        app->dispatchFrontAndForget([pw = weak_from_this(), app, net]() {
+            const auto getSelf = [&]() -> std::shared_ptr<FileList> {
+                if (auto p = pw.lock()) {
+                    return std::dynamic_pointer_cast<FileList>(p);
+                }
+                return nullptr;
+            };
 
-            do {  // NOLINT
-                app->processFront();
-                app->processEvents();
-            } while (net->runningBackgroundJobs() > 0);
-        }
-    });
+            auto running = [&]() -> bool {
+                if (auto self = getSelf()) return self->running_;
+                return false;
+            };
+
+            const util::OnScopeExit stopRunning{[&]() {
+                if (auto self = getSelf()) self->running_ = false;
+            }};
+
+            const auto files = [&]() -> std::vector<std::filesystem::directory_entry> {
+                if (auto self = getSelf()) {
+                    return self->files_;
+                } else {
+                    return {};
+                }
+            }();
+
+            for (size_t i = 0; running() && i < files.size(); ++i) {
+                if (auto self = getSelf()) {
+                    log::info("Loading: {} {:?g}", i, files[i].path());
+                    self->selectedIndex_.set(i);
+                }
+
+                do {  // NOLINT
+                    app->processFront();
+                    app->processEvents();
+                } while (running() && net->runningBackgroundJobs() > 0);
+            }
+        });
+    } else {
+        running_ = false;
+    }
 }
 
 void FileList::process() {

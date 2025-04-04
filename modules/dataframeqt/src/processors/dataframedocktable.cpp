@@ -116,7 +116,7 @@ void DataFrameDockTableWidget::brushingUpdate() { tableview_->brushingUpdate(); 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameDockTable::processorInfo_{
     "org.inviwo.DataFrameDockTable",  // Class identifier
-    "Data Frame Dock Table",          // Display name
+    "DataFrame Dock Table",           // Display name
     "Data Output",                    // Category
     CodeState::Stable,                // Code state
     Tags::CPU | Tag{"DataFrame"},     // Tags
@@ -129,8 +129,10 @@ DataFrameDockTable::DataFrameDockTable()
     , inport_("inport", "DataFrame contents to be shown in the processor widget"_help)
     , brushLinkPort_("brushingAndLinking", "Inport for brushing & linking interactions"_help)
 
-    , dimensions_{"dimensions",          "Canvas Size", size2_t(512, 300),       size2_t(1, 1),
-                  size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid}
+    , dimensions_{"dimensions", "Canvas Size",
+                  util::ordinalCount(size2_t(512, 300), size2_t(10000, 10000))
+                      .setMin(size2_t(1, 1))
+                      .set(InvalidationLevel::Valid)}
     , position_{"position",
                 "Canvas Position",
                 ivec2(128, 128),
@@ -175,12 +177,12 @@ DataFrameDockTable::DataFrameDockTable()
     visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
 
     showIndexColumn_.onChange([this]() {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             w->setIndexColumnVisible(showIndexColumn_);
         }
     });
     showFilteredRowCols_.onChange([this]() {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             w->setFilteredRowsVisible(showFilteredRowCols_);
         }
     });
@@ -212,7 +214,7 @@ void DataFrameDockTable::setNetwork(ProcessorNetwork* network) {
 }
 
 void DataFrameDockTable::process() {
-    if (auto w = getWidget()) {
+    if (auto* w = getWidget()) {
         setWidgetParent(w, parent_.get());
 
         if (inport_.isChanged() || showCategoryIndices_.isModified()) {
@@ -223,7 +225,7 @@ void DataFrameDockTable::process() {
 }
 
 void DataFrameDockTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    auto widget = dynamic_cast<DataFrameDockTableWidget*>(processorWidget.get());
+    auto* widget = getWidget();
     if (processorWidget && !widget) {
         throw Exception(
             "Expected DataFrameDockTableWidget in DataFrameDockTable::setProcessorWidget");
@@ -306,25 +308,21 @@ void DataFrameDockTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaDa
 
 void DataFrameDockTable::onProcessorNetworkDidAddProcessor(Processor* p) {
     if (parent_.get() != currentParent_ && p->getIdentifier() == parent_.get()) {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             setWidgetParent(w, parent_.get());
         }
     }
 }
 void DataFrameDockTable::onProcessorNetworkWillRemoveProcessor(Processor* p) {
     if (p->getIdentifier() == parent_.get()) {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             setWidgetParent(w, "");
         }
     }
 }
 
 DataFrameDockTableWidget* DataFrameDockTable::getWidget() const {
-    if (auto widget = dynamic_cast<DataFrameDockTableWidget*>(processorWidget_.get())) {
-        return widget;
-    } else {
-        return nullptr;
-    }
+    return dynamic_cast<DataFrameDockTableWidget*>(processorWidget_.get());
 }
 
 void DataFrameDockTable::setWidgetSize(size2_t dim) {
@@ -332,7 +330,7 @@ void DataFrameDockTable::setWidgetSize(size2_t dim) {
     dimensions_.set(dim);
 }
 
-size2_t DataFrameDockTable::getWidgetSize() const { return dimensions_; }
+size2_t DataFrameDockTable::getWidgetSize() const { return dimensions_.get(); }
 
 std::optional<std::filesystem::path> DataFrameDockTable::exportFile(
     const std::filesystem::path& path, std::string_view name,
@@ -346,7 +344,7 @@ std::optional<std::filesystem::path> DataFrameDockTable::exportFile(
 }
 
 std::shared_ptr<const Image> DataFrameDockTable::getImage() const {
-    if (auto w = getWidget()) {
+    if (auto* w = getWidget()) {
         QPixmap pm(w->size());
         w->render(&pm);
 

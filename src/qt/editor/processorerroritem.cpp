@@ -29,7 +29,7 @@
 
 #include <inviwo/qt/editor/processorerroritem.h>
 
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
