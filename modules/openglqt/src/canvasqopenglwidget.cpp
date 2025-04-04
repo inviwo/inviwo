@@ -29,9 +29,10 @@
 
 #include <modules/openglqt/canvasqopenglwidget.h>
 
-#include <inviwo/core/common/inviwoapplication.h>            // for InviwoApplication
-#include <inviwo/core/datastructures/image/imagetypes.h>     // for LayerType
-#include <inviwo/core/interaction/events/event.h>            // for Event
+#include <inviwo/core/common/inviwoapplication.h>         // for InviwoApplication
+#include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType
+#include <inviwo/core/interaction/events/event.h>         // for Event
+#include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
 #include <inviwo/core/interaction/pickingcontroller.h>       // for PickingController
 #include <inviwo/core/network/networklock.h>                 // for NetworkLock
@@ -186,6 +187,22 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     setUpdatesEnabled(false);
     util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
     QOpenGLWidget::resizeEvent(event);
+
+    // Propagated an event with the physical (pixel) dimensions of the canvas
+    // Note: QWidget::size() will return logical dimensions
+    const auto dpr = window()->devicePixelRatio();
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    ResizeEvent resizeEvent{dpr * utilqt::toGLM(event->size()),
+                            dpr * utilqt::toGLM(event->oldSize())};
+    propagateEvent(&resizeEvent, nullptr);
+}
+
+void CanvasQOpenGLWidget::triggerResizeEventPropagation() {
+    const auto dpr = window()->devicePixelRatio();
+
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    ResizeEvent resizeEvent{dpr * utilqt::toGLM(size()), dpr * utilqt::toGLM(size())};
+    propagateEvent(&resizeEvent, nullptr);
 }
 
 void CanvasQOpenGLWidget::releaseContext() {
@@ -204,10 +221,8 @@ size2_t CanvasQOpenGLWidget::getCanvasDimensions() const {
 
 void CanvasQOpenGLWidget::propagateEvent(Event* e, Outport* source) {
     if (!propagator_) return;
-    NetworkLock lock;
+    const NetworkLock lock;
     pickingController_.propagateEvent(e, propagator_);
-    if (e->hasBeenUsed()) return;
-    propagator_->propagateEvent(e, source);
 }
 
 }  // namespace inviwo

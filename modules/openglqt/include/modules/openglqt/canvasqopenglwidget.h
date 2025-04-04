@@ -47,6 +47,7 @@
 #define GLEXT_64_TYPES_DEFINED
 
 #include <QOpenGLWidget>  // for QOpenGLWidget
+#include <QSize>
 
 class QWidget;
 class QMenu;
@@ -81,11 +82,15 @@ public:
     virtual size2_t getCanvasDimensions() const override;
 
     /**
-     * Set a callback to be invoded on contextmeny events.
-     * The callback can add more functionallity to the context menu.
-     * I the function retuns true the menu will be shown, else it will be discarded.
+     * Set a callback to be invoked on context meny events.
+     * The callback can add more functionality to the context menu.
+     * I the function returns true the menu will be shown, else it will be discarded.
      */
     void onContextMenu(std::function<bool(QMenu&)> callback);
+
+    // this is needed when we have have changed connections, and need to update the image port
+    // sizes. This is called by  CanvasProcessorWidgetQt::propagateResizeEvent() for example.
+    void triggerResizeEventPropagation();
 
 protected:
     // inviwo::Canvas override

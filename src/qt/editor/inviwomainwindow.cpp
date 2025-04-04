@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/inviwomainwindow.h>
+
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -43,6 +44,23 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/network/workspaceutils.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/compositeprocessorutils.h>
+#include <inviwo/core/processors/exporter.h>
+#include <inviwo/core/rendering/datavisualizermanager.h>
+#include <inviwo/core/util/timer.h>
+
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/propertylistwidget.h>
+#include <modules/qtwidgets/keyboardutils.h>
+#include <modules/qtwidgets/processors/processordockwidgetqt.h>
+
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/editorsettings.h>
 #include <inviwo/qt/editor/helpwidget.h>
@@ -61,23 +79,8 @@
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/qtapptools.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/propertylistwidget.h>
-#include <modules/qtwidgets/keyboardutils.h>
-#include <inviwo/core/metadata/processormetadata.h>
-#include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <inviwo/core/network/workspaceutils.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/processors/compositeprocessor.h>
-#include <inviwo/core/processors/compositeprocessorutils.h>
-#include <inviwo/core/processors/exporter.h>
-
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
-#include <inviwo/core/rendering/datavisualizermanager.h>
-#include <inviwo/core/util/timer.h>
 
 #include <QScreen>
 #include <QStandardPaths>
@@ -1680,8 +1683,9 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 }
 
 void InviwoMainWindow::VisibleWidgets::hide(InviwoMainWindow* win) {
-    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(),
-                                [](const auto w) { return w->isVisible(); });
+    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(), [](const auto w) {
+        return w->isVisible() && dynamic_cast<ProcessorDockWidgetQt*>(w) == nullptr;
+    });
     processors = util::copy_if(
         win->getInviwoApplication()->getProcessorNetwork()->getProcessors(), [](const auto p) {
             return p->hasProcessorWidget() && p->getProcessorWidget()->isVisible();

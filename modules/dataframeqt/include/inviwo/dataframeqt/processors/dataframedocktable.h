@@ -34,18 +34,22 @@
 #include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
 #include <inviwo/core/processors/processor.h>              // for Processor
 #include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
+#include <inviwo/core/processors/exporter.h>
+#include <inviwo/core/properties/boolproperty.h>  // for BoolProperty
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>                    // for IntSize2Property
+#include <inviwo/core/properties/ordinalproperty.h>  // for IntSize2Property
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/glmvec.h>                                   // for size2_t
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
 #include <inviwo/core/processors/processorwidget.h>
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
+#include <inviwo/core/network/processornetworkobserver.h>
 
 namespace inviwo {
 
 class DataFrameTableView;
+class ProcessorNetwork;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameDockTableWidget : public ProcessorDockWidgetQt {
 public:
@@ -67,7 +71,10 @@ private:
 };
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameDockTable : public Processor,
-                                                      public ProcessorWidgetMetaDataObserver {
+                                                      public ProcessorWidgetMetaDataObserver,
+                                                      public ProcessorNetworkObserver,
+                                                      public Exporter,
+                                                      public ImageExporter {
 public:
     DataFrameDockTable();
     DataFrameDockTable(const DataFrameDockTable&) = delete;
@@ -87,12 +94,31 @@ public:
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
 
+    /**
+     * @see Exporter::exportFile
+     */
+    virtual std::optional<std::filesystem::path> exportFile(
+        const std::filesystem::path& path, std::string_view name,
+        const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const override;
+
+    /**
+     * @see ImageExporter::getImage
+     */
+    virtual std::shared_ptr<const Image> getImage() const override;
+
 protected:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;
 
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
+    virtual void setNetwork(ProcessorNetwork* network) override;
+
     DataFrameDockTableWidget* getWidget() const;
+
+    void setWidgetParent(DataFrameDockTableWidget* widget, std::string_view processorId);
+    void setDockArea(DataFrameDockTableWidget* widget, Qt::DockWidgetArea area);
 
 private:
     DataFrameInport inport_;
@@ -102,12 +128,14 @@ private:
     IntVec2Property position_;
     BoolProperty visible_;
     StringProperty parent_;
+    OptionProperty<Qt::DockWidgetArea> dockArea_;
 
     BoolProperty showIndexColumn_;
     BoolProperty showCategoryIndices_;
     BoolProperty showFilteredRowCols_;
 
     ProcessorWidgetMetaData* widgetMetaData_;
+    std::string currentParent_;
 };
 
 }  // namespace inviwo

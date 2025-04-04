@@ -50,7 +50,9 @@ PickingController::~PickingController() = default;
 void PickingController::propagateEvent(Event* event, EventPropagator* propagator) {
     if (!propagator) return;
     if (!event) return;
-    if (!pickingEnabled()) return;
+    if (!pickingEnabled()) {
+        propagator->propagateEvent(event, nullptr);
+    }
 
     switch (event->hash()) {
         case MouseEvent::chash(): {
@@ -71,6 +73,10 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
             propagateEvent(static_cast<TouchEvent*>(event), propagator);
             break;
         }
+    }
+
+    if (!event->hasBeenUsed()) {
+        propagator->propagateEvent(event, nullptr);
     }
 }
 
