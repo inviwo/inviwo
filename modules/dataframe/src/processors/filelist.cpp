@@ -142,7 +142,7 @@ FileList::~FileList() { running_ = false; }
 
 namespace {
 
-auto getSelf(std::weak_ptr<Processor> pw) -> std::shared_ptr<FileList> {
+auto getSelf(const std::weak_ptr<Processor>& pw) -> std::shared_ptr<FileList> {
     return std::dynamic_pointer_cast<FileList>(pw.lock());
 }
 
@@ -175,12 +175,12 @@ void FileList::cycleFiles() {
     }
 }
 
-bool FileList::running(std::weak_ptr<Processor> pw) {
+bool FileList::running(const std::weak_ptr<Processor>& pw) {
     if (auto self = getSelf(pw)) return self->running_;
     return false;
 }
 
-auto FileList::getFiles(std::weak_ptr<Processor> pw)
+auto FileList::getFiles(const std::weak_ptr<Processor>& pw)
     -> std::vector<std::filesystem::directory_entry> {
     if (auto self = getSelf(pw)) {
         return self->files_;
@@ -189,7 +189,8 @@ auto FileList::getFiles(std::weak_ptr<Processor> pw)
     }
 }
 
-void FileList::setIndex(std::weak_ptr<Processor> pw, size_t i, const std::filesystem::path& path) {
+void FileList::setIndex(const std::weak_ptr<Processor>& pw, size_t i,
+                        const std::filesystem::path& path) {
     if (auto self = getSelf(pw)) {
         log::info("Loading: {} {:?g}", i, path);
         self->selectedIndex_.set(i);

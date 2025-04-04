@@ -487,7 +487,7 @@ void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::str
     screenGrab.save(utilqt::toQString(path / fileName), "png");
 }
 
-void InviwoMainWindow::addActions() {
+void InviwoMainWindow::addActions() { // NOLINT
     auto menu = menuBar();
 
     auto fileMenuItem = menu->addMenu(tr("&File"));
@@ -609,8 +609,9 @@ void InviwoMainWindow::addActions() {
             saveFileDialog.setAcceptMode(AcceptMode::Open);
 
             if (saveFileDialog.exec()) {
-                std::filesystem::path path = utilqt::toPath(saveFileDialog.selectedFiles().at(0));
-                saveSnapshots(path, fmt::format("{:%Y-%m-%d_%H-%M-%S}_UPN", std::chrono::system_clock::now()));
+                const auto path = utilqt::toPath(saveFileDialog.selectedFiles().at(0));
+                saveSnapshots(path, fmt::format("{:%Y-%m-%d_%H-%M-%S}_UPN",
+                                                std::chrono::system_clock::now()));
             }
         });
     }
