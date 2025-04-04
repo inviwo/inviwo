@@ -61,9 +61,11 @@ public:
 
 private:
     void cycleFiles();
-    static bool running(std::weak_ptr<Processor> pw);
-    static std::vector<std::filesystem::directory_entry> getFiles(std::weak_ptr<Processor> pw);
-    static void setIndex(std::weak_ptr<Processor> pw, size_t i, const std::filesystem::path& path);
+    static bool running(const std::weak_ptr<Processor>& pw);
+    static std::vector<std::filesystem::directory_entry> getFiles(
+        const std::weak_ptr<Processor>& pw);
+    static void setIndex(const std::weak_ptr<Processor>& pw, size_t i,
+                         const std::filesystem::path& path);
 
     DataOutport<DataFrame> outport_;
     BrushingAndLinkingInport bnlInport_;

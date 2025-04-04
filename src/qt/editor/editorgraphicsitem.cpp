@@ -116,9 +116,40 @@ std::string layerToString(const Layer& layer) {
     // the layer. Happens if cimg not used, and no other data writer is registered.
     if (!imgbuf) return {};
 
-    QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()), static_cast<int>(imgbuf->size()));
+    const QByteArray byteArray(reinterpret_cast<const char*>(imgbuf->data()),  // NOLINT
+                               static_cast<int>(imgbuf->size()));
 
-    return std::string(byteArray.toBase64().data());
+    return {byteArray.toBase64().data()};
+}
+
+void addLayersTable(Document::DocumentHandle& body,
+                    const std::vector<std::pair<std::string, const Layer*>>& layers, size_t size) {
+    auto p = body.append("p");
+    p.append("b", "Port Inspector", {{"style", "color:white;"}});
+    auto t = p.append("table");
+    auto tableRow = t.append("tr");
+    const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
+    size_t rowCount = 0;
+    for (const auto& [name, layer] : layers) {
+        if (rowCount >= perRow) {
+            rowCount = 0;
+            tableRow = t.append("tr");
+        }
+
+        const auto layerStr = layerToString(*layer);
+        if (layerStr.empty()) continue;
+
+        auto table = tableRow.append("td").append("table");
+
+        table.append("tr").append("td").append("img", "",
+                                               {{"width", std::to_string(size)},
+                                                {"height", std::to_string(size)},
+                                                {"src", "data:image/png;base64," + layerStr}});
+        if (!name.empty()) {
+            table.append("tr").append("td", name);
+        }
+        ++rowCount;
+    }
 }
 
 }  // namespace
@@ -132,7 +163,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     auto* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     const bool inspector = settings->enablePortInspectors_.get();
-    size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
+    const auto portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
     Document desc{};
     auto html = desc.append("html");
@@ -164,7 +195,6 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if (inspector && outport) {
         if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
-
             std::vector<std::pair<std::string, const Layer*>> layers;
             if (auto* imageOutport = dynamic_cast<ImageOutport*>(outport)) {
                 if (auto imageData = imageOutport->getData()) {
@@ -175,34 +205,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 // outport is not an ImageOutport, show only first color layer
                 layers.emplace_back("", image->getColorLayer(0));
             }
-
-            auto p = body.append("p");
-            p.append("b", "Port Inspector", {{"style", "color:white;"}});
-            auto t = p.append("table");
-            auto tableRow = t.append("tr");
-            const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
-            size_t rowCount = 0;
-            for (const auto& [name, layer] : layers) {
-                if (rowCount >= perRow) {
-                    rowCount = 0;
-                    tableRow = t.append("tr");
-                }
-
-                const auto layerStr = layerToString(*layer);
-                if (layerStr.empty()) continue;
-
-                auto table = tableRow.append("td").append("table");
-
-                table.append("tr").append("td").append(
-                    "img", "",
-                    {{"width", std::to_string(portInspectorSize)},
-                     {"height", std::to_string(portInspectorSize)},
-                     {"src", "data:image/png;base64," + layerStr}});
-                if (!name.empty()) {
-                    table.append("tr").append("td", name);
-                }
-                ++rowCount;
-            }
+            addLayersTable(body, layers, portInspectorSize);
         }
     }
 
