@@ -111,6 +111,7 @@ public:
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     IntVec2Property position_;
+    BoolProperty visible_;
     OptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
     OptionProperty<FileExtension> imageTypeExt_;

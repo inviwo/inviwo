@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/canvasprocessorwidget.h>  // for CanvasProcessorWidget
 #include <inviwo/core/processors/processor.h>              // for Processor, Processor::NameDisp...
 #include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
+#include <inviwo/core/interaction/events/eventpropagator.h>
 
 #include <functional>   // for function
 #include <memory>       // for unique_ptr
@@ -56,7 +57,8 @@ class CanvasQOpenGLWidget;
 class PropertyListFrame;
 
 class IVW_MODULE_OPENGLQT_API CanvasWithPropertiesProcessorWidgetQt : public CanvasProcessorWidget,
-                                                                      public QMainWindow {
+                                                                      public QMainWindow,
+                                                                      public EventPropagator {
 public:
     CanvasWithPropertiesProcessorWidgetQt(Processor* p);
     virtual ~CanvasWithPropertiesProcessorWidgetQt() = default;
@@ -92,10 +94,8 @@ public:
 protected:
     using Super = QMainWindow;
 
-    /**
-     * Propagated an event with the physical (pixel) dimensions of the canvas
-     * Note: QWidget::size() will return logical dimensions
-     */
+    virtual void propagateEvent(Event* e, Outport* source) override;
+
     virtual void propagateResizeEvent() override;
 
     bool contextMenu(QMenu& menu);
@@ -110,7 +110,6 @@ protected:
     std::unique_ptr<CanvasQOpenGLWidget, std::function<void(CanvasQOpenGLWidget*)>> canvas_;
     Processor::NameDispatcherHandle nameChange_;
 
-    size2_t canvasDimensions_{0};
     PropertyListFrame* frame_;
     std::vector<std::string> addedPaths_;
 };

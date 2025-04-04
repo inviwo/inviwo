@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/image.h>
@@ -87,10 +87,83 @@ NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
     return qobject_cast<NetworkEditor*>(scene());
 }
 
+namespace {
+std::vector<std::pair<std::string, const Layer*>> getLayersForImagePort(
+    const std::shared_ptr<const Image>& image, const std::shared_ptr<const Image>& imageData) {
+    std::vector<std::pair<std::string, const Layer*>> layers;
+    for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
+        const auto* layerData = imageData->getColorLayer(i);
+        const auto* layer = image->getColorLayer(i);
+        layers.emplace_back(
+            fmt::format("Color Layer {} {}", i, layerData->getDataFormat()->getString()), layer);
+    }
+
+    // register picking layer
+    layers.emplace_back(
+        fmt::format("Picking Layer {}", imageData->getPickingLayer()->getDataFormat()->getString()),
+        image->getPickingLayer());
+    // register depth layer
+    layers.emplace_back(
+        fmt::format("Depth Layer {}", imageData->getDepthLayer()->getDataFormat()->getString()),
+        image->getDepthLayer());
+
+    return layers;
+}
+
+std::string layerToString(const Layer& layer) {
+    const auto imgbuf = layer.getAsCodedBuffer("png");
+    // imgbuf might be null, if we don't have a data writer factory function to save
+    // the layer. Happens if cimg not used, and no other data writer is registered.
+    if (!imgbuf) return {};
+
+    const QByteArray byteArray(reinterpret_cast<const char*>(imgbuf->data()),  // NOLINT
+                               static_cast<int>(imgbuf->size()));
+
+    return {byteArray.toBase64().data()};
+}
+
+void addLayersTable(Document::DocumentHandle& body,
+                    const std::vector<std::pair<std::string, const Layer*>>& layers, size_t size) {
+    auto p = body.append("p");
+    p.append("b", "Port Inspector", {{"style", "color:white;"}});
+    auto t = p.append("table");
+    auto tableRow = t.append("tr");
+    const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
+    size_t rowCount = 0;
+    for (const auto& [name, layer] : layers) {
+        if (rowCount >= perRow) {
+            rowCount = 0;
+            tableRow = t.append("tr");
+        }
+
+        const auto layerStr = layerToString(*layer);
+        if (layerStr.empty()) continue;
+
+        auto table = tableRow.append("td").append("table");
+
+        table.append("tr").append("td").append("img", "",
+                                               {{"width", std::to_string(size)},
+                                                {"height", std::to_string(size)},
+                                                {"src", "data:image/png;base64," + layerStr}});
+        if (!name.empty()) {
+            table.append("tr").append("td", name);
+        }
+        ++rowCount;
+    }
+}
+
+}  // namespace
+
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
-    auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    bool inspector = settings->enablePortInspectors_.get();
-    size_t portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
+    if (!scene() || scene()->views().empty()) return;
+    QGraphicsView* view = scene()->views().first();
+    const QRectF rect = this->mapRectToScene(this->rect());
+    const QRect viewRect = view->mapFromScene(rect).boundingRect();
+    e->accept();
+
+    auto* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    const bool inspector = settings->enablePortInspectors_.get();
+    const auto portInspectorSize = static_cast<size_t>(settings->portInspectorSize_.get());
 
     Document desc{};
     auto html = desc.append("html");
@@ -122,67 +195,17 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if (inspector && outport) {
         if (auto image = getNetworkEditor()->renderPortInspectorImage(outport)) {
-
-            bool isImagePort = (dynamic_cast<ImageOutport*>(port) != nullptr ||
-                                dynamic_cast<ImageInport*>(port) != nullptr);
-
             std::vector<std::pair<std::string, const Layer*>> layers;
-            if (isImagePort) {
-                // register all color layers
-                for (std::size_t i = 0; i < image->getNumberOfColorLayers(); ++i) {
-                    const auto layer = image->getColorLayer(i);
-                    layers.push_back(
-                        {fmt::format("Color Layer {} {}", i, layer->getDataFormat()->getString()),
-                         layer});
+            if (auto* imageOutport = dynamic_cast<ImageOutport*>(outport)) {
+                if (auto imageData = imageOutport->getData()) {
+                    // register all color layers
+                    layers = getLayersForImagePort(image, imageData);
                 }
-
-                // register picking layer
-                layers.push_back(
-                    {fmt::format("Picking Layer {}",
-                                 image->getPickingLayer()->getDataFormat()->getString()),
-                     image->getPickingLayer()});
-                // register depth layer
-                layers.push_back(
-                    {fmt::format("Depth Layer {}",
-                                 image->getPickingLayer()->getDataFormat()->getString()),
-                     image->getDepthLayer()});
             } else {
                 // outport is not an ImageOutport, show only first color layer
-                layers.push_back({"", image->getColorLayer(0)});
+                layers.emplace_back("", image->getColorLayer(0));
             }
-
-            auto p = body.append("p");
-            p.append("b", "Port Inspector", {{"style", "color:white;"}});
-            auto t = p.append("table");
-            auto tableRow = t.append("tr");
-            const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
-            size_t rowCount = 0;
-            for (const auto& [name, layer] : layers) {
-                if (rowCount >= perRow) {
-                    rowCount = 0;
-                    tableRow = t.append("tr");
-                }
-
-                const auto imgbuf = layer->getAsCodedBuffer("png");
-                // imgbuf might be null, if we don't have a data writer factory function to save
-                // the layer. Happens if cimg not used, and no other data writer is registered.
-                if (!imgbuf) continue;
-
-                QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()),
-                                     static_cast<int>(imgbuf->size()));
-
-                auto table = tableRow.append("td").append("table");
-
-                table.append("tr").append("td").append(
-                    "img", "",
-                    {{"width", std::to_string(portInspectorSize)},
-                     {"height", std::to_string(portInspectorSize)},
-                     {"src", "data:image/png;base64," + std::string(byteArray.toBase64().data())}});
-                if (!name.empty()) {
-                    table.append("tr").append("td", name);
-                }
-                ++rowCount;
-            }
+            addLayersTable(body, layers, portInspectorSize);
         }
     }
 
@@ -190,7 +213,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     // otherwise we might loose focus and the tooltip will go away...
     qApp->processEvents();
 
-    showToolTipHelper(e, utilqt::toLocalQString(desc));
+    // don't use showToolTipHelper here, since this might have been deleted in processEvents.
+    QToolTip::showText(e->screenPos(), utilqt::toLocalQString(desc), view, viewRect);
 }
 
 }  // namespace inviwo

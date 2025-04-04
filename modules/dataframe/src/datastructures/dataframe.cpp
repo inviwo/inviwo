@@ -53,33 +53,75 @@ namespace inviwo {
 /*
  * This creates a table with one column: The index column
  */
-DataFrame::DataFrame(std::uint32_t size) : columns_{} {
-    // at the moment, GPUs only support uints up to 32bit
-    auto seq = util::make_sequence<std::uint32_t>(0, size);
-    std::vector<std::uint32_t> indices(seq.begin(), seq.end());
-    addColumn(std::make_shared<IndexColumn>("index", std::move(indices)));
+DataFrame::DataFrame(std::uint32_t size) : columns_{} { createIndexBuffer(size); }
+
+DataFrame::DataFrame(std::vector<std::shared_ptr<Column>> columns) : columns_{std::move(columns)} {
+    if (columns_.empty()) {
+        createIndexBuffer(0);
+    } else {
+        if (auto it = std::ranges::adjacent_find(columns_, std::ranges::not_equal_to{},
+                                                 [](auto& item) { return item->getSize(); });
+            it != columns_.end()) {
+            throw Exception(SourceContext{},
+                            "Columns have different lengths {}: {} rows and {} {} rows",
+                            (*it)->getHeader(), (*it)->getSize(), (*(it + 1))->getHeader(),
+                            (*(it + 1))->getSize());
+        }
+        if (!getIndexColumn()) {
+            createIndexBuffer(columns_.front()->getSize());
+        }
+    }
 }
-DataFrame::DataFrame(const DataFrame& rhs) : columns_{} {
+
+DataFrame::DataFrame(const DataFrame& rhs) : MetaDataOwner{rhs}, columns_{} {
     for (const auto& col : rhs.columns_) {
         columns_.emplace_back(col->clone());
     }
 }
-DataFrame::DataFrame(const DataFrame& rhs, const std::vector<std::uint32_t>& rowSelection)
-    : columns_{} {
+DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::uint32_t> rowSelection)
+    : MetaDataOwner{rhs}, columns_{} {
     for (const auto& col : rhs.columns_) {
         columns_.emplace_back(col->clone(rowSelection));
     }
 }
+
+DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::string> columnSelection)
+    : MetaDataOwner{rhs}, columns_{} {
+    for (const auto& col : columnSelection) {
+        columns_.emplace_back(rhs.getColumnRef(col).clone());
+    }
+    if (columns_.empty()) {
+        createIndexBuffer(0);
+    } else if (!getIndexColumn()) {
+        createIndexBuffer(columns_.front()->getSize());
+    }
+}
+
+DataFrame::DataFrame(const DataFrame& rhs, std::span<const std::string> columnSelection,
+                     std::span<const std::uint32_t> rowSelection)
+    : MetaDataOwner{rhs}, columns_{} {
+    for (const auto& col : columnSelection) {
+        columns_.emplace_back(rhs.getColumnRef(col).clone(rowSelection));
+    }
+}
+
 DataFrame& DataFrame::operator=(const DataFrame& that) {
     if (this != &that) {
         DataFrame tmp(that);
         std::swap(tmp.columns_, columns_);
+        std::swap(tmp.metaData_, metaData_);
     }
     return *this;
 }
-DataFrame& DataFrame::operator=(DataFrame&&) = default;
-DataFrame::DataFrame(DataFrame&&) = default;
+DataFrame& DataFrame::operator=(DataFrame&&) noexcept = default;
+DataFrame::DataFrame(DataFrame&&) noexcept = default;
 
+void DataFrame::createIndexBuffer(size_t rows) {
+    // at the moment, GPUs only support uints up to 32bit
+    auto seq = util::make_sequence<std::uint32_t>(0, static_cast<std::uint32_t>(rows));
+    std::vector<std::uint32_t> indices(seq.begin(), seq.end());
+    columns_.insert(columns_.begin(), std::make_shared<IndexColumn>("index", std::move(indices)));
+}
 std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
     if (column) {
         columns_.push_back(column);
@@ -132,8 +174,7 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(
 void DataFrame::updateIndexBuffer() {
     const size_t nrows = getNumberOfRows();
 
-    auto indexBuffer = std::static_pointer_cast<Buffer<std::uint32_t>>(columns_[0]->getBuffer());
-    auto& indexVector = indexBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& indexVector = getIndexColumnRef().getEditableContainer();
 
     const auto oldSize = indexVector.size();
     indexVector.resize(nrows);
@@ -170,12 +211,43 @@ std::shared_ptr<const Column> DataFrame::getColumn(std::string_view name) const 
     return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
+Column& DataFrame::getColumnRef(std::string_view name) {
+    if (auto col = getColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No Column with name '{}' found", name);
+    }
+}
+
+const Column& DataFrame::getColumnRef(std::string_view name) const {
+    if (auto col = getColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No Column with name '{}' found", name);
+    }
+}
+
 std::shared_ptr<CategoricalColumn> DataFrame::getCategoricalColumn(std::string_view name) {
     return std::dynamic_pointer_cast<CategoricalColumn>(getColumn(name));
 }
 std::shared_ptr<const CategoricalColumn> DataFrame::getCategoricalColumn(
     std::string_view name) const {
     return std::dynamic_pointer_cast<const CategoricalColumn>(getColumn(name));
+}
+
+CategoricalColumn& DataFrame::getCategoricalColumnRef(std::string_view name) {
+    if (auto col = getCategoricalColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No CategoricalColumn with name '{}' found", name);
+    }
+}
+const CategoricalColumn& DataFrame::getCategoricalColumnRef(std::string_view name) const {
+    if (auto col = getCategoricalColumn(name)) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No CategoricalColumn with name '{}' found", name);
+    }
 }
 
 std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
@@ -193,6 +265,22 @@ std::shared_ptr<IndexColumn> DataFrame::getIndexColumn() {
         return std::static_pointer_cast<IndexColumn>(columns_[0]);
     } else {
         return nullptr;
+    }
+}
+
+const IndexColumn& DataFrame::getIndexColumnRef() const {
+    if (auto col = getIndexColumn()) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No IndexColumn found");
+    }
+}
+
+IndexColumn& DataFrame::getIndexColumnRef() {
+    if (auto col = getIndexColumn()) {
+        return *col;
+    } else {
+        throw Exception(SourceContext{}, "No IndexColumn found");
     }
 }
 

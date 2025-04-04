@@ -146,7 +146,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             auto size = app_->getSettingsByType<SystemSettings>()->portInspectorSize_.get();
             widgetMeta->setDimensions(ivec2(size, size));
             widgetMeta->setPosition(pos);
-            widgetMeta->setVisibile(false);
+            widgetMeta->setVisible(false);
 
             // Add processors to the network
             insertNetwork(portInspector.get(), network, outport, true);
@@ -221,7 +221,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
                     ProcessorWidgetMetaData::classIdentifier);
                 auto size = app_->getSystemSettings().portInspectorSize_.get();
                 widgetMeta->setDimensions(ivec2(size, size));
-                widgetMeta->setVisibile(false);
+                widgetMeta->setVisible(false);
 
                 auto network = app_->getProcessorNetwork();
                 {

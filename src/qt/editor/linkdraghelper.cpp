@@ -30,7 +30,7 @@
 #include <inviwo/qt/editor/linkdraghelper.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>

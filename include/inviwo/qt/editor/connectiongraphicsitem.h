@@ -40,7 +40,7 @@
 #include <QGraphicsTextItem>
 #include <warn/pop>
 
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 #include <inviwo/core/network/portconnection.h>
 
 namespace inviwo {

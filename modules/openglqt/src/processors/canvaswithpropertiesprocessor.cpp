@@ -171,7 +171,7 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     wmd->addObserver(pwObserver_.get());
     dimensions_.onChange([this, wmd]() { wmd->setDimensions(dimensions_.get()); });
     position_.onChange([this, wmd]() { wmd->setPosition(position_.get()); });
-    visible_.onChange([this, wmd]() { wmd->setVisibile(visible_.get()); });
+    visible_.onChange([this, wmd]() { wmd->setVisible(visible_.get()); });
     fullScreen_.onChange([this, wmd]() { wmd->setFullScreen(fullScreen_.get()); });
     onTop_.onChange([this, wmd]() { wmd->setOnTop(onTop_.get()); });
 

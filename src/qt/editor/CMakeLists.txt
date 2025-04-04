@@ -24,7 +24,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/annotationswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/dataopener.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/fileassociations.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/helpwidget.h
@@ -72,7 +72,7 @@ set(SOURCE_FILES
     consolewidget.cpp
     dataopener.cpp
     editorsettings.cpp
-    editorgrapicsitem.cpp
+    editorgraphicsitem.cpp
     fileassociations.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
