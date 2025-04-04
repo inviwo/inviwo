@@ -89,21 +89,11 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title,
     }
 
     {
-        // Trigger both resize event and move event by showing and hiding the widget
-        // in order to set the correct, i.e. the de-serialized, size and position.
-        //
-        // Otherwise, a spontaneous event will be triggered which will set the widget
-        // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
-        const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
-        InviwoDockWidget::setVisible(true);
-        InviwoDockWidget::resize(dim.x, dim.y);
-        InviwoDockWidget::setVisible(false);
-    }
-    {
         // ignore internal state updates, i.e. position, when showing the widget
         // On Windows, the widget hasn't got a decoration yet. So it will be positioned using the
         // decoration offset, i.e. the "adjusted" position.
         const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        InviwoDockWidget::resize(dim.x, dim.y);
         InviwoDockWidget::setVisible(ProcessorWidget::isVisible());
     }
 

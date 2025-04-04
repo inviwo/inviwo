@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 #include <inviwo/core/util/glmvec.h>
 
 #include <warn/push>

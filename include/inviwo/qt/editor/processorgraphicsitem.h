@@ -32,7 +32,7 @@
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <inviwo/qt/editor/editorgraphicsitem.h>
 #include <inviwo/qt/editor/processorerroritem.h>
 #include <modules/qtwidgets/labelgraphicsitem.h>
 #include <inviwo/core/metadata/processormetadata.h>

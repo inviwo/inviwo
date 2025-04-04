@@ -396,7 +396,7 @@ std::shared_ptr<Layer> toLayer(const QImage& image) {
     if (static_cast<size_t>(qImage.sizeInBytes()) != ramMemSize) {
         throw Exception(
             SourceContext{},
-            "Expected the Qt image byte size {}, and Inviwo Layer byte size {}, to be equal",
+            "Expected the QImage byte size {}, and Inviwo Layer byte size {}, to be equal",
             qImage.sizeInBytes(), ramMemSize);
     }
 
@@ -485,10 +485,10 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
     std::vector<std::pair<std::string, QImage>> images;
 
     network->forEachProcessor([&](Processor* p) {
-        if (auto exporter = dynamic_cast<const ImageExporter*>(p)) {
+        if (const auto* exporter = dynamic_cast<const ImageExporter*>(p)) {
             if (p->isSink() && p->isReady()) {
                 if (auto img = exporter->getImage()) {
-                    if (auto layer = img->getColorLayer()) {
+                    if (const auto* layer = img->getColorLayer()) {
                         auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
                         images.emplace_back(p->getDisplayName(), qimg);
                     }

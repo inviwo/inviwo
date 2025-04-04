@@ -84,7 +84,7 @@ public:
     /**
      * Set a callback to be invoked on context meny events.
      * The callback can add more functionality to the context menu.
-     * I the function returns true the menu will be shown, else it will be discarded.
+     * If the function returns true the menu will be shown, else it will be discarded.
      */
     void onContextMenu(std::function<bool(QMenu&)> callback);
 
