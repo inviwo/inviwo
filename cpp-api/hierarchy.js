@@ -621,6 +621,7 @@ var hierarchy =
         [ "inviwo::CubeProxyGeometry", "classinviwo_1_1CubeProxyGeometry.html", null ],
         [ "inviwo::CubeRenderer", "classinviwo_1_1CubeRenderer.html", null ],
         [ "inviwo::DataExport< DataType, PortType >", "classinviwo_1_1DataExport.html", null ],
+        [ "inviwo::DataFrameDockTable", "classinviwo_1_1DataFrameDockTable.html", null ],
         [ "inviwo::DataFrameExporter", "classinviwo_1_1DataFrameExporter.html", null ],
         [ "inviwo::DataFrameFilter", "classinviwo_1_1DataFrameFilter.html", null ],
         [ "inviwo::DataFrameFloat32Converter", "classinviwo_1_1DataFrameFloat32Converter.html", null ],
@@ -644,6 +645,7 @@ var hierarchy =
         [ "inviwo::EmbeddedVolumeSlice", "classinviwo_1_1EmbeddedVolumeSlice.html", null ],
         [ "inviwo::EntryExitPoints", "classinviwo_1_1EntryExitPoints.html", null ],
         [ "inviwo::FXAA", "classinviwo_1_1FXAA.html", null ],
+        [ "inviwo::FileList", "classinviwo_1_1FileList.html", null ],
         [ "inviwo::FirstIvwProcessor", "classinviwo_1_1FirstIvwProcessor.html", null ],
         [ "inviwo::Fog", "classinviwo_1_1Fog.html", null ],
         [ "inviwo::GLUITestProcessor", "classinviwo_1_1GLUITestProcessor.html", null ],
@@ -1016,7 +1018,9 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::EventPropagator", "classinviwo_1_1EventPropagator.html", [
+      [ "inviwo::CanvasProcessorWidgetQt", "classinviwo_1_1CanvasProcessorWidgetQt.html", null ],
       [ "inviwo::CanvasQOpenGLWidget", "classinviwo_1_1CanvasQOpenGLWidget.html", null ],
+      [ "inviwo::CanvasWithPropertiesProcessorWidgetQt", "classinviwo_1_1CanvasWithPropertiesProcessorWidgetQt.html", null ],
       [ "inviwo::Processor", "classinviwo_1_1Processor.html", null ]
     ] ],
     [ "std::exception", null, [
@@ -1058,6 +1062,7 @@ var hierarchy =
     [ "inviwo::Exporter", "classinviwo_1_1Exporter.html", [
       [ "inviwo::CanvasProcessor", "classinviwo_1_1CanvasProcessor.html", null ],
       [ "inviwo::CanvasWithPropertiesProcessor", "classinviwo_1_1CanvasWithPropertiesProcessor.html", null ],
+      [ "inviwo::DataFrameDockTable", "classinviwo_1_1DataFrameDockTable.html", null ],
       [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", null ]
     ] ],
     [ "inviwo::MeshRasterizer::FaceSettings", "structinviwo_1_1MeshRasterizer_1_1FaceSettings.html", null ],
@@ -1323,7 +1328,9 @@ var hierarchy =
     [ "inviwo::ImageConvolution", "classinviwo_1_1ImageConvolution.html", null ],
     [ "inviwo::ImageExporter", "classinviwo_1_1ImageExporter.html", [
       [ "inviwo::CanvasProcessor", "classinviwo_1_1CanvasProcessor.html", null ],
-      [ "inviwo::CanvasWithPropertiesProcessor", "classinviwo_1_1CanvasWithPropertiesProcessor.html", null ]
+      [ "inviwo::CanvasWithPropertiesProcessor", "classinviwo_1_1CanvasWithPropertiesProcessor.html", null ],
+      [ "inviwo::DataFrameDockTable", "classinviwo_1_1DataFrameDockTable.html", null ],
+      [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", null ]
     ] ],
     [ "inviwo::ImagePortBase", "classinviwo_1_1ImagePortBase.html", [
       [ "inviwo::BaseImageInport< 1 >", "classinviwo_1_1BaseImageInport.html", null ],
@@ -1740,6 +1747,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< meshutil::CalculateMeshNormalsMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< LayerType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColormapType >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< Qt::DockWidgetArea >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BrushingMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< JoinType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColumnMatch >", "classinviwo_1_1OptionProperty.html", null ],
@@ -2247,6 +2255,7 @@ var hierarchy =
           [ "inviwo::CanvasWithPropertiesProcessorWidgetQt", "classinviwo_1_1CanvasWithPropertiesProcessorWidgetQt.html", null ]
         ] ],
         [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
+        [ "inviwo::DataFrameDockTable", "classinviwo_1_1DataFrameDockTable.html", null ],
         [ "inviwo::ImageExport", "classinviwo_1_1ImageExport.html", null ],
         [ "inviwo::LinkDialogGraphicsScene", "classinviwo_1_1LinkDialogGraphicsScene.html", null ],
         [ "inviwo::NetWorkCefSynchronizer", "classinviwo_1_1NetWorkCefSynchronizer.html", null ],
@@ -2267,10 +2276,13 @@ var hierarchy =
       ] ],
       [ "inviwo::ProcessorWidgetMetaDataObserver", "classinviwo_1_1ProcessorWidgetMetaDataObserver.html", [
         [ "inviwo::CanvasProcessor", "classinviwo_1_1CanvasProcessor.html", null ],
+        [ "inviwo::DataFrameDockTable", "classinviwo_1_1DataFrameDockTable.html", null ],
         [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", null ],
         [ "inviwo::ProcessorWidget", "classinviwo_1_1ProcessorWidget.html", [
           [ "inviwo::CanvasProcessorWidget", "classinviwo_1_1CanvasProcessorWidget.html", null ],
-          [ "inviwo::ProcessorDockWidgetQt", "classinviwo_1_1ProcessorDockWidgetQt.html", null ],
+          [ "inviwo::ProcessorDockWidgetQt", "classinviwo_1_1ProcessorDockWidgetQt.html", [
+            [ "inviwo::DataFrameDockTableWidget", "classinviwo_1_1DataFrameDockTableWidget.html", null ]
+          ] ],
           [ "inviwo::ProcessorWidgetQt", "classinviwo_1_1ProcessorWidgetQt.html", [
             [ "inviwo::DataFrameTableProcessorWidget", "classinviwo_1_1DataFrameTableProcessorWidget.html", null ]
           ] ]
@@ -2927,8 +2939,10 @@ var hierarchy =
       [ "inviwo::animation::AnimationLabelViewQt", "classinviwo_1_1animation_1_1AnimationLabelViewQt.html", null ]
     ] ],
     [ "QMainWindow", null, [
+      [ "inviwo::CanvasProcessorWidgetQt", "classinviwo_1_1CanvasProcessorWidgetQt.html", null ],
       [ "inviwo::CanvasWithPropertiesProcessorWidgetQt", "classinviwo_1_1CanvasWithPropertiesProcessorWidgetQt.html", null ],
-      [ "inviwo::InviwoMainWindow", "classinviwo_1_1InviwoMainWindow.html", null ]
+      [ "inviwo::InviwoMainWindow", "classinviwo_1_1InviwoMainWindow.html", null ],
+      [ "inviwo::ProcessorWidgetQt", "classinviwo_1_1ProcessorWidgetQt.html", null ]
     ] ],
     [ "QMenu", null, [
       [ "inviwo::InviwoEditMenu", "classinviwo_1_1InviwoEditMenu.html", null ],
@@ -3015,7 +3029,6 @@ var hierarchy =
         [ "inviwo::SliderWidgetQt< double >", "classinviwo_1_1SliderWidgetQt.html", null ],
         [ "inviwo::SliderWidgetQt< T >", "classinviwo_1_1SliderWidgetQt.html", null ]
       ] ],
-      [ "inviwo::CanvasProcessorWidgetQt", "classinviwo_1_1CanvasProcessorWidgetQt.html", null ],
       [ "inviwo::CodeEdit::LineNumberArea", "classinviwo_1_1CodeEdit_1_1LineNumberArea.html", null ],
       [ "inviwo::ColorWheel", "classinviwo_1_1ColorWheel.html", null ],
       [ "inviwo::DoubleValueDragSpinBox", "classinviwo_1_1DoubleValueDragSpinBox.html", null ],
@@ -3024,7 +3037,6 @@ var hierarchy =
       [ "inviwo::IndicatorWidget", "classinviwo_1_1IndicatorWidget.html", null ],
       [ "inviwo::InviwoDockWidgetTitleBar", "classinviwo_1_1InviwoDockWidgetTitleBar.html", null ],
       [ "inviwo::NetworkSearch", "classinviwo_1_1NetworkSearch.html", null ],
-      [ "inviwo::ProcessorWidgetQt", "classinviwo_1_1ProcessorWidgetQt.html", null ],
       [ "inviwo::PropertyListFrame", "classinviwo_1_1PropertyListFrame.html", null ],
       [ "inviwo::PropertySelectionTreeWidget", "classinviwo_1_1PropertySelectionTreeWidget.html", null ],
       [ "inviwo::PropertyWidgetQt", "classinviwo_1_1PropertyWidgetQt.html", null ],
@@ -3120,6 +3132,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< meshutil::CalculateMeshNormalsMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< LayerType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColormapType >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< Qt::DockWidgetArea >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BrushingMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< JoinType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColumnMatch >", "classinviwo_1_1OptionPropertyOption.html", null ],

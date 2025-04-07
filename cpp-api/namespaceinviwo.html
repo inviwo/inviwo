@@ -534,6 +534,10 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameColormapProperty.html">DataFrameColormapProperty</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> for selecting which column to apply colormapping to. Allows the user to select a column and options for the color map. A <a class="el" href="classinviwo_1_1ColormapProperty.html" title="Selection of pre-defined color maps based on data type.">ColormapProperty</a> for each column will be added to this property, but only the one corresponding to the selected axis will be visible.  <a href="classinviwo_1_1DataFrameColormapProperty.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameDockTable.html">DataFrameDockTable</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameDockTableWidget.html">DataFrameDockTableWidget</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameExporter.html">DataFrameExporter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataFrameFilter.html">DataFrameFilter</a></td></tr>
@@ -817,6 +821,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FileException.html">FileException</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FileList.html">FileList</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FileLogger.html">FileLogger</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A logger class that logs to a file in html format.  <a href="classinviwo_1_1FileLogger.html#details">More...</a><br /></td></tr>
@@ -6487,7 +6493,7 @@ template&lt;class F, class... Args&gt; </div>
 </div><div class="memdoc">
 <p>Converts a JSON object to a <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a>. The JSON object must contain the following elements: "columns" (list of column headers) and "data" (list of rows). The elements "index" and "types" are optional. If no types are provided, the column types will be derived from json types. In case a column only holds null values, the inferred data type will be float. Null values are converted to NaN in float columns and 0 in integer columns.</p>
 <p>Usage example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> df = j.get&lt;<a class="code hl_class" href="classinviwo_1_1DataFrame.html">DataFrame</a>&gt;();</div>
-<div class="ttc" id="aclassinviwo_1_1DataFrame_html"><div class="ttname"><a href="classinviwo_1_1DataFrame.html">inviwo::DataFrame</a></div><div class="ttdef"><b>Definition</b> dataframe.h:92</div></div>
+<div class="ttc" id="aclassinviwo_1_1DataFrame_html"><div class="ttname"><a href="classinviwo_1_1DataFrame.html">inviwo::DataFrame</a></div><div class="ttdef"><b>Definition</b> dataframe.h:93</div></div>
 </div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="#af0b805b7e936956f5c09e4d32c70d126">to_json(json&amp;, const DataFrame&amp;)</a> </dd></dl>
 
 </div>

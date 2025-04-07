@@ -129,6 +129,7 @@ $(function(){initNavTree('classinviwo_1_1ProcessorDockWidgetQt.html',''); initRe
 <area href="classinviwo_1_1ProcessorWidget.html" alt="inviwo::ProcessorWidget" shape="rect" coords="268,112,526,136"/>
 <area href="classinviwo_1_1ProcessorWidgetMetaDataObserver.html" alt="inviwo::ProcessorWidgetMetaDataObserver" shape="rect" coords="268,56,526,80"/>
 <area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="268,0,526,24"/>
+<area href="classinviwo_1_1DataFrameDockTableWidget.html" alt="inviwo::DataFrameDockTableWidget" shape="rect" coords="134,224,392,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -221,6 +222,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservations</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a543d34db7ebda05fb07171efc5941ff1" id="r_a543d34db7ebda05fb07171efc5941ff1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a543d34db7ebda05fb07171efc5941ff1">updateVisible</a> (bool visible) override</td></tr>
+<tr class="separator:a543d34db7ebda05fb07171efc5941ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0448f22b419e56a33f07a54f4e22798b" id="r_a0448f22b419e56a33f07a54f4e22798b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0448f22b419e56a33f07a54f4e22798b">updateDimensions</a> (ivec2 dimensions) override</td></tr>
+<tr class="separator:a0448f22b419e56a33f07a54f4e22798b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1fef818773fa4d729df647cbf3e9eb1" id="r_ad1fef818773fa4d729df647cbf3e9eb1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1fef818773fa4d729df647cbf3e9eb1">updatePosition</a> (ivec2 pos) override</td></tr>
+<tr class="separator:ad1fef818773fa4d729df647cbf3e9eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af258ddd9603528d7ac63677ddb589589" id="r_af258ddd9603528d7ac63677ddb589589"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af258ddd9603528d7ac63677ddb589589">updateFullScreen</a> (bool) override</td></tr>
+<tr class="separator:af258ddd9603528d7ac63677ddb589589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aa57248c0f633f2e816aff8252a3783" id="r_a7aa57248c0f633f2e816aff8252a3783"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7aa57248c0f633f2e816aff8252a3783">updateOnTop</a> (bool) override</td></tr>
+<tr class="separator:a7aa57248c0f633f2e816aff8252a3783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d3b00400efdbcfbecb9f25d57f28ca1" id="r_a8d3b00400efdbcfbecb9f25d57f28ca1"><td class="memItemLeft" align="right" valign="top"><a id="a8d3b00400efdbcfbecb9f25d57f28ca1" name="a8d3b00400efdbcfbecb9f25d57f28ca1"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>resizeEvent</b> (QResizeEvent *) override</td></tr>
 <tr class="separator:a8d3b00400efdbcfbecb9f25d57f28ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,28 +247,18 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>hideEvent</b>
 <tr class="memitem:a1126de3713e30482cc8ed8a388888818 inherit pro_methods_classinviwo_1_1InviwoDockWidget" id="r_a1126de3713e30482cc8ed8a388888818"><td class="memItemLeft" align="right" valign="top">
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>closeEvent</b> (QCloseEvent *event) override</td></tr>
 <tr class="separator:a1126de3713e30482cc8ed8a388888818 inherit pro_methods_classinviwo_1_1InviwoDockWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1ProcessorWidget"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1ProcessorWidget')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1ProcessorWidget.html">inviwo::ProcessorWidget</a></td></tr>
-<tr class="memitem:a683dbb19985111b590d4345e85ee9c5d inherit pro_methods_classinviwo_1_1ProcessorWidget" id="r_a683dbb19985111b590d4345e85ee9c5d"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>updateVisible</b> (bool visible)=0</td></tr>
-<tr class="separator:a683dbb19985111b590d4345e85ee9c5d inherit pro_methods_classinviwo_1_1ProcessorWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4a139ad08ca4d3e0825ec48844febd8 inherit pro_methods_classinviwo_1_1ProcessorWidget" id="r_ae4a139ad08ca4d3e0825ec48844febd8"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>updateDimensions</b> (ivec2)=0</td></tr>
-<tr class="separator:ae4a139ad08ca4d3e0825ec48844febd8 inherit pro_methods_classinviwo_1_1ProcessorWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73140b7a461be9622dd310fd43de7ce0 inherit pro_methods_classinviwo_1_1ProcessorWidget" id="r_a73140b7a461be9622dd310fd43de7ce0"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>updatePosition</b> (ivec2)=0</td></tr>
-<tr class="separator:a73140b7a461be9622dd310fd43de7ce0 inherit pro_methods_classinviwo_1_1ProcessorWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a515bc13f79da3eb285c444e4d24b9248 inherit pro_methods_classinviwo_1_1ProcessorWidget" id="r_a515bc13f79da3eb285c444e4d24b9248"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>updateFullScreen</b> (bool)=0</td></tr>
-<tr class="separator:a515bc13f79da3eb285c444e4d24b9248 inherit pro_methods_classinviwo_1_1ProcessorWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c52166dfa42fa5f3b730cddac6a8460 inherit pro_methods_classinviwo_1_1ProcessorWidget" id="r_a4c52166dfa42fa5f3b730cddac6a8460"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>updateOnTop</b> (bool)=0</td></tr>
-<tr class="separator:a4c52166dfa42fa5f3b730cddac6a8460 inherit pro_methods_classinviwo_1_1ProcessorWidget"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observer')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
 <tr class="memitem:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer" id="r_aa62add49e9cc4b358f61aa9d38aee991"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991">addObservation</a> (<a class="el" href="classinviwo_1_1ObservableInterface.html">ObservableInterface</a> *observable)</td></tr>
 <tr class="separator:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:a69cb001e632b81cd8fca231d9450ae58" id="r_a69cb001e632b81cd8fca231d9450ae58"><td class="memItemLeft" align="right" valign="top"><a id="a69cb001e632b81cd8fca231d9450ae58" name="a69cb001e632b81cd8fca231d9450ae58"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ignoreEvents_</b> {false}</td></tr>
+<tr class="separator:a69cb001e632b81cd8fca231d9450ae58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad54c75c9f67fd9f9669f2e3dc4266504" id="r_ad54c75c9f67fd9f9669f2e3dc4266504"><td class="memItemLeft" align="right" valign="top"><a id="ad54c75c9f67fd9f9669f2e3dc4266504" name="ad54c75c9f67fd9f9669f2e3dc4266504"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>resizeOngoing_</b> {false}</td></tr>
+<tr class="separator:ad54c75c9f67fd9f9669f2e3dc4266504"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae973446993591a3dbeab544cea52f8d1" id="r_ae973446993591a3dbeab544cea52f8d1"><td class="memItemLeft" align="right" valign="top"><a id="ae973446993591a3dbeab544cea52f8d1" name="ae973446993591a3dbeab544cea52f8d1"></a>
 Processor::NameDispatcherHandle&#160;</td><td class="memItemRight" valign="bottom"><b>idChange_</b></td></tr>
 <tr class="separator:ae973446993591a3dbeab544cea52f8d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -356,6 +357,141 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>stickyFlagChanged</b>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1InviwoDockWidget.html">inviwo::InviwoDockWidget</a>.</p>
+
+</div>
+</div>
+<a id="a0448f22b419e56a33f07a54f4e22798b" name="a0448f22b419e56a33f07a54f4e22798b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0448f22b419e56a33f07a54f4e22798b">&#9670;&#160;</a></span>updateDimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ProcessorDockWidgetQt::updateDimensions </td>
+          <td>(</td>
+          <td class="paramtype">ivec2</td>          <td class="paramname"><span class="paramname"><em>dimensions</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1ProcessorWidget.html">inviwo::ProcessorWidget</a>.</p>
+
+</div>
+</div>
+<a id="af258ddd9603528d7ac63677ddb589589" name="af258ddd9603528d7ac63677ddb589589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af258ddd9603528d7ac63677ddb589589">&#9670;&#160;</a></span>updateFullScreen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ProcessorDockWidgetQt::updateFullScreen </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1ProcessorWidget.html">inviwo::ProcessorWidget</a>.</p>
+
+</div>
+</div>
+<a id="a7aa57248c0f633f2e816aff8252a3783" name="a7aa57248c0f633f2e816aff8252a3783"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aa57248c0f633f2e816aff8252a3783">&#9670;&#160;</a></span>updateOnTop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ProcessorDockWidgetQt::updateOnTop </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1ProcessorWidget.html">inviwo::ProcessorWidget</a>.</p>
+
+</div>
+</div>
+<a id="ad1fef818773fa4d729df647cbf3e9eb1" name="ad1fef818773fa4d729df647cbf3e9eb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1fef818773fa4d729df647cbf3e9eb1">&#9670;&#160;</a></span>updatePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ProcessorDockWidgetQt::updatePosition </td>
+          <td>(</td>
+          <td class="paramtype">ivec2</td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1ProcessorWidget.html">inviwo::ProcessorWidget</a>.</p>
+
+</div>
+</div>
+<a id="a543d34db7ebda05fb07171efc5941ff1" name="a543d34db7ebda05fb07171efc5941ff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a543d34db7ebda05fb07171efc5941ff1">&#9670;&#160;</a></span>updateVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ProcessorDockWidgetQt::updateVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>visible</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1ProcessorWidget.html">inviwo::ProcessorWidget</a>.</p>
 
 </div>
 </div>

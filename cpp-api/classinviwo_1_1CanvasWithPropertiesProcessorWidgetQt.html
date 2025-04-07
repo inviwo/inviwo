@@ -122,6 +122,7 @@ $(function(){initNavTree('classinviwo_1_1CanvasWithPropertiesProcessorWidgetQt.h
   <img src="classinviwo_1_1CanvasWithPropertiesProcessorWidgetQt.png" usemap="#inviwo::CanvasWithPropertiesProcessorWidgetQt_map" alt=""/>
   <map id="inviwo::CanvasWithPropertiesProcessorWidgetQt_map" name="inviwo::CanvasWithPropertiesProcessorWidgetQt_map">
 <area href="classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="inviwo::CanvasProcessorWidget" shape="rect" coords="149,168,437,192"/>
+<area href="classinviwo_1_1EventPropagator.html" title="Abstract base class for a event propagator." alt="inviwo::EventPropagator" shape="rect" coords="745,168,1033,192"/>
 <area href="classinviwo_1_1ProcessorWidget.html" alt="inviwo::ProcessorWidget" shape="rect" coords="0,112,288,136"/>
 <area href="classinviwo_1_1ProcessorNetworkObserver.html" alt="inviwo::ProcessorNetworkObserver" shape="rect" coords="298,112,586,136"/>
 <area href="classinviwo_1_1ProcessorWidgetMetaDataObserver.html" alt="inviwo::ProcessorWidgetMetaDataObserver" shape="rect" coords="0,56,288,80"/>
@@ -261,6 +262,8 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Super</b> = QMainWin
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a8ac7d412acb12cc27e1c5b73c18ff623" id="r_a8ac7d412acb12cc27e1c5b73c18ff623"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ac7d412acb12cc27e1c5b73c18ff623">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *e, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *source) override</td></tr>
+<tr class="separator:a8ac7d412acb12cc27e1c5b73c18ff623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fad4c982cbe2c855b51a7c7f9b53e0f" id="r_a8fad4c982cbe2c855b51a7c7f9b53e0f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8fad4c982cbe2c855b51a7c7f9b53e0f">propagateResizeEvent</a> () override</td></tr>
 <tr class="separator:a8fad4c982cbe2c855b51a7c7f9b53e0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e89a09af9c70bf6316727532dc43bc7" id="r_a7e89a09af9c70bf6316727532dc43bc7"><td class="memItemLeft" align="right" valign="top"><a id="a7e89a09af9c70bf6316727532dc43bc7" name="a7e89a09af9c70bf6316727532dc43bc7"></a>
@@ -288,9 +291,6 @@ std::unique_ptr&lt; <a class="el" href="classinviwo_1_1CanvasQOpenGLWidget.html"
 <tr class="memitem:a683f1e49420d2fda89ce340b66da22e6" id="r_a683f1e49420d2fda89ce340b66da22e6"><td class="memItemLeft" align="right" valign="top"><a id="a683f1e49420d2fda89ce340b66da22e6" name="a683f1e49420d2fda89ce340b66da22e6"></a>
 Processor::NameDispatcherHandle&#160;</td><td class="memItemRight" valign="bottom"><b>nameChange_</b></td></tr>
 <tr class="separator:a683f1e49420d2fda89ce340b66da22e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a413c78e26c2417728dca4748df5411bb" id="r_a413c78e26c2417728dca4748df5411bb"><td class="memItemLeft" align="right" valign="top"><a id="a413c78e26c2417728dca4748df5411bb" name="a413c78e26c2417728dca4748df5411bb"></a>
-size2_t&#160;</td><td class="memItemRight" valign="bottom"><b>canvasDimensions_</b> {0}</td></tr>
-<tr class="separator:a413c78e26c2417728dca4748df5411bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3d6b29fc7b495d9eca55a18b28d6c29" id="r_ab3d6b29fc7b495d9eca55a18b28d6c29"><td class="memItemLeft" align="right" valign="top"><a id="ab3d6b29fc7b495d9eca55a18b28d6c29" name="ab3d6b29fc7b495d9eca55a18b28d6c29"></a>
 <a class="el" href="classinviwo_1_1PropertyListFrame.html">PropertyListFrame</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>frame_</b></td></tr>
 <tr class="separator:ab3d6b29fc7b495d9eca55a18b28d6c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -337,6 +337,37 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorNetworkObs
 
 </div>
 </div>
+<a id="a8ac7d412acb12cc27e1c5b73c18ff623" name="a8ac7d412acb12cc27e1c5b73c18ff623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ac7d412acb12cc27e1c5b73c18ff623">&#9670;&#160;</a></span>propagateEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CanvasWithPropertiesProcessorWidgetQt::propagateEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Event.html">Event</a> *</td>          <td class="paramname"><span class="paramname"><em>e</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Outport.html">Outport</a> *</td>          <td class="paramname"><span class="paramname"><em>source</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1EventPropagator.html">inviwo::EventPropagator</a>.</p>
+
+</div>
+</div>
 <a id="a8fad4c982cbe2c855b51a7c7f9b53e0f" name="a8fad4c982cbe2c855b51a7c7f9b53e0f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8fad4c982cbe2c855b51a7c7f9b53e0f">&#9670;&#160;</a></span>propagateResizeEvent()</h2>
 
@@ -359,7 +390,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorNetworkObs
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Propagated an event with the physical (pixel) dimensions of the canvas Note: QWidget::size() will return logical dimensions </p>
 
 <p>Implements <a class="el" href="classinviwo_1_1CanvasProcessorWidget.html">inviwo::CanvasProcessorWidget</a>.</p>
 

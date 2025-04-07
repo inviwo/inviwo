@@ -135,9 +135,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3c005f8f34c7bfd4aa786cbef66f32fc" id="r_a3c005f8f34c7bfd4aa786cbef66f32fc"><td class="memItemLeft" align="right" valign="top"><a id="a3c005f8f34c7bfd4aa786cbef66f32fc" name="a3c005f8f34c7bfd4aa786cbef66f32fc"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>IndexColumn</b> (const <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> &amp;rhs)=default</td></tr>
 <tr class="separator:a3c005f8f34c7bfd4aa786cbef66f32fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a884db68410e46128e41b700eadca503e" id="r_a884db68410e46128e41b700eadca503e"><td class="memItemLeft" align="right" valign="top"><a id="a884db68410e46128e41b700eadca503e" name="a884db68410e46128e41b700eadca503e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>IndexColumn</b> (const <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> &amp;rhs, const std::vector&lt; std::uint32_t &gt; &amp;rowSelection)</td></tr>
-<tr class="separator:a884db68410e46128e41b700eadca503e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33a3ad1f1bdb606cae73df24ccce5b8c" id="r_a33a3ad1f1bdb606cae73df24ccce5b8c"><td class="memItemLeft" align="right" valign="top"><a id="a33a3ad1f1bdb606cae73df24ccce5b8c" name="a33a3ad1f1bdb606cae73df24ccce5b8c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>IndexColumn</b> (const <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> &amp;rhs, std::span&lt; const std::uint32_t &gt; rowSelection)</td></tr>
+<tr class="separator:a33a3ad1f1bdb606cae73df24ccce5b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54847512e0019314178ab3a4865c09d2" id="r_a54847512e0019314178ab3a4865c09d2"><td class="memItemLeft" align="right" valign="top"><a id="a54847512e0019314178ab3a4865c09d2" name="a54847512e0019314178ab3a4865c09d2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>IndexColumn</b> (<a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> &amp;&amp;rhs)=default</td></tr>
 <tr class="separator:a54847512e0019314178ab3a4865c09d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,8 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8dad74ab1e7cb3d4ceb385ef97f63ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c9d6daae972474f830486eac1304a11" id="r_a9c9d6daae972474f830486eac1304a11"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c9d6daae972474f830486eac1304a11">clone</a> () const override</td></tr>
 <tr class="separator:a9c9d6daae972474f830486eac1304a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97e19f62df76ab6930123bc85b8f55f4" id="r_a97e19f62df76ab6930123bc85b8f55f4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97e19f62df76ab6930123bc85b8f55f4">clone</a> (const std::vector&lt; std::uint32_t &gt; &amp;rowSelection) const override</td></tr>
-<tr class="separator:a97e19f62df76ab6930123bc85b8f55f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8874cc1b4a6dbe4082c455b1c9113fec" id="r_a8874cc1b4a6dbe4082c455b1c9113fec"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8874cc1b4a6dbe4082c455b1c9113fec">clone</a> (std::span&lt; const std::uint32_t &gt; rowSelection) const override</td></tr>
+<tr class="separator:a8874cc1b4a6dbe4082c455b1c9113fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a000654ab7dfd5cdc6a2796e3c98cc507" id="r_a000654ab7dfd5cdc6a2796e3c98cc507"><td class="memItemLeft" align="right" valign="top">virtual ColumnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a000654ab7dfd5cdc6a2796e3c98cc507">getColumnType</a> () const override</td></tr>
 <tr class="separator:a000654ab7dfd5cdc6a2796e3c98cc507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1TemplateColumn"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1TemplateColumn')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a></td></tr>
@@ -166,9 +166,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3292b6653a01f1de5c3f6adcb8ddc739 inherit pub_methods_classinviwo_1_1TemplateColumn" id="r_a3292b6653a01f1de5c3f6adcb8ddc739"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;rhs)</td></tr>
 <tr class="separator:a3292b6653a01f1de5c3f6adcb8ddc739 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe731c791915264d34a243e16cc16897 inherit pub_methods_classinviwo_1_1TemplateColumn" id="r_afe731c791915264d34a243e16cc16897"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;rhs, const std::vector&lt; std::uint32_t &gt; &amp;rowSelection)</td></tr>
-<tr class="separator:afe731c791915264d34a243e16cc16897 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a035d75908ff947b7c90f2b6c2e9ad3f3 inherit pub_methods_classinviwo_1_1TemplateColumn" id="r_a035d75908ff947b7c90f2b6c2e9ad3f3"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (const <a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;rhs, std::span&lt; const std::uint32_t &gt; rowSelection)</td></tr>
+<tr class="separator:a035d75908ff947b7c90f2b6c2e9ad3f3 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96b3d9268eeddc5f7de7ad86ba331656 inherit pub_methods_classinviwo_1_1TemplateColumn" id="r_a96b3d9268eeddc5f7de7ad86ba331656"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>TemplateColumn</b> (<a class="el" href="classinviwo_1_1TemplateColumn.html">TemplateColumn</a>&lt; std::uint32_t &gt; &amp;&amp;rhs)</td></tr>
 <tr class="separator:a96b3d9268eeddc5f7de7ad86ba331656 inherit pub_methods_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -359,6 +359,19 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a9c06b2042eeaa5298f001fd3ce7fb62e inherit pub_types_classinviwo_1_1TemplateColumn" id="r_a9c06b2042eeaa5298f001fd3ce7fb62e"><td class="memItemLeft" align="right" valign="top">
 using&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
 <tr class="separator:a9c06b2042eeaa5298f001fd3ce7fb62e inherit pub_types_classinviwo_1_1TemplateColumn"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1Column"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Column')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Column.html">inviwo::Column</a></td></tr>
+<tr class="memitem:a8e6138d02dfd38d7bf4191358ccaebc7 inherit pro_methods_classinviwo_1_1Column" id="r_a8e6138d02dfd38d7bf4191358ccaebc7"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Column</b> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;)=default</td></tr>
+<tr class="separator:a8e6138d02dfd38d7bf4191358ccaebc7 inherit pro_methods_classinviwo_1_1Column"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6b1585a18d2f4e5d27d9152f592b76f inherit pro_methods_classinviwo_1_1Column" id="r_ac6b1585a18d2f4e5d27d9152f592b76f"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Column</b> (<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:ac6b1585a18d2f4e5d27d9152f592b76f inherit pro_methods_classinviwo_1_1Column"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d157b8cbbae3b127e692237060aa456 inherit pro_methods_classinviwo_1_1Column" id="r_a8d157b8cbbae3b127e692237060aa456"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;)=default</td></tr>
+<tr class="separator:a8d157b8cbbae3b127e692237060aa456 inherit pro_methods_classinviwo_1_1Column"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fb52343744076d78379e0e44c4fb21c inherit pro_methods_classinviwo_1_1Column" id="r_a4fb52343744076d78379e0e44c4fb21c"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a4fb52343744076d78379e0e44c4fb21c inherit pro_methods_classinviwo_1_1Column"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1TemplateColumn"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1TemplateColumn')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1TemplateColumn.html">inviwo::TemplateColumn&lt; std::uint32_t &gt;</a></td></tr>
 <tr class="memitem:a6fc1ca4c60a8ba8c9ed2590783fbfdac inherit pro_attribs_classinviwo_1_1TemplateColumn" id="r_a6fc1ca4c60a8ba8c9ed2590783fbfdac"><td class="memItemLeft" align="right" valign="top">
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>header_</b></td></tr>
@@ -405,8 +418,8 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
 
 </div>
 </div>
-<a id="a97e19f62df76ab6930123bc85b8f55f4" name="a97e19f62df76ab6930123bc85b8f55f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97e19f62df76ab6930123bc85b8f55f4">&#9670;&#160;</a></span>clone() <span class="overload">[2/2]</span></h2>
+<a id="a8874cc1b4a6dbe4082c455b1c9113fec" name="a8874cc1b4a6dbe4082c455b1c9113fec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8874cc1b4a6dbe4082c455b1c9113fec">&#9670;&#160;</a></span>clone() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -417,7 +430,7 @@ std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Buffer.html">Buffer</a>&l
         <tr>
           <td class="memname">virtual <a class="el" href="classinviwo_1_1IndexColumn.html">IndexColumn</a> * inviwo::IndexColumn::clone </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>rowSelection</em></span></td><td>)</td>
+          <td class="paramtype">std::span&lt; const std::uint32_t &gt;</td>          <td class="paramname"><span class="paramname"><em>rowSelection</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

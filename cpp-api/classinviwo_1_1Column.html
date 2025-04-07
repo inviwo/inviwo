@@ -106,6 +106,7 @@ $(function(){initNavTree('classinviwo_1_1Column.html',''); initResizable(true); 
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1Column-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::Column Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span><div class="ingroups"><a class="el" href="group__datastructures.html">Datastructures</a></div></div></div>
 </div><!--header-->
@@ -137,9 +138,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7fb4527145c62b0b080e958bc6002466" id="r_a7fb4527145c62b0b080e958bc6002466"><td class="memItemLeft" align="right" valign="top"><a id="a7fb4527145c62b0b080e958bc6002466" name="a7fb4527145c62b0b080e958bc6002466"></a>
 virtual <a class="el" href="classinviwo_1_1Column.html">Column</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
 <tr class="separator:a7fb4527145c62b0b080e958bc6002466"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d6f32b9da0261973dc0778b93a33861" id="r_a8d6f32b9da0261973dc0778b93a33861"><td class="memItemLeft" align="right" valign="top"><a id="a8d6f32b9da0261973dc0778b93a33861" name="a8d6f32b9da0261973dc0778b93a33861"></a>
-virtual <a class="el" href="classinviwo_1_1Column.html">Column</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> (const std::vector&lt; std::uint32_t &gt; &amp;rowSelection) const =0</td></tr>
-<tr class="separator:a8d6f32b9da0261973dc0778b93a33861"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16eaab52269198486bfd7761757250f3" id="r_a16eaab52269198486bfd7761757250f3"><td class="memItemLeft" align="right" valign="top"><a id="a16eaab52269198486bfd7761757250f3" name="a16eaab52269198486bfd7761757250f3"></a>
+virtual <a class="el" href="classinviwo_1_1Column.html">Column</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> (std::span&lt; const std::uint32_t &gt; rowSelection) const =0</td></tr>
+<tr class="separator:a16eaab52269198486bfd7761757250f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09e3c4f6184c163717fb9ad9d55db4db" id="r_a09e3c4f6184c163717fb9ad9d55db4db"><td class="memItemLeft" align="right" valign="top"><a id="a09e3c4f6184c163717fb9ad9d55db4db" name="a09e3c4f6184c163717fb9ad9d55db4db"></a>
 virtual ColumnType&#160;</td><td class="memItemRight" valign="bottom"><b>getColumnType</b> () const =0</td></tr>
 <tr class="separator:a09e3c4f6184c163717fb9ad9d55db4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -269,6 +270,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a cla
 <tr class="memitem:abb9e1a56048d3d22f0ed91727d292c02 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_abb9e1a56048d3d22f0ed91727d292c02"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
 <tr class="separator:abb9e1a56048d3d22f0ed91727d292c02 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a8e6138d02dfd38d7bf4191358ccaebc7" id="r_a8e6138d02dfd38d7bf4191358ccaebc7"><td class="memItemLeft" align="right" valign="top"><a id="a8e6138d02dfd38d7bf4191358ccaebc7" name="a8e6138d02dfd38d7bf4191358ccaebc7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Column</b> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;)=default</td></tr>
+<tr class="separator:a8e6138d02dfd38d7bf4191358ccaebc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6b1585a18d2f4e5d27d9152f592b76f" id="r_ac6b1585a18d2f4e5d27d9152f592b76f"><td class="memItemLeft" align="right" valign="top"><a id="ac6b1585a18d2f4e5d27d9152f592b76f" name="ac6b1585a18d2f4e5d27d9152f592b76f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Column</b> (<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:ac6b1585a18d2f4e5d27d9152f592b76f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d157b8cbbae3b127e692237060aa456" id="r_a8d157b8cbbae3b127e692237060aa456"><td class="memItemLeft" align="right" valign="top"><a id="a8d157b8cbbae3b127e692237060aa456" name="a8d157b8cbbae3b127e692237060aa456"></a>
+<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;)=default</td></tr>
+<tr class="separator:a8d157b8cbbae3b127e692237060aa456"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fb52343744076d78379e0e44c4fb21c" id="r_a4fb52343744076d78379e0e44c4fb21c"><td class="memItemLeft" align="right" valign="top"><a id="a4fb52343744076d78379e0e44c4fb21c" name="a4fb52343744076d78379e0e44c4fb21c"></a>
+<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Column.html">Column</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a4fb52343744076d78379e0e44c4fb21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
