@@ -40,7 +40,7 @@ ProcessorWidget::ProcessorWidget(Processor* p)
     metaData_->addObserver(this);
 }
 
-void ProcessorWidget::setVisible(bool visible) { metaData_->setVisibile(visible, this); }
+void ProcessorWidget::setVisible(bool visible) { metaData_->setVisible(visible, this); }
 bool ProcessorWidget::isVisible() const { return metaData_->isVisible(); }
 
 Processor* ProcessorWidget::getProcessor() const { return processor_; }

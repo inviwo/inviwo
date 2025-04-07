@@ -85,6 +85,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     })} {
 
     setWindowTitle(utilqt::toQString(p->getDisplayName()));
+    setDockNestingEnabled(true);
 
     const ivec2 dim = CanvasProcessorWidget::getDimensions();
     const ivec2 pos = CanvasProcessorWidget::getPosition();
@@ -92,7 +93,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
 
     auto splitter = new QSplitter();
 
-    canvas_->setEventPropagator(p);
+    canvas_->setEventPropagator(this);
     canvas_->setMinimumSize(16, 16);
     canvas_->onContextMenu([this](QMenu& menu) { return contextMenu(menu); });
 
@@ -116,9 +117,6 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     frame_->setContentsMargins(space, 0, 0, 0);
     scrollArea->setWidget(frame_);
     splitter->addWidget(scrollArea);
-
-    connect(splitter, &QSplitter::splitterMoved, this,
-            &CanvasWithPropertiesProcessorWidgetQt::propagateResizeEvent);
 
     QSizePolicy sp(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(5);
@@ -187,9 +185,18 @@ void CanvasWithPropertiesProcessorWidgetQt::setProperties(std::string_view paths
 
 Canvas* CanvasWithPropertiesProcessorWidgetQt::getCanvas() const { return canvas_.get(); }
 
+void CanvasWithPropertiesProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
+    if (event->hash() == ResizeEvent::chash()) {
+        // Note: use the size of this, i.e. the whole widgets size, not the event size which is just
+        // the canvas
+        CanvasProcessorWidget::setDimensions(utilqt::toGLM(size()));
+    }
+
+    getProcessor()->propagateEvent(event, source);
+}
+
 void CanvasWithPropertiesProcessorWidgetQt::resizeEvent(QResizeEvent* event) {
     Super::resizeEvent(event);
-    propagateResizeEvent();
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::showEvent(QShowEvent* event) {
@@ -214,16 +221,7 @@ void CanvasWithPropertiesProcessorWidgetQt::changeEvent(QEvent* event) {
 }
 
 void CanvasWithPropertiesProcessorWidgetQt::propagateResizeEvent() {
-    CanvasProcessorWidget::setDimensions(utilqt::toGLM(size()));
-
-    auto previousCanvasDimensions = canvasDimensions_;
-    const auto dpr = window()->devicePixelRatio();
-    canvasDimensions_ = dpr * utilqt::toGLM(canvas_->size());
-
-    NetworkLock lock;
-    RenderContext::getPtr()->activateDefaultRenderContext();
-    ResizeEvent resizeEvent(canvasDimensions_, previousCanvasDimensions);
-    getProcessor()->propagateEvent(&resizeEvent, nullptr);
+    canvas_->triggerResizeEventPropagation();
 }
 
 bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu) {

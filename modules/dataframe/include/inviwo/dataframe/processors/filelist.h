@@ -31,19 +31,28 @@
 
 #include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <atomic>
 
 namespace inviwo {
 
-class IVW_MODULE_DATAFRAME_API TFFromDataFrameColumn : public Processor {
+class IVW_MODULE_DATAFRAME_API FileList : public Processor {
 public:
-    TFFromDataFrameColumn();
+    FileList();
+    FileList(const FileList&) = delete;
+    FileList(FileList&&) = delete;
+    FileList& operator=(const FileList&) = delete;
+    FileList& operator=(FileList&&) = delete;
+    virtual ~FileList();
 
     virtual void process() override;
 
@@ -51,17 +60,28 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<DataFrame> dataFrame_;
-    BrushingAndLinkingInport bnl_;
-    ColumnOptionProperty column_;
-    BoolProperty lock_;
-    TransferFunctionProperty tf_;
-    DoubleProperty alpha_;
-    DoubleProperty delta_;
-    DoubleProperty shift_;
-    DoubleMinMaxProperty range_;
+    void cycleFiles();
+    static bool running(const std::weak_ptr<Processor>& pw);
+    static std::vector<std::filesystem::directory_entry> getFiles(
+        const std::weak_ptr<Processor>& pw);
+    static void setIndex(const std::weak_ptr<Processor>& pw, size_t i,
+                         const std::filesystem::path& path);
 
-    std::vector<double> pos_;
+    DataOutport<DataFrame> outport_;
+    BrushingAndLinkingInport bnlInport_;
+    BrushingAndLinkingOutport bnlOutport_;
+    DirectoryProperty directory_;
+    ButtonProperty refresh_;
+    StringProperty filter_;
+    IntSizeTProperty selectedIndex_;
+    IntSizeTProperty highlightIndex_;
+    std::vector<std::filesystem::directory_entry> files_;
+
+    FileProperty selected_;
+    FileProperty highlight_;
+
+    ButtonProperty cycleFiles_;
+    std::atomic<bool> running_;
 };
 
 }  // namespace inviwo

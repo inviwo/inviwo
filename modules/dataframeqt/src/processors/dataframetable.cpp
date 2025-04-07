@@ -29,9 +29,10 @@
 
 #include <inviwo/dataframeqt/processors/dataframetable.h>
 
-#include <inviwo/core/io/datawriterutil.h>                             // for saveData
-#include <inviwo/core/metadata/processorwidgetmetadata.h>              // for ProcessorWidgetMet...
-#include <inviwo/core/network/networklock.h>                           // for NetworkLock
+#include <inviwo/core/io/datawriterutil.h>                 // for saveData
+#include <inviwo/core/metadata/processorwidgetmetadata.h>  // for ProcessorWidgetMet...
+#include <inviwo/core/network/networklock.h>               // for NetworkLock
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/processors/processor.h>                          // for Processor
 #include <inviwo/core/processors/processorstate.h>                     // for CodeState, CodeSta...
 #include <inviwo/core/processors/processortags.h>                      // for Tags, Tag, Tags::CPU
@@ -48,6 +49,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrameInport
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>          // for DataFrameTableProc...
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>  // for BrushingAndLinking...
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <functional>  // for __base
 #include <limits>      // for numeric_limits
@@ -66,21 +68,25 @@ const ProcessorInfo DataFrameTable::processorInfo_{
     "Data Output",                 // Category
     CodeState::Stable,             // Code state
     Tags::CPU | Tag{"DataFrame"},  // Tags
-};
+    "Shows the content of a DataFrame in a tabular view."_help};
+
 const ProcessorInfo& DataFrameTable::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameTable::DataFrameTable()
     : Processor()
-    , inport_("inport")
-    , brushLinkPort_("brushingAndLinking")
+    , inport_("inport", "DataFrame contents to be shown in the processor widget"_help)
+    , brushLinkPort_("brushingAndLinking", "Inport for brushing & linking interactions"_help)
 
     , dimensions_("dimensions", "Canvas Size", size2_t(512, 300), size2_t(1, 1),
                   size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid)
     , position_("position", "Canvas Position", ivec2(128, 128),
                 ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
                 ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
-    , showIndexColumn_("showIndexColumn", "Show Index Column", false, InvalidationLevel::Valid)
-    , showCategoryIndices_("showCategoryIndices", "Show Category Indices", false)
+    , visible_{"visible", "Visible", true}
+    , showIndexColumn_("showIndexColumn", "Show Index Column",
+                       "show/hide index column in table"_help, false, InvalidationLevel::Valid)
+    , showCategoryIndices_("showCategoryIndices", "Show Category Indices",
+                           "show integral category indices for categorical columns"_help, false)
     , showFilteredRowCols_("showFilteredItems", "Show Filtered Items", true)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier)} {
@@ -88,23 +94,25 @@ DataFrameTable::DataFrameTable()
 
     addPort(inport_);
     addPort(brushLinkPort_);
-    addProperties(dimensions_, position_, showIndexColumn_, showCategoryIndices_,
+    addProperties(dimensions_, position_, visible_, showIndexColumn_, showCategoryIndices_,
                   showFilteredRowCols_);
 
     // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     position_.setSerializationMode(PropertySerializationMode::None);
+    visible_.setSerializationMode(PropertySerializationMode::None);
 
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
+    visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
 
     showIndexColumn_.onChange([this]() {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             w->setIndexColumnVisible(showIndexColumn_);
         }
     });
     showFilteredRowCols_.onChange([this]() {
-        if (auto w = getWidget()) {
+        if (auto* w = getWidget()) {
             w->setFilteredRowsVisible(showFilteredRowCols_);
         }
     });
@@ -117,7 +125,7 @@ DataFrameTable::~DataFrameTable() {
 }
 
 void DataFrameTable::process() {
-    if (auto w = getWidget()) {
+    if (auto* w = getWidget()) {
         if (inport_.isChanged() || showCategoryIndices_.isModified()) {
             w->setDataFrame(inport_.getData(), showCategoryIndices_);
         }
@@ -126,7 +134,7 @@ void DataFrameTable::process() {
 }
 
 void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get());
+    auto* widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get());
     if (processorWidget && !widget) {
         throw Exception(
             "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget");
@@ -145,34 +153,34 @@ void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> process
 
 void DataFrameTable::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
-        Property::OnChangeBlocker blocker{position_};
+        const Property::OnChangeBlocker blocker{position_};
         position_.set(widgetMetaData_->getPosition());
     }
 }
 
 void DataFrameTable::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getDimensions() != dimensions_.get()) {
-        Property::OnChangeBlocker blocker{dimensions_};
+        const Property::OnChangeBlocker blocker{dimensions_};
         dimensions_.set(widgetMetaData_->getDimensions());
     }
 }
 
 void DataFrameTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+    if (widgetMetaData_->isVisible() != visible_.get()) {
+        const Property::OnChangeBlocker blocker{visible_};
+        visible_.set(widgetMetaData_->isVisible());
+    }
     isSink_.update();
     isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
 DataFrameTableProcessorWidget* DataFrameTable::getWidget() const {
-    if (auto widget = static_cast<DataFrameTableProcessorWidget*>(processorWidget_.get())) {
-        return widget;
-    } else {
-        return nullptr;
-    }
+    return dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget_.get());
 }
 
 void DataFrameTable::setWidgetSize(size2_t dim) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     dimensions_.set(dim);
 }
 
@@ -187,6 +195,17 @@ std::optional<std::filesystem::path> DataFrameTable::exportFile(
     }
 
     throw Exception("Inport has no data");
+}
+
+std::shared_ptr<const Image> DataFrameTable::getImage() const {
+    if (auto* w = getWidget()) {
+        QPixmap pm(w->size());
+        w->render(&pm);
+
+        return std::make_shared<Image>(utilqt::toLayer(pm.toImage()));
+    }
+
+    return nullptr;
 }
 
 }  // namespace inviwo

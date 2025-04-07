@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/inviwomainwindow.h>
+
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -43,6 +44,23 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/metadata/processormetadata.h>
+#include <inviwo/core/common/inviwomodulefactoryobject.h>
+#include <inviwo/core/network/workspaceutils.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/compositeprocessorutils.h>
+#include <inviwo/core/processors/exporter.h>
+#include <inviwo/core/rendering/datavisualizermanager.h>
+#include <inviwo/core/util/timer.h>
+
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <modules/qtwidgets/propertylistwidget.h>
+#include <modules/qtwidgets/keyboardutils.h>
+#include <modules/qtwidgets/processors/processordockwidgetqt.h>
+
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/editorsettings.h>
 #include <inviwo/qt/editor/helpwidget.h>
@@ -61,23 +79,8 @@
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/qtapptools.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
-#include <modules/qtwidgets/propertylistwidget.h>
-#include <modules/qtwidgets/keyboardutils.h>
-#include <inviwo/core/metadata/processormetadata.h>
-#include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <inviwo/core/network/workspaceutils.h>
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorwidget.h>
-#include <inviwo/core/processors/compositeprocessor.h>
-#include <inviwo/core/processors/compositeprocessorutils.h>
-#include <inviwo/core/processors/exporter.h>
-
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
-#include <inviwo/core/rendering/datavisualizermanager.h>
-#include <inviwo/core/util/timer.h>
 
 #include <QScreen>
 #include <QStandardPaths>
@@ -102,6 +105,7 @@
 #include <QApplication>
 
 #include <fmt/std.h>
+#include <fmt/chrono.h>
 
 #include <algorithm>
 
@@ -451,20 +455,28 @@ void InviwoMainWindow::showWindow() {
 }
 
 void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::string_view fileName) {
-    repaint();
-    qApp->processEvents();
-    app_->waitForPool();
-
-    while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+    try {
+        repaint();
         qApp->processEvents();
-        app_->processFront();
-    }
+        app_->waitForPool();
 
-    rendercontext::activateDefault();
-    util::exportAllFiles(
-        *app_->getProcessorNetwork(), path, fileName,
-        {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
-        Overwrite::Yes);
+        while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
+            qApp->processEvents();
+            app_->processFront();
+        }
+
+        rendercontext::activateDefault();
+        util::exportAllFiles(
+            *app_->getProcessorNetwork(), path, fileName,
+            {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
+            Overwrite::Yes);
+    } catch (const Exception& e) {
+        log::exception(e);
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception();
+    }
 }
 
 void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::string_view fileName) {
@@ -475,7 +487,7 @@ void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::str
     screenGrab.save(utilqt::toQString(path / fileName), "png");
 }
 
-void InviwoMainWindow::addActions() {
+void InviwoMainWindow::addActions() { // NOLINT
     auto menu = menuBar();
 
     auto fileMenuItem = menu->addMenu(tr("&File"));
@@ -589,7 +601,20 @@ void InviwoMainWindow::addActions() {
         });
         fileMenuItem->addAction(appendAction);
     }
+    {
+        auto snapshot = fileMenuItem->addAction("Save Snapshots ...");
+        connect(snapshot, &QAction::triggered, [this](bool /*state*/) {
+            InviwoFileDialog saveFileDialog(nullptr, "Save Snapshots ...", "images");
+            saveFileDialog.setFileMode(FileMode::Directory);
+            saveFileDialog.setAcceptMode(AcceptMode::Open);
 
+            if (saveFileDialog.exec()) {
+                const auto path = utilqt::toPath(saveFileDialog.selectedFiles().at(0));
+                saveSnapshots(path, fmt::format("{:%Y-%m-%d_%H-%M-%S}_UPN",
+                                                std::chrono::system_clock::now()));
+            }
+        });
+    }
     {
         auto exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
 
@@ -989,7 +1014,6 @@ void InviwoMainWindow::addActions() {
             }
         });
     }
-
 #if IVW_PROFILING
     {
         networkMenuItem->addSeparator();
@@ -1680,8 +1704,9 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 }
 
 void InviwoMainWindow::VisibleWidgets::hide(InviwoMainWindow* win) {
-    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(),
-                                [](const auto w) { return w->isVisible(); });
+    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(), [](const auto w) {
+        return w->isVisible() && dynamic_cast<ProcessorDockWidgetQt*>(w) == nullptr;
+    });
     processors = util::copy_if(
         win->getInviwoApplication()->getProcessorNetwork()->getProcessors(), [](const auto p) {
             return p->hasProcessorWidget() && p->getProcessorWidget()->isVisible();

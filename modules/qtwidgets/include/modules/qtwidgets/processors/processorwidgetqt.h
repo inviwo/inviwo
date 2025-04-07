@@ -33,16 +33,21 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <QWidget>
+#include <QMainWindow>
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public ProcessorWidget, public QWidget {
+class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public ProcessorWidget, public QMainWindow {
 public:
     ProcessorWidgetQt(Processor* p);
+    ProcessorWidgetQt(const ProcessorWidgetQt&) = delete;
+    ProcessorWidgetQt(ProcessorWidgetQt&&) = delete;
+    ProcessorWidgetQt& operator=(const ProcessorWidgetQt&) = delete;
+    ProcessorWidgetQt& operator=(ProcessorWidgetQt&&) = delete;
     virtual ~ProcessorWidgetQt() = default;
-
-    using QWidget::setVisible;
+    
+    using Super = QMainWindow;
+    using QMainWindow::setVisible;
     virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
     virtual void setDimensions(ivec2 dime) override;  // Override ProcessorWidget
     virtual void setFullScreen(bool fullScreen) override;

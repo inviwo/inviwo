@@ -64,6 +64,7 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for declval, move
 #include <vector>         // for vector, vector<>:...
+#include <span>
 
 #include <fmt/core.h>            // for format, formatter
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
@@ -91,7 +92,7 @@ public:
     virtual ~Column() = default;
 
     virtual Column* clone() const = 0;
-    virtual Column* clone(const std::vector<std::uint32_t>& rowSelection) const = 0;
+    virtual Column* clone(std::span<const std::uint32_t> rowSelection) const = 0;
 
     virtual ColumnType getColumnType() const = 0;
 
@@ -177,6 +178,10 @@ public:
 
 protected:
     Column() = default;
+    Column(const Column&) = default;
+    Column(Column&&) = default;  // NOLINT
+    Column& operator=(const Column&) = default;
+    Column& operator=(Column&&) = default;  // NOLINT
 };
 
 /**
@@ -200,14 +205,14 @@ public:
                    std::optional<dvec2> range = std::nullopt);
 
     TemplateColumn(const TemplateColumn<T>& rhs);
-    TemplateColumn(const TemplateColumn<T>& rhs, const std::vector<std::uint32_t>& rowSelection);
-    TemplateColumn(TemplateColumn<T>&& rhs);
+    TemplateColumn(const TemplateColumn<T>& rhs, std::span<const std::uint32_t> rowSelection);
+    TemplateColumn(TemplateColumn<T>&& rhs);  // NOLINT
 
     TemplateColumn<T>& operator=(const TemplateColumn<T>& rhs);
     TemplateColumn<T>& operator=(TemplateColumn<T>&& rhs);
 
     virtual TemplateColumn* clone() const override;
-    virtual TemplateColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
+    virtual TemplateColumn* clone(std::span<const std::uint32_t> rowSelection) const override;
 
     virtual ~TemplateColumn() = default;
 
@@ -298,13 +303,13 @@ public:
                                              std::make_shared<Buffer<std::uint32_t>>());
     IndexColumn(std::string_view header, std::vector<std::uint32_t> data);
     IndexColumn(const IndexColumn& rhs) = default;
-    IndexColumn(const IndexColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
-    IndexColumn(IndexColumn&& rhs) = default;
+    IndexColumn(const IndexColumn& rhs, std::span<const std::uint32_t> rowSelection);
+    IndexColumn(IndexColumn&& rhs) = default;  // NOLINT
     IndexColumn& operator=(const IndexColumn& rhs) = default;
     IndexColumn& operator=(IndexColumn&& rhs) = default;
 
     virtual IndexColumn* clone() const override;
-    virtual IndexColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
+    virtual IndexColumn* clone(std::span<const std::uint32_t> rowSelection) const override;
 
     virtual ~IndexColumn() = default;
 
@@ -346,13 +351,13 @@ public:
                       std::optional<dvec2> range = std::nullopt);
 
     CategoricalColumn(const CategoricalColumn& rhs);
-    CategoricalColumn(const CategoricalColumn& rhs, const std::vector<std::uint32_t>& rowSelection);
+    CategoricalColumn(const CategoricalColumn& rhs, std::span<const std::uint32_t> rowSelection);
     CategoricalColumn(CategoricalColumn&& rhs) = default;
     CategoricalColumn& operator=(const CategoricalColumn& rhs);
     CategoricalColumn& operator=(CategoricalColumn&& rhs);
 
     virtual CategoricalColumn* clone() const override;
-    virtual CategoricalColumn* clone(const std::vector<std::uint32_t>& rowSelection) const override;
+    virtual CategoricalColumn* clone(std::span<const std::uint32_t> rowSelection) const override;
 
     virtual ~CategoricalColumn() = default;
 
@@ -558,7 +563,7 @@ TemplateColumn<T>::TemplateColumn(TemplateColumn<T>&& rhs)
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn& rhs,
-                                  const std::vector<std::uint32_t>& rowSelection)
+                                  std::span<const std::uint32_t> rowSelection)
     : header_(rhs.getHeader())
     , unit_(rhs.unit_)
     , range_(rhs.range_)
@@ -599,7 +604,7 @@ TemplateColumn<T>* TemplateColumn<T>::clone() const {
 }
 
 template <typename T>
-TemplateColumn<T>* TemplateColumn<T>::clone(const std::vector<std::uint32_t>& rowSelection) const {
+TemplateColumn<T>* TemplateColumn<T>::clone(std::span<const std::uint32_t> rowSelection) const {
     return new TemplateColumn(*this, rowSelection);
 }
 

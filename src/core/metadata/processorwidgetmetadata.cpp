@@ -36,7 +36,7 @@ ProcessorWidgetMetaData::ProcessorWidgetMetaData()
     , Observable<ProcessorWidgetMetaDataObserver>()
     , position_(0, 0)
     , dimensions_(256, 256)
-    , visibility_(true)
+    , visible_(true)
     , fullScreen_(false)
     , onTop_(true) {}
 
@@ -68,17 +68,17 @@ void ProcessorWidgetMetaData::setDimensions(const size2_t& dim,
 
 size2_t ProcessorWidgetMetaData::getDimensions() const { return dimensions_; }
 
-void ProcessorWidgetMetaData::setVisibile(bool visibility,
-                                          const ProcessorWidgetMetaDataObserver* source) {
-    if (visibility != visibility_) {
-        visibility_ = visibility;
+void ProcessorWidgetMetaData::setVisible(bool visible,
+                                         const ProcessorWidgetMetaDataObserver* source) {
+    if (visible != visible_) {
+        visible_ = visible;
         forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
             if (o != source) o->onProcessorWidgetVisibilityChange(this);
         });
     }
 }
 
-bool ProcessorWidgetMetaData::isVisible() const { return visibility_; }
+bool ProcessorWidgetMetaData::isVisible() const { return visible_; }
 
 void ProcessorWidgetMetaData::setFullScreen(bool fullScreen,
                                             const ProcessorWidgetMetaDataObserver* source) {
@@ -110,7 +110,7 @@ void ProcessorWidgetMetaData::serialize(Serializer& s) const {
 
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
-    s.serialize("visibility", visibility_);
+    s.serialize("visibility", visible_);
     s.serialize("fullScreen", fullScreen_);
     s.serialize("onTop", onTop_);
 }
@@ -124,9 +124,9 @@ void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
     d.deserialize("dimensions", dimensions);
     setDimensions(dimensions);
 
-    bool visibility{visibility_};
+    bool visibility{visible_};
     d.deserialize("visibility", visibility);
-    setVisibile(visibility);
+    setVisible(visibility);
 
     bool fullScreen{fullScreen_};
     d.deserialize("fullScreen", fullScreen);
@@ -139,7 +139,7 @@ void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
 
 bool ProcessorWidgetMetaData::equal(const MetaData& rhs) const {
     if (auto tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs)) {
-        return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
+        return tmp->position_ == position_ && tmp->visible_ == visible_ &&
                tmp->dimensions_ == dimensions_ && tmp->fullScreen_ == fullScreen_ &&
                tmp->onTop_ == onTop_;
     } else {
