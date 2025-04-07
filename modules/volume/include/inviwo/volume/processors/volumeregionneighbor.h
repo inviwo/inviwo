@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/volume/processors/histogramtodataframe.h>
-#include <inviwo/volume/processors/neighborlistfiltering.h>
-#include <inviwo/volume/processors/volumeregionneighbor.h>
-#include <inviwo/volume/processors/volumeregionstatistics.h>
-#include <inviwo/volume/processors/volumeregionmapper.h>
-#include <inviwo/volume/processors/volumevoronoisegmentation.h>
-#include <inviwo/volume/volumemodule.h>
+#pragma once
 
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/layerport.h>
+#include <inviwo/volume/volumemoduledefine.h>
+
+#include <inviwo/core/ports/volumeport.h>               // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/poolprocessor.h>       // for PoolProcessor
+#include <inviwo/core/processors/processorinfo.h>       // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>        // for BoolProperty
+#include <inviwo/core/properties/ordinalproperty.h>     // for OrdinalProperty
+#include <inviwo/dataframe/datastructures/dataframe.h>  // for DataFrameInport
 
 namespace inviwo {
 
-VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume") {
-    // Register objects that can be shared with the rest of inviwo here:
+class IVW_MODULE_VOLUME_API VolumeRegionNeighbor : public PoolProcessor {
+public:
+    VolumeRegionNeighbor();
 
-    // Processors
-    registerProcessor<HistogramToDataFrame<Layer>>();
-    registerProcessor<HistogramToDataFrame<Volume>>();
-    registerProcessor<NeighborListFiltering>();
-    registerProcessor<VolumeRegionMapper>();
-    registerProcessor<VolumeRegionNeighbor>();
-    registerProcessor<VolumeRegionStatistics>();
-    registerProcessor<VolumeVoronoiSegmentation>();
-}
+    virtual void process() override;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport inport_;
+    VolumeInport scalarField_;
+    DataFrameOutport outport_;
+
+    BoolProperty useCutoff_;
+    DoubleProperty cutoff_;
+};
 
 }  // namespace inviwo
