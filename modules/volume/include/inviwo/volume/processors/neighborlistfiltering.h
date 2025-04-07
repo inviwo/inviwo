@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,37 @@
  *
  *********************************************************************************/
 
-#include <inviwo/volume/processors/histogramtodataframe.h>
-#include <inviwo/volume/processors/neighborlistfiltering.h>
-#include <inviwo/volume/processors/volumeregionneighbor.h>
-#include <inviwo/volume/processors/volumeregionstatistics.h>
-#include <inviwo/volume/processors/volumeregionmapper.h>
-#include <inviwo/volume/processors/volumevoronoisegmentation.h>
-#include <inviwo/volume/volumemodule.h>
+#pragma once
 
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/layerport.h>
+#include <inviwo/volume/volumemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 
 namespace inviwo {
 
-VolumeModule::VolumeModule(InviwoApplication* app) : InviwoModule(app, "Volume") {
-    // Register objects that can be shared with the rest of inviwo here:
+class IVW_MODULE_VOLUME_API NeighborListFiltering : public Processor {
+public:
+    NeighborListFiltering();
 
-    // Processors
-    registerProcessor<HistogramToDataFrame<Layer>>();
-    registerProcessor<HistogramToDataFrame<Volume>>();
-    registerProcessor<NeighborListFiltering>();
-    registerProcessor<VolumeRegionMapper>();
-    registerProcessor<VolumeRegionNeighbor>();
-    registerProcessor<VolumeRegionStatistics>();
-    registerProcessor<VolumeVoronoiSegmentation>();
-}
+    virtual void process() override;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    DataFrameInport neighborList_;
+    DataFrameInport inport_;
+    DataFrameOutport outport_;
+
+    ColumnOptionProperty pairFirst_;
+    ColumnOptionProperty pairSecond_;
+
+    IntSizeTProperty center_;
+};
 
 }  // namespace inviwo
