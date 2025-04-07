@@ -205,6 +205,17 @@ bool CacheBase::isConnectionActive(Inport* inport, Outport*) const {
     }
 }
 
+void CacheBase::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
+    if (auto* net = getNetwork()) {
+        auto key = detail::cacheState(this, *net, refDir_.get(), xml_);
+        if (modifiedProperty == nullptr && key == loadedKey()) {
+            return;
+        }
+    }
+
+    Processor::invalidate(invalidationLevel, modifiedProperty);
+}
+
 void CacheBase::writeXML() const {
     if (!cacheDir_.get().empty()) {
         if (auto f = std::ofstream(cacheDir_.get() / fmt::format("{}.inv", key_))) {
