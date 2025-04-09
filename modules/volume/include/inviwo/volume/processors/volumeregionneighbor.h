@@ -51,7 +51,11 @@ public:
 
 private:
     VolumeInport inport_;
+    VolumeInport scalarField_;
     DataFrameOutport outport_;
+
+    BoolProperty useCutoff_;
+    DoubleProperty cutoff_;
 };
 
 }  // namespace inviwo

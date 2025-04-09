@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -52,35 +53,32 @@ const ProcessorInfo& NeighborListFiltering::getProcessorInfo() const { return pr
 
 NeighborListFiltering::NeighborListFiltering()
     : Processor{}
+    , neighborList_{"neighborList"}
     , inport_{"inport"}
-    , bnl_{"brushingAndLinking"}
-    , enable_{"enable", "Enable", true}
-    , pairFirst_{"pairFirst", "Pair First", inport_, ColumnOptionProperty::AddNoneOption::No, 1}
-    , pairSecond_{"pairSecond", "Pair Second", inport_, ColumnOptionProperty::AddNoneOption::No, 2}
-    , center_{"center", "Center"}
-    , range_{"range", "Range"} {
+    , outport_{"outport"}
+    , pairFirst_{"pairFirst", "Pair First", neighborList_, ColumnOptionProperty::AddNoneOption::No,
+                 1}
+    , pairSecond_{"pairSecond", "Pair Second", neighborList_,
+                  ColumnOptionProperty::AddNoneOption::No, 2}
+    , center_{"center", "Center"} {
 
-    addPorts(inport_, bnl_);
-    addProperties(enable_, pairFirst_, pairSecond_, center_, range_);
-
-    bnl_.setInvalidationLevels({});
+    addPorts(neighborList_, inport_, outport_);
+    addProperties(pairFirst_, pairSecond_, center_);
 }
 
 void NeighborListFiltering::process() {
-    if (!enable_) {
-        bnl_.filter(getIdentifier(), BitSet{});
-        return;
-    }
 
-    auto df = inport_.getData();
+    auto neighborList = neighborList_.getData();
+    auto input = inport_.getData();
+    auto output = std::make_shared<DataFrame>(*input);
 
-    df->getColumn(pairFirst_)
+    neighborList->getColumn(pairFirst_)
         ->getRAMRepresentation()
         ->dispatch<void, dispatching::filter::UnsignedIntegerScalars>([&](auto br) {
             using ValueType = util::PrecisionValueType<decltype(br)>;
 
             const auto& iCol = br->getDataContainer();
-            const auto& jCol = df->getColumn(pairSecond_)->getContainer<ValueType>();
+            const auto& jCol = neighborList->getColumn(pairSecond_)->getContainer<ValueType>();
 
             std::map<ValueType, std::vector<ValueType>> neighbors;
 
@@ -89,25 +87,34 @@ void NeighborListFiltering::process() {
                 neighbors[j].push_back(i);
             }
 
+            auto index = output->getIndexColumnRef().getContainer();
+            std::vector<int> stepsFromCenter(index.size(), -1);
+
             std::set<ValueType> selected;
-            selected.emplace(static_cast<ValueType>(center_.get()));
-
             std::set<ValueType> tmp;
+            std::set<ValueType> visited;
+            selected.emplace(static_cast<ValueType>(center_.get()));
+            visited.emplace(static_cast<ValueType>(center_.get()));
 
-            for (size_t r = 0; r < range_.get(); ++r) {
+            for (size_t step = 0; !selected.empty(); ++step) {
+                for (auto i : selected) {
+                    stepsFromCenter[i] = step;
+                }
                 tmp = selected;
+                selected.clear();
                 for (auto i : tmp) {
-                    selected.insert_range(neighbors[i]);
+                    for (auto j : neighbors[i]) {
+                        if (!visited.contains(j)) {
+                            selected.emplace(j);
+                            visited.emplace(j);
+                        }
+                    }
                 }
             }
 
-            const auto min = static_cast<std::uint32_t>(neighbors.begin()->first);
-            const auto max = static_cast<std::uint32_t>(neighbors.rbegin()->first);
+            output->addColumn("NN Dist", std::move(stepsFromCenter), Unit{}, dvec2{0, 10});
 
-            auto vec = std::views::iota(min, max + 1) |
-                       std::views::filter([&](auto i) { return !selected.contains(i); });
-
-            bnl_.filter(getIdentifier(), BitSet{std::begin(vec), std::end(vec)});
+            outport_.setData(output);
         });
 }
 

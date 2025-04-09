@@ -50,15 +50,14 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    DataFrameInport neighborList_;
     DataFrameInport inport_;
-    BrushingAndLinkingInport bnl_;
+    DataFrameOutport outport_;
 
-    BoolProperty enable_;
     ColumnOptionProperty pairFirst_;
     ColumnOptionProperty pairSecond_;
 
     IntSizeTProperty center_;
-    IntSizeTProperty range_;
 };
 
 }  // namespace inviwo

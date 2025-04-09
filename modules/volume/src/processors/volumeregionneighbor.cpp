@@ -53,9 +53,17 @@ const ProcessorInfo VolumeRegionNeighbor::processorInfo_{
 const ProcessorInfo& VolumeRegionNeighbor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRegionNeighbor::VolumeRegionNeighbor()
-    : PoolProcessor{}, inport_{"inputVolume", "The input volume"_help}, outport_{"seedPoints"} {
+    : PoolProcessor{}
+    , inport_{"inputVolume", "The input volume"_help}
+    , scalarField_{"scalarField"}
+    , outport_{"seedPoints"}
+    , useCutoff_{"useCutoff", "Use Cutoff", false}
+    , cutoff_{"cutoff", "Cutoff", util::ordinalSymmetricVector(0.0)} {
 
-    addPorts(inport_, outport_);
+    scalarField_.setOptional(true);
+
+    addPorts(inport_, scalarField_, outport_);
+    addProperties(useCutoff_, cutoff_);
 }
 
 namespace {
@@ -148,75 +156,154 @@ void forEachVoxelParallelState(const size3_t dims, size_t jobs, C callback) {
     }
 }
 
+static constexpr auto neighbors =
+    std::array{size3_t{0, 0, 1}, size3_t{0, 1, 0}, size3_t{0, 1, 1}, size3_t{1, 0, 0},
+               size3_t{1, 0, 1}, size3_t{1, 1, 0}, size3_t{1, 1, 1}};
+
+auto calc(std::shared_ptr<const Volume> volume) -> std::shared_ptr<DataFrame> {
+    auto df = std::make_shared<DataFrame>();
+
+    const size_t poolSize = util::getPoolSize();
+    const auto dims = volume->getDimensions();
+    const util::IndexMapper3D im{dims};
+
+    volume->getRepresentation<VolumeRAM>()
+        ->dispatch<void, dispatching::filter::UnsignedIntegerScalars>([&](auto vr) {
+            using ValueType = util::PrecisionValueType<decltype(vr)>;
+
+            const auto pairs = wrappingDispatch<std::vector<std::pair<ValueType, ValueType>>>(
+                vr->getWrapping(), [&]<Wrapping X, Wrapping Y, Wrapping Z>() {
+                    const auto dimsM1 = dims - size3_t{1, 1, 1};
+
+                    const auto jobs = 4 * poolSize;
+                    std::vector<std::set<std::pair<ValueType, ValueType>>> sets(jobs);
+
+                    const auto data = vr->getView();
+                    forEachVoxelParallelState(dims, jobs, [&](const size3_t& voxelPos, size_t job) {
+                        const auto center = data[im(voxelPos)];
+
+                        for (const auto& nn : neighbors) {
+                            const auto val = data[im(wrap<X, Y, Z>(voxelPos + nn, dimsM1))];
+                            if (center < val) {
+                                sets[job].emplace(center, val);
+                            } else if (center > val) {
+                                sets[job].emplace(val, center);
+                            }
+                        }
+                    });
+
+                    std::vector<std::pair<ValueType, ValueType>> res;
+                    std::vector<std::pair<ValueType, ValueType>> tmp;
+                    for (const auto& set : sets) {
+                        std::swap(tmp, res);
+                        res.clear();
+                        std::ranges::set_union(set, tmp, std::back_inserter(res));
+                    }
+
+                    return res;
+                });
+
+            df->addColumn("Pair First", pairs | std::views::transform([](const auto& p) {
+                                            return p.first;
+                                        }) | std::ranges::to<std::vector>());
+            df->addColumn("Pair Second", pairs | std::views::transform([](const auto& p) {
+                                             return p.second;
+                                         }) | std::ranges::to<std::vector>());
+        });
+
+    df->updateIndexBuffer();
+    return df;
+}
+
+auto calc(std::shared_ptr<const Volume> volume, std::shared_ptr<const Volume> scalars,
+          double cutoff) -> std::shared_ptr<DataFrame> {
+    auto df = std::make_shared<DataFrame>();
+
+    const size_t poolSize = util::getPoolSize();
+    const auto dims = volume->getDimensions();
+    const util::IndexMapper3D im{dims};
+
+    if (scalars->getDimensions() != dims) {
+        throw Exception("Expected both volumes to have the same dimensions");
+    }
+
+    auto* sf = scalars->getRepresentation<VolumeRAM>();
+
+    volume->getRepresentation<VolumeRAM>()
+        ->dispatch<void, dispatching::filter::UnsignedIntegerScalars>([&](auto vr) {
+            using ValueType = util::PrecisionValueType<decltype(vr)>;
+
+            const auto pairs = wrappingDispatch<std::vector<std::pair<ValueType, ValueType>>>(
+                vr->getWrapping(), [&]<Wrapping X, Wrapping Y, Wrapping Z>() {
+                    const auto dimsM1 = dims - size3_t{1, 1, 1};
+
+                    const auto jobs = 4 * poolSize;
+                    std::vector<std::set<std::pair<ValueType, ValueType>>> sets(jobs);
+
+                    const auto data = vr->getView();
+                    forEachVoxelParallelState(dims, jobs, [&](const size3_t& voxelPos, size_t job) {
+                        if (sf->getAsNormalizedDouble(voxelPos) < cutoff) return;
+
+                        const auto center = data[im(voxelPos)];
+
+                        for (const auto& nn : neighbors) {
+                            const auto npos = wrap<X, Y, Z>(voxelPos + nn, dimsM1);
+                            if (sf->getAsNormalizedDouble(npos) < cutoff) continue;
+
+                            const auto val = data[im(npos)];
+                            if (center < val) {
+                                sets[job].emplace(center, val);
+                            } else if (center > val) {
+                                sets[job].emplace(val, center);
+                            }
+                        }
+                    });
+
+                    std::vector<std::pair<ValueType, ValueType>> res;
+                    std::vector<std::pair<ValueType, ValueType>> tmp;
+                    for (const auto& set : sets) {
+                        std::swap(tmp, res);
+                        res.clear();
+                        std::ranges::set_union(set, tmp, std::back_inserter(res));
+                    }
+
+                    return res;
+                });
+
+            df->addColumn("Pair First", pairs | std::views::transform([](const auto& p) {
+                                            return p.first;
+                                        }) | std::ranges::to<std::vector>());
+            df->addColumn("Pair Second", pairs | std::views::transform([](const auto& p) {
+                                             return p.second;
+                                         }) | std::ranges::to<std::vector>());
+        });
+
+    df->updateIndexBuffer();
+    return df;
+}
+
 }  // namespace
 
 void VolumeRegionNeighbor::process() {
-
-    static constexpr auto neighbors =
-        std::array{size3_t{0, 0, 1}, size3_t{0, 1, 0}, size3_t{0, 1, 1}, size3_t{1, 0, 0},
-                   size3_t{1, 0, 1}, size3_t{1, 1, 0}, size3_t{1, 1, 1}};
-
-    auto calc = [volume = inport_.getData()]() -> std::shared_ptr<DataFrame> {
-        auto df = std::make_shared<DataFrame>();
-
-        const size_t poolSize = util::getPoolSize();
-        const auto dims = volume->getDimensions();
-        const util::IndexMapper3D im{dims};
-
-        volume->getRepresentation<VolumeRAM>()
-            ->dispatch<void, dispatching::filter::UnsignedIntegerScalars>([&](auto vr) {
-                using ValueType = util::PrecisionValueType<decltype(vr)>;
-
-                const auto pairs = wrappingDispatch<std::vector<std::pair<ValueType, ValueType>>>(
-                    vr->getWrapping(), [&]<Wrapping X, Wrapping Y, Wrapping Z>() {
-                        const auto dimsM1 = dims - size3_t{1, 1, 1};
-
-                        const auto jobs = 4 * poolSize;
-                        std::vector<std::set<std::pair<ValueType, ValueType>>> sets(jobs);
-
-                        const auto data = vr->getView();
-                        forEachVoxelParallelState(
-                            dims, jobs, [&](const size3_t& voxelPos, size_t job) {
-                                const auto center = data[im(voxelPos)];
-
-                                for (const auto& nn : neighbors) {
-                                    const auto val = data[im(wrap<X, Y, Z>(voxelPos + nn, dimsM1))];
-                                    if (center < val) {
-                                        sets[job].emplace(center, val);
-                                    } else if (center > val) {
-                                        sets[job].emplace(val, center);
-                                    }
-                                }
-                            });
-
-                        std::vector<std::pair<ValueType, ValueType>> res;
-                        std::vector<std::pair<ValueType, ValueType>> tmp;
-                        for (const auto& set : sets) {
-                            std::swap(tmp, res);
-                            res.clear();
-                            std::ranges::set_union(set, tmp, std::back_inserter(res));
-                        }
-
-                        return res;
+    if (useCutoff_) {
+        if (!scalarField_.isReady()) {
+            throw Exception("To use the cutoff a scalar field needs to be connected");
+        }
+        outport_.setData(nullptr);
+        dispatchOne([vol = inport_.getData(), sf = scalarField_.getData(),
+                     cutoff = cutoff_.get()]() { return calc(vol, sf, cutoff); },
+                    [this](std::shared_ptr<DataFrame> result) {
+                        outport_.setData(result);
+                        newResults();
                     });
-
-                df->addColumn("Pair First", pairs | std::views::transform([](const auto& p) {
-                                                return p.first;
-                                            }) | std::ranges::to<std::vector>());
-                df->addColumn("Pair Second", pairs | std::views::transform([](const auto& p) {
-                                                 return p.second;
-                                             }) | std::ranges::to<std::vector>());
-            });
-
-        df->updateIndexBuffer();
-        return df;
-    };
-
-    outport_.setData(nullptr);
-    dispatchOne(calc, [this](std::shared_ptr<DataFrame> result) {
-        outport_.setData(result);
-        newResults();
-    });
+    } else {
+        outport_.setData(nullptr);
+        dispatchOne([vol = inport_.getData()]() { return calc(vol); },
+                    [this](std::shared_ptr<DataFrame> result) {
+                        outport_.setData(result);
+                        newResults();
+                    });
+    }
 }
 
 }  // namespace inviwo
