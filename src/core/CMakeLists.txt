@@ -919,10 +919,6 @@ if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
 endif()
 
-if(WIN32)
-    find_package(stackwalker CONFIG REQUIRED)
-endif()
-
 target_compile_definitions(inviwo-core 
     PUBLIC
         GLM_FORCE_SIZE_T_LENGTH
@@ -944,7 +940,6 @@ target_link_libraries(inviwo-core
         fmt::fmt
         $<$<BOOL:${IVW_ENABLE_OPENMP}>:OpenMP::OpenMP_CXX>
         $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
-        $<$<BOOL:${WIN32}>:unofficial::stackwalker::StackWalker>
         $<$<BOOL:${APPLE}>:${CORESERVICES_LIBRARY}>
         llnl-units::units
         FastFloat::fast_float

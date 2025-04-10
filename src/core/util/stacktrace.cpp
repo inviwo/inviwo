@@ -29,80 +29,26 @@
 
 #include <inviwo/core/util/stacktrace.h>
 
-#if defined(__unix__)
-#include <execinfo.h>
-#include <cxxabi.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#elif defined(_MSC_VER)
-#include <StackWalker.h>
-#endif
-
 #include <inviwo/core/util/stringconversion.h>
 
-#if defined(_MSC_VER)
-class StackWalkerToVector : public StackWalker {
-public:
-    StackWalkerToVector(StackWalkOptions level, std::vector<std::string>* vector)
-        : StackWalker(level), vector_(vector) {}
-
-protected:
-    virtual void OnOutput(LPCSTR szText) {
-        std::string str(szText);
-
-        if (str.find("StackWalker") != std::string::npos) {
-            vector_->clear();
-        } else if (str.find("ERROR: ") != std::string::npos) {
-            // return;
-        } else if (str.find("filename not available") != std::string::npos) {
-            // return;
-        }
-
-        inviwo::replaceInString(
-            str, "\n",
-            "");  // remove new line character at the end of the string that we get fro stack walker
-        vector_->push_back(str);
-    }
-
-private:
-    std::vector<std::string>* vector_;
-};
+#ifdef __cpp_lib_stacktrace
+#include <stacktrace>
 #endif
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
 std::vector<std::string> getStackTrace() {
     std::vector<std::string> lines;
-#if defined(__unix__)
-    void* array[100];
-    size_t size;
-    char** strings;
-    size = backtrace(array, 100);
-    strings = backtrace_symbols(array, size);
 
-    for (size_t i = 0; i < size; i++) {
-        int status;
-        std::string line = strings[i];
-        size_t start = line.find("(");
-        size_t end = line.find("+");
-        std::string className = line.substr(start + 1, end - start - 1);
-        char* fixedClass = abi::__cxa_demangle(className.c_str(), 0, 0, &status);
-
-        if (!status && fixedClass) {
-            replaceInString(line, className, std::string(fixedClass));
-            free(fixedClass);
-        }
-
-        lines.push_back(line);
-        //    free(line);
+#ifdef __cpp_lib_stacktrace
+    for (auto&& entry : std::stacktrace::current()) {
+        lines.emplace_back(fmt::format("{}({}): {}", entry.source_file(), entry.source_line(),
+                                       entry.description()));
     }
-
-    free(strings);
-#elif defined(_MSC_VER)
-    StackWalkerToVector sw(StackWalker::OptionsAll, &lines);
-    sw.ShowCallstack();
 #endif
+
     return lines;
 }
 

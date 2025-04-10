@@ -46,11 +46,7 @@
     "fast-float",
     "bext-sml",
     "md4c",
-    "curlcpp",
-    {
-      "name":"stackwalker",
-      "platform": "windows"
-    }
+    "curlcpp"
   ],
   "default-features": [
     "hdf5",
