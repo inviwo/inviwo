@@ -154,6 +154,22 @@ The repository structure is organized as follows:
 └── vcpkg.json           <- Package dependencies
 ```
 
+## How to cite
+Please cite this paper if you use Inviwo in your research.
+```
+@Article{inviwo2019,
+    author   = {J{\"o}nsson, Daniel and Steneteg, Peter and Sund{\'e}n, Erik and Englund, Rickard and Kottravel, Sathish and Falk, Martin and Ynnerman, Anders and Hotz, Ingrid and Ropinski, Timo},
+    title    = {Inviwo - A Visualization System with Usage Abstraction Levels},
+    journal  = {IEEE Transactions on Visualization and Computer Graphics},
+    year     = {2019},
+    volume   = {26},
+    number   = {11},
+    pages    = {3241-3254},
+    doi      = {10.1109/TVCG.2019.2920639},
+    ISSN     = {1077-2626},
+}
+```
+
 ## Sponsors
 This work is supported by Linköping University, Ulm University, and KTH Royal Institute of Technology as well as grants from the Swedish e-Science Research Centre (SeRC), the Excellence Center at Linköping - Lund in Information Technology (ELLIIT), the Swedish Research Council (Vetenskapsrådet), DFG (German Research Foundation), and the BMBF.
 
