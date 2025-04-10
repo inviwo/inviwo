@@ -125,6 +125,10 @@ public:
 
     void erase(iterator pos) { data_.erase(pos.base()); }
     void erase(const_iterator begin, const_iterator end) { data_.erase(begin.base(), end.base()); }
+
+    void replace(iterator pos, std::shared_ptr<const Data> data) { *pos.base() = data; }
+    void replace(iterator pos, std::shared_ptr<Data> data) { *pos.base() = data; }
+
     void shrink_to_fit() { data_.shrink_to_fit(); }
 
     iterator begin() { return util::makeTransformIterator(getData, data_.begin()); }
