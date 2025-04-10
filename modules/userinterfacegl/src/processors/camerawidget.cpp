@@ -260,11 +260,7 @@ CameraWidget::CameraWidget()
     }
 
     animate_.getBoolProperty()->onChange([this]() {
-        if (animate_.getBoolProperty()->get()) {
-            timer_.start(ms{fps_.get()});
-        } else {
-            timer_.stop();
-        }
+        startStopAnimation(animate_.getBoolProperty()->get());
     });
     fps_.onChange([this]() { timer_.setInterval(ms{fps_.get()}); });
 }
@@ -743,6 +739,16 @@ std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
          [this] { singleStepInteraction(Interaction::Zoom, true); }},
     }};
 }
+
+void CameraWidget::startStopAnimation(bool start) {
+    if (start) {
+        saveInitialCameraState();
+        timer_.start(ms{fps_.get()});
+    } else {
+        timer_.stop();
+    }
+}
+
 
 void CameraWidget::animate() {
     switch (type_.get()) {

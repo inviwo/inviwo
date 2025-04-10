@@ -107,6 +107,7 @@ private:
 
     std::vector<ButtonGroupProperty::Button> buttons();
 
+    void startStopAnimation(bool start);
     void animate();
 
     ImageInport inport_;
