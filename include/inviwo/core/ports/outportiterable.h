@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/datasequence.h>
 
 #include <vector>
 #include <memory>
@@ -57,7 +58,7 @@ struct OutportIterable {
         using reference = std::shared_ptr<const T>;
         using iterator_category = std::forward_iterator_tag;
 
-        const_iterator() : self_(nullptr){};
+        const_iterator() : self_(nullptr) {};
         template <typename Wrapper>
         const_iterator(Wrapper wrapper) : self_(std::make_unique<Model<Wrapper>>(wrapper)) {}
         const_iterator(const const_iterator& rhs)
@@ -297,6 +298,42 @@ private:
     bool end_;
 };
 
+// Specialization for DataSequence of data
+template <typename T>
+class OutportIterableWrapper<DataSequence<T>> {
+public:
+    using Iter = typename DataSequence<T>::const_iterator;
+
+    OutportIterableWrapper() : iter_(), iterEnd_(), end_(true) {}
+    OutportIterableWrapper(const DataOutport<DataSequence<T>>& port)
+        : iter_{port.hasData() ? port.getData()->begin() : Iter{}}
+        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
+        , end_{iter_ == iterEnd_} {}
+
+    std::shared_ptr<const T> get() { return *iter_; };
+
+    void inc() {
+        ++iter_;
+        if (iter_ == iterEnd_) end_ = true;
+    };
+
+    bool equal(const OutportIterableWrapper& rhs) const {
+        if (end_ && rhs.end_)
+            return true;
+        else if (end_ != rhs.end_)
+            return false;
+        else
+            return iter_ == rhs.iter_;
+    }
+
+    bool end() const { return end_; }
+
+private:
+    Iter iter_;
+    Iter iterEnd_;
+    bool end_;
+};
+
 }  // namespace detail
 
 // Base template for single data ptr
@@ -356,11 +393,25 @@ struct OutportIterableImpl<Derived, std::vector<T*, Alloc>> : public OutportIter
     }
 };
 
-// Specialization for vector of data pointer
+// Specialization for vector of data unique pointer
 template <typename Derived, typename T, typename Alloc>
 struct OutportIterableImpl<Derived, std::vector<std::unique_ptr<T>, Alloc>>
     : public OutportIterable<T> {
     using Container = std::vector<std::unique_ptr<T>, Alloc>;
+    using const_iterator = typename OutportIterable<T>::const_iterator;
+
+    virtual const_iterator begin() const override {
+        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
+    }
+    virtual const_iterator end() const override {
+        return detail::OutportIterableWrapper<Container>{};
+    }
+};
+
+// Specialization for DataSequence of data
+template <typename Derived, typename T>
+struct OutportIterableImpl<Derived, DataSequence<T>> : public OutportIterable<T> {
+    using Container = DataSequence<T>;
     using const_iterator = typename OutportIterable<T>::const_iterator;
 
     virtual const_iterator begin() const override {
