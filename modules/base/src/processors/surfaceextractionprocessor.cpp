@@ -190,14 +190,14 @@ void SurfaceExtraction::process() {
     const bool stateChange = method_.isModified() || isoValue_.isModified() ||
                              invertIso_.isModified() || encloseSurface_.isModified();
 
-    if (stateChange || size != meshes_.size()) {  // Need to recompute all...
+    if (stateChange || size != meshes_->size()) {  // Need to recompute all...
         std::vector<decltype(computeSurface(vec4{}, std::shared_ptr<const Volume>{}))> jobs;
         for (auto [i, vol] : util::enumerate(volume_)) {
             jobs.push_back(computeSurface(getColor(i), vol));
         }
         dispatchMany(jobs, [this](std::vector<std::shared_ptr<Mesh>> result) {
-            meshes_ = result;
-            outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+            meshes_ = std::make_shared<DataSequence<Mesh>>(result);
+            outport_.setData(meshes_);
             newResults();
         });
     } else {  // Only update the modified ones
@@ -211,16 +211,17 @@ void SurfaceExtraction::process() {
                 jobs.push_back(computeSurface(getColor(i), data));
                 inds.push_back(i);
             } else if (colors_[i]->isModified()) {
-                jobs.push_back(changeColor(getColor(i), meshes_[i]));
+                jobs.push_back(changeColor(getColor(i), (*meshes_)[i]));
                 inds.push_back(i);
             }
         }
         if (!jobs.empty()) {
             dispatchMany(jobs, [this, inds](std::vector<std::shared_ptr<Mesh>> results) {
                 for (auto [i, result] : util::zip(inds, results)) {
-                    meshes_[i] = result;
+                    auto it = meshes_->begin() + i;
+                    meshes_->replace(it, result);
                 }
-                outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+                outport_.setData(meshes_);
                 newResults();
             });
         }
