@@ -33,6 +33,7 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
 #include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/datastructures/datasequence.h>   // for DataSequence
 #include <inviwo/core/ports/datainport.h>              // for DataInport
 #include <inviwo/core/ports/dataoutport.h>             // for DataOutport
 #include <inviwo/core/ports/outportiterable.h>         // for OutportIterable
@@ -97,6 +98,7 @@ protected:
 
     DataInport<Volume, 0, true> volume_;
     DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
+    DataOutport<DataSequence<Mesh>> extraOutport_;
     std::vector<std::shared_ptr<Mesh>> meshes_;
 
     OptionProperty<Method> method_;

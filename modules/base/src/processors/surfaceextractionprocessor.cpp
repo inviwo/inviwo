@@ -94,6 +94,7 @@ SurfaceExtraction::SurfaceExtraction()
     : PoolProcessor(pool::Option::KeepOldResults | pool::Option::DelayDispatch)
     , volume_("volume")
     , outport_("mesh")
+    , extraOutport_("also_mesh")
     , method_("method", "Method",
               {{"marchingtetrahedron", "Marching Tetrahedron", Method::MarchingTetrahedron},
                {"marchingcubes", "Marching Cubes", Method::MarchingCubes},
@@ -106,6 +107,7 @@ SurfaceExtraction::SurfaceExtraction()
 
     addPort(volume_);
     addPort(outport_);
+    addPort(extraOutport_);
 
     addProperty(method_);
     addProperty(isoValue_);
@@ -198,6 +200,7 @@ void SurfaceExtraction::process() {
         dispatchMany(jobs, [this](std::vector<std::shared_ptr<Mesh>> result) {
             meshes_ = result;
             outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+            extraOutport_.setData(std::make_shared<DataSequence<Mesh>>(meshes_));
             newResults();
         });
     } else {  // Only update the modified ones
@@ -221,6 +224,7 @@ void SurfaceExtraction::process() {
                     meshes_[i] = result;
                 }
                 outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+                extraOutport_.setData(std::make_shared<DataSequence<Mesh>>(meshes_));
                 newResults();
             });
         }
