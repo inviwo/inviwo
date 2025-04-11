@@ -82,7 +82,7 @@ protected:
 
     DataInport<Volume, 0, true> volume_;
     DataOutport<DataSequence<Mesh>> outport_;
-    std::shared_ptr<DataSequence<Mesh>> meshes_;
+    std::vector<std::shared_ptr<Mesh>> meshes_;
 
     OptionProperty<Method> method_;
     FloatProperty isoValue_;
