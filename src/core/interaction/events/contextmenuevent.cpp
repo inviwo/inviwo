@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,22 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/interaction/events/contextmenuevent.h>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
+ContextMenuEvent::ContextMenuEvent(std::string_view id, MouseButton button, MouseState state,
+                                   MouseButtons buttonState, KeyModifiers modifiers,
+                                   dvec2 normalizedPosition, uvec2 canvasSize, double depth)
+    : MouseEvent{button, state, buttonState, modifiers, normalizedPosition, canvasSize, depth}
+    , id_{std::move(id)} {}
 
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
+ContextMenuEvent::~ContextMenuEvent() = default;
 
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
-}
+ContextMenuEvent* ContextMenuEvent::clone() const { return new ContextMenuEvent(*this); }
 
-void InteractionEvent::setToolTip(std::string_view tooltip) const {
-    if (tooltip_) tooltip_(tooltip);
-}
+std::string_view ContextMenuEvent::getId() const { return id_; }
 
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
-
-void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,
-                                       ContextMenuActions actions) {
-    if (contextMenuCallback_) {
-        contextMenuCallback_(entries, actions);
-    }
-}
-
-void InteractionEvent::setContextMenuCallback(ContextMenuCallback callback) {
-    contextMenuCallback_ = callback;
-}
-auto InteractionEvent::getContexMenuCallback() const -> const ContextMenuCallback& {
-    return contextMenuCallback_;
-}
+uint64_t ContextMenuEvent::hash() const { return chash(); }
 
 }  // namespace inviwo

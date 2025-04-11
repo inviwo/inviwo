@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,26 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/interaction/contextmenuaction.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
-
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
-
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
-}
-
-void InteractionEvent::setToolTip(std::string_view tooltip) const {
-    if (tooltip_) tooltip_(tooltip);
-}
-
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
-
-void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,
-                                       ContextMenuActions actions) {
-    if (contextMenuCallback_) {
-        contextMenuCallback_(entries, actions);
+std::string_view enumToStr(ContextMenuAction a) {
+    switch (a) {
+        case ContextMenuAction::Empty:
+            return "Empty";
+        case ContextMenuAction::Image:
+            return "Image";
+        case ContextMenuAction::View:
+            return "View";
+        case ContextMenuAction::Widget:
+            return "Widget";
+        case ContextMenuAction::Custom:
+            return "Custom";
     }
-}
-
-void InteractionEvent::setContextMenuCallback(ContextMenuCallback callback) {
-    contextMenuCallback_ = callback;
-}
-auto InteractionEvent::getContexMenuCallback() const -> const ContextMenuCallback& {
-    return contextMenuCallback_;
+    throw Exception(SourceContext{}, "Found invalid ContextMenuAction enum value '{}'",
+                    static_cast<int>(a));
 }
 
 }  // namespace inviwo

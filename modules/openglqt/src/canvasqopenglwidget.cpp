@@ -33,12 +33,14 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType
 #include <inviwo/core/interaction/events/event.h>         // for Event
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/contextmenuevent.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
 #include <inviwo/core/interaction/pickingcontroller.h>       // for PickingController
 #include <inviwo/core/network/networklock.h>                 // for NetworkLock
 #include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
 #include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas
 #include <inviwo/core/util/glmvec.h>                         // for size2_t, dvec2
+#include <inviwo/core/util/glm.h>                            // for invertY
 #include <inviwo/core/util/raiiutils.h>                      // for OnScopeExit, OnScopeExit::Ex...
 #include <inviwo/core/util/rendercontext.h>                  // for CanvasContextHolder, RenderC...
 #include <inviwo/core/util/settings/systemsettings.h>        // for SystemSettings
@@ -47,6 +49,7 @@
 #include <modules/openglqt/hiddencanvasqt.h>                 // for HiddenCanvasQt
 #include <modules/openglqt/interactioneventmapperqt.h>       // for InteractionEventMapperQt
 #include <modules/qtwidgets/inviwoqtutils.h>                 // for toGLM, addImageActions, Widg...
+#include <modules/qtwidgets/eventconverterqt.h>
 
 #include <utility>  // for move
 
@@ -68,6 +71,14 @@ namespace inviwo {
 class Image;
 class Outport;
 
+namespace {
+
+dvec2 normalizePosition(QPointF pos, size2_t dim) {
+    return util::invertY(utilqt::toGLM(pos), dim) / dvec2(dim - size2_t(1));
+}
+
+}  // namespace
+
 CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
     : QOpenGLWidget{parent}, CanvasGL{}, name_{name} {
 
@@ -80,15 +91,42 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         this, this, [this]() { return utilqt::toGLM(size()); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
-        [this](QMouseEvent* e) {
+        [this](QMouseEvent* e, ContextMenuActions actions, std::span<ContextMenuEntry> entries) {
             if (!contextMenuCallback_) return;
 
             QMenu menu(this);
-            if (auto image = image_.lock()) {
-                utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
-                menu.addSeparator();
+            if (actions | ContextMenuAction::Custom && !entries.empty()) {
+                for (const auto& entry : entries) {
+                    if (entry.label.empty()) {
+                        menu.addSeparator();
+                        continue;
+                    }
+                    QObject::connect(
+                        menu.addAction(utilqt::toQString(entry.label)), &QAction::triggered,
+                        [this, e, entry]() {
+                            RenderContext::getPtr()->activateDefaultRenderContext();
+                            const auto pos =
+                                normalizePosition(e->position(), getCanvasDimensions());
+                            ContextMenuEvent menuEvent{entry.id,
+                                                       utilqt::getMouseButtonCausingEvent(e),
+                                                       MouseState::Release,
+                                                       utilqt::getMouseButtons(e),
+                                                       utilqt::getModifiers(e),
+                                                       pos,
+                                                       getImageDimensions(),
+                                                       getDepthValueAtNormalizedCoord(pos)};
+                            propagateEvent(&menuEvent, nullptr);
+                        });
+                }
             }
-            if (contextMenuCallback_(menu)) {
+
+            if (auto image = image_.lock(); image && actions & ContextMenuAction::Image) {
+                if (!menu.actions().empty()) {
+                    menu.addSeparator();
+                }
+                utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
+            }
+            if (contextMenuCallback_(menu, actions)) {
                 menu.exec(e->globalPosition().toPoint());
             }
         },
@@ -210,7 +248,7 @@ void CanvasQOpenGLWidget::releaseContext() {
     context()->moveToThread(QApplication::instance()->thread());
 }
 
-void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&)> callback) {
+void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&, ContextMenuActions)> callback) {
     contextMenuCallback_ = std::move(callback);
 }
 
