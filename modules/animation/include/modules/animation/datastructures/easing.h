@@ -130,7 +130,7 @@ inline double inOutSine(const double t) {
     // We could also use a system similar to the polynomial easing,
     //  where we first call the InSine function and then the OutSine function.
     // However, this is most concise:
-    return (1 - cos(t * M_PI)) / 2;
+    return (1 - cos(t * std::numbers::pi)) / 2;
 }
 
 /// Exponential In-Easing

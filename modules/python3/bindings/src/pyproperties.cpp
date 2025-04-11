@@ -83,6 +83,11 @@ void exposeProperties(py::module& m) {
         .value("InvalidOutput", InvalidationLevel::InvalidOutput)
         .value("InvalidResources", InvalidationLevel::InvalidResources);
 
+    py::enum_<PropertySerializationMode>(m, "PropertySerializationMode")
+        .value("Default", PropertySerializationMode::Default)
+        .value("All", PropertySerializationMode::All)
+        .value("Nothing", PropertySerializationMode::None);
+
     auto listPropertyUIFlag = py::enum_<ListPropertyUIFlag>(m, "ListPropertyUIFlag")
                                   .value("Static", ListPropertyUIFlag::Static)
                                   .value("Add", ListPropertyUIFlag::Add)
@@ -155,6 +160,8 @@ void exposeProperties(py::module& m) {
         .def("hasWidgets", &Property::hasWidgets)
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState)
+        .def_property("serializationMode", &Property::getSerializationMode,
+                      &Property::setSerializationMode)
         .def("onChange", [](Property* p, std::function<void()> func) { p->onChange(func); })
         .def("visibilityDependsOn",
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
