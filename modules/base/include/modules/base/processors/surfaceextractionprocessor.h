@@ -33,6 +33,7 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
 #include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/datastructures/datasequence.h>   // for DataSequence
 #include <inviwo/core/ports/datainport.h>              // for DataInport
 #include <inviwo/core/ports/dataoutport.h>             // for DataOutport
 #include <inviwo/core/ports/outportiterable.h>         // for OutportIterable
@@ -50,29 +51,13 @@
 #include <memory>       // for shared_ptr
 #include <string>       // for operator==, operator+, string
 #include <string_view>  // for operator==
-#include <vector>       // for vector, operator!=, operator==
 
 #include <fmt/core.h>    // for format, format_to, basic_string_view
 #include <glm/fwd.hpp>   // for uvec3
 #include <glm/vec3.hpp>  // for operator+
 
 namespace inviwo {
-/** \docpage{org.inviwo.SurfaceExtraction, Surface Extraction}
- * ![](org.inviwo.SurfaceExtraction.png?classIdentifier=org.inviwo.SurfaceExtraction)
- *
- * ...
- *
- * ### Inports
- *   * __volume__ ...
- *
- * ### Outports
- *   * __mesh__ ...
- *
- * ### Properties
- *   * __ISO Value__ ...
- *   * __Triangle Color__ ...
- *
- */
+
 class IVW_MODULE_BASE_API SurfaceExtraction : public PoolProcessor {
 public:
     enum class Method {
@@ -96,7 +81,7 @@ protected:
     vec4 getColor(size_t i) const;
 
     DataInport<Volume, 0, true> volume_;
-    DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
+    DataOutport<DataSequence<Mesh>> outport_;
     std::vector<std::shared_ptr<Mesh>> meshes_;
 
     OptionProperty<Method> method_;

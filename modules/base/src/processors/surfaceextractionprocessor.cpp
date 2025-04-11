@@ -197,7 +197,8 @@ void SurfaceExtraction::process() {
         }
         dispatchMany(jobs, [this](std::vector<std::shared_ptr<Mesh>> result) {
             meshes_ = result;
-            outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+            auto sequence = std::make_shared<DataSequence<Mesh>>(meshes_);
+            outport_.setData(sequence);
             newResults();
         });
     } else {  // Only update the modified ones
@@ -220,7 +221,8 @@ void SurfaceExtraction::process() {
                 for (auto [i, result] : util::zip(inds, results)) {
                     meshes_[i] = result;
                 }
-                outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+                auto sequence = std::make_shared<DataSequence<Mesh>>(meshes_);
+                outport_.setData(sequence);
                 newResults();
             });
         }
