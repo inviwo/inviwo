@@ -74,6 +74,7 @@ public:
 
 private:
     static void updateByteOrder(TxElement* root);
+    static void moveMetaData(TxElement* root);
 
     int version_;
 };
@@ -86,17 +87,27 @@ void Converter::updateByteOrder(TxElement* root) {
     if (metaDataMap) {
         if (auto* littleEndianNode =
                 xml::getElement(metaDataMap, "MetaDataItem&key=LittleEndian/MetaData")) {
-            // move byteorder to own tag
+            // move endianness to own tag
             TxElement byteOrder{"ByteOrder"};
 
-            if (auto content = littleEndianNode->Attribute("content")) {
-                byteOrder.SetAttribute("content", content == "1" ? "LittleEndian" : "BigEndian");
-            } else {
-                byteOrder.SetAttribute("content", "LittleEndian");
-            }
+            auto content = littleEndianNode->Attribute("content").value_or("1");
+            byteOrder.SetAttribute(
+                "content",
+                fmt::format("{}", content == "1" ? static_cast<int>(ByteOrder::LittleEndian)
+                                                 : static_cast<int>(ByteOrder::BigEndian)));
+
             root->InsertBeforeChild(metaDataMap, byteOrder);
             metaDataMap->RemoveChild(littleEndianNode->Parent());
         }
+    }
+}
+
+void Converter::moveMetaData(TxElement* root) {
+    auto* metaDataMap = xml::getElement(root, "MetaDataMap");
+    if (auto* rawFile = xml::getElement(root, "RawFile"); rawFile && metaDataMap) {
+        // move metadata map to RawFile
+        rawFile->InsertEndChild(*metaDataMap);
+        root->RemoveChild(metaDataMap);
     }
 }
 
@@ -110,29 +121,8 @@ bool Converter::convert(TxElement* root) {
     switch (version_) {
         case 0:
         case 1: {
-            auto* metaDataMap = xml::getElement(root, "MetaDataMap");
-
-            if (metaDataMap) {
-                if (auto* littleEndianNode =
-                        xml::getElement(metaDataMap, "MetaDataItem&key=LittleEndian/MetaData")) {
-                    // move endianness to own tag
-                    TxElement byteOrder{"ByteOrder"};
-
-                    auto content = littleEndianNode->Attribute("content").value_or("1");
-                    byteOrder.SetAttribute(
-                        "content",
-                        fmt::format("{}", content == "1" ? static_cast<int>(ByteOrder::LittleEndian)
-                                                         : static_cast<int>(ByteOrder::BigEndian)));
-
-                    root->InsertBeforeChild(metaDataMap, byteOrder);
-                    metaDataMap->RemoveChild(littleEndianNode->Parent());
-                }
-            }
-            if (auto* rawFile = xml::getElement(root, "RawFile"); rawFile && metaDataMap) {
-                // move metadata map to RawFile
-                rawFile->InsertEndChild(*metaDataMap);
-                root->RemoveChild(metaDataMap);
-            }
+            updateByteOrder(root);
+            moveMetaData(root);
 
             return true;
         }
