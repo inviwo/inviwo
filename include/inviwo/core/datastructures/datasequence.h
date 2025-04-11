@@ -47,31 +47,32 @@ class DataSequence {
     using DataVariant = std::variant<std::shared_ptr<const Data>, std::shared_ptr<Data>>;
     std::vector<DataVariant> data_;
 
-    static constexpr auto getConstData =
-        [](const DataVariant& data) -> std::shared_ptr<const Data> {
-        return std::visit([](auto& d) -> std::shared_ptr<const Data> { return d; }, data);
+    struct ConstDataAccess {
+        std::shared_ptr<const Data> operator()(const DataVariant& data) const {
+            return std::visit([](auto& d) -> std::shared_ptr<const Data> { return d; }, data);
+        }
     };
-
-    static constexpr auto getData = [](DataVariant& data) -> std::shared_ptr<Data> {
-        if (std::holds_alternative<std::shared_ptr<Data>>(data)) {
-            return std::get<std::shared_ptr<Data>>(data);
-        } else {
-            return nullptr;
+    struct DataAccess {
+        std::shared_ptr<Data> operator()(DataVariant& data) const {
+            if (std::holds_alternative<std::shared_ptr<Data>>(data)) {
+                return std::get<std::shared_ptr<Data>>(data);
+            } else {
+                return nullptr;
+            }
         }
     };
 
-    std::shared_ptr<const Data> get(const DataVariant& v) const { return getConstData(v); }
-    std::shared_ptr<Data> get(DataVariant& v) { return getData(v); }
+    std::shared_ptr<const Data> get(const DataVariant& v) const { return ConstDataAccess{}(v); }
+    std::shared_ptr<Data> get(DataVariant& v) { return DataAccess{}(v); }
 
 public:
     using value_type = std::shared_ptr<Data>;
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
     using iterator =
-        util::TransformIterator<decltype(getData), typename std::vector<DataVariant>::iterator>;
+        util::TransformIterator<DataAccess, typename std::vector<DataVariant>::iterator>;
     using const_iterator =
-        util::TransformIterator<decltype(getConstData),
-                                typename std::vector<DataVariant>::const_iterator>;
+        util::TransformIterator<ConstDataAccess, typename std::vector<DataVariant>::const_iterator>;
 
     DataSequence() = default;
 
@@ -131,13 +132,15 @@ public:
 
     void shrink_to_fit() { data_.shrink_to_fit(); }
 
-    iterator begin() { return util::makeTransformIterator(getData, data_.begin()); }
-    iterator end() { return util::makeTransformIterator(getData, data_.end()); }
+    iterator begin() { return util::makeTransformIterator(DataAccess{}, data_.begin()); }
+    iterator end() { return util::makeTransformIterator(DataAccess{}, data_.end()); }
 
     const_iterator begin() const {
-        return util::makeTransformIterator(getConstData, data_.begin());
+        return util::makeTransformIterator(ConstDataAccess{}, data_.begin());
     }
-    const_iterator end() const { return util::makeTransformIterator(getConstData, data_.end()); }
+    const_iterator end() const {
+        return util::makeTransformIterator(ConstDataAccess{}, data_.end());
+    }
 
     std::size_t size() const { return data_.size(); }
 
