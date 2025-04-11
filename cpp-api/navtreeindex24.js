@@ -1,5 +1,7 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1BaseKeyframeSequence.html":[4,0,1,1,17],
+"classinviwo_1_1animation_1_1BaseKeyframeSequence.html#a17af4ee10522c3a12c72765191dc0a67":[2,0,0,0,16,0],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html#a17af4ee10522c3a12c72765191dc0a67":[4,0,1,1,17,0],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html#a87bd1b972cc7c512a9166ccb35ff3f3a":[2,0,0,0,16,1],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html#a87bd1b972cc7c512a9166ccb35ff3f3a":[4,0,1,1,17,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1buffertraits_1_1ScalarMetaBuffer.html":[1,1,0,10],
 "classinviwo_1_1buffertraits_1_1TexCoordBuffer.html":[1,1,0,5],
 "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html":[1,1,0,1],
-"classinviwo_1_1colorbrewer_1_1ColorBrewerException.html":[2,0,0,4,0],
-"classinviwo_1_1colorbrewer_1_1ColorBrewerException.html":[4,0,1,4,0],
-"classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[2,0,0,4,1]
+"classinviwo_1_1colorbrewer_1_1ColorBrewerException.html":[2,0,0,4,0]
 };

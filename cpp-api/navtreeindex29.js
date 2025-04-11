@@ -1,5 +1,8 @@
 var NAVTREEINDEX29 =
 {
+"namespacemembers_func_n.html":[2,1,1,11],
+"namespacemembers_func_o.html":[2,1,1,12],
+"namespacemembers_func_p.html":[2,1,1,13],
 "namespacemembers_func_r.html":[2,1,1,14],
 "namespacemembers_func_s.html":[2,1,1,15],
 "namespacemembers_func_t.html":[2,1,1,16],
@@ -184,7 +187,7 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1LayerConfig.html":[4,0,1,546],
 "structinviwo_1_1LayerReprConfig.html":[2,0,0,564],
 "structinviwo_1_1LayerReprConfig.html":[4,0,1,571],
-"structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html":[1,3,41,0],
+"structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html":[1,3,40,0],
 "structinviwo_1_1LightingConfig.html":[2,0,0,581],
 "structinviwo_1_1LightingConfig.html":[4,0,1,588],
 "structinviwo_1_1LightingState.html":[2,0,0,583],
@@ -246,8 +249,5 @@ var NAVTREEINDEX29 =
 "structinviwo_1_1NodeDebugger_1_1Node.html":[2,0,0,698,0],
 "structinviwo_1_1NodeDebugger_1_1Node.html":[4,0,1,705,0],
 "structinviwo_1_1NumberWidgetConfig.html":[2,0,0,706],
-"structinviwo_1_1NumberWidgetConfig.html":[4,0,1,713],
-"structinviwo_1_1OptionPropertyState.html":[2,0,0,721],
-"structinviwo_1_1OptionPropertyState.html":[4,0,1,728],
-"structinviwo_1_1OptionPropertyTraits.html":[2,0,0,722]
+"structinviwo_1_1NumberWidgetConfig.html":[4,0,1,713]
 };

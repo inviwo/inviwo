@@ -860,6 +860,7 @@ var namespaceinviwo =
     [ "OutportFactoryObjectTemplate", "classinviwo_1_1OutportFactoryObjectTemplate.html", null ],
     [ "OutportIterable", "structinviwo_1_1OutportIterable.html", "structinviwo_1_1OutportIterable" ],
     [ "OutportIterableImpl", "structinviwo_1_1OutportIterableImpl.html", null ],
+    [ "OutportIterableImpl< Derived, DataSequence< T > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01DataSequence_3_01T_01_4_01_4.html", null ],
     [ "OutportIterableImpl< Derived, std::vector< std::shared_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
     [ "OutportIterableImpl< Derived, std::vector< std::unique_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
     [ "OutportIterableImpl< Derived, std::vector< T *, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4.html", null ],

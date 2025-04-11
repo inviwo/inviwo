@@ -71,9 +71,6 @@ var group__processors =
       [ "process", "classinviwo_1_1SpotLightSourceProcessor.html#a3a4fada09fb7d08ea3442fa514625886", null ],
       [ "updateSpotLightSource", "classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f", null ]
     ] ],
-    [ "inviwo::SurfaceExtraction", "classinviwo_1_1SurfaceExtraction.html", [
-      [ "process", "classinviwo_1_1SurfaceExtraction.html#a66980c25dc054f8e5b22767ce7449893", null ]
-    ] ],
     [ "inviwo::TrianglesToWireframe", "classinviwo_1_1TrianglesToWireframe.html", [
       [ "process", "classinviwo_1_1TrianglesToWireframe.html#a9e8d88fa85d2b870313835e3fa0c4540", null ]
     ] ],
