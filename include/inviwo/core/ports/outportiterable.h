@@ -138,7 +138,7 @@ template <typename T>
 class OutportIterableWrapper {
 public:
     OutportIterableWrapper() : data_(nullptr) {}
-    OutportIterableWrapper(const DataOutport<T>& port) : data_{port.getData()} {}
+    explicit OutportIterableWrapper(const DataOutport<T>& port) : data_{port.getData()} {}
 
     std::shared_ptr<const T> get() { return data_; };
 
@@ -165,16 +165,19 @@ public:
 
     void inc() {
         ++iter_;
-        if (iter_ == iterEnd_) end_ = true;
+        if (iter_ == iterEnd_) {
+            end_ = true;
+        }
     };
 
     bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_)
+        if (end_ && rhs.end_) {
             return true;
-        else if (end_ != rhs.end_)
+        } else if (end_ != rhs.end_) {
             return false;
-        else
+        } else {
             return iter_ == rhs.iter_;
+        }
     }
     bool end() const { return end_; }
 
@@ -201,16 +204,19 @@ public:
 
     void inc() {
         ++iter_;
-        if (iter_ == iterEnd_) end_ = true;
+        if (iter_ == iterEnd_) {
+            end_ = true;
+        }
     };
 
     bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_)
+        if (end_ && rhs.end_) {
             return true;
-        else if (end_ != rhs.end_)
+        } else if (end_ != rhs.end_) {
             return false;
-        else
+        } else {
             return iter_ == rhs.iter_;
+        }
     }
 
     bool end() const { return end_; }
@@ -239,16 +245,19 @@ public:
 
     void inc() {
         ++iter_;
-        if (iter_ == iterEnd_) end_ = true;
+        if (iter_ == iterEnd_) {
+            end_ = true;
+        }
     };
 
     bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_)
+        if (end_ && rhs.end_) {
             return true;
-        else if (end_ != rhs.end_)
+        } else if (end_ != rhs.end_) {
             return false;
-        else
+        } else {
             return iter_ == rhs.iter_;
+        }
     }
 
     bool end() const { return end_; }
@@ -277,16 +286,19 @@ public:
 
     void inc() {
         ++iter_;
-        if (iter_ == iterEnd_) end_ = true;
+        if (iter_ == iterEnd_) {
+            end_ = true;
+        }
     };
 
     bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_)
+        if (end_ && rhs.end_) {
             return true;
-        else if (end_ != rhs.end_)
+        } else if (end_ != rhs.end_) {
             return false;
-        else
+        } else {
             return iter_ == rhs.iter_;
+        }
     }
 
     bool end() const { return end_; }
@@ -305,7 +317,7 @@ public:
     using Iter = typename DataSequence<T>::const_iterator;
 
     OutportIterableWrapper() : iter_(), iterEnd_(), end_(true) {}
-    OutportIterableWrapper(const DataOutport<DataSequence<T>>& port)
+    explicit OutportIterableWrapper(const DataOutport<DataSequence<T>>& port)
         : iter_{port.hasData() ? port.getData()->begin() : Iter{}}
         , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
         , end_{iter_ == iterEnd_} {}
@@ -314,16 +326,19 @@ public:
 
     void inc() {
         ++iter_;
-        if (iter_ == iterEnd_) end_ = true;
+        if (iter_ == iterEnd_) {
+            end_ = true;
+        }
     };
 
     bool equal(const OutportIterableWrapper& rhs) const {
-        if (end_ && rhs.end_)
+        if (end_ && rhs.end_) {
             return true;
-        else if (end_ != rhs.end_)
+        } else if (end_ != rhs.end_) {
             return false;
-        else
+        } else {
             return iter_ == rhs.iter_;
+        }
     }
 
     bool end() const { return end_; }
