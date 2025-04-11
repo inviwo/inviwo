@@ -2,7 +2,7 @@
 
 # Inviwo - Interactive Visualization Workshop
 
-[![Build Status](https://github.com/inviwo/inviwo/actions/workflows/inviwo.yml/badge.svg?branch=master)](https://github.com/inviwo/inviwo/actions/workflows/inviwo.ymll?query=branch%3Amaster) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
+[![Build Status](https://github.com/inviwo/inviwo/actions/workflows/inviwo.yml/badge.svg?branch=master)](https://github.com/inviwo/inviwo/actions/workflows/inviwo.yml?query=branch%3Amaster) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
 [![Slack](https://img.shields.io/badge/slack-join?style=social&logo=slack)](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLTRiMWM1ZWJiYjljZjkwNWE3OTk3MzYxODZlMDUyMzRmZjUzMzBiZjVhNTM3NWUyNzU1MjI4OWJjMzdkODViMzM)
 
