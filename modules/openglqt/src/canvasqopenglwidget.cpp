@@ -219,7 +219,7 @@ size2_t CanvasQOpenGLWidget::getCanvasDimensions() const {
     return dpr * utilqt::toGLM(size());
 }
 
-void CanvasQOpenGLWidget::propagateEvent(Event* e, Outport* source) {
+void CanvasQOpenGLWidget::propagateEvent(Event* e, Outport*) {
     if (!propagator_) return;
     const NetworkLock lock;
     pickingController_.propagateEvent(e, propagator_);
