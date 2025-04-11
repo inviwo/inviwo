@@ -33,9 +33,10 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>     // for LayerType, LayerType::Color
 #include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
-#include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas (p...
-#include <inviwo/core/util/glmvec.h>                         // for size2_t
-#include <modules/opengl/canvasgl.h>                         // for CanvasGL
+#include <inviwo/core/interaction/contextmenuaction.h>
+#include <inviwo/core/util/canvas.h>  // for Canvas::ContextID, Canvas (p...
+#include <inviwo/core/util/glmvec.h>  // for size2_t
+#include <modules/opengl/canvasgl.h>  // for CanvasGL
 
 #include <cstddef>      // for size_t
 #include <functional>   // for function
@@ -82,11 +83,11 @@ public:
     virtual size2_t getCanvasDimensions() const override;
 
     /**
-     * Set a callback to be invoked on context meny events.
+     * Set a callback to be invoked on context menu events.
      * The callback can add more functionality to the context menu.
      * If the function returns true the menu will be shown, else it will be discarded.
      */
-    void onContextMenu(std::function<bool(QMenu&)> callback);
+    void onContextMenu(std::function<bool(QMenu&, ContextMenuActions)> callback);
 
     // this is needed when we have have changed connections, and need to update the image port
     // sizes. This is called by  CanvasProcessorWidgetQt::propagateResizeEvent() for example.
@@ -103,7 +104,7 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
-    std::function<bool(QMenu&)> contextMenuCallback_;
+    std::function<bool(QMenu&, ContextMenuActions)> contextMenuCallback_;
 
     std::string name_;
 };

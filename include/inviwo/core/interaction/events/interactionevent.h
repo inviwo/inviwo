@@ -33,9 +33,11 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/contextmenuaction.h>
 
 #include <functional>
 #include <string_view>
+#include <span>
 
 namespace inviwo {
 
@@ -68,9 +70,29 @@ public:
     void setToolTipCallback(ToolTipCallback callback);
     const ToolTipCallback& getToolTipCallback() const;
 
+    /**
+     * Show a context menu at the current mouse position. The custom menu \p entries are added
+     * before any other default actions based on \p actions. When any of the custom \p entries is
+     * triggered a ContexMenuEvent with the corresponding entry ID will be propagated through the
+     * processor network.
+     * @param entries  list of custom menu items. An item with an empty label will add a menu
+     *                 separator.
+     * @param actions  determines which menu actions should be included in the context menu
+     *
+     * \see ContextMenuActions
+     */
+    void showContextMenu(std::span<ContextMenuEntry> entries,
+                         ContextMenuActions actions = ContextMenuAction::Custom);
+
+    using ContextMenuCallback =
+        std::function<void(std::span<ContextMenuEntry>, ContextMenuActions)>;
+    void setContextMenuCallback(ContextMenuCallback callback);
+    const ContextMenuCallback& getContexMenuCallback() const;
+
 protected:
     KeyModifiers modifiers_;
     ToolTipCallback tooltip_;
+    ContextMenuCallback contextMenuCallback_;
 };
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,51 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#pragma once
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/util/constexprhash.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <string_view>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
+/**
+ * A ContextMenuEvent is triggered when a custom context menu entry is selected.
+ *
+ * \see ContextMenuEntry
+ */
+class IVW_CORE_API ContextMenuEvent : public MouseEvent {
+public:
+    explicit ContextMenuEvent(std::string_view id, MouseButton button = MouseButton::Right,
+                              MouseState state = MouseState::Release,
+                              MouseButtons buttonState = MouseButtons(flags::empty),
+                              KeyModifiers modifiers = KeyModifiers(flags::empty),
+                              dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
+                              double depth = 1.0);
+    ContextMenuEvent(const ContextMenuEvent&) = default;
+    ContextMenuEvent(ContextMenuEvent&&) = default;
+    ContextMenuEvent& operator=(const ContextMenuEvent&) = default;
+    ContextMenuEvent& operator=(ContextMenuEvent&&) = default;
 
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
+    virtual ~ContextMenuEvent();
 
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
-}
+    virtual ContextMenuEvent* clone() const override;
 
-void InteractionEvent::setToolTip(std::string_view tooltip) const {
-    if (tooltip_) tooltip_(tooltip);
-}
+    /**
+     * ID of the triggered context menu action
+     */
+    std::string_view getId() const;
 
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
-
-void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,
-                                       ContextMenuActions actions) {
-    if (contextMenuCallback_) {
-        contextMenuCallback_(entries, actions);
+    virtual uint64_t hash() const override;
+    static constexpr uint64_t chash() {
+        return util::constexpr_hash("org.inviwo.ContextMenuEvent");
     }
-}
 
-void InteractionEvent::setContextMenuCallback(ContextMenuCallback callback) {
-    contextMenuCallback_ = callback;
-}
-auto InteractionEvent::getContexMenuCallback() const -> const ContextMenuCallback& {
-    return contextMenuCallback_;
-}
+private:
+    std::string id_;
+};
 
 }  // namespace inviwo
