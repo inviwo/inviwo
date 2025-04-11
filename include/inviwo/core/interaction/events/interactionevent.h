@@ -33,9 +33,11 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/events/contextmenuaction.h>
 
 #include <functional>
 #include <string_view>
+#include <span>
 
 namespace inviwo {
 
@@ -68,9 +70,16 @@ public:
     void setToolTipCallback(ToolTipCallback callback);
     const ToolTipCallback& getToolTipCallback() const;
 
+    void showContextMenu(std::span<ContextMenuEntry> entries);
+
+    using ContextMenuCallback = std::function<void(std::span<ContextMenuEntry>)>;
+    void setContextMenuCallback(ContextMenuCallback callback);
+    const ContextMenuCallback& getContexMenuCallback() const;
+
 protected:
     KeyModifiers modifiers_;
     ToolTipCallback tooltip_;
+    ContextMenuCallback contextMenuCallback_;
 };
 
 }  // namespace inviwo

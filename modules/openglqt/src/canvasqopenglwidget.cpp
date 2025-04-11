@@ -80,15 +80,23 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         this, this, [this]() { return utilqt::toGLM(size()); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
-        [this](QMouseEvent* e) {
+        [this](QMouseEvent* e, ContextMenuActions actions, std::span<ContextMenuEntry> entries) {
             if (!contextMenuCallback_) return;
 
             QMenu menu(this);
-            if (auto image = image_.lock()) {
+            if (actions | ContextMenuAction::Custom && !entries.empty()) {
+                for (const auto& entry : entries) {
+                    QObject::connect(
+                        menu.addAction(utilqt::toQString(entry.label)), &QAction::triggered,
+                        [entry]() { log::warn("Context menu: {}, id={}", entry.label, entry.id); });
+                }
+            }
+
+            if (auto image = image_.lock(); image && actions | ContextMenuAction::Image) {
                 utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
                 menu.addSeparator();
             }
-            if (contextMenuCallback_(menu)) {
+            if (contextMenuCallback_(menu, actions)) {
                 menu.exec(e->globalPosition().toPoint());
             }
         },
@@ -210,7 +218,7 @@ void CanvasQOpenGLWidget::releaseContext() {
     context()->moveToThread(QApplication::instance()->thread());
 }
 
-void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&)> callback) {
+void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&, ContextMenuActions)> callback) {
     contextMenuCallback_ = std::move(callback);
 }
 

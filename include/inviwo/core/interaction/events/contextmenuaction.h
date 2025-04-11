@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,52 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#pragma once
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/fmtutils.h>
+
+#include <flags/flags.h>
+#include <string_view>
+#include <iosfwd>
+#include <cstdint>
+#include <span>
+#include <string>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
+enum class ContextMenuAction : int {
+    None = 0,
+    Image = 1 << 0,  //!< Save and copy image layers, \see utilqt::addImageActions
+    View = 1 << 1,   //!< Adjust camera view \see utilqt::addViewActions
+    Widget =
+        1 << 2,  //!< Show/hide canvas, fullscreen, ... \see CanvasProcessorWidgetQt::contextMenu
+    Custom = 1 << 3,  //!< Additional actions
+};
 
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
+struct ContextMenuEntry {
+    std::string label;
+    uint64_t id;
+};
 
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
+ALLOW_FLAGS_FOR_ENUM(ContextMenuAction)
+using ContextMenuActions = flags::flags<ContextMenuAction>;
+
+namespace util {
+
+constexpr ContextMenuActions defaultMenuActions =
+    ContextMenuAction::Image | ContextMenuAction::View | ContextMenuAction::Widget;
+
 }
 
-void InteractionEvent::setToolTip(std::string_view tooltip) const {
-    if (tooltip_) tooltip_(tooltip);
-}
+IVW_CORE_API std::string_view enumToStr(ContextMenuAction a);
 
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
-
-void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries) {
-    if (contextMenuCallback_) {
-        contextMenuCallback_(entries);
-    }
-}
-
-void InteractionEvent::setContextMenuCallback(ContextMenuCallback callback) {
-    contextMenuCallback_ = callback;
-}
-auto InteractionEvent::getContexMenuCallback() const -> const ContextMenuCallback& {
-    return contextMenuCallback_;
-}
+inline std::string_view format_as(ContextMenuAction a) { return enumToStr(a); }
 
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <>
+struct fmt::formatter<inviwo::ContextMenuActions>
+    : inviwo::FlagsFormatter<inviwo::ContextMenuActions> {};
+#endif
