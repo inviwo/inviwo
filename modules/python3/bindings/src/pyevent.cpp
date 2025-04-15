@@ -281,15 +281,15 @@ void exposeEvents(pybind11::module& m) {
     py::classh<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")
         .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string&>(),
              py::arg("key") = IvwKey::Unknown, py::arg("state") = KeyState::Press,
-             py::arg("modifiers") = KeyModifier::None, py::arg("nativeVirtualKey") = 0,
-             py::arg("utfText") = "")
+             py::arg("modifiers") = KeyModifiers{KeyModifier::None},
+             py::arg("nativeVirtualKey") = 0, py::arg("utfText") = "")
         .def(py::init<KeyboardEvent>())
         .def_property("state", &KeyboardEvent::state, &KeyboardEvent::setState)
         .def_property("key", &KeyboardEvent::key, &KeyboardEvent::setKey)
         .def_property("nativeVirtualKey", &KeyboardEvent::getNativeVirtualKey,
                       &KeyboardEvent::setNativeVirtualKey)
         .def_property("text", &KeyboardEvent::text, &KeyboardEvent::setText)
-        .def_property_readonly_static("chash", &KeyboardEvent::chash);
+        .def_property_readonly_static("chash", [](py::object) { return KeyboardEvent::chash(); });
 
     py::classh<MouseInteractionEvent, InteractionEvent>(m, "MouseInteractionEvent")
         .def_property("buttonState", &MouseInteractionEvent::buttonState,
@@ -308,20 +308,22 @@ void exposeEvents(pybind11::module& m) {
     py::classh<MouseEvent, MouseInteractionEvent>(m, "MouseEvent")
         .def(py::init<MouseButton, MouseState, MouseButtons, KeyModifiers, dvec2, uvec2, double>(),
              py::arg("button") = MouseButton::Left, py::arg("state") = MouseState::Press,
-             py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
+             py::arg("buttonState") = MouseButtons{MouseButton::None},
+             py::arg("modifiers") = KeyModifiers{KeyModifier::None},
              py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
              py::arg("depth") = 1.0)
         .def_property("button", &MouseEvent::button, &MouseEvent::setButton)
         .def_property("state", &MouseEvent::state, &MouseEvent::setState)
-        .def_property_readonly_static("chash", &MouseEvent::chash);
+        .def_property_readonly_static("chash", [](py::object) { return MouseEvent::chash(); });
 
     py::classh<WheelEvent, MouseInteractionEvent>(m, "WheelEvent")
         .def(py::init<MouseButtons, KeyModifiers, dvec2, dvec2, uvec2, double>(),
-             py::arg("buttonState") = MouseButton::None, py::arg("modifiers") = KeyModifier::None,
-             py::arg("delta") = dvec2(0), py::arg("normalizedPosition") = dvec2(0),
-             py::arg("canvasSize") = uvec2(0), py::arg("depth") = 1.0)
+             py::arg("buttonState") = MouseButtons{MouseButton::None},
+             py::arg("modifiers") = KeyModifiers{KeyModifier::None}, py::arg("delta") = dvec2(0),
+             py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
+             py::arg("depth") = 1.0)
         .def_property("delta", &WheelEvent::delta, &WheelEvent::setDelta)
-        .def_property_readonly_static("chash", &WheelEvent::chash);
+        .def_property_readonly_static("chash", [](py::object) { return WheelEvent::chash(); });
 
     py::classh<TouchPoint>(m, "TouchPoint")
         .def(py::init<>())
@@ -371,7 +373,7 @@ void exposeEvents(pybind11::module& m) {
         .def_property_readonly("getDevice", &TouchEvent::getDevice)
 
         .def("findClosestTwoTouchPoints", &TouchEvent::findClosestTwoTouchPoints)
-        .def_property_readonly_static("chash", &TouchEvent::chash)
+        .def_property_readonly_static("chash", [](py::object) { return TouchEvent::chash(); })
         .def_static("getPickingState", &TouchEvent::getPickingState);
 
     py::classh<ResizeEvent, Event>(m, "ResizeEvent")
@@ -380,7 +382,7 @@ void exposeEvents(pybind11::module& m) {
         .def(py::init<ResizeEvent>())
         .def_property("size", &ResizeEvent::size, &ResizeEvent::setSize)
         .def_property("previousSize", &ResizeEvent::previousSize, &ResizeEvent::setPreviousSize)
-        .def_property_readonly_static("chash", &ResizeEvent::chash);
+        .def_property_readonly_static("chash", [](py::object) { return ResizeEvent::chash(); });
 
     py::classh<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
     py::classh<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
@@ -388,7 +390,7 @@ void exposeEvents(pybind11::module& m) {
     py::classh<ViewEvent, Event>(m, "ViewEvent")
         .def(py::init<typename ViewEvent::Action>())
         .def_property_readonly("action", &ViewEvent::getAction)
-        .def_property_readonly_static("chash", &ViewEvent::chash);
+        .def_property_readonly_static("chash", [](py::object) { return ViewEvent::chash(); });
 }
 
 }  // namespace inviwo
