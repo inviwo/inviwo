@@ -57,6 +57,7 @@ public:
     virtual ~RandomMeshGenerator() = default;
 
     virtual void process() override;
+    virtual void invokeEvent(Event* event) override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
