@@ -70,8 +70,6 @@ EditorSettings::EditorSettings(InviwoApplication* app)
 
     workspaceDirectories.setHelp(
         "Additional workspace directories listed on the Get Started screen."_help);
-
-    load();
 }
 
 }  // namespace inviwo
