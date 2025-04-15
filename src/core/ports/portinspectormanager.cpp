@@ -128,7 +128,17 @@ PortInspectorManager::PortInspectorManager(PortInspectorManager&&) = default;
 
 PortInspectorManager& PortInspectorManager::operator=(PortInspectorManager&& that) = default;
 
-PortInspectorManager::~PortInspectorManager() { clear(); }
+PortInspectorManager::~PortInspectorManager() {
+    try {
+        clear();
+    } catch (const Exception& e) {
+        log::exception(e);
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception();
+    }
+}
 
 bool PortInspectorManager::hasPortInspector(Outport* outport) const {
     return embeddedProcessors_.count(outport->getPath());

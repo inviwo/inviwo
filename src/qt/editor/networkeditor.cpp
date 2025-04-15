@@ -118,7 +118,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     , adjustSceneToChange_(true) {
 
     // The bsp crashes sometimes, maybe a fixed size will help,
-    //setBspTreeDepth(5);
+    // setBspTreeDepth(5);
     // Otherwise disabling might be better
     setItemIndexMethod(QGraphicsScene::NoIndex);
 

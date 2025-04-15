@@ -89,6 +89,124 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
     }
     return pybind11::none();
 }
+
+auto createPythonQtModule(pybind11::module_ inviwopy) {
+    namespace py = pybind11;
+
+    auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
+
+    m.def("prompt", &prompt, py::arg("title"), py::arg("message"), py::arg("defaultResponse") = "")
+        .def("configureInviwoQtApp", &utilqt::configureInviwoQtApp)
+        .def("logQtMessages", [](QtMsgType type, const QMessageLogContext& context,
+                                 const QString& msg) { utilqt::logQtMessages(type, context, msg); })
+        .def("configureFileSystemObserver", &utilqt::configureFileSystemObserver)
+        .def("configurePostEnqueueFront", &utilqt::configurePostEnqueueFront)
+        .def("configureAssertionHandler", &utilqt::configureAssertionHandler)
+        .def("configurePoolResizeWait", &utilqt::configurePoolResizeWait)
+        .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
+        .def("execWithTimer",
+             []() {
+                 auto timer = new QTimer(qApp);
+                 QObject::connect(timer, &QTimer::timeout, []() {
+                     try {
+                         py::exec("lambda x: 1");
+                     } catch (...) {
+                         log::info("Aborted Qt event loop");
+                         qApp->quit();
+                     }
+                 });
+                 timer->start(100);
+
+                 qApp->exec();
+             })
+        .def(
+            "exit", [](int i) { qApp->exit(i); }, py::arg("exitCode") = 0)
+        .def(
+            "exitInviwo",
+            [](InviwoApplication& app, bool saveIfModified) {
+                if (!saveIfModified) {
+                    app.getWorkspaceManager()->clear();
+                }
+                if (auto* win = utilqt::getApplicationMainWindow()) {
+                    win->close();
+                } else {
+                    qApp->quit();
+                }
+            },
+            py::arg("inviwoApplication"), py::arg("saveIfModified") = true)
+        .def(
+            "waitForNetwork",
+            [](InviwoApplication* app, int maxJobs, bool waitForPool) {
+                qApp->processEvents();
+                if (waitForPool) {
+                    app->waitForPool();
+                }
+                do {  // NOLING
+                    qApp->processEvents();
+                    app->processFront();
+                } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
+            },
+            py::arg("inviwoApplication"), py::arg("maxJobs") = 0, py::arg("waitForPool") = true)
+
+        .def("address",
+             [](ProcessorWidget* w) {
+                 if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                     return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
+                 } else {
+                     throw Exception("invalid object");
+                 }
+             })
+        .def("address",
+             [](PropertyWidget* w) {
+                 if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                     return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
+                 } else {
+                     throw Exception("invalid object");
+                 }
+             })
+        .def("address", [](PropertyEditorWidget* w) {
+            if (auto* qw = dynamic_cast<QWidget*>(w)) {
+                return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
+            } else {
+                throw Exception("invalid object");
+            }
+        });
+
+    py::classh<PropertyListWidget>(m, "PropertyListWidget")
+        .def(py::init([](InviwoApplication* app) {
+            auto mainwin = utilqt::getApplicationMainWindow();
+            auto plw = new PropertyListWidget(mainwin, app);
+            plw->setFloating(true);
+            return plw;
+        }))
+        .def("addProcessorProperties", &PropertyListWidget::addProcessorProperties)
+        .def("removeProcessorProperties", &PropertyListWidget::removeProcessorProperties)
+        .def_property("visible", &PropertyListWidget::isVisible, &PropertyListWidget::setVisible)
+        .def_property("floating", &PropertyListWidget::isFloating, &PropertyListWidget::setFloating)
+        .def_property(
+            "dimensions", [](const PropertyListWidget& w) { return utilqt::toGLM(w.size()); },
+            [](PropertyListWidget& w, ivec2 dim) { w.resize(dim.x, dim.y); })
+        .def_property(
+            "position", [](const PropertyListWidget& w) { return utilqt::toGLM(w.pos()); },
+            [](PropertyListWidget& w, ivec2 pos) { w.move(pos.x, pos.y); })
+
+        .def("removeAndDeleteProcessorProperties",
+             &PropertyListWidget::removeAndDeleteProcessorProperties)
+
+        .def("addPropertyWidgets", &PropertyListWidget::addPropertyWidgets)
+        .def("removePropertyWidgets", &PropertyListWidget::removePropertyWidgets)
+        .def("removeAndDeletePropertyWidgets", &PropertyListWidget::removeAndDeletePropertyWidgets)
+
+        .def("show", &PropertyListWidget::show)
+        .def("hide", &PropertyListWidget::hide)
+        .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); })
+        .def("address", [](PropertyListWidget* w) {
+            return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));  // NOLINT
+        });
+
+    return m;
+}
+
 }  // namespace
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
@@ -106,132 +224,16 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     try {
         const pybind11::gil_scoped_acquire gil;
         auto inviwopy = py::module::import("inviwopy");
-        auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
+        auto m = createPythonQtModule(inviwopy);
 
-        m.def("prompt", &prompt, py::arg("title"), py::arg("message"),
-              py::arg("defaultResponse") = "")
-            .def("update",
-                 [this]() {
-                     qApp->processEvents();
-                     qApp->sendPostedEvents();
-                     if (abortPythonEvaluation_) {
-                         abortPythonEvaluation_ = false;
-                         throw PythonAbortException("Evaluation aborted");
-                     }
-                 })
-            .def("configureInviwoQtApp", &utilqt::configureInviwoQtApp)
-            .def("logQtMessages",
-                 [](QtMsgType type, const QMessageLogContext& context, const QString& msg) {
-                     utilqt::logQtMessages(type, context, msg);
-                 })
-            .def("configureFileSystemObserver", &utilqt::configureFileSystemObserver)
-            .def("configurePostEnqueueFront", &utilqt::configurePostEnqueueFront)
-            .def("configureAssertionHandler", &utilqt::configureAssertionHandler)
-            .def("configurePoolResizeWait", &utilqt::configurePoolResizeWait)
-            .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
-            .def("execWithTimer",
-                 []() {
-                     auto timer = new QTimer(qApp);
-                     QObject::connect(timer, &QTimer::timeout, []() {
-                         try {
-                             py::exec("lambda x: 1");
-                         } catch (...) {
-                             log::info("Aborted Qt event loop");
-                             qApp->quit();
-                         }
-                     });
-                     timer->start(100);
-
-                     qApp->exec();
-                 })
-            .def(
-                "exit", [](int i) { qApp->exit(i); }, py::arg("exitCode") = 0)
-            .def(
-                "exitInviwo",
-                [](InviwoApplication& app, bool saveIfModified) {
-                    if (!saveIfModified) {
-                        app.getWorkspaceManager()->clear();
-                    }
-                    if (auto* win = utilqt::getApplicationMainWindow()) {
-                        win->close();
-                    } else {
-                        qApp->quit();
-                    }
-                },
-                py::arg("inviwoApplication"), py::arg("saveIfModified") = true)
-            .def(
-                "waitForNetwork",
-                [](InviwoApplication* app, int maxJobs, bool waitForPool) {
-                    qApp->processEvents();
-                    if (waitForPool) {
-                        app->waitForPool();
-                    }
-                    do {
-                        qApp->processEvents();
-                        app->processFront();
-                    } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
-                },
-                py::arg("inviwoApplication"), py::arg("maxJobs") = 0, py::arg("waitForPool") = true)
-
-            .def("address",
-                 [](ProcessorWidget* w) {
-                     if (auto* qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
-                     } else {
-                         throw Exception("invalid object");
-                     }
-                 })
-            .def("address",
-                 [](PropertyWidget* w) {
-                     if (auto* qw = dynamic_cast<QWidget*>(w)) {
-                         return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
-                     } else {
-                         throw Exception("invalid object");
-                     }
-                 })
-            .def("address", [](PropertyEditorWidget* w) {
-                if (auto* qw = dynamic_cast<QWidget*>(w)) {
-                    return reinterpret_cast<std::intptr_t>(static_cast<void*>(qw));  // NOLINT
-                } else {
-                    throw Exception("invalid object");
-                }
-            });
-
-        py::classh<PropertyListWidget>(m, "PropertyListWidget")
-            .def(py::init([](InviwoApplication* app) {
-                auto mainwin = utilqt::getApplicationMainWindow();
-                auto plw = new PropertyListWidget(mainwin, app);
-                plw->setFloating(true);
-                return plw;
-            }))
-            .def("addProcessorProperties", &PropertyListWidget::addProcessorProperties)
-            .def("removeProcessorProperties", &PropertyListWidget::removeProcessorProperties)
-            .def_property("visible", &PropertyListWidget::isVisible,
-                          &PropertyListWidget::setVisible)
-            .def_property("floating", &PropertyListWidget::isFloating,
-                          &PropertyListWidget::setFloating)
-            .def_property(
-                "dimensions", [](const PropertyListWidget& w) { return utilqt::toGLM(w.size()); },
-                [](PropertyListWidget& w, ivec2 dim) { w.resize(dim.x, dim.y); })
-            .def_property(
-                "position", [](const PropertyListWidget& w) { return utilqt::toGLM(w.pos()); },
-                [](PropertyListWidget& w, ivec2 pos) { w.move(pos.x, pos.y); })
-
-            .def("removeAndDeleteProcessorProperties",
-                 &PropertyListWidget::removeAndDeleteProcessorProperties)
-
-            .def("addPropertyWidgets", &PropertyListWidget::addPropertyWidgets)
-            .def("removePropertyWidgets", &PropertyListWidget::removePropertyWidgets)
-            .def("removeAndDeletePropertyWidgets",
-                 &PropertyListWidget::removeAndDeletePropertyWidgets)
-
-            .def("show", &PropertyListWidget::show)
-            .def("hide", &PropertyListWidget::hide)
-            .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); })
-            .def("address", [](PropertyListWidget* w) {
-                return reinterpret_cast<std::intptr_t>(static_cast<void*>(w));  // NOLINT
-            });
-
+        m.def("update", [this]() {
+            qApp->processEvents();
+            qApp->sendPostedEvents();
+            if (abortPythonEvaluation_) {
+                abortPythonEvaluation_ = false;
+                throw PythonAbortException("Evaluation aborted");
+            }
+        });
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what());
     }
