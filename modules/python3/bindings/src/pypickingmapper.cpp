@@ -112,6 +112,8 @@ void exposePickingMapper(pybind11::module& m) {
         .def_property_readonly("previousNDC", &PickingEvent::getPreviousNDC)
         .def_property_readonly("pressedNDC", &PickingEvent::getPressedNDC)
         .def("getWorldSpaceDeltaAtPressDepth", &PickingEvent::getWorldSpaceDeltaAtPressDepth)
+        .def("getMovedSincePressed", &PickingEvent::getMovedSincePressed,
+             py::arg("deltaDistance") = 3.0)
         .def_property_readonly("canvasSize", &PickingEvent::getCanvasSize)
         .def_property_readonly("state", &PickingEvent::getState)
         .def_property_readonly("pressState", &PickingEvent::getPressState)
