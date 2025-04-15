@@ -42,7 +42,7 @@ class Processor;
 /**
  * \class PickingAction
  * Associate a range of picking colors / indices to a callback function. Created and handled by the
- * PickingManger. Use a PickingMapper to ask the PickingManager for a PickingAction.
+ * PickingManager. Use a PickingMapper to ask the PickingManager for a PickingAction.
  */
 class IVW_CORE_API PickingAction {
 public:
