@@ -74,7 +74,7 @@ namespace util {
 constexpr ContextMenuActions defaultMenuActions =
     ContextMenuAction::Image | ContextMenuAction::View | ContextMenuAction::Widget;
 
-}
+}  // namespace util
 
 IVW_CORE_API std::string_view enumToStr(ContextMenuAction a);
 

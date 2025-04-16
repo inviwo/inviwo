@@ -269,10 +269,6 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
         auto* mouseEvent = event->getAs<MouseEvent>();
         if (mouseEvent->button() & MouseButton::Right &&
             mouseEvent->state() & MouseState::Release) {
-
-            auto uniqueId = [this](std::string_view str) {
-                return fmt::format("{}.{}", getIdentifier(), str);
-            };
             std::array entries = {
                 ContextMenuEntry{"Randomize Mesh Seed", fmt::format("{}.reseed", getIdentifier())}};
             mouseEvent->showContextMenu(entries,
@@ -295,10 +291,10 @@ float RandomMeshGenerator::rand(const float min, const float max) {
 }
 
 vec3 RandomMeshGenerator::randVec3(const float min, const float max) {
-    float x = rand(min, max);
-    float y = rand(min, max);
-    float z = rand(min, max);
-    return vec3(x, y, z);
+    const float x = rand(min, max);
+    const float y = rand(min, max);
+    const float z = rand(min, max);
+    return {x, y, z};
 }
 
 void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
@@ -311,7 +307,7 @@ void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
 }
 
 void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
-    if (p->getPressState() == PickingPressState::Move &&
+    if (p->getPressState() & PickingPressState::Move &&
         p->getPressItems().count(PickingPressItem::Primary)) {
         callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
         p->markAsUsed();
