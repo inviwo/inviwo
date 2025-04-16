@@ -103,7 +103,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
                     }
                     QObject::connect(
                         menu.addAction(utilqt::toQString(entry.label)), &QAction::triggered,
-                        [this, e, entry]() {
+                        [this, e, entry]() noexcept(false) {
                             RenderContext::getPtr()->activateDefaultRenderContext();
                             const auto pos =
                                 normalizePosition(e->position(), getCanvasDimensions());

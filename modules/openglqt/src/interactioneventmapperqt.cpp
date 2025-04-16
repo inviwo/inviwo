@@ -138,9 +138,9 @@ InteractionEventMapperQt::InteractionEventMapperQt(
     , propagator_{propagator}
     , canvasDimensions_{canvasDimensions}
     , imageDimensions_{imageDimensions}
-    , depth_{depth}
-    , contextMenu_{contextMenu}
-    , cursorChange_{cursorChange} {}
+    , depth_{std::move(depth)}
+    , contextMenu_{std::move(contextMenu)}
+    , cursorChange_{std::move(cursorChange)} {}
 
 bool InteractionEventMapperQt::eventFilter(QObject*, QEvent* e) {
     switch (e->type()) {

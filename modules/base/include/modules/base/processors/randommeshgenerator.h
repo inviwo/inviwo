@@ -97,7 +97,7 @@ private:
     float rand(const float min, const float max);
     vec3 randVec3(const float min = 0, const float max = 1);
 
-    void addPickingBuffer(Mesh& mesh, size_t id);
+    static void addPickingBuffer(Mesh& mesh, size_t id);
     void handlePicking(PickingEvent* p, std::function<void(vec3)> callback);
 
     MeshOutport mesh_;
