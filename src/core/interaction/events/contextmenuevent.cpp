@@ -35,7 +35,7 @@ ContextMenuEvent::ContextMenuEvent(std::string_view id, MouseButton button, Mous
                                    MouseButtons buttonState, KeyModifiers modifiers,
                                    dvec2 normalizedPosition, uvec2 canvasSize, double depth)
     : MouseEvent{button, state, buttonState, modifiers, normalizedPosition, canvasSize, depth}
-    , id_{std::move(id)} {}
+    , id_{id} {}
 
 ContextMenuEvent::~ContextMenuEvent() = default;
 
