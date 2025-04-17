@@ -58,7 +58,7 @@ void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,
 }
 
 void InteractionEvent::setContextMenuCallback(ContextMenuCallback callback) {
-    contextMenuCallback_ = callback;
+    contextMenuCallback_ = std::move(callback);
 }
 auto InteractionEvent::getContexMenuCallback() const -> const ContextMenuCallback& {
     return contextMenuCallback_;
