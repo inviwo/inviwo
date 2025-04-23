@@ -155,7 +155,7 @@ public:
         if (auto prec = dynamic_cast<const BufferRAMPrecision<T>*>(ram)) {
             return prec->getDataContainer();
         } else {
-            throw Exception(SourceContext{}, "Tried to get a '{}' container, but the type was",
+            throw Exception(SourceContext{}, "Tried to get a '{}' container, but the type was '{}'",
                             DataFormat<T>::str(), ram->getDataFormat()->getString());
         }
     }
@@ -165,7 +165,7 @@ public:
         if (auto prec = dynamic_cast<BufferRAMPrecision<T>*>(ram)) {
             return prec->getDataContainer();
         } else {
-            throw Exception(SourceContext{}, "Tried to get a '{}' container, but the type was",
+            throw Exception(SourceContext{}, "Tried to get a '{}' container, but the type was '{}'",
                             DataFormat<T>::str(), ram->getDataFormat()->getString());
         }
     }
