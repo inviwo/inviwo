@@ -90,6 +90,7 @@ inviwopy.properties
       PropertyFactory
       PropertyOwner
       PropertySemantics
+      PropertySerializationMode
       PropertyVecWrapper
       PropertyWidget
       Size_tMinMaxProperty
