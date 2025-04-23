@@ -139,11 +139,11 @@ constexpr std::array<UnitDesc, 3> extra = {{
 }};
 
 constexpr std::array<UnitDesc, 5> time = {{
-    {units::precise::time::min,  "minute", "min",  UnitFlag::None},
-    {units::precise::time::h,    "hour",   "h",    UnitFlag::None},
-    {units::precise::time::day,  "day",    "day",  UnitFlag::None},
-    {units::precise::time::week, "week",   "week", UnitFlag::None},
-    {units::precise::time::yr,   "year",   "yr",   UnitFlag::None}
+    {units::precise::time::minute,  "minute", "min",  UnitFlag::None},
+    {units::precise::time::h,       "hour",   "h",    UnitFlag::None},
+    {units::precise::time::day,     "day",    "day",  UnitFlag::None},
+    {units::precise::time::week,    "week",   "week", UnitFlag::None},
+    {units::precise::time::yr,      "year",   "yr",   UnitFlag::None}
 }};
 
 constexpr std::array<UnitDesc, 1> temperature = {{
