@@ -141,7 +141,7 @@ auto createPythonQtModule(pybind11::module_ inviwopy) {
                 if (waitForPool) {
                     app->waitForPool();
                 }
-                do {  // NOLING
+                do {  // NOLINT
                     qApp->processEvents();
                     app->processFront();
                 } while (app->getProcessorNetwork()->runningBackgroundJobs() > maxJobs);
@@ -174,8 +174,8 @@ auto createPythonQtModule(pybind11::module_ inviwopy) {
 
     py::classh<PropertyListWidget>(m, "PropertyListWidget")
         .def(py::init([](InviwoApplication* app) {
-            auto mainwin = utilqt::getApplicationMainWindow();
-            auto plw = new PropertyListWidget(mainwin, app);
+            auto* mainWin = utilqt::getApplicationMainWindow();
+            auto* plw = new PropertyListWidget(mainWin, app);
             plw->setFloating(true);
             return plw;
         }))

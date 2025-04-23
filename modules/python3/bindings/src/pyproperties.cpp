@@ -162,7 +162,8 @@ void exposeProperties(py::module& m) {
         .def("resetToDefaultState", &Property::resetToDefaultState)
         .def_property("serializationMode", &Property::getSerializationMode,
                       &Property::setSerializationMode)
-        .def("onChange", [](Property* p, std::function<void()> func) { p->onChange(std::move(func)); })
+        .def("onChange",
+             [](Property* p, std::function<void()> func) { p->onChange(std::move(func)); })
         .def("visibilityDependsOn",
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
                  p->visibilityDependsOn(*other, func);
