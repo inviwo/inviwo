@@ -88,10 +88,8 @@ public:
 private:
     // initial state of camera when an interaction is triggered to keep the rotation axis consistent
     struct CameraState {
-        vec3 dir = vec3(0.0f, 0.0f, -1.0f);
-        vec3 up = vec3(0.0f, 1.0f, 0.0f);
-        vec3 right = vec3(1.0f, 0.0f, 0.0f);
-        double zoom = 1.0f;
+        vec3 dir{0.0f, 0.0f, -1.0f};
+        vec3 up{0.0f, 1.0f, 0.0f};
     };
 
     void updateWidgetTexture(const ivec2& widgetSize);
@@ -207,27 +205,43 @@ private:
 
         enum class Mode : std::uint8_t { Continuous, Swing };
 
+        enum class Easing : std::uint8_t {
+            linear,
+            quadratic,
+            cubic,
+            quartic,
+            quintic,
+            sine,
+            circular,
+            exponential,
+            elastic,
+            back,
+            bounce
+        };
+
         using ms = typename Timer::Milliseconds;
         CameraWidget* widget;
         BoolCompositeProperty props;
         IntProperty fps;
         OptionProperty<RotationAxis> type;
         OptionProperty<Mode> mode;
+        OptionProperty<Easing> easing;
         FloatProperty increment;
         FloatProperty amplitude;
         EventProperty playPause;
         vec3 axis;
         Timer timer;
         bool paused;
-        float currentDirection;
+        float direction;
         float counter;
-        vec3 viewDir;
-        vec3 lookTo;
-        vec3 lookUp;
+        CameraState cam;
 
         void startStopAnimation(bool start);
         void animate();
         void invokeEvent(Event* e);
+
+        void interactionStart();
+        void interactionStop();
     };
 
     Animate animate_;

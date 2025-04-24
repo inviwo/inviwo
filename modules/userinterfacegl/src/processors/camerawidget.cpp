@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>          // for ImageType, ImageType::C...
 #include <inviwo/core/interaction/events/pickingevent.h>          // for PickingEvent
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/pickingmapper.h>          // for PickingMapper
 #include <inviwo/core/interaction/pickingstate.h>           // for PickingPressItem, Picki...
 #include <inviwo/core/io/datareader.h>                      // for DataReaderType
@@ -297,9 +298,9 @@ void CameraWidget::initializeResources() {
 
     // set up default colors for the mesh (horizontal: red, vertical: green, center: light gray,
     // roll: light blue, zoom: light gray)
-    std::array<vec4, 5> color = {vec4(0.8f, 0.5f, 0.5f, 1.0f), vec4(0.5f, 0.8f, 0.5f, 1.0f),
-                                 vec4(vec3(0.5f), 1.0f), vec4(0.4f, 0.5f, 0.8f, 1.0f),
-                                 vec4(vec3(0.5f), 1.0f)};
+    static constexpr std::array<vec4, 5> color = {
+        vec4(0.8f, 0.5f, 0.5f, 1.0f), vec4(0.5f, 0.8f, 0.5f, 1.0f), vec4(vec3(0.5f), 1.0f),
+        vec4(0.4f, 0.5f, 0.8f, 1.0f), vec4(vec3(0.5f), 1.0f)};
     shader_.setUniform("meshColors_", color);
 }
 
@@ -413,6 +414,7 @@ void CameraWidget::Picking::objectPicked(PickingEvent* e, CameraWidget& cameraWi
             mouseWasMoved = false;
             currentPickingID = static_cast<int>(e->getPickedId());
             cameraWidget.initialState_ = cameraState(cameraWidget.camera_);
+            cameraWidget.animate_.interactionStart();
         } else if (e->getPressState() == PickingPressState::Move &&
                    e->getPressItems() & PickingPressItem::Primary) {
             // check whether mouse has been moved for more than 1 pixel
@@ -427,6 +429,7 @@ void CameraWidget::Picking::objectPicked(PickingEvent* e, CameraWidget& cameraWi
             triggerSingleEvent =
                 (isMouseBeingPressedAndHold && (currentPickingID >= 0) && !mouseWasMoved);
             isMouseBeingPressedAndHold = false;
+            cameraWidget.animate_.interactionStop();
             if (currentPickingID >= 0) {
                 currentPickingID = -1;
                 cameraWidget.invalidate(InvalidationLevel::InvalidOutput);
@@ -439,28 +442,22 @@ void CameraWidget::Picking::objectPicked(PickingEvent* e, CameraWidget& cameraWi
         cameraWidget.dragInteraction(widgets_[currentPickingID].dir,
                                      e->getDeltaPosition() * dvec2(e->getCanvasSize()));
     } else if (triggerSingleEvent) {
+        cameraWidget.animate_.interactionStart();
         cameraWidget.stepInteraction(widgets_[pickedID].dir, widgets_[pickedID].clockwise);
+        cameraWidget.animate_.interactionStop();
     }
 }
 
 void CameraWidget::invokeEvent(Event* event) {
-    animate_.invokeEvent(event);
     Processor::invokeEvent(event);
+    animate_.invokeEvent(event);
 }
 
 CameraWidget::CameraState CameraWidget::cameraState(const Camera& cam) {
-    // save current camera vectors (direction, up, and right) to be able to do absolute
-    // rotations
+    // save current camera vectors (direction, up) to be able to do absolute rotations
     const vec3 camDir = glm::normalize(cam.getDirection());
     const vec3 camUp = glm::normalize(cam.getLookUp());
-    const vec3 camRight = glm::cross(camDir, camUp);
-
-    double zoom = 1.0;
-    if (const auto* perspCam = dynamic_cast<const PerspectiveCamera*>(&cam)) {
-        const double fovy = perspCam->getFovy();
-        zoom = 1.0 / std::tan(glm::radians(fovy) / 2.0f);
-    }
-    return {.dir = camDir, .up = camUp, .right = camRight, .zoom = zoom};
+    return {.dir = camDir, .up = camUp};
 }
 
 void CameraWidget::loadMesh() {
@@ -606,21 +603,13 @@ void CameraWidget::stepRotation(RotationAxis dir, bool clockwise) {
 }
 
 void CameraWidget::dragZoom(dvec2 delta) {
-    const double f = -delta.y / 50.0;
-    auto& cam = camera_.get();
-    const auto focalLength =
-        std::max(0.01, glm::length(cam.getDirection()) + f * initialState_.zoom);
-
-    // update camera look from position
-    const vec3 campos(camera_.getLookTo() - initialState_.dir * static_cast<float>(focalLength));
-    camera_.setLookFrom(campos);
+    const auto factor = static_cast<float>(delta.y / 50.0f);
+    camera_.get().zoom(factor, std::nullopt);
 }
 
 void CameraWidget::stepZoom(bool zoomIn) {
-    // adjust zoom direction
-    dvec2 delta(angleIncrement_.get() * (zoomIn ? -1.0f : 1.0f));
-    initialState_ = cameraState(camera_);
-    dragZoom(delta);
+    const auto factor = abs(angleIncrement_.get()) / 90.0f * (zoomIn ? -1.0f : 1.0f);
+    camera_.get().zoom(factor, std::nullopt);
 }
 
 void CameraWidget::updateOutput(const mat4& rotation) {
@@ -656,7 +645,7 @@ vec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const Came
             case RotationAxis::Yaw:
                 return cam.up;
             case RotationAxis::Pitch:
-                return cam.right;
+                return glm::cross(cam.dir, cam.up);
             case RotationAxis::Roll:
                 return cam.dir;
             default:
@@ -694,7 +683,24 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
             {"swing", "Swing", CameraWidget::Animate::Mode::Swing}},
            0,
            InvalidationLevel::Valid}
-    , increment{"increment", "Angle (deg) per frame",
+    , easing{"easing",
+             "Easing",
+             "Easing mode to use in Swing Mode"_help,
+             {{"linear", "Linear", Easing::linear},
+              {"quadratic", "Quadratic", Easing::quadratic},
+              {"cubic", "Cubic", Easing::cubic},
+              {"quartic", "Quartic", Easing::quartic},
+              {"quintic", "Quintic", Easing::quintic},
+              {"sine", "Sine", Easing::sine},
+              {"circular", "Circular", Easing::circular},
+              {"exponential", "Exponential", Easing::exponential},
+              {"elastic", "Elastic", Easing::elastic},
+              {"back", "Back", Easing::back},
+              {"bounce", "Bounce", Easing::bounce}},
+             2,
+             InvalidationLevel::Valid}
+
+    , increment{"increment", "Angle per frame",
                 util::ordinalSymmetricVector(1.0f, 5.0f)
                     .set(InvalidationLevel::Valid)
                     .setInc(0.01f)
@@ -702,20 +708,22 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
     , amplitude{"amplitude", "Angle max",
                 util::ordinalLength(45.0f, 360.0f)
                     .set(InvalidationLevel::Valid)
-                    .set("Max Rotation angle in degrees"_help)}
+                    .set("Max Rotation angle in degrees, for use in Swing Mode. "
+                         "The animation will rotate between -amplitude to +amplitude degrees"_help)}
     , playPause{"playPause", "Play/Pause",
-                [this](Event*) { props.getBoolProperty()->set(!props.getBoolProperty()->get()); },
+                [this](Event* e) {
+                    e->markAsUsed();
+                    props.getBoolProperty()->set(!props.getBoolProperty()->get());
+                },
                 IvwKey::Space, KeyState::Press}
     , axis{1.0f, 0.0f, 0.0f}
     , timer{ms{0}, [this]() { animate(); }}
     , paused{false}
-    , currentDirection{1.0}
+    , direction{1.0}
     , counter{0.0f}
-    , viewDir{}
-    , lookTo{}
-    , lookUp{} {
+    , cam{} {
 
-    props.addProperties(fps, type, mode, increment, amplitude, playPause);
+    props.addProperties(fps, type, mode, easing, increment, amplitude, playPause);
 
     props.getBoolProperty()->onChange(
         [this]() { startStopAnimation(props.getBoolProperty()->get()); });
@@ -723,14 +731,12 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
     type.onChange([this]() { startStopAnimation(props.getBoolProperty()->get()); });
 }
 
-void CameraWidget::Animate::startStopAnimation(bool startAni) {
-    if (startAni) {
+void CameraWidget::Animate::startStopAnimation(bool start) {
+    if (start) {
         axis = rotationAxis(type.get(), widget->useObjectRotAxis_, cameraState(widget->camera_));
         counter = 0.0f;
-        currentDirection = 1.0f;
-        viewDir = widget->camera_.get().getDirection();
-        lookTo = widget->camera_.getLookTo();
-        lookUp = widget->camera_.getLookUp();
+        direction = 1.0f;
+        cam = {.dir = widget->camera_.get().getDirection(), .up = widget->camera_.getLookUp()};
         timer.start(ms{fps.get()});
     } else {
         timer.stop();
@@ -739,18 +745,48 @@ void CameraWidget::Animate::startStopAnimation(bool startAni) {
 
 void CameraWidget::Animate::animate() {
     if (mode == Mode::Swing) {
-        if (counter > amplitude.get() || counter < -amplitude.get()) {
-            currentDirection *= -1.0f;
+        if (abs(counter) > abs(amplitude.get())) {
+            direction *= -1.0f;
         }
-        counter += currentDirection * increment.get();
+        counter += direction * increment.get();
 
-        const auto angle = std::copysignf(amplitude.get(), counter) *
-                           glm::quadraticEaseOut(std::clamp(
-                               std::abs(counter) / std::abs(amplitude.get()), 0.0f, 1.0f));
+        const auto easingFunc = [&](float x) {
+            switch (easing.getSelectedValue()) {
+                case Easing::linear:
+                    return glm::linearInterpolation(x);
+                case Easing::quadratic:
+                    return glm::quadraticEaseOut(x);
+                case Easing::cubic:
+                    return glm::cubicEaseOut(x);
+                case Easing::quartic:
+                    return glm::quarticEaseOut(x);
+                case Easing::quintic:
+                    return glm::quinticEaseOut(x);
+                case Easing::sine:
+                    return glm::sineEaseOut(x);
+                case Easing::circular:
+                    return glm::circularEaseOut(x);
+                case Easing::exponential:
+                    return glm::exponentialEaseOut(x);
+                case Easing::elastic:
+                    return glm::elasticEaseOut(x);
+                case Easing::back:
+                    return glm::backEaseOut(x);
+                case Easing::bounce:
+                    return glm::bounceEaseOut(x);
+                default:
+                    return glm::quadraticEaseOut(x);
+            }
+        };
 
-        const auto rotation = glm::rotate(-glm::radians(angle), axis);
-        const mat3 m(rotation);
-        widget->camera_.setLook(lookTo - m * viewDir, lookTo, m * lookUp);
+        const auto angle =
+            std::copysignf(amplitude.get(), counter) *
+            easingFunc(std::clamp(std::abs(counter) / std::abs(amplitude.get()), 0.0f, 1.0f));
+
+        // Rotate LookFrom around LookTo using axis
+        const auto rotation = mat3(glm::rotate(-glm::radians(angle), axis));
+        const auto to = widget->camera_.getLookTo();
+        widget->camera_.setLook(to - rotation * cam.dir, to, rotation * cam.up);
     } else {
         widget->updateOutput(glm::rotate(-glm::radians(increment.get()), axis));
     }
@@ -758,14 +794,32 @@ void CameraWidget::Animate::animate() {
 
 void CameraWidget::Animate::invokeEvent(Event* e) {
     if (auto* me = e->getAs<MouseEvent>()) {
-        if (timer.isRunning() && me->state() == MouseState::Press) {
-            startStopAnimation(false);
-            paused = true;
-        } else if (paused && me->state() == MouseState::Release &&
-                   me->buttonState() == MouseButton::None) {
-            startStopAnimation(true);
-            paused = false;
+        if (me->state() == MouseState::Press) {
+            interactionStart();
+        } else if (me->state() == MouseState::Release && me->buttonState() == MouseButton::None) {
+            interactionStop();
         }
+    } else if (auto* ke = e->getAs<KeyboardEvent>()) {
+        if (!ke->hasBeenUsed()) {
+            if (ke->state() == KeyState::Press) {
+                interactionStart();
+            } else if (ke->state() == KeyState::Release) {
+                interactionStop();
+            }
+        }
+    }
+}
+
+void CameraWidget::Animate::interactionStart() {
+    if (timer.isRunning()) {
+        paused = true;
+        startStopAnimation(false);
+    }
+}
+void CameraWidget::Animate::interactionStop() {
+    if (paused) {
+        startStopAnimation(true);
+        paused = false;
     }
 }
 
