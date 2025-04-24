@@ -289,7 +289,7 @@ void CameraWidget::initializeResources() {
     const utilgl::Activate as{&shader_};
 
     // fill array with picking colors
-    std::array<vec3, widgets_.size()> colors;
+    std::array<vec3, widgets_.size()> colors{};
     for (auto&& [i, color] : util::enumerate(colors)) {
         color = picking_.getColor(i);
     }
@@ -394,7 +394,7 @@ void CameraWidget::drawWidgetTexture() {
     utilgl::singleDrawImagePlaneRect();
 }
 
-void CameraWidget::objectPicked(PickingEvent* e) { pickingState_.objectPicked(e, *this); }
+void CameraWidget::objectPicked(PickingEvent* p) { pickingState_.objectPicked(p, *this); }
 
 void CameraWidget::Picking::objectPicked(PickingEvent* e, CameraWidget& cameraWidget) {
     const auto pickedID = static_cast<int>(e->getPickedId());
@@ -456,9 +456,9 @@ CameraWidget::CameraState CameraWidget::cameraState(const Camera& cam) {
     const vec3 camRight = glm::cross(camDir, camUp);
 
     double zoom = 1.0;
-    if (auto* perspCam = dynamic_cast<const PerspectiveCamera*>(&cam)) {
-        double fovy = perspCam->getFovy();
-        zoom = 1.0 / std::tan(fovy * glm::pi<double>() / 360.0);
+    if (const auto* perspCam = dynamic_cast<const PerspectiveCamera*>(&cam)) {
+        const double fovy = perspCam->getFovy();
+        zoom = 1.0 / std::tan(glm::radians(fovy) / 2.0f);
     }
     return {.dir = camDir, .up = camUp, .right = camRight, .zoom = zoom};
 }
@@ -606,14 +606,13 @@ void CameraWidget::stepRotation(RotationAxis dir, bool clockwise) {
 }
 
 void CameraWidget::dragZoom(dvec2 delta) {
-    double f = -delta.y / 50.0;
-
+    const double f = -delta.y / 50.0;
     auto& cam = camera_.get();
-    double focalLength = glm::length(cam.getDirection());
-    focalLength = std::max(0.01, focalLength + f * initialState_.zoom);
+    const auto focalLength =
+        std::max(0.01, glm::length(cam.getDirection()) + f * initialState_.zoom);
 
     // update camera look from position
-    vec3 campos(camera_.getLookTo() - initialState_.dir * static_cast<float>(focalLength));
+    const vec3 campos(camera_.getLookTo() - initialState_.dir * static_cast<float>(focalLength));
     camera_.setLookFrom(campos);
 }
 
@@ -705,7 +704,7 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
                     .set(InvalidationLevel::Valid)
                     .set("Max Rotation angle in degrees"_help)}
     , playPause{"playPause", "Play/Pause",
-                [this](Event* e) { props.getBoolProperty()->set(!props.getBoolProperty()->get()); },
+                [this](Event*) { props.getBoolProperty()->set(!props.getBoolProperty()->get()); },
                 IvwKey::Space, KeyState::Press}
     , axis{1.0f, 0.0f, 0.0f}
     , timer{ms{0}, [this]() { animate(); }}
@@ -750,7 +749,7 @@ void CameraWidget::Animate::animate() {
                                std::abs(counter) / std::abs(amplitude.get()), 0.0f, 1.0f));
 
         const auto rotation = glm::rotate(-glm::radians(angle), axis);
-        mat3 m(rotation);
+        const mat3 m(rotation);
         widget->camera_.setLook(lookTo - m * viewDir, lookTo, m * lookUp);
     } else {
         widget->updateOutput(glm::rotate(-glm::radians(increment.get()), axis));

@@ -70,8 +70,8 @@ class PickingEvent;
  */
 class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor {
 public:
-    enum class Interaction { Yaw, Pitch, Roll, FreeRotation, Zoom, None };
-    enum class RotationAxis { Yaw, Pitch, Roll };
+    enum class Interaction : std::uint8_t { Yaw, Pitch, Roll, FreeRotation, Zoom, None };
+    enum class RotationAxis : std::uint8_t { Yaw, Pitch, Roll };
 
     CameraWidget();
     ~CameraWidget();
@@ -203,9 +203,9 @@ private:
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
 
     struct Animate {
-        Animate(CameraWidget& cameraWidget);
+        explicit Animate(CameraWidget& cameraWidget);
 
-        enum class Mode { Continuous, Swing };
+        enum class Mode : std::uint8_t { Continuous, Swing };
 
         using ms = typename Timer::Milliseconds;
         CameraWidget* widget;
