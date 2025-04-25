@@ -60,7 +60,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                  255.0,
                  -DataFloat64::max(),
                  DataFloat64::max(),
-                 0.0,
+                 0.001,
                  0.0,
                  InvalidationLevel::InvalidOutput,
                  PropertySemantics::Text}
@@ -70,7 +70,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                   255.0,
                   -DataFloat64::max(),
                   DataFloat64::max(),
-                  0.0,
+                  0.001,
                   0.0,
                   InvalidationLevel::InvalidOutput,
                   PropertySemantics::Text}
@@ -81,7 +81,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                        1.0,
                        std::numeric_limits<double>::lowest(),
                        std::numeric_limits<double>::max(),
-                       0.01,
+                       0.001,
                        0.0,
                        InvalidationLevel::InvalidOutput,
                        PropertySemantics::Text}
@@ -91,7 +91,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                         1.0,
                         std::numeric_limits<double>::lowest(),
                         std::numeric_limits<double>::max(),
-                        0.01,
+                        0.001,
                         0.0,
                         InvalidationLevel::InvalidOutput,
                         PropertySemantics::Text}
