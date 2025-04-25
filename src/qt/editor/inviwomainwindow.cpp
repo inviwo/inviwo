@@ -1436,6 +1436,7 @@ void InviwoMainWindow::hideWelcomeScreen() {
     centralWidget_->removeWidget(getWelcomeWidget());
     // restore previously hidden dock and processor widgets
     visibleWidgetState_.show();
+    setToolTip("");
 
     setUpdatesEnabled(true);
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
