@@ -311,6 +311,19 @@ T lowerBoundedValue(T v, T absDelta, T minValue, ConstraintBehavior cb) {
     }
 }
 
+template <typename T>
+T clamp(T v, T minValue, T maxValue, ConstraintBehavior minCB, ConstraintBehavior maxCB) {
+    if (minCB != ConstraintBehavior::Ignore && maxCB != ConstraintBehavior::Ignore) {
+        return std::clamp(v, minValue, maxValue);
+    } else if (minCB != ConstraintBehavior::Ignore) {
+        return std::max(v, minValue);
+    } else if (maxCB != ConstraintBehavior::Ignore) {
+        return std::min(v, maxValue);
+    } else {
+        return v;
+    }
+}
+
 }  // namespace detail
 
 template <typename T>
@@ -359,14 +372,19 @@ void NumberWidget<T>::initDragValue() {
 
 template <typename T>
 bool NumberWidget<T>::valueFromTextValid(const QString& str) {
-    return utilqt::numericValueFromString<T>(str).has_value();
+    if (auto newValue = utilqt::numericValueFromString<T>(str); newValue) {
+        return *newValue == detail::clamp(*newValue, minValue_, maxValue_, minCB_, maxCB_);
+    }
+    return false;
 }
 
 template <typename T>
 bool NumberWidget<T>::updateValueFromText(const QString& str) {
-    if (auto newValue = utilqt::numericValueFromString<T>(str); newValue && *newValue != value_) {
-        value_ = *newValue;
-        return true;
+    if (auto newValue = utilqt::numericValueFromString<T>(str); newValue) {
+        T clamped = detail::clamp(*newValue, minValue_, maxValue_, minCB_, maxCB_);
+        bool updated = (clamped != value_);
+        value_ = clamped;
+        return updated;
     }
     return false;
 }
