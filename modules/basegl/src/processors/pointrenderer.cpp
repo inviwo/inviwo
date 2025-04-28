@@ -93,7 +93,24 @@ PointRenderer::PointRenderer()
                    util::ordinalLength(1.5f, 5.0f)
                        .set("Width of the antialised point edge (in pixel), this determines the "
                             "softness along the outer edge of the point"_help)}
-
+    , overrideMarker_{"overrideMarker", "Override Marker", false,
+                      InvalidationLevel::InvalidResources}
+    , marker_{"marker",
+              "Marker",
+              ""_help,
+              {
+                  {"circle", "Circle", Marker::Circle},
+                  {"diamond", "Diamond", Marker::Diamond},
+                  {"square", "Square", Marker::Square},
+                  {"hexagon", "Hexagon", Marker::Hexagon},
+                  {"plus", "Plus", Marker::Plus},
+                  {"cross", "Cross", Marker::Cross},
+                  {"triangleUp", "TriangleUp", Marker::TriangleUp},
+                  {"triangleLeft", "TriangleLeft", Marker::TriangleLeft},
+                  {"triangleDown", "TriangleDown", Marker::TriangleDown},
+                  {"triangleRight", "TriangleRight", Marker::TriangleRight},
+              },
+              0}
     , labels_{}
     , periodic_{}
     , texture_{"pointTexture", "Texture to apply to points"_help}
@@ -110,6 +127,7 @@ PointRenderer::PointRenderer()
                 {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
                 {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
                 {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"},
+                {BufferType::IntMetaAttrib, MeshShaderCache::Optional, "int"},
                 bnl_.getRequirement(),
                 texture_.getRequirement()},
 
@@ -125,7 +143,8 @@ PointRenderer::PointRenderer()
     addPort(labels_.strings);
     addPort(outport_);
 
-    config_.config.addProperties(borderWidth_, borderColor_, antialising_);
+    config_.config.addProperties(borderWidth_, borderColor_, antialising_, overrideMarker_,
+                                 marker_);
     config_.radius.setMaxValue(32);
     config_.radius.set(8);
     config_.radius.setCurrentStateAsDefault();
@@ -143,6 +162,8 @@ void PointRenderer::initializeResources() {
 
 void PointRenderer::configureShader(Shader& shader) {
     utilgl::addDefines(shader, labels_, periodic_, config_, texture_);
+    shader[ShaderType::Vertex]->setShaderDefine("OVERRIDE_MARKER", overrideMarker_);
+
     shader.build();
 }
 
@@ -164,7 +185,7 @@ void PointRenderer::process() {
         shader.activate();
 
         utilgl::setUniforms(shader, camera_, config_, bnl_, periodic_, labels_, texture_,
-                            borderWidth_, borderColor_, antialising_);
+                            borderWidth_, borderColor_, antialising_, marker_);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
                                            2.0f / outport_.getDimensions().y));
         utilgl::setShaderUniforms(shader, *mesh, "geometry");

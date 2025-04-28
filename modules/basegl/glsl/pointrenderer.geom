@@ -54,6 +54,7 @@ struct Point {
     vec4 pickColor;
     float radius;
     uint index;
+    uint marker;
 };
 
 layout(points) in;
@@ -70,6 +71,7 @@ in PointVert {
     flat float radius;
     flat uint pickID;
     flat uint index;
+    flat uint marker;
 } inPoint[];
 
 #if defined(ENABLE_PERIODICITY)
@@ -83,6 +85,7 @@ out PointGeom {
     vec3 camPos;
     float radius;
     flat uint index;
+    flat uint marker;
 } outPoint;
 
 void emitQuad(in Point point, in vec3 camPos) {
@@ -99,6 +102,7 @@ void emitQuad(in Point point, in vec3 camPos) {
     outPoint.color = point.color;
     outPoint.pickColor = point.pickColor;
     outPoint.index = point.index;
+    outPoint.marker = point.marker;
 
     EmitVertex();
     EndPrimitive();
@@ -154,6 +158,7 @@ void main(void) {
     point.pickColor.w = inPoint[0].pickID == 0 ? 0.0 : 1.0;
     point.radius = inPoint[0].radius;
     point.index = inPoint[0].index;
+    point.marker = inPoint[0].marker;
 
     // TODO handle orthographic cam...
     vec3 camDir = normalize((camera.viewToWorld[2]).xyz);

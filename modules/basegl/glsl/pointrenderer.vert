@@ -39,6 +39,8 @@ uniform Config config = Config(vec3(1, 0, 0), 1.0, 0.1);
 
 uniform sampler2D metaColor;
 
+uniform uint marker = 0;
+
 #if defined(ENABLE_BNL)
 uniform usamplerBuffer bnl;
 uniform SelectionColor bnlFilter;
@@ -51,6 +53,7 @@ out PointVert {
     flat float radius;
     flat uint pickID;
     flat uint index;
+    flat uint marker;
 } point;
 
 #if defined(ENABLE_PERIODICITY)
@@ -85,6 +88,13 @@ void main(void) {
 #else
     point.index = gl_VertexID;
 #endif
+
+#if defined(HAS_INTMETA) && !defined(OVERRIDE_MARKER)
+    point.marker = in_IntMeta;
+#else
+    point.marker = marker;
+#endif
+
 
 #if defined(ENABLE_BNL)
     int bnlSize = textureSize(bnl);

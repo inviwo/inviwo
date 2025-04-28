@@ -55,6 +55,7 @@ enum class BufferType {
     RadiiAttrib,
     PickingAttrib,
     ScalarMetaAttrib,
+    IntMetaAttrib,
     Unknown
 };
 
