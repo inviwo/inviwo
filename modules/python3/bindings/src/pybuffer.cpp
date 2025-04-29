@@ -101,6 +101,7 @@ void exposeBuffer(pybind11::module& m) {
         .value("RadiiAttrib", BufferType::RadiiAttrib)
         .value("PickingAttrib", BufferType::PickingAttrib)
         .value("ScalarMetaAttrib", BufferType::ScalarMetaAttrib)
+        .value("IntMetaAttrib", BufferType::IntMetaAttrib)
         .value("Unknown", BufferType::Unknown);
 
     py::enum_<BufferUsage>(m, "BufferUsage")
