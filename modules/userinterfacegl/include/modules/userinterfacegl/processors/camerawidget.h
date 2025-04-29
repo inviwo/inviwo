@@ -109,7 +109,7 @@ private:
 
     void freeRotation(dvec2 mouseDelta);
     void axisRotation(RotationAxis dir, dvec2 mouseDelta);
-    void rotation(vec3 axis, float distance);
+    void rotation(vec3 axis, float degrees);
     void stepRotation(RotationAxis dir, bool clockwise);
     void dragZoom(dvec2 delta);
     void stepZoom(bool zoomIn);
@@ -120,9 +120,6 @@ private:
 
     static vec3 rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam);
 
-    void startStopAnimation(bool start);
-    void animate();
-
     ImageInport inport_;
     ImageOutport outport_;
 
@@ -131,7 +128,7 @@ private:
     CompositeProperty settings_;
     BoolProperty enabled_;
     BoolProperty invertDirections_;
-    BoolProperty useObjectRotAxis_;
+    BoolProperty useWorldAxis_;
     BoolProperty showRollWidget_;
     BoolProperty showDollyWidget_;
     BoolProperty showRotWidget_;
@@ -185,6 +182,7 @@ private:
     // UI state and textures
     struct Picking {
         void objectPicked(PickingEvent* e, CameraWidget& camera);
+
     private:
         int currentPickingID{-1};
     };
@@ -197,7 +195,6 @@ private:
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
-
 
     struct Continuous {
         vec3 axis{};
@@ -229,7 +226,7 @@ private:
                        bool objectAxis) -> Animation;
 
     struct Animator {
-        Animator(Camera& camera);
+        explicit Animator(Camera& camera);
         using ms = typename Timer::Milliseconds;
         Animation animation;
         Camera* camera;

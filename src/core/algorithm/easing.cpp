@@ -28,8 +28,20 @@
  *********************************************************************************/
 
 #include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 namespace inviwo {
+void Easing::serialize(Serializer& s) const {
+    s.serialize("type", static_cast<std::size_t>(type), SerializationTarget::Attribute);
+    s.serialize("mode", static_cast<std::size_t>(mode), SerializationTarget::Attribute);
+}
+void Easing::deserialize(Deserializer& d) {
+    size_t t = static_cast<std::size_t>(type);
+    size_t m = static_cast<std::size_t>(mode);
+    d.deserialize("type", t, SerializationTarget::Attribute);
+    d.deserialize("mode", m, SerializationTarget::Attribute);
 
-
+    type = static_cast<EasingType>(t);
+    mode = static_cast<EasingMode>(m);
+}
 }  // namespace inviwo

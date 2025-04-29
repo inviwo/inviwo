@@ -67,7 +67,7 @@ public:
 
     // keys should be sorted by time
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing, Result& out) const override;
+                            Easing easing, Result& out) const override;
 };
 
 template <typename Key, typename Result>
@@ -108,7 +108,7 @@ bool ConstantInterpolation<Key, Result>::equal(const Interpolation& other) const
 }
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                    Seconds from, Seconds to, easing::EasingType,
+                                                    Seconds from, Seconds to, Easing,
                                                     Result& out) const {
 
     if (to > from) {

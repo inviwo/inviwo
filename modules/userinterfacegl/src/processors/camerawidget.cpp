@@ -195,7 +195,10 @@ CameraWidget::CameraWidget()
                "Enables mouse and touch interactions with the widget"_help, true}
     , invertDirections_{"invertDirections", "Invert Directions",
                         "Inverts the rotation directions"_help, false, InvalidationLevel::Valid}
-    , useObjectRotAxis_{"useObjectRotationAxis", "Use Closest Object Axis for Rotation", false}
+    , useWorldAxis_{"useObjectRotationAxis", "Use Closest World Axis for Rotation",
+                    "When this is enables we rotate around one of the world axis, "
+                    "instead of the view space axes"_help,
+                    true}
     , showRollWidget_{"showRollWidget", "Camera Roll",
                       "Shows an additional widget for rolling the camera"_help, true}
     , showDollyWidget_{"showDolly", "Camera Dolly",
@@ -284,7 +287,7 @@ CameraWidget::CameraWidget()
 
     // interaction settings
     enabled_.onChange([this]() { picking_.setEnabled(enabled_); });
-    settings_.addProperties(enabled_, invertDirections_, useObjectRotAxis_, showRotWidget_,
+    settings_.addProperties(enabled_, invertDirections_, useWorldAxis_, showRotWidget_,
                             showRollWidget_, showDollyWidget_, showCube_, speed_, angleIncrement_,
                             minTouchMovement_);
     // widget appearance
@@ -331,8 +334,8 @@ void CameraWidget::process() {
 
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_, ImageType::ColorDepthPicking);
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-    utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::GlBoolState depthTest{GL_DEPTH_TEST, true};
+    const utilgl::BlendModeState blending{GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
     drawWidgetTexture();
 
     utilgl::deactivateCurrentTarget();
@@ -351,7 +354,7 @@ void CameraWidget::initializeResources() {
     cubeShader_.build();
 
     // initialize shader uniform containing all picking colors, the mesh will fetch the
-    // appropriate one using the object ID stored in the second texture coordinate set¨
+    // appropriate one using the object ID stored in the second texture coordinate set
     const utilgl::Activate as{&shader_};
 
     // fill array with picking colors
@@ -498,9 +501,9 @@ vec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, vec3 currentUp) {
             }
             break;
         case 3:
-            for (auto x : {-2, -1, 1, 2}) {
-                for (auto y : {-2, -1, 1, 2}) {
-                    for (auto z : {-2, -1, 1, 2}) {
+            for (const auto x : {-2, -1, 1, 2}) {
+                for (const auto y : {-2, -1, 1, 2}) {
+                    for (const auto z : {-2, -1, 1, 2}) {
                         if (dot(ivec3{x, y, z}, newDir) == 0) {
                             candidates[count++] = ivec3{x, y, z};
                         }
@@ -533,7 +536,9 @@ void CameraWidget::cubePicked(PickingEvent* p) {
     if (p->getPressState() == PickingPressState::Press) {
         initialState_ = cameraState(camera_);
 
-        cubeState_.paused = animator_.animation;
+        if (!std::holds_alternative<Goal>(animator_.animation)) {
+            cubeState_.paused = animator_.animation;
+        }
         animator_.setAnimation(std::monostate{});
 
     } else if (p->getPressState() == PickingPressState::Move) {
@@ -570,15 +575,13 @@ void CameraWidget::cubePicked(PickingEvent* p) {
                      .step = 1.f / 20.f,
                      .current = 0.0f,
                      .done = [ani = cubeState_.paused, rotType = animate_.type.get(),
-                              objAxis = useObjectRotAxis_.get()](Camera& camera) {
+                              objAxis = useWorldAxis_.get()](Camera& camera) {
                          return resume(ani, camera, rotType, objAxis);
                      }});
-            cubeState_.paused = std::monostate{};
         } else {
-            const auto ani = resume(cubeState_.paused, camera_.get(), animate_.type.get(),
-                                    useObjectRotAxis_.get());
+            const auto ani =
+                resume(cubeState_.paused, camera_.get(), animate_.type.get(), useWorldAxis_.get());
             animator_.setAnimation(ani);
-            cubeState_.paused = std::monostate{};
         }
     }
 
@@ -739,7 +742,7 @@ void CameraWidget::stepInteraction(Interaction dir, bool clockwise) {
 }
 
 void CameraWidget::axisRotation(RotationAxis dir, dvec2 mouseDelta) {
-    const auto rotAxis = rotationAxis(dir, useObjectRotAxis_, initialState_);
+    const auto rotAxis = rotationAxis(dir, useWorldAxis_, initialState_);
     const auto distance = static_cast<float>([&]() {
         switch (dir) {
             case RotationAxis::Yaw:
@@ -749,6 +752,7 @@ void CameraWidget::axisRotation(RotationAxis dir, dvec2 mouseDelta) {
             case RotationAxis::Roll:
                 return mouseDelta.x;
         }
+        return 0.0;
     }());
     rotation(rotAxis, distance);
 }
@@ -763,19 +767,19 @@ void CameraWidget::freeRotation(dvec2 mouseDelta) {
     rotation(rotAxis, distance);
 }
 
-void CameraWidget::rotation(vec3 rotAxis, float distance) {
-    if (std::abs(distance) < glm::epsilon<float>()) {  // practically no change
+void CameraWidget::rotation(vec3 rotAxis, float degrees) {
+    if (std::abs(degrees) < glm::epsilon<float>()) {  // practically no change
         return;
     }
 
     const auto angle =
-        glm::radians(distance) * speed_.get() * (invertDirections_.get() ? -1.0f : 1.0f);
+        glm::radians(degrees) * speed_.get() * (invertDirections_.get() ? -1.0f : 1.0f);
     const auto rotMatrix = glm::rotate(-angle, rotAxis);
     updateOutput(rotMatrix);
 }
 
 void CameraWidget::stepRotation(RotationAxis dir, bool clockwise) {
-    const auto rotAxis = rotationAxis(dir, useObjectRotAxis_, cameraState(camera_));
+    const auto rotAxis = rotationAxis(dir, useWorldAxis_, cameraState(camera_));
     const auto angle = glm::radians(angleIncrement_.get()) * (clockwise ? -1.0f : 1.0f) *
                        (invertDirections_.get() ? -1.0f : 1.0f);
     const auto rotMatrix = glm::rotate(-angle, rotAxis);
@@ -939,12 +943,12 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
              2,
              InvalidationLevel::Valid}
 
-    , increment{"increment", "Angle per frame",
+    , increment{"increment", "Degrees per frame",
                 util::ordinalSymmetricVector(1.0f, 5.0f)
                     .set(InvalidationLevel::Valid)
                     .setInc(0.01f)
                     .set("Rotation angle in degrees per frame"_help)}
-    , amplitude{"amplitude", "Angle max",
+    , amplitude{"amplitude", "Max Rotation",
                 util::ordinalLength(45.0f, 360.0f)
                     .set(InvalidationLevel::Valid)
                     .set("Max Rotation angle in degrees, for use in Swing Mode. "
@@ -969,12 +973,12 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
 void CameraWidget::Animate::startStopAnimation(bool start) {
     if (start) {
         if (mode.get() == Mode::Continuous) {
-            const auto ani = Continuous{.axis = rotationAxis(type.get(), widget->useObjectRotAxis_,
+            const auto ani = Continuous{.axis = rotationAxis(type.get(), widget->useWorldAxis_,
                                                              cameraState(widget->camera_)),
                                         .step = increment.get()};
             widget->animator_.setAnimation(ani);
         } else if (mode.get() == Mode::Swing) {
-            const auto ani = Swing{.axis = rotationAxis(type.get(), widget->useObjectRotAxis_,
+            const auto ani = Swing{.axis = rotationAxis(type.get(), widget->useWorldAxis_,
                                                         cameraState(widget->camera_)),
                                    .dir = widget->camera_.get().getDirection(),
                                    .up = widget->camera_.getLookUp(),
@@ -1043,8 +1047,8 @@ void CameraWidget::Animate::interactionStart() {
 }
 void CameraWidget::Animate::interactionStop() {
     if (!holds_alternative<std::monostate>(paused)) {
-        const auto resume = CameraWidget::resume(paused, widget->camera_.get(), type.get(),
-                                                 widget->useObjectRotAxis_);
+        const auto resume =
+            CameraWidget::resume(paused, widget->camera_.get(), type.get(), widget->useWorldAxis_);
 
         widget->animator_.setAnimation(resume);
         paused = std::monostate{};

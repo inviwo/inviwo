@@ -34,7 +34,6 @@
 #include <inviwo/core/util/glmvec.h>                          // for dvec3
 #include <modules/animation/datastructures/animationtime.h>   // for Seconds
 #include <modules/animation/datastructures/camerakeyframe.h>  // for CameraKeyframe, CameraKeyfr...
-#include <modules/animation/datastructures/easing.h>          // for ease, EasingType
 #include <modules/animation/interpolation/interpolation.h>    // for Interpolation
 
 #include <algorithm>  // for upper_bound
@@ -73,7 +72,7 @@ std::string_view CameraLinearInterpolation::classIdentifier() {
 }
 
 void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
-                                           Seconds /*from*/, Seconds to, easing::EasingType easing,
+                                           Seconds /*from*/, Seconds to, Easing easing,
                                            CameraKeyframe::value_type& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
@@ -86,7 +85,7 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
     const auto& v2 = *(*it);
     const auto& t2 = (*it)->getTime();
 
-    auto t = easing::ease((to - t1) / (t2 - t1), easing);
+    auto t = util::ease((to - t1) / (t2 - t1), easing);
 
     auto lookTo = glm::mix(dvec3(v1.getLookTo()), dvec3(v2.getLookTo()), t);
     auto lookFrom = glm::mix(dvec3(v1.getLookFrom()), dvec3(v2.getLookFrom()), t);

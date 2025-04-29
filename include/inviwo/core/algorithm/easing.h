@@ -34,10 +34,14 @@
 #include <cstdint>
 #include <string_view>
 #include <ranges>
+#include <algorithm>
 
 #include <glm/gtx/easing.hpp>
 
 namespace inviwo {
+
+class Serializer;
+class Deserializer;
 
 enum class EasingType : std::uint8_t {
     linear,
@@ -55,11 +59,15 @@ enum class EasingType : std::uint8_t {
 
 enum class EasingMode : std::uint8_t { in, out, inOut };
 
-struct Easing {
-    EasingType type;
-    EasingMode mode;
+struct IVW_CORE_API Easing {
+    EasingType type = EasingType::linear;
+    EasingMode mode = EasingMode::inOut;
     static constexpr size_t typeCount = 11;
     static constexpr size_t modeCount = 3;
+    constexpr auto operator<=>(const Easing& other) const noexcept = default;
+
+    void serialize(Serializer& s) const;
+    void deserialize(Deserializer& d);
 };
 
 constexpr std::string_view format_as(EasingType type) {

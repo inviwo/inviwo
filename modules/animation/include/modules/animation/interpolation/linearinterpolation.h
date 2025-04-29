@@ -66,7 +66,7 @@ public:
      * Returns linear interpolation of keyframe values at time t.
      */
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing, Result& out) const override;
+                            Easing easing, Result& out) const override;
 };
 
 template <typename Key, typename Result>
@@ -99,7 +99,7 @@ std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
                                                   Seconds /*from*/, Seconds to,
-                                                  easing::EasingType easing, Result& out) const {
+                                                  Easing easing, Result& out) const {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;
@@ -119,7 +119,7 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
     const auto& dv1 = static_cast<DT>(v1);
     const auto& dv2 = static_cast<DT>(v2);
 
-    out = static_cast<VT>(glm::mix(dv1, dv2, easing::ease((to - t1) / (t2 - t1), easing)));
+    out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easing)));
 }
 
 template <typename Key, typename Result>

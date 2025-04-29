@@ -63,7 +63,6 @@
 #include <modules/animation/datastructures/camerakeyframe.h>          // for CameraKeyframe
 #include <modules/animation/datastructures/cameratrack.h>             // IWYU pragma: keep
 #include <modules/animation/datastructures/controltrack.h>            // for ControlTrack
-#include <modules/animation/datastructures/easing.h>                  // for ease
 #include <modules/animation/datastructures/invalidationtrack.h>
 #include <modules/animation/datastructures/keyframe.h>                     // for operator<
 #include <modules/animation/datastructures/keyframesequence.h>             // for operator<
@@ -142,7 +141,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     });
 
     // Register properties that should not interpolate
-    // Todo: Add MultiFileProperty when we can deal with vector<T> data in animation
+    // TODO: Add MultiFileProperty when we can deal with vector<T> data in animation
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         [&]<typename PropertyType>() {
             propertyHelper<PropertyType>();

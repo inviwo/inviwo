@@ -635,8 +635,8 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
                     const auto c3 = vec3{x2, y2, side};
                     const auto c4 = vec3{x1, y2, side};
 
-                    for (uint32_t i : {0, 1, 2, 0, 2, 3}) {
-                        indices.emplace_back(positions.size() + i);
+                    for (const uint32_t i : {0, 1, 2, 0, 2, 3}) {
+                        indices.emplace_back(static_cast<uint32_t>(positions.size()) + i);
                     }
 
                     const auto cs1 = vec3{c1[swizzle[0]], c1[swizzle[1]], c1[swizzle[2]]};
@@ -653,7 +653,7 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
                     const auto pickPos =
                         glm::u32vec3{index(center.x), index(center.y), index(center.z)};
 
-                    std::uint32_t pickId = pickPos.x + 3 * pickPos.y + 9 * pickPos.z;
+                    const std::uint32_t pickId = pickPos.x + 3 * pickPos.y + 9 * pickPos.z;
                     pickIds.emplace_back(pickId);
                     pickIds.emplace_back(pickId);
                     pickIds.emplace_back(pickId);
@@ -664,18 +664,19 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
     }
 
     for (const auto& normal : {vec3{1.f, 0.f, 0.f}, vec3{0.f, 1.f, 0.f}, vec3{0.f, 0.f, 1.f}}) {
-        for (auto side : {1.f, -1.f}) {
-            for (auto _ : std::views::iota(size_t{0}, (p.size() - 1) * (p.size() - 1) * 4)) {
+        for (const auto side : {1.f, -1.f}) {
+            for ([[maybe_unused]] const auto _ :
+                 std::views::iota(size_t{0}, (p.size() - 1) * (p.size() - 1) * 4)) {
                 normals.emplace_back(normal * side);
             }
         }
     }
 
     for (const auto& color : {vec3{1.f, 0.f, 0.f}, vec3{0.f, 1.f, 0.f}, vec3{0.f, 0.f, 1.f}}) {
-        for (auto side : {0.2f, -0.2f}) {
-            for (bool xCorner : {true, false, true}) {
-                for (bool yCorner : {true, false, true}) {
-                    for (auto _ : std::views::iota(0, 4)) {
+        for (const auto side : {0.2f, -0.2f}) {
+            for (const bool xCorner : {true, false, true}) {
+                for (const bool yCorner : {true, false, true}) {
+                    for ([[maybe_unused]] const auto _ : std::views::iota(0, 4)) {
                         const auto c = 0.5 * color + side + (xCorner ? vec3{0.1f} : vec3{0.0f}) +
                                        (yCorner ? vec3{0.1f} : vec3{0.0f});
                         colors.emplace_back(c, 1.0);

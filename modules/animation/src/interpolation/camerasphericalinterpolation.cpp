@@ -33,7 +33,6 @@
 #include <inviwo/core/io/serialization/serializer.h>          // for Serializer
 #include <modules/animation/datastructures/animationtime.h>   // for Seconds
 #include <modules/animation/datastructures/camerakeyframe.h>  // for CameraKeyframe, CameraKeyfr...
-#include <modules/animation/datastructures/easing.h>          // for ease, EasingType
 #include <modules/animation/interpolation/interpolation.h>    // for Interpolation
 
 #include <algorithm>  // for upper_bound
@@ -78,7 +77,7 @@ std::string_view CameraSphericalInterpolation::classIdentifier() {
 
 void CameraSphericalInterpolation::operator()(
     const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds /*from*/, Seconds to,
-    easing::EasingType easing, CameraKeyframe::value_type& out) const {
+    Easing easing, CameraKeyframe::value_type& out) const {
 
     auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
         return time < key->getTime();
@@ -90,7 +89,7 @@ void CameraSphericalInterpolation::operator()(
     const auto& v2 = *(*it);
     const auto& t2 = (*it)->getTime();
 
-    auto t = static_cast<float>(easing::ease((to - t1) / (t2 - t1), easing));
+    auto t = static_cast<float>(util::ease((to - t1) / (t2 - t1), easing));
 
     auto fromDir = glm::normalize(v1.getDirection());
     auto rotation = glm::slerp(glm::quat_identity<float, glm::defaultp>(),

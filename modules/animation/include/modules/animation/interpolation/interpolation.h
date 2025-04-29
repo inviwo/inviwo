@@ -30,9 +30,9 @@
 
 #include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
+#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/io/serialization/serializable.h>       // for Serializable
 #include <modules/animation/datastructures/animationtime.h>  // for Seconds
-#include <modules/animation/datastructures/easing.h>         // for EasingType
 
 #include <memory>  // for unique_ptr
 #include <string>  // for string
@@ -89,7 +89,7 @@ public:
 
     // Override this function to interpolate between key frames
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                            easing::EasingType easing, Result& out) const = 0;
+                            Easing easing, Result& out) const = 0;
 };
 
 }  // namespace animation
