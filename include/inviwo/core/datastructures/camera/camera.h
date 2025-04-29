@@ -99,6 +99,8 @@ public:
     const vec3& getLookUp() const;
     virtual void setLookUp(vec3 val);
 
+    void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
+
     virtual float getAspectRatio() const;
     virtual void setAspectRatio(float val);
 

@@ -77,29 +77,72 @@
 
 namespace inviwo {
 
-const ProcessorInfo MeshCreator::processorInfo_{
-    "org.inviwo.MeshCreator",  // Class identifier
-    "Mesh Creator",            // Display name
-    "Mesh Creation",           // Category
-    CodeState::Stable,         // Code state
-    Tags::CPU,                 // Tags
-};
+const ProcessorInfo MeshCreator::processorInfo_{"org.inviwo.MeshCreator",  // Class identifier
+                                                "Mesh Creator",            // Display name
+                                                "Mesh Creation",           // Category
+                                                CodeState::Stable,         // Code state
+                                                Tags::CPU,                 // Tags
+                                                R"(
+    Generate various meshes_
+     * __Sphere__,
+     * __ColorSphere__,
+     * __CubeBasicMesh__,
+     * __CubeSimpleMesh__,
+     * __CubeIndicator__,
+     * __LineCube__,
+     * __LineCubeAdjacency__,
+     * __Plane__,
+     * __Disk__,
+     * __Cone__,
+     * __Cylinder__,
+     * __Arrow__,
+     * __CoordAxes__,
+     * __Torus
+    )"_unindentHelp};
+
 const ProcessorInfo& MeshCreator::getProcessorInfo() const { return processorInfo_; }
 
 MeshCreator::MeshCreator()
     : Processor()
-    , outport_("outport")
-    , position1_("position1", "Start Position", vec3(0.0f, 0.0f, 0.0f), vec3(-50.0f), vec3(50.0f))
-    , position2_("position2", "Stop Position", vec3(1.0f, 0.0f, 0.0f), vec3(-50.0f), vec3(50.0f))
+    , outport_("outport", "The generated mesh"_help)
+    , position1_("position1", "Start Position",
+                 util::ordinalSymmetricVector(vec3{0.0f}, vec3{50.f})
+                     .set("Start position of several mesh types"_help))
+    , position2_("position2", "Stop Position",
+                 util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, vec3{50.f})
+                     .set("Stop position of several mesh types"_help))
     , basis_("Basis", "Basis and offset")
-    , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-50.0f), vec3(50.0f))
-    , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , normal_("normal", "Normal", "Normal direction for planes, etc."_help, vec3(0.0f, 0.0f, 1.0f),
+              {vec3(-50.0f), ConstraintBehavior::Editable},
+              {vec3(50.0f), ConstraintBehavior::Editable})
+    , color_("color", "Color",
+             util::ordinalColor(vec4(1.0f, 1.0f, 1.0f, 1.0f)).set("Color parameter"_help))
     , torusRadius1_("torusRadius1_", "Torus Radius 1", 1.0f)
     , torusRadius2_("torusRadius2_", "Torus Radius 2", 0.3f)
-    , meshScale_("scale", "Size scaling", 1.f, 0.01f, 10.f)
-    , meshRes_("res", "Mesh resolution", vec2(16), vec2(1), vec2(1024))
-    , meshType_("meshType", "Mesh Type")
+    , meshScale_("scale", "Size scaling",
+                 util::ordinalScale(1.0f).set("Scale parameter for various mesh types"_help))
+    , meshRes_("res", "Mesh resolution",
+               util::ordinalCount(ivec2{16}).setMin(ivec2{1}).set(
+                   "Mesh resolution parameter for some meshes"_help))
+    , meshType_{"meshType",
+                "Mesh Type",
+                "The type of mesh to generate"_help,
+                {{"sphere", "Sphere", MeshType::Sphere},
+                 {"colorsphere", "Color Sphere", MeshType::ColorSphere},
+                 {"cube_basic_mesh", "Cube (Basic Mesh)", MeshType::CubeBasicMesh},
+                 {"cube", "Cube (Simple Mesh)", MeshType::CubeSimpleMesh},
+                 {"cubeIndicator", "Cube Indicator", MeshType::CubeIndicator},
+                 {"linecube", "Line cube", MeshType::LineCube},
+                 {"linecubeadjacency", "Line cube adjacency", MeshType::LineCubeAdjacency},
+                 {"plane", "Plane", MeshType::Plane},
+                 {"disk", "Disk", MeshType::Disk},
+                 {"cone", "Cone", MeshType::Cone},
+                 {"cylinder", "Cylinder", MeshType::Cylinder},
+                 {"arrow", "Arrow", MeshType::Arrow},
+                 {"coordaxes", "Coordinate Indicator", MeshType::CoordAxes},
+                 {"torus", "Torus", MeshType::Torus},
+                 {"sphereopt", "Sphere with Position", MeshType::SphereOpt}},
+                0}
     , enablePicking_("enablePicking", "Enable Picking", false)
     , picking_(this, 1,
                [&](PickingEvent* p) {
@@ -110,26 +153,8 @@ MeshCreator::MeshCreator()
 
     addPort(outport_);
 
-    meshType_.addOption("sphere", "Sphere", MeshType::Sphere);
-    meshType_.addOption("colorsphere", "Color Sphere", MeshType::ColorSphere);
-    meshType_.addOption("cube_basic_mesh", "Cube (Basic Mesh)", MeshType::CubeBasicMesh);
-    meshType_.addOption("cube", "Cube (Simple Mesh)", MeshType::CubeSimpleMesh);
-    meshType_.addOption("linecube", "Line cube", MeshType::LineCube);
-    meshType_.addOption("linecubeadjacency", "Line cube adjacency", MeshType::LineCubeAdjacency);
-    meshType_.addOption("plane", "Plane", MeshType::Plane);
-    meshType_.addOption("disk", "Disk", MeshType::Disk);
-    meshType_.addOption("cone", "Cone", MeshType::Cone);
-    meshType_.addOption("cylinder", "Cylinder", MeshType::Cylinder);
-    meshType_.addOption("arrow", "Arrow", MeshType::Arrow);
-    meshType_.addOption("coordaxes", "Coordinate Indicator", MeshType::CoordAxes);
-    meshType_.addOption("torus", "Torus", MeshType::Torus);
-    meshType_.addOption("sphereopt", "Sphere with Position", MeshType::SphereOpt);
-
     util::hide(position1_, position2_, normal_, basis_, color_, torusRadius1_, torusRadius2_);
     util::show(meshScale_, meshRes_);
-
-    meshType_.set(MeshType::Sphere);
-    meshType_.setCurrentStateAsDefault();
 
     meshType_.onChange([this]() {
         auto updateNone = [](PickingEvent*) {};
@@ -289,6 +314,8 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
             return SimpleMeshCreator::rectangularPrism(posLLF, posURB, posLLF, posURB,
                                                        vec4(posLLF, 1.f), vec4(posURB, 1.f));
         }
+        case MeshType::CubeIndicator:
+            return meshutil::cubeIndicator(basis_.getBasisAndOffset());
         case MeshType::LineCube:
             return meshutil::boundingbox(basis_.getBasisAndOffset(), color_);
 

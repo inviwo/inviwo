@@ -96,14 +96,17 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> square(const vec3& center, const 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> cube(const mat4& orientation,
                                                     const vec4& color = vec4(1, 1, 1, 1));
 
+
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset);
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> coordindicator(const vec3& center,
                                                               const float& size);
 
-IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset,
+IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> boundingbox(const mat4& basisAndOffset,
                                                            const vec4& color);
 
 IVW_MODULE_BASE_API std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(
-    const mat4& basisandoffset, const vec4& color);
+    const mat4& basisAndOffset, const vec4& color);
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
                                                      const vec3& up = vec3(0, 1, 0), float r1 = 1.f,

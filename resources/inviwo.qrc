@@ -131,6 +131,8 @@
         <file>svgicons/camera-up.svg</file>
         <file>svgicons/camera-dolly-away.svg</file>
         <file>svgicons/camera-dolly-closer.svg</file>
+        <file>svgicons/camera-roll-left.svg</file>
+        <file>svgicons/camera-roll-right.svg</file>
 
         <file>svgicons/axis-horizontal-bottom.svg</file>
         <file>svgicons/axis-horizontal-top.svg</file>

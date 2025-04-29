@@ -31,6 +31,8 @@
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
+#include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/ports/imageport.h>
@@ -55,6 +57,8 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
+#include <variant>
+#include <functional>
 
 namespace inviwo {
 
@@ -96,6 +100,7 @@ private:
     void drawWidgetTexture();
 
     void objectPicked(PickingEvent* p);
+    void cubePicked(PickingEvent* p);
     static CameraState cameraState(const Camera& cam);
     void loadMesh();
 
@@ -129,6 +134,7 @@ private:
     BoolProperty useObjectRotAxis_;
     BoolProperty showRollWidget_;
     BoolProperty showDollyWidget_;
+    BoolProperty showRotWidget_;
     FloatProperty speed_;
     FloatProperty angleIncrement_;
     IntProperty minTouchMovement_;
@@ -141,7 +147,6 @@ private:
     BoolCompositeProperty customColorComposite_;
     BoolProperty axisColoring_;
     FloatVec4Property userColor_;
-    FloatVec4Property cubeColor_;
 
     CompositeProperty outputProps_;
     CameraProperty camera_;
@@ -151,7 +156,6 @@ private:
     PerspectiveCamera internalCamera_;
     SimpleLightingProperty lightingProperty_;
 
-    PickingMapper picking_;
     Shader shader_;
     Shader cubeShader_;
     Shader overlayShader_;
@@ -181,15 +185,9 @@ private:
     // UI state and textures
     struct Picking {
         void objectPicked(PickingEvent* e, CameraWidget& camera);
-
     private:
-        bool isMouseBeingPressedAndHold{false};
-        bool mouseWasMoved{false};
         int currentPickingID{-1};
     };
-    Picking pickingState_;
-
-    CameraState initialState_;
 
     // Ensure that the Image and ImageGL are always in sync.
     // By returning a pair we ensure we can never return an Image and a nullptr ImageGL,
@@ -200,24 +198,52 @@ private:
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
 
+
+    struct Continuous {
+        vec3 axis{};
+        float step{};
+    };
+    struct Swing {
+        vec3 axis{};
+        vec3 dir{};
+        vec3 up{};
+        float amplitude{};
+        EasingType easing = EasingType::quadratic;
+        float step{};
+        float current{};
+    };
+    struct Goal {
+        glm::quat start{};
+        glm::quat stop{};
+        vec3 dir{};
+        vec3 up{};
+        EasingType easing = EasingType::cubic;
+        float step{};
+        float current{};
+        std::function<std::variant<std::monostate, Continuous, Swing, Goal>(Camera&)> done =
+            [](Camera&) { return std::monostate{}; };
+    };
+    using Animation = std::variant<std::monostate, Continuous, Swing, Goal>;
+
+    static auto resume(Animation animation, const Camera& camera, RotationAxis axis,
+                       bool objectAxis) -> Animation;
+
+    struct Animator {
+        Animator(Camera& camera);
+        using ms = typename Timer::Milliseconds;
+        Animation animation;
+        Camera* camera;
+        Timer timer;
+
+        void setAnimation(const Animation& ani);
+
+        void animate();
+    };
+
     struct Animate {
         explicit Animate(CameraWidget& cameraWidget);
 
         enum class Mode : std::uint8_t { Continuous, Swing };
-
-        enum class Easing : std::uint8_t {
-            linear,
-            quadratic,
-            cubic,
-            quartic,
-            quintic,
-            sine,
-            circular,
-            exponential,
-            elastic,
-            back,
-            bounce
-        };
 
         using ms = typename Timer::Milliseconds;
         CameraWidget* widget;
@@ -225,25 +251,32 @@ private:
         IntProperty fps;
         OptionProperty<RotationAxis> type;
         OptionProperty<Mode> mode;
-        OptionProperty<Easing> easing;
+        OptionProperty<EasingType> easing;
         FloatProperty increment;
         FloatProperty amplitude;
         EventProperty playPause;
-        vec3 axis;
-        Timer timer;
-        bool paused;
-        float direction;
-        float counter;
-        CameraState cam;
+
+        Animation paused{};
 
         void startStopAnimation(bool start);
-        void animate();
-        void invokeEvent(Event* e);
+        void willInvokeEvent(Event* e);
+        void didInvokeEvent(Event* e);
 
         void interactionStart();
         void interactionStop();
     };
 
+    struct CubePicking {
+        int hoverID{-1};
+        Animation paused{};
+    };
+
+    PickingMapper picking_;
+    PickingMapper cubePicking_;
+    Picking pickingState_;
+    CameraState initialState_;
+    CubePicking cubeState_;
+    Animator animator_;
     Animate animate_;
 };
 
