@@ -99,19 +99,18 @@ float crossFunc(vec2 coord) {
     }
 }
 
-float tringleUpFunc(vec2 coord) {
+float triangleUpFunc(vec2 coord) {
     return max(abs(coord.y-0.287), 0.5*(abs(coord.x)*1.713 + abs(coord.y+1.0)));
 }
-float tringleLeftFunc(vec2 coord) {
+float triangleLeftFunc(vec2 coord) {
     return max(abs(coord.x+0.287), 0.5*(abs(coord.x-1.0) + abs(coord.y)*1.713));
 }
-float tringleDownFunc(vec2 coord) {
+float triangleDownFunc(vec2 coord) {
     return max(abs(coord.y+0.287), 0.5*(abs(coord.x)*1.713 + abs(coord.y-1.0)));
 }
-float tringleRightFunc(vec2 coord) {
+float triangleRightFunc(vec2 coord) {
     return max(abs(coord.x-0.287), 0.5*(abs(coord.x+1.0) + abs(coord.y)*1.713));
 }
-
 
 float radius(vec2 coord, uint marker) {
     switch(marker) {
@@ -121,14 +120,13 @@ float radius(vec2 coord, uint marker) {
         case 3: return hexagonFunc(coord);
         case 4: return plusFunc(coord);
         case 5: return crossFunc(coord);
-        case 6: return tringleUpFunc(coord);
-        case 7: return tringleLeftFunc(coord);
-        case 8: return tringleDownFunc(coord);
-        case 9: return tringleRightFunc(coord);
+        case 6: return triangleUpFunc(coord);
+        case 7: return triangleLeftFunc(coord);
+        case 8: return triangleDownFunc(coord);
+        case 9: return triangleRightFunc(coord);
         default: return circleFunc(coord);
     }
 }
-
 
 void main() {
     vec4 pixelPos = gl_FragCoord;
@@ -138,7 +136,6 @@ void main() {
     vec2 coord = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
     float r = radius(coord, point.marker);
 
-    
     if (r > 1.0) {
          discard;
     }

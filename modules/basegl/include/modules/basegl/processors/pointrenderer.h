@@ -77,7 +77,7 @@ private:
         PointsOnly,  //!< render only parts of mesh with DrawType::Points
     };
 
-    enum class Marker : std::uint32_t {
+    enum class Marker : std::uint32_t {  // NOLINT
         Circle,
         Diamond,
         Square,
