@@ -260,7 +260,8 @@ DataFrameToMesh::DataFrameToMesh()
               {RadiiAttrib, RealType{ScaleAndOffset{}}},
               {PickingAttrib, PickingType{OffsetAndPicking{
                                   this, 0, [this](PickingEvent* event) { picking(event); }}}},
-              {ScalarMetaAttrib, RealType{ScaleAndOffset{}}}}}
+              {ScalarMetaAttrib, RealType{ScaleAndOffset{}}},
+              {IntMetaAttrib, IntType{ScaleAndOffset{}}}}}
 
     , mapper_{infos_}
     , modelMatrix_{"modelMatrix", "Model Matrix", util::transformState(mat4{1.0})}

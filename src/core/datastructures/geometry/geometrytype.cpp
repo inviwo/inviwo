@@ -84,6 +84,8 @@ std::string_view enumToStr(BufferType bt) {
             return "Picking";
         case BufferType::ScalarMetaAttrib:
             return "ScalarMeta";
+        case BufferType::IntMetaAttrib:
+            return "IntMeta";
         case BufferType::Unknown:
             return "Unknown";
     }

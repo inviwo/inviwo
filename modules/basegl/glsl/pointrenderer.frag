@@ -63,8 +63,70 @@ in PointGeom {
     vec3 camPos;
     float radius;
     flat uint index;
+	flat uint marker;
 }
 point;
+
+
+float circleFunc(vec2 coord) {
+    return length(coord);
+}
+float diamondFunc(vec2 coord) {
+    return (abs(coord.x) + abs(coord.y)) / 1.4142 + 0.287;
+}
+float squareFunc(vec2 coord) {
+    return max(abs(coord.x), abs(coord.y));
+}
+float hexagonFunc(vec2 coord) {
+    return 0.5*max(2.0*max(abs(coord.x), abs(coord.y)), abs(coord.x) * 2.0 + abs(coord.y));
+}
+float plusFunc(vec2 coord) {
+    if (max(abs(coord.x), abs(coord.y)) < 0.35) {
+        return min(abs(coord.x), abs(coord.y)) + 0.65;
+    } else if (abs(coord.y) < 0.35) {
+        return max(abs(coord.y) + 0.65, abs(coord.x));
+    } else {
+        return max(abs(coord.y), abs(coord.x) + 0.65);
+    }
+}
+float crossFunc(vec2 coord) {
+    vec2 absCoord = abs(coord);
+    if (abs(dot(absCoord, vec2(-1, 1))) < 0.5) {
+        float r = abs(dot(absCoord, vec2(-1, 1))) / 1.4142 + 0.65;
+        return max(r, (abs(coord.x) + abs(coord.y)) / 1.4142 - 0.065);
+    } else { 
+        return 1.0;
+    }
+}
+
+float triangleUpFunc(vec2 coord) {
+    return max(abs(coord.y-0.287), 0.5*(abs(coord.x)*1.713 + abs(coord.y+1.0)));
+}
+float triangleLeftFunc(vec2 coord) {
+    return max(abs(coord.x+0.287), 0.5*(abs(coord.x-1.0) + abs(coord.y)*1.713));
+}
+float triangleDownFunc(vec2 coord) {
+    return max(abs(coord.y+0.287), 0.5*(abs(coord.x)*1.713 + abs(coord.y-1.0)));
+}
+float triangleRightFunc(vec2 coord) {
+    return max(abs(coord.x-0.287), 0.5*(abs(coord.x+1.0) + abs(coord.y)*1.713));
+}
+
+float radius(vec2 coord, uint marker) {
+    switch(marker) {
+        case 0: return circleFunc(coord);
+        case 1: return diamondFunc(coord);
+        case 2: return squareFunc(coord);
+        case 3: return hexagonFunc(coord);
+        case 4: return plusFunc(coord);
+        case 5: return crossFunc(coord);
+        case 6: return triangleUpFunc(coord);
+        case 7: return triangleLeftFunc(coord);
+        case 8: return triangleDownFunc(coord);
+        case 9: return triangleRightFunc(coord);
+        default: return circleFunc(coord);
+    }
+}
 
 void main() {
     vec4 pixelPos = gl_FragCoord;
@@ -72,8 +134,11 @@ void main() {
 
     // gl_PointCoord [0,1] within the point
     vec2 coord = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
-    float r = length(coord);
-    if (r > 1.0) discard;
+    float r = radius(coord, point.marker);
+
+    if (r > 1.0) {
+         discard;
+    }
 
     r *= point.radius;
 

@@ -77,6 +77,19 @@ private:
         PointsOnly,  //!< render only parts of mesh with DrawType::Points
     };
 
+    enum class Marker : std::uint32_t {  // NOLINT
+        Circle,
+        Diamond,
+        Square,
+        Hexagon,
+        Plus,
+        Cross,
+        TriangleUp,
+        TriangleLeft,
+        TriangleDown,
+        TriangleRight
+    };
+
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
@@ -89,6 +102,8 @@ private:
     FloatProperty borderWidth_;
     FloatVec4Property borderColor_;
     FloatProperty antialising_;
+    BoolProperty overrideMarker_;
+    OptionProperty<Marker> marker_;
 
     UniformLabelAtlasGL labels_;
     PeriodicityGL periodic_;

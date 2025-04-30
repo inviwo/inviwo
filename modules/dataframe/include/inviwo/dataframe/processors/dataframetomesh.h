@@ -191,7 +191,7 @@ private:
 
     OptionPropertyInt drawType_;
 
-    std::array<Info, 9> infos_;
+    std::array<Info, 10> infos_;
     util::ColumnMapper mapper_;
 
     OrdinalProperty<mat4> modelMatrix_;
