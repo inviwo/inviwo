@@ -107,6 +107,16 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
 
+
+    // Since we have a "global" std::string type here bind_vector will create module local bindings
+    // for StringVector. But since we have included it in opaquetypes we need to create a
+    // definition of this in each python module that uses it, unless we are linking statically. 
+    // See https://pybind11.readthedocs.io/en/stable/advanced/classes.html#module-local
+    // and https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
+    // for more details.
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
+
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);
     exposeGLMMatTypes(glmModule);
