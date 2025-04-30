@@ -35,6 +35,7 @@
 #include <warn/pop>
 
 #include <vector>
+#include <string>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -129,3 +130,5 @@ PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<3, 4, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 2, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 3, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 4, unsigned int>>)
+
+PYBIND11_MAKE_OPAQUE(std::vector<std::string>)

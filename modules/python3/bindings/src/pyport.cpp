@@ -32,6 +32,8 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
 
 #include <modules/python3/pythonoutport.h>
@@ -39,6 +41,8 @@
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
+
+#include <modules/python3/pyportutils.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -125,6 +129,10 @@ void exposePort(pybind11::module& m) {
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("getData", &PythonOutport::getData)
         .def("setData", &PythonOutport::setData);
+
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    exposeInport<DataInport<std::vector<std::string>>>(m, "StringVector");
+    exposeOutport<DataOutport<std::vector<std::string>>>(m, "StringVector");
 }
 
 }  // namespace inviwo
