@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,5 @@
  *
  *********************************************************************************/
 
-#include <modules/base/pythonbindings/io/volumewriting.h>
-#include <modules/base/pythonbindings/algorithm/volumeoperations.h>
-#include <modules/python3/pybindmodule.h>
 #include <modules/python3/opaquetypes.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <warn/pop>
-
-namespace py = pybind11;
-
-INVIWO_PYBIND_MODULE(ivwbase, m) {
-    m.doc() = R"doc(
-        Base Module API
-    
-        .. rubric:: Modules
-        
-        .. autosummary::
-            :toctree: .
-            
-            io
-            algorithm
-        )doc";
-
-    auto ioMod = m.def_submodule("io", "Input and Output functions");
-    auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
-
-#ifdef INVIWO_ALL_DYN_LINK
-    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
-    py::implicitly_convertible<py::list, std::vector<std::string>>();
-#endif
-
-    inviwo::exposeVolumeWriteMethods(ioMod);
-    inviwo::exposeVolumeOperations(utilMod);
-}

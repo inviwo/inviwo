@@ -217,7 +217,8 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
             );
         });
 
-    pybind11::bind_vector<std::vector<Mat>>(m, classname + "Vector", "Vectors of glm matrices");
+    pybind11::bind_vector<std::vector<Mat>, pybind11::smart_holder>(m, classname + "Vector",
+                                                                    "Vectors of glm matrices");
 
     pybind11::implicitly_convertible<pybind11::list, Mat>();
     pybind11::implicitly_convertible<pybind11::array_t<T>, Mat>();
@@ -270,14 +271,15 @@ struct ExposePortsFunctor {
                 }
             }();
             const auto vectorName = fmt::format("{}Vector", name);
-            pybind11::bind_vector<std::vector<T>>(m, vectorName);
+            pybind11::bind_vector<std::vector<T>, pybind11::smart_holder>(m, vectorName);
             exposeStandardDataPorts<std::vector<T>>(m, vectorName);
 
         } else if constexpr (rank == 1 && util::extent_v<T> <= 4) {
             constexpr auto N = util::extent_v<T>;
             const auto prefix = glm::detail::prefix<V>::value();
             const auto vectorName = fmt::format("{}vec{}Vector", prefix, N);
-            pybind11::bind_vector<std::vector<T>>(m, vectorName, pybind11::buffer_protocol{});
+            pybind11::bind_vector<std::vector<T>, pybind11::smart_holder>(
+                m, vectorName, pybind11::buffer_protocol{});
             exposeStandardDataPorts<std::vector<T>>(m, vectorName);
 
         } else if constexpr (rank == 2 && util::extent_v<T, 0> <= 4 &&
