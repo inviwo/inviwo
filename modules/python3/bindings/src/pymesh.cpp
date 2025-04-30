@@ -305,7 +305,7 @@ void exposeMesh(pybind11::module& m) {
         });
 
     using MeshSequence = std::vector<std::shared_ptr<Mesh>>;
-    py::bind_vector<MeshSequence>(m, "MeshSequence");
+    py::bind_vector<MeshSequence, py::smart_holder>(m, "MeshSequence");
 
     exposeStandardDataPorts<Mesh>(m, "Mesh");
     exposeStandardDataPorts<MeshSequence>(m, "MeshSequence");
