@@ -141,7 +141,6 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     });
 
     // Register properties that should not interpolate
-    // TODO: Add MultiFileProperty when we can deal with vector<T> data in animation
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         [&]<typename PropertyType>() {
             propertyHelper<PropertyType>();

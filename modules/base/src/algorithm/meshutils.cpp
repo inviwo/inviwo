@@ -600,6 +600,7 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
     return mesh;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
     constexpr float offset = 0.2f;
     constexpr std::array<float, 4> p{{0.0f, 0.0f + offset, 1.0f - offset, 1.0f}};

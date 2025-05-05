@@ -4,6 +4,7 @@
         <file>changelog.html</file>
     </qresource>
      <qresource prefix="/resources/changelog/">
+        <file alias="camera-cube.jpg">changelog/camera-cube.jpg</file>
         <file alias="canvas-with-properties.jpg">changelog/canvas-with-properties.jpg</file>
         <file alias="brushing.jpg">changelog/brushing.jpg</file>
         <file alias="internal-links.jpg">changelog/internal-links.jpg</file>

@@ -255,7 +255,7 @@ private:
 
         Animation paused{};
 
-        void startStopAnimation(bool start);
+        void startStopAnimation(bool start);  // NOLINT(readability-make-member-function-const)
         void willInvokeEvent(Event* e);
         void didInvokeEvent(Event* e);
 
