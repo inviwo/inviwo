@@ -36,8 +36,8 @@ void Easing::serialize(Serializer& s) const {
     s.serialize("mode", static_cast<std::size_t>(mode), SerializationTarget::Attribute);
 }
 void Easing::deserialize(Deserializer& d) {
-    size_t t = static_cast<std::size_t>(type);
-    size_t m = static_cast<std::size_t>(mode);
+    auto t = static_cast<std::size_t>(type);
+    auto m = static_cast<std::size_t>(mode);
     d.deserialize("type", t, SerializationTarget::Attribute);
     d.deserialize("mode", m, SerializationTarget::Attribute);
 

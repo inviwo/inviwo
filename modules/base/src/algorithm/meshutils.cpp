@@ -603,9 +603,12 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
 std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
     constexpr float offset = 0.2f;
     constexpr std::array<float, 4> p{{0.0f, 0.0f + offset, 1.0f - offset, 1.0f}};
+    constexpr size_t pointsPerFace = (p.size() - 1) * (p.size() - 1) * 4;
+    constexpr size_t indicesPerFace = (p.size() - 1) * (p.size() - 1) * 6;
+    constexpr size_t facesPerCube = 6;
 
     std::vector<vec3> positions;
-    positions.reserve(3 * 2 * (p.size() - 1) * (p.size() - 1) * 4);
+    positions.reserve(facesPerCube * pointsPerFace);
     std::vector<vec3> normals;
     normals.reserve(positions.capacity());
     std::vector<vec4> colors;
@@ -614,7 +617,7 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
     pickIds.reserve(positions.capacity());
 
     std::vector<std::uint32_t> indices;
-    indices.reserve(3 * 2 * (p.size() - 1) * (p.size() - 1) * 6);
+    indices.reserve(facesPerCube * indicesPerFace);
 
     constexpr auto index = [](float x) -> std::uint32_t {
         if (x < 1.0f / 3.0f) {
@@ -626,23 +629,28 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
         }
     };
 
-    for (const auto& swizzle : {size3_t{0, 1, 2}, size3_t{2, 0, 1}, size3_t{0, 2, 1}}) {
-        for (const auto side : {0.0f, 1.0f}) {
-            for (const auto [x1, x2] : std::views::zip(p, p | std::views::drop(1))) {
-                for (const auto [y1, y2] : std::views::zip(p, p | std::views::drop(1))) {
-                    const auto c1 = vec3{x1, y1, side};
-                    const auto c2 = vec3{x2, y1, side};
-                    const auto c3 = vec3{x2, y2, side};
-                    const auto c4 = vec3{x1, y2, side};
+    constexpr auto xyz = +[](const vec3& v) { return vec3{v.x, v.y, v.z}; };
+    constexpr auto zxy = +[](const vec3& v) { return vec3{v.z, v.x, v.y}; };
+    constexpr auto yzx = +[](const vec3& v) { return vec3{v.y, v.z, v.x}; };
+
+    // generate a mesh of 3x3 quads on each side of the cube
+    for (const auto& swizzle : {xyz, zxy, yzx}) {
+        for (const auto x : {0.0f, 1.0f}) {
+            for (const auto [y1, y2] : std::views::zip(p, p | std::views::drop(1))) {
+                for (const auto [z1, z2] : std::views::zip(p, p | std::views::drop(1))) {
+                    const auto c1 = vec3{x, y1, z1};
+                    const auto c2 = vec3{x, y2, z1};
+                    const auto c3 = vec3{x, y2, z2};
+                    const auto c4 = vec3{x, y1, z2};
 
                     for (const uint32_t i : {0, 1, 2, 0, 2, 3}) {
                         indices.emplace_back(static_cast<uint32_t>(positions.size()) + i);
                     }
 
-                    const auto cs1 = vec3{c1[swizzle[0]], c1[swizzle[1]], c1[swizzle[2]]};
-                    const auto cs2 = vec3{c2[swizzle[0]], c2[swizzle[1]], c2[swizzle[2]]};
-                    const auto cs3 = vec3{c3[swizzle[0]], c3[swizzle[1]], c3[swizzle[2]]};
-                    const auto cs4 = vec3{c4[swizzle[0]], c4[swizzle[1]], c4[swizzle[2]]};
+                    const auto cs1 = swizzle(c1);
+                    const auto cs2 = swizzle(c2);
+                    const auto cs3 = swizzle(c3);
+                    const auto cs4 = swizzle(c4);
 
                     positions.emplace_back(cs1);
                     positions.emplace_back(cs2);
@@ -663,22 +671,22 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
         }
     }
 
+    // generate normals for each point
     for (const auto& normal : {vec3{1.f, 0.f, 0.f}, vec3{0.f, 1.f, 0.f}, vec3{0.f, 0.f, 1.f}}) {
         for (const auto side : {1.f, -1.f}) {
-            for ([[maybe_unused]] const auto _ :
-                 std::views::iota(size_t{0}, (p.size() - 1) * (p.size() - 1) * 4)) {
+            for ([[maybe_unused]] const auto _ : std::views::iota(size_t{0}, pointsPerFace)) {
                 normals.emplace_back(normal * side);
             }
         }
     }
 
+    // generate colors for each point
     for (const auto& color : {vec3{1.f, 0.f, 0.f}, vec3{0.f, 1.f, 0.f}, vec3{0.f, 0.f, 1.f}}) {
-        for (const auto side : {0.2f, -0.2f}) {
-            for (const bool xCorner : {true, false, true}) {
-                for (const bool yCorner : {true, false, true}) {
+        for (const auto side : {-0.2f, 0.2f}) {
+            for (const auto& xCorner : {vec3{0.1f}, vec3{0.0f}, vec3{0.1f}}) {
+                for (const auto& yCorner : {vec3{0.1f}, vec3{0.0f}, vec3{0.1f}}) {
                     for ([[maybe_unused]] const auto _ : std::views::iota(0, 4)) {
-                        const auto c = 0.5 * color + side + (xCorner ? vec3{0.1f} : vec3{0.0f}) +
-                                       (yCorner ? vec3{0.1f} : vec3{0.0f});
+                        const auto c = 0.5f * color + side + xCorner + yCorner;
                         colors.emplace_back(c, 1.0);
                     }
                 }
@@ -707,11 +715,7 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
 
     mesh->setModelMatrix(basisAndOffset);
 
-    auto m2 = cube(basisAndOffset);
-
     return mesh;
-
-    // return mesh;
 }
 
 std::shared_ptr<BasicMesh> coordindicator(const vec3& center, const float& size) {

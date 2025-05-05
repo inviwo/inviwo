@@ -34,7 +34,7 @@
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/enumtraits.h>
-#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 #include <algorithm>
 

@@ -97,6 +97,13 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> cube(const mat4& orientation,
                                                     const vec4& color = vec4(1, 1, 1, 1));
 
 
+/**
+ * Create a triangle mesh for a cube with 3x3 quads on each face.
+ * Each face gets a color (red, green, and blue) brighter on the front face and darker on the
+ * back, the edges gets a bit brighter and the corners brighter still.
+ * Picking will are assigned to each 3x3x3 "sub cube" where the center one is unused.
+ * The use case is for a orientation indicator and rotation tool, see CameraWidget.
+ */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset);
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> coordindicator(const vec3& center,

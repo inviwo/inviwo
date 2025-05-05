@@ -80,7 +80,7 @@ void Camera::setLookUp(vec3 val) {
     }
 }
 
-void Camera::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+void Camera::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {  // NOLINT
     const NetworkLock lock{camprop_};
     setLookFrom(lookFrom);
     setLookTo(lookTo);

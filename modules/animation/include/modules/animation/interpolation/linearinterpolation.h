@@ -30,6 +30,7 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/interpolation/interpolation.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 #include <algorithm>
 
@@ -98,8 +99,8 @@ std::string_view LinearInterpolation<Key, Result>::classIdentifier() {
 
 template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                  Seconds /*from*/, Seconds to,
-                                                  Easing easing, Result& out) const {
+                                                  Seconds /*from*/, Seconds to, Easing easing,
+                                                  Result& out) const {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;

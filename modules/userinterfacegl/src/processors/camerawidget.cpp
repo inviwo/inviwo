@@ -470,57 +470,50 @@ void CameraWidget::objectPicked(PickingEvent* p) { pickingState_.objectPicked(p,
 
 namespace {
 vec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, vec3 currentUp) {
-    static constexpr std::array axes{ivec3{1, 0, 0}, ivec3{0, 1, 0}, ivec3{0, 0, 1}};
+    static constexpr std::array primaryCandidates{ivec3{1, 0, 0},  ivec3{0, 1, 0},
+                                                  ivec3{0, 0, 1},  ivec3{-1, 0, 0},
+                                                  ivec3{0, -1, 0}, ivec3{0, 0, -1}};
 
-    // We assume that newDir is a permutation of -1, 0, 1;
-    const auto sum = glm::compAdd(glm::abs(newDir));
+    static constexpr auto diagonalCandidates = []() {
+        std::array<ivec3, 4 * 4 * 4> candidates{};
 
-    std::array<ivec3, 4 * 4 * 4> candidates{};
-    size_t count = 0;
+        size_t count = 0;
+        for (const auto x : {-2, -1, 1, 2}) {
+            for (const auto y : {-2, -1, 1, 2}) {
+                for (const auto z : {-2, -1, 1, 2}) {
+                    candidates[count++] = ivec3{x, y, z};
+                }
+            }
+        }
+
+        return candidates;
+    }();
 
     // glm::dot only handles floating point
     constexpr auto dot = [](const ivec3& a, const ivec3& b) {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     };
 
+    const auto orthogonal = [&](const ivec3& v) { return dot(v, newDir) == 0; };
+    const auto closest = [&](const ivec3& v) { return glm::dot(vec3{v}, currentUp); };
+
+    const auto best = [&](auto&& range) {
+        if (!range) return currentUp;
+        return glm::normalize(vec3{std::ranges::max(range, std::ranges::less{}, closest)});
+    };
+
+    // We assume that newDir is a permutation of -1, 0, 1;
+    const auto sum = glm::compAdd(glm::abs(newDir));
     switch (sum) {
         case 1:
-            for (const auto& a : axes) {
-                if (dot(a, newDir) == 0) {
-                    candidates[count++] = a;
-                    candidates[count++] = -a;
-                }
-            }
-            break;
+            [[fallthrough]];
         case 2:
-            for (const auto& a : axes) {
-                if (dot(a, newDir) == 0) {
-                    candidates[count++] = a;
-                    candidates[count++] = -a;
-                }
-            }
-            break;
+            return best(primaryCandidates | std::views::filter(orthogonal));
         case 3:
-            for (const auto x : {-2, -1, 1, 2}) {
-                for (const auto y : {-2, -1, 1, 2}) {
-                    for (const auto z : {-2, -1, 1, 2}) {
-                        if (dot(ivec3{x, y, z}, newDir) == 0) {
-                            candidates[count++] = ivec3{x, y, z};
-                        }
-                    }
-                }
-            }
-            break;
+            return best(diagonalCandidates | std::views::filter(orthogonal));
+        default:
+            return currentUp;
     }
-    if (count == 0) {
-        return currentUp;
-    }
-
-    const auto best =
-        std::ranges::max(std::span(candidates.data(), count), std::ranges::less{},
-                         [&](const ivec3& c) { return glm::dot(vec3{c}, currentUp); });
-
-    return glm::normalize(vec3{best});
 }
 }  // namespace
 
@@ -685,7 +678,6 @@ void CameraWidget::loadMesh() {
         mat4 transform(glm::scale(vec3(cubeScale)));
         transform[3] -= vec4(0.5f * cubeScale, 0.0f);
         return meshutil::cubeIndicator(transform);
-        // return meshutil::cube(transform);
     });
 
     for (std::size_t i = 0; i < meshes_.size(); ++i) {
@@ -1035,7 +1027,7 @@ auto CameraWidget::resume(Animation animation, const Camera& camera, RotationAxi
                              ani.current = 0.0f;
                              return ani;
                          },
-                         [&](Goal) -> Animation { return std::monostate{}; }},
+                         [&](const Goal&) -> Animation { return std::monostate{}; }},
         animation);
 }
 
