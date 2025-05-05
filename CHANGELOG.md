@@ -1,7 +1,7 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2025-05-05 CameraWidget
-The CameraWidget gained new functionallity to animate the camera either in a continious fashion or by swinging back and forth.
+The CameraWidget gained new functionality to animate the camera either in a continuous fashion or by swinging back and forth.
 ![Camera Cube](resources/changelog/camera-cube.jpg)
 It also got a new "Cube" interaction widget to easily set various view directions. 
 
