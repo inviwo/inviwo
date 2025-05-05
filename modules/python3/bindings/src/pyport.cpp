@@ -130,7 +130,10 @@ void exposePort(pybind11::module& m) {
         .def("getData", &PythonOutport::getData)
         .def("setData", &PythonOutport::setData);
 
+
     py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
+
     exposeInport<DataInport<std::vector<std::string>>>(m, "StringVector");
     exposeOutport<DataOutport<std::vector<std::string>>>(m, "StringVector");
 }
