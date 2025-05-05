@@ -44,9 +44,6 @@ var group__processors =
     [ "inviwo::MeshConverterProcessor", "classinviwo_1_1MeshConverterProcessor.html", [
       [ "process", "classinviwo_1_1MeshConverterProcessor.html#ab58f13e94b35f15aa1836da86708e093", null ]
     ] ],
-    [ "inviwo::MeshCreator", "classinviwo_1_1MeshCreator.html", [
-      [ "process", "classinviwo_1_1MeshCreator.html#a23d4b274332cfec9ff1aba433e0ca898", null ]
-    ] ],
     [ "inviwo::MeshExport", "classinviwo_1_1MeshExport.html", null ],
     [ "inviwo::MeshPlaneClipping", "classinviwo_1_1MeshPlaneClipping.html", [
       [ "process", "classinviwo_1_1MeshPlaneClipping.html#a3bd7074b86fd395103189160fb235a6c", null ]

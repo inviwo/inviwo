@@ -186,10 +186,10 @@ Examples</h1>
 <h2><a class="anchor" id="autotoc_md13"></a>
 Creating a bounding box with Adjacency information</h2>
 <p>The following code snippet uses a SimpleMesh2 to create bounding box for a given basisandoffset matrix. It is the code used in meshutil::boundingBoxAdjacency</p>
-<div class="fragment"><div class="line">std::shared_ptr&lt;PosTexColorMesh&gt; boundingBoxAdjacency(<span class="keyword">const</span> mat4&amp; basisandoffset,</div>
+<div class="fragment"><div class="line">std::shared_ptr&lt;PosTexColorMesh&gt; boundingBoxAdjacency(<span class="keyword">const</span> mat4&amp; basisAndOffset,</div>
 <div class="line">                                                      <span class="keyword">const</span> vec4&amp; color) {</div>
 <div class="line">    <span class="keyword">auto</span> mesh = std::make_shared&lt;PosTexColorMesh&gt;();</div>
-<div class="line">    mesh-&gt;setModelMatrix(basisandoffset);</div>
+<div class="line">    mesh-&gt;setModelMatrix(basisAndOffset);</div>
 <div class="line"> </div>
 <div class="line">    mesh-&gt;addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},</div>
 <div class="line">                       {vec3(1.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), color},</div>
@@ -316,10 +316,10 @@ Creating camera frustum</h2>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line"> <a class="code hl_class" href="classinviwo_1_1TypedMesh.html">TypedMesh&lt;buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer&lt;3&gt;</a>,</div>
 <div class="line">                                  <a class="code hl_class" href="classinviwo_1_1buffertraits_1_1ColorsBuffer.html">buffertraits::ColorsBuffer</a>&gt;</div>
-</div><!-- fragment --><p>Type definition of a <a class="el" href="classinviwo_1_1TypedMesh.html">TypedMesh</a> having positions(vec3), texture coordinates(vec3) and colors(vec4). Example usage: </p><div class="fragment"><div class="line">std::shared_ptr&lt;PosTexColorMesh&gt; boundingBoxAdjacency(<span class="keyword">const</span> mat4&amp; basisandoffset,</div>
+</div><!-- fragment --><p>Type definition of a <a class="el" href="classinviwo_1_1TypedMesh.html">TypedMesh</a> having positions(vec3), texture coordinates(vec3) and colors(vec4). Example usage: </p><div class="fragment"><div class="line">std::shared_ptr&lt;PosTexColorMesh&gt; boundingBoxAdjacency(<span class="keyword">const</span> mat4&amp; basisAndOffset,</div>
 <div class="line">                                                      <span class="keyword">const</span> vec4&amp; color) {</div>
 <div class="line">    <span class="keyword">auto</span> mesh = std::make_shared&lt;PosTexColorMesh&gt;();</div>
-<div class="line">    mesh-&gt;setModelMatrix(basisandoffset);</div>
+<div class="line">    mesh-&gt;setModelMatrix(basisAndOffset);</div>
 <div class="line"> </div>
 <div class="line">    mesh-&gt;addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},</div>
 <div class="line">                       {vec3(1.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), color},</div>

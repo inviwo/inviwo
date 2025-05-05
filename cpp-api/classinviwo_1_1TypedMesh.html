@@ -547,10 +547,10 @@ Examples</h1>
 <h2><a class="anchor" id="autotoc_md13"></a>
 Creating a bounding box with Adjacency information</h2>
 <p>The following code snippet uses a SimpleMesh2 to create bounding box for a given basisandoffset matrix. It is the code used in meshutil::boundingBoxAdjacency</p>
-<div class="fragment"><div class="line">std::shared_ptr&lt;PosTexColorMesh&gt; boundingBoxAdjacency(<span class="keyword">const</span> mat4&amp; basisandoffset,</div>
+<div class="fragment"><div class="line">std::shared_ptr&lt;PosTexColorMesh&gt; boundingBoxAdjacency(<span class="keyword">const</span> mat4&amp; basisAndOffset,</div>
 <div class="line">                                                      <span class="keyword">const</span> vec4&amp; color) {</div>
 <div class="line">    <span class="keyword">auto</span> mesh = std::make_shared&lt;PosTexColorMesh&gt;();</div>
-<div class="line">    mesh-&gt;setModelMatrix(basisandoffset);</div>
+<div class="line">    mesh-&gt;setModelMatrix(basisAndOffset);</div>
 <div class="line"> </div>
 <div class="line">    mesh-&gt;addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},</div>
 <div class="line">                       {vec3(1.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), color},</div>

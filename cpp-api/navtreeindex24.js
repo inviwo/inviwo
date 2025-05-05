@@ -1,5 +1,7 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1BaseKeyframe.html":[4,0,1,1,16],
+"classinviwo_1_1animation_1_1BaseKeyframeSequence.html":[2,0,0,0,16],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html":[4,0,1,1,17],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html#a17af4ee10522c3a12c72765191dc0a67":[2,0,0,0,16,0],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html#a17af4ee10522c3a12c72765191dc0a67":[4,0,1,1,17,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1buffertraits_1_1PositionsBufferBase.html":[1,1,0,2],
 "classinviwo_1_1buffertraits_1_1RadiiBuffer.html":[1,1,0,8],
 "classinviwo_1_1buffertraits_1_1ScalarMetaBuffer.html":[1,1,0,10],
-"classinviwo_1_1buffertraits_1_1TexCoordBuffer.html":[1,1,0,5],
-"classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html":[1,1,0,1],
-"classinviwo_1_1colorbrewer_1_1ColorBrewerException.html":[2,0,0,4,0]
+"classinviwo_1_1buffertraits_1_1TexCoordBuffer.html":[1,1,0,5]
 };

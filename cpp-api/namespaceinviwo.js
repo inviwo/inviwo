@@ -117,6 +117,7 @@ var namespaceinviwo =
       [ "centerViewOnMeshes", "namespaceinviwo_1_1meshutil.html#a9cf6e5f619537edd5ed4b6cd81a65065", null ],
       [ "clipMeshAgainstPlane", "namespaceinviwo_1_1meshutil.html#ab1b287f94ada0d7b15c0e40f0fea831d", null ],
       [ "computeNearFarPlanes", "namespaceinviwo_1_1meshutil.html#a2abda663afb24d43fb919e12066cfac2", null ],
+      [ "cubeIndicator", "namespaceinviwo_1_1meshutil.html#ab192283190c2d7297782e7a5981fdf9a", null ],
       [ "parallelepiped", "namespaceinviwo_1_1meshutil.html#a7b46ed43ca77d6c87bfef81a9a23b3ef", null ],
       [ "toLineMesh", "namespaceinviwo_1_1meshutil.html#a776cc183c44c144cd82c90a36621a7eb", null ],
       [ "toPointMesh", "namespaceinviwo_1_1meshutil.html#aefab0ef45f52d52f4003e6ca5e1da8a7", null ]
@@ -389,6 +390,7 @@ var namespaceinviwo =
     [ "DoubleValueDragSpinBox", "classinviwo_1_1DoubleValueDragSpinBox.html", "classinviwo_1_1DoubleValueDragSpinBox" ],
     [ "DrawLines", "classinviwo_1_1DrawLines.html", "classinviwo_1_1DrawLines" ],
     [ "DrawPoints", "classinviwo_1_1DrawPoints.html", "classinviwo_1_1DrawPoints" ],
+    [ "Easing", "structinviwo_1_1Easing.html", null ],
     [ "Edge", "classinviwo_1_1Edge.html", null ],
     [ "EditableLabelQt", "classinviwo_1_1EditableLabelQt.html", null ],
     [ "EditorGraphicsItem", "classinviwo_1_1EditorGraphicsItem.html", null ],

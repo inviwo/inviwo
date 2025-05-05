@@ -142,17 +142,22 @@ $(function(){initNavTree('classinviwo_1_1CameraWidget.html',''); initResizable(t
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a96e769fbc932997f50af0f67d50d39c4" id="r_a96e769fbc932997f50af0f67d50d39c4"><td class="memItemLeft" align="right" valign="top"><a id="a96e769fbc932997f50af0f67d50d39c4" name="a96e769fbc932997f50af0f67d50d39c4"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Interaction</b> { <br />
-&#160;&#160;<b>HorizontalRotation</b>
-, <b>VerticalRotation</b>
-, <b>FreeRotation</b>
+<tr class="memitem:a3ca25afdd5cf67c3c1c749f98d83e612" id="r_a3ca25afdd5cf67c3c1c749f98d83e612"><td class="memItemLeft" align="right" valign="top"><a id="a3ca25afdd5cf67c3c1c749f98d83e612" name="a3ca25afdd5cf67c3c1c749f98d83e612"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Interaction</b> : std::uint8_t { <br />
+&#160;&#160;<b>Yaw</b>
+, <b>Pitch</b>
 , <b>Roll</b>
+, <b>FreeRotation</b>
 , <br />
 &#160;&#160;<b>Zoom</b>
 , <b>None</b>
 <br />
  }</td></tr>
-<tr class="separator:a96e769fbc932997f50af0f67d50d39c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a3ca25afdd5cf67c3c1c749f98d83e612"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef629c614403471c2af3d0ed4378e07" id="r_adef629c614403471c2af3d0ed4378e07"><td class="memItemLeft" align="right" valign="top"><a id="adef629c614403471c2af3d0ed4378e07" name="adef629c614403471c2af3d0ed4378e07"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>RotationAxis</b> : std::uint8_t { <b>Yaw</b>
+, <b>Pitch</b>
+, <b>Roll</b>
+ }</td></tr>
+<tr class="separator:adef629c614403471c2af3d0ed4378e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1Processor')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a54efc0672583e4cc7676c0c377eaf9c7 inherit pub_types_classinviwo_1_1Processor" id="r_a54efc0672583e4cc7676c0c377eaf9c7"><td class="memItemLeft" align="right" valign="top">
 using&#160;</td><td class="memItemRight" valign="bottom"><b>NameDispatcher</b> = <a class="el" href="classinviwo_1_1Dispatcher.html">Dispatcher</a>&lt;void(std::string_view, std::string_view)&gt;</td></tr>
@@ -176,6 +181,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6cb5058686ea119e4370536234b4f700"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adef632b7f887d2839f20529c7734fc60" id="r_adef632b7f887d2839f20529c7734fc60"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adef632b7f887d2839f20529c7734fc60">getProcessorInfo</a> () const override</td></tr>
 <tr class="separator:adef632b7f887d2839f20529c7734fc60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3423aeb4a0d23080c91f88d5ba1b1f74" id="r_a3423aeb4a0d23080c91f88d5ba1b1f74"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3423aeb4a0d23080c91f88d5ba1b1f74">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
+<tr class="separator:a3423aeb4a0d23080c91f88d5ba1b1f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Processor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a1d4bc7897d472833b1a7680153f683d6 inherit pub_methods_classinviwo_1_1Processor" id="r_a1d4bc7897d472833b1a7680153f683d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> (std::string_view identifier=&quot;&quot;, std::string_view displayName=&quot;&quot;)</td></tr>
 <tr class="separator:a1d4bc7897d472833b1a7680153f683d6 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -274,8 +281,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasInteractionHandler
 <tr class="memitem:ad5ae89af8652a8b78cee84d59bb36565 inherit pub_methods_classinviwo_1_1Processor" id="r_ad5ae89af8652a8b78cee84d59bb36565"><td class="memItemLeft" align="right" valign="top">
 const std::vector&lt; <a class="el" href="classinviwo_1_1InteractionHandler.html">InteractionHandler</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getInteractionHandlers</b> () const</td></tr>
 <tr class="separator:ad5ae89af8652a8b78cee84d59bb36565 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5ca45df8fe5ad88e2857f39cf7fe771 inherit pub_methods_classinviwo_1_1Processor" id="r_af5ca45df8fe5ad88e2857f39cf7fe771"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#af5ca45df8fe5ad88e2857f39cf7fe771">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
-<tr class="separator:af5ca45df8fe5ad88e2857f39cf7fe771 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bf416de3503cbd10e396951f03899ae inherit pub_methods_classinviwo_1_1Processor" id="r_a0bf416de3503cbd10e396951f03899ae"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a0bf416de3503cbd10e396951f03899ae">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *source) override</td></tr>
 <tr class="separator:a0bf416de3503cbd10e396951f03899ae inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a414ff14492f4e3be367f6d38ffc92028 inherit pub_methods_classinviwo_1_1Processor" id="r_a414ff14492f4e3be367f6d38ffc92028"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a414ff14492f4e3be367f6d38ffc92028">getProcessor</a> () override</td></tr>
@@ -728,6 +733,33 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 <p>InitializeResources is called whenever a property with InvalidationLevel::InvalidResources is changes. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">inviwo::Processor</a>.</p>
+
+</div>
+</div>
+<a id="a3423aeb4a0d23080c91f88d5ba1b1f74" name="a3423aeb4a0d23080c91f88d5ba1b1f74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3423aeb4a0d23080c91f88d5ba1b1f74">&#9670;&#160;</a></span>invokeEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CameraWidget::invokeEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Event.html">Event</a> *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
 
 </div>
 </div>

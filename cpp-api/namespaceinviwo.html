@@ -735,6 +735,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DrawPoints.html">DrawPoints</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactive 2D point drawing.  <a href="classinviwo_1_1DrawPoints.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1Easing.html">Easing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Edge.html">Edge</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1EditableLabelQt.html">EditableLabelQt</a></td></tr>
@@ -4036,6 +4038,28 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Int64PropertyWidgetC
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:aea0149972374fa51599a6ca0deebf0ca" id="r_aea0149972374fa51599a6ca0deebf0ca"><td class="memItemLeft" align="right" valign="top"><a id="aea0149972374fa51599a6ca0deebf0ca" name="aea0149972374fa51599a6ca0deebf0ca"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>EasingType</b> : std::uint8_t { <br />
+&#160;&#160;<b>linear</b>
+, <b>quadratic</b>
+, <b>cubic</b>
+, <b>quartic</b>
+, <br />
+&#160;&#160;<b>quintic</b>
+, <b>sine</b>
+, <b>circular</b>
+, <b>exponential</b>
+, <br />
+&#160;&#160;<b>elastic</b>
+, <b>back</b>
+, <b>bounce</b>
+<br />
+ }</td></tr>
+<tr class="separator:aea0149972374fa51599a6ca0deebf0ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa92422cffc510ac7e0d3d7c52fa500da" id="r_aa92422cffc510ac7e0d3d7c52fa500da"><td class="memItemLeft" align="right" valign="top"><a id="aa92422cffc510ac7e0d3d7c52fa500da" name="aa92422cffc510ac7e0d3d7c52fa500da"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>EasingMode</b> : std::uint8_t { <b>in</b>
+, <b>out</b>
+, <b>inOut</b>
+ }</td></tr>
+<tr class="separator:aa92422cffc510ac7e0d3d7c52fa500da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f8be0f987001a055d1b2e9043c3c857" id="r_a6f8be0f987001a055d1b2e9043c3c857"><td class="memItemLeft" align="right" valign="top"><a id="a6f8be0f987001a055d1b2e9043c3c857" name="a6f8be0f987001a055d1b2e9043c3c857"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ProtectedModule</b> : bool { <b>on</b>
 , <b>off</b>
  }</td></tr>
@@ -4860,6 +4884,15 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ae3300ff291aea75849a02cca64e78f93" id="r_ae3300ff291aea75849a02cca64e78f93"><td class="memItemLeft" align="right" valign="top"><a id="ae3300ff291aea75849a02cca64e78f93" name="ae3300ff291aea75849a02cca64e78f93"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (EasingType type)</td></tr>
+<tr class="separator:ae3300ff291aea75849a02cca64e78f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85692f2677104b932f38420949c9005" id="r_af85692f2677104b932f38420949c9005"><td class="memItemLeft" align="right" valign="top"><a id="af85692f2677104b932f38420949c9005" name="af85692f2677104b932f38420949c9005"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (EasingMode mode)</td></tr>
+<tr class="separator:af85692f2677104b932f38420949c9005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a838a4c47c2b6f3639ee7dce0f109e4c3" id="r_a838a4c47c2b6f3639ee7dce0f109e4c3"><td class="memItemLeft" align="right" valign="top"><a id="a838a4c47c2b6f3639ee7dce0f109e4c3" name="a838a4c47c2b6f3639ee7dce0f109e4c3"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (<a class="el" href="structinviwo_1_1Easing.html">Easing</a> easing)</td></tr>
+<tr class="separator:a838a4c47c2b6f3639ee7dce0f109e4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a111ace7a4952d35eaf707b2d696350" id="r_a9a111ace7a4952d35eaf707b2d696350"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a111ace7a4952d35eaf707b2d696350">operator&quot;&quot;_md</a> (const char *str, size_t len)</td></tr>
 <tr class="separator:a9a111ace7a4952d35eaf707b2d696350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49826a0996c5365a64256a7f5a290c4f" id="r_a49826a0996c5365a64256a7f5a290c4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49826a0996c5365a64256a7f5a290c4f">operator&quot;&quot;_help</a> (const char *str, size_t len)</td></tr>

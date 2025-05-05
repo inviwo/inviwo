@@ -796,6 +796,7 @@ var annotated_dup =
       [ "DoubleValueDragSpinBox", "classinviwo_1_1DoubleValueDragSpinBox.html", "classinviwo_1_1DoubleValueDragSpinBox" ],
       [ "DrawLines", "classinviwo_1_1DrawLines.html", "classinviwo_1_1DrawLines" ],
       [ "DrawPoints", "classinviwo_1_1DrawPoints.html", "classinviwo_1_1DrawPoints" ],
+      [ "Easing", "structinviwo_1_1Easing.html", null ],
       [ "Edge", "classinviwo_1_1Edge.html", null ],
       [ "EditableLabelQt", "classinviwo_1_1EditableLabelQt.html", null ],
       [ "EditorGraphicsItem", "classinviwo_1_1EditorGraphicsItem.html", null ],
