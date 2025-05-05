@@ -1,5 +1,16 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-05-05 CameraWidget
+The CameraWidget gained new functionality to animate the camera either in a continuous fashion or by swinging back and forth.
+![Camera Cube](resources/changelog/camera-cube.jpg)
+It also got a new "Cube" interaction widget to easily set various view directions. 
+
+
+## 2025-05-05 Easing
+The easing header in the `Animation` module has been refactored and moved into `inviwo/core/algorithm/easing.h`
+The `easing` namespace has been remvoed. The `EasingType` has been split into a `EasingType` and a `EasingMode` which are combined in a `Easing` struct. 
+The function `easing::ease` is replaced with a `util::ease` function. 
+
 ## 2025-03-25 Updated Inviwo Volume File Formats (.ivf and .ivfs)
 The Inviwo Volume File format (.ivf) was revised and updated. It now also supports reading compressed binary/raw data using either ZLib, libBZ2, libLZMA, or libZstd (.gz, .bz2, .xz, and .zst). When exporting volume data to .ivf the data is compressed with ZLib.
 

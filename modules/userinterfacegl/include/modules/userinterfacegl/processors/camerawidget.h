@@ -31,6 +31,8 @@
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 
+#include <inviwo/core/algorithm/easing.h>
+#include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/ports/imageport.h>
@@ -43,14 +45,20 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/timer.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <array>
 #include <cstddef>
 #include <memory>
+#include <vector>
+#include <variant>
+#include <functional>
 
 namespace inviwo {
 
@@ -66,7 +74,8 @@ class PickingEvent;
  */
 class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor {
 public:
-    enum class Interaction { HorizontalRotation, VerticalRotation, FreeRotation, Roll, Zoom, None };
+    enum class Interaction : std::uint8_t { Yaw, Pitch, Roll, FreeRotation, Zoom, None };
+    enum class RotationAxis : std::uint8_t { Yaw, Pitch, Roll };
 
     CameraWidget();
     ~CameraWidget();
@@ -78,29 +87,38 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void invokeEvent(Event* event) override;
+
 private:
+    // initial state of camera when an interaction is triggered to keep the rotation axis consistent
+    struct CameraState {
+        vec3 dir{0.0f, 0.0f, -1.0f};
+        vec3 up{0.0f, 1.0f, 0.0f};
+    };
+
     void updateWidgetTexture(const ivec2& widgetSize);
     void drawWidgetTexture();
 
     void objectPicked(PickingEvent* p);
-    void saveInitialCameraState();
+    void cubePicked(PickingEvent* p);
+    static CameraState cameraState(const Camera& cam);
     void loadMesh();
 
-    void interaction(Interaction dir, dvec2 mouseDelta);
-    void singleStepInteraction(Interaction dir, bool clockwise);
+    void dragInteraction(Interaction dir, dvec2 mouseDelta);
+    void stepInteraction(Interaction dir, bool clockwise);
 
-    void rotation(Interaction dir, dvec2 mouseDelta);
-    void singleStepRotation(Interaction dir, bool clockwise);
-    void zoom(dvec2 delta);
-    void singleStepZoom(bool zoomIn);
+    void freeRotation(dvec2 mouseDelta);
+    void axisRotation(RotationAxis dir, dvec2 mouseDelta);
+    void rotation(vec3 axis, float degrees);
+    void stepRotation(RotationAxis dir, bool clockwise);
+    void dragZoom(dvec2 delta);
+    void stepZoom(bool zoomIn);
 
     void updateOutput(const mat4& rotation);
 
-    static int interactionDirectionToInt(Interaction dir);
-    static Interaction intToInteractionDirection(int dir);
-    vec3 getObjectRotationAxis(const vec3& rotAxis) const;
-
     std::vector<ButtonGroupProperty::Button> buttons();
+
+    static vec3 rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam);
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -110,9 +128,10 @@ private:
     CompositeProperty settings_;
     BoolProperty enabled_;
     BoolProperty invertDirections_;
-    BoolProperty useObjectRotAxis_;
+    BoolProperty useWorldAxis_;
     BoolProperty showRollWidget_;
     BoolProperty showDollyWidget_;
+    BoolProperty showRotWidget_;
     FloatProperty speed_;
     FloatProperty angleIncrement_;
     IntProperty minTouchMovement_;
@@ -125,7 +144,6 @@ private:
     BoolCompositeProperty customColorComposite_;
     BoolProperty axisColoring_;
     FloatVec4Property userColor_;
-    FloatVec4Property cubeColor_;
 
     CompositeProperty outputProps_;
     CameraProperty camera_;
@@ -135,16 +153,9 @@ private:
     PerspectiveCamera internalCamera_;
     SimpleLightingProperty lightingProperty_;
 
-    PickingMapper picking_;
     Shader shader_;
     Shader cubeShader_;
     Shader overlayShader_;
-
-    // number of available interaction elements. Each interaction widget has two trigger areas to
-    // distinguish the direction of rotation when clicked
-    static const int numInteractionWidgets = 10;  //!< horizontal (left, right), vertical (up,
-                                                  //!< down), center (2), roll (left, right), zoom
-                                                  //!< (out, in)
 
     // meshes of the interaction widgets.
     // 1) camera widget
@@ -154,25 +165,27 @@ private:
     std::array<std::unique_ptr<MeshDrawerGL>, 4> meshDrawers_;
     std::array<std::shared_ptr<const Mesh>, 4> meshes_;
 
-    struct PickIDs {
-        std::size_t id;
+    struct Widget {
         Interaction dir;
         bool clockwise;
     };
-    std::array<PickIDs, numInteractionWidgets> pickingIDs_;
+
+    // Each interaction widget has two trigger areas to
+    // distinguish the direction of rotation when clicked.
+    static constexpr std::array widgets_ = {
+        Widget{Interaction::Yaw, true},          Widget{Interaction::Yaw, false},
+        Widget{Interaction::Pitch, true},        Widget{Interaction::Pitch, false},
+        Widget{Interaction::FreeRotation, true}, Widget{Interaction::FreeRotation, false},
+        Widget{Interaction::Roll, true},         Widget{Interaction::Roll, false},
+        Widget{Interaction::Zoom, true},         Widget{Interaction::Zoom, false}};
 
     // UI state and textures
-    bool isMouseBeingPressedAndHold_;
-    bool mouseWasMoved_;
-    int currentPickingID_;
+    struct Picking {
+        void objectPicked(PickingEvent* e, CameraWidget& camera);
 
-    // initial state of camera when an interaction is triggered to keep the rotation axis consistent
-    struct InitialState {
-        vec3 camDir = vec3(0.0f, 0.0f, -1.0f);
-        vec3 camUp = vec3(0.0f, 1.0f, 0.0f);
-        vec3 camRight = vec3(1.0f, 0.0f, 0.0f);
-        double zoom_ = 1.0f;
-    } initialState_;
+    private:
+        int currentPickingID{-1};
+    };
 
     // Ensure that the Image and ImageGL are always in sync.
     // By returning a pair we ensure we can never return an Image and a nullptr ImageGL,
@@ -182,6 +195,86 @@ private:
     std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL* widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
+
+    struct Continuous {
+        vec3 axis{};
+        float step{};
+    };
+    struct Swing {
+        vec3 axis{};
+        vec3 dir{};
+        vec3 up{};
+        float amplitude{};
+        EasingType easing = EasingType::quadratic;
+        float step{};
+        float current{};
+    };
+    struct Goal {
+        glm::quat start{};
+        glm::quat stop{};
+        vec3 dir{};
+        vec3 up{};
+        EasingType easing = EasingType::cubic;
+        float step{};
+        float current{};
+        std::function<std::variant<std::monostate, Continuous, Swing, Goal>(Camera&)> done =
+            [](Camera&) { return std::monostate{}; };
+    };
+    using Animation = std::variant<std::monostate, Continuous, Swing, Goal>;
+
+    static auto resume(Animation animation, const Camera& camera, RotationAxis axis,
+                       bool objectAxis) -> Animation;
+
+    struct Animator {
+        explicit Animator(Camera& camera);
+        using ms = typename Timer::Milliseconds;
+        Animation animation;
+        Camera* camera;
+        Timer timer;
+
+        void setAnimation(const Animation& ani);
+
+        void animate();
+    };
+
+    struct Animate {
+        explicit Animate(CameraWidget& cameraWidget);
+
+        enum class Mode : std::uint8_t { Continuous, Swing };
+
+        using ms = typename Timer::Milliseconds;
+        CameraWidget* widget;
+        BoolCompositeProperty props;
+        IntProperty fps;
+        OptionProperty<RotationAxis> type;
+        OptionProperty<Mode> mode;
+        OptionProperty<EasingType> easing;
+        FloatProperty increment;
+        FloatProperty amplitude;
+        EventProperty playPause;
+
+        Animation paused{};
+
+        void startStopAnimation(bool start);  // NOLINT(readability-make-member-function-const)
+        void willInvokeEvent(Event* e);
+        void didInvokeEvent(Event* e);
+
+        void interactionStart();
+        void interactionStop();
+    };
+
+    struct CubePicking {
+        int hoverID{-1};
+        Animation paused{};
+    };
+
+    PickingMapper picking_;
+    PickingMapper cubePicking_;
+    Picking pickingState_;
+    CameraState initialState_;
+    CubePicking cubeState_;
+    Animator animator_;
+    Animate animate_;
 };
 
 }  // namespace inviwo

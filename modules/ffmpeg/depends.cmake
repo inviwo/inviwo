@@ -17,10 +17,6 @@ set(dependencies
 # By calling set(EnableByDefault ON) the module will be set to enabled 
 # when initially being added to CMake. Default OFF.
 
-
-message("FFMPEG CMAKE_CXX_IMPLICIT_LINK_LIBRARIES: ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}")
-message("FFMPEG CMAKE_C_IMPLICIT_LINK_LIBRARIES: ${CMAKE_C_IMPLICIT_LINK_LIBRARIES}")
-
 find_package(FFMPEG QUIET)
 if(FFMPEG_FOUND)
     set(EnableByDefault ON)

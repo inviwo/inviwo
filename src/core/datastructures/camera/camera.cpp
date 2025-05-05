@@ -34,6 +34,7 @@
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <memory>
 #include <glm/matrix.hpp>
@@ -77,6 +78,13 @@ void Camera::setLookUp(vec3 val) {
         invalidateViewMatrix();
         if (camprop_) camprop_->lookUp_.propertyModified();
     }
+}
+
+void Camera::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {  // NOLINT
+    const NetworkLock lock{camprop_};
+    setLookFrom(lookFrom);
+    setLookTo(lookTo);
+    setLookUp(lookUp);
 }
 
 void Camera::setNearPlaneDist(float val) {

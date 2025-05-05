@@ -34,10 +34,10 @@
 #include <inviwo/core/io/serialization/serializer.h>                // for Serializer
 #include <inviwo/core/util/exception.h>                             // for Exception
 #include <inviwo/core/util/observer.h>                              // for Observable, Observer
+#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/util/stdextensions.h>                         // for dynamic_unique_ptr_cast
 #include <modules/animation/datastructures/animationtime.h>         // for Seconds
 #include <modules/animation/datastructures/basekeyframesequence.h>  // for BaseKeyframeSequence
-#include <modules/animation/datastructures/easing.h>                // for EasingType, EasingTyp...
 #include <modules/animation/factories/interpolationfactory.h>       // IWYU pragma: keep
 #include <modules/animation/interpolation/constantinterpolation.h>  // for ConstantInterpolation
 #include <modules/animation/interpolation/interpolation.h>          // for InterpolationTyped
@@ -121,8 +121,8 @@ public:
     virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
         InterpolationFactory& factory) const = 0;
 
-    virtual easing::EasingType getEasingType() const = 0;
-    virtual void setEasingType(easing::EasingType easing) = 0;
+    virtual Easing getEasingType() const = 0;
+    virtual void setEasingType(Easing easing) = 0;
 };
 
 /** \class KeyframeSequenceTyped
@@ -171,14 +171,14 @@ public:
     virtual std::vector<InterpolationFactoryObject*> getSupportedInterpolations(
         InterpolationFactory& factory) const override;
 
-    virtual easing::EasingType getEasingType() const override;
-    virtual void setEasingType(easing::EasingType easing) override;
+    virtual Easing getEasingType() const override;
+    virtual void setEasingType(Easing easing) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    easing::EasingType easing_{easing::EasingType::Linear};
+    Easing easing_{};
     std::unique_ptr<InterpolationTyped<Key>> interpolation_{nullptr};
 };
 
@@ -286,12 +286,12 @@ std::vector<InterpolationFactoryObject*> KeyframeSequenceTyped<Key>::getSupporte
 }
 
 template <typename Key>
-easing::EasingType KeyframeSequenceTyped<Key>::getEasingType() const {
+Easing KeyframeSequenceTyped<Key>::getEasingType() const {
     return easing_;
 }
 
 template <typename Key>
-void KeyframeSequenceTyped<Key>::setEasingType(easing::EasingType easing) {
+void KeyframeSequenceTyped<Key>::setEasingType(Easing easing) {
     if (easing_ != easing) {
         easing_ = easing;
         notifyValueKeyframeSequenceEasingChanged(this);
@@ -309,7 +309,7 @@ template <typename Key>
 void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
     BaseKeyframeSequence<Key>::deserialize(d);
     {
-        easing::EasingType easing = easing_;
+        Easing easing = easing_;
         d.deserialize("easing", easing);
         setEasingType(easing);
     }

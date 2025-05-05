@@ -29,6 +29,7 @@
 
 #include <modules/animationqt/sequenceeditor/propertysequenceeditor.h>
 
+#include <inviwo/core/algorithm/easing.h>
 #include <inviwo/core/common/factoryutil.h>                            // for getPropertyWidgetF...
 #include <inviwo/core/properties/cameraproperty.h>                     // for CameraProperty
 #include <inviwo/core/properties/property.h>                           // for Property
@@ -36,7 +37,6 @@
 #include <inviwo/core/util/stringconversion.h>                         // for toString
 #include <modules/animation/animationmanager.h>                        // for AnimationManager
 #include <modules/animation/datastructures/animationtime.h>            // for Seconds
-#include <modules/animation/datastructures/easing.h>                   // for operator++, operat...
 #include <modules/animation/datastructures/keyframe.h>                 // for Keyframe
 #include <modules/animation/datastructures/keyframeobserver.h>         // for KeyframeObserver
 #include <modules/animation/datastructures/keyframesequence.h>         // for KeyframeSequence
@@ -229,16 +229,27 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     sublayout->addWidget(new QLabel("Easing"), 1, 0);
     sublayout->addWidget(easingComboBox_, 1, 1);
 
-    for (auto e = easing::FirstEasingType; e <= easing::LastEasingType; ++e) {
-        easingComboBox_->addItem(utilqt::toQString(toString(e)), QVariant(static_cast<int>(e)));
-        if (valseq.getEasingType() == e) {
-            easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
+    for (size_t t = 0; t < Easing::typeCount; ++t) {
+        for (size_t m = 0; m < Easing::modeCount; ++m) {
+            const auto e = Easing{static_cast<EasingType>(t), static_cast<EasingMode>(m)};
+            auto label = utilqt::toQString(format_as(e));
+            label.front() = label.front().toUpper();
+            easingComboBox_->addItem(label,
+                                     QVariant(QPoint{static_cast<int>(t), static_cast<int>(m)}));
+            if (valseq.getEasingType() == e) {
+                easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
+            }
         }
     }
 
     connect(easingComboBox_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this,
-            [&valseq](int index) { valseq.setEasingType(static_cast<easing::EasingType>(index)); });
+            this, [&valseq, this](int) {
+                const auto tmp = easingComboBox_->currentData().value<QPoint>();
+                const auto e =
+                    Easing{static_cast<EasingType>(tmp.x()), static_cast<EasingMode>(tmp.y())};
+
+                valseq.setEasingType(e);
+            });
 
     for (size_t i = 0; i < sequence_.size(); i++) {
         onKeyframeAdded(&sequence_[i], &sequence_);
@@ -252,8 +263,12 @@ QWidget* PropertySequenceEditor::create(Keyframe* key) {
 }
 
 void PropertySequenceEditor::onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) {
-    QSignalBlocker block(easingComboBox_);
-    auto index = easingComboBox_->findData(QVariant(static_cast<int>(seq->getEasingType())));
+    const QSignalBlocker block(easingComboBox_);
+
+    const auto e = seq->getEasingType();
+    const auto v = QVariant{QPoint{static_cast<int>(e.type), static_cast<int>(e.mode)}};
+
+    const auto index = easingComboBox_->findData(v);
     easingComboBox_->setCurrentIndex(index);
 }
 

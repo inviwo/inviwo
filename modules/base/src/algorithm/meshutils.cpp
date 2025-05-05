@@ -55,6 +55,7 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for move
 #include <numbers>
+#include <ranges>
 
 #include <glm/ext/matrix_transform.hpp>  // for rotate
 #include <glm/fwd.hpp>                   // for vec4, vec3, uint32_t
@@ -599,6 +600,125 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
     return mesh;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
+    constexpr float offset = 0.2f;
+    constexpr std::array<float, 4> p{{0.0f, 0.0f + offset, 1.0f - offset, 1.0f}};
+    constexpr size_t pointsPerFace = (p.size() - 1) * (p.size() - 1) * 4;
+    constexpr size_t indicesPerFace = (p.size() - 1) * (p.size() - 1) * 6;
+    constexpr size_t facesPerCube = 6;
+
+    std::vector<vec3> positions;
+    positions.reserve(facesPerCube * pointsPerFace);
+    std::vector<vec3> normals;
+    normals.reserve(positions.capacity());
+    std::vector<vec4> colors;
+    colors.reserve(positions.capacity());
+    std::vector<std::uint32_t> pickIds;
+    pickIds.reserve(positions.capacity());
+
+    std::vector<std::uint32_t> indices;
+    indices.reserve(facesPerCube * indicesPerFace);
+
+    constexpr auto index = [](float x) -> std::uint32_t {
+        if (x < 1.0f / 3.0f) {
+            return 0;
+        } else if (x > 2.0f / 3.0f) {
+            return 2;
+        } else {
+            return 1;
+        }
+    };
+
+    constexpr auto xyz = +[](const vec3& v) { return vec3{v.x, v.y, v.z}; };
+    constexpr auto zxy = +[](const vec3& v) { return vec3{v.z, v.x, v.y}; };
+    constexpr auto yzx = +[](const vec3& v) { return vec3{v.y, v.z, v.x}; };
+
+    // generate a mesh of 3x3 quads on each side of the cube
+    for (const auto& swizzle : {xyz, zxy, yzx}) {
+        for (const auto x : {0.0f, 1.0f}) {
+            for (const auto [y1, y2] : std::views::zip(p, p | std::views::drop(1))) {
+                for (const auto [z1, z2] : std::views::zip(p, p | std::views::drop(1))) {
+                    const auto c1 = vec3{x, y1, z1};
+                    const auto c2 = vec3{x, y2, z1};
+                    const auto c3 = vec3{x, y2, z2};
+                    const auto c4 = vec3{x, y1, z2};
+
+                    for (const uint32_t i : {0, 1, 2, 0, 2, 3}) {
+                        indices.emplace_back(static_cast<uint32_t>(positions.size()) + i);
+                    }
+
+                    const auto cs1 = swizzle(c1);
+                    const auto cs2 = swizzle(c2);
+                    const auto cs3 = swizzle(c3);
+                    const auto cs4 = swizzle(c4);
+
+                    positions.emplace_back(cs1);
+                    positions.emplace_back(cs2);
+                    positions.emplace_back(cs3);
+                    positions.emplace_back(cs4);
+
+                    const auto center = (cs1 + cs2 + cs3 + cs4) / 4.0f;
+                    const auto pickPos =
+                        glm::u32vec3{index(center.x), index(center.y), index(center.z)};
+
+                    const std::uint32_t pickId = pickPos.x + 3 * pickPos.y + 9 * pickPos.z;
+                    pickIds.emplace_back(pickId);
+                    pickIds.emplace_back(pickId);
+                    pickIds.emplace_back(pickId);
+                    pickIds.emplace_back(pickId);
+                }
+            }
+        }
+    }
+
+    // generate normals for each point
+    for (const auto& normal : {vec3{1.f, 0.f, 0.f}, vec3{0.f, 1.f, 0.f}, vec3{0.f, 0.f, 1.f}}) {
+        for (const auto side : {1.f, -1.f}) {
+            for ([[maybe_unused]] const auto _ : std::views::iota(size_t{0}, pointsPerFace)) {
+                normals.emplace_back(normal * side);
+            }
+        }
+    }
+
+    // generate colors for each point
+    for (const auto& color : {vec3{1.f, 0.f, 0.f}, vec3{0.f, 1.f, 0.f}, vec3{0.f, 0.f, 1.f}}) {
+        for (const auto side : {-0.2f, 0.2f}) {
+            for (const auto& xCorner : {vec3{0.1f}, vec3{0.0f}, vec3{0.1f}}) {
+                for (const auto& yCorner : {vec3{0.1f}, vec3{0.0f}, vec3{0.1f}}) {
+                    for ([[maybe_unused]] const auto _ : std::views::iota(0, 4)) {
+                        const auto c = 0.5f * color + side + xCorner + yCorner;
+                        colors.emplace_back(c, 1.0);
+                    }
+                }
+            }
+        }
+    }
+
+    const auto pos = std::make_shared<Buffer<vec3>>(
+        std::make_shared<BufferRAMPrecision<vec3>>(std::move(positions)));
+    const auto norm = std::make_shared<Buffer<vec3>>(
+        std::make_shared<BufferRAMPrecision<vec3>>(std::move(normals)));
+    const auto col = std::make_shared<Buffer<vec4>>(
+        std::make_shared<BufferRAMPrecision<vec4>>(std::move(colors)));
+    const auto pick = std::make_shared<Buffer<std::uint32_t>>(
+        std::make_shared<BufferRAMPrecision<std::uint32_t>>(std::move(pickIds)));
+
+    const auto inds =
+        std::make_shared<IndexBuffer>(std::make_shared<IndexBufferRAM>(std::move(indices)));
+
+    auto mesh = std::make_shared<Mesh>(
+        Mesh::BufferVector{{BufferType::PositionAttrib, pos},
+                           {BufferType::NormalAttrib, norm},
+                           {BufferType::ColorAttrib, col},
+                           {BufferType::PickingAttrib, pick}},
+        Mesh::IndexVector{{Mesh::MeshInfo{DrawType::Triangles, ConnectivityType::None}, inds}});
+
+    mesh->setModelMatrix(basisAndOffset);
+
+    return mesh;
+}
+
 std::shared_ptr<BasicMesh> coordindicator(const vec3& center, const float& size) {
     size_t segments = 16;
     float bsize = size * 1.0f;
@@ -626,9 +746,9 @@ std::shared_ptr<BasicMesh> coordindicator(const vec3& center, const float& size)
     return mesh;
 }
 
-std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& color) {
+std::shared_ptr<BasicMesh> boundingbox(const mat4& basisAndOffset, const vec4& color) {
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(basisandoffset);
+    mesh->setModelMatrix(basisAndOffset);
 
     mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 0.0), color},
                        {vec3(1.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 0.0), color},
@@ -646,10 +766,10 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& c
 }
 
 //! [Using PosTexColorMesh]
-std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset,
+std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisAndOffset,
                                                       const vec4& color) {
     auto mesh = std::make_shared<PosTexColorMesh>();
-    mesh->setModelMatrix(basisandoffset);
+    mesh->setModelMatrix(basisAndOffset);
 
     mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), color},
                        {vec3(1.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), color},

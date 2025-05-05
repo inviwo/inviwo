@@ -30,9 +30,9 @@
 
 #include <modules/animation/animationmoduledefine.h>  // for IVW_MODULE_ANIMATION_API
 
+#include <inviwo/core/algorithm/easing.h>
 #include <modules/animation/datastructures/animationtime.h>   // for Seconds
 #include <modules/animation/datastructures/camerakeyframe.h>  // for CameraKeyframe, CameraKeyfr...
-#include <modules/animation/datastructures/easing.h>          // for EasingType
 #include <modules/animation/interpolation/interpolation.h>    // for InterpolationTyped
 
 #include <memory>  // for unique_ptr
@@ -76,7 +76,7 @@ public:
      * Pan/tilt: Rotate lookAt between key frames.
      */
     virtual void operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys, Seconds from,
-                            Seconds to, easing::EasingType easing,
+                            Seconds to, Easing easing,
                             CameraKeyframe::value_type& out) const override;
 };
 

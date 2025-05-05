@@ -1,8 +1,6 @@
-#--------------------------------------------------------------------
 # Inviwo Animation Module
 ivw_module(Animation)
 
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     include/modules/animation/algorithm/animationrange.h
@@ -30,7 +28,6 @@ set(HEADER_FILES
     include/modules/animation/datastructures/controlkeyframe.h
     include/modules/animation/datastructures/controlkeyframesequence.h
     include/modules/animation/datastructures/controltrack.h
-    include/modules/animation/datastructures/easing.h
     include/modules/animation/datastructures/invalidationtrack.h
     include/modules/animation/datastructures/keyframe.h
     include/modules/animation/datastructures/keyframeobserver.h
@@ -60,7 +57,6 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-#--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
     src/algorithm/animationrange.cpp
@@ -87,7 +83,6 @@ set(SOURCE_FILES
     src/datastructures/controlkeyframe.cpp
     src/datastructures/controlkeyframesequence.cpp
     src/datastructures/controltrack.cpp
-    src/datastructures/easing.cpp
     src/datastructures/invalidationtrack.cpp
     src/datastructures/keyframe.cpp
     src/datastructures/keyframeobserver.cpp
@@ -115,19 +110,15 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/animation-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/track-test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/easing-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
-#--------------------------------------------------------------------
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
-#--------------------------------------------------------------------
 # Add shader directory to pack
 # ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)

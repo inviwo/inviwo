@@ -53,37 +53,6 @@ namespace inviwo {
 class Mesh;
 class PickingEvent;
 
-/** \docpage{org.inviwo.MeshCreator, Mesh Creator}
- * ![](org.inviwo.MeshCreator.png?classIdentifier=org.inviwo.MeshCreator)
- *
- * Generate various meshes
- *   * __Sphere__,
- *   * __ColorSphere__,
- *   * __CubeBasicMesh__,
- *   * __CubeSimpleMesh__,
- *   * __LineCube__,
- *   * __LineCubeAdjacency__,
- *   * __Plane__,
- *   * __Disk__,
- *   * __Cone__,
- *   * __Cylinder__,
- *   * __Arrow__,
- *   * __CoordAxes__,
- *   * __Torus
- *
- *
- * ### Outports
- *   * __outport__ The generated mesh
- *
- * ### Properties
- *   * __Mesh Type__ The type of mesh to generate.
- *   * __Color__ Color parameter.
- *   * __Stop Position__ Start position of several mesh types
- *   * __Start Position__ Start position of several mesh types
- *   * __Normal__ Normal direction for planes, etc.
- *   * __Size scaling__ Scale parameter for various mesh types.
- *   * __Mesh resolution__ Mesh resulution parameter for some meshes.
- */
 class IVW_MODULE_BASE_API MeshCreator : public Processor {
 public:
     MeshCreator();
@@ -103,6 +72,7 @@ private:
         ColorSphere,
         CubeBasicMesh,
         CubeSimpleMesh,
+        CubeIndicator,
         LineCube,
         LineCubeAdjacency,
         Plane,
