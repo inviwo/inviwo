@@ -962,6 +962,7 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
     type.onChange([this]() { startStopAnimation(props.getBoolProperty()->get()); });
 }
 
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CameraWidget::Animate::startStopAnimation(bool start) {
     if (start) {
         if (mode.get() == Mode::Continuous) {
