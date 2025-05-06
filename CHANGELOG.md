@@ -12,7 +12,7 @@ It also got a new "Cube" interaction widget to easily set various view direction
 
 ## 2025-05-05 Easing
 The easing header in the `Animation` module has been refactored and moved into `inviwo/core/algorithm/easing.h`
-The `easing` namespace has been remvoed. The `EasingType` has been split into a `EasingType` and a `EasingMode` which are combined in a `Easing` struct. 
+The `easing` namespace has been removed. The `EasingType` has been split into a `EasingType` and a `EasingMode` which are combined in a `Easing` struct. 
 The function `easing::ease` is replaced with a `util::ease` function. 
 
 ## 2025-03-25 Updated Inviwo Volume File Formats (.ivf and .ivfs)
