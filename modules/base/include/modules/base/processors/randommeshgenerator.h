@@ -57,6 +57,7 @@ public:
     virtual ~RandomMeshGenerator() = default;
 
     virtual void process() override;
+    virtual void invokeEvent(Event* event) override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -96,7 +97,7 @@ private:
     float rand(const float min, const float max);
     vec3 randVec3(const float min = 0, const float max = 1);
 
-    void addPickingBuffer(Mesh& mesh, size_t id);
+    static void addPickingBuffer(Mesh& mesh, size_t id);
     void handlePicking(PickingEvent* p, std::function<void(vec3)> callback);
 
     MeshOutport mesh_;
