@@ -232,9 +232,9 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     for (size_t t = 0; t < Easing::typeCount; ++t) {
         for (size_t m = 0; m < Easing::modeCount; ++m) {
             const auto e = Easing{static_cast<EasingType>(t), static_cast<EasingMode>(m)};
-            auto label = utilqt::toQString(format_as(e));
-            label.front() = label.front().toUpper();
-            easingComboBox_->addItem(label,
+            auto easingLabel = utilqt::toQString(format_as(e));
+            easingLabel.front() = easingLabel.front().toUpper();
+            easingComboBox_->addItem(easingLabel,
                                      QVariant(QPoint{static_cast<int>(t), static_cast<int>(m)}));
             if (valseq.getEasingType() == e) {
                 easingComboBox_->setCurrentIndex(easingComboBox_->count() - 1);
