@@ -96,7 +96,7 @@ void NeighborListFiltering::process() {
             selected.emplace(static_cast<ValueType>(center_.get()));
             visited.emplace(static_cast<ValueType>(center_.get()));
 
-            for (size_t step = 0; !selected.empty(); ++step) {
+            for (int step = 0; !selected.empty(); ++step) {
                 for (auto i : selected) {
                     stepsFromCenter[i] = step;
                 }
