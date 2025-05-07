@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/base/properties/datarangeproperty.h>
+#include <modules/base/properties/valueaxisproperty.h>
 
 namespace inviwo {
 
@@ -54,6 +55,7 @@ private:
     std::array<OptionPropertyInt, 4> channel_;
     BoolProperty normalizeChannels_;
     DataRangeProperty dataRange_;
+    ValueAxisProperty valueAxis_;
 };
 
 }  // namespace inviwo

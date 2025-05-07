@@ -117,6 +117,7 @@ VolumeConverter::VolumeConverter()
         Float formats are __not__ normalized!)"_unindentHelp,
                          false}
     , dataRange_{"dataRange", "Data Range", inport_, true}
+    , valueAxis_{"valueAxis", "Value Axis", inport_, true}
     , outputDataRange_{"outputDataRange",
                        "Output Data Range",
                        0.0,
@@ -135,7 +136,7 @@ VolumeConverter::VolumeConverter()
     outputDataRange_.setReadOnly(true);
     outputDataRange_.setSerializationMode(PropertySerializationMode::All);
     dataRange_.insertProperty(2, outputDataRange_);
-    addProperties(srcFormat_, dstFormat_, enableDataMapping_, dataRange_);
+    addProperties(srcFormat_, dstFormat_, enableDataMapping_, dataRange_, valueAxis_);
 
     auto updateOutputRange = [this]() {
         const auto* format = DataFormatBase::get(dstFormat_);
@@ -216,12 +217,12 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
 
 void VolumeConverter::process() {
     if ((inport_.getData()->getDataFormat()->getId() == dstFormat_.get()) &&
-        !dataRange_.getCustomRangeEnabled()) {
+        !dataRange_.getCustomRangeEnabled() && !valueAxis_.getCustomAxisEnabled()) {
         outport_.setData(inport_.getData());
         return;
     }
 
-    const auto dstRange = [&]() -> std::pair<dvec2, dvec2> {
+    const auto [dstDataRange, dstValueRange] = [&]() -> std::pair<dvec2, dvec2> {
         if (dataRange_.getCustomRangeEnabled()) {
             return {dataRange_.getCustomDataRange(), dataRange_.getCustomValueRange()};
         } else {
@@ -245,11 +246,13 @@ void VolumeConverter::process() {
         if (srcVolume->getDataFormat()->getId() == dstFormat_.get()) {
             return std::shared_ptr<Volume>(srcVolume->clone());
         } else {
-            return convertVolume(dstFormat_.get(), *srcVolume, enableDataMapping_, dstRange.first);
+            return convertVolume(dstFormat_.get(), *srcVolume, enableDataMapping_, dstDataRange);
         }
     }();
-    dstVolume->dataMap.dataRange = dstRange.first;
-    dstVolume->dataMap.valueRange = dstRange.second;
+    dstVolume->dataMap.dataRange = dstDataRange;
+    dstVolume->dataMap.valueRange = dstValueRange;
+    dstVolume->dataMap.valueAxis.name = valueAxis_.getValueName();
+    dstVolume->dataMap.valueAxis.unit = valueAxis_.getValueUnit();
 
     outport_.setData(dstVolume);
 }

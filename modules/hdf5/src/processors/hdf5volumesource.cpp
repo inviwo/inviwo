@@ -32,6 +32,7 @@
 #include <modules/hdf5/datastructures/hdf5path.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/network/networklock.h>
 #include <functional>
 #include <numeric>
 #include <limits>
@@ -360,7 +361,7 @@ HDF5ToVolume::DimSelection::DimSelection(const std::string& identifier,
 
 void HDF5ToVolume::DimSelection::update(int newMax) {
     range.setRangeMax(newMax);
-    range.setEnd(newMax);
+    range.setEnd(std::min(range.getEnd(), newMax));
     stride.set(std::min(stride.get(), newMax));
     stride.setMaxValue(std::max(10, newMax));
 }
@@ -384,6 +385,7 @@ HDF5ToVolume::DimSelections::DimSelections(const std::string& identifier,
 }
 
 void HDF5ToVolume::DimSelections::update(const MetaData& meta) {
+    const NetworkLock lock{this};
     auto cmdims = meta.getColumnMajorDimensions();
     rank_ = cmdims.size();
     for (size_t i = 0; i < maxRank_ - rank_; ++i) {

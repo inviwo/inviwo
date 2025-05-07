@@ -41,6 +41,7 @@
 #include <inviwo/core/util/formats.h>                   // for DataFormatId
 #include <inviwo/core/util/staticstring.h>              // for operator+
 #include <modules/base/properties/datarangeproperty.h>  // for DataRangeProperty
+#include <modules/base/properties/valueaxisproperty.h>
 
 #include <functional>   // for __base
 #include <string>       // for operator==, string
@@ -68,6 +69,7 @@ private:
     BoolProperty enableDataMapping_;
 
     DataRangeProperty dataRange_;
+    ValueAxisProperty valueAxis_;
     DoubleMinMaxProperty outputDataRange_;
 };
 

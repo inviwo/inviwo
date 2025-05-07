@@ -45,7 +45,6 @@
 #include <type_traits>  // for remove_extent_t
 
 namespace inviwo {
-class Volume;
 
 std::string_view DataRangeProperty::getClassIdentifier() const { return classIdentifier; }
 

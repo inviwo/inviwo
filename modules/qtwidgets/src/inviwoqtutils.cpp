@@ -388,7 +388,11 @@ QImage layerToQImage(const Layer& layer) {
 std::shared_ptr<Layer> toLayer(const QImage& image) {
     // Note: it is critical that the QImage format "Format_RGBA8888" is binary compatible with
     // our "LayerRAMPrecision<glm::u8vec4>".
+#if (QT_VERSION < QT_VERSION_CHECK(6, 9, 0))
     const auto qImage = image.convertToFormat(QImage::Format_RGBA8888).mirrored(false, true);
+#else
+    const auto qImage = image.convertToFormat(QImage::Format_RGBA8888).flipped(Qt::Vertical);
+#endif
     auto ram = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(utilqt::toGLM(qImage.size()));
     const auto ramMemSize =
         glm::compMul(ram->getDimensions()) * ram->getDataFormat()->getSizeInBytes();

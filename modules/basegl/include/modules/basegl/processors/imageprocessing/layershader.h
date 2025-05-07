@@ -38,7 +38,6 @@
 #include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
-#include <modules/base/properties/datarangeproperty.h>
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
