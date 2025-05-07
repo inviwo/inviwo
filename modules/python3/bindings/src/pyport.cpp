@@ -29,6 +29,14 @@
 
 #include <inviwopy/pyport.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
+#include <warn/pop>
+
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
@@ -43,14 +51,6 @@
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <modules/python3/pyportutils.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <pybind11/functional.h>
-#include <warn/pop>
 
 #include <utility>
 
@@ -130,12 +130,60 @@ void exposePort(pybind11::module& m) {
         .def("getData", &PythonOutport::getData)
         .def("setData", &PythonOutport::setData);
 
-
+    // Since we have a "global" std::string type here bind_vector will create module local bindings
+    // for StringVector. But since we have included it in opaquetypes we need to create a
+    // definition of this in each python module that uses it.
+    // See https://pybind11.readthedocs.io/en/stable/advanced/classes.html#module-local
+    // and https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
+    // for more details. 
     py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
     py::implicitly_convertible<py::list, std::vector<std::string>>();
 
     exposeInport<DataInport<std::vector<std::string>>>(m, "StringVector");
     exposeOutport<DataOutport<std::vector<std::string>>>(m, "StringVector");
+
+    /*
+    pybind11::classh<DataInport<std::vector<std::string>>, Inport>(m, "StringVectorInport")
+        .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
+        .def("hasData", &DataInport<std::vector<std::string>>::hasData)
+        .def("getData",
+             [](DataInport<std::vector<std::string>>* p) {
+                 if (auto data = p->getData()) {
+                     return *data;
+                 } else {
+                     return std::vector<std::string>{};
+                 }
+             })
+        .def("data", [](DataInport<std::vector<std::string>>* p) {
+            if (auto data = p->getData()) {
+                return *data;
+            } else {
+                return std::vector<std::string>{};
+            }
+        });
+
+    py::classh<DataOutport<std::vector<std::string>>, Outport>(m, "StringVectorOutport")
+        .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
+        .def("getData",
+             [](DataOutport<std::vector<std::string>>* p) {
+                 if (auto data = p->getData()) {
+                     return *data;
+                 } else {
+                     return std::vector<std::string>{};
+                 }
+             })
+        .def("detatchData",
+             [](DataOutport<std::vector<std::string>>* p) {
+                 if (auto data = p->getData()) {
+                     return *data;
+                 } else {
+                     return std::vector<std::string>{};
+                 }
+             })
+        .def("setData", [](DataOutport<std::vector<std::string>>* p, py::list vec) {
+            p->setData(vec.cast<std::vector<std::string>>());
+        });
+        */
 }
 
 }  // namespace inviwo

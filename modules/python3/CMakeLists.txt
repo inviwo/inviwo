@@ -30,6 +30,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/layerpy.cpp
+    src/opaquetypes.cpp
     src/polymorphictypehooks.cpp
     src/processortrampoline.cpp
     src/pybindflags.cpp
