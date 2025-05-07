@@ -107,6 +107,8 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
 
+    inviwo::util::bindModuleLocalTypes(m);
+
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);
     exposeGLMMatTypes(glmModule);
