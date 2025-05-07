@@ -984,6 +984,7 @@ var hierarchy =
             [ "inviwo::PointLightTrackball", "classinviwo_1_1PointLightTrackball.html", null ]
           ] ],
           [ "inviwo::TransformListProperty", "classinviwo_1_1TransformListProperty.html", null ],
+          [ "inviwo::ValueAxisProperty", "classinviwo_1_1ValueAxisProperty.html", null ],
           [ "inviwo::plot::AxisStyleProperty", "classinviwo_1_1plot_1_1AxisStyleProperty.html", null ],
           [ "inviwo::plot::BoxSelectionProperty", "classinviwo_1_1plot_1_1BoxSelectionProperty.html", null ],
           [ "inviwo::plot::CategoricalAxisProperty", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html", null ],

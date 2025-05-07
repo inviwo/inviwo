@@ -1744,6 +1744,7 @@ var annotated_dup =
       [ "UnitDesc", "structinviwo_1_1UnitDesc.html", null ],
       [ "UnitSettings", "classinviwo_1_1UnitSettings.html", null ],
       [ "UserInterfaceGLModule", "classinviwo_1_1UserInterfaceGLModule.html", null ],
+      [ "ValueAxisProperty", "classinviwo_1_1ValueAxisProperty.html", "classinviwo_1_1ValueAxisProperty" ],
       [ "ValueDragger", "classinviwo_1_1ValueDragger.html", "classinviwo_1_1ValueDragger" ],
       [ "ValueDragSpinBox", "classinviwo_1_1ValueDragSpinBox.html", "classinviwo_1_1ValueDragSpinBox" ],
       [ "ValueWrapper", "structinviwo_1_1ValueWrapper.html", "structinviwo_1_1ValueWrapper" ],

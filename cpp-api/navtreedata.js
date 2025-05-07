@@ -77,17 +77,17 @@ var NAVTREEINDEX =
 "classinviwo_1_1StructuredCameraCoordinateTransformerImpl.html#a4bd116e5573577e5d327d966e800eb6b",
 "classinviwo_1_1TIFFLayerReader.html",
 "classinviwo_1_1TouchPoint.html#af80beba86dc33c64a0532d503f54e91c",
-"classinviwo_1_1VolumeBinary.html#a1de0e6438645fcef7994750e733af13b",
-"classinviwo_1_1VolumeSliceVisualizer.html#a227f76e336f79d56f7e5174cd49e0690",
-"classinviwo_1_1animation_1_1BaseKeyframe.html",
-"classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html",
-"classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html#aeb1bb65ffc20eda5588765072fa1d5f4",
-"namespaceinviwo.html#a9ebb97c8b7082088f096b5f7bfbf425a",
-"namespaceinviwo_1_1util.html#a35a361515d9e7661be39f493d796dca6",
-"namespacemembers_func_i.html",
-"structinviwo_1_1NodeDebugger.html",
-"structinviwo_1_1TextBoundingBox.html#abeb7c48f750ee9347fdf47b4b0f8ddf9",
-"structinviwo_1_1util_1_1GridPos.html"
+"classinviwo_1_1Volume.html",
+"classinviwo_1_1VolumeSliceGL.html",
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9c878433103c41eb4dc0b704e953ddd5",
+"classinviwo_1_1buffertraits_1_1CurvatureBuffer.html",
+"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9",
+"namespaceinviwo.html#a85f8d2a404fd311d361a16dd0ec807a2",
+"namespaceinviwo_1_1util.html#a301a4dd68ec13be8ccacafeaa3d5d23c",
+"namespacemembers_func.html",
+"structinviwo_1_1NetworkEdge.html#aa1ae88a2ff2643445dcc7a91fa9ea7bb",
+"structinviwo_1_1TexAtlasRenderInfo.html",
+"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';
