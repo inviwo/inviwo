@@ -63,6 +63,8 @@ void exposeBnL(py::module& m) {
             
         )doc";
 
+     inviwo::util::bindModuleLocalTypes(m);
+
     py::enum_<BrushingAction>(m, "BrushingAction")
         .value("Filter", BrushingAction::Filter)
         .value("Select", BrushingAction::Select)

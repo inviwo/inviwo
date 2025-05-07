@@ -30,6 +30,7 @@
 #include <modules/base/pythonbindings/io/volumewriting.h>
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
 #include <modules/python3/pybindmodule.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -54,6 +55,8 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
 
     auto ioMod = m.def_submodule("io", "Input and Output functions");
     auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
+
+    inviwo::util::bindModuleLocalTypes(m);
 
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
