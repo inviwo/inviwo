@@ -45,6 +45,7 @@
 #include <unordered_set>
 #include <vector>
 #include <fstream>
+#include <ranges>
 
 #include <fmt/std.h>
 
@@ -526,46 +527,35 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
     }
 
     // Copy over the value of old props to new ones if id and class name are equal.
-    auto newProps = newProcessor.getProperties();
-    auto oldProps = oldProcessor->getProperties();
-
-    std::map<Property*, Property*> propertymap;
-
-    for (auto newProp : newProps) {
-        for (auto oldProp : oldProps) {
-            if (newProp->getIdentifier() == oldProp->getIdentifier() &&
-                newProp->getClassIdentifier() == oldProp->getClassIdentifier()) {
+    for (auto* oldProp : oldProcessor->getProperties()) {
+        if (auto* newProp = newProcessor.getPropertyByIdentifier(oldProp->getIdentifier())) {
+            if (newProp->getClassIdentifier() == oldProp->getClassIdentifier()) {
                 newProp->set(oldProp);
-                propertymap[oldProp] = newProp;
             }
         }
     }
 
     // Move property links to the new processor
-    auto links = network->getLinks();
-    for (auto oldProp : oldProps) {
-        for (auto link : links) {
-            if (link.getDestination() == oldProp) {
-                auto match = propertymap.find(oldProp);
-                if (match != propertymap.end()) {
-                    // add link from
-                    Property* start = link.getSource();
-                    // to
-                    Property* end = match->second;
+    const auto links =
+        network->linkRange() |
+        std::views::filter([&](const PropertyLink& link) { return link.involves(oldProcessor); }) |
+        std::ranges::to<std::vector>();
 
-                    network->addLink(start, end);
-                }
+    std::pmr::string path;
+    for (const auto& link : links) {
+        if (link.getDestination()->getOwner()->getProcessor() == oldProcessor) {
+            path.clear();
+            link.getDestination()->getPath(path);
+            const auto [first, rest] = util::splitByFirst(path, '.');
+            if (auto* newDst = newProcessor.getPropertyByPath(rest)) {
+                network->addLink(link.getSource(), newDst);
             }
-            if (link.getSource() == oldProp) {
-                auto match = propertymap.find(oldProp);
-                if (match != propertymap.end()) {
-                    // add link from
-                    Property* start = match->second;
-                    // to
-                    Property* end = link.getDestination();
-
-                    network->addLink(start, end);
-                }
+        } else if (link.getSource()->getOwner()->getProcessor() == oldProcessor) {
+            path.clear();
+            link.getSource()->getPath(path);
+            const auto [first, rest] = util::splitByFirst(path, '.');
+            if (auto* newSrc = newProcessor.getPropertyByPath(rest)) {
+                network->addLink(newSrc, link.getDestination());
             }
         }
     }
