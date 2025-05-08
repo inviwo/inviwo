@@ -63,7 +63,8 @@ void exposeBnL(py::module& m) {
             
         )doc";
 
-     inviwo::util::bindModuleLocalTypes(m);
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
 
     py::enum_<BrushingAction>(m, "BrushingAction")
         .value("Filter", BrushingAction::Filter)

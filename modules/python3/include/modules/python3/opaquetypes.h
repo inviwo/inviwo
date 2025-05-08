@@ -141,7 +141,7 @@ namespace inviwo::util {
 
 /**
  * For some types we want the python bindings to stay local to each module.
- * This is mainly to avoid conflicts for common types such as std::vector<std::string> or simialr
+ * This is mainly to avoid conflicts for common types such as std::vector<std::string> or similar
  * standard type. This means we have to define those types in each python module.
  * Note: this has to be inline, for unknown reasons.
  */
@@ -154,8 +154,8 @@ inline void bindModuleLocalTypes(pybind11::module& m) {
     // See https://pybind11.readthedocs.io/en/stable/advanced/classes.html#module-local
     // and https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
     // for more details.
-    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
-    py::implicitly_convertible<py::list, std::vector<std::string>>();
+    //py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    //py::implicitly_convertible<py::list, std::vector<std::string>>();
 }
 
 

@@ -55,6 +55,7 @@ INVIWO_PYBIND_MODULE(ivwdataframe, m) {
         DataFrame Module API
         )doc";
 
-    inviwo::util::bindModuleLocalTypes(m);
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
     inviwo::exposeDataFrame(m);
 }
