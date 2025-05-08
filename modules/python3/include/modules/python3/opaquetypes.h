@@ -29,12 +29,16 @@
 
 #pragma once
 
+#include <modules/python3/python3moduledefine.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
 #include <warn/pop>
 
 #include <vector>
+#include <string>
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -129,3 +133,30 @@ PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<3, 4, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 2, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 3, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 4, unsigned int>>)
+
+PYBIND11_MAKE_OPAQUE(std::vector<std::string>)
+
+namespace inviwo::util {
+
+
+/**
+ * For some types we want the python bindings to stay local to each module.
+ * This is mainly to avoid conflicts for common types such as std::vector<std::string> or similar
+ * standard type. This means we have to define those types in each python module.
+ * Note: this has to be inline, for unknown reasons.
+ */
+inline void bindModuleLocalTypes(pybind11::module& m) {
+    namespace py = pybind11;
+
+    // Since we have a "global" std::string type here bind_vector will create module local bindings
+    // for StringVector. But since we have included it in opaquetypes we need to create a
+    // definition of this in each python module that uses it.
+    // See https://pybind11.readthedocs.io/en/stable/advanced/classes.html#module-local
+    // and https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
+    // for more details.
+    //py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    //py::implicitly_convertible<py::list, std::vector<std::string>>();
+}
+
+
+}  // namespace inviwo::util

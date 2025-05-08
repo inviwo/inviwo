@@ -107,6 +107,9 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
 
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
+
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);
     exposeGLMMatTypes(glmModule);
