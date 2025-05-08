@@ -56,7 +56,8 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
     auto ioMod = m.def_submodule("io", "Input and Output functions");
     auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
 
-    inviwo::util::bindModuleLocalTypes(m);
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
 
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
