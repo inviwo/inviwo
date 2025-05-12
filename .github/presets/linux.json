@@ -20,15 +20,12 @@
       "name": "gha-static",
       "inherits" : ["gha"],
       "cacheVariables": {
-        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "OFF"},
+        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "OFF"}
       }
     },
     {
       "name": "gha-dynamic",
-      "inherits" : ["gha"],
-      "cacheVariables": {
-        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "ON"},
-      }
+      "inherits" : ["gha"]
     }
   ]
 }

@@ -1,6 +1,6 @@
 if(NOT DEFINED VCPKG_TARGET_TRIPLET)
     if(CMAKE_HOST_APPLE)
-        # cmake flasgs for this CMAKE_SYSTEM_PROCESSOR etc, are usually not
+        # cmake flags for CMAKE_SYSTEM_PROCESSOR etc, are usually not
         # around before the first call to project, which is to late.
         execute_process(
             COMMAND uname -m
