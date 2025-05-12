@@ -35,6 +35,8 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 
 #include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
@@ -58,6 +60,8 @@ private:
     ImageOutport outport_;
 
     plot::AxisStyleProperty style_;
+    FloatVec4Property backgroundColor_;
+    BoolProperty clipContent_;
     plot::AxisProperty axis1_;
     plot::AxisProperty axis2_;
     MarginProperty margins_;
