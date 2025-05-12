@@ -45,6 +45,8 @@ if(NOT IVW_CFG_BUILD_VERSION STREQUAL "")
     string(APPEND IVW_VERSION "+${IVW_CFG_BUILD_VERSION}")
 endif()
 
+include(cmake/vcpkg-default-triplets.cmake)
+
 # option for setting the project/solution name of the Inviwo project
 set(IVW_CFG_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_CFG_PROJECT_NAME} 

@@ -21,8 +21,6 @@
       "inherits" : ["gha"],
       "cacheVariables": {
         "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "OFF"},
-        "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "VCPKG_HOST_TRIPLET": "x64-linux"
       }
     },
     {
@@ -30,8 +28,6 @@
       "inherits" : ["gha"],
       "cacheVariables": {
         "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "ON"},
-        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic",
-        "VCPKG_HOST_TRIPLET": "x64-linux-dynamic"
       }
     }
   ]

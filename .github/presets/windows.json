@@ -21,8 +21,6 @@
       "cacheVariables": {
         "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON"},
         "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF"},
-        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
-        "VCPKG_HOST_TRIPLET": "x64-windows-static-md"
       }
     },
     {
