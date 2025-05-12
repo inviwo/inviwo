@@ -95,14 +95,14 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point",
         [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
     , wheelZoom_("wheelZoom",             "Zoom (Wheel)",
-        [this](Event* e) { zoomWheel(static_cast<WheelEvent*>(e)); },    std::make_unique<WheelEventMatcher>())
+        [this](Event* e) { zoomWheel(e->getAs<WheelEvent>()); },    std::make_unique<WheelEventMatcher>())
 
     , mouseRotate_("trackballRotate",     "Rotate",
-        [this](Event* e) { rotate(static_cast<MouseEvent*>(e)); },       MouseButton::Left,        MouseState::Move)
+        [this](Event* e) { rotate(e->getAs<MouseEvent>()); },       MouseButton::Left,        MouseState::Move)
     , mouseZoom_("mouseZoom",             "Zoom (Drag)",
-        [this](Event* e) { zoom(static_cast<MouseEvent*>(e)); },         MouseButton::Right,       MouseState::Move)
+        [this](Event* e) { zoom(e->getAs<MouseEvent>()); },         MouseButton::Right,       MouseState::Move)
     , mousePan_("trackballPan",           "Pan",
-        [this](Event* e) { pan(static_cast<MouseEvent*>(e)); },          MouseButton::Middle,      MouseState::Move)
+        [this](Event* e) { pan(e->getAs<MouseEvent>()); },          MouseButton::Middle,      MouseState::Move)
     , mouseReset_("mouseReset",           "Reset",
         [this](Event* e) { reset(e); },        MouseButtons(flags::any), MouseState::Release, KeyModifiers(flags::any))
 

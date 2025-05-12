@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/camera/cameratools.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
+#include <inviwo/core/datastructures/camera/plotcamera.h>
 
 #include <memory>
 #include <utility>
@@ -104,6 +105,9 @@ void SkewedPerspectiveCamera::updateFrom(const Camera& source) {
         setFovy(pc->getFovy());
     } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
+        setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
+    } else if (auto plc = dynamic_cast<const PlotCamera*>(&source)) {
+        const auto dist = util::widthToViewDist(plc->getSize().x, getFovy(), getAspectRatio());
         setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
     }
 }

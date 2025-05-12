@@ -87,15 +87,15 @@ void PlotCamera::zoom(const ZoomOptions& opts) {
 
 void PlotCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
-    if (auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
+    if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
         setSize(plc->getSize());
-    } else if (auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+    } else if (const auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         setSize(vec2{oc->getWidth(), oc->getWidth() / getAspectRatio()});
-    } else if (auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+    } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
             pc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
         setSize(vec2{width, width / getAspectRatio()});
-    } else if (auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+    } else if (const auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
             sc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
         setSize(vec2{width, width / getAspectRatio()});

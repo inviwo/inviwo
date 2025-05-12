@@ -128,12 +128,12 @@ protected:
     void moveBackward(Event* event);
 
     const vec3 getWorldUp() const;
-    mat4 roll(const float radians) const;
-    mat4 pitch(const float radians) const;
-    mat4 yaw(const float radians) const;
+    mat4 roll(float radians) const;
+    mat4 pitch(float radians) const;
+    mat4 yaw(float radians) const;
 
     void stepRotate(Direction dir);
-    void stepZoom(Direction dir, const int numSteps = 1);
+    void stepZoom(Direction dir, int numSteps = 1);
     void stepPan(Direction dir);
 
     void rotateLeft(Event* event);
@@ -147,8 +147,8 @@ protected:
     void panDown(Event* event);
 
     void zoomWheel(WheelEvent* event);
-    void zoomIn(Event* event, const int numSteps = 1);
-    void zoomOut(Event* event, const int numSteps = 1);
+    void zoomIn(Event* event, int numSteps = 1);
+    void zoomOut(Event* event, int numSteps = 1);
 
     void recenterFocusPoint(Event* event);
 
