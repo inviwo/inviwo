@@ -45,19 +45,23 @@ namespace inviwo {
  */
 class IVW_CORE_API PlotCamera final : public Camera {
 public:
-    PlotCamera(vec3 lookFrom = cameradefaults::lookFrom, vec3 lookTo = cameradefaults::lookTo,
-               vec3 lookUp = cameradefaults::lookUp, float nearPlane = cameradefaults::nearPlane,
-               float farPlane = cameradefaults::farPlane,
-               float aspectRatio = cameradefaults::aspectRatio, vec2 size = vec2{300, 300});
+    explicit PlotCamera(vec3 lookFrom = cameradefaults::lookFrom,
+                        vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
+                        float nearPlane = cameradefaults::nearPlane,
+                        float farPlane = cameradefaults::farPlane,
+                        float aspectRatio = cameradefaults::aspectRatio,
+                        vec2 size = vec2{300, 300});
     virtual ~PlotCamera() = default;
     PlotCamera(const PlotCamera& other);
     PlotCamera& operator=(const PlotCamera& other);
+    PlotCamera(PlotCamera&& other) noexcept;
+    PlotCamera& operator=(PlotCamera&& other) noexcept;
     virtual PlotCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"PlotCamera"};
 
     virtual void updateFrom(const Camera& source) override;
-    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
+    virtual void configureProperties(CameraProperty& cp, bool attach) override;
 
     vec2 getSize() const { return size_; }
     void setSize(vec2 size);

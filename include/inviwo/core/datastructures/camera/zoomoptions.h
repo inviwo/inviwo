@@ -34,11 +34,12 @@
 #include <glm/vec2.hpp>
 
 #include <optional>
+#include <cstdint>
 
 namespace inviwo {
 
 struct IVW_CORE_API ZoomOptions {
-    enum class Bounded { Yes, No };
+    enum class Bounded : std::uint8_t { Yes, No };
 
     glm::vec2 factor = glm::vec2{1.0f, 1.0f};
     std::optional<glm::vec2> origin = std::nullopt;

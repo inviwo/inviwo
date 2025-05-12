@@ -47,6 +47,8 @@
 namespace inviwo {
 
 class Event;
+class WheelEvent;
+class MouseEvent;
 class TrackballObject;
 
 class IVW_CORE_API Trackball : public CompositeProperty {
@@ -110,12 +112,12 @@ protected:
     float getBoundedZoom(const vec3& lookFrom, const vec3& zoomTo, float zoom);
     std::pair<bool, vec3> getTrackBallIntersection(const vec2 pos) const;
 
-    void rotate(Event* event);
-    void rotateTAV(Event* event);
-    void rotateArc(Event* event, bool followObjectDuringRotation = false);
-    void rotateFPS(Event* event);
-    void zoom(Event* event);
-    void pan(Event* event);
+    void rotate(MouseEvent* event);
+    void rotateTAV(MouseEvent* event);
+    void rotateArc(MouseEvent* event, bool followObjectDuringRotation = false);
+    void rotateFPS(MouseEvent* event);
+    void zoom(MouseEvent* event);
+    void pan(MouseEvent* event);
     void reset(Event* event);
 
     void moveLeft(Event* event);
@@ -144,7 +146,7 @@ protected:
     void panUp(Event* event);
     void panDown(Event* event);
 
-    void zoomWheel(Event* event);
+    void zoomWheel(WheelEvent* event);
     void zoomIn(Event* event, const int numSteps = 1);
     void zoomOut(Event* event, const int numSteps = 1);
 

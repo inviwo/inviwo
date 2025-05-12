@@ -92,34 +92,58 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , allowRecenterView_("allowRecenterView", "Recenter view with Double Click", false)
     , animate_("animate", "Animate rotations", false)
     // clang-format off
-    , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point", [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
-    , wheelZoom_("wheelZoom",             "Zoom (Wheel)",  [this](Event* e) { zoomWheel(e); },    std::make_unique<WheelEventMatcher>())
+    , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point",
+        [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
+    , wheelZoom_("wheelZoom",             "Zoom (Wheel)",
+        [this](Event* e) { zoomWheel(static_cast<WheelEvent*>(e)); },    std::make_unique<WheelEventMatcher>())
 
-    , mouseRotate_("trackballRotate",     "Rotate",        [this](Event* e) { rotate(e); },       MouseButton::Left,        MouseState::Move)
-    , mouseZoom_("mouseZoom",             "Zoom (Drag)",   [this](Event* e) { zoom(e); },         MouseButton::Right,       MouseState::Move)
-    , mousePan_("trackballPan",           "Pan",           [this](Event* e) { pan(e); },          MouseButton::Middle,      MouseState::Move)
-    , mouseReset_("mouseReset",           "Reset",         [this](Event* e) { reset(e); },        MouseButtons(flags::any), MouseState::Release, KeyModifiers(flags::any))
+    , mouseRotate_("trackballRotate",     "Rotate",
+        [this](Event* e) { rotate(static_cast<MouseEvent*>(e)); },       MouseButton::Left,        MouseState::Move)
+    , mouseZoom_("mouseZoom",             "Zoom (Drag)",
+        [this](Event* e) { zoom(static_cast<MouseEvent*>(e)); },         MouseButton::Right,       MouseState::Move)
+    , mousePan_("trackballPan",           "Pan",
+        [this](Event* e) { pan(static_cast<MouseEvent*>(e)); },          MouseButton::Middle,      MouseState::Move)
+    , mouseReset_("mouseReset",           "Reset",
+        [this](Event* e) { reset(e); },        MouseButtons(flags::any), MouseState::Release, KeyModifiers(flags::any))
 
-    , moveUp_("moveUp",                   "Move Up",       [this](Event* e) { moveUp(e); },       IvwKey::R,     KeyState::Press)
-    , moveDown_("moveDown",               "Move Down",     [this](Event* e) { moveDown(e); },     IvwKey::F,     KeyState::Press)
-    , moveForward_("moveForward",         "Move Forward",  [this](Event* e) { moveForward(e); },  IvwKey::W,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
-    , moveBackward_("moveBackward",       "Move Backward", [this](Event* e) { moveBackward(e); }, IvwKey::S,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
-    , moveLeft_("moveLeft",               "Move Left",     [this](Event* e) { moveLeft(e); },     IvwKey::A,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
-    , moveRight_("moveRight",             "Move Right",    [this](Event* e) { moveRight(e); },    IvwKey::D,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
+    , moveUp_("moveUp",                   "Move Up",
+        [this](Event* e) { moveUp(e); },       IvwKey::R,     KeyState::Press)
+    , moveDown_("moveDown",               "Move Down",
+        [this](Event* e) { moveDown(e); },     IvwKey::F,     KeyState::Press)
+    , moveForward_("moveForward",         "Move Forward",
+        [this](Event* e) { moveForward(e); },  IvwKey::W,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
+    , moveBackward_("moveBackward",       "Move Backward",
+        [this](Event* e) { moveBackward(e); }, IvwKey::S,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
+    , moveLeft_("moveLeft",               "Move Left",
+        [this](Event* e) { moveLeft(e); },     IvwKey::A,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
+    , moveRight_("moveRight",             "Move Right",
+        [this](Event* e) { moveRight(e); },    IvwKey::D,     KeyState::Press, KeyModifier::Shift | KeyModifier::Alt)
 
-    , stepRotateUp_("stepRotateUp",       "Rotate up",     [this](Event* e) { rotateUp(e); },     IvwKey::W,     KeyState::Press)
-    , stepRotateDown_("stepRotateDown",   "Rotate down",   [this](Event* e) { rotateDown(e); },   IvwKey::S,     KeyState::Press)
-    , stepRotateLeft_("stepRotateLeft",   "Rotate left",   [this](Event* e) { rotateLeft(e); },   IvwKey::A,     KeyState::Press)
-    , stepRotateRight_("stepRotateRight", "Rotate right",  [this](Event* e) { rotateRight(e); },  IvwKey::D,     KeyState::Press)
+    , stepRotateUp_("stepRotateUp",       "Rotate up",
+        [this](Event* e) { rotateUp(e); },     IvwKey::W,     KeyState::Press)
+    , stepRotateDown_("stepRotateDown",   "Rotate down",
+        [this](Event* e) { rotateDown(e); },   IvwKey::S,     KeyState::Press)
+    , stepRotateLeft_("stepRotateLeft",   "Rotate left",
+        [this](Event* e) { rotateLeft(e); },   IvwKey::A,     KeyState::Press)
+    , stepRotateRight_("stepRotateRight", "Rotate right",
+        [this](Event* e) { rotateRight(e); },  IvwKey::D,     KeyState::Press)
 
-    , stepZoomIn_("stepZoomIn",           "Zoom in",       [this](Event* e) { zoomIn(e); },       IvwKey::Plus,  KeyState::Press)
-    , stepZoomOut_("stepZoomOut",         "Zoom out",      [this](Event* e) { zoomOut(e); },      IvwKey::Minus, KeyState::Press)
-    , stepPanUp_("stepPanUp",             "Pan up",        [this](Event* e) { panUp(e); },        IvwKey::W,     KeyState::Press, KeyModifier::Shift)
-    , stepPanDown_("stepPanDown",         "Pan down",      [this](Event* e) { panDown(e); },      IvwKey::S,     KeyState::Press, KeyModifier::Shift)
-    , stepPanLeft_("stepPanLeft",         "Pan left",      [this](Event* e) { panLeft(e); },      IvwKey::A,     KeyState::Press, KeyModifier::Shift)
-    , stepPanRight_("stepPanRight",       "Pan right",     [this](Event* e) { panRight(e); },     IvwKey::D,     KeyState::Press, KeyModifier::Shift)
+    , stepZoomIn_("stepZoomIn",           "Zoom in",
+        [this](Event* e) { zoomIn(e); },       IvwKey::Plus,  KeyState::Press)
+    , stepZoomOut_("stepZoomOut",         "Zoom out",
+        [this](Event* e) { zoomOut(e); },      IvwKey::Minus, KeyState::Press)
+    , stepPanUp_("stepPanUp",             "Pan up",
+        [this](Event* e) { panUp(e); },        IvwKey::W,     KeyState::Press, KeyModifier::Shift)
+    , stepPanDown_("stepPanDown",         "Pan down",
+        [this](Event* e) { panDown(e); },      IvwKey::S,     KeyState::Press, KeyModifier::Shift)
+    , stepPanLeft_("stepPanLeft",         "Pan left",
+        [this](Event* e) { panLeft(e); },      IvwKey::A,     KeyState::Press, KeyModifier::Shift)
+    , stepPanRight_("stepPanRight",       "Pan right",
+        [this](Event* e) { panRight(e); },     IvwKey::D,     KeyState::Press, KeyModifier::Shift)
 
-    , touchGesture_("touchGesture",       "Touch",         [this](Event* e) { touchGesture(e); }, std::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
+    , touchGesture_("touchGesture",       "Touch",
+        [this](Event* e) { touchGesture(e); },
+        std::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
 // clang-format on
 {
 
@@ -303,7 +327,7 @@ std::pair<bool, vec3> Trackball::getTrackBallIntersection(const vec2 pos) const 
 }
 
 /* \brief Passes the mouse event (no touch events!) on to the chosen rotation method */
-void Trackball::rotate(Event* event) {
+void Trackball::rotate(MouseEvent* event) {
     switch (trackballMethod_) {
         case 0:  // Virtual Trackball
             rotateArc(event);
@@ -323,8 +347,7 @@ void Trackball::rotate(Event* event) {
 }
 
 /* \brief Maps the mouse inputs to camera movement according to the Two Axis Valuator method */
-void Trackball::rotateTAV(Event* event) {
-    auto mouseEvent = static_cast<MouseEvent*>(event);
+void Trackball::rotateTAV(MouseEvent* mouseEvent) {
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
 
     const auto curNDC =
@@ -366,7 +389,7 @@ void Trackball::rotateTAV(Event* event) {
     }
     // update mouse positions
     this->lastNDC_ = curNDC;
-    event->markAsUsed();
+    mouseEvent->markAsUsed();
 }
 
 /* \brief Maps the mouse inputs to camera movement according to the Arcball method
@@ -374,11 +397,10 @@ void Trackball::rotateTAV(Event* event) {
  * @param followObjectDuringRotation Ensures the finger stays on the same position on the object
  * surface
  */
-void Trackball::rotateArc(Event* event, bool followObjectDuringRotation) {
+void Trackball::rotateArc(MouseEvent* mouseEvent, bool followObjectDuringRotation) {
     if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
     timer_.stop();
 
-    auto mouseEvent = static_cast<MouseEvent*>(event);
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
 
     const auto curNDC =
@@ -416,13 +438,12 @@ void Trackball::rotateArc(Event* event, bool followObjectDuringRotation) {
     }
     // update mouse positions
     lastNDC_ = curNDC;
-    event->markAsUsed();
+    mouseEvent->markAsUsed();
 }
 
 /* \brief Maps the mouse inputs to first person camera movement */
-void Trackball::rotateFPS(Event* event) {
-    auto mouseEvent = static_cast<MouseEvent*>(event);
-    const vec3 ndc = static_cast<vec3>(mouseEvent->ndc());
+void Trackball::rotateFPS(MouseEvent* mouseEvent) {
+    const auto ndc = static_cast<vec3>(mouseEvent->ndc());
 
     const auto curNDC =
         vec3(allowHorizontalRotation_ ? ndc.x : 0.0f, allowVerticalRotation_ ? ndc.y : 0.0f, 1.0f);
@@ -445,7 +466,7 @@ void Trackball::rotateFPS(Event* event) {
     }
     // update mouse positions
     lastNDC_ = curNDC;
-    event->markAsUsed();
+    mouseEvent->markAsUsed();
 }
 
 mat4 Trackball::pitch(const float radians) const {
@@ -510,12 +531,11 @@ void Trackball::moveBackward(Event*) {
 
 /* \brief zoom based on mouse move event
  */
-void Trackball::zoom(Event* event) {
+void Trackball::zoom(MouseEvent* event) {
     if (!allowZooming_) return;
     timer_.stop();
 
-    auto mouseEvent = static_cast<MouseEvent*>(event);
-    auto curNDC = static_cast<vec3>(mouseEvent->ndc());
+    const auto curNDC = static_cast<vec3>(event->ndc());
 
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
@@ -535,11 +555,10 @@ void Trackball::zoom(Event* event) {
     event->markAsUsed();
 }
 
-void Trackball::pan(Event* event) {
+void Trackball::pan(MouseEvent* mouseEvent) {
     if (!allowHorizontalPanning_ && !allowVerticalPanning_) return;
 
     timer_.stop();
-    auto mouseEvent = static_cast<MouseEvent*>(event);
     auto curNDC = static_cast<vec3>(mouseEvent->ndc());
 
     // disable movements on first press
@@ -570,7 +589,7 @@ void Trackball::pan(Event* event) {
 
     lastNDC_ = curNDC;
 
-    event->markAsUsed();
+    mouseEvent->markAsUsed();
 }
 
 void Trackball::reset(Event* event) {
@@ -777,7 +796,7 @@ void Trackball::touchGesture(Event* event) {
         }
 
         // Compute translation in world space
-        vec3 fromNDC(2. * prevCenterPoint - 1., pressNDC_.z);
+        const vec3 fromNDC(2. * prevCenterPoint - 1., pressNDC_.z);
         vec3 toNDC(2. * centerPoint - 1., pressNDC_.z);
         if (!allowHorizontalPanning_) toNDC.x = fromNDC.x;
         if (!allowVerticalPanning_) toNDC.y = fromNDC.y;
@@ -964,15 +983,13 @@ void Trackball::panDown(Event* event) {
  * Uses the step zoom functions and triggers one
  * step per mouse wheel tick. Horizontal scrolling is disregarded
  */
-void Trackball::zoomWheel(Event* event) {
+void Trackball::zoomWheel(WheelEvent* event) {
     if (!allowWheelZooming_) return;
 
-    auto* wheelEvent = static_cast<WheelEvent*>(event);
-
     object_->zoom(
-        {.factor = static_cast<vec2>(wheelEvent->delta()) * stepSize,
+        {.factor = static_cast<vec2>(event->delta()) * stepSize,
          .origin = mouseCenteredZoom_.get()
-                       ? std::optional<glm::vec2>{static_cast<vec2>(wheelEvent->ndc())}
+                       ? std::optional<glm::vec2>{static_cast<vec2>(event->ndc())}
                        : std::optional<glm::vec2>{},
          .bounded = boundedZooming_ ? ZoomOptions::Bounded::Yes : ZoomOptions::Bounded::No});
 }

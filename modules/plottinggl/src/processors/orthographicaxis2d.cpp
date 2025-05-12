@@ -101,7 +101,7 @@ void OrthographicAxis2D::process() {
 
     const auto padding = axisMargin_.get();
 
-    utilgl::ClearColor clearColor{backgroundColor_.get()};
+    const utilgl::ClearColor clearColor{backgroundColor_.get()};
     utilgl::activateAndClearTarget(outport_);
     if (auto source = inport_.getData()) {
         const auto scissors =

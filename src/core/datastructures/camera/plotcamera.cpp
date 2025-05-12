@@ -48,6 +48,10 @@ PlotCamera::PlotCamera(const PlotCamera&) = default;
 
 PlotCamera& PlotCamera::operator=(const PlotCamera&) = default;
 
+PlotCamera::PlotCamera(PlotCamera&& other) noexcept = default;
+
+PlotCamera& PlotCamera::operator=(PlotCamera&& other) noexcept = default;
+
 PlotCamera* PlotCamera::clone() const { return new PlotCamera(*this); }
 
 std::string_view PlotCamera::getClassIdentifier() const { return classIdentifier; }
@@ -57,7 +61,7 @@ void PlotCamera::setSize(vec2 size) {
         size_ = size;
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto p = util::getCameraWidthProperty(*camprop_)) {
+            if (auto* p = util::getCameraWidthProperty(*camprop_)) {
                 p->propertyModified();
             }
         }
@@ -83,15 +87,15 @@ void PlotCamera::zoom(const ZoomOptions& opts) {
 
 void PlotCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
-    if (auto plc = dynamic_cast<const PlotCamera*>(&source)) {
+    if (auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
         setSize(plc->getSize());
-    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+    } else if (auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         setSize(vec2{oc->getWidth(), oc->getWidth() / getAspectRatio()});
-    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+    } else if (auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
             pc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
         setSize(vec2{width, width / getAspectRatio()});
-    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+    } else if (auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         const auto width = util::fovyToWidth(
             sc->getFovy(), glm::distance(getLookTo(), getLookFrom()), getAspectRatio());
         setSize(vec2{width, width / getAspectRatio()});
@@ -129,7 +133,7 @@ void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
 }
 
 bool PlotCamera::equal(const Camera& other) const {
-    if (auto rhs = dynamic_cast<const PlotCamera*>(&other)) {
+    if (const auto* rhs = dynamic_cast<const PlotCamera*>(&other)) {
         return equalTo(other) && size_ == rhs->size_;
     } else {
         return false;

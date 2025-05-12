@@ -93,9 +93,7 @@ void SkewedPerspectiveCamera::setOffset(vec2 offset) {
     }
 }
 
-void SkewedPerspectiveCamera::zoom(const ZoomOptions& opts) {
-    util::perspectiveZoom(*this, opts);
-}
+void SkewedPerspectiveCamera::zoom(const ZoomOptions& opts) { util::perspectiveZoom(*this, opts); }
 
 void SkewedPerspectiveCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);

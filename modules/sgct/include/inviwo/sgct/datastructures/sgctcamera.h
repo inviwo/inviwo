@@ -65,7 +65,7 @@ public:
     float getFovy() const;
     void setFovy(float val);
     void setExternal(const sgct::RenderData& renderData);
-    virtual void zoom(float factor, std::optional<mat4> boundingBox) override;
+    virtual void zoom(const ZoomOptions& opts) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

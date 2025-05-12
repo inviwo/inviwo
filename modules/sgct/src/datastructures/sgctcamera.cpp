@@ -174,8 +174,8 @@ void SGCTCamera::setExternal(const sgct::RenderData& renderData) {
     }
 }
 
-void SGCTCamera::zoom(float factor, std::optional<mat4> boundingBox) {
-    setLookFrom(util::perspectiveZoom(*this, factor, boundingBox));
+void SGCTCamera::zoom(const ZoomOptions& opts) {
+    util::perspectiveZoom(*this, opts);
 }
 
 mat4 SGCTCamera::calculateViewMatrix() const {
