@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,45 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/datastructures/camera/zoomoptions.h>
 
-namespace inviwo {
-
-/**
- * \class TrackballObject
- */
-class IVW_CORE_API TrackballObject {
-public:
-    virtual ~TrackballObject() = default;
-    [[nodiscard]] virtual vec3 getLookTo() const = 0;
-    [[nodiscard]] virtual vec3 getLookFrom() const = 0;
-    [[nodiscard]] virtual vec3 getLookUp() const = 0;
-
-    virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
-    virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
-    virtual TrackballObject& setLookUp(vec3 lookUp) = 0;
-
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;  // NOLINT
-
-    [[nodiscard]] virtual vec3 getLookFromMinValue() const = 0;
-    [[nodiscard]] virtual vec3 getLookFromMaxValue() const = 0;
-
-    [[nodiscard]] virtual vec3 getLookToMinValue() const = 0;
-    [[nodiscard]] virtual vec3 getLookToMaxValue() const = 0;
-
-    [[nodiscard]] virtual float getNearPlaneDist() const = 0;
-    [[nodiscard]] virtual float getFarPlaneDist() const = 0;
-
-    [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
-        const vec3& ndcCoords) const = 0;
-    [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-        const vec2& normalizedScreenCoord) const = 0;
-
-    virtual void zoom(const ZoomOptions& opts) = 0;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -36,6 +36,7 @@
 // Cameras
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
+#include <inviwo/core/datastructures/camera/plotcamera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
@@ -177,6 +178,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // Register Cameras
     registerCamera<PerspectiveCamera>(PerspectiveCamera::classIdentifier);
     registerCamera<OrthographicCamera>(OrthographicCamera::classIdentifier);
+    registerCamera<PlotCamera>(PlotCamera::classIdentifier);
     registerCamera<SkewedPerspectiveCamera>(SkewedPerspectiveCamera::classIdentifier);
 
     // Register Data readers

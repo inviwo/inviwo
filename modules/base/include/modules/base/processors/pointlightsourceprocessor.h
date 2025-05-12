@@ -123,7 +123,7 @@ public:
     [[nodiscard]] virtual float getNearPlaneDist() const override;
     [[nodiscard]] virtual float getFarPlaneDist() const override;
 
-    virtual void zoom(float factor, Bounded bounded) override;
+    virtual void zoom(const ZoomOptions& opts) override;
 
     [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
         const vec3& ndcCoords) const override;

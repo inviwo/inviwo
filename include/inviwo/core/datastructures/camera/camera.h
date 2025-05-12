@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/datastructures/camera/zoomoptions.h>
 #include <inviwo/core/util/glmvec.h>
 #include <glm/mat4x4.hpp>
 
@@ -104,7 +105,7 @@ public:
     virtual float getAspectRatio() const;
     virtual void setAspectRatio(float val);
 
-    virtual void zoom(float factor, std::optional<mat4> boundingBox) = 0;
+    virtual void zoom(const ZoomOptions& opts) = 0;
 
     /**
      * \brief Get unnormalized direction of camera: lookTo - lookFrom

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/datastructures/camera/zoomoptions.h>
+
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+
+#include <optional>
 
 namespace inviwo {
 
-/**
- * \class TrackballObject
- */
-class IVW_CORE_API TrackballObject {
-public:
-    virtual ~TrackballObject() = default;
-    [[nodiscard]] virtual vec3 getLookTo() const = 0;
-    [[nodiscard]] virtual vec3 getLookFrom() const = 0;
-    [[nodiscard]] virtual vec3 getLookUp() const = 0;
+struct IVW_CORE_API ZoomOptions {
+    enum class Bounded { Yes, No };
 
-    virtual TrackballObject& setLookTo(vec3 lookTo) = 0;
-    virtual TrackballObject& setLookFrom(vec3 lookFrom) = 0;
-    virtual TrackballObject& setLookUp(vec3 lookUp) = 0;
-
-    virtual TrackballObject& setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) = 0;  // NOLINT
-
-    [[nodiscard]] virtual vec3 getLookFromMinValue() const = 0;
-    [[nodiscard]] virtual vec3 getLookFromMaxValue() const = 0;
-
-    [[nodiscard]] virtual vec3 getLookToMinValue() const = 0;
-    [[nodiscard]] virtual vec3 getLookToMaxValue() const = 0;
-
-    [[nodiscard]] virtual float getNearPlaneDist() const = 0;
-    [[nodiscard]] virtual float getFarPlaneDist() const = 0;
-
-    [[nodiscard]] virtual vec3 getWorldPosFromNormalizedDeviceCoords(
-        const vec3& ndcCoords) const = 0;
-    [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
-        const vec2& normalizedScreenCoord) const = 0;
-
-    virtual void zoom(const ZoomOptions& opts) = 0;
+    glm::vec2 factor = glm::vec2{1.0f, 1.0f};
+    std::optional<glm::vec2> origin = std::nullopt;
+    Bounded bounded = Bounded::No;
+    std::optional<glm::mat4> boundingBox = std::nullopt;
 };
 
 }  // namespace inviwo

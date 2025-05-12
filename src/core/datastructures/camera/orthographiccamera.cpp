@@ -62,8 +62,8 @@ void OrthographicCamera::setWidth(float width) {
     }
 }
 
-void OrthographicCamera::zoom(float factor, std::optional<mat4>) {
-    setWidth(width_ * (1.0f - factor));
+void OrthographicCamera::zoom(const ZoomOptions& opts) {
+    setWidth(width_ * (1.0f - opts.factor.y));
 }
 
 void OrthographicCamera::updateFrom(const Camera& source) {

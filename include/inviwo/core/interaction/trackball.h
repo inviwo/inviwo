@@ -163,12 +163,12 @@ protected:
     bool isMouseBeingPressedAndHold_;
 
     vec3 lastNDC_;
+    vec3 pressNDC_;
 
-    double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
 
     static constexpr float radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
-    static constexpr float stepsize = 0.05f;
+    static constexpr float stepSize = 0.05f;
 
     glm::quat lastRot_;
     std::chrono::system_clock::time_point lastRotTime_;
@@ -195,6 +195,7 @@ public:
     BoolProperty allowZooming_;       ///< Enable/disable zooming
     BoolProperty allowWheelZooming_;  ///< Enable/disable zooming using the mouse wheel
     BoolProperty boundedZooming_;
+    BoolProperty mouseCenteredZoom_;
 
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
@@ -243,7 +244,7 @@ private:
         return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_, worldUp_,
                         customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
                         allowHorizontalPanning_, allowVerticalPanning_, boundedPanning_,
-                        allowZooming_, allowWheelZooming_, boundedZooming_,
+                        allowZooming_, allowWheelZooming_, boundedZooming_, mouseCenteredZoom_,
                         allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
@@ -251,7 +252,7 @@ private:
         return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_, worldUp_,
                         customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
                         allowHorizontalPanning_, allowVerticalPanning_, boundedPanning_,
-                        allowZooming_, allowWheelZooming_, boundedZooming_,
+                        allowZooming_, allowWheelZooming_, boundedZooming_, mouseCenteredZoom_,
                         allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
