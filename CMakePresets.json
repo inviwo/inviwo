@@ -53,7 +53,7 @@
       "name" : "vcpkg-cache-read",
       "hidden": true,
       "environment": {
-        "VCPKG_BINARY_SOURCES" : "default;http,https://jenkins.inviwo.org/cache/{sha},read"
+        "VCPKG_BINARY_SOURCES" : "default;http,https://scivis-vcpkg-cache.it.liu.se/cache/{sha},read"
       },
       "cacheVariables": {
         "VCPKG_INSTALL_OPTIONS": "--x-abi-tools-use-exact-versions"
@@ -64,7 +64,7 @@
       "hidden": true,
       "inherits" : ["vcpkg-cache-read"],
       "environment": {
-        "VCPKG_BINARY_SOURCES": "default;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
+        "VCPKG_BINARY_SOURCES": "default;http,https://scivis-vcpkg-cache.it.liu.se/cache/{sha},readwrite,Authorization: Bearer $env{VCPKG_CACHE_TOKEN}"
       }
     },
 
@@ -95,10 +95,7 @@
       "generator": "Visual Studio 17 2022",
       "architecture" : "x64",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "x64-windows",
-        "VCPKG_HOST_TRIPLET"   : "x64-windows",
-        "BUILD_SHARED_LIBS"    : { "type": "BOOL", "value": "ON"},
-        "VCPKG_FEATURE_FLAGS":   "-compilertracking"
+        "VCPKG_FEATURE_FLAGS": "-compilertracking"
       }
     },
     {
@@ -106,10 +103,7 @@
       "hidden": true,
       "generator": "Xcode",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" : "arm64-osx-dynamic",
-        "VCPKG_HOST_TRIPLET"   : "arm64-osx-dynamic",
-        "BUILD_SHARED_LIBS"    : { "type": "BOOL", "value": "ON"},
-        "VCPKG_APPLOCAL_DEPS"  : { "type": "BOOL", "value": "OFF"}
+        "VCPKG_APPLOCAL_DEPS" : { "type": "BOOL", "value": "OFF"}
       }
     },
     {

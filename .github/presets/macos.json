@@ -17,9 +17,7 @@
       "name": "gha-static",
       "inherits" : ["gha"],
       "cacheVariables": {
-        "BUILD_SHARED_LIBS":    { "type": "BOOL", "value": "OFF"},
-        "VCPKG_TARGET_TRIPLET": "arm64-osx",
-        "VCPKG_HOST_TRIPLET":   "arm64-osx"
+        "BUILD_SHARED_LIBS":    { "type": "BOOL", "value": "OFF"}
       }
     },
     {
