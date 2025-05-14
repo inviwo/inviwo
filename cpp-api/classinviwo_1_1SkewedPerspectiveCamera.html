@@ -162,8 +162,8 @@ const vec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getOffset
 <tr class="memitem:a98e85c6f1d0eccf911c32e07517bc1a5" id="r_a98e85c6f1d0eccf911c32e07517bc1a5"><td class="memItemLeft" align="right" valign="top"><a id="a98e85c6f1d0eccf911c32e07517bc1a5" name="a98e85c6f1d0eccf911c32e07517bc1a5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setOffset</b> (vec2 val)</td></tr>
 <tr class="separator:a98e85c6f1d0eccf911c32e07517bc1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbf132ce6117d97250b94e886aec7aa5" id="r_afbf132ce6117d97250b94e886aec7aa5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbf132ce6117d97250b94e886aec7aa5">zoom</a> (float factor, std::optional&lt; mat4 &gt; boundingBox) override</td></tr>
-<tr class="separator:afbf132ce6117d97250b94e886aec7aa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2d7f22a75e3bd3c8dc738c80728b8fb" id="r_af2d7f22a75e3bd3c8dc738c80728b8fb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2d7f22a75e3bd3c8dc738c80728b8fb">zoom</a> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts) override</td></tr>
+<tr class="separator:af2d7f22a75e3bd3c8dc738c80728b8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e31a74bf3f48754a46bafd8a6e3e9a1" id="r_a3e31a74bf3f48754a46bafd8a6e3e9a1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e31a74bf3f48754a46bafd8a6e3e9a1">setLookFrom</a> (vec3 val) override</td></tr>
 <tr class="separator:a3e31a74bf3f48754a46bafd8a6e3e9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afee335d0eca2503056822c37a7ea7330" id="r_afee335d0eca2503056822c37a7ea7330"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afee335d0eca2503056822c37a7ea7330">setLookTo</a> (vec3 val) override</td></tr>
@@ -636,8 +636,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="afbf132ce6117d97250b94e886aec7aa5" name="afbf132ce6117d97250b94e886aec7aa5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbf132ce6117d97250b94e886aec7aa5">&#9670;&#160;</a></span>zoom()</h2>
+<a id="af2d7f22a75e3bd3c8dc738c80728b8fb" name="af2d7f22a75e3bd3c8dc738c80728b8fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2d7f22a75e3bd3c8dc738c80728b8fb">&#9670;&#160;</a></span>zoom()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -648,12 +648,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
         <tr>
           <td class="memname">virtual void inviwo::SkewedPerspectiveCamera::zoom </td>
           <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>factor</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opts</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::optional&lt; mat4 &gt;</td>          <td class="paramname"><span class="paramname"><em>boundingBox</em></span>&#160;)</td>
         </tr>
       </table>
   </td>

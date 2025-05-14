@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: inviwo::SGCTCamera Class Reference</title>
+<title>Inviwo: inviwo::PlotCamera Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,7 +78,7 @@ $(function() { codefold.init(0); });
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(function(){initNavTree('classinviwo_1_1SGCTCamera.html',''); initResizable(true); });
+$(function(){initNavTree('classinviwo_1_1PlotCamera.html',''); initResizable(true); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -109,65 +109,68 @@ $(function(){initNavTree('classinviwo_1_1SGCTCamera.html',''); initResizable(tru
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
-<a href="classinviwo_1_1SGCTCamera-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::SGCTCamera Class Reference<span class="mlabels"><span class="mlabel final">final</span></span></div></div>
+<a href="classinviwo_1_1PlotCamera-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">inviwo::PlotCamera Class Reference<span class="mlabels"><span class="mlabel final">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;sgctcamera.h&gt;</code></p>
+<p>Orthographic camera for plotting that does not preserve aspect ratios.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;plotcamera.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::SGCTCamera:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::PlotCamera:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
  <div class="center">
-  <img src="classinviwo_1_1SGCTCamera.png" usemap="#inviwo::SGCTCamera_map" alt=""/>
-  <map id="inviwo::SGCTCamera_map" name="inviwo::SGCTCamera_map">
-<area href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix." alt="inviwo::Camera" shape="rect" coords="0,56,131,80"/>
-<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="0,0,131,24"/>
+  <img src="classinviwo_1_1PlotCamera.png" usemap="#inviwo::PlotCamera_map" alt=""/>
+  <map id="inviwo::PlotCamera_map" name="inviwo::PlotCamera_map">
+<area href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix." alt="inviwo::Camera" shape="rect" coords="0,56,120,80"/>
+<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="0,0,120,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8c7a8b05b4755ded0ad0471f04b0764e" id="r_a8c7a8b05b4755ded0ad0471f04b0764e"><td class="memItemLeft" align="right" valign="top"><a id="a8c7a8b05b4755ded0ad0471f04b0764e" name="a8c7a8b05b4755ded0ad0471f04b0764e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SGCTCamera</b> (vec3 lookFrom=cameradefaults::lookFrom, vec3 lookTo=cameradefaults::lookTo, vec3 lookUp=cameradefaults::lookUp, float nearPlane=cameradefaults::nearPlane, float farPlane=cameradefaults::farPlane, float aspectRatio=cameradefaults::aspectRatio, float fieldOfView=cameradefaults::fieldOfView)</td></tr>
-<tr class="separator:a8c7a8b05b4755ded0ad0471f04b0764e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cddbbbe0fad275a05827bed2a8ce809" id="r_a4cddbbbe0fad275a05827bed2a8ce809"><td class="memItemLeft" align="right" valign="top"><a id="a4cddbbbe0fad275a05827bed2a8ce809" name="a4cddbbbe0fad275a05827bed2a8ce809"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SGCTCamera</b> (const <a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> &amp;other)=default</td></tr>
-<tr class="separator:a4cddbbbe0fad275a05827bed2a8ce809"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a108932f57f2d3f81ade42dd3d9d7be6f" id="r_a108932f57f2d3f81ade42dd3d9d7be6f"><td class="memItemLeft" align="right" valign="top"><a id="a108932f57f2d3f81ade42dd3d9d7be6f" name="a108932f57f2d3f81ade42dd3d9d7be6f"></a>
-<a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> &amp;other)=default</td></tr>
-<tr class="separator:a108932f57f2d3f81ade42dd3d9d7be6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a418031e2d1488cc52980ec14d9f773c8" id="r_a418031e2d1488cc52980ec14d9f773c8"><td class="memItemLeft" align="right" valign="top"><a id="a418031e2d1488cc52980ec14d9f773c8" name="a418031e2d1488cc52980ec14d9f773c8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SGCTCamera</b> (<a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> &amp;&amp;other) noexcept=default</td></tr>
-<tr class="separator:a418031e2d1488cc52980ec14d9f773c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbcc4f4a401ef818c4a1b954d918be47" id="r_adbcc4f4a401ef818c4a1b954d918be47"><td class="memItemLeft" align="right" valign="top"><a id="adbcc4f4a401ef818c4a1b954d918be47" name="adbcc4f4a401ef818c4a1b954d918be47"></a>
-<a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> &amp;&amp;other) noexcept=default</td></tr>
-<tr class="separator:adbcc4f4a401ef818c4a1b954d918be47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e5d5aba429f0cba8454053f3ac99b9c" id="r_a7e5d5aba429f0cba8454053f3ac99b9c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e5d5aba429f0cba8454053f3ac99b9c">clone</a> () const override</td></tr>
-<tr class="separator:a7e5d5aba429f0cba8454053f3ac99b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5ab6c63952537f6b187e5d9534493cc" id="r_af5ab6c63952537f6b187e5d9534493cc"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5ab6c63952537f6b187e5d9534493cc">getClassIdentifier</a> () const override</td></tr>
-<tr class="separator:af5ab6c63952537f6b187e5d9534493cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a022abab20fe586ab16ea1c4605a64616" id="r_a022abab20fe586ab16ea1c4605a64616"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a022abab20fe586ab16ea1c4605a64616">updateFrom</a> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;source) override</td></tr>
-<tr class="separator:a022abab20fe586ab16ea1c4605a64616"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca392f92af52600904841b57103aab42" id="r_aca392f92af52600904841b57103aab42"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca392f92af52600904841b57103aab42">configureProperties</a> (<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;cameraProperty, bool attach) override</td></tr>
-<tr class="separator:aca392f92af52600904841b57103aab42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36c78f8f0836240a091eef8a8436dd80" id="r_a36c78f8f0836240a091eef8a8436dd80"><td class="memItemLeft" align="right" valign="top"><a id="a36c78f8f0836240a091eef8a8436dd80" name="a36c78f8f0836240a091eef8a8436dd80"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>getFovy</b> () const</td></tr>
-<tr class="separator:a36c78f8f0836240a091eef8a8436dd80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7537e86dd1a89ec65c44ba0b11e1bff" id="r_ab7537e86dd1a89ec65c44ba0b11e1bff"><td class="memItemLeft" align="right" valign="top"><a id="ab7537e86dd1a89ec65c44ba0b11e1bff" name="ab7537e86dd1a89ec65c44ba0b11e1bff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFovy</b> (float val)</td></tr>
-<tr class="separator:ab7537e86dd1a89ec65c44ba0b11e1bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a139876726b6aa64a211eddf1fa1b2869" id="r_a139876726b6aa64a211eddf1fa1b2869"><td class="memItemLeft" align="right" valign="top"><a id="a139876726b6aa64a211eddf1fa1b2869" name="a139876726b6aa64a211eddf1fa1b2869"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setExternal</b> (const sgct::RenderData &amp;renderData)</td></tr>
-<tr class="separator:a139876726b6aa64a211eddf1fa1b2869"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31243b0830dd4e7b0ccbdd418525d2f1" id="r_a31243b0830dd4e7b0ccbdd418525d2f1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31243b0830dd4e7b0ccbdd418525d2f1">zoom</a> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts) override</td></tr>
-<tr class="separator:a31243b0830dd4e7b0ccbdd418525d2f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a345c5b76b9c70cad44d2e851e85e08ae" id="r_a345c5b76b9c70cad44d2e851e85e08ae"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a345c5b76b9c70cad44d2e851e85e08ae">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
-<tr class="separator:a345c5b76b9c70cad44d2e851e85e08ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4446b81728d4d68fa326fc51fa06977a" id="r_a4446b81728d4d68fa326fc51fa06977a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4446b81728d4d68fa326fc51fa06977a">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
-<tr class="separator:a4446b81728d4d68fa326fc51fa06977a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6cd32ad86c1e765f521b75c537bc93c" id="r_ac6cd32ad86c1e765f521b75c537bc93c"><td class="memItemLeft" align="right" valign="top"><a id="ac6cd32ad86c1e765f521b75c537bc93c" name="ac6cd32ad86c1e765f521b75c537bc93c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PlotCamera</b> (vec3 lookFrom=cameradefaults::lookFrom, vec3 lookTo=cameradefaults::lookTo, vec3 lookUp=cameradefaults::lookUp, float nearPlane=cameradefaults::nearPlane, float farPlane=cameradefaults::farPlane, float aspectRatio=cameradefaults::aspectRatio, vec2 size=vec2{300, 300})</td></tr>
+<tr class="separator:ac6cd32ad86c1e765f521b75c537bc93c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1cdb0ea8cbf31b178a1bc45de128bae" id="r_ab1cdb0ea8cbf31b178a1bc45de128bae"><td class="memItemLeft" align="right" valign="top"><a id="ab1cdb0ea8cbf31b178a1bc45de128bae" name="ab1cdb0ea8cbf31b178a1bc45de128bae"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PlotCamera</b> (const <a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> &amp;other)</td></tr>
+<tr class="separator:ab1cdb0ea8cbf31b178a1bc45de128bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d198f411b1ea16bdd503e97320bd141" id="r_a5d198f411b1ea16bdd503e97320bd141"><td class="memItemLeft" align="right" valign="top"><a id="a5d198f411b1ea16bdd503e97320bd141" name="a5d198f411b1ea16bdd503e97320bd141"></a>
+<a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> &amp;other)</td></tr>
+<tr class="separator:a5d198f411b1ea16bdd503e97320bd141"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae91cb55f84105ed9082a2c6a4c645851" id="r_ae91cb55f84105ed9082a2c6a4c645851"><td class="memItemLeft" align="right" valign="top"><a id="ae91cb55f84105ed9082a2c6a4c645851" name="ae91cb55f84105ed9082a2c6a4c645851"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PlotCamera</b> (<a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="separator:ae91cb55f84105ed9082a2c6a4c645851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7958332e854a42ae89412cc57323a8ba" id="r_a7958332e854a42ae89412cc57323a8ba"><td class="memItemLeft" align="right" valign="top"><a id="a7958332e854a42ae89412cc57323a8ba" name="a7958332e854a42ae89412cc57323a8ba"></a>
+<a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="separator:a7958332e854a42ae89412cc57323a8ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7500bd00003d1dbfd00e2d2c2350df39" id="r_a7500bd00003d1dbfd00e2d2c2350df39"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7500bd00003d1dbfd00e2d2c2350df39">clone</a> () const override</td></tr>
+<tr class="separator:a7500bd00003d1dbfd00e2d2c2350df39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e2f87c67b0a5927a0feb6dc07a8695d" id="r_a2e2f87c67b0a5927a0feb6dc07a8695d"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e2f87c67b0a5927a0feb6dc07a8695d">getClassIdentifier</a> () const override</td></tr>
+<tr class="separator:a2e2f87c67b0a5927a0feb6dc07a8695d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae93d56cd3a4b04cdccc9eea3b400001b" id="r_ae93d56cd3a4b04cdccc9eea3b400001b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae93d56cd3a4b04cdccc9eea3b400001b">updateFrom</a> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;source) override</td></tr>
+<tr class="separator:ae93d56cd3a4b04cdccc9eea3b400001b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8bd6f50a5035ed12aa6e465fa9a6b4a" id="r_ae8bd6f50a5035ed12aa6e465fa9a6b4a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8bd6f50a5035ed12aa6e465fa9a6b4a">configureProperties</a> (<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;cp, bool attach) override</td></tr>
+<tr class="separator:ae8bd6f50a5035ed12aa6e465fa9a6b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab60b55f4e383c5dbe16baa2075abbf0" id="r_aab60b55f4e383c5dbe16baa2075abbf0"><td class="memItemLeft" align="right" valign="top"><a id="aab60b55f4e383c5dbe16baa2075abbf0" name="aab60b55f4e383c5dbe16baa2075abbf0"></a>
+vec2&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
+<tr class="separator:aab60b55f4e383c5dbe16baa2075abbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceff9671cd7e22cabb5015187640d0b2" id="r_aceff9671cd7e22cabb5015187640d0b2"><td class="memItemLeft" align="right" valign="top"><a id="aceff9671cd7e22cabb5015187640d0b2" name="aceff9671cd7e22cabb5015187640d0b2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setSize</b> (vec2 size)</td></tr>
+<tr class="separator:aceff9671cd7e22cabb5015187640d0b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6708298b102cd53dabfe19cd9daa89e5" id="r_a6708298b102cd53dabfe19cd9daa89e5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6708298b102cd53dabfe19cd9daa89e5">zoom</a> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts) override</td></tr>
+<tr class="separator:a6708298b102cd53dabfe19cd9daa89e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8fdc32f2ebf041da01d8270d5a15597" id="r_ac8fdc32f2ebf041da01d8270d5a15597"><td class="memItemLeft" align="right" valign="top">virtual vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8fdc32f2ebf041da01d8270d5a15597">getClipPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const override</td></tr>
+<tr class="memdesc:ac8fdc32f2ebf041da01d8270d5a15597"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates, where z value of -1 correspond to the near plane and 1 to the far plane. Coordinates outside of the [-1 1]^3 range will be clipped.  <br /></td></tr>
+<tr class="separator:ac8fdc32f2ebf041da01d8270d5a15597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58d90b43a345780c0f12dacb9909530e" id="r_a58d90b43a345780c0f12dacb9909530e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a58d90b43a345780c0f12dacb9909530e">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
+<tr class="separator:a58d90b43a345780c0f12dacb9909530e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5808457034bf05462e2debad4091630" id="r_ab5808457034bf05462e2debad4091630"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab5808457034bf05462e2debad4091630">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
+<tr class="separator:ab5808457034bf05462e2debad4091630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Camera')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
 <tr class="memitem:a923ef63c3558c0e980670b8a4f8fa767 inherit pub_methods_classinviwo_1_1Camera" id="r_a923ef63c3558c0e980670b8a4f8fa767"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Camera.html#a923ef63c3558c0e980670b8a4f8fa767">Camera</a> (vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane, float aspectRatio)</td></tr>
 <tr class="memdesc:a923ef63c3558c0e980670b8a4f8fa767 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a camera.  <br /></td></tr>
@@ -244,32 +247,30 @@ const mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getInvers
 <tr class="memitem:a1a9064422b3837317a1d1d0d8ed98992 inherit pub_methods_classinviwo_1_1Camera" id="r_a1a9064422b3837317a1d1d0d8ed98992"><td class="memItemLeft" align="right" valign="top">vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Camera.html#a1a9064422b3837317a1d1d0d8ed98992">getWorldPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const</td></tr>
 <tr class="memdesc:a1a9064422b3837317a1d1d0d8ed98992 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.  <br /></td></tr>
 <tr class="separator:a1a9064422b3837317a1d1d0d8ed98992 inherit pub_methods_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa99d2337b8fd1f1bf1220c3f93f41cd8 inherit pub_methods_classinviwo_1_1Camera" id="r_aa99d2337b8fd1f1bf1220c3f93f41cd8"><td class="memItemLeft" align="right" valign="top">virtual vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Camera.html#aa99d2337b8fd1f1bf1220c3f93f41cd8">getClipPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const</td></tr>
-<tr class="memdesc:aa99d2337b8fd1f1bf1220c3f93f41cd8 inherit pub_methods_classinviwo_1_1Camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates, where z value of -1 correspond to the near plane and 1 to the far plane. Coordinates outside of the [-1 1]^3 range will be clipped.  <br /></td></tr>
-<tr class="separator:aa99d2337b8fd1f1bf1220c3f93f41cd8 inherit pub_methods_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae00b8f3baffebe636fd4add8f9df17af inherit pub_methods_classinviwo_1_1Camera" id="r_ae00b8f3baffebe636fd4add8f9df17af"><td class="memItemLeft" align="right" valign="top">
 vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth</b> (const vec2 &amp;normalizedScreenCoord) const</td></tr>
 <tr class="separator:ae00b8f3baffebe636fd4add8f9df17af inherit pub_methods_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:af477d9c4354ebee5c3a0efc6e41a2061" id="r_af477d9c4354ebee5c3a0efc6e41a2061"><td class="memItemLeft" align="right" valign="top"><a id="af477d9c4354ebee5c3a0efc6e41a2061" name="af477d9c4354ebee5c3a0efc6e41a2061"></a>
-static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;SGCTCamera&quot;}</td></tr>
-<tr class="separator:af477d9c4354ebee5c3a0efc6e41a2061"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ed3be888c76eec84cae97fa2518445" id="r_ab1ed3be888c76eec84cae97fa2518445"><td class="memItemLeft" align="right" valign="top"><a id="ab1ed3be888c76eec84cae97fa2518445" name="ab1ed3be888c76eec84cae97fa2518445"></a>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;PlotCamera&quot;}</td></tr>
+<tr class="separator:ab1ed3be888c76eec84cae97fa2518445"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a551112bbd1a42e3c5621251867c90404" id="r_a551112bbd1a42e3c5621251867c90404"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a551112bbd1a42e3c5621251867c90404">equal</a> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;other) const override</td></tr>
-<tr class="separator:a551112bbd1a42e3c5621251867c90404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65525e987a8cd35ceea33f3a6050fd34" id="r_a65525e987a8cd35ceea33f3a6050fd34"><td class="memItemLeft" align="right" valign="top">virtual mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65525e987a8cd35ceea33f3a6050fd34">calculateProjectionMatrix</a> () const override</td></tr>
-<tr class="memdesc:a65525e987a8cd35ceea33f3a6050fd34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate and return the projection matrix for the camera.  <br /></td></tr>
-<tr class="separator:a65525e987a8cd35ceea33f3a6050fd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b1e13d9c96b1f684fd77d27ea8ff1a8" id="r_a8b1e13d9c96b1f684fd77d27ea8ff1a8"><td class="memItemLeft" align="right" valign="top">virtual mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b1e13d9c96b1f684fd77d27ea8ff1a8">calculateViewMatrix</a> () const override</td></tr>
-<tr class="separator:a8b1e13d9c96b1f684fd77d27ea8ff1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb60c75dd384dcd62d481ceadb247274" id="r_acb60c75dd384dcd62d481ceadb247274"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb60c75dd384dcd62d481ceadb247274">equal</a> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;other) const override</td></tr>
+<tr class="separator:acb60c75dd384dcd62d481ceadb247274"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab67de6f3527b3e43db17692d57442ab3" id="r_ab67de6f3527b3e43db17692d57442ab3"><td class="memItemLeft" align="right" valign="top">virtual mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab67de6f3527b3e43db17692d57442ab3">calculateProjectionMatrix</a> () const override</td></tr>
+<tr class="memdesc:ab67de6f3527b3e43db17692d57442ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate and return the projection matrix for the camera.  <br /></td></tr>
+<tr class="separator:ab67de6f3527b3e43db17692d57442ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Camera')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
 <tr class="memitem:a697c603a996e9221066ffe95277cf597 inherit pro_methods_classinviwo_1_1Camera" id="r_a697c603a996e9221066ffe95277cf597"><td class="memItemLeft" align="right" valign="top">
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>equalTo</b> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;other) const</td></tr>
 <tr class="separator:a697c603a996e9221066ffe95277cf597 inherit pro_methods_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac383e7d60514c617fe9ec94a113bd0ee inherit pro_methods_classinviwo_1_1Camera" id="r_ac383e7d60514c617fe9ec94a113bd0ee"><td class="memItemLeft" align="right" valign="top">
+virtual mat4&#160;</td><td class="memItemRight" valign="bottom"><b>calculateViewMatrix</b> () const</td></tr>
+<tr class="separator:ac383e7d60514c617fe9ec94a113bd0ee inherit pro_methods_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e5cf9febb0e9327fe94a766dcd175f0 inherit pro_methods_classinviwo_1_1Camera" id="r_a2e5cf9febb0e9327fe94a766dcd175f0"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>invalidateViewMatrix</b> ()</td></tr>
 <tr class="separator:a2e5cf9febb0e9327fe94a766dcd175f0 inherit pro_methods_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -279,18 +280,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>invalidateProjectionM
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a943784508a2d82939b2fb68c053562f8" id="r_a943784508a2d82939b2fb68c053562f8"><td class="memItemLeft" align="right" valign="top"><a id="a943784508a2d82939b2fb68c053562f8" name="a943784508a2d82939b2fb68c053562f8"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>fovy_</b></td></tr>
-<tr class="separator:a943784508a2d82939b2fb68c053562f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7c4f8717333007df690f9e928ed53a4" id="r_ad7c4f8717333007df690f9e928ed53a4"><td class="memItemLeft" align="right" valign="top"><a id="ad7c4f8717333007df690f9e928ed53a4" name="ad7c4f8717333007df690f9e928ed53a4"></a>
-std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>extProj_</b> {}</td></tr>
-<tr class="separator:ad7c4f8717333007df690f9e928ed53a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae130c66d060ad7271c7f360ece267c40" id="r_ae130c66d060ad7271c7f360ece267c40"><td class="memItemLeft" align="right" valign="top"><a id="ae130c66d060ad7271c7f360ece267c40" name="ae130c66d060ad7271c7f360ece267c40"></a>
-mat4&#160;</td><td class="memItemRight" valign="bottom"><b>extView_</b> {1.0f}</td></tr>
-<tr class="separator:ae130c66d060ad7271c7f360ece267c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc71a16da0799cd94841bf60ba441db2" id="r_afc71a16da0799cd94841bf60ba441db2"><td class="memItemLeft" align="right" valign="top"><a id="afc71a16da0799cd94841bf60ba441db2" name="afc71a16da0799cd94841bf60ba441db2"></a>
-mat4&#160;</td><td class="memItemRight" valign="bottom"><b>extModel_</b> {1.0f}</td></tr>
-<tr class="separator:afc71a16da0799cd94841bf60ba441db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd726b98fa985e51aaf02dac9be0193" id="r_a6cd726b98fa985e51aaf02dac9be0193"><td class="memItemLeft" align="right" valign="top"><a id="a6cd726b98fa985e51aaf02dac9be0193" name="a6cd726b98fa985e51aaf02dac9be0193"></a>
+vec2&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
+<tr class="separator:a6cd726b98fa985e51aaf02dac9be0193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Camera')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
 <tr class="memitem:a2d0f264980a77b2ffe9dc99e69efdf2d inherit pro_attribs_classinviwo_1_1Camera" id="r_a2d0f264980a77b2ffe9dc99e69efdf2d"><td class="memItemLeft" align="right" valign="top">
 vec3&#160;</td><td class="memItemRight" valign="bottom"><b>lookFrom_</b></td></tr>
@@ -335,10 +327,11 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 <tr class="separator:a8f71f9e8375fe19b8fb217bf4e39aac0 inherit pro_attribs_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A Perspective <a class="el" href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix.">Camera</a> with the possibility of injecting additional external model, view, and projection matrices. </p>
+<div class="textblock"><p>Orthographic camera for plotting that does not preserve aspect ratios. </p>
+<p>The <a class="el" href="classinviwo_1_1PlotCamera.html" title="Orthographic camera for plotting that does not preserve aspect ratios.">PlotCamera</a> is a specialized orthographic camera designed for plotting and visualization tasks where maintaining the original aspect ratio of the view is not required. Unlike standard orthographic cameras, <a class="el" href="classinviwo_1_1PlotCamera.html" title="Orthographic camera for plotting that does not preserve aspect ratios.">PlotCamera</a> allows independent scaling of the view along each axis, enabling flexible and non-uniform projections suitable for data visualization. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a65525e987a8cd35ceea33f3a6050fd34" name="a65525e987a8cd35ceea33f3a6050fd34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a65525e987a8cd35ceea33f3a6050fd34">&#9670;&#160;</a></span>calculateProjectionMatrix()</h2>
+<a id="ab67de6f3527b3e43db17692d57442ab3" name="ab67de6f3527b3e43db17692d57442ab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab67de6f3527b3e43db17692d57442ab3">&#9670;&#160;</a></span>calculateProjectionMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -347,7 +340,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual mat4 inviwo::SGCTCamera::calculateProjectionMatrix </td>
+          <td class="memname">virtual mat4 inviwo::PlotCamera::calculateProjectionMatrix </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -369,8 +362,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a8b1e13d9c96b1f684fd77d27ea8ff1a8" name="a8b1e13d9c96b1f684fd77d27ea8ff1a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b1e13d9c96b1f684fd77d27ea8ff1a8">&#9670;&#160;</a></span>calculateViewMatrix()</h2>
+<a id="a7500bd00003d1dbfd00e2d2c2350df39" name="a7500bd00003d1dbfd00e2d2c2350df39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7500bd00003d1dbfd00e2d2c2350df39">&#9670;&#160;</a></span>clone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -379,34 +372,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual mat4 inviwo::SGCTCamera::calculateViewMatrix </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a>.</p>
-
-</div>
-</div>
-<a id="a7e5d5aba429f0cba8454053f3ac99b9c" name="a7e5d5aba429f0cba8454053f3ac99b9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e5d5aba429f0cba8454053f3ac99b9c">&#9670;&#160;</a></span>clone()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a> * inviwo::SGCTCamera::clone </td>
+          <td class="memname">virtual <a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a> * inviwo::PlotCamera::clone </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -423,8 +389,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="aca392f92af52600904841b57103aab42" name="aca392f92af52600904841b57103aab42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca392f92af52600904841b57103aab42">&#9670;&#160;</a></span>configureProperties()</h2>
+<a id="ae8bd6f50a5035ed12aa6e465fa9a6b4a" name="ae8bd6f50a5035ed12aa6e465fa9a6b4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8bd6f50a5035ed12aa6e465fa9a6b4a">&#9670;&#160;</a></span>configureProperties()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -433,9 +399,9 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void inviwo::SGCTCamera::configureProperties </td>
+          <td class="memname">virtual void inviwo::PlotCamera::configureProperties </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cameraProperty</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cp</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -454,8 +420,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a4446b81728d4d68fa326fc51fa06977a" name="a4446b81728d4d68fa326fc51fa06977a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4446b81728d4d68fa326fc51fa06977a">&#9670;&#160;</a></span>deserialize()</h2>
+<a id="ab5808457034bf05462e2debad4091630" name="ab5808457034bf05462e2debad4091630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5808457034bf05462e2debad4091630">&#9670;&#160;</a></span>deserialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -464,7 +430,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void inviwo::SGCTCamera::deserialize </td>
+          <td class="memname">virtual void inviwo::PlotCamera::deserialize </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>d</em></span></td><td>)</td>
           <td></td>
@@ -481,8 +447,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a551112bbd1a42e3c5621251867c90404" name="a551112bbd1a42e3c5621251867c90404"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a551112bbd1a42e3c5621251867c90404">&#9670;&#160;</a></span>equal()</h2>
+<a id="acb60c75dd384dcd62d481ceadb247274" name="acb60c75dd384dcd62d481ceadb247274"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb60c75dd384dcd62d481ceadb247274">&#9670;&#160;</a></span>equal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -491,7 +457,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool inviwo::SGCTCamera::equal </td>
+          <td class="memname">virtual bool inviwo::PlotCamera::equal </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>other</em></span></td><td>)</td>
           <td> const</td>
@@ -508,8 +474,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="af5ab6c63952537f6b187e5d9534493cc" name="af5ab6c63952537f6b187e5d9534493cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5ab6c63952537f6b187e5d9534493cc">&#9670;&#160;</a></span>getClassIdentifier()</h2>
+<a id="a2e2f87c67b0a5927a0feb6dc07a8695d" name="a2e2f87c67b0a5927a0feb6dc07a8695d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e2f87c67b0a5927a0feb6dc07a8695d">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -518,7 +484,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::string_view inviwo::SGCTCamera::getClassIdentifier </td>
+          <td class="memname">virtual std::string_view inviwo::PlotCamera::getClassIdentifier </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -535,8 +501,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a345c5b76b9c70cad44d2e851e85e08ae" name="a345c5b76b9c70cad44d2e851e85e08ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a345c5b76b9c70cad44d2e851e85e08ae">&#9670;&#160;</a></span>serialize()</h2>
+<a id="ac8fdc32f2ebf041da01d8270d5a15597" name="ac8fdc32f2ebf041da01d8270d5a15597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8fdc32f2ebf041da01d8270d5a15597">&#9670;&#160;</a></span>getClipPosFromNormalizedDeviceCoords()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -545,7 +511,43 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void inviwo::SGCTCamera::serialize </td>
+          <td class="memname">virtual vec4 inviwo::PlotCamera::getClipPosFromNormalizedDeviceCoords </td>
+          <td>(</td>
+          <td class="paramtype">const vec3 &amp;</td>          <td class="paramname"><span class="paramname"><em>ndcCoords</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates, where z value of -1 correspond to the near plane and 1 to the far plane. Coordinates outside of the [-1 1]^3 range will be clipped. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ndcCoords</td><td>xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for perspective division. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Clip space position </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Camera.html#aa99d2337b8fd1f1bf1220c3f93f41cd8">inviwo::Camera</a>.</p>
+
+</div>
+</div>
+<a id="a58d90b43a345780c0f12dacb9909530e" name="a58d90b43a345780c0f12dacb9909530e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58d90b43a345780c0f12dacb9909530e">&#9670;&#160;</a></span>serialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::PlotCamera::serialize </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>s</em></span></td><td>)</td>
           <td> const</td>
@@ -562,8 +564,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a022abab20fe586ab16ea1c4605a64616" name="a022abab20fe586ab16ea1c4605a64616"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a022abab20fe586ab16ea1c4605a64616">&#9670;&#160;</a></span>updateFrom()</h2>
+<a id="ae93d56cd3a4b04cdccc9eea3b400001b" name="ae93d56cd3a4b04cdccc9eea3b400001b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae93d56cd3a4b04cdccc9eea3b400001b">&#9670;&#160;</a></span>updateFrom()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -572,7 +574,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void inviwo::SGCTCamera::updateFrom </td>
+          <td class="memname">virtual void inviwo::PlotCamera::updateFrom </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>source</em></span></td><td>)</td>
           <td></td>
@@ -589,8 +591,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a31243b0830dd4e7b0ccbdd418525d2f1" name="a31243b0830dd4e7b0ccbdd418525d2f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31243b0830dd4e7b0ccbdd418525d2f1">&#9670;&#160;</a></span>zoom()</h2>
+<a id="a6708298b102cd53dabfe19cd9daa89e5" name="a6708298b102cd53dabfe19cd9daa89e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6708298b102cd53dabfe19cd9daa89e5">&#9670;&#160;</a></span>zoom()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -599,7 +601,7 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void inviwo::SGCTCamera::zoom </td>
+          <td class="memname">virtual void inviwo::PlotCamera::zoom </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opts</em></span></td><td>)</td>
           <td></td>
@@ -617,14 +619,14 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>sgctcamera.h</b></li>
+<li><b>plotcamera.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespaceinviwo.html">inviwo</a></li><li class="navelem"><a class="el" href="classinviwo_1_1SGCTCamera.html">SGCTCamera</a></li>
+    <li class="navelem"><a class="el" href="namespaceinviwo.html">inviwo</a></li><li class="navelem"><a class="el" href="classinviwo_1_1PlotCamera.html">PlotCamera</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>

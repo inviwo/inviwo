@@ -156,8 +156,8 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>getWidth</b> () cons
 <tr class="memitem:aaf4ed0c6ecd6cfe56da66091d8fafe92" id="r_aaf4ed0c6ecd6cfe56da66091d8fafe92"><td class="memItemLeft" align="right" valign="top"><a id="aaf4ed0c6ecd6cfe56da66091d8fafe92" name="aaf4ed0c6ecd6cfe56da66091d8fafe92"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setWidth</b> (float width)</td></tr>
 <tr class="separator:aaf4ed0c6ecd6cfe56da66091d8fafe92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6043896f42716372b004ff29f0caa60c" id="r_a6043896f42716372b004ff29f0caa60c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6043896f42716372b004ff29f0caa60c">zoom</a> (float factor, std::optional&lt; mat4 &gt; boundingBox) override</td></tr>
-<tr class="separator:a6043896f42716372b004ff29f0caa60c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60a38267918d944957ac5fae0704d116" id="r_a60a38267918d944957ac5fae0704d116"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60a38267918d944957ac5fae0704d116">zoom</a> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts) override</td></tr>
+<tr class="separator:a60a38267918d944957ac5fae0704d116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5e9d9cc00d3d6a14879e5ed7032576c" id="r_ad5e9d9cc00d3d6a14879e5ed7032576c"><td class="memItemLeft" align="right" valign="top">virtual vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad5e9d9cc00d3d6a14879e5ed7032576c">getClipPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const override</td></tr>
 <tr class="memdesc:ad5e9d9cc00d3d6a14879e5ed7032576c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates, where z value of -1 correspond to the near plane and 1 to the far plane. Coordinates outside of the [-1 1]^3 range will be clipped.  <br /></td></tr>
 <tr class="separator:ad5e9d9cc00d3d6a14879e5ed7032576c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -587,8 +587,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
 
 </div>
 </div>
-<a id="a6043896f42716372b004ff29f0caa60c" name="a6043896f42716372b004ff29f0caa60c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6043896f42716372b004ff29f0caa60c">&#9670;&#160;</a></span>zoom()</h2>
+<a id="a60a38267918d944957ac5fae0704d116" name="a60a38267918d944957ac5fae0704d116"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60a38267918d944957ac5fae0704d116">&#9670;&#160;</a></span>zoom()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -599,12 +599,8 @@ mat4&#160;</td><td class="memItemRight" valign="bottom"><b>inverseProjectionMatr
         <tr>
           <td class="memname">virtual void inviwo::OrthographicCamera::zoom </td>
           <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>factor</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opts</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::optional&lt; mat4 &gt;</td>          <td class="paramname"><span class="paramname"><em>boundingBox</em></span>&#160;)</td>
         </tr>
       </table>
   </td>

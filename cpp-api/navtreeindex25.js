@@ -1,5 +1,11 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[4,0,1,1,91,1],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[2,0,0,0,90,4],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[4,0,1,1,91,4],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[2,0,0,0,90,3],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[4,0,1,1,91,3],
+"classinviwo_1_1buffertraits_1_1ColorsBuffer.html":[1,1,0,4],
 "classinviwo_1_1buffertraits_1_1CurvatureBuffer.html":[1,1,0,6],
 "classinviwo_1_1buffertraits_1_1IndexBuffer.html":[1,1,0,7],
 "classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3],
@@ -243,11 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a8dcc95dcc2ee0f67398e2ad3db877e0f":[4,0,1,19,30,2],
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a9912988b4abeec86f65ffe5390cc0b8f":[2,0,0,14,29,0],
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a9912988b4abeec86f65ffe5390cc0b8f":[4,0,1,19,30,0],
-"classinviwo_1_1plot_1_1PCPMajorTickSettings.html":[2,0,0,14,30],
-"classinviwo_1_1plot_1_1PCPMajorTickSettings.html":[4,0,1,19,31],
-"classinviwo_1_1plot_1_1PCPMinorTickSettings.html":[2,0,0,14,31],
-"classinviwo_1_1plot_1_1PCPMinorTickSettings.html":[4,0,1,19,32],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html":[2,0,0,14,26],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html":[4,0,1,19,27],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9":[2,0,0,14,26,0]
+"classinviwo_1_1plot_1_1PCPMajorTickSettings.html":[2,0,0,14,30]
 };

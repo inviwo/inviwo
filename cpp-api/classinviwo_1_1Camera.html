@@ -126,11 +126,12 @@ $(function(){initNavTree('classinviwo_1_1Camera.html',''); initResizable(true); 
  <div class="center">
   <img src="classinviwo_1_1Camera.png" usemap="#inviwo::Camera_map" alt=""/>
   <map id="inviwo::Camera_map" name="inviwo::Camera_map">
-<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="328,0,537,24"/>
+<area href="classinviwo_1_1Serializable.html" alt="inviwo::Serializable" shape="rect" coords="438,0,647,24"/>
 <area href="classinviwo_1_1OrthographicCamera.html" title="Camera with no perspective projection. Objects far away will appear as large as objects close." alt="inviwo::OrthographicCamera" shape="rect" coords="0,112,209,136"/>
 <area href="classinviwo_1_1PerspectiveCamera.html" alt="inviwo::PerspectiveCamera" shape="rect" coords="219,112,428,136"/>
-<area href="classinviwo_1_1SGCTCamera.html" alt="inviwo::SGCTCamera" shape="rect" coords="438,112,647,136"/>
-<area href="classinviwo_1_1SkewedPerspectiveCamera.html" title="Camera with off axis perspective projection." alt="inviwo::SkewedPerspectiveCamera" shape="rect" coords="657,112,866,136"/>
+<area href="classinviwo_1_1PlotCamera.html" title="Orthographic camera for plotting that does not preserve aspect ratios." alt="inviwo::PlotCamera" shape="rect" coords="438,112,647,136"/>
+<area href="classinviwo_1_1SGCTCamera.html" alt="inviwo::SGCTCamera" shape="rect" coords="657,112,866,136"/>
+<area href="classinviwo_1_1SkewedPerspectiveCamera.html" title="Camera with off axis perspective projection." alt="inviwo::SkewedPerspectiveCamera" shape="rect" coords="876,112,1085,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -190,9 +191,9 @@ virtual float&#160;</td><td class="memItemRight" valign="bottom"><b>getAspectRat
 <tr class="memitem:ab10d2c4838a68239ab22189c48f98fcd" id="r_ab10d2c4838a68239ab22189c48f98fcd"><td class="memItemLeft" align="right" valign="top"><a id="ab10d2c4838a68239ab22189c48f98fcd" name="ab10d2c4838a68239ab22189c48f98fcd"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setAspectRatio</b> (float val)</td></tr>
 <tr class="separator:ab10d2c4838a68239ab22189c48f98fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe82700d004b920b198d9968b55d4d8e" id="r_abe82700d004b920b198d9968b55d4d8e"><td class="memItemLeft" align="right" valign="top"><a id="abe82700d004b920b198d9968b55d4d8e" name="abe82700d004b920b198d9968b55d4d8e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>zoom</b> (float factor, std::optional&lt; mat4 &gt; boundingBox)=0</td></tr>
-<tr class="separator:abe82700d004b920b198d9968b55d4d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6098954978189f43884b94c0f687f238" id="r_a6098954978189f43884b94c0f687f238"><td class="memItemLeft" align="right" valign="top"><a id="a6098954978189f43884b94c0f687f238" name="a6098954978189f43884b94c0f687f238"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>zoom</b> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts)=0</td></tr>
+<tr class="separator:a6098954978189f43884b94c0f687f238"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b51272f130a1940999f96af2ad8dca4" id="r_a7b51272f130a1940999f96af2ad8dca4"><td class="memItemLeft" align="right" valign="top"><a id="a7b51272f130a1940999f96af2ad8dca4" name="a7b51272f130a1940999f96af2ad8dca4"></a>
 vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getDirection</b> () const</td></tr>
 <tr class="memdesc:a7b51272f130a1940999f96af2ad8dca4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get unnormalized direction of camera: lookTo - lookFrom. <br /></td></tr>
@@ -401,7 +402,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
 <dd>
 <a class="el" href="classinviwo_1_1OrthographicCamera.html" title="Camera with no perspective projection. Objects far away will appear as large as objects close.">OrthographicCamera</a> </dd></dl>
 
-<p>Implemented in <a class="el" href="classinviwo_1_1OrthographicCamera.html#acc580b976faf34b1d69469dca84b0bb9">inviwo::OrthographicCamera</a>, <a class="el" href="classinviwo_1_1PerspectiveCamera.html#ae4e30d6b1ba81170a7b60ed4cde8c37e">inviwo::PerspectiveCamera</a>, <a class="el" href="classinviwo_1_1SGCTCamera.html#a65525e987a8cd35ceea33f3a6050fd34">inviwo::SGCTCamera</a>, and <a class="el" href="classinviwo_1_1SkewedPerspectiveCamera.html#a0cd91c9bbdd0d6ba770c38f04ae2e09b">inviwo::SkewedPerspectiveCamera</a>.</p>
+<p>Implemented in <a class="el" href="classinviwo_1_1OrthographicCamera.html#acc580b976faf34b1d69469dca84b0bb9">inviwo::OrthographicCamera</a>, <a class="el" href="classinviwo_1_1PerspectiveCamera.html#ae4e30d6b1ba81170a7b60ed4cde8c37e">inviwo::PerspectiveCamera</a>, <a class="el" href="classinviwo_1_1PlotCamera.html#ab67de6f3527b3e43db17692d57442ab3">inviwo::PlotCamera</a>, <a class="el" href="classinviwo_1_1SGCTCamera.html#a65525e987a8cd35ceea33f3a6050fd34">inviwo::SGCTCamera</a>, and <a class="el" href="classinviwo_1_1SkewedPerspectiveCamera.html#a0cd91c9bbdd0d6ba770c38f04ae2e09b">inviwo::SkewedPerspectiveCamera</a>.</p>
 
 </div>
 </div>
@@ -464,7 +465,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Clip space position </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1OrthographicCamera.html#ad5e9d9cc00d3d6a14879e5ed7032576c">inviwo::OrthographicCamera</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1OrthographicCamera.html#ad5e9d9cc00d3d6a14879e5ed7032576c">inviwo::OrthographicCamera</a>, and <a class="el" href="classinviwo_1_1PlotCamera.html#ac8fdc32f2ebf041da01d8270d5a15597">inviwo::PlotCamera</a>.</p>
 
 </div>
 </div>

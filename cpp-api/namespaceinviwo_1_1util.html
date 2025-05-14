@@ -527,6 +527,9 @@ template&lt;typename T = vec3, BufferUsage U = BufferUsage::Static, BufferTarget
 <tr class="memitem:aa4d38c8a311e159b1bdb778697984dbe" id="r_aa4d38c8a311e159b1bdb778697984dbe"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API <a class="el" href="classinviwo_1_1OrdinalRefProperty.html">FloatVec2RefProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4d38c8a311e159b1bdb778697984dbe">updateOrCreateCameraEyeOffsetProperty</a> (<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;cameraProperty, std::function&lt; vec2()&gt; get, std::function&lt; void(const vec2 &amp;)&gt; set)</td></tr>
 <tr class="memdesc:aa4d38c8a311e159b1bdb778697984dbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Either return an existing eye offset property updated with the provided get and set functions or create a new one. The new one will automatically be added to the camera property.  <br /></td></tr>
 <tr class="separator:aa4d38c8a311e159b1bdb778697984dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7bd91c403aa92b92284dde1989eab1d" id="r_ab7bd91c403aa92b92284dde1989eab1d"><td class="memItemLeft" align="right" valign="top"><a id="ab7bd91c403aa92b92284dde1989eab1d" name="ab7bd91c403aa92b92284dde1989eab1d"></a>
+IVW_CORE_API vec2&#160;</td><td class="memItemRight" valign="bottom"><b>fovyToSize</b> (float fovy, float distance, float aspect)</td></tr>
+<tr class="separator:ab7bd91c403aa92b92284dde1989eab1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7430ed5a7df8b460b6fdae1d9778ed7" id="r_ab7430ed5a7df8b460b6fdae1d9778ed7"><td class="memItemLeft" align="right" valign="top"><a id="ab7430ed5a7df8b460b6fdae1d9778ed7" name="ab7430ed5a7df8b460b6fdae1d9778ed7"></a>
 IVW_CORE_API float&#160;</td><td class="memItemRight" valign="bottom"><b>fovyToWidth</b> (float fovy, float distance, float aspect)</td></tr>
 <tr class="separator:ab7430ed5a7df8b460b6fdae1d9778ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -536,10 +539,10 @@ IVW_CORE_API float&#160;</td><td class="memItemRight" valign="bottom"><b>widthTo
 <tr class="memitem:ad76223fb253c738efe53ef628360a54b" id="r_ad76223fb253c738efe53ef628360a54b"><td class="memItemLeft" align="right" valign="top"><a id="ad76223fb253c738efe53ef628360a54b" name="ad76223fb253c738efe53ef628360a54b"></a>
 IVW_CORE_API float&#160;</td><td class="memItemRight" valign="bottom"><b>widthToViewDist</b> (float width, float fov, float aspect)</td></tr>
 <tr class="separator:ad76223fb253c738efe53ef628360a54b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a916efff8c0f4ed2fd1774e7aac8b9265" id="r_a916efff8c0f4ed2fd1774e7aac8b9265"><td class="memTemplParams" colspan="2"><a id="a916efff8c0f4ed2fd1774e7aac8b9265" name="a916efff8c0f4ed2fd1774e7aac8b9265"></a>
+<tr class="memitem:a10cf4747fc655c82c40d7c13ca338254" id="r_a10cf4747fc655c82c40d7c13ca338254"><td class="memTemplParams" colspan="2"><a id="a10cf4747fc655c82c40d7c13ca338254" name="a10cf4747fc655c82c40d7c13ca338254"></a>
 template&lt;typename CamType&gt; </td></tr>
-<tr class="memitem:a916efff8c0f4ed2fd1774e7aac8b9265"><td class="memTemplItemLeft" align="right" valign="top">vec3&#160;</td><td class="memTemplItemRight" valign="bottom"><b>perspectiveZoom</b> (CamType &amp;cam, float factor, std::optional&lt; mat4 &gt;)</td></tr>
-<tr class="separator:a916efff8c0f4ed2fd1774e7aac8b9265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10cf4747fc655c82c40d7c13ca338254"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>perspectiveZoom</b> (CamType &amp;cam, const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts)</td></tr>
+<tr class="separator:a10cf4747fc655c82c40d7c13ca338254"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b1f29a2adf6ba7edfe46f0bbf9a1e3c" id="r_a2b1f29a2adf6ba7edfe46f0bbf9a1e3c"><td class="memTemplParams" colspan="2"><a id="a2b1f29a2adf6ba7edfe46f0bbf9a1e3c" name="a2b1f29a2adf6ba7edfe46f0bbf9a1e3c"></a>
 template&lt;size_t N&gt; </td></tr>
 <tr class="memitem:a2b1f29a2adf6ba7edfe46f0bbf9a1e3c"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>generateTransforms</b> (std::array&lt; <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a>, N &gt; spaces)</td></tr>

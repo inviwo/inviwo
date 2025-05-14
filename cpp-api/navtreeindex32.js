@@ -1,5 +1,13 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1util_1_1ColumnMapper_1_1OffsetAndPicking.html":[4,0,1,27,9,1],
+"structinviwo_1_1util_1_1ColumnMapper_1_1ScaleAndOffset.html":[2,0,0,19,5,2],
+"structinviwo_1_1util_1_1ColumnMapper_1_1ScaleAndOffset.html":[4,0,1,27,9,2],
+"structinviwo_1_1util_1_1ColumnMapper_1_1Type.html":[2,0,0,19,5,3],
+"structinviwo_1_1util_1_1ColumnMapper_1_1Type.html":[4,0,1,27,9,3],
+"structinviwo_1_1util_1_1DefaultColorRepresentation.html":[2,0,0,19,7],
+"structinviwo_1_1util_1_1DefaultColorRepresentation.html":[4,0,1,27,11],
+"structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html":[2,0,0,19,8],
 "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html":[4,0,1,27,12],
 "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html":[2,0,0,19,9],
 "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html":[4,0,1,27,13],

@@ -3234,6 +3234,7 @@ var hierarchy =
       [ "inviwo::Camera", "classinviwo_1_1Camera.html", [
         [ "inviwo::OrthographicCamera", "classinviwo_1_1OrthographicCamera.html", null ],
         [ "inviwo::PerspectiveCamera", "classinviwo_1_1PerspectiveCamera.html", null ],
+        [ "inviwo::PlotCamera", "classinviwo_1_1PlotCamera.html", null ],
         [ "inviwo::SGCTCamera", "classinviwo_1_1SGCTCamera.html", null ],
         [ "inviwo::SkewedPerspectiveCamera", "classinviwo_1_1SkewedPerspectiveCamera.html", null ]
       ] ],
@@ -3694,5 +3695,6 @@ var hierarchy =
       [ "inviwo::utildoc::TableBuilder::Header", "structinviwo_1_1utildoc_1_1TableBuilder_1_1Header.html", null ]
     ] ],
     [ "inviwo::util::detailzip::zipIterator< Iterables >", "structinviwo_1_1util_1_1detailzip_1_1zipIterator.html", null ],
-    [ "inviwo::util::detailzip::zipper< Iterable >", "structinviwo_1_1util_1_1detailzip_1_1zipper.html", null ]
+    [ "inviwo::util::detailzip::zipper< Iterable >", "structinviwo_1_1util_1_1detailzip_1_1zipper.html", null ],
+    [ "inviwo::ZoomOptions", "structinviwo_1_1ZoomOptions.html", null ]
 ];

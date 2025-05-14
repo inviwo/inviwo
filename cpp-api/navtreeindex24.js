@@ -1,5 +1,11 @@
 var NAVTREEINDEX24 =
 {
+"classinviwo_1_1animation_1_1AnimationQtSupplier.html#a8ea34a59290c592fb9f254b9d88d1be8":[4,0,1,1,11,1],
+"classinviwo_1_1animation_1_1AnimationSupplier.html":[2,0,0,0,12],
+"classinviwo_1_1animation_1_1AnimationSupplier.html":[4,0,1,1,13],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a2bfc1a33c13448c08f4eadff51160a4c":[2,0,0,0,12,0],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a2bfc1a33c13448c08f4eadff51160a4c":[4,0,1,1,13,0],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9c878433103c41eb4dc0b704e953ddd5":[2,0,0,0,12,2],
 "classinviwo_1_1animation_1_1AnimationSupplier.html#a9c878433103c41eb4dc0b704e953ddd5":[4,0,1,1,13,2],
 "classinviwo_1_1animation_1_1AnimationSupplier.html#a9fa6375eb8ecced6f69a4e3b410b9d83":[2,0,0,0,12,1],
 "classinviwo_1_1animation_1_1AnimationSupplier.html#a9fa6375eb8ecced6f69a4e3b410b9d83":[4,0,1,1,13,1],
@@ -243,11 +249,5 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#a64aa1dc29b4d1718404dc189bd36e486":[4,0,1,1,91,2],
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#a997b3ae57696abf6c3244bbab12b2be8":[2,0,0,0,90,0],
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#a997b3ae57696abf6c3244bbab12b2be8":[4,0,1,1,91,0],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[2,0,0,0,90,1],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[4,0,1,1,91,1],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[2,0,0,0,90,4],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[4,0,1,1,91,4],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[2,0,0,0,90,3],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[4,0,1,1,91,3],
-"classinviwo_1_1buffertraits_1_1ColorsBuffer.html":[1,1,0,4]
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[2,0,0,0,90,1]
 };

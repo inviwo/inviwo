@@ -166,11 +166,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = std::
 <tr class="memitem:a22da3c1ecbe5a89a651f4d3feef13c99 inherit pub_types_classinviwo_1_1PropertyOwner" id="r_a22da3c1ecbe5a89a651f4d3feef13c99"><td class="memItemLeft" align="right" valign="top">
 using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::const_iterator</td></tr>
 <tr class="separator:a22da3c1ecbe5a89a651f4d3feef13c99 inherit pub_types_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_types_classinviwo_1_1TrackballObject"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1TrackballObject')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1TrackballObject.html">inviwo::TrackballObject</a></td></tr>
-<tr class="memitem:a7aa13fda539cb700aa3dd8fc79fd9944 inherit pub_types_classinviwo_1_1TrackballObject" id="r_a7aa13fda539cb700aa3dd8fc79fd9944"><td class="memItemLeft" align="right" valign="top"><a id="a7aa13fda539cb700aa3dd8fc79fd9944" name="a7aa13fda539cb700aa3dd8fc79fd9944"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Bounded</b> { <b>Yes</b>
-, <b>No</b>
- }</td></tr>
-<tr class="separator:a7aa13fda539cb700aa3dd8fc79fd9944 inherit pub_types_classinviwo_1_1TrackballObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -250,8 +245,8 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>getAspectRatio</b> (
 <tr class="separator:a23087d00df07e7c2acfa9c3e90308051"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a683ad1131abd94c36457b8d06a269404" id="r_a683ad1131abd94c36457b8d06a269404"><td class="memItemLeft" align="right" valign="top">virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a683ad1131abd94c36457b8d06a269404">getLookToMaxValue</a> () const override</td></tr>
 <tr class="separator:a683ad1131abd94c36457b8d06a269404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73a49cb36ac777c698a90151da54e0d1" id="r_a73a49cb36ac777c698a90151da54e0d1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73a49cb36ac777c698a90151da54e0d1">zoom</a> (float factor, Bounded bounded) override</td></tr>
-<tr class="separator:a73a49cb36ac777c698a90151da54e0d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af18fb8d5d2e214ef040fdf25dd705320" id="r_af18fb8d5d2e214ef040fdf25dd705320"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af18fb8d5d2e214ef040fdf25dd705320">zoom</a> (const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;opts) override</td></tr>
+<tr class="separator:af18fb8d5d2e214ef040fdf25dd705320"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac17349631c9045756d2a7224f65df963" id="r_ac17349631c9045756d2a7224f65df963"><td class="memItemLeft" align="right" valign="top">virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac17349631c9045756d2a7224f65df963">getWorldPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const override</td></tr>
 <tr class="memdesc:ac17349631c9045756d2a7224f65df963"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.  <br /></td></tr>
 <tr class="separator:ac17349631c9045756d2a7224f65df963"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1683,8 +1678,8 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
 
 </div>
 </div>
-<a id="a73a49cb36ac777c698a90151da54e0d1" name="a73a49cb36ac777c698a90151da54e0d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73a49cb36ac777c698a90151da54e0d1">&#9670;&#160;</a></span>zoom()</h2>
+<a id="af18fb8d5d2e214ef040fdf25dd705320" name="af18fb8d5d2e214ef040fdf25dd705320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af18fb8d5d2e214ef040fdf25dd705320">&#9670;&#160;</a></span>zoom()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1695,12 +1690,8 @@ std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.
         <tr>
           <td class="memname">virtual void inviwo::CameraProperty::zoom </td>
           <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>factor</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1ZoomOptions.html">ZoomOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opts</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">Bounded</td>          <td class="paramname"><span class="paramname"><em>bounded</em></span>&#160;)</td>
         </tr>
       </table>
   </td>

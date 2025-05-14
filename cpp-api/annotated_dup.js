@@ -1291,6 +1291,7 @@ var annotated_dup =
       [ "PixelValue", "classinviwo_1_1PixelValue.html", "classinviwo_1_1PixelValue" ],
       [ "Plane", "classinviwo_1_1Plane.html", "classinviwo_1_1Plane" ],
       [ "PlaneProperty", "classinviwo_1_1PlaneProperty.html", "classinviwo_1_1PlaneProperty" ],
+      [ "PlotCamera", "classinviwo_1_1PlotCamera.html", "classinviwo_1_1PlotCamera" ],
       [ "PlottingGLModule", "classinviwo_1_1PlottingGLModule.html", "classinviwo_1_1PlottingGLModule" ],
       [ "PlottingModule", "classinviwo_1_1PlottingModule.html", "classinviwo_1_1PlottingModule" ],
       [ "PNGLayerReader", "classinviwo_1_1PNGLayerReader.html", null ],
@@ -1864,7 +1865,8 @@ var annotated_dup =
       [ "WorkspaceTreeModel", "classinviwo_1_1WorkspaceTreeModel.html", null ],
       [ "WorkspaceTreeView", "classinviwo_1_1WorkspaceTreeView.html", null ],
       [ "WorldTransformDeprecated", "classinviwo_1_1WorldTransformDeprecated.html", "classinviwo_1_1WorldTransformDeprecated" ],
-      [ "XMLWriter", "classinviwo_1_1XMLWriter.html", "classinviwo_1_1XMLWriter" ]
+      [ "XMLWriter", "classinviwo_1_1XMLWriter.html", "classinviwo_1_1XMLWriter" ],
+      [ "ZoomOptions", "structinviwo_1_1ZoomOptions.html", null ]
     ] ],
     [ "pybind11", null, [
       [ "polymorphic_type_hook< inviwo::Processor >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Processor_01_4.html", null ],
