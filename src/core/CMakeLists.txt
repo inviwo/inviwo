@@ -41,7 +41,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/cameratools.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/orthographiccamera.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/perspectivecamera.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/plotcamera.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/skewedperspectivecamera.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera/zoomoptions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/coordinatetransformer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/data.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagroup.h
@@ -456,7 +458,9 @@ set(SOURCE_FILES
     datastructures/camera/cameratools.cpp
     datastructures/camera/orthographiccamera.cpp
     datastructures/camera/perspectivecamera.cpp
+    datastructures/camera/plotcamera.cpp
     datastructures/camera/skewedperspectivecamera.cpp
+    datastructures/camera/zoomoptions.cpp
     datastructures/coordinatetransformer.cpp
     datastructures/datamapper.cpp
     datastructures/datarepresentation.cpp

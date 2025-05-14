@@ -27,50 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/datastructures/camera/zoomoptions.h>
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/marginproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
-
-namespace inviwo {
-
-class IVW_MODULE_PLOTTINGGL_API OrthographicAxis2D : public Processor {
-public:
-    OrthographicAxis2D();
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    ImageInport inport_;
-    MeshInport mesh_;
-    ImageOutport outport_;
-
-    plot::AxisStyleProperty style_;
-    FloatVec4Property backgroundColor_;
-    BoolProperty clipContent_;
-    plot::AxisProperty axis1_;
-    plot::AxisProperty axis2_;
-    MarginProperty margins_;
-    FloatProperty axisMargin_;
-    BoolProperty antialiasing_;
-    CameraProperty camera_;
-    CameraTrackball trackball_;
-
-    std::array<plot::AxisRenderer, 2> axisRenderers_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -32,6 +32,8 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/datastructures/camera/camera.h>
 
+#include <glm/gtx/transform.hpp>
+
 #include <memory>
 
 namespace inviwo {
@@ -115,14 +117,33 @@ IVW_CORE_API FloatVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
     CameraProperty& cameraProperty, std::function<vec2()> get,
     std::function<void(const vec2&)> set);
 
+IVW_CORE_API vec2 fovyToSize(float fovy, float distance, float aspect);
 IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
 IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
 IVW_CORE_API float widthToViewDist(float width, float fov, float aspect);
 
 template <typename CamType>
-vec3 perspectiveZoom(CamType& cam, float factor, std::optional<mat4>) {
+void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
     const auto direction = cam.getLookFrom() - cam.getLookTo();
-    return cam.getLookFrom() - direction * factor;
+    if (opts.origin) {
+
+        const auto up = cam.getLookUp();
+        const auto dir = -glm::normalize(cam.getDirection());
+        const auto right = glm::cross(up, dir);
+        const auto basis = mat3(right, up, dir);
+
+        const auto size =
+            fovyToSize(cam.getFovy(), glm::length(cam.getDirection()), cam.getAspectRatio());
+        const auto translate = glm::translate(vec3{0.5f * size * opts.origin.value(), 0.f});
+        const auto scale = glm::scale(vec3{1.0f - opts.factor.y, 1.0f - opts.factor.y, 1.f});
+        const auto m = translate * scale * glm::inverse(translate);
+        const auto offset = basis * vec3{m * vec4{0.f, 0.f, 0.f, 1.f}};
+
+        cam.setLook(cam.getLookFrom() + offset - direction * opts.factor.y,
+                    cam.getLookTo() + offset, cam.getLookUp());
+    } else {
+        cam.setLookFrom(cam.getLookFrom() - direction * opts.factor.y);
+    }
 }
 
 }  // namespace util

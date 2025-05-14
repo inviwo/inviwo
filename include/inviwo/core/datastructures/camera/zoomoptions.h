@@ -26,51 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/marginproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
-#include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
-#include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+
+#include <optional>
+#include <cstdint>
 
 namespace inviwo {
 
-class IVW_MODULE_PLOTTINGGL_API OrthographicAxis2D : public Processor {
-public:
-    OrthographicAxis2D();
+struct IVW_CORE_API ZoomOptions {
+    enum class Bounded : std::uint8_t { Yes, No };
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    ImageInport inport_;
-    MeshInport mesh_;
-    ImageOutport outport_;
-
-    plot::AxisStyleProperty style_;
-    FloatVec4Property backgroundColor_;
-    BoolProperty clipContent_;
-    plot::AxisProperty axis1_;
-    plot::AxisProperty axis2_;
-    MarginProperty margins_;
-    FloatProperty axisMargin_;
-    BoolProperty antialiasing_;
-    CameraProperty camera_;
-    CameraTrackball trackball_;
-
-    std::array<plot::AxisRenderer, 2> axisRenderers_;
+    glm::vec2 factor = glm::vec2{1.0f, 1.0f};
+    std::optional<glm::vec2> origin = std::nullopt;
+    Bounded bounded = Bounded::No;
+    std::optional<glm::mat4> boundingBox = std::nullopt;
 };
 
 }  // namespace inviwo

@@ -117,6 +117,11 @@ float fovyToWidth(float fovy, float distance, float aspect) {
     return 2.0f * distance * std::tan(0.5f * glm::radians(fovy)) * aspect;
 }
 
+vec2 fovyToSize(float fovy, float distance, float aspect) {
+    const auto height = 2.0f * distance * std::tan(0.5f * glm::radians(fovy));
+    return {height * aspect, height};
+}
+
 float widthToFovy(float width, float distance, float aspect) {
     return glm::degrees(2.0f * std::atan(width / aspect / 2.0f / distance));
 }

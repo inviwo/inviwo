@@ -231,8 +231,9 @@ float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->g
 
 float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
 
-void PointLightInteractionHandler::zoom(float factor, Bounded) {
-    setLookFrom(util::perspectiveZoom(*this, factor, std::nullopt));
+void PointLightInteractionHandler::zoom(const ZoomOptions& opts) {
+    const auto direction = getLookFrom() - getLookTo();
+    setLookFrom(getLookFrom() - direction * opts.factor.y);
 }
 
 vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
@@ -244,7 +245,6 @@ vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocu
     const vec2& normalizedScreenCoord) const {
     return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
-
 
 const Camera& PointLightInteractionHandler::getCamera() { return camera_->get(); }
 

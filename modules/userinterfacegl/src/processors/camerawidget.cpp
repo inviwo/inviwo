@@ -779,13 +779,13 @@ void CameraWidget::stepRotation(RotationAxis dir, bool clockwise) {
 }
 
 void CameraWidget::dragZoom(dvec2 delta) {
-    const auto factor = static_cast<float>(delta.y / 50.0f);
-    camera_.get().zoom(factor, std::nullopt);
+    const auto factor = static_cast<vec2>(delta) / 50.0f;
+    camera_.get().zoom({.factor = factor});
 }
 
 void CameraWidget::stepZoom(bool zoomIn) {
     const auto factor = abs(angleIncrement_.get()) / 90.0f * (zoomIn ? -1.0f : 1.0f);
-    camera_.get().zoom(factor, std::nullopt);
+    camera_.get().zoom({.factor = vec2{factor}});
 }
 
 void CameraWidget::updateOutput(const mat4& rotation) {

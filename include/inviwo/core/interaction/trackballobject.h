@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/datastructures/camera/zoomoptions.h>
 
 namespace inviwo {
 
@@ -64,8 +65,7 @@ public:
     [[nodiscard]] virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const = 0;
 
-    enum class Bounded { Yes, No };
-    virtual void zoom(float factor, Bounded bounded) = 0;
+    virtual void zoom(const ZoomOptions& opts) = 0;
 };
 
 }  // namespace inviwo

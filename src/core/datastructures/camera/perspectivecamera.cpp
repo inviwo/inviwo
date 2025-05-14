@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/camera/cameratools.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
+#include <inviwo/core/datastructures/camera/plotcamera.h>
 
 #include <memory>
 #include <utility>
@@ -60,7 +61,10 @@ void PerspectiveCamera::updateFrom(const Camera& source) {
     } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
         setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
-    } else if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+    } else if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
+        const auto dist = util::widthToViewDist(plc->getSize().x, getFovy(), getAspectRatio());
+        setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
+    } else if (const auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         setFovy(sc->getFovy());
     }
 }
@@ -77,9 +81,7 @@ void PerspectiveCamera::setFovy(float val) {
     }
 }
 
-void PerspectiveCamera::zoom(float factor, std::optional<mat4> boundingBox) {
-    setLookFrom(util::perspectiveZoom(*this, factor, boundingBox));
-}
+void PerspectiveCamera::zoom(const ZoomOptions& opts) { util::perspectiveZoom(*this, opts); }
 
 void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);

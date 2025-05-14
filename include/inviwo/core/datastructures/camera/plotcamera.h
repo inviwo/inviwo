@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,33 +35,36 @@
 namespace inviwo {
 
 /**
- * \class OrthographicCamera
+ * \class PlotCamera
+ * \brief Orthographic camera for plotting that does not preserve aspect ratios.
  *
- * \brief Camera with no perspective projection.
- * Objects far away will appear as large as objects close.
- * @see Camera
- * @see OrthographicCamera
+ * The PlotCamera is a specialized orthographic camera designed for plotting and visualization
+ * tasks where maintaining the original aspect ratio of the view is not required. Unlike standard
+ * orthographic cameras, PlotCamera allows independent scaling of the view along each axis,
+ * enabling flexible and non-uniform projections suitable for data visualization.
  */
-class IVW_CORE_API OrthographicCamera final : public Camera {
+class IVW_CORE_API PlotCamera final : public Camera {
 public:
-    OrthographicCamera(vec3 lookFrom = cameradefaults::lookFrom,
-                       vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
-                       float nearPlane = cameradefaults::nearPlane,
-                       float farPlane = cameradefaults::farPlane,
-                       float aspectRatio = cameradefaults::aspectRatio,
-                       float width = cameradefaults::width);
-    virtual ~OrthographicCamera() = default;
-    OrthographicCamera(const OrthographicCamera& other);
-    OrthographicCamera& operator=(const OrthographicCamera& other);
-    virtual OrthographicCamera* clone() const override;
+    explicit PlotCamera(vec3 lookFrom = cameradefaults::lookFrom,
+                        vec3 lookTo = cameradefaults::lookTo, vec3 lookUp = cameradefaults::lookUp,
+                        float nearPlane = cameradefaults::nearPlane,
+                        float farPlane = cameradefaults::farPlane,
+                        float aspectRatio = cameradefaults::aspectRatio,
+                        vec2 size = vec2{300, 300});
+    virtual ~PlotCamera() = default;
+    PlotCamera(const PlotCamera& other);
+    PlotCamera& operator=(const PlotCamera& other);
+    PlotCamera(PlotCamera&& other) noexcept;
+    PlotCamera& operator=(PlotCamera&& other) noexcept;
+    virtual PlotCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
-    static constexpr std::string_view classIdentifier{"OrthographicCamera"};
+    static constexpr std::string_view classIdentifier{"PlotCamera"};
 
     virtual void updateFrom(const Camera& source) override;
-    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
+    virtual void configureProperties(CameraProperty& cp, bool attach) override;
 
-    float getWidth() const;
-    void setWidth(float width);
+    vec2 getSize() const { return size_; }
+    void setSize(vec2 size);
     virtual void zoom(const ZoomOptions& opts) override;
 
     virtual vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
@@ -73,9 +76,7 @@ protected:
     virtual bool equal(const Camera& other) const override;
     virtual mat4 calculateProjectionMatrix() const override;
 
-    float width_;
+    vec2 size_;
 };
-
-inline float OrthographicCamera::getWidth() const { return width_; }
 
 }  // namespace inviwo

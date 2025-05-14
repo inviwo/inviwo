@@ -47,6 +47,8 @@
 namespace inviwo {
 
 class Event;
+class WheelEvent;
+class MouseEvent;
 class TrackballObject;
 
 class IVW_CORE_API Trackball : public CompositeProperty {
@@ -110,12 +112,12 @@ protected:
     float getBoundedZoom(const vec3& lookFrom, const vec3& zoomTo, float zoom);
     std::pair<bool, vec3> getTrackBallIntersection(const vec2 pos) const;
 
-    void rotate(Event* event);
-    void rotateTAV(Event* event);
-    void rotateArc(Event* event, bool followObjectDuringRotation = false);
-    void rotateFPS(Event* event);
-    void zoom(Event* event);
-    void pan(Event* event);
+    void rotate(MouseEvent* event);
+    void rotateTAV(MouseEvent* event);
+    void rotateArc(MouseEvent* event, bool followObjectDuringRotation = false);
+    void rotateFPS(MouseEvent* event);
+    void zoom(MouseEvent* event);
+    void pan(MouseEvent* event);
     void reset(Event* event);
 
     void moveLeft(Event* event);
@@ -126,12 +128,12 @@ protected:
     void moveBackward(Event* event);
 
     const vec3 getWorldUp() const;
-    mat4 roll(const float radians) const;
-    mat4 pitch(const float radians) const;
-    mat4 yaw(const float radians) const;
+    mat4 roll(float radians) const;
+    mat4 pitch(float radians) const;
+    mat4 yaw(float radians) const;
 
     void stepRotate(Direction dir);
-    void stepZoom(Direction dir, const int numSteps = 1);
+    void stepZoom(Direction dir, int numSteps = 1);
     void stepPan(Direction dir);
 
     void rotateLeft(Event* event);
@@ -144,9 +146,9 @@ protected:
     void panUp(Event* event);
     void panDown(Event* event);
 
-    void zoomWheel(Event* event);
-    void zoomIn(Event* event, const int numSteps = 1);
-    void zoomOut(Event* event, const int numSteps = 1);
+    void zoomWheel(WheelEvent* event);
+    void zoomIn(Event* event, int numSteps = 1);
+    void zoomOut(Event* event, int numSteps = 1);
 
     void recenterFocusPoint(Event* event);
 
@@ -163,12 +165,12 @@ protected:
     bool isMouseBeingPressedAndHold_;
 
     vec3 lastNDC_;
+    vec3 pressNDC_;
 
-    double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
 
     static constexpr float radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
-    static constexpr float stepsize = 0.05f;
+    static constexpr float stepSize = 0.05f;
 
     glm::quat lastRot_;
     std::chrono::system_clock::time_point lastRotTime_;
@@ -195,6 +197,7 @@ public:
     BoolProperty allowZooming_;       ///< Enable/disable zooming
     BoolProperty allowWheelZooming_;  ///< Enable/disable zooming using the mouse wheel
     BoolProperty boundedZooming_;
+    BoolProperty mouseCenteredZoom_;
 
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
@@ -243,7 +246,7 @@ private:
         return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_, worldUp_,
                         customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
                         allowHorizontalPanning_, allowVerticalPanning_, boundedPanning_,
-                        allowZooming_, allowWheelZooming_, boundedZooming_,
+                        allowZooming_, allowWheelZooming_, boundedZooming_, mouseCenteredZoom_,
                         allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
@@ -251,7 +254,7 @@ private:
         return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_, worldUp_,
                         customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
                         allowHorizontalPanning_, allowVerticalPanning_, boundedPanning_,
-                        allowZooming_, allowWheelZooming_, boundedZooming_,
+                        allowZooming_, allowWheelZooming_, boundedZooming_, mouseCenteredZoom_,
                         allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
