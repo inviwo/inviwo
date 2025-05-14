@@ -52,14 +52,17 @@ const ProcessorInfo& OrthographicAxis2D::getProcessorInfo() const { return proce
 OrthographicAxis2D::OrthographicAxis2D()
     : Processor{}
     , inport_{"inport"}
-    , mesh_{"mesh"}
+    , mesh_{"mesh", "A mesh to extract a World to Model matrix from"_help}
     , outport_{"outport"}
     , style_{"style", "Global Style"}
     , backgroundColor_{"backgroundColor", "Background Color",
                        util::ordinalColor(1.f, 1.f, 1.f, 1.f)}
-    , clipContent_{"clipContent", "Clip Content", true}
-    , axis1_{"axis1", "Axis 1"}
-    , axis2_{"axis2", "Axis 2", plot::AxisProperty::Orientation::Vertical}
+    , clipContent_{"clipContent", "Clip Content",
+                   "The input image will only be shown inside of the margins when enabled"_help,
+                   true}
+    , axis1_{"axis1", "Axis 1", "Horizontal axis aligned to the bottom of the view"_help}
+    , axis2_{"axis2", "Axis 2", "Vertical axis aligned to the left of the view"_help,
+             plot::AxisProperty::Orientation::Vertical}
     , margins_{"margins", "Margins", 5.0f, 5.0f, 55.0f, 65.0f}
     , axisMargin_{"axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f}
     , antialiasing_{"antialias", "Antialiasing", true}
@@ -104,6 +107,7 @@ void OrthographicAxis2D::process() {
     const utilgl::ClearColor clearColor{backgroundColor_.get()};
     utilgl::activateAndClearTarget(outport_);
     if (auto source = inport_.getData()) {
+        // if we clipContent_ we only want to draw the inport image inside of the margins
         const auto scissors =
             [&]() -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
             if (clipContent_) {
