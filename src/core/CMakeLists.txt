@@ -112,6 +112,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumerepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/cameratrackball.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/contextmenuaction.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/contextmenuevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/event.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventlistener.h
@@ -518,6 +520,8 @@ set(SOURCE_FILES
     datastructures/volume/volumeramprecision.cpp
     datastructures/volume/volumerepresentation.cpp
     interaction/cameratrackball.cpp
+    interaction/contextmenuaction.cpp
+    interaction/events/contextmenuevent.cpp
     interaction/events/event.cpp
     interaction/events/eventhandler.cpp
     interaction/events/eventlistener.cpp

@@ -56,11 +56,10 @@ public:
      */
     virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source);
 
-    bool markAsUsed();
     /**
      * Returns the previous used state, and sets it to used;
      */
-    bool hasBeenUsed() const;
+    bool markAsUsed();
     /**
      * Returns the previous used state, and sets it to unused;
      */
@@ -70,6 +69,7 @@ public:
      * Returns the previous used state, and sets it to 'isUsed';
      */
     bool setUsed(bool isUsed);
+    bool hasBeenUsed() const;
 
     /**
      * Returns false if the processor was already visited;

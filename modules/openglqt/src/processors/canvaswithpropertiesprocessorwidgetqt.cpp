@@ -95,7 +95,8 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
 
     canvas_->setEventPropagator(this);
     canvas_->setMinimumSize(16, 16);
-    canvas_->onContextMenu([this](QMenu& menu) { return contextMenu(menu); });
+    canvas_->onContextMenu(
+        [this](QMenu& menu, ContextMenuActions actions) { return contextMenu(menu, actions); });
 
     splitter->addWidget(canvas_.get());
 
@@ -224,26 +225,35 @@ void CanvasWithPropertiesProcessorWidgetQt::propagateResizeEvent() {
     canvas_->triggerResizeEventPropagation();
 }
 
-bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu) {
-    connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
-            &QAction::triggered, this, [this]() {
-                getProcessor()
-                    ->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)
-                    ->setSelected(true);
-            });
-    connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered,
-            this, [&]() { setVisible(false); });
+bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuActions actions) {
+    if (actions & ContextMenuAction::Widget) {
+        if (!menu.actions().empty()) {
+            menu.addSeparator();
+        }
+        connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
+                &QAction::triggered, this, [this]() {
+                    getProcessor()
+                        ->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)
+                        ->setSelected(true);
+                });
+        connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"),
+                &QAction::triggered, this, [&]() { setVisible(false); });
 
-    connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
-            &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
+        connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
+                &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
 
-    auto ontop = menu.addAction("On Top");
-    ontop->setCheckable(true);
-    ontop->setChecked(isOnTop());
-    connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
+        auto ontop = menu.addAction("On Top");
+        ontop->setCheckable(true);
+        ontop->setChecked(isOnTop());
+        connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
+    }
 
-    menu.addSeparator();
-    utilqt::addViewActions(menu, getProcessor());
+    if (actions & ContextMenuAction::View) {
+        if (!menu.actions().empty()) {
+            menu.addSeparator();
+        }
+        utilqt::addViewActions(menu, getProcessor());
+    }
 
     return true;
 }
