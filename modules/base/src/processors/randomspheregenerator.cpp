@@ -90,7 +90,7 @@ const ProcessorInfo& RandomSphereGenerator::getProcessorInfo() const { return pr
 
 RandomSphereGenerator::RandomSphereGenerator()
     : Processor()
-    , meshOut_("mesh", "generated sphere meshes with randomized colors and radii"_help)
+    , meshOut_("mesh", "Generated sphere mesh with randomized colors and radii"_help)
     , seed_("seed", "Seed", 0, 0, std::mt19937::max())
     , reseed_("reseed_", "Seed")
     , scale_("scale", "Scale", 12.0f, 0.001f, 100.0f, 0.1f)

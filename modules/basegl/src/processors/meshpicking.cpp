@@ -87,8 +87,8 @@ const ProcessorInfo MeshPicking::processorInfo_{
     "Mesh Rendering",              // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
-    R"(Composite image with mesh where mesh repositioned through picking
-    Use Left Mouse Button to move the mesh around in the scene)"_unindentHelp,
+    R"(Renders a Mesh with an optional background image. The mesh can be repositioned through picking.
+    Use the left mouse button to move the mesh around.)"_unindentHelp,
 };
 const ProcessorInfo& MeshPicking::getProcessorInfo() const { return processorInfo_; }
 

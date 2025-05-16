@@ -104,9 +104,9 @@ const ProcessorInfo ImageStackVolumeSource::processorInfo_{
     "Data Input",                         // Category
     CodeState::Stable,                    // Code state
     "CPU, Layer, Image, Volume",          // Tags
-    R"(The format of the volume will be equivalent to the first input image. The volume resolution
+    R"(Create a Volume from a stack of individual images. The format of the volume will be equivalent to the first input image. The volume resolution
     will be equal to the size of the first image times the number of images. The physical size of 
-    volume is determined by the the voxel spacing property.
+    volume is determined by the voxel spacing property.
  
     The input images are converted to a volume representation based on the input channel selection.
     Single channels, i.e. red, green, blue, alpha, and grayscale, will result in a scalar volume

@@ -49,10 +49,10 @@ namespace inviwo {
 
 class PoolProcessor;
 
-/** PoolProcesor utilities*/
+/** PoolProcessor utilities*/
 namespace pool {
 
-/** PoolProcesor implementation details */
+/** PoolProcessor implementation details */
 namespace detail {
 
 /** Helper class to manage state for the background jobs */

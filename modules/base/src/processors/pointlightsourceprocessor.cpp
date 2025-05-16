@@ -86,7 +86,8 @@ const ProcessorInfo PointLightSourceProcessor::processorInfo_{
     "Light source",                 // Category
     CodeState::Experimental,        // Code state
     Tags::CPU,                      // Tags
-    "Produces a point light source, spreading light in all directions the given position."_help};
+    "Creates a point light source, spreading light uniformly in all directions from the given position."_help,
+};
 const ProcessorInfo& PointLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PointLightSourceProcessor::PointLightSourceProcessor()

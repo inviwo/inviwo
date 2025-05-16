@@ -60,8 +60,9 @@ const ProcessorInfo VolumeGradientProcessor::processorInfo_{
     "Volume Operation",           // Category
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
-    "Computes the gradient of one channel of a 3D scalar field. The input channel "
-    "can saved along with the gradient in the alpha channel of the output."_help};
+    "Computes the gradient of one channel of a 3D scalar field. The data of the input channel "
+    "can optionally be stored in the fourth channel of the output volume along with the gradient."_help,
+};
 const ProcessorInfo& VolumeGradientProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientProcessor::VolumeGradientProcessor()

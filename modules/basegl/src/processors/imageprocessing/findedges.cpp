@@ -42,12 +42,14 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-const ProcessorInfo FindEdges::processorInfo_{"org.inviwo.FindEdges",  // Class identifier
-                                              "Image Find Edges",      // Display name
-                                              "Image Operation",       // Category
-                                              CodeState::Stable,       // Code state
-                                              Tags::GL,                // Tags
-                                              "Extracts edges in the input image"_help};
+const ProcessorInfo FindEdges::processorInfo_{
+    "org.inviwo.FindEdges",  // Class identifier
+    "Image Find Edges",      // Display name
+    "Image Operation",       // Category
+    CodeState::Stable,       // Code state
+    Tags::GL,                // Tags
+    "Extracts edges in the input image"_help,
+};
 const ProcessorInfo& FindEdges::getProcessorInfo() const { return processorInfo_; }
 
 FindEdges::FindEdges()

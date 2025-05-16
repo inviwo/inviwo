@@ -62,7 +62,7 @@ const ProcessorInfo ImageMixer::processorInfo_{
     "Image Operation",        // Category
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
-    R"( * The output is defined by function <tt>f(a,b)</tt> which is given by the blend mode:
+    R"(Mixes the two input images. The output is defined by function <tt>f(a,b)</tt> which is given by the blend mode:
  
     Supported blend modes for determining <tt>f(a,b)</tt>
     <table>

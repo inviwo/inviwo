@@ -76,7 +76,7 @@ MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identi
                                                          std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
     , volume_{"volume", VolumeComponent::Gradients::All,
-              "input volume, each channel rendered with it's own TF"_help}
+              "input volume, each channel rendered with its own TF"_help}
     , entryExit_{}
     , background_{*this}
     , isoTFs_{volume_.volumePort}

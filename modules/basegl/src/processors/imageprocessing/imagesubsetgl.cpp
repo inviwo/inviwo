@@ -81,8 +81,9 @@ const ProcessorInfo ImageSubsetGL::processorInfo_{
     "Image Operation",           // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
-    R"(Extracts a region of an image. First color layer, depth layer, and picking layer are
-    copied. The region can be moved using mouse/touch interaction.)"_unindentHelp,
+    R"(Extracts a region of an image. The region can be moved using mouse/touch interaction.
+    Note that only the first color layer as well as the depth and picking layers are copied.
+    )"_unindentHelp,
 };
 const ProcessorInfo& ImageSubsetGL::getProcessorInfo() const { return processorInfo_; }
 

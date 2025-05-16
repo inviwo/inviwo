@@ -62,9 +62,8 @@ const ProcessorInfo ImageScaling::processorInfo_{
     "Image Operation",          // Category
     CodeState::Stable,          // Code state
     "GL, Image",                // Tags
-    R"(This processor provides functionality for up-scaling or 
-    down-scaling an image with respect to the size of the input image.
-    Alternatively, an absolut size can be set.)"_unindentHelp,
+    R"(Up-scaling or down-scaling of the input image with respect to its size and aspect ratio.
+    Alternatively, an absolute size can be set.)"_unindentHelp,
 };
 const ProcessorInfo& ImageScaling::getProcessorInfo() const { return processorInfo_; }
 
