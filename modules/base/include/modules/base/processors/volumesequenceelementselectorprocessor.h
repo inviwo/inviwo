@@ -39,20 +39,6 @@
 #include <string>  // for string
 
 namespace inviwo {
-
-/** \docpage{org.inviwo.TimeStepSelector, Volume Sequence/Time Selector}
- * ![](org.inviwo.TimeStepSelector.png?classIdentifier=org.inviwo.TimeStepSelector)
- *
- * Select a specific volume out of a sequence of volumes
- *
- * ### Inport
- *   * __inport__ Sequence of volumes
- * ### Outport
- *   * __outport__ Selected volume
- *
- * ### Properties
- *   * __Step__ The volume sequence index to extract
- */
 class IVW_MODULE_BASE_API VolumeSequenceElementSelectorProcessor
     : public VectorElementSelectorProcessor<Volume> {
 public:

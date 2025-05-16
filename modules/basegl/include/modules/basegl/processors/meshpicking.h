@@ -53,30 +53,9 @@ class Mesh;
 class MeshDrawerGL;
 class PickingEvent;
 
-/** \docpage{org.inviwo.GeometryPicking, Mesh Picking}
- * ![](org.inviwo.GeometryPicking.png?classIdentifier=org.inviwo.GeometryPicking)
- * Composite image with mesh where mesh repositioned through picking
- *
- * Use Left Mouse Button to move the mesh around in the scene
- *
- * ### Inports
- *   * __MeshInport__ The input mesh.
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- *
- * ### Properties
- *   * __Position__ Defines size of all lines.
- *   * __Camera__ Camera of the scene.
- *   * __Trackball__ Camera trackball.
- */
-
 /**
- * \brief Composite image with geometry where geometry repositioned through picking
- *
+ * @brief Composite image with geometry where geometry repositioned through picking
  */
-
 class IVW_MODULE_BASEGL_API MeshPicking : public Processor {
 public:
     virtual const ProcessorInfo& getProcessorInfo() const override;

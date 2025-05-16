@@ -44,7 +44,9 @@ VolumeRaycasterBase::VolumeRaycasterBase(std::string_view identifier, std::strin
           {utilgl::imgIdentityVert(),
            {ShaderType::Fragment,
             utilgl::findShaderResource("raycasting/raycaster-template.frag")}},
-          identifier, displayName) {}
+          identifier, displayName) {
+    outport_.setHelp("output image containing volume rendering of the input"_help);
+}
 
 VolumeRaycasterBase::~VolumeRaycasterBase() = default;
 

@@ -63,12 +63,15 @@ const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
     "Volume Operation",            // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
+    "Calculates the magnitude of the input volume."_help,
 };
 const ProcessorInfo& VectorMagnitudeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
     : VolumeGLProcessor("vectormagnitudeprocessor.frag") {
     this->dataFormat_ = DataFloat32::get();
+
+    outport_.setHelp("Gradient magnitude of the input volume"_help);
 }
 
 VectorMagnitudeProcessor::~VectorMagnitudeProcessor() = default;

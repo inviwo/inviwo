@@ -39,24 +39,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.Tonemapper, Tonemapping operator}
- * ![](org.inviwo.Tonemapper.png?classIdentifier=org.inviwo.Tonemapper)
- * Applies some tonemapping operation on the input image
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Exposure__ Controls exposure if the image.
- *   * __Gamma__ Controls the gamma (1.0 / gamma) (default is 2.2).
- */
-
 /**
- * \class ImageBrightnessContrast
- * \brief Controls brightness and contrast of an image.
+ * @brief Controls brightness and contrast of an image.
  */
 class IVW_MODULE_POSTPROCESSING_API Tonemapping : public ImageGLProcessor {
 public:

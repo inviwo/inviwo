@@ -40,23 +40,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TransformRasterization, Transform Rasterization}
- * ![](org.inviwo.TransformRasterization.png?classIdentifier=org.inviwo.TransformRasterization)
- * Add a transformation on a rasterization object.
- *
- * ### Inports
- *   * __input__ Input rasterization object to be rendered by a rasterization renderer
- *
- * ### Outports
- *   * __output__ Wrapper around the input rasterization with a transform applied on rasterize call
- *
- * ### Properties
- *   * __Mesh Transform__ Additional world transform applied to all input meshes
- */
-
 /**
- * \class TransformRasterization
- * \brief Applies an additional transform on a given rasterization object.
+ * @brief Applies an additional transform on a given rasterization object.
  */
 class IVW_MODULE_OIT_API TransformRasterization : public Rasterizer {
 public:

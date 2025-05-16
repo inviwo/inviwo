@@ -44,27 +44,8 @@ class Deserializer;
 class Event;
 class Outport;
 
-/** \docpage{org.inviwo.ImageScaling, Image Scaling}
- * ![](org.inviwo.ImageScaling.png?classIdentifier=org.inviwo.ImageScaling)
- * This processor provides functionality for up-scaling or down-scaling an image with respect to the
- * size of the input image. Alternatively, an absolut size can be set.
- *
- * ### Inports
- *   * __Source Image__ The mixed image
- *
- * ### Outports
- *   * __Output Image__ The scaled image
- *
- * ### Properties
- *   * __Enabled__   Enables or disables scaling of the input image
- *   * __Scaling Factor__
- *   * __Custom Factor__   custom scaling factor is used if scaling factor is "Custom"
- *   * __Absolute Size__   specific size is used if scaling factor is "Absolute"
- */
-
 /**
- * \class ImageScaling
- * \brief Processor for up-scaling or down-scaling an image. Modifies the resize events by scaling
+ * @brief Processor for up-scaling or down-scaling an image. Modifies the resize events by scaling
  * them before they are propagated further.
  */
 class IVW_MODULE_BASEGL_API ImageScaling : public Processor {

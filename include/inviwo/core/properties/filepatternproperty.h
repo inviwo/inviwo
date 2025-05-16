@@ -61,6 +61,12 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.FilePatternProperty"};
 
+    FilePatternProperty(std::string_view identifier, std::string_view displayName, Document help,
+                        const std::filesystem::path& pattern = "",
+                        std::string_view contentType = "default",
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
+
     FilePatternProperty(std::string_view identifier, std::string_view displayName,
                         const std::filesystem::path& pattern = "",
                         std::string_view contentType = "default",

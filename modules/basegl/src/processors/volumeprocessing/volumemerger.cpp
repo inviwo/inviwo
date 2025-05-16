@@ -55,6 +55,9 @@ const ProcessorInfo VolumeMerger::processorInfo_{
     "Volume Operation",         // Category
     CodeState::Stable,          // Code state
     "GL",                       // Tags
+    R"(Merges up to four single-channel volumes into a single volume. If, for example,
+    input volumes 1 and 4 are given, the output volume will have 2 channels where the
+    first one contains volume 1 and the second one volume 4.)"_unindentHelp,
 };
 const ProcessorInfo& VolumeMerger::getProcessorInfo() const { return processorInfo_; }
 

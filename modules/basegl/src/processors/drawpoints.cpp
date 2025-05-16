@@ -76,6 +76,8 @@ const ProcessorInfo DrawPoints::processorInfo_{
     "Drawing",                // Category
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
+    R"(Interactive 2D point drawing
+    Hold Ctrl+D and click/move Left Mouse Button to Draw)"_unindentHelp,
 };
 const ProcessorInfo& DrawPoints::getProcessorInfo() const { return processorInfo_; }
 
@@ -83,9 +85,12 @@ DrawPoints::DrawPoints()
     : Processor()
     , inport_("inputImage")
     , outport_("outputImage")
-    , pointSize_("pointSize", "Point Size", 5, 1, 10)
-    , pointColor_("pointColor", "Point Color", vec4(1.f))
-    , clearButton_("clearButton", "Clear Drawing")
+    , pointSize_("pointSize", "Point Size",
+                 util::ordinalScale(5, 10).set("Defines size of all points."_help))
+    , pointColor_("pointColor", "Point Color",
+                  util::ordinalColor(vec4(1.f)).set("Defines color of all points."_help))
+    , clearButton_("clearButton", "Clear Drawing", "Clear all points."_help,
+                   [this]() { clearPoints(); })
     , mouseDraw_(
           "mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
           MouseStates(flags::any), KeyModifier::Control)
@@ -99,14 +104,7 @@ DrawPoints::DrawPoints()
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(pointSize_);
-    pointColor_.setSemantics(PropertySemantics::Color);
-    addProperty(pointColor_);
-    clearButton_.onChange([this]() { clearPoints(); });
-    addProperty(clearButton_);
-
-    addProperty(mouseDraw_);
-    addProperty(keyEnableDraw_);
+    addProperties(pointSize_, pointColor_, clearButton_, mouseDraw_, keyEnableDraw_);
 
     pointShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     points_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());

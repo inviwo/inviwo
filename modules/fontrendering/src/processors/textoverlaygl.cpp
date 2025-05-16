@@ -76,10 +76,13 @@ TextOverlayProperty::TextOverlayProperty(std::string_view identifier, std::strin
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , text("text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
-           PropertySemantics::TextEditor)
-    , position("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , offset("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100)) {
+    , text("text", "Text", "The text with possible formatting"_help, "Lorem ipsum etc.",
+           InvalidationLevel::InvalidOutput, PropertySemantics::TextEditor)
+    , position("position", "Position", "Where to put the text, relative position from 0 to 1"_help,
+               vec2(0.0f), {vec2(-1.0f), ConstraintBehavior::Immutable},
+               {vec2(2.0f), ConstraintBehavior::Immutable}, vec2(0.01f))
+    , offset("offset", "Offset (Pixel)", "Pixel offset for the text"_help, ivec2(0),
+             {ivec2(-100), ConstraintBehavior::Ignore}, {ivec2(100), ConstraintBehavior::Ignore}) {
     addProperties(text, position, offset);
 }
 TextOverlayProperty::TextOverlayProperty(const TextOverlayProperty& rhs)
@@ -94,18 +97,30 @@ const ProcessorInfo TextOverlayGL::processorInfo_{
     "Drawing",                   // Category
     CodeState::Stable,           // Code state
     "GL, Font, Text",            // Tags
+    R"(Overlay text onto an image. The text can contain place markers indicated by '{}'.
+    These markers will be replaced with the contents of the corresponding  Arguments properties.
+    The place markers uses standard fmt syntax and can either be numbered {0}, {1}, or
+    named {arg0} {arg1}.)"_unindentHelp,
 };
 const ProcessorInfo& TextOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
 TextOverlayGL::TextOverlayGL()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input image (optional)"_help)
+    , outport_("outport", "Output image with overlayed text"_help)
     , enable_("enable", "Enabled", true)
-    , texts_{"texts", "Texts", std::make_unique<TextOverlayProperty>("text0", "Text 0"), 0,
+    , texts_{"texts",
+             "Texts",
+             "List of text items to overlay"_help,
+             []() {
+                 std::vector<std::unique_ptr<Property>> res;
+                 res.emplace_back(std::make_unique<TextOverlayProperty>("text0", "Text 0"));
+                 return res;
+             }(),
+             0,
              ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
-    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , color_("color", "Color",
+             util::ordinalColor(vec4(1.f)).set("Foreground color of the text"_help))
     , font_("font", "Font Settings")
     , args_{"args", "Arguments",
             []() {

@@ -79,13 +79,14 @@ const ProcessorInfo GLUITestProcessor::processorInfo_{
     "UI",                            // Category
     CodeState::Experimental,         // Code state
     "GL, UI",                        // Tags
+    "Test processor for demonstrating GLUI functionality."_help,
 };
 const ProcessorInfo& GLUITestProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GLUITestProcessor::GLUITestProcessor()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input image"_help)
+    , outport_("outport", "Input image with the UI rendered on top."_help)
     // properties represented by GLUI
     , boolProperty_("boolProperty", "Bool Property", true)
     , intProperty_("intProperty", "Int Property", 20, 0, 100)
@@ -99,24 +100,32 @@ GLUITestProcessor::GLUITestProcessor()
 
     // settings properties for GLUI
     , uiSettings_("uiSettings", "UI Settings")
-    , uiVisible_("uiVisibility", "UI Visible", true)
+    , uiVisible_("uiVisibility", "UI Visible",
+                 "UI visibility, i.e. whether the UI is rendered or not"_help, true)
     , uiScaling_("uiScaling", "UI Scaling", 1.0f, 0.0f, 4.0f)
-    , uiColor_("uiColor", "UI Color", vec4(0.51f, 0.64f, 0.91f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , uiColor_("uiColor", "UI Color",
+               util::ordinalColor(vec4(0.51f, 0.64f, 0.91f, 1.0f)).set("main color of the UI"_help))
     , uiSecondaryColor_("uiSecondaryColor", "UI Secondary Color", vec4(0.4f, 0.4f, 0.45f, 1.0f),
                         vec4(0.0f), vec4(1.0f))
     , uiBorderColor_("uiBorderColor", "UI Border Color", vec4(vec3(0.1f), 1.0f), vec4(0.0f),
                      vec4(1.0f))
     , uiDisabledColor_("uiDisabledColor", "UI Disabled Color", vec4(0.6f, 0.6f, 0.63f, 1.0f),
                        vec4(0.0f), vec4(1.0f))
-    , uiTextColor_("uiTextColor", "Text Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
-    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 1.0f, 1.0f, 0.5f), vec4(0.0f), vec4(1.0f))
+    , uiTextColor_("uiTextColor", "Text Color",
+                   util::ordinalColor(vec4(vec3(0.0f), 1.0f)).set("color of the text labels"_help))
+    , hoverColor_("hoverColor", "Hover Color",
+                  util::ordinalColor(vec4(1.0f, 1.0f, 1.0f, 0.5f))
+                      .set("highlight color when hovering UI elements"_help))
     , layoutDirection_("layoutDirection", "Layout Direction",
                        {{"horizontal", "Horizontal", glui::BoxLayout::LayoutDirection::Horizontal},
                         {"vertical", "Vertical", glui::BoxLayout::LayoutDirection::Vertical}},
                        1)
     , intPropertyVertical_("intPropertyVertical", "Int Property Vertical", false)
-    , layoutSpacing_("layoutSpacing", "Layout Spacing", 5, 0, 50)
-    , layoutMargins_("layoutMargins", "Layout Margins", ivec4(10), ivec4(0), ivec4(50))
+    , layoutSpacing_("layoutSpacing", "Layout Spacing",
+                     util::ordinalLength(5, 50).set("spacing in between UI elements"_help))
+    , layoutMargins_("layoutMargins", "Layout Margins",
+                     util::ordinalLength(ivec4(40), ivec4(50))
+                         .set("margins applied to the layout (top, left, bottom, right)"_help))
     , layout_(glui::BoxLayout::LayoutDirection::Vertical)
     // GLUI property widgets
     , boolPropertyUI_(boolProperty_, *this, uiRenderer_)

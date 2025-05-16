@@ -40,46 +40,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.WorldTransformVolumeDeprecated, Basis Transform Mesh (Deprecated)}
- * ![](org.inviwo.WorldTransformVolumeDeprecated.png?classIdentifier=org.inviwo.WorldTransformVolumeDeprecated)
- *
- * Sets the world transform of a volume.
- *
- * ### Inports
- *   * __VolumeInport__ Input volume.
- *
- * ### Outports
- *   * __VolumeOutport__ Transformed output volume.
- *
- * ### Properties
- *   * __Type__ There are 3 modes: Translate, Rotate, Scale, User Defined
- *   * __Translate__ A translation
- *   * __Axis__ Axis of rotation
- *   * __Angle__ Angle of rotation
- *   * __Scale__ Scaling for each axis
- *   * __Transformation__ Arbitrary transformation
- */
-
-/** \docpage{org.inviwo.WorldTransformGeometryDeprecated, Basis Transform Volume (Deprecated)}
- * ![](org.inviwo.WorldTransformGeometryDeprecated.png?classIdentifier=org.inviwo.WorldTransformGeometryDeprecated)
- *
- * Sets the world transform of a mesh.
- *
- * ### Inports
- *   * __MeshInport__ Input mesh.
- *
- * ### Outports
- *   * __MeshOutport__ Transformed output mesh.
- *
- * ### Properties
- *   * __Type__ There are 3 modes: Translate, Rotate, Scale, User Defined
- *   * __Translate__ A translation
- *   * __Axis__ Axis of rotation
- *   * __Angle__ Angle of rotation
- *   * __Scale__ Scaling for each axis
- *   * __Transformation__ Arbitrary transformation
- */
-
 template <typename T>
 class WorldTransformDeprecated : public Processor {
 public:
@@ -129,7 +89,8 @@ struct ProcessorTraits<WorldTransformDeprecated<Mesh>> {
             "World Transform Mesh (Deprecated)",        // Display name
             "Coordinate Transforms",                    // Category
             CodeState::Deprecated,                      // Code state
-            Tags::None                                  // Tags
+            Tags::CPU,                                  // Tags
+            "Sets the world transform of a mesh."_help,
         };
     }
 };
@@ -143,7 +104,8 @@ struct ProcessorTraits<WorldTransformDeprecated<Volume>> {
             "World Transform Volume (Deprecated)",        // Display name
             "Coordinate Transforms",                      // Category
             CodeState::Deprecated,                        // Code state
-            Tags::None                                    // Tags
+            Tags::CPU,                                    // Tags
+            "Sets the world transform of a volume."_help,
         };
     }
 };

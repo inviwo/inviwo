@@ -46,12 +46,26 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                                            InvalidationLevel invalidationLevel,
                                            PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
-    , lineWidth{"lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f}
-    , antialiasing{"antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f}
-    , miterLimit{"miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f}
-    , roundCaps{"roundCaps", "Round Caps", true}
-    , pseudoLighting{"pseudoLighting", "Pseudo Lighting", true, InvalidationLevel::InvalidResources}
-    , roundDepthProfile{"roundDepthProfile", "Round Depth Profile", true,
+    , lineWidth{"lineWidth", "Line Width (pixel)",
+                util::ordinalLength(1.0f, 50.0f).set("width of the rendered lines (in pixel)"_help)}
+    , antialiasing{"antialiasing", "Antialiasing (pixel)",
+                   util::ordinalLength(0.5f, 10.0f)
+                       .set("width of the antialiased line edge (in pixel), "
+                            "this determines the softness along the edge"_help)}
+    , miterLimit{"miterLimit",
+                 "Miter Limit",
+                 "limit for cutting of sharp corners"_help,
+                 0.8f,
+                 {0.0f, ConstraintBehavior::Immutable},
+                 {1.0f, ConstraintBehavior::Immutable},
+                 0.1f}
+    , roundCaps{"roundCaps", "Round Caps",
+                "If enabled, round caps are drawn at the end of each line"_help, true}
+    , pseudoLighting{"pseudoLighting", "Pseudo Lighting",
+                     "enables radial shading as depth cue, i.e. tube like appearance"_help, true,
+                     InvalidationLevel::InvalidResources}
+    , roundDepthProfile{"roundDepthProfile", "Round Depth Profile",
+                        "Modify line depth matching a round depth profile"_help, true,
                         InvalidationLevel::InvalidResources}
     , defaultColor{"defaultColor", "Default Color",
                    util::ordinalColor(vec4{1.0f, 0.7f, 0.2f, 1.0f})}

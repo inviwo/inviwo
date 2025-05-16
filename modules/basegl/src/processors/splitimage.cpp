@@ -70,19 +70,24 @@ const ProcessorInfo SplitImage::processorInfo_{
     "Image Operation",        // Category
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
+    "Split screen of two input images. "
+    "The images are split in the middle either horizontally or vertically."_help,
 };
 const ProcessorInfo& SplitImage::getProcessorInfo() const { return processorInfo_; }
 
 SplitImage::SplitImage()
     : Processor()
-    , inport0_("inputA")
-    , inport1_("inputB")
-    , outport_("outport")
+    , inport0_("inputA", "first image (left/top)"_help)
+    , inport1_("inputB", "second image (right/bottom)"_help)
+    , outport_("outport", "resulting image where the two input images are split in the middle"_help)
     , splitDirection_("splitDirection", "Split Direction",
+                      "split direction, i.e. either vertical or horizontal"_help,
                       {{"vertical", "Vertical", splitter::Direction::Vertical},
                        {"horizontal", "Horizontal", splitter::Direction::Horizontal}},
                       0)
-    , splitPosition_("splitPosition", "Split Position", 0.5f, 0.0f, 1.0f)
+    , splitPosition_("splitPosition", "Split Position", "normalized split position [0,1]"_help,
+                     0.5f, {0.0f, ConstraintBehavior::Immutable},
+                     {1.0f, ConstraintBehavior::Immutable})
     , splitterSettings_("handlebarWidget", "Handle Bar", true, splitter::Style::Handle)
     , renderer_(this) {
 

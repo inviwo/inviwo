@@ -45,9 +45,9 @@ namespace inviwo {
 std::string_view ColumnOptionProperty::getClassIdentifier() const { return classIdentifier; }
 
 ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
-                                           std::string_view displayName,
+                                           std::string_view displayName, Document help,
                                            AddNoneOption emptySelection, int defaultIndex)
-    : OptionPropertyInt(std::string{identifier}, std::string{displayName})
+    : OptionPropertyInt(identifier, displayName, std::move(help))
     , noneOption_(emptySelection)
     , defaultColumnIndex_(defaultIndex) {
 
@@ -58,15 +58,27 @@ ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
 }
 
 ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
-                                           std::string_view displayName, DataFrameInport& port,
+                                           std::string_view displayName,
                                            AddNoneOption emptySelection, int defaultIndex)
-    : OptionPropertyInt(std::string{identifier}, std::string{displayName})
+    : ColumnOptionProperty(identifier, displayName, Document{}, emptySelection, defaultIndex) {}
+
+ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
+                                           std::string_view displayName, Document help,
+                                           DataFrameInport& port, AddNoneOption emptySelection,
+                                           int defaultIndex)
+    : OptionPropertyInt(identifier, displayName, std::move(help))
     , noneOption_(emptySelection)
     , defaultColumnIndex_(defaultIndex) {
 
     setSerializationMode(PropertySerializationMode::All);
     setPort(port);
 }
+
+ColumnOptionProperty::ColumnOptionProperty(std::string_view identifier,
+                                           std::string_view displayName, DataFrameInport& port,
+                                           AddNoneOption emptySelection, int defaultIndex)
+    : ColumnOptionProperty(identifier, displayName, Document{}, port, emptySelection,
+                           defaultIndex) {}
 
 ColumnOptionProperty::ColumnOptionProperty(const ColumnOptionProperty& rhs)
     : OptionPropertyInt(rhs)

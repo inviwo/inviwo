@@ -38,18 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.StereoCameraSyncer, Stereo Camera Syncer}
- * ![](org.inviwo.StereoCameraSyncer.png?classIdentifier=org.inviwo.StereoCameraSyncer)
- * A processor linking a left and right camera.
- *
- *
- * ### Properties
- *   * __master__ Master Camera
- *   * __left__ Left Camera
- *   * __right__ Right Camera
- *   * __separation__ Eye separation
- */
-
 /**
  * \class StereoCameraSyncer
  * \brief A processor linking a left and right camera.

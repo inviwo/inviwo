@@ -75,18 +75,21 @@ const ProcessorInfo HdrBloom::processorInfo_{
     "Postprocessing",       // Category
     CodeState::Stable,      // Code state
     Tags::GL,               // Tags
-};
+    "Applies blooming for high intensities within HDR images"_help};
 
 const ProcessorInfo& HdrBloom::getProcessorInfo() const { return processorInfo_; }
 
 HdrBloom::HdrBloom()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input image."_help)
+    , outport_("outport", "Output image."_help)
     , enable_("enable", "Enable Operation", true)
-    , threshold_("threshold", "Threshold", 1.f, 0.f, 10.f)
-    , strength_("strength", "Strength", 1.f, 0.f, 3.f)
-    , radius_("radius", "Radius", 0.5f, 0.f, 1.f)
+    , threshold_("threshold", "Threshold",
+                 util::ordinalLength(1.0f, 10.f).set("All values above this will be blurred."_help))
+    , strength_("strength", "Strength",
+                util::ordinalLength(1.f, 3.f).set("Sets the intensity of the bloom."_help))
+    , radius_("radius", "Radius",
+              util::ordinalLength(0.5f, 1.f).set("Sets the blur radius of the bloom."_help))
     , highPass_("fullscreenquad.vert", "bloomhighpass.frag")
     , blur_("fullscreenquad.vert", "bloomblur.frag")
     , compose_("fullscreenquad.vert", "bloomcompose.frag")

@@ -48,7 +48,12 @@ const ProcessorInfo ImageBrightnessContrast::processorInfo_{
     "Image Brightness Contrast",           // Display name
     "Image Operation",                     // Category
     CodeState::Stable,                     // Code state
-    Tags::None,                            // Tags
+    Tags::GL,                              // Tags
+    R"(Controls brightness and contrast of an image.
+    The following manipulations are applied:
+      out.rgb = in.rgb - 0.5) * contrast + 0.5 + brightness
+      out.a = in.a
+    )"_unindentHelp,
 };
 const ProcessorInfo& ImageBrightnessContrast::getProcessorInfo() const { return processorInfo_; }
 

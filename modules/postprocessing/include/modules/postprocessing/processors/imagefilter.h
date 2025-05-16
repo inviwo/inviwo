@@ -44,22 +44,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageFilter, Image Filter}
- * ![](org.inviwo.ImageFilter.png?classIdentifier=org.inviwo.ImageFilter)
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Enable__ Turn filter on/off.
- */
-
 /**
- * \class ImageFilter
- * \brief Applies a kernel to the input image.
+ * @brief Applies a kernel to the input image.
  */
 class IVW_MODULE_POSTPROCESSING_API ImageFilter : public Processor {
 public:

@@ -45,28 +45,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.CalcNormalsProcessor, Calculate Normals}
- * ![](org.inviwo.CalcNormalsProcessor.png?classIdentifier=org.inviwo.CalcNormalsProcessor)
- *
- * Calculates a normal buffer for a mesh
- *
- * ### Inports
- *   * __inport__ Mesh inport.
- *
- * ### Outports
- *   * __outport__ Mesh outport.
- *
- * ### Properties
- *   * __Mode__  The weighting modes for calculating normals
- *      * __PassThrough__ mesh is not changed
- *      * __NoWeighting__ no weighting of the normals, simple average
- *      * __WeightArea__  Weight = area of the triangle
- *      * __WeightAngle__ Weight based on the angle. As defined in "Computing vertex normals
- *                        from polygonal facets" by Grit Thürmer and Charles A. Wüthrich 1998.
- *      * __WeightNMax__  Based on "Weights for Computing Vertex Normals from Facet Normals",
- *                        N. Max, 1999. This gives the best results in most cases.
- *
- */
 class IVW_MODULE_OIT_API CalcNormalsProcessor : public Processor {
 public:
     CalcNormalsProcessor();

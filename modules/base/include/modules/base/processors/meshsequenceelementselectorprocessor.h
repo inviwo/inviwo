@@ -46,20 +46,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshTimeStepSelector, Mesh Sequence Element Selector}
- * ![](org.inviwo.MeshTimeStepSelector.png?classIdentifier=org.inviwo.MeshTimeStepSelector)
- *
- * Select a specific volume out of a sequence of meshs
- *
- * ### Inport
- *   * __inport__ Sequence of meshs
- * ### Outport
- *   * __outport__ Selected mesh
- *
- * ### Properties
- *   * __Step__ The mesh sequence index to extract
- */
-
 class IVW_MODULE_BASE_API MeshSequenceElementSelectorProcessor
     : public VectorElementSelectorProcessor<Mesh, MeshOutport> {
 public:

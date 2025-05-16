@@ -46,6 +46,7 @@ IVW_MODULE_PYTHON3_API const void* castProperty(const ::inviwo::Property* proper
 
 }  // namespace inviwo::detail
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /*
  * The python type caster for polymorphic types can only lookup exact
  * matches. I.e. if we have a property Basis that derives from CompositeProperty
@@ -71,3 +72,4 @@ struct pybind11::polymorphic_type_hook<inviwo::Processor> {
         return inviwo::detail::castProcessor(processor, type);
     }
 };
+#endif

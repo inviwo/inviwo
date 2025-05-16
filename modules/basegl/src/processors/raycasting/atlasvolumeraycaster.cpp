@@ -57,11 +57,19 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo AtlasVolumeRaycaster::processorInfo_{
-    "org.inviwo.AtlasVolumeRaycaster",                          // Class identifier
-    "Atlas Volume Raycaster",                                   // Display name
-    "Volume Rendering",                                         // Category
-    CodeState::Experimental,                                    // Code state
-    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Atlas"}  // Tags
+    "org.inviwo.AtlasVolumeRaycaster",                           // Class identifier
+    "Atlas Volume Raycaster",                                    // Display name
+    "Volume Rendering",                                          // Category
+    CodeState::Experimental,                                     // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"} | Tag{"Atlas"},  // Tags
+    R"(Processor for visualizing volumetric data by means of volume raycasting. Only one channel of
+    the volume will be used. Besides the volume data, entry and exit point locations of the
+    bounding box are required. These can be created with the EntryExitPoints processor. The camera
+    properties between these two processors need to be linked. In addition, an Atlas volume has be 
+    provided with segmentation indices of the volume. Each segment will then be rendered using
+    individual colors to make it possible to separate the different regions. An optional brushing
+    and linking port can also be connected to handle selection and filtering of segments.
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& AtlasVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
@@ -70,7 +78,8 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
                                            std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
     , time_{"time", [this](InvalidationLevel level) { invalidate(level); }}
-    , volume_{"volume"}
+    , volume_{"volume", VolumeComponent::Gradients::Single,
+              "input volume (Only one channel will be rendered)"_help}
     , entryExit_{}
     , background_{*this}
     , isoTF_{volume_.volumePort}

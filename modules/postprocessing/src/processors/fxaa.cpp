@@ -64,27 +64,28 @@
 
 namespace inviwo {
 class DataFormatBase;
-}  // namespace inviwo
 
-static void newTexture(GLuint& id) {
+namespace {
+
+void newTexture(GLuint& id) {
     if (id) glDeleteTextures(1, &id);
     glGenTextures(1, &id);
 }
 
-static void newFramebuffer(GLuint& id) {
+void newFramebuffer(GLuint& id) {
     if (id) glDeleteFramebuffers(1, &id);
     glGenFramebuffers(1, &id);
 }
 
-static void delTexture(GLuint id) {
+void delTexture(GLuint id) {
     if (id) glDeleteTextures(1, &id);
 }
 
-static void delFramebuffer(GLuint id) {
+void delFramebuffer(GLuint id) {
     if (id) glDeleteFramebuffers(1, &id);
 }
 
-namespace inviwo {
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo FXAA::processorInfo_{
@@ -93,30 +94,27 @@ const ProcessorInfo FXAA::processorInfo_{
     "Postprocessing",   // Category
     CodeState::Stable,  // Code state
     Tags::GL,           // Tags
+    "Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation"_help,
 };
 
 const ProcessorInfo& FXAA::getProcessorInfo() const { return processorInfo_; }
 
 FXAA::FXAA()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input image."_help)
+    , outport_("outport", "Output image."_help)
     , enable_("enable", "Enable Operation", true)
-    , dither_("dither", "Dither")
-    , quality_("quality", "Quality", 0.5f, 0.f, 1.f, 0.1f)
+    , dither_("dither", "Dither", "Sets amount of dithering."_help,
+              {{"medium", "Medium (Default)", 1}, {"low", "Low", 2}, {"off", "Off (Expensive)", 3}})
+    , quality_("quality", "Quality",
+               util::ordinalLength(0.5f, 1.0f)
+                   .set("Sets the quality (number of samples) used. Performance vs. Quality"_help))
     , fxaa_("fullscreenquad.vert", "fxaa.frag", Shader::Build::No)
     , prepass_("fullscreenquad.vert", "rgbl.frag", Shader::Build::Yes) {
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(enable_);
-    addProperty(dither_);
-    addProperty(quality_);
-
-    dither_.addOption("medium", "Medium (Default)", 1);
-    dither_.addOption("low", "Low", 2);
-    dither_.addOption("off", "Off (Expensive)", 3);
-    dither_.setCurrentStateAsDefault();
+    addProperties(enable_, dither_, quality_);
 
     auto width = static_cast<int>(outport_.getDimensions().x);
     auto height = static_cast<int>(outport_.getDimensions().y);

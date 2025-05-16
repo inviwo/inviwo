@@ -55,31 +55,8 @@ class Mesh;
 class MeshShaderCache;
 class Shader;
 
-/** \docpage{org.inviwo.LineRasterizer, Line Rasterizer}
- * ![](org.inviwo.LineRasterizer.png?classIdentifier=org.inviwo.LineRasterizer)
- * Render input meshes as lines, allows for order-independent transparency.
- *
- * ### Inports
- *   * __geometry__ Input meshes
- *
- * ### Outports
- *   * __rasterization__ rasterization functor rendering either opaquely or into fragment buffer
- *
- * ### Properties
- *   * __Mesh Transform__ Additional world/model transform applied to all input lines
- *   * __Line Width__  width of the rendered lines (in pixel)
- *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the
- *                     softness along the edge
- *   * __Miter Limit__ limit for cutting of sharp corners
- *   * __Round Caps__  if enabled, round caps are drawn at the end of each line
- *   * __Pseudo Lighting__      enables radial shading as depth cue, i.e. tube like appearance
- *   * __Round Depth Profile__  modify line depth matching a round depth profile
- *   * __Shade opaque__    use simple depth checks instead of fragment lists
- */
-
 /**
- * \class LineRasterizer
- * \brief Renders input geometry with 2D lines
+ * @brief Renders input geometry with 2D lines
  */
 class IVW_MODULE_OIT_API LineRasterizer : public Rasterizer {
     friend class LineRasterization;

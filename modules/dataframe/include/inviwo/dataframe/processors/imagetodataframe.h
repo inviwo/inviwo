@@ -51,25 +51,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageToDataFrame, Image To DataFrame}
- * ![](org.inviwo.ImageToDataFrame.png?classIdentifier=org.inviwo.ImageToDataFrame)
- * This processor converts an image into a DataFrame.
- *
- * ### Inports
- *   * __image__  source image
- *
- * ### Outports
- *   * __outport__  generated DataFrame
- *
- * ### Properties
- *   * __Mode__  The processor can operate in 3 modes: Analytics, where data for each pixel is
- *               outputted, or Rows/Columns where one column for each line of pixel in the
- *               specified direction is outputted.
- *   * __Layer__ The image layer to use
- *   * __Color Index__ The color layer index
- *   * __Range__ range of rows/columns to use.
- */
-
 class IVW_MODULE_DATAFRAME_API ImageToDataFrame : public Processor {
 public:
     ImageToDataFrame();

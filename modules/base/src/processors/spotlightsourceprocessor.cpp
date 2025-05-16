@@ -65,6 +65,10 @@ const ProcessorInfo SpotLightSourceProcessor::processorInfo_{
     "Light source",                // Category
     CodeState::Experimental,       // Code state
     Tags::CPU,                     // Tags
+    R"(Produces a spot light source, spreading light in the shape of a cone.
+    The direction of the cone will be computed as glm::normalize(vec3(0) - lightPos)
+    when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
+    view space.)"_unindentHelp,
 };
 const ProcessorInfo& SpotLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
@@ -73,14 +77,22 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
     , outport_("SpotLightSource")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
-    , lightPosition_("lightPosition", "Light Source Position", vec3(100.f), CoordinateSpace::World,
-                     &camera_, PropertySemantics::LightPosition)
+    , lightPosition_("lightPosition", "Light Source Position", "Start point of the cone."_help,
+                     vec3(100.f), CoordinateSpace::World, &camera_,
+                     PropertySemantics::LightPosition)
     , lighting_("lighting", "Light Parameters")
-    , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
+    , lightPowerProp_("lightPower", "Light power (%)",
+                      util::ordinalLength(50.f).set("Increases/decreases light strength"_help))
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
-    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
-    , lightConeRadiusAngle_("lightConeRadiusAngle", "Light Cone Radius Angle", 30.f, 1.f, 90.f)
-    , lightFallOffAngle_("lightFallOffAngle", "Light Fall Off Angle", 5.f, 0.f, 30.f)
+    , lightDiffuse_("lightDiffuse", "Color",
+                    "Flux density per solid angle, W*s*r^-1 (intensity)"_help, vec3(1.0f))
+    , lightConeRadiusAngle_("lightConeRadiusAngle", "Light Cone Radius Angle",
+                            "Cone radius angle of the light source"_help, 30.f,
+                            {1.f, ConstraintBehavior::Immutable},
+                            {90.f, ConstraintBehavior::Immutable})
+    , lightFallOffAngle_(
+          "lightFallOffAngle", "Light Fall Off Angle", "Fall off angle of the light source"_help,
+          5.f, {0.f, ConstraintBehavior::Immutable}, {30.f, ConstraintBehavior::Immutable})
     , lightSource_{std::make_shared<SpotLight>()} {
 
     addPort(outport_);

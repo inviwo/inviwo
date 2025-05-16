@@ -48,6 +48,7 @@ const ProcessorInfo MeshExport::processorInfo_{
     "Data Output",            // Category
     CodeState::Stable,        // Code state
     Tags::CPU,                // Tags
+    "Export meshes"_help,
 };
 MeshExport::MeshExport(InviwoApplication* app)
     : DataExport<Mesh, MeshInport>{util::getDataWriterFactory(app), "", "geometry"} {}

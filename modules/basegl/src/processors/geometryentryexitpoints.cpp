@@ -56,15 +56,21 @@ const ProcessorInfo GeometryEntryExitPoints::processorInfo_{
     "Mesh Rendering",                      // Category
     CodeState::Stable,                     // Code state
     Tags::GL,                              // Tags
+    R"(Computes entry and exit points of a given mesh based on the current camera parameters.
+    The positions of the input geometry are mapped to Data space, i.e. texture coordinates, of the
+    input volume. The output color will be zero if no intersection is found, otherwise.
+    )"_unindentHelp,
 };
 const ProcessorInfo& GeometryEntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
 GeometryEntryExitPoints::GeometryEntryExitPoints()
     : Processor()
-    , volumeInport_("volume")
-    , meshInport_("geometry")
-    , entryPort_("entry", DataVec4UInt16::get())
-    , exitPort_("exit", DataVec4UInt16::get())
+    , volumeInport_("volume", "Input volume used to map geometry positions to Data space"_help)
+    , meshInport_("geometry", "Input mesh used for determining entry and exit points"_help)
+    , entryPort_("entry", "The first hit point in texture coordinates [0,1]"_help,
+                 DataVec4UInt16::get())
+    , exitPort_("exit", "The last hit point in texture coordinates [0,1]"_help,
+                DataVec4UInt16::get())
     , camera_("camera", "Camera", util::boundingBox(meshInport_))
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_) {
@@ -72,9 +78,7 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     addPort(meshInport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
-    addProperty(capNearClipping_);
-    addProperty(camera_);
-    addProperty(trackball_);
+    addProperties(capNearClipping_, camera_, trackball_);
 
     onReloadCallback_ =
         entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

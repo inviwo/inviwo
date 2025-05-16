@@ -226,17 +226,6 @@ void OrdinalAnimationProperty<T>::setLimits() {
     }
 }
 
-/** \docpage{org.inviwo.OrdinalPropertyAnimator, Property Animator}
- * ![](org.inviwo.OrdinalPropertyAnimator.png?classIdentifier=org.inviwo.OrdinalPropertyAnimator)
- * Generate a periodically uppdating property. Usefull for animations
- *
- * ### Properties
- *   * __Property__ The type of ordinal property
- *   * __Add__ Add property.
- *   * __Delay (ms)__ elay between updates.
- *   * __Play/Pause__ Activate animation.
- *
- */
 class IVW_MODULE_BASE_API OrdinalPropertyAnimator : public Processor {
 public:
     using Types =

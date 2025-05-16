@@ -52,17 +52,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeSequenceToDataFrame, Volume To DataFrame}
- * ![](org.inviwo.VolumeSequenceToDataFrame.png?classIdentifier=org.inviwo.VolumeSequenceToDataFrame)
- * This processor converts a volume sequence into a DataFrame.
- *
- * ### Inports
- *   * __volume__  source volume
- *
- * ### Outports
- *   * __outport__  generated DataFrame
- */
-
 class IVW_MODULE_DATAFRAME_API VolumeSequenceToDataFrame : public Processor {
 public:
     VolumeSequenceToDataFrame();

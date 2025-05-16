@@ -69,14 +69,16 @@ const ProcessorInfo SyntheticDataFrame::processorInfo_{
     "Synthetic DataFrame",            // Display name
     "Data Creation",                  // Category
     CodeState::Stable,                // Code state
-    "CPU, Plotting, DataFrame"        // Tags
-};
+    "CPU, Plotting, DataFrame",       // Tags
+    "This processor generates a DataFrame filled with random values."_help};
 const ProcessorInfo& SyntheticDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 SyntheticDataFrame::SyntheticDataFrame()
     : Processor()
-    , dataFrame_("dataFrame_")
-    , numRow_("numRow", "Number of Rows", 1000, 3, 100000)
+    , dataFrame_("dataFrame_", "resulting DataFrame containing n rows with random values"_help)
+    , numRow_("numRow", "Number of Rows",
+              util::ordinalCount(size_t{1000}, size_t{100000})
+                  .set("defines the size of the generated DataFrame"_help))
     , includeSingleValueColumnsFloat_("includeSingleValueColumnsFloat",
                                       "Include Single Value Column (float)", false)
     , includeSingleValueColumnsInt_("includeSingleValueColumnsInt",

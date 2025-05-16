@@ -38,27 +38,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenMix, EigenMix}
- * ![](org.inviwo.EigenMix.png?classIdentifier=org.inviwo.EigenMix)
- *
- * Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
- *
- *
- * ### Inports
- *   * __a__ Matrix A
- *   * __b__ Matrix B
- *
- * ### Outports
- *   * __res__ Lineart mix of Matrix A and B
- *
- * ### Properties
- *   * __Mix factor__ Weighting factor, a low value favors A and high value favors B
- *
- */
-
 /**
- * \class EigenMix
- * \brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
+ * @brief Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)
  */
 class IVW_MODULE_EIGENUTILS_API EigenMix : public Processor {
 public:

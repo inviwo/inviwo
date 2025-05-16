@@ -59,6 +59,7 @@ public:
      * and de-serializer.
      *
      * @param fileName full path to xml file (for reading or writing).
+     * @param alloc Allocator to use for memory resources.
      */
     explicit SerializeBase(const std::filesystem::path& fileName, allocator_type alloc = {});
 

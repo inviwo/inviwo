@@ -104,22 +104,58 @@ const ProcessorInfo DepthOfField::processorInfo_{
     "Depth Of Field",           // Display name
     "Postprocessing",           // Category
     CodeState::Experimental,    // Code state
-    Tags::None,                 // Tags
+    Tags::GL,                   // Tags
+    R"(Applies a depth of field effect where out-of-focus regions appear blurred.
+    Use any pinhole camera-generated image as input and connect the camera property to the rendering
+    processor. The image should be generated with a perspective camera but may use any rendering
+    technique.
+    
+    Implementation is based on Depth of Field Rendering from Sparsely Sampled Pinhole Images (Master
+    thesis, 2020) by Natalie Axelsson.)"_unindentHelp,
 };
 const ProcessorInfo& DepthOfField::getProcessorInfo() const { return processorInfo_; }
 
 DepthOfField::DepthOfField()
     : Processor()
-    , inport_("inport")
-    , trackingInport_("trackingInport")
-    , outport_("outport")
-    , aperture_("aperture", "Aperture", 0.5, 0.01, 1., 0.01)
-    , focusDepth_("focusDepth", "Focus depth", 8., 1.0, 15.0, 0.1)
-    , manualFocus_("manualFocus", "Manual focus", true)
-    , approximate_("approximate", "Approximate", false)
-    , viewCountExact_("viewCountExact", "View count", 40, 10, 200)
-    , viewCountApprox_("viewCountApprox", "Rendered view count", 5, 1, 12)
-    , simViewCountApprox_("simViewCountApprox", "Simulated view count", 40, 10, 200)
+    , inport_("inport", "Input image."_help)
+    , trackingInport_("trackingInport",
+                      "World space point to focus on. "
+                      "The first point in the first position buffer will be used."_help)
+    , outport_("outport", "Output image."_help)
+    , aperture_("aperture", "Aperture",
+                util::ordinalScale(0.5, 1.).set(
+                    "The diameter of the simulated lens. Affects blur strength."_help))
+    , focusDepth_("focusDepth", "Focus depth",
+                  util::ordinalLength(8.0, 15.0).set("The depth in the scene that is in focus. "
+                                                     "Requires manual focus to be enabled."_help))
+    , manualFocus_("manualFocus", "Manual focus",
+                   "Determines whether the focus depth is determined "
+                   "by manual input or inport data."_help,
+                   true)
+    , approximate_("approximate", "Approximate",
+                   "If true, uses an approximative algorithm which renders "
+                   "the scene fewer times. Requires a valid depth map. "
+                   "Note that the approximative algorithm does not"
+                   "support transparency in the scene."_help,
+                   false)
+    , viewCountExact_("viewCountExact", "View count",
+                      util::ordinalCount(size_t{40}, size_t{200})
+                          .set("The number of times to render the scene. "
+                               "A higher view count leads to smoother blur in the image, "
+                               "but also requires longer computation times."_help))
+    , viewCountApprox_(
+          "viewCountApprox", "Rendered view count",
+          util::ordinalCount(size_t{5}, size_t{12})
+              .set(
+                  "The number of times to render the scene when using the approximative algorithm. "
+                  "A higher rendered view count improves approximations of partially occluded "
+                  "regions "
+                  "and may reduce artifacts around object boundaries."_help))
+    , simViewCountApprox_(
+          "simViewCountApprox", "Simulated view count",
+          util::ordinalCount(size_t{40}, size_t{200})
+              .set("The number of additional views to approximate. "
+                   "The simulated view count affects ghosting artifacts in the final image."_help))
     , clickToFocus_(
           "clickToFocus", "Click to focus",
           [this](Event* e) {
@@ -133,7 +169,6 @@ DepthOfField::DepthOfField()
     , addSampleShader_("fullscreenquad.vert", "dof_exact.frag")
     , addToLightFieldShader_({{ShaderType::Compute, "dof_approx.comp"}}, Shader::Build::No)
     , averageLightFieldShader_("fullscreenquad.vert", "dof_approx.frag") {
-
     addPort(inport_);
     addPort(trackingInport_);
     addPort(outport_);

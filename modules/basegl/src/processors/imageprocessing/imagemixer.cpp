@@ -62,16 +62,49 @@ const ProcessorInfo ImageMixer::processorInfo_{
     "Image Operation",        // Category
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
+    R"(Mixes the two input images. The output is defined by function <tt>f(a,b)</tt> which is given by the blend mode:
+ 
+    Supported blend modes for determining <tt>f(a,b)</tt>
+    <table>
+      <tr><td>Mix</td><td><tt>a * (1 - weight) + b * weight</tt></td></tr>
+      <tr><td>Over</td><td><tt>f(a,b) = b over a</tt>, regular front-to-back blending</td></tr>
+      <tr><td>Multiply</td><td><tt>f(a,b) = a * b</tt></td></tr>
+      <tr><td>Screen</td><td><tt>f(a,b) = 1 - (1 - a) * (1 - b)</tt></td></tr>
+      <tr><td>Overlay</td><td><tt>f(a,b) = 2 * a *b, if a &lt; 0.5</tt>, and</td></tr>
+         <tr><td></td><td><tt>f(a,b) = 1 - 2(1 - a)(1 - b)</tt>, otherwise (combination of Multiply
+    and Screen)</td></tr> <tr><td>HardLight</td><td>Overlay where a and b are swapped</td></tr>
+      <tr><td>Divide</td><td><tt>f(a,b) = a/b</tt></td></tr>
+      <tr><td>Addition</td><td><tt>f(a,b) = a + b</tt>, clamped to [0,1]</td></tr>
+      <tr><td>Subtraction</td><td><tt>f(a,b) = a - b</tt>, clamped to [0,1]</td></tr>
+      <tr><td>Difference</td><td><tt>f(a,b) = |a - b|</tt></td></tr>
+      <tr><td>DarkenOnly</td><td><tt>f(a,b) = min(a, b)</tt>, per component</td></tr>
+      <tr><td>BrightenOnly</td><td><tt>f(a,b) = max(a, b)</tt>, per component</td></tr>
+    </table>)"_unindentHelp,
 };
 const ProcessorInfo& ImageMixer::getProcessorInfo() const { return processorInfo_; }
 
 ImageMixer::ImageMixer()
     : Processor()
-    , inport0_("inport0")
-    , inport1_("inport1")
-    , outport_("outport")
-    , blendingMode_("blendMode", "Blend Mode", InvalidationLevel::InvalidResources)
-    , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
+    , inport0_("inport0", "Input image A"_help)
+    , inport1_("inport1", "Input image B"_help)
+    , outport_("outport", "The mixed image."_help)
+    , blendingMode_("blendMode", "Blend Mode", "Blend mode used for mixing the input images."_help,
+                    {{"mix", "Mix", BlendModes::Mix},
+                     {"over", "Over", BlendModes::Over},
+                     {"multiply", "Multiply", BlendModes::Multiply},
+                     {"screen", "Screen", BlendModes::Screen},
+                     {"overlay", "Overlay", BlendModes::Overlay},
+                     {"hardlight", "Hard Light", BlendModes::HardLight},
+                     {"divide", "Divide", BlendModes::Divide},
+                     {"addition", "Addition", BlendModes::Addition},
+                     {"subtraction", "Subtraction", BlendModes::Subtraction},
+                     {"difference", "Difference", BlendModes::Difference},
+                     {"darkenonly", "DarkenOnly (min)", BlendModes::DarkenOnly},
+                     {"brightenonly", "BrightenOnly (max)", BlendModes::BrightenOnly}},
+                    0, InvalidationLevel::InvalidResources)
+    , weight_("weight", "Weight",
+              "Weighting factor for mixing the blending result with input image A."_help, 0.5f,
+              {0.0f, ConstraintBehavior::Immutable}, {1.0f, ConstraintBehavior::Immutable})
     , clamp_("clamp", "Clamp values to zero and one", false, InvalidationLevel::InvalidResources)
     , shader_("img_mix.frag", Shader::Build::No) {
 
@@ -80,21 +113,6 @@ ImageMixer::ImageMixer()
     addPort(inport0_);
     addPort(inport1_);
     addPort(outport_);
-
-    blendingMode_.addOption("mix", "Mix", BlendModes::Mix);
-    blendingMode_.addOption("over", "Over", BlendModes::Over);
-    blendingMode_.addOption("multiply", "Multiply", BlendModes::Multiply);
-    blendingMode_.addOption("screen", "Screen", BlendModes::Screen);
-    blendingMode_.addOption("overlay", "Overlay", BlendModes::Overlay);
-    blendingMode_.addOption("hardlight", "Hard Light", BlendModes::HardLight);
-    blendingMode_.addOption("divide", "Divide", BlendModes::Divide);
-    blendingMode_.addOption("addition", "Addition", BlendModes::Addition);
-    blendingMode_.addOption("subtraction", "Subtraction", BlendModes::Subtraction);
-    blendingMode_.addOption("difference", "Difference", BlendModes::Difference);
-    blendingMode_.addOption("darkenonly", "DarkenOnly (min)", BlendModes::DarkenOnly);
-    blendingMode_.addOption("brightenonly", "BrightenOnly (max)", BlendModes::BrightenOnly);
-    blendingMode_.setSelectedValue(BlendModes::Mix);
-    blendingMode_.setCurrentStateAsDefault();
 
     addProperty(blendingMode_);
     addProperty(weight_);

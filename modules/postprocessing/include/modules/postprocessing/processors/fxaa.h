@@ -42,25 +42,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.FXAA, FXAA}
- * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
- * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
- *
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Dither__ Sets amount of dithering.
- *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
- */
-
 /**
- * \class FXAA
- * \brief Anti-aliasing post process
+ * @brief Anti-aliasing post process
  */
 class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor {
 public:

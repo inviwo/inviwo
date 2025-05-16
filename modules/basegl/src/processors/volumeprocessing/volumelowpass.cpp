@@ -78,20 +78,17 @@ const ProcessorInfo& VolumeLowPass::getProcessorInfo() const { return processorI
 
 VolumeLowPass::VolumeLowPass()
     : VolumeGLProcessor("volume_lowpass.frag")
-    , kernelSize_("kernelSize", "Kernel size", 3, 2, 27)
-    , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
-    , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f)
-    , updateDataRange_("updateDataRange", "Update Data Range", false) {
+    , kernelSize_("kernelSize", "Kernel size", "Size of the applied low pass filter."_help, 3,
+                  {2, ConstraintBehavior::Immutable}, {27, ConstraintBehavior::Immutable})
+    , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights",
+                          "Toggles between a Gaussian kernel and a box filter."_help)
+    , sigma_("sigma", "Sigma",
+             util::ordinalScale(1.0f, 2.0f).set("Sigma used by the Gaussian kernel."_help))
+    , updateDataRange_("updateDataRange", "Update Data Range",
+                       "Calculate and assign a new data range for the smoothed volume."_help,
+                       false) {
 
-    kernelSize_.getHelp() = Document{"Size of the applied low pass filter."};
-    useGaussianWeights_.getHelp() = Document{"Toggles between a Gaussian kernel and a box filter."};
-    sigma_.getHelp() = Document{"Sigma used by the Gaussian kernel."};
-    updateDataRange_.getHelp() =
-        Document{"Calculate and assign a new data range for the smoothed volume."};
-
-    addProperty(kernelSize_);
-    addProperty(useGaussianWeights_);
-    addProperty(updateDataRange_);
+    addProperties(kernelSize_, useGaussianWeights_, updateDataRange_);
     useGaussianWeights_.addProperty(sigma_);
     useGaussianWeights_.getBoolProperty()->setInvalidationLevel(
         InvalidationLevel::InvalidResources);

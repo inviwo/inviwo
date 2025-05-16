@@ -55,18 +55,24 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SphericalVolumeRaycaster::processorInfo_{
-    "org.inviwo.SphericalVolumeRaycaster",       // Class identifier
-    "Spherical Volume Raycaster",                // Display name
-    "Volume Rendering",                          // Category
-    CodeState::Experimental,                     // Code state
-    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
+    "org.inviwo.SphericalVolumeRaycaster",        // Class identifier
+    "Spherical Volume Raycaster",                 // Display name
+    "Volume Rendering",                           // Category
+    CodeState::Experimental,                      // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"},  // Tags
+    R"(Processor for visualizing volumetric data by means of volume raycasting. Only one channel of
+    the volume will be used. The texture positions will be transformed using spherical coordinates.
+    Besides the volume data, entry and exit point locations of the bounding box are required. These
+    can be created with the EntryExitPoints processor. The camera properties between these two
+    processors need to be linked.)"_unindentHelp,
 };
 const ProcessorInfo& SphericalVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 SphericalVolumeRaycaster::SphericalVolumeRaycaster(std::string_view identifier,
                                                    std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
-    , volume_{"volume"}
+    , volume_{"volume", VolumeComponent::Gradients::Single,
+              "input volume (Only one channel will be rendered)"_help}
     , entryExit_{}
     , background_{*this}
     , isoTF_{volume_.volumePort}

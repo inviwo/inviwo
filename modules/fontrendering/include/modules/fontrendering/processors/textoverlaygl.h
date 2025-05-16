@@ -67,36 +67,6 @@ public:
     IntVec2Property offset;
 };
 
-/** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
- * ![](org.inviwo.TextOverlayGL.png?classIdentifier=org.inviwo.TextOverlayGL)
- *
- * Overlay text onto an image. The text can contain place markers indicated by '{}'.
- * These markers will be replaced with the contents of the corresponding \p Arguments properties.
- * The placemarkers uses standard fmt syntax and can either be numbered {0}, {1}, or
- * named {arg0} {arg1}.
- *
- * ### Inports
- *   * __Inport__ Input image (optional)
- *
- * ### Outports
- *   * __Outport__ Output image with overlayed text
- *
- * ### Properties
- *   * __Texts__ List of text items to overlay.
- *      * __Text__  The text with possible formatting
- *      * __Position__ Where to put the text, relative position from 0 to 1
- *      * __Offset__ Pixel offset for the text
- *   * __Arguments__ List of String, Int and Double Properties to get inserter at the markers
- *     indicated in the text strings
- *   * __Font__ Text font options
- *      * __Font Face__ Font face
- *      * __Font Size__ Size
- *      * __Line Spacing__ Line spacing ot the text
- *      * __Anchor__ What point of the text to put at "Position". Relative from -1,1. 0 means the
- *        text is centered on "Position".
- *      * __Color__ Foreground color of the text
- */
-
 class IVW_MODULE_FONTRENDERING_API TextOverlayGL : public Processor {
 public:
     TextOverlayGL();

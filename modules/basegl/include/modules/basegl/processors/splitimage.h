@@ -48,26 +48,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SplitImage, Split Image}
- * ![](org.inviwo.SplitImage.png?classIdentifier=org.inviwo.SplitImage)
- * Split screen of two input images. The images are split in the middle either horizontally or
- * vertically.
- *
- * ### Inports
- *   * __inputA__  first image (left/top)
- *   * __inputB__  second image (right/bottom)
- *
- * ### Outports
- *   * __outport__  resulting image where the two input images are split in the middle
- *
- * ### Properties
- *   * __Split Direction__       split direction, i.e. either vertical or horizontal
- *   * __Split Position__        normalized split position [0,1]
- */
-
 /**
- * \class SplitImage
- * \brief Processor providing split screen functionality for two images
+ * @brief Processor providing split screen functionality for two images
  */
 class IVW_MODULE_BASEGL_API SplitImage : public Processor {
 public:

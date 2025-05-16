@@ -45,17 +45,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SyntheticDataFrame, Synthetic DataFrame}
- * ![](org.inviwo.SyntheticDataFrame.png?classIdentifier=org.inviwo.SyntheticDataFrame)
- * This processor generates a DataFrame filled with random values.
- *
- * ### Outports
- *   * __Outport__   resulting DataFrame containing n rows with random values
- *
- * ### Properties
- *   * __Number of Rows__  defines the size of the generated DataFrame
- */
-
 class IVW_MODULE_DATAFRAME_API SyntheticDataFrame : public Processor {
 public:
     SyntheticDataFrame();

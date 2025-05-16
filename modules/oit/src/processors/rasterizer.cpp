@@ -35,7 +35,9 @@
 namespace inviwo {
 
 Rasterizer::Rasterizer(std::string_view identifier, std::string_view displayName)
-    : Processor(identifier, displayName), outport_{"image"} {
+    : Processor(identifier, displayName)
+    , outport_{"image",
+               "Rasterization functor rendering either opaquely or into fragment buffer"_help} {
     addPort(outport_);
 }
 

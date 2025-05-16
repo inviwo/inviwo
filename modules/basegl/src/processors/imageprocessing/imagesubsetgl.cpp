@@ -81,17 +81,22 @@ const ProcessorInfo ImageSubsetGL::processorInfo_{
     "Image Operation",           // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
+    R"(Extracts a region of an image. The region can be moved using mouse/touch interaction.
+    Note that only the first color layer as well as the depth and picking layers are copied.
+    )"_unindentHelp,
 };
 const ProcessorInfo& ImageSubsetGL::getProcessorInfo() const { return processorInfo_; }
 
 ImageSubsetGL::ImageSubsetGL()
     : Processor()
     // Inport must use its connected outport's size
-    , inport_("inputImage", true)
+    , inport_("inputImage", "Image to extract region from."_help, OutportDeterminesSize::Yes)
     // Outport shall not handle resize events
-    , outport_("outputImage", false)
-    , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)
-    , rangeY_("rangeY", "Y Slices", 0, 256, 0, 256, 1, 1)
+    , outport_("outputImage", "Extracted region."_help, DataVec4UInt8::get(),
+               HandleResizeEvents::No)
+    , rangeX_("rangeX", "X Slices", "Min/max pixel along horizontal axis."_help, 0, 256, 0, 256, 1,
+              1)
+    , rangeY_("rangeY", "Y Slices", "Min/max pixel along vertical axis."_help, 0, 256, 0, 256, 1, 1)
     , shader_("img_texturequad.vert", "img_copy.frag")
     , rect_(DrawType::Triangles, ConnectivityType::Strip,
             {{{-1.0f, -1.0f}, {0.f, 0.f}},

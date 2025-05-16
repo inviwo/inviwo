@@ -35,24 +35,42 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeRegionMapper::processorInfo_{
-    "org.inviwo.VolumeRegionMapper",                             // Class identifier
-    "Volume Region Mapper",                                      // Display name
-    "Volume Operation",                                          // Category
-    CodeState::Stable,                                           // Code state
-    Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"}  // Tags
+    "org.inviwo.VolumeRegionMapper",                              // Class identifier
+    "Volume Region Mapper",                                       // Display name
+    "Volume Operation",                                           // Category
+    CodeState::Stable,                                            // Code state
+    Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
+    R"(Voxel values are remapped to values provided in columns of a DataFrame. Requires two columns.
+    First column contains the source indices and the second column contains the matching destination
+    indices.)"_unindentHelp,
 };
 const ProcessorInfo& VolumeRegionMapper::getProcessorInfo() const { return processorInfo_; }
 
 VolumeRegionMapper::VolumeRegionMapper()
     : Processor()
-    , inport_("inport")
-    , dataFrame_("mappingIndices")
-    , outport_("outport")
-    , from_{"fromColumn", "From Column Index", dataFrame_, ColumnOptionProperty::AddNoneOption::No,
+    , inport_("inport", "Input volume"_help)
+    , dataFrame_("mappingIndices",
+                 "DataFrame with at least two columns used for mapping the input volume"_help)
+    , outport_("outport", "Resulting volume after mapping the voxels of the input volume."_help)
+    , from_{"fromColumn",
+            "From Column Index",
+            "DataFrame column index for source values"_help,
+            dataFrame_,
+            ColumnOptionProperty::AddNoneOption::No,
             1}
-    , to_{"toColumn", "To Column Index", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 2}
-    , useMissingValue_{"useMissingValue", "Use missing value", true}
-    , missingValue_{"missingValue", "Missing value", 0, std::pair{0, ConstraintBehavior::Ignore},
+    , to_{"toColumn",
+          "To Column Index",
+          "DataFrame column index for destination values"_help,
+          dataFrame_,
+          ColumnOptionProperty::AddNoneOption::No,
+          2}
+    , useMissingValue_{"useMissingValue", "Use missing value",
+                       "If set, unmapped values are set to __missingValue__"_help, true}
+    , missingValue_{"missingValue",
+                    "Missing value",
+                    "Value specifying missing values"_help,
+                    0,
+                    std::pair{0, ConstraintBehavior::Ignore},
                     std::pair{100, ConstraintBehavior::Ignore}} {
 
     addPort(inport_);
@@ -71,7 +89,7 @@ constexpr auto copyColumn = [](const Column& col, auto& dstContainer, auto assig
             }
         });
 };
-}
+}  // namespace
 
 void VolumeRegionMapper::process() {
     // Get data
