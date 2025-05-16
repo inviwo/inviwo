@@ -84,10 +84,10 @@ mat4 TransformationList::getMatrix() const {
 }
 
 TransformListProperty::TransformListProperty(std::string_view identifier,
-                                             std::string_view displayName,
+                                             std::string_view displayName, Document help,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , transforms_("internalTransforms", "Transformations")
     , result_(
           "result", "Result", mat4(1.0f),
@@ -101,6 +101,13 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
 
     transforms_.onChange([this]() { result_.set(transforms_.getMatrix()); });
 }
+TransformListProperty::TransformListProperty(std::string_view identifier,
+                                             std::string_view displayName,
+                                             InvalidationLevel invalidationLevel,
+                                             PropertySemantics semantics)
+    : TransformListProperty(identifier, displayName,
+                            "List of transformations being applied on each other."_help,
+                            invalidationLevel, semantics) {}
 
 TransformListProperty::TransformListProperty(const TransformListProperty& other)
     : CompositeProperty(other), transforms_(other.transforms_), result_(other.result_) {

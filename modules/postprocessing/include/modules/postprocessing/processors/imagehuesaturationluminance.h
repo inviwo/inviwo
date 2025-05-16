@@ -38,33 +38,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageHueSaturationLuminance, Image Hue Saturation Luminance}
- * ![](org.inviwo.ImageHueSaturationLuminance.png?classIdentifier=org.inviwo.ImageHueSaturationLuminance)
- * Controls hue, saturation and luminance of an image.
- * Input image is in RGB color space. The colors are then converted into HSL and the following
- * manipulations are performed:
- *
- *    hsl.r = mod(hsl.r + hue, 1.0);
- *    hsl.g = clamp(hsl.g + sat, 0.0, 1.0);
- *    hsl.b = clamp(hsl.b + lum, 0.0, 1.0);
- *
- * Finally, the image is transformed back into RGB.
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Hue__ Controls hue.
- *   * __Saturation__ Controls saturation.
- *   * __Luminance__ Controls luminance.
- */
-
 /**
- * \class ImageHueSaturationLuminance
- * \brief Controls hue, saturation and luminance of an image.
+ * @brief Controls hue, saturation and luminance of an image.
  */
 class IVW_MODULE_POSTPROCESSING_API ImageHueSaturationLuminance : public ImageGLProcessor {
 public:

@@ -50,15 +50,15 @@ const ProcessorInfo ImageHighPass::processorInfo_{
     "Image Operation",           // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
-};
+    "Applies a high pass filter on the input image."_help};
 const ProcessorInfo& ImageHighPass::getProcessorInfo() const { return processorInfo_; }
 
 ImageHighPass::ImageHighPass()
     : ImageGLProcessor("img_highpass.frag")
-    , kernelSize_("kernelSize", "Kernel Size", 3, 1, 15, 2)
-    , sharpen_("sharpen", "Sharpen", false) {
-    addProperty(kernelSize_);
-    addProperty(sharpen_);
+    , kernelSize_("kernelSize", "Kernel Size", "Size of the applied high pass filter"_help, 3,
+                  {1, ConstraintBehavior::Immutable}, {15, ConstraintBehavior::Immutable}, 2)
+    , sharpen_("sharpen", "Sharpen", "Toggles additional sharpening operation"_help, false) {
+    addProperties(kernelSize_, sharpen_);
 }
 
 void ImageHighPass::preProcess(TextureUnitContainer&) {

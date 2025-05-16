@@ -52,6 +52,7 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
  * @param volume
  * @param clipOrigin  clip origin (bottom left corner), normalized texture coordinates [0,1]
  * @param clipExtent  extent of the clipped volume, normalized texture coordinates [0,1]
+ * @param normals
  * @return cube proxy geometry
  */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
@@ -65,6 +66,7 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(
  * @param volume
  * @param clipMin  bottom left clip position in voxel coordinates [0,volDim - 1]
  * @param clipExtent  positive extent of the clipped volume in voxel coordinates [0,volDim - 1]
+ * @param normals
  * @return cube proxy geometry. Returns
  */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> createCubeProxyGeometry(

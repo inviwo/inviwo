@@ -60,11 +60,14 @@ const ProcessorInfo DataFrameFloat32Converter::processorInfo_{
     "DataFrame",                             // Category
     CodeState::Stable,                       // Code state
     "CPU, Plotting, DataFrame",              // Tags
+    "Converts all floating point columns from double precision to single precision."_help,
 };
 const ProcessorInfo& DataFrameFloat32Converter::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameFloat32Converter::DataFrameFloat32Converter()
-    : Processor(), inport_("inport"), outport_("outport") {
+    : Processor()
+    , inport_("inport", "Input DataFrame"_help)
+    , outport_("outport", "DataFrame with double columns converted to float32"_help) {
 
     addPort(inport_);
     addPort(outport_);

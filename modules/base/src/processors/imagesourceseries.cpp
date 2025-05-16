@@ -71,17 +71,21 @@ const ProcessorInfo ImageSourceSeries::processorInfo_{
     "Data Input",                    // Category
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
-};
+    R"(Provides functionality to pick a single image from a 
+    list of files matching a pattern or selection)"_unindentHelp};
+
 const ProcessorInfo& ImageSourceSeries::getProcessorInfo() const { return processorInfo_; }
 
 ImageSourceSeries::ImageSourceSeries(InviwoApplication* app)
     : Processor()
-    , outport_("outputImage", DataVec4UInt8::get(), false)
-    , findFilesButton_("findFiles", "Update File List")
+    , outport_("outputImage", "Selected image"_help, DataVec4UInt8::get(), HandleResizeEvents::No)
+    , findFilesButton_("findFiles", "Update File List", "Reload the list of matching images"_help)
     , imageFilePattern_("imageFilePattern", "File Pattern",
                         filesystem::getPath(PathType::Images, "/*"), "")
-    , currentImageIndex_("currentImageIndex", "Image Index", 1, 1, 1, 1)
-    , imageFileName_("imageFileName", "Image File Name") {
+    , currentImageIndex_("currentImageIndex", "Image Index", "Index of selected image file"_help, 1,
+                         {1, ConstraintBehavior::Immutable}, {1, ConstraintBehavior::Immutable}, 1)
+    , imageFileName_("imageFileName", "Image File Name",
+                     "Name of the selected file (read-only)"_help) {
 
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() { return !fileList_.empty(); });

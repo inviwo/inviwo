@@ -38,10 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TestMatrix, Test Matrix}
- * ![](org.inviwo.TestMatrix.png?classIdentifier=org.inviwo.TestMatrix)
- * Processor crating an matrix useful for regression testing.
- */
 class IVW_MODULE_EIGENUTILS_API TestMatrix : public Processor {
 public:
     TestMatrix();

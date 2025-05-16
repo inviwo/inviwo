@@ -50,11 +50,17 @@ const ProcessorInfo EigenMix::processorInfo_{
     "Eigen",                  // Category
     CodeState::Experimental,  // Code state
     "Eigen",                  // Tags
+    "Creates a linear mix of matrix A and B such that Cij = Aij + w (Bij-Aij)"_help,
 };
 const ProcessorInfo& EigenMix::getProcessorInfo() const { return processorInfo_; }
 
 EigenMix::EigenMix()
-    : Processor(), a_("a"), b_("b"), res_("res"), w_("w", "Mix factor", 0.5f, 0.f, 1.f, 0.1f) {
+    : Processor()
+    , a_("a", "Matrix A"_help)
+    , b_("b", "Matrix B"_help)
+    , res_("res", "Linear mix of Matrix A and B"_help)
+    , w_("w", "Mix factor", "Weighting factor, a low value favors A and high value favors B"_help,
+         0.5f, {0.f, ConstraintBehavior::Immutable}, {1.f, ConstraintBehavior::Immutable}, 0.01f) {
 
     addPort(a_);
     addPort(b_);

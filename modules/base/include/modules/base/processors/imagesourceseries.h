@@ -47,22 +47,6 @@ namespace inviwo {
 
 class InviwoApplication;
 
-/** \docpage{org.inviwo.ImageSourceSeries, Image Series Source}
- * ![](org.inviwo.ImageSourceSeries.png?classIdentifier=org.inviwo.ImageSourceSeries)
- *
- * Provides functionality to pick a single image from a list of files matching a pattern or
- * selection.
- *
- * ### Outports
- *   * __image.outport__ Selected image
- *
- * ### Properties
- *   * __File Pattern__ Pattern used for multi-file matching including path
- *   * __Image Index__  Index of selected image file
- *   * __Image File Name__  Name of the selected file (read-only)
- *   * __Update File List__ Reload the list of matching images
- *
- */
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
 public:
     ImageSourceSeries(InviwoApplication* app);

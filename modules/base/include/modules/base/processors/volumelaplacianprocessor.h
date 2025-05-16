@@ -47,17 +47,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeLaplacianProcessor, Volume Laplacian Processor}
- * ![](org.inviwo.VolumeLaplacianProcessor.png?classIdentifier=org.inviwo.VolumeLaplacianProcessor)
- * Computes the Laplacian of the input volume.
- *
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Output volume
- *
- */
 class IVW_MODULE_BASE_API VolumeLaplacianProcessor : public PoolProcessor {
 public:
     VolumeLaplacianProcessor();

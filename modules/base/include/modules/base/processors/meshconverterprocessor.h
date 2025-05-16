@@ -50,19 +50,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshConverterProcessor, Mesh Converter Processor}
- * ![](org.inviwo.MeshConverterProcessor.png?classIdentifier=org.inviwo.MeshConverterProcessor)
- * Convert a mesh into either a point mesh or a line mesh.
- *
- * ### Inports
- *   * __inport__ Input meshes
- *
- * ### Outports
- *   * __outport__ Transformed meshes
- *
- * ### Properties
- *   * __type__ Conversion type, lines or points.
- */
 class IVW_MODULE_BASE_API MeshConverterProcessor : public Processor {
 public:
     MeshConverterProcessor();

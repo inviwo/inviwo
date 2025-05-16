@@ -49,12 +49,13 @@ const ProcessorInfo TransformRasterization::processorInfo_{
     "Mesh Rendering",                     // Category
     CodeState::Stable,                    // Code state
     Tags::GL,                             // Tags
+    "Add a transformation on a rasterization object."_help,
 };
 const ProcessorInfo& TransformRasterization::getProcessorInfo() const { return processorInfo_; }
 
 TransformRasterization::TransformRasterization()
     : Rasterizer()
-    , inport_("input")
+    , inport_("input", "Input rasterization object to be rendered by a rasterization renderer"_help)
     , transformSetting_("transformSettings", "Additional Transform") {
 
     addPort(inport_);

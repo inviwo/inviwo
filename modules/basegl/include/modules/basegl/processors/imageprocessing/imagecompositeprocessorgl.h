@@ -38,19 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageCompositeProcessorGL, ImageCompositeProcessorGL}
- * ![](org.inviwo.ImageCompositeProcessorGL.png?classIdentifier=org.inviwo.ImageCompositeProcessorGL)
- * Do a depth based compositing of two images
- *
- * ### Inports
- *   * __imageInport1__ Image 1.
- *   * __imageInport2__ Image 2.
- *
- * ### Outports
- *   * __outport__ Output image.
- *
- */
-
 class IVW_MODULE_BASEGL_API ImageCompositeProcessorGL : public Processor {
 public:
     virtual const ProcessorInfo& getProcessorInfo() const override;

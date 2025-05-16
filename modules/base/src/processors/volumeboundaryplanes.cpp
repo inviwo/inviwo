@@ -63,14 +63,18 @@ const ProcessorInfo VolumeBoundaryPlanes::processorInfo_{
     "Data Creation",                    // Category
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
+    R"(Outputs the six planes that enclose the input volume in world space.
+    Order of planes: -X, -Y, -Z, +X, +Y, +Z (sides of volume in model coordinates).
+    Planes face outward by default, but can be flipped.)"_unindentHelp,
 };
 const ProcessorInfo& VolumeBoundaryPlanes::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBoundaryPlanes::VolumeBoundaryPlanes()
     : Processor()
-    , volume_("volumeInport")
-    , planes_("planeOutport")
-    , flipPlanes_("flipPlanes", "Flip planes", false) {
+    , volume_("volumeInport", "Input volume"_help)
+    , planes_("planeOutport", "The six boundary planes"_help)
+    , flipPlanes_("flipPlanes", "Flip planes",
+                  "Switch plane normals between inward and outward."_help, false) {
 
     addPort(volume_);
     addPort(planes_);

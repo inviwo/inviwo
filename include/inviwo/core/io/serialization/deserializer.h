@@ -121,42 +121,52 @@ struct MapFunctions {
 class IVW_CORE_API Deserializer : public SerializeBase, public LogFilter {
 public:
     /**
-     * \brief Deserialize content from a file
-     * @param fileName path to file that is to be deserialized.
+     * @brief Deserialize content from a file
+     * @param fileName Path to file that is to be deserialized.
+     * @param rootElement Name of the root element to use (default: InviwoWorkspace).
+     * @param alloc Allocator to use for memory resources.
      */
     explicit Deserializer(const std::filesystem::path& fileName,
                           std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                           allocator_type alloc = {});
 
     /**
-     * \brief Deserialize content from a stream.
+     * @brief Deserialize content from a stream.
      * @param stream Stream with content that is to be deserialized.
      * @param refPath Used to calculate paths relative to the stream source if any.
+     * @param rootElement Name of the root element to use (default: InviwoWorkspace).
+     * @param alloc Allocator to use for memory resources.
      */
     explicit Deserializer(std::istream& stream, const std::filesystem::path& refPath,
                           std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                           allocator_type alloc = {});
 
     /**
-     * \brief Deserialize content from a stream.
+     * @brief Deserialize content from a stream.
      * @param stream Stream with content that is to be deserialized.
+     * @param rootElement Name of the root element to use (default: InviwoWorkspace).
+     * @param alloc Allocator to use for memory resources.
      */
     explicit Deserializer(std::istream& stream,
                           std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                           allocator_type alloc = {});
 
     /**
-     * \brief Deserialize content from a string.
+     * @brief Deserialize content from a string.
      * @param content String with content that is to be deserialized.
      * @param refPath Used to calculate paths relative to the stream source if any.
+     * @param rootElement Name of the root element to use (default: InviwoWorkspace).
+     * @param alloc Allocator to use for memory resources.
      */
     explicit Deserializer(const std::pmr::string& content, const std::filesystem::path& refPath,
                           std::string_view rootElement = SerializeConstants::InviwoWorkspace,
                           allocator_type alloc = {});
 
     /**
-     * \brief Deserialize content from a string.
+     * @brief Deserialize content from a string.
      * @param content String with content that is to be deserialized.
+     * @param rootElement Name of the root element to use (default: InviwoWorkspace).
+     * @param alloc Allocator to use for memory resources.
      */
     explicit Deserializer(const std::pmr::string& content,
                           std::string_view rootElement = SerializeConstants::InviwoWorkspace,

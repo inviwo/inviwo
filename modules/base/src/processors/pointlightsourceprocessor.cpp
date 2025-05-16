@@ -86,7 +86,7 @@ const ProcessorInfo PointLightSourceProcessor::processorInfo_{
     "Light source",                 // Category
     CodeState::Experimental,        // Code state
     Tags::CPU,                      // Tags
-};
+    "Produces a point light source, spreading light in all directions the given position."_help};
 const ProcessorInfo& PointLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PointLightSourceProcessor::PointLightSourceProcessor()
@@ -94,16 +94,22 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , outport_("PointLightSource")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
-    , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f),
-                     CoordinateSpace::World, &camera_, PropertySemantics::LightPosition)
+    , lightPosition_("lightPosition", "Light Source Position", "Center point of light source"_help,
+                     vec3(-2.f, -50.f, 90.f), CoordinateSpace::World, &camera_,
+                     PropertySemantics::LightPosition)
     , lighting_("lighting", "Light Parameters")
-    , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
-    , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
-    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
-    , lightEnabled_("lightEnabled", "Enabled", true)
+    , lightPowerProp_("lightPower", "Light power (%)",
+                      util::ordinalLength(50.f).set("Increases/decreases light strength"_help))
+    , lightSize_(
+          "lightSize", "Light radius",
+          util::ordinalLength(1.5f, 3.0f)
+              .set("Radius of the sphere used to determine the size of the point light"_help))
+    , lightDiffuse_("lightDiffuse", "Color", "RGB color"_help, vec3(1.0f))
+    , lightEnabled_("lightEnabled", "Enabled", "Turn light on or off"_help, true)
     , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
     , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
-    , interactionEvents_("interactionEvents", "Interaction Events")
+    , interactionEvents_("interactionEvents", "Interaction Events",
+                         "Allow light source to be moved using interaction events"_help)
     , lightInteractionHandler_(&lightPosition_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_)
     , lightSource_(std::make_shared<PointLight>()) {
 

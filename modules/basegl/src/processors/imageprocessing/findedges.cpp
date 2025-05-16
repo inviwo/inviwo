@@ -42,17 +42,18 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-const ProcessorInfo FindEdges::processorInfo_{
-    "org.inviwo.FindEdges",  // Class identifier
-    "Image Find Edges",      // Display name
-    "Image Operation",       // Category
-    CodeState::Stable,       // Code state
-    Tags::GL,                // Tags
-};
+const ProcessorInfo FindEdges::processorInfo_{"org.inviwo.FindEdges",  // Class identifier
+                                              "Image Find Edges",      // Display name
+                                              "Image Operation",       // Category
+                                              CodeState::Stable,       // Code state
+                                              Tags::GL,                // Tags
+                                              "Extracts edges in the input image"_help};
 const ProcessorInfo& FindEdges::getProcessorInfo() const { return processorInfo_; }
 
 FindEdges::FindEdges()
-    : ImageGLProcessor("img_findedges.frag"), alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {
+    : ImageGLProcessor("img_findedges.frag")
+    , alpha_("alpha", "Alpha", "Threshold alpha used for detecting edges"_help, 0.5f,
+             {0.0f, ConstraintBehavior::Ignore}, {1.0f, ConstraintBehavior::Ignore}) {
     addProperty(alpha_);
 }
 

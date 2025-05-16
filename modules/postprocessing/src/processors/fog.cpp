@@ -57,15 +57,22 @@ const ProcessorInfo Fog::processorInfo_{
     "Postprocessing",       // Category
     CodeState::Stable,      // Code state
     "GL, Image Operation",  // Tags
+    R"(Use any image with a proper depth channel as input. It will apply a colored fog to the
+    color-layer based on the normalized and linearized depth. The fog is computed from an 
+    exponential function and the shape/curve of this exponential function is controlled by
+    the density.)"_unindentHelp,
 };
 const ProcessorInfo& Fog::getProcessorInfo() const { return processorInfo_; }
 
 Fog::Fog()
-    : input_("inport")
-    , output_("output")
-    , color_("color", "Color", vec3(1.f))
-    , density_("density", "Density", 1.f, 0.f, 10.f)
-    , range_("range", "Range", 0.0f, 1.0f, 0.0f, 1.0f)
+    : input_("inport", "Input Image."_help)
+    , output_("output", "Output Image."_help)
+    , color_("color", "Color", util::ordinalColor(vec3(1.f)).set("The color of the fog"_help))
+    , density_("density", "Density",
+               util::ordinalLength(1.0f, 10.0f).set("The density of the fog"_help))
+    , range_("range", "Range",
+             "range of the fog [0,1] with respect to near and far clip plane of the camera"_help,
+             0.0f, 1.0f, 0.0f, 1.0f)
     , camera_("camera", "Camera")
     , shader_("fullscreenquad.vert", "fog.frag") {
     addPort(input_);

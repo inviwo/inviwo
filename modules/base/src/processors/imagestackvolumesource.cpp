@@ -103,16 +103,29 @@ const ProcessorInfo ImageStackVolumeSource::processorInfo_{
     "Image Stack Volume Source",          // Display name
     "Data Input",                         // Category
     CodeState::Stable,                    // Code state
-    "Layer, Image, Volume",               // Tags
+    "CPU, Layer, Image, Volume",          // Tags
+    R"(The format of the volume will be equivalent to the first input image. The volume resolution
+    will be equal to the size of the first image times the number of images. The physical size of 
+    volume is determined by the the voxel spacing property.
+ 
+    The input images are converted to a volume representation based on the input channel selection.
+    Single channels, i.e. red, green, blue, alpha, and grayscale, will result in a scalar volume
+    whereas rgb and rgba will yield a vec3 or vec4 volume, respectively.)"_unindentHelp,
+
 };
 const ProcessorInfo& ImageStackVolumeSource::getProcessorInfo() const { return processorInfo_; }
 
 ImageStackVolumeSource::ImageStackVolumeSource(InviwoApplication* app)
     : Processor()
-    , outport_("volume")
-    , filePattern_("filePattern", "File Pattern", "####.jpeg", "")
+    , outport_("volume", "Volume generated from a stack of input images."_help)
+    , filePattern_("filePattern", "File Pattern",
+                   "Pattern used for multi-file matching of images"_help, "####.jpeg", "")
     , reload_("reload", "Reload data")
-    , skipUnsupportedFiles_("skipUnsupportedFiles", "Skip Unsupported Files", false)
+    , skipUnsupportedFiles_("skipUnsupportedFiles", "Skip Unsupported Files",
+                            R"(If true, matching files with unsupported image formats are
+                            not considered. Otherwise an empty volume slice will be inserted
+                            for each file.)"_unindentHelp,
+                            false)
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , readerFactory_{util::getDataReaderFactory(app)} {

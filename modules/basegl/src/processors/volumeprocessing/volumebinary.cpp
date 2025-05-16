@@ -57,25 +57,29 @@ const ProcessorInfo VolumeBinary::processorInfo_{
     "Volume Binary",            // Display name
     "Volume Operation",         // Category
     CodeState::Stable,          // Code state
-    Tags::None,                 // Tags
+    Tags::GL,                   // Tags
+    R"(Computes a binary volume of the input volume using a threshold. The output
+    will contain "0" for all values below the threshold and "1" otherwise.)"_unindentHelp,
 };
 const ProcessorInfo& VolumeBinary::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBinary::VolumeBinary()
     : VolumeGLProcessor("volume_binary.frag", false)
-    , threshold_("threshold", "Threshold", 0.5)
-    , op_("operator", "Operator", InvalidationLevel::InvalidResources) {
-    addProperty(threshold_);
-    addProperty(op_);
+    , threshold_("threshold", "Threshold",
+                 "Threshold used for the binarization of the input volume"_help, 0.5)
+    , op_("operator", "Operator",
+          {{"greaterthen", ">", Operator::GreaterThen},
+           {"greaterthenorequal", ">=", Operator::GreaterThenOrEqual},
+           {"lessthen", "<", Operator::LessThen},
+           {"lessthenorequal", "<=", Operator::LessThenOrEqual},
+           {"equal", "==", Operator::Equal},
+           {"notequal", "!=", Operator::NotEqual}},
+          0, InvalidationLevel::InvalidResources) {
 
-    op_.addOption("greaterthen", ">", Operator::GreaterThen);
-    op_.addOption("greaterthenorequal", ">=", Operator::GreaterThenOrEqual);
-    op_.addOption("lessthen", "<", Operator::LessThen);
-    op_.addOption("lessthenorequal", "<=", Operator::LessThenOrEqual);
-    op_.addOption("equal", "==", Operator::Equal);
-    op_.addOption("notequal", "!=", Operator::NotEqual);
+    outport_.setHelp("Binary output volume"_help);
 
-    op_.setCurrentStateAsDefault();
+    addProperties(threshold_, op_);
+
     this->dataFormat_ = DataUInt8::get();
 }
 
@@ -89,7 +93,6 @@ void VolumeBinary::postProcess() {
 }
 
 void VolumeBinary::initializeResources() {
-
     shader_.getFragmentShaderObject()->addShaderDefine("OP", op_.getSelectedDisplayName());
     shader_.build();
 }

@@ -47,14 +47,8 @@ namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.AxisRenderProcessor, Axis Render Processor}
- * ![](org.inviwo.AxisRenderProcessor.png?classIdentifier=org.inviwo.AxisRenderProcessor)
- * Test processor for rendering plot axes
- */
-
 /**
- * \class AxisRenderProcessor
- * \brief Test processor for axis rendering
+ * @brief Test processor for axis rendering
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderProcessor : public Processor {
 public:

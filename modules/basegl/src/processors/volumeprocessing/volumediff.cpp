@@ -49,11 +49,19 @@ const ProcessorInfo VolumeDiff::processorInfo_{
     "Volume Operation",       // Category
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
+    "Computes the difference between two volumes "
+    "by subtracting the second volume from the first one."_help,
 };
+
 const ProcessorInfo& VolumeDiff::getProcessorInfo() const { return processorInfo_; }
 
-VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2") {
+VolumeDiff::VolumeDiff()
+    : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2", "Input volume 2"_help) {
     addPort(vol2_);
+
+    inport_.setHelp("Input volume 2"_help);
+    outport_.setHelp(
+        "Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0) / 2.0</tt>"_help);
 }
 
 void VolumeDiff::preProcess(TextureUnitContainer& cont) {

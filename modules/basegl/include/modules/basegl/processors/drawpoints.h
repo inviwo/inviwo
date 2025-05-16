@@ -45,27 +45,8 @@
 namespace inviwo {
 class Event;
 
-/** \docpage{org.inviwo.DrawPoints, Draw Points}
- * ![](org.inviwo.DrawPoints.png?classIdentifier=org.inviwo.DrawPoints)
- *
- * Interactive 2D point drawing
- *
- * Hold Ctrl+D and click/move Left Mouse Button to Draw
- *
- * ### Inports
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- *
- * ### Properties
- *   * __PointSize__ Defines size of all points.
- *   * __PointColor__ Defines color of all points.
- *   * __ClearButton__ Button to clear all points.
- */
-
 /**
- * \brief Interactive 2D point drawing
+ * @brief Interactive 2D point drawing
  *
  * Hold Ctrl+D and click/move Left Mouse Button to Draw
  */

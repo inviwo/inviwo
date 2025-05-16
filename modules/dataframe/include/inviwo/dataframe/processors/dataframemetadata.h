@@ -38,16 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.DataFrameMetaData, Data Frame Meta Data}
- * ![](org.inviwo.DataFrameMetaData.png?classIdentifier=org.inviwo.DataFrameMetaData)
- * Augment a DataFrame with column-specific metadata like minimum and maximum values.
- *
- * ### Inports
- *   * __inport__ input DataFrame to be augmented
- *
- * ### Outports
- *   * __outport__ copy of the input DataFrame along with column MetaData
- */
 class IVW_MODULE_DATAFRAME_API DataFrameMetaData : public Processor {
 public:
     DataFrameMetaData();

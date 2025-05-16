@@ -62,6 +62,7 @@ struct ByteSize {
 
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T>
 struct fmt::formatter<inviwo::ByteSize<T>, char> {
     fmt::formatter<std::string_view> strFormatter;
@@ -113,3 +114,4 @@ struct fmt::formatter<inviwo::ByteSize<T>, char> {
             ctx);
     }
 };
+#endif

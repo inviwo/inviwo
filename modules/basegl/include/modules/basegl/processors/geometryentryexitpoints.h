@@ -46,24 +46,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.GeometryEntryExitPoints, Geometry Entry Exit Points}
- * ![](org.inviwo.GeometryEntryExitPoints.png?classIdentifier=org.inviwo.GeometryEntryExitPoints)
- * Computes entry and exit points of a given mesh based on the current camera parameters.
- * The positions of the input geometry are mapped to Data space, i.e. texture coordinates, of the
- * input volume. The output color will be zero if no intersection is found, otherwise.
- *
- * ### Inports
- *   * __volume__     Input volume used to map geometry positions to Data space
- *   * __geometry__   Input mesh used for determining entry and exit points
- *
- * ### Outports
- *   * __entry__ The first hit point in texture coordinates [0,1]
- *   * __exit__  The last hit point in texture coordinates [0,1]
- *
- * ### Properties
- *   * __Camera__   Scene camera
- */
-
 class IVW_MODULE_BASEGL_API GeometryEntryExitPoints : public Processor {
 public:
     GeometryEntryExitPoints();

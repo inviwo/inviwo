@@ -44,20 +44,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshExport, Mesh Export}
- * ![](org.inviwo.MeshExport.png?classIdentifier=org.inviwo.MeshExport)
- *
- * Export meshes
- *
- * ### Inports
- *   * __Mesh__ Mesh to export.
- *
- *
- * ### Properties
- *   * __Mesh file name__ File to export to
- *   * __Export__ Button to execute export
- *   * __Overwrite__ Should existing files be overwritten
- */
 class IVW_MODULE_BASE_API MeshExport : public DataExport<Mesh, MeshInport> {
 public:
     MeshExport(InviwoApplication* app);

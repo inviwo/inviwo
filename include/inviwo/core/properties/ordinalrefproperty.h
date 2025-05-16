@@ -288,7 +288,6 @@ IVW_CORE_API OrdinalRefPropertyState<vec4> ordinalRefColor(
  * A factory function for configuring a OrdinalRefProperty representing a generic vector, with a
  * symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to
  * InvalidOutput, and the property semantics to SpinBox.
- * @param value the default value for the property
  * @param minMax used to construct the range of the property like min = T{-minMax}, max = T{minMax}.
  * The constraint behavior will be Ignore.
  */

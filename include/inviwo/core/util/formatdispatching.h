@@ -122,7 +122,7 @@ std::string predicateName() {
  * @param format ID if for the dataformat to dispatch on
  * @param obj This should be a callable with a generic call operator taking a template argument
  *  T of the dispatch type. The callable will be called with the supplied arguments (`args`).
- *  For example []<typename T>() {}. T here will be, float, double, int, ... vec2, dvec2, etc.
+ *  For example `[]<typename T>() {}`. T here will be, float, double, int, ... vec2, dvec2, etc.
  * @param args Any arguments that should be passed on to the callable.
  *
  * @throws dispatching::DispatchException in the case that the format is not in

@@ -83,23 +83,31 @@ const ProcessorInfo MeshMapping::processorInfo_{
     "Mesh Operation",            // Category
     CodeState::Stable,           // Code state
     "CPU, Mesh, Color Mapping",  // Tags
+    "Maps the contents of a buffer component to colors of a mesh via a transfer function."_help,
 };
 const ProcessorInfo& MeshMapping::getProcessorInfo() const { return processorInfo_; }
 
 MeshMapping::MeshMapping()
     : Processor()
-    , meshInport_("meshInport")
-    , outport_("outport")
+    , meshInport_("meshInport", "Input mesh"_help)
+    , outport_("outport",
+               "Mesh identical to input mesh but with the color mapped to a specific buffer"_help)
 
     , enabled_("enabled", "Enabled", true)
     , tf_("transferfunction", "Transfer Function",
           TransferFunction(
               {{0.0f, vec4(0.0f, 0.1f, 1.0f, 1.0f)}, {1.0f, vec4(1.0f, 0.03f, 0.03f, 1.0f)}}))
 
-    , buffer_("buffer", "Buffer")
-    , component_("component", "Component", {{"component1", "Component 1", 0}})
+    , buffer_("buffer", "Buffer", "buffer used as source for the color mapping"_help)
+    , component_(
+          "component", "Component",
+          "selected buffer component, i.e. x, y, z, or w (if available) used for mapping"_help,
+          {{"component1", "Component 1", 0}})
 
-    , useCustomDataRange_("useCustomRange", "Use Custom Range", false)
+    , useCustomDataRange_("useCustomRange", "Use Custom Range",
+                          "If enabled, the custom range is used for mapping "
+                          "instead of the range of the input buffer"_help,
+                          false)
     , customDataRange_("customDataRange", "Custom Range", 0.0, 1.0,
                        std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
                        0.01, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)

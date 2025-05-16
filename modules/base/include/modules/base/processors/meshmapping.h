@@ -41,23 +41,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshMapping, Map Buffer To Mesh Color}
- * ![](org.inviwo.MeshMapping.png?classIdentifier=org.inviwo.MeshMapping)
- * Maps the contents of a buffer component to colors of a mesh via a transfer function.
- *
- * ### Inports
- *   * __Mesh__  Input mesh
- *
- * ### Outports
- *   * __Output__   Mesh identical to input mesh but with the color mapped to a specific buffer
- *
- * ### Properties
- *   * __Buffer__     buffer used as source for the color mapping
- *   * __Component__  selected buffer component, i.e. x, y, z, or w (if available) used for mapping
- *   * __Use Custom Range__   if enabled, the custom range is used for mapping instead of the
- *                    range of the input buffer
- */
-
 /**
  * \class MeshMapping
  * \brief Maps the contents of a buffer to colors of a mesh via a transfer function.

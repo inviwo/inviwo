@@ -57,52 +57,6 @@ namespace inviwo {
 class Deserializer;
 class Event;
 
-/** \docpage{org.inviwo.VolumeSliceGL, Volume Slice (GL)}
- * ![](org.inviwo.VolumeSliceGL.png?classIdentifier=org.inviwo.VolumeSliceGL)
- * This processor visualizes an arbitrary 2D slice from an input volume.
- *
- * Note: The output dimensions generally differ from the input Volume dimensions.
- * Use Volume Slice Extracter to extract slices with the same dimensions as the Volume.
- *
- * ### Inports
- *   * __volume__ The input volume
- *
- * ### Outports
- *   * __outport__ The extracted volume slice
- *
- * ### Properties
- *   * __Slice along axis__ Defines the volume axis or plane normal for the output slice
- *   * __X Volume Position__ Position of the slice if the x axis is chosen
- *   * __Y Volume Position__ Position of the slice if the y axis is chosen
- *   * __Z Volume Position__ Position of the slice if the z axis is chosen
- *   * __Plane Normal__ Defines the normal of the slice plane (if slice axis is set to "Plane
- *                      Equation")
- *   * __Plane Position__ Defines the origin of the slice plane (if slice axis is set to "Plane
- *                        Equation")
- *   * __Transformations__
- *      + __Rotation (ccw)__ Defines the rotation of the output image
- *      + __Angle__ Angle of rotation if "Free Rotation" is chosen as rotation
- *      + __Scale__ Scaling factor applied to the volume slice
- *      + __Horizontal Flip__ Flips the output image left and right
- *      + __Vertical Flip__ Flips the output image up and down
- *      + __Volume Texture Wrapping__ Texture wrapping mode used for extracting the image slice
- *          (use fill color, repeat edge values, repeat the contents, mirror contents)
- *      + __Fill Color__ Defines the color which is used if the texture wrapping  is set to "Fill
- *                       with Color"
- *   * __Position Selection__
- *      + __Enable Picking__ Enables selecting the position selection with the mouse
- *      + __Show Position Indicator__ Toggles the visibility of the position indicator
- *      + __Indicator Color__  Custom color of the position indicator
- *   * __Transfer Function Properties__
- *      + __Enable Transfer Function__ Toggles whether the transfer function is applied onto the
- *                                     extracted volume slice
- *      + __Transfer Function__ Defines the transfer function for mapping voxel values to color and
- *                              opacity
- *      + __Alpha Offset__ Offset
- *   * __World Position__ Outputs the world position of the slice plane (read-only)
- *   * __Handle interaction events__ Toggles whether this processor will handle interaction events
- *                                   like mouse buttons or key presses
- */
 class IVW_MODULE_BASEGL_API VolumeSliceGL : public Processor {
 public:
     VolumeSliceGL();

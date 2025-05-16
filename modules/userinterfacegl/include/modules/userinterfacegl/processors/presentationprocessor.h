@@ -52,27 +52,8 @@ namespace inviwo {
 class Event;
 class Image;
 
-/** \docpage{org.inviwo.PresentationProcessor, Presentation Switch}
- * ![](org.inviwo.PresentationProcessor.png?classIdentifier=org.inviwo.PresentationProcessor)
- * Allows switching between slide images and a regular image inport (e.g. rendered image)
- *
- * ### Inports
- *   * __inport__  regular image inport connected to the rendering network
- *
- * ### Outports
- *   * __outport__  either the regular inport image or a slide depending on Slide Mode
- *
- * ### Properties
- *   * __Presentation Mode__   if true the current slide is shown, otherwise the image of the inport
- *   * __File Pattern__ Pattern used for multi-file matching including path
- *   * __Slide Index__  Index of currently selected slide
- *   * __Image File Name__  Name of the selected file (read-only)
- *   * __Update File List__ Reload the list of matching slide images
- */
-
 /**
- * \class PresentationProcessor
- * \brief processor for switching between slide images and another image inport
+ * @brief processor for switching between slide images and another image inport
  */
 class IVW_MODULE_USERINTERFACEGL_API PresentationProcessor : public Processor {
 public:

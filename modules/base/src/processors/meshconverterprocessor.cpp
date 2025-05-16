@@ -56,15 +56,17 @@ const ProcessorInfo MeshConverterProcessor::processorInfo_{
     "Mesh Operation",            // Category
     CodeState::Stable,           // Code state
     Tags::CPU,                   // Tags
+    "Convert a mesh into either a point mesh or a line mesh."_help,
 };
 const ProcessorInfo& MeshConverterProcessor::getProcessorInfo() const { return processorInfo_; }
 
 MeshConverterProcessor::MeshConverterProcessor()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input meshes"_help)
+    , outport_("outport", "Transformed meshes"_help)
     , type_{"type",
             "Type",
+            "Conversion type, lines or points."_help,
             {{"lines", "To Lines", Type::ToLines}, {"points", "To Points", Type::ToPoints}},
             0} {
 

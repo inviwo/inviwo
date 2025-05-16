@@ -38,20 +38,6 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.FindEdges, Image Find Edges}
- * ![](org.inviwo.FindEdges.png?classIdentifier=org.inviwo.FindEdges)
- * Extracts edges in the input image
- *
- * ### Inports
- *   * __inputImage__ Input image
- *
- * ### Outports
- *   * __outputImage__ Output image
- *
- * ### Properties
- *   * __Alpha__ Threshold alpha used for detecting edges
- *
- */
 class IVW_MODULE_BASEGL_API FindEdges : public ImageGLProcessor {
 public:
     FindEdges();

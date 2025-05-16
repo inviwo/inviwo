@@ -87,14 +87,15 @@ const ProcessorInfo VolumeSequenceToDataFrame::processorInfo_{
     "Data Creation",                         // Category
     CodeState::Experimental,                 // Code state
     "CPU, DataFrame, Volume",                // Tags
+    "This processor converts a volume sequence into a DataFrame."_help,
 };
 
 const ProcessorInfo& VolumeSequenceToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSequenceToDataFrame::VolumeSequenceToDataFrame()
     : Processor()
-    , inport_("volume")
-    , outport_("dataframe")
+    , inport_("volume", "Source Volume"_help)
+    , outport_("dataframe", "Generated DataDFrame"_help)
     , reduce_("reduce", "Reduce", true)
     , probability_("probability", "Probability", 0.01f, 0.0f, 1.0f, 0.01f)
     , omitOutliers_("omitOutliers", "Omit outliers", true)

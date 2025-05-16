@@ -63,19 +63,27 @@ const ProcessorInfo TFSelector::processorInfo_{
     "Transfer Function",                   // Category
     CodeState::Stable,                     // Code state
     "Transfer Function, TF, Presets, UI",  // Tags
+    R"(Allows to select a transfer function from a number of presets
+     which can be added and modified by the user. The image is passed
+     through without any modifications.)"_unindentHelp,
 };
 
 const ProcessorInfo& TFSelector::getProcessorInfo() const { return processorInfo_; }
 
 TFSelector::TFSelector()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , tfOut_("tfOut", "TF Out", TransferFunction{})
-    , selectedTF_("selectedTF", "Selected")
-    , cycle_("cycle", "Cycle TFs")
-    , tfPresets_("presets", "Presets",
-                 std::make_unique<TransferFunctionProperty>("tfPreset1", "TF 1"))
+    , inport_("inport", "Input image"_help)
+    , outport_("outport", "Unchanged input image"_help)
+    , tfOut_("tfOut", "TF Out", "selected transfer function (read-only)"_help, TransferFunction{})
+    , selectedTF_("selectedTF", "Selected", "option property to select the TF"_help)
+    , cycle_("cycle", "Cycle TFs",
+             "if true, the first TF will be the successor of the last available TF"_help)
+    , tfPresets_("presets", "Presets", "List of TF presets"_help,
+                 []() {
+                     std::vector<std::unique_ptr<Property>> res;
+                     res.push_back(std::make_unique<TransferFunctionProperty>("tfPreset1", "TF 1"));
+                     return res;
+                 }())
     , interactions_("interactions", "Interactions")
     , nextTF_(
           "nextTF", "Next TF",

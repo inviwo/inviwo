@@ -36,40 +36,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BasisTransformVolume, Basis Transform Volume}
- * ![](org.inviwo.BasisTransformVolume.png?classIdentifier=org.inviwo.BasisTransformVolume)
- *
- * Transforms the world of a volume.
- *
- * ### Inports
- *   * __VolumeInport__ Input volume.
- *
- * ### Outports
- *   * __VolumeOutport__ Transformed output volume.
- *
- * ### Properties
- *   * __Lengths__ Length of each basis vector
- *   * __Angles__ Angles between vectors
- *   * __Offset__ Offset of basis
- */
-
-/** \docpage{org.inviwo.BasisTransformGeometry, Basis Transform Mesh}
- * ![](org.inviwo.BasisTransformGeometry.png?classIdentifier=org.inviwo.BasisTransformGeometry)
- *
- * Transforms the basis of a mesh.
- *
- * ### Inports
- *   * __MeshInport__ Input mesh.
- *
- * ### Outports
- *   * __MeshOutport__ Transformed output mesh.
- *
- * ### Properties
- *   * __Lengths__ Length of each basis vector
- *   * __Angles__ Angles between vectors
- *   * __Offset__ Offset of basis
- */
-
 template <typename T>
 class BasisTransform : public Processor {
 public:
@@ -107,7 +73,8 @@ struct ProcessorTraits<BasisTransform<Mesh>> {
             "Basis Transform Mesh",               // Display name
             "Coordinate Transforms",              // Category
             CodeState::Experimental,              // Code state
-            Tags::CPU                             // Tags
+            Tags::CPU,                            // Tags
+            "Transforms the basis of a mesh."_help,
         };
     }
 };
@@ -121,7 +88,8 @@ struct ProcessorTraits<BasisTransform<Volume>> {
             "Basis Transform Volume",           // Display name
             "Coordinate Transforms",            // Category
             CodeState::Experimental,            // Code state
-            Tags::CPU                           // Tags
+            Tags::CPU,                          // Tags
+            "Transforms the world of a volume."_help,
         };
     }
 };

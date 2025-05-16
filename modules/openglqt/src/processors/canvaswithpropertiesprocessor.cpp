@@ -97,6 +97,8 @@ const ProcessorInfo CanvasWithPropertiesProcessor::processorInfo_{
     "Data Output",                               // Category
     CodeState::Experimental,                     // Code state
     Tags::GL,                                    // Tags
+    R"(Show a processor widget with a split pane with a image on the left, 
+    and a list of PropertyWidgets on the right)"_unindentHelp,
 };
 const ProcessorInfo& CanvasWithPropertiesProcessor::getProcessorInfo() const {
     return processorInfo_;
@@ -105,9 +107,10 @@ const ProcessorInfo& CanvasWithPropertiesProcessor::getProcessorInfo() const {
 CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     : Processor()
     , pwObserver_{std::make_unique<PWObserver>()}
-    , inport_{"inport"}
+    , inport_{"inport", "brushing and linking port for hierarchical interactions"_help}
     , dimensions_{"dimensions",
                   "Widget Size",
+                  "size of the whole widget, not just the image."_help,
                   size2_t(756, 512),
                   std::pair{size2_t{1}, ConstraintBehavior::Immutable},
                   std::pair{size2_t{10000}, ConstraintBehavior::Ignore},
@@ -115,23 +118,34 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
                   InvalidationLevel::Valid}
     , position_{"position",
                 "Widget Position",
+                "position of the widget"_help,
                 ivec2(128, 128),
                 std::pair{ivec2{-10000}, ConstraintBehavior::Ignore},
                 std::pair{ivec2{10000}, ConstraintBehavior::Ignore},
                 ivec2(1, 1),
                 InvalidationLevel::Valid,
                 PropertySemantics::Text}
-    , visible_{"visible", "Visible", true, InvalidationLevel::Valid}
-    , fullScreen_{"fullScreen", "Full Screen", false, InvalidationLevel::Valid}
-    , onTop_{"onTop", "On Top", true, InvalidationLevel::Valid}
+    , visible_{"visible", "Visible", "Toggle widget visibility"_help, true,
+               InvalidationLevel::Valid}
+    , fullScreen_{"fullScreen", "Full Screen", "Toggle if the widget should be fullscreen"_help,
+                  false, InvalidationLevel::Valid}
+    , onTop_{"onTop", "On Top", "Keep the widget on top of the inviwo main window."_help, true,
+             InvalidationLevel::Valid}
     , layerType_{"layerType",
                  "Visible Layer",
+                 "The layer type to render, color, depth of picking"_help,
                  {{"color", "Color layer", LayerType::Color},
                   {"depth", "Depth layer", LayerType::Depth},
                   {"picking", "Picking layer", LayerType::Picking}},
                  0}
-    , layerIndex_{"layerIndex", "Color Layer ID", 0, 0, 0}
-    , paths_{"paths", "Paths", "", InvalidationLevel::InvalidOutput, PropertySemantics::Multiline} {
+    , layerIndex_{"layerIndex", "Color Layer ID", "The color layer index to render"_help, 0}
+    , paths_{"paths",
+             "Paths",
+             "A list of processor ids and/or property paths, "
+             "separated by new lines to show in the property list in the widget."_help,
+             "",
+             InvalidationLevel::InvalidOutput,
+             PropertySemantics::Multiline} {
 
     pwObserver_->position = [this](ProcessorWidgetMetaData* m) {
         if (m->getPosition() != position_.get()) {
