@@ -39,7 +39,7 @@ RaycastingProperty::RaycastingProperty(std::string_view identifier, std::string_
     : CompositeProperty(identifier, displayName,
                         "Raycasting parameters including rendering type (DVR / isosurfaces), "
                         "compositing, sampling rate, etc."_help,
-                        invalidationLevel, semantics)
+                        invalidationLevel, std::move(semantics))
     , renderingType_("renderingType", "Rendering",
                      {{"dvr", "Direct Volume Rendering", RenderingType::Dvr},
                       {"dvriso", "DVR + Isosurfaces", RenderingType::DvrIsosurface},

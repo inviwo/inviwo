@@ -72,7 +72,7 @@ const ProcessorInfo& BrushingAndLinkingProcessor::getProcessorInfo() const {
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
     , inport_("inport", "brushing and linking port for hierarchical interactions"_help)
-    , outport_("outport", "brushing and linking port for connecting \"linked\" processors"_help)
+    , outport_("outport", R"(brushing and linking port for connecting "linked" processors)"_help)
     , clearSelection_(
           "clearSelection", "Clear Selection", [&]() { outport_.getManager().clearSelected(); },
           InvalidationLevel::Valid)

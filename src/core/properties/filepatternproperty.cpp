@@ -45,7 +45,7 @@ FilePatternProperty::FilePatternProperty(std::string_view identifier, std::strin
                                          std::string_view contentType,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, help, invalidationLevel, std::move(semantics))
     , helpText_("helpText", "",
                 "A pattern might include '#' as placeholder for digits, where "
                 "multiple '###' indicate leading zeros. Wildcards('*', '?') are supported.")
@@ -107,7 +107,7 @@ FilePatternProperty::FilePatternProperty(std::string_view identifier, std::strin
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : FilePatternProperty(identifier, displayName, Document{}, pattern, contentType,
-                          invalidationLevel, semantics) {}
+                          invalidationLevel, std::move(semantics)) {}
 
 FilePatternProperty::FilePatternProperty(const FilePatternProperty& rhs)
     : CompositeProperty(rhs)

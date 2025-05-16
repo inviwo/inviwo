@@ -82,7 +82,7 @@ public:
 
 private:
     friend ::inviwo::pool::detail::State;
-    Stop(const std::atomic<bool>& stop) : stop_{stop} {}
+    explicit Stop(const std::atomic<bool>& stop) : stop_{stop} {}
     const std::atomic<bool>& stop_;
 };
 

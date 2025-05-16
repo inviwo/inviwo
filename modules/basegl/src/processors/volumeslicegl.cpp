@@ -129,7 +129,7 @@ const ProcessorInfo VolumeSliceGL::processorInfo_{
     R"(This processor visualizes an arbitrary 2D slice from an input volume.
     
     Note: The output dimensions generally differ from the input Volume dimensions.
-    Use Volume Slice Extracter to extract slices with the same dimensions as the Volume)"_unindentHelp,
+    Use Volume Slice Extractor to extract slices with the same dimensions as the Volume)"_unindentHelp,
 };
 const ProcessorInfo& VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
 
@@ -176,7 +176,7 @@ VolumeSliceGL::VolumeSliceGL()
                            {"free", "Free Rotation", 4}},
                           0, InvalidationLevel::Valid)
     , imageRotation_("imageRotation", "Angle",
-                     "Angle of rotation if \"Free Rotation\" is chosen as rotation"_help, 0,
+                     R"(Angle of rotation if "Free Rotation" is chosen as rotation)"_help, 0,
                      {0, ConstraintBehavior::Ignore},
                      {glm::radians(360.f), ConstraintBehavior::Ignore})
     , flipHorizontal_("flipHorizontal", "Horizontal Flip",

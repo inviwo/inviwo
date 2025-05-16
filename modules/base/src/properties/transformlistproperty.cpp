@@ -87,7 +87,8 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
                                              std::string_view displayName, Document help,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics))
     , transforms_("internalTransforms", "Transformations")
     , result_(
           "result", "Result", mat4(1.0f),
@@ -107,7 +108,7 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
                                              PropertySemantics semantics)
     : TransformListProperty(identifier, displayName,
                             "List of transformations being applied on each other."_help,
-                            invalidationLevel, semantics) {}
+                            invalidationLevel, std::move(semantics)) {}
 
 TransformListProperty::TransformListProperty(const TransformListProperty& other)
     : CompositeProperty(other), transforms_(other.transforms_), result_(other.result_) {

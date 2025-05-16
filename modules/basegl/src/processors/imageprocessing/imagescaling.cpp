@@ -91,11 +91,11 @@ ImageScaling::ImageScaling()
     , customFactor_("customFactor", "Custom Factor",
                     util::ordinalScale(1.0, 32.0)
                         .setMin(1.0 / 32.0)
-                        .set("custom scaling factor is used if scaling factor is \"Custom\""_help))
+                        .set(R"(custom scaling factor is used if scaling factor is "Custom")"_help))
     , absoluteSize_("absoluteSize", "Absolute Size",
                     util::ordinalCount(size2_t{200}, size2_t{4096})
                         .setMin(size2_t{1})
-                        .set("specific size is used if scaling factor is \"Absolute\""_help)) {
+                        .set(R"(specific size is used if scaling factor is "Absolute")"_help)) {
 
     addPort(inport_);
     addPort(outport_);
