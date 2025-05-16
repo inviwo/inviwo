@@ -181,7 +181,7 @@ public:
     size_t getPrecision() const;
 
     /**
-     *	Returns numeric type of the format see @NumericType
+     *	Returns numeric type of the format @see NumericType
      */
     NumericType getNumericType() const;
 
@@ -191,7 +191,7 @@ public:
     std::string_view getString() const;
 
     /**
-     *	Returns DataFormatId of the format see @DataFormatId
+     *	Returns DataFormatId of the format @see DataFormatId
      */
     DataFormatId getId() const;
 
@@ -256,7 +256,7 @@ public:
     static constexpr size_t precision();
 
     /**
-     *	Returns numeric type of the format see @NumericType
+     *	Returns numeric type of the format @see NumericType
      */
     static constexpr NumericType numericType();
 
