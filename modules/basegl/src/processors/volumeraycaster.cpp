@@ -92,7 +92,6 @@
 #include <modules/opengl/uniform/isotfuniforms.h>
 #include <modules/opengl/uniform/propertyuniforms.h>
 
-
 #include <inviwo/tracy/tracy.h>
 #include <inviwo/tracy/tracyopengl.h>
 
