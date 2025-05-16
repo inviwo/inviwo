@@ -64,6 +64,10 @@ const ProcessorInfo PersistenceDiagramPlotProcessor::processorInfo_{
     "Plotting",                                    // Category
     CodeState::Stable,                             // Code state
     "GL, Plotting, Topology",                      // Tags
+    R"(Plots a persistence diagram of extremum-saddle pairs. It uses x-y pairs and draws vertical
+    lines from y_low(x) = x to y_high(x) = y. Thus, the x coordinate of each pair corresponds
+    to the birth of the extremum pair as well as the lower y coordinate. The higher y coordinate
+    matches the point of death.)"_unindentHelp,
 };
 const ProcessorInfo& PersistenceDiagramPlotProcessor::getProcessorInfo() const {
     return processorInfo_;
@@ -71,10 +75,12 @@ const ProcessorInfo& PersistenceDiagramPlotProcessor::getProcessorInfo() const {
 
 PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     : Processor()
-    , dataFrame_("dataFrame")
-    , brushingPort_("brushing")
+    , dataFrame_("dataFrame",
+                 "DataFrame with at least two columns corresponding "
+                 "to birth and death of extremum-saddle pairs"_help)
+    , brushingPort_("brushing", "inport for brushing & linking interactions"_help)
     , backgroundPort_("background")
-    , outport_("outport")
+    , outport_("outport", "rendered image of the persistence diagram"_help)
     , persistenceDiagramPlot_(this)
     , birth_("xAxis", "Birth", dataFrame_, ColumnOptionProperty::AddNoneOption::No, 1)
     , death_("yAxis", "Death", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes, 2)

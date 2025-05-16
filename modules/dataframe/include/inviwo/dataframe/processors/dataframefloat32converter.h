@@ -37,16 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.DataFrameFloat32Converter, DataFrame Float32 Converter}
- * ![](org.inviwo.DataFrameFloat32Converter.png?classIdentifier=org.inviwo.DataFrameFloat32Converter)
- * Converts all floating point columns from double precision to single precision.
- *
- * ### Inports
- *   * __inport__ Input DataFrame
- *
- * ### Outports
- *   * __outport__  DataFrame with double columns converted to float32
- */
 class IVW_MODULE_DATAFRAME_API DataFrameFloat32Converter : public Processor {
 public:
     DataFrameFloat32Converter();

@@ -58,7 +58,8 @@ const ProcessorInfo ImageGradient::processorInfo_{
 const ProcessorInfo& ImageGradient::getProcessorInfo() const { return processorInfo_; }
 
 ImageGradient::ImageGradient()
-    : ImageGLProcessor("img_gradient.frag"), channel_("channel", "Channel") {
+    : ImageGLProcessor("img_gradient.frag")
+    , channel_("channel", "Channel", "Selects the channel used for the gradient computation"_help) {
 
     dataFormat_ = DataVec2Float32::get();
     swizzleMask_ = {

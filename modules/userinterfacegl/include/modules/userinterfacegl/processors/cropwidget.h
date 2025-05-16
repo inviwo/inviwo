@@ -62,25 +62,6 @@ namespace inviwo {
 class Mesh;
 class PickingEvent;
 
-/** \docpage{org.inviwo.CropWidget, Clipping Widget}
- * ![](org.inviwo.CropWidget.png?classIdentifier=org.inviwo.CropWidget)
- * Processor for providing interaction handles for cropping a volume.
- *
- * ### Inports
- *   * __inport__ input image
- *   * __volume__ input volume used to determine the bounding box
- *
- * ### Outports
- *   * __outport__ output image with the interaction handles rendered
- *                 on top of the input image
- *
- * ### Properties
- *   * __Crop X__  enable and adjust crop range along the x axis
- *   * __Crop Y__  enable and adjust crop range along the y axis
- *   * __Crop Z__  enable and adjust crop range along the z axis
- *   * __UI Settings__ various properties for adjusting the visual appearance
- */
-
 class IVW_MODULE_USERINTERFACEGL_API CropWidget : public Processor {
 public:
     enum class InteractionElement { LowerBound, UpperBound, Middle, None };

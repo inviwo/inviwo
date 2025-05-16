@@ -62,6 +62,7 @@ const ProcessorInfo AxisRenderProcessor::processorInfo_{
     "Plotting",                        // Category
     CodeState::Stable,                 // Code state
     "GL, Plotting, Demo",              // Tags
+    "Test processor for rendering plot axes"_help,
 };
 const ProcessorInfo& AxisRenderProcessor::getProcessorInfo() const { return processorInfo_; }
 

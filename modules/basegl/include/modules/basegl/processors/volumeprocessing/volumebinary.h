@@ -45,25 +45,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.VolumeBinary, Volume Binary}
- * ![](org.inviwo.VolumeBinary.png?classIdentifier=org.inviwo.VolumeBinary)
- * Computes a binary volume of the input volume using a threshold. The output
- * will contain "0" for all values below the threshold and "1" otherwise.
- *
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Binary output volume
- *
- * ### Properties
- *   * __Threshold__ Threshold used for the binarization of the input volume
- */
-
 /**
- * \class VolumeBinary
- *
- * \brief computes a binary volume of the input volume using a threshold.
+ * @brief computes a binary volume of the input volume using a threshold.
  */
 class IVW_MODULE_BASEGL_API VolumeBinary : public VolumeGLProcessor {
 public:

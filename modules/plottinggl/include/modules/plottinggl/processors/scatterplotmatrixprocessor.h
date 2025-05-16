@@ -60,19 +60,6 @@ class Texture2D;
 
 namespace plot {
 
-/** \docpage{org.inviwo.ScatterPlotMatrixProcessor, Scatter Plot Matrix}
- * ![](org.inviwo.ScatterPlotMatrixProcessor.png?classIdentifier=org.inviwo.ScatterPlotMatrixProcessor)
- * This processor creates a scatter plot matrix for a given DataFrame.
- *
- * ### Inports
- *   * __DataFrame__  data input for plotting
- *   * __BrushingAndLinking__   inport for brushing & linking interactions
- *
- * ### Outports
- *   * __outport__   rendered image of the scatter plot matrix
- *
- */
-
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotMatrixProcessor : public Processor {
 public:
     ScatterPlotMatrixProcessor();

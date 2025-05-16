@@ -58,18 +58,25 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MultiChannelVolumeRaycaster::processorInfo_{
-    "org.inviwo.MultichannelVolumeRaycaster",    // Class identifier
-    "Multichannel Volume Raycaster",             // Display name
-    "Volume Rendering",                          // Category
-    CodeState::Experimental,                     // Code state
-    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"}  // Tags
+    "org.inviwo.MultichannelVolumeRaycaster",     // Class identifier
+    "Multichannel Volume Raycaster",              // Display name
+    "Volume Rendering",                           // Category
+    CodeState::Experimental,                      // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"},  // Tags
+    R"(Processor for visualizing volumetric data by means of volume raycasting. Each channel of the
+    volume uses a different transfer function. Besides the volume data, entry and exit point
+    locations of the bounding box are required. These can be created with the EntryExitPoints
+    processor. The camera properties between these two processors need to be linked.)"_unindentHelp,
 };
-const ProcessorInfo& MultiChannelVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MultiChannelVolumeRaycaster::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identifier,
                                                          std::string_view displayName)
     : VolumeRaycasterBase(identifier, displayName)
-    , volume_{"volume", VolumeComponent::Gradients::All}
+    , volume_{"volume", VolumeComponent::Gradients::All,
+              "input volume, each channel rendered with it's own TF"_help}
     , entryExit_{}
     , background_{*this}
     , isoTFs_{volume_.volumePort}

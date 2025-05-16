@@ -60,14 +60,17 @@ const ProcessorInfo VolumeGradientProcessor::processorInfo_{
     "Volume Operation",           // Category
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
-};
+    "Computes the gradient of one channel of a 3D scalar field. The input channel "
+    "can saved along with the gradient in the alpha channel of the output."_help};
 const ProcessorInfo& VolumeGradientProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientProcessor::VolumeGradientProcessor()
     : VolumeGLProcessor("volume_gradient.frag")
-    , channel_("channel", "Channel")
-    , dataInChannel4_("dataInChannel4_", "Store Input Data in Alpha", false,
-                      InvalidationLevel::InvalidResources) {
+    , channel_("channel", "Channel", "Selects the channel used for the gradient computation"_help)
+    , dataInChannel4_(
+          "dataInChannel4_", "Store Input Data in Alpha",
+          "Toggles whether the input data is saved in the alpha channel of the output"_help, false,
+          InvalidationLevel::InvalidResources) {
     this->dataFormat_ = DataVec3Float32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);

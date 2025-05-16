@@ -75,21 +75,25 @@ const ProcessorInfo CSVSource::processorInfo_{
     "Data Input",                             // Category
     CodeState::Stable,                        // Code state
     "CPU, Plotting, Source, CSV, DataFrame",  // Tags
+    "Reads comma separated values (CSV) and converts it into a DataFrame."_help,
 };
 const ProcessorInfo& CSVSource::getProcessorInfo() const { return processorInfo_; }
 
 CSVSource::CSVSource(const std::filesystem::path& file)
     : Processor{}
-    , data_{"data"}
+    , data_{"data", "DataFrame representation of the CSV input file"_help}
     , inputFile_{"inputFile_", "CSV File", file, "dataframe"}
     , firstRowIsHeaders_{"firstRowIsHeaders", "First Row Contains Column Headers",
+                         "if true, the first row is used as column names in the DataFrame"_help,
                          CSVReader::defaultFirstRowHeader}
     , firstColumnIsIndices_{"firstColumnIsIndices", "First Column Contains Indices",
                             CSVReader::defaultFirstColIndices}
     , unitsInHeaders_{"unitsInHeaders", "Look for units in headers",
                       CSVReader::defaultUnitInHeaders}
     , unitRegexp_{"unitRegexp", "Unit regexp", CSVReader::defaultUnitRegexp}
-    , delimiters_{"delimiters", "Delimiters", CSVReader::defaultDelimiters}
+    , delimiters_{"delimiters", "Delimiters",
+                  "Defines the delimiter between values (default ',')"_help,
+                  CSVReader::defaultDelimiters}
     , stripQuotes_{"stripQuotes", "Strip surrounding quotes", CSVReader::defaultStripQuotes}
     , doublePrecision_{"doublePrecision", "Double Precision", CSVReader::defaultDoublePrecision}
     , exampleRows_{"exampleRows", "Example Rows", CSVReader::defaultNumberOfExampleRows, 0, 10000}

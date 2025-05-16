@@ -45,25 +45,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.HdrBloom, HdrBloom}
- * ![](org.inviwo.HdrBloom.png?classIdentifier=org.inviwo.HdrBloom)
- * Applies blooming for high intensities within HDR images
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Threshold__ All values above this will be blurred.
- *   * __Strength__ Sets the intensity of the bloom.
- *   * __Radius__ Sets the blur radius of the bloom.
- */
-
 /**
- * \class HdrBloom
- * \brief Bloom filter with threshold
+ * @brief Bloom filter with threshold
  */
 class IVW_MODULE_POSTPROCESSING_API HdrBloom : public Processor {
 public:

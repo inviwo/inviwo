@@ -81,20 +81,32 @@ const ProcessorInfo CubeRenderer::processorInfo_{
     "Mesh Rendering",           // Category
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
+    R"(This processor renders a set of point meshes using cubical glyphs in OpenGL.
+    The glyphs are resolution independent and consist only of a single point.
+    The size of each point is given in the w coordinate of the vertex position unless
+    globally overwritten by the property.)"_unindentHelp,
+
 };
 const ProcessorInfo& CubeRenderer::getProcessorInfo() const { return processorInfo_; }
 
 CubeRenderer::CubeRenderer()
     : Processor()
-    , inport_("geometry")
-    , imageInport_("imageInport")
-    , outport_("image")
+    , inport_("geometry", "Input meshes"_help)
+    , imageInport_("imageInport", "Optional background image"_help)
+    , outport_("image",
+               "Output image containing the rendered cubes and the optional input image"_help)
     , cubeProperties_("cubeProperties", "Cube Properties")
-    , forceSize_("forceSize", "Force Size", false, InvalidationLevel::InvalidResources)
-    , defaultSize_("defaultSize", "Default Size", 0.05f, 0.00001f, 2.0f, 0.01f)
-    , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
-    , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
-                    vec4(1.0f))
+    , forceSize_("forceSize", "Force Size", "enable a fixed user-defined size for all cubes"_help,
+                 false, InvalidationLevel::InvalidResources)
+    , defaultSize_("defaultSize", "Default Size",
+                   util::ordinalScale(0.05f, 2.0f)
+                       .set("size of the rendered cubes (in world coordinates)"_help))
+    , forceColor_("forceColor", "Force Color",
+                  "if enabled, all cubes will share the same custom color"_help, false,
+                  InvalidationLevel::InvalidResources)
+    , defaultColor_("defaultColor", "Default Color",
+                    util::ordinalColor(vec4(0.7f, 0.7f, 0.7f, 1.0f))
+                        .set("custom color when overwriting the input colors"_help))
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
@@ -121,19 +133,10 @@ CubeRenderer::CubeRenderer()
     addPort(imageInport_).setOptional(true);
     addPort(outport_);
 
-    cubeProperties_.addProperty(forceSize_);
-    cubeProperties_.addProperty(defaultSize_);
-    cubeProperties_.addProperty(forceColor_);
-    cubeProperties_.addProperty(defaultColor_);
-    cubeProperties_.addProperty(useMetaColor_);
-    cubeProperties_.addProperty(metaColor_);
-    defaultColor_.setSemantics(PropertySemantics::Color);
+    cubeProperties_.addProperties(forceSize_, defaultSize_, forceColor_, defaultColor_,
+                                  useMetaColor_, metaColor_);
 
-    addProperty(cubeProperties_);
-
-    addProperty(camera_);
-    addProperty(lighting_);
-    addProperty(trackball_);
+    addProperties(cubeProperties_, camera_, lighting_, trackball_);
 }
 
 void CubeRenderer::initializeResources() {

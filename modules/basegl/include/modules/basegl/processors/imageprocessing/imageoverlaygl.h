@@ -57,9 +57,9 @@ class Deserializer;
 class Event;
 class Outport;
 
-/*! \class OverlayProperty
+/** @class OverlayProperty
  *
- * \brief CompositeProperty for overlay images. An overlay is defined by
+ * @brief CompositeProperty for overlay images. An overlay is defined by
  * a position, a anchor position, and the blend mode used for compositing.
  */
 // TODO: implement absolute positioning.
@@ -106,30 +106,8 @@ private:
     bool isDeserializing_;
 };
 
-/** \docpage{org.inviwo.ImageOverlayGL, Image Overlay}
- * Places one or more input images on top of the source image.
- * ![](org.inviwo.ImageOverlayGL.png?classIdentifier=org.inviwo.ImageOverlayGL)
- *
- * ### Inports
- *   * __ImageInport__ Source image.
- *   * __ImageInport__ Overlay images (multi-port).
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- *
- * ### Properties
- *   * __Overlay Interaction__ Allow interactions on overlay images.
- *   * __Pass Events to Main View__  Events unhandled by the overlay will be passed
- *                           on to the main view
- *   * __Size__              Size of the overlay image.
- *   * __Position__          Position of the overlay image.
- *   * __Anchor Position__   Anchor of the overlay image for alignment.
- *   * __Blend Mode__        Blend mode used for mixing the overlay image.
- */
-
-/*! \class ImageOverlayGL
- *
- * \brief Places one or more input images on top of the source image.
+/*!
+ * @brief Places one or more input images on top of the source image.
  */
 class IVW_MODULE_BASEGL_API ImageOverlayGL : public Processor {
 public:

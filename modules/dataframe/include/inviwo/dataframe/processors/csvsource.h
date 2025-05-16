@@ -59,18 +59,6 @@
 namespace inviwo {
 class Deserializer;
 
-/** \docpage{org.inviwo.CSVSource, CSVSource}
- * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
- * Reads comma separated values (CSV) and converts it into a DataFrame.
- *
- * ### Outports
- *   * __data__  DataFrame representation of the CSV input file
- *
- * ### Properties
- *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
- *   * __Delimiters__          defines the delimiter between values (default ',')
- */
-
 class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
 public:
     CSVSource(const std::filesystem::path& file = "");

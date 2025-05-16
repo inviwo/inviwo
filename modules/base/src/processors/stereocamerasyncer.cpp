@@ -53,7 +53,8 @@ const ProcessorInfo StereoCameraSyncer::processorInfo_{
     "Stereo Camera Syncer",           // Display name
     "Camera",                         // Category
     CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
+    Tags::None,                       // Tags,
+    "A processor linking a left and right camera"_help,
 };
 const ProcessorInfo& StereoCameraSyncer::getProcessorInfo() const { return processorInfo_; }
 

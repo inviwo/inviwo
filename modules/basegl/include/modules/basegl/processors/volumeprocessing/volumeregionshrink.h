@@ -47,19 +47,6 @@ namespace inviwo {
 class StringShaderResource;
 class Volume;
 
-/** \docpage{org.inviwo.VolumeRegionShrink, Volume Region Shrink}
- * ![](org.inviwo.VolumeRegionShrink.png?classIdentifier=org.inviwo.VolumeRegionShrink)
-
- *
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Output volume
- *
- * ### Properties
- *   * __iterations__ How many iterations to use
- */
 class IVW_MODULE_BASEGL_API VolumeRegionShrink : public Processor {
 public:
     VolumeRegionShrink();

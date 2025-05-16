@@ -66,6 +66,7 @@ const ProcessorInfo DataFrameExporter::processorInfo_{
     "Data Output",                       // Category
     CodeState::Stable,                   // Code state
     "CPU, DataFrame, Export, CSV, XML",  // Tags
+    "This processor exports a DataFrame into a CSV or XML file."_help,
 };
 
 const ProcessorInfo& DataFrameExporter::getProcessorInfo() const { return processorInfo_; }
@@ -75,7 +76,7 @@ FileExtension DataFrameExporter::xmlExtension_ = FileExtension("xml", "XML");
 
 DataFrameExporter::DataFrameExporter()
     : Processor()
-    , dataFrame_("dataFrame")
+    , dataFrame_("dataFrame", "Source DataFrame which is saved as CSV or XML file"_help)
     , exportFile_("exportFile", "Export file name", "", "dataframe")
     , exportButton_("snapshot", "Export DataFrame")
     , overwrite_("overwrite", "Overwrite", false)

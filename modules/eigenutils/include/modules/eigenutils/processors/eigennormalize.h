@@ -44,29 +44,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenNormalize, Matrix Normalization}
- * ![](org.inviwo.Normalize.png?classIdentifier=org.inviwo.EigenNormalize)
- *
- * A processor to normalize an Eigen::MatrixXf, supports following methods:
- *  * MaxElement: Divide in element in the matrix by the value of the largest element
- *  * MniMaxElement: Normalize each element based on the min and max value of the matrix
- *  * Normalize: Uses the Eigens provided normalization method
- *
- *
- * ### Inports
- *   * __in__ Unnormalized matrix
- *
- * ### Outports
- *   * __out__ Normalized matrix
- *
- * ### Properties
- *   * __Method__ Select which method to use (see above)
- *
- */
-
 /**
- * \class EigenNormalize
- * \brief A processor to normalize an Eigen::MatrixXf
+ * @brief A processor to normalize an Eigen::MatrixXf
  * A processor to normalize an Eigen::MatrixXf, supports following methods:
  *  * MaxElement: Divide in element in the matrix by the value of the largest element
  *  * MinMaxElement: Normalize each element based on the min and max value of the matrix

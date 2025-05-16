@@ -67,16 +67,17 @@ const ProcessorInfo ScatterPlotProcessor::processorInfo_{
     "Plotting",                         // Category
     CodeState::Stable,                  // Code state
     "GL, Plotting",                     // Tags
+    "This processor plots a scatter plot for a given DataFrame."_help,
 };
 
 const ProcessorInfo& ScatterPlotProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ScatterPlotProcessor::ScatterPlotProcessor()
     : Processor()
-    , dataFramePort_("dataFrame_")
-    , brushingPort_("brushing")
+    , dataFramePort_("dataFrame_", "data input for plotting"_help)
+    , brushingPort_("brushing", "inport for brushing & linking interactions"_help)
     , backgroundPort_("background")
-    , outport_("outport")
+    , outport_("outport", "rendered image of the scatter plot"_help)
     , scatterPlot_(this)
     , xAxis_("xAxis", "X-axis", dataFramePort_, ColumnOptionProperty::AddNoneOption::No, 0)
     , yAxis_("yAxis", "Y-axis", dataFramePort_, ColumnOptionProperty::AddNoneOption::No, 2)

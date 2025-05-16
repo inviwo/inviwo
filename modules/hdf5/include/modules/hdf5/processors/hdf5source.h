@@ -43,18 +43,6 @@ namespace inviwo {
 
 namespace hdf5 {
 
-/** \docpage{org.inviwo.HDFSource, HDF Source}
- * ![](org.inviwo.HDFSource.png?classIdentifier=org.inviwo.HDFSource)
- *
- * Open a handle to a HDF File
- *
- *
- * ### Outports
- *   * __outport__ A HDF5 file handle
- *
- * ### Properties
- *   * __HDF File__ File to open
- */
 class IVW_MODULE_HDF5_API Source : public Processor {
 public:
     Source();

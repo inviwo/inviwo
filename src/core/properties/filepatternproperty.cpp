@@ -41,11 +41,11 @@ namespace inviwo {
 std::string_view FilePatternProperty::getClassIdentifier() const { return classIdentifier; }
 
 FilePatternProperty::FilePatternProperty(std::string_view identifier, std::string_view displayName,
-                                         const std::filesystem::path& pattern,
+                                         Document help, const std::filesystem::path& pattern,
                                          std::string_view contentType,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
     , helpText_("helpText", "",
                 "A pattern might include '#' as placeholder for digits, where "
                 "multiple '###' indicate leading zeros. Wildcards('*', '?') are supported.")
@@ -100,6 +100,14 @@ FilePatternProperty::FilePatternProperty(std::string_view identifier, std::strin
         updateFileList();
     }
 }
+
+FilePatternProperty::FilePatternProperty(std::string_view identifier, std::string_view displayName,
+                                         const std::filesystem::path& pattern,
+                                         std::string_view contentType,
+                                         InvalidationLevel invalidationLevel,
+                                         PropertySemantics semantics)
+    : FilePatternProperty(identifier, displayName, Document{}, pattern, contentType,
+                          invalidationLevel, semantics) {}
 
 FilePatternProperty::FilePatternProperty(const FilePatternProperty& rhs)
     : CompositeProperty(rhs)

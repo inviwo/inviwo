@@ -75,7 +75,6 @@ public:
      * If opaque is set, a standard render call instead.
      * @param imageSize Size in pixels.
      * @param worldMatrixTransform Additional transform to be applied before rendering.
-     * @param setUniforms Binds the fragment list buffer and sets required uniforms.
      */
     virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) = 0;
 

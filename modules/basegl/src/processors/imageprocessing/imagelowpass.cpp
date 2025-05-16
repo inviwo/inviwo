@@ -53,16 +53,20 @@ const ProcessorInfo ImageLowPass::processorInfo_{
     "Image Operation",          // Category
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
+    "Applies a low pass filter on the input image."_help,
 };
 const ProcessorInfo& ImageLowPass::getProcessorInfo() const { return processorInfo_; }
 
 ImageLowPass::ImageLowPass()
     : Processor()
-    , inport_("inputImage")
-    , outport_("outputImage")
-    , kernelSize_("kernelSize", "Kernel Size", 3, 1, 25, 1)
-    , gaussian_("gaussian", "Use Gaussian weights", true)
-    , sigma_("sigma", "Sigma", 1.f, 1.f, 100.f, 0.01f)
+    , inport_("inputImage", "Input image."_help)
+    , outport_("outputImage", "Lowpass filtered image."_help)
+    , kernelSize_("kernelSize", "Kernel Size", "Size of the kernel to use."_help, 3,
+                  {1, ConstraintBehavior::Immutable}, {25, ConstraintBehavior::Immutable}, 1)
+    , gaussian_("gaussian", "Use Gaussian weights",
+                "Whether to use Gaussian weights or constant weights"_help, true)
+    , sigma_("sigma", "Sigma",
+             util::ordinalLength(1.f).set("Controls the shape of the Gaussian bell curve"_help))
     , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPort(inport_);

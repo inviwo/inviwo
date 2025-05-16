@@ -112,16 +112,16 @@ constexpr NumericType getNumericType() {
 }
 
 /**
- * Determines the common numeric type of the given \p formats. Returns NumericType::Float if any of
+ * Determines the common numeric type of the given @p formats. Returns NumericType::Float if any of
  * the formats is a floating point format. Otherwise, NumericType::SignedInteger is returned if at
  * least one format is signed, and NumericType::UnsignedInteger if that is not the case.
- * @return NumericType based on \p formats. NumericType::NotSpecialized if the span is empty.
+ * @return NumericType based on @p formats. NumericType::NotSpecialized if the span is empty.
  */
 IVW_CORE_API NumericType commonNumericType(std::span<const DataFormatBase*> formats);
 
 /**
- * Determines the format precision of the given \p formats, that is the highest one.
- * @return maximum precision of all \p formats
+ * Determines the format precision of the given @p formats, that is the highest one.
+ * @return maximum precision of all @p formats
  */
 IVW_CORE_API size_t commonFormatPrecision(std::span<const DataFormatBase*> formats);
 
@@ -146,7 +146,7 @@ public:
     using Exception::Exception;
 };
 
-/** \brief Defines general useful formats and new data types
+/** @brief Defines general useful formats and new data types
  * Non-virtual, meaning no dynamic_cast as string comparison is as fast/faster
  */
 class IVW_CORE_API DataFormatBase {
@@ -181,7 +181,7 @@ public:
     size_t getPrecision() const;
 
     /**
-     *	Returns numeric type of the format see @NumericType
+     *	Returns numeric type of the format @see NumericType
      */
     NumericType getNumericType() const;
 
@@ -191,7 +191,7 @@ public:
     std::string_view getString() const;
 
     /**
-     *	Returns DataFormatId of the format see @DataFormatId
+     *	Returns DataFormatId of the format @see DataFormatId
      */
     DataFormatId getId() const;
 
@@ -256,7 +256,7 @@ public:
     static constexpr size_t precision();
 
     /**
-     *	Returns numeric type of the format see @NumericType
+     *	Returns numeric type of the format @see NumericType
      */
     static constexpr NumericType numericType();
 

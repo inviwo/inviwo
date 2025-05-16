@@ -46,7 +46,10 @@
 namespace inviwo {
 
 BackgroundComponent::BackgroundComponent(Processor& processor)
-    : ShaderComponent(), background_("bg") {
+    : ShaderComponent()
+    , background_("bg",
+                  "Optional background image. "
+                  "The depth channel is used to terminate the raycasting."_help) {
     background_.setOptional(true);
 
     background_.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });

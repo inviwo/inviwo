@@ -38,26 +38,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageOpacity, Image Opacity}
- * ![](org.inviwo.ImageOpacity.png?classIdentifier=org.inviwo.ImageOpacity)
- * Controls an image's opacity
- *
- *     out.rgb = in.rgb
- *     out.a = alpha
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Alpha__ Controls the opacity.
- */
-
 /**
- * \class ImageOpacity
- * \brief Controls an image's opacity
+ * @brief Controls an image's opacity
  */
 class IVW_MODULE_POSTPROCESSING_API ImageOpacity : public ImageGLProcessor {
 public:

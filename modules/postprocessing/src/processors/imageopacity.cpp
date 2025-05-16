@@ -48,7 +48,11 @@ const ProcessorInfo ImageOpacity::processorInfo_{
     "Image Opacity",            // Display name
     "Image Operation",          // Category
     CodeState::Experimental,    // Code state
-    Tags::None,                 // Tags
+    Tags::GL,                   // Tags
+    R"(Controls an image's opacity
+    
+        out.rgb = in.rgb
+        out.a = alpha)"_unindentHelp,
 };
 const ProcessorInfo& ImageOpacity::getProcessorInfo() const { return processorInfo_; }
 

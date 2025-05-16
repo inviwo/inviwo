@@ -51,14 +51,6 @@ namespace inviwo {
 class Camera;
 class PickingEvent;
 
-/** \docpage{org.inviwo.RandomSphereGenerator, Random Sphere Generator}
- * ![](org.inviwo.RandomSphereGenerator.png?classIdentifier=org.inviwo.RandomSphereGenerator)
- * Create a grid of randomly generated spheres.
- *
- * ### Outports
- *   * __mesh__ generated sphere meshes with randomized colors and radii
- */
-
 class IVW_MODULE_BASE_API RandomSphereGenerator : public Processor {
 public:
     RandomSphereGenerator();

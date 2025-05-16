@@ -80,11 +80,6 @@ protected:
     bool deserialized_;
 };
 
-/** \docpage{org.inviwo.ColumnLayout, Column Layout}
- * ![](org.inviwo.ColumnLayout.png?classIdentifier=org.inviwo.ColumnLayout)
- * Horizontal layout which puts multiple input images next to each other. Interactions are forwarded
- * to the respective areas.
- */
 class IVW_MODULE_BASEGL_API ColumnLayout : public Layout {
 public:
     ColumnLayout();
@@ -97,11 +92,6 @@ private:
     virtual void updateViewports(ivec2 dim) override;
 };
 
-/** \docpage{org.inviwo.RowLayout, Column Layout}
- * ![](org.inviwo.RowLayout.png?classIdentifier=org.inviwo.RowLayout)
- * Horizontal layout which puts multiple input images next to each other. Interactions are forwarded
- * to the respective areas.
- */
 class IVW_MODULE_BASEGL_API RowLayout : public Layout {
 public:
     RowLayout();

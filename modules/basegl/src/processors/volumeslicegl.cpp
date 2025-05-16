@@ -126,19 +126,24 @@ const ProcessorInfo VolumeSliceGL::processorInfo_{
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
+    R"(This processor visualizes an arbitrary 2D slice from an input volume.
+    
+    Note: The output dimensions generally differ from the input Volume dimensions.
+    Use Volume Slice Extracter to extract slices with the same dimensions as the Volume)"_unindentHelp,
 };
 const ProcessorInfo& VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
-    , inport_("volume")
-    , outport_("outport", DataFormat<glm::u8vec4>::get())
+    , inport_("volume", "The input volume"_help)
+    , outport_("outport", "The extracted volume slice"_help, DataFormat<glm::u8vec4>::get())
     , shader_("standard.vert", "volumeslice.frag", Shader::Build::No)
     , indicatorShader_("standard.vert", "standard.frag", Shader::Build::Yes)
-    , trafoGroup_("trafoGroup", "Transformations")
+    , trafoGroup_("trafoGroup", "Transformations", "Transformations to the output slice"_help)
     , pickGroup_("pickGroup", "Position Selection")
     , tfGroup_("tfGroup", "Transfer Function Properties")
     , sliceAlongAxis_("sliceAxis", "Slice along axis",
+                      "Defines the volume axis or plane normal for the output slice"_help,
                       {{"x", "y-z plane (X axis)", static_cast<int>(CartesianCoordinateAxis::X)},
                        {"y", "z-x plane (Y axis)", static_cast<int>(CartesianCoordinateAxis::Y)},
                        {"z", "x-y plane (Z axis)", static_cast<int>(CartesianCoordinateAxis::Z)},
@@ -147,39 +152,63 @@ VolumeSliceGL::VolumeSliceGL()
     , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
-    , worldPosition_("worldPosition_", "World Position", vec3(0.0f), vec3(-10.0f), vec3(10.0f),
-                     vec3(0.01f), InvalidationLevel::Valid)
-    , planeNormal_("planeNormal", "Plane Normal", vec3(1.f, 0.f, 0.f), vec3(-1.f, -1.f, -1.f),
-                   vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
-    , planePosition_("planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
-    , imageScale_("imageScale", "Scale", 1.0f, 0.1f, 10.0f)
+    , worldPosition_("worldPosition_", "World Position",
+                     util::ordinalSymmetricVector(vec3(0.0f), vec3(10.0f))
+                         .set("Outputs the world position of the slice plane (read-only)"_help)
+                         .set(InvalidationLevel::Valid))
+    , planeNormal_("planeNormal", "Plane Normal",
+                   util::ordinalSymmetricVector(vec3(1.f, 0.f, 0.f), vec3(1.f))
+                       .set("Defines the normal of the slice plane "
+                            "(if slice axis is set to \"Plane Equation\")"_help))
+    , planePosition_("planePosition", "Plane Position",
+                     util::ordinalSymmetricVector(vec3(0.5f), vec3(1.0f))
+                         .setMin(vec3(0.0f))
+                         .set("Defines the origin of the slice plane "
+                              "(if slice axis is set to \"Plane Equation\")"_help))
+    , imageScale_("imageScale", "Scale", "Scaling factor applied to the volume slice"_help, 1.0f,
+                  {0.1f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore})
     , rotationAroundAxis_("rotation", "Rotation (ccw)",
+                          "Defines the rotation of the output image"_help,
                           {{"0", "0 deg", 0},
                            {"90", "90 deg", 1},
                            {"180", "180 deg", 2},
                            {"270", "270 deg", 3},
                            {"free", "Free Rotation", 4}},
                           0, InvalidationLevel::Valid)
-    , imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
-    , flipHorizontal_("flipHorizontal", "Horizontal Flip", false)
-    , flipVertical_("flipVertical", "Vertical Flip", false)
-    , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping",
-                      {{"color", "Fill with Color", GL_CLAMP_TO_EDGE},
-                       {"edge", "Fill with Edge", GL_CLAMP_TO_EDGE},
-                       {"repeat", "Repeat", GL_REPEAT},
-                       {"m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT}},
-                      0)
-    , fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
-                 vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , posPicking_("posPicking", "Enable Picking", false)
-    , showIndicator_("showIndicator", "Show Position Indicator", true)
-    , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
-                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                      PropertySemantics::Color)
+    , imageRotation_("imageRotation", "Angle",
+                     "Angle of rotation if \"Free Rotation\" is chosen as rotation"_help, 0,
+                     {0, ConstraintBehavior::Ignore},
+                     {glm::radians(360.f), ConstraintBehavior::Ignore})
+    , flipHorizontal_("flipHorizontal", "Horizontal Flip",
+                      "Flips the output image left and right"_help, false)
+    , flipVertical_("flipVertical", "Vertical Flip", "Flips the output image up and down"_help,
+                    false)
+    , volumeWrapping_(
+          "volumeWrapping", "Volume Texture Wrapping",
+          "Texture wrapping mode used for extracting the image slice "
+          "(use fill color, repeat edge values, repeat the contents, mirror contents)"_help,
+          {{"color", "Fill with Color", GL_CLAMP_TO_EDGE},
+           {"edge", "Fill with Edge", GL_CLAMP_TO_EDGE},
+           {"repeat", "Repeat", GL_REPEAT},
+           {"m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT}},
+          0)
+    , fillColor_("fillColor", "Fill Color",
+                 util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 0.0f))
+                     .set("Defines the color which is used if the texture wrapping "
+                          "is set to \"Fill with Color\""_help))
+    , posPicking_("posPicking", "Enable Picking",
+                  "Enables selecting the position selection with the mouse"_help, false)
+    , showIndicator_("showIndicator", "Show Position Indicator",
+                     "Toggles the visibility of the position indicator true"_help, true)
+    , indicatorColor_("indicatorColor", "Indicator Color",
+                      util::ordinalColor(vec4(1.0f, 0.8f, 0.1f, 0.8f))
+                          .set("Custom color of the position indicator"_help))
     , indicatorSize_("indicatorSize", "Indicator Size", 4.0f, 0.0f, 100.0f, 0.01f,
                      InvalidationLevel::InvalidOutput)
-    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
-                        InvalidationLevel::InvalidResources)
+    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function",
+                        "Toggles whether the transfer function is applied "
+                        "onto the extracted volume slice"_help,
+                        true, InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer Function", &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)
@@ -191,8 +220,10 @@ VolumeSliceGL::VolumeSliceGL()
                     vec4(std::numeric_limits<float>::lowest()),
                     vec4(std::numeric_limits<float>::max()), vec4(0.001f), InvalidationLevel::Valid,
                     PropertySemantics::Text)
-    , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
-                               InvalidationLevel::Valid)
+    , handleInteractionEvents_("handleEvents", "Handle Interaction Events",
+                               "Toggles whether this processor will handle "
+                               "interaction events like mouse buttons or key presses"_help,
+                               true, InvalidationLevel::Valid)
     , mouseShiftSlice_(
           "mouseShiftSlice", "Mouse Slice Shift", [this](Event* e) { eventShiftSlice(e); },
           std::make_unique<WheelEventMatcher>())
@@ -541,7 +572,6 @@ void VolumeSliceGL::renderPositionIndicator() {
 }
 
 VolumeSliceGL::ColoredMesh2D VolumeSliceGL::createIndicatorMesh() {
-
     // indices for cross lines
     auto indexBuf1 =
         util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
@@ -845,7 +875,6 @@ void VolumeSliceGL::rotationModeChange() {
 }
 
 void VolumeSliceGL::updateFromWorldPosition() {
-
     if (!inport_.hasData() || updating_) return;
 
     if (inport_.hasData()) {

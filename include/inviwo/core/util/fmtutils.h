@@ -33,8 +33,10 @@
 #include <inviwo/core/util/detected.h>
 #include <flags/flags.h>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T, typename Char>
 struct fmt::is_range<inviwo::flags::flags<T>, Char> : std::false_type {};
+#endif
 
 namespace inviwo {
 

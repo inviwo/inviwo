@@ -50,6 +50,7 @@ const ProcessorInfo HDF5ToVolume::processorInfo_{
     "Data Input",                // Category
     CodeState::Stable,           // Code state
     Tags::None,                  // Tags
+    "Load a volume from a HTF5 file handle."_help,
 };
 const ProcessorInfo& HDF5ToVolume::getProcessorInfo() const { return processorInfo_; }
 

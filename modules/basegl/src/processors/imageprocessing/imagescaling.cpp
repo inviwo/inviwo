@@ -62,14 +62,17 @@ const ProcessorInfo ImageScaling::processorInfo_{
     "Image Operation",          // Category
     CodeState::Stable,          // Code state
     "GL, Image",                // Tags
+    R"(This processor provides functionality for up-scaling or 
+    down-scaling an image with respect to the size of the input image.
+    Alternatively, an absolut size can be set.)"_unindentHelp,
 };
 const ProcessorInfo& ImageScaling::getProcessorInfo() const { return processorInfo_; }
 
 ImageScaling::ImageScaling()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , enabled_("enabled", "Enabled", true)
+    , inport_("inport", "Input image"_help)
+    , outport_("outport", "The scaled image"_help)
+    , enabled_("enabled", "Enabled", "Enables or disables scaling of the input image"_help, true)
     , scalingFactor_("scalingFactor", "Scaling Factor",
                      {
                          {"one-eighth", "12.5%", 0.125},
@@ -85,8 +88,14 @@ ImageScaling::ImageScaling()
                          {"absolute", "Absolute", -2.0},
                      },
                      4)
-    , customFactor_("customFactor", "Custom Factor", 1.0, 1.0 / 32.0, 32.0)
-    , absoluteSize_("absoluteSize", "Absolute Size", size2_t{200, 200}, size2_t{1}, size2_t{4096}) {
+    , customFactor_("customFactor", "Custom Factor",
+                    util::ordinalScale(1.0, 32.0)
+                        .setMin(1.0 / 32.0)
+                        .set("custom scaling factor is used if scaling factor is \"Custom\""_help))
+    , absoluteSize_("absoluteSize", "Absolute Size",
+                    util::ordinalCount(size2_t{200}, size2_t{4096})
+                        .setMin(size2_t{1})
+                        .set("specific size is used if scaling factor is \"Absolute\""_help)) {
 
     addPort(inport_);
     addPort(outport_);

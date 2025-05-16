@@ -48,20 +48,6 @@
 namespace inviwo {
 class Outport;
 
-/** \docpage{org.inviwo.InputSelector, Input Selector}
- * ![](org.inviwo.InputSelector.png?classIdentifier=org.inviwo.InputSelector)
- * Allows to select one particular input from all given ones.
- *
- * ### Inports
- *   * __inport__  all available inputs
- *
- * ### Outports
- *   * __outport__ selected input
- *
- * ### Properties
- *   * __selected inport__  name of selected port
- */
-
 /**
  * \brief processor for selecting one of n connected inputs
  */
@@ -89,9 +75,9 @@ private:
 template <typename Inport, typename Outport>
 InputSelector<Inport, Outport>::InputSelector()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , selectedPort_("selectedPort", "Select Inport") {
+    , inport_("inport", "All available inputs"_help)
+    , outport_("outport", "Selected input"_help)
+    , selectedPort_("selectedPort", "Select Inport", "Name of selected port"_help) {
     portSettings();
 
     addPort(inport_);
@@ -156,14 +142,13 @@ template <typename Inport, typename Outport>
 struct ProcessorTraits<InputSelector<Inport, Outport>> {
     static ProcessorInfo getProcessorInfo() {
         using DataType = typename Inport::type;
-        return {
-            fmt::format("{}.InputSelector",
-                        DataTraits<DataType>::classIdentifier()),                // Class identifier
-            fmt::format("{} Input Selector", DataTraits<DataType>::dataName()),  // Display name
-            "Data Selector",                                                     // Category
-            CodeState::Stable,                                                   // Code state
-            Tags::CPU,                                                           // Tags
-        };
+        return {fmt::format("{}.InputSelector",
+                            DataTraits<DataType>::classIdentifier()),  // Class identifier
+                fmt::format("{} Input Selector", DataTraits<DataType>::dataName()),  // Display name
+                "Data Selector",                                                     // Category
+                CodeState::Stable,                                                   // Code state
+                Tags::CPU,                                                           // Tags
+                "Allows to select one particular input from all given ones."_help};
     }
 };
 

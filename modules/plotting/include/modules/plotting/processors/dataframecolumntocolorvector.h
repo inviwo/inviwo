@@ -54,21 +54,6 @@ class DataFrame;
 
 namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
- *
- * ### Inports
- *   * __dataFrame__ input data
- *
- * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
- *
- * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
- */
-
 class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
 public:
     DataFrameColumnToColorVector();

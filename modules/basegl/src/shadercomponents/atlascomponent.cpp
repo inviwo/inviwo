@@ -141,8 +141,10 @@ void orderTf(TransferFunction& tf, size_t nSegments) {
 
 AtlasComponent::AtlasComponent(Processor* p, std::string_view color, TimeComponent* time)
     : ShaderComponent{}
-    , atlas_{"atlas"}
-    , brushing_{"brushing"}
+    , atlas_{"atlas",
+             "Atlas of volume segments, should be a integer volume labeling each segment"_help}
+    , brushing_{"brushing",
+                "Brushing and Linking port for selecting and filtering of regions in the atlas"_help}
     , selectionColor_{"selectionColor", "Selection Color",
                       util::ordinalColor(vec3{1.0f, 0.0f, 0.0f})}
     , selectionAlpha_{"selectionAlpha", "Selection Alpha", ordinalAlpha(1.0f)}

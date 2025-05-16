@@ -38,25 +38,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.VolumeMerger, Volume Merger}
- * ![](org.inviwo.VolumeMerger.png?classIdentifier=org.inviwo.VolumeMerger)
- * Merges up to four single-channel volumes into a single volume. If, for example,
- * input volumes 1 and 4 are given, the output volume will have 2 channels where the
- * first one contains volume 1 and the second one volume 4.
- *
- * ### Inports
- *   * __inputVolume__ Input volume 1
- *   * __volume2__ Input volume 2
- *   * __volume3__ Input volume 3
- *   * __volume4__ Input volume 4
- *
- * ### Outports
- *   * __outputVolume__ Merged volume
- */
-
 /**
- * \class VolumeMerger
- * \brief merges up to four single-channel volumes into a single volume
+ * @brief merges up to four single-channel volumes into a single volume
  */
 class IVW_MODULE_BASEGL_API VolumeMerger : public VolumeGLProcessor {
 public:

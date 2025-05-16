@@ -38,24 +38,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.Jacobian2D, Jacobian2D}
- * ![](org.inviwo.Jacobian2D.png?classIdentifier=org.inviwo.Jacobian2D)
- * Computes the Jacobian of a two channel image.
- *
- * ### Inports
- *   * __inputImage__ Input image (only first two channels are used)
- *
- * ### Outports
- *   * __outputImage__ Resulting Jacobian (du, dv) or its inverse (if enabled)
- *
- * ### Properties
- *   * __Renormalization__  Re-normalize results by taking the grid spacing into account
- *   * __Invert Jacobian__  If enabled, the processor outputs the inverse of the Jacobian
- */
-
 /**
- * \class Jacobian2D
- * \brief Computes the Jacobian of a two channel image.
+ * @brief Computes the Jacobian of a two channel image.
  */
 class IVW_MODULE_BASEGL_API Jacobian2D : public ImageGLProcessor {
 public:

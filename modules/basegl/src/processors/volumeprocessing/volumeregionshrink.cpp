@@ -51,12 +51,12 @@
 #include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
 #include <modules/opengl/shader/shaderresource.h>                       // for StringShaderResource
 #include <modules/opengl/shader/stringshaderresource.h>
-#include <modules/opengl/shader/shadertype.h>                           // for ShaderType, Shade...
-#include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
-#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
-#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <modules/opengl/shader/shadertype.h>     // for ShaderType, Shade...
+#include <modules/opengl/shader/shaderutils.h>    // for findShaderResource
+#include <modules/opengl/texture/textureunit.h>   // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>  // for multiDrawImagePla...
+#include <modules/opengl/volume/volumegl.h>       // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>    // for bindAndSetUniforms
 
 #include <cstddef>        // for size_t
 #include <functional>     // for __base
@@ -123,7 +123,8 @@ VolumeRegionShrink::VolumeRegionShrink()
     : Processor()
     , inport_{"inputVolume"}
     , outport_{"outputVolume"}
-    , iterations_{"iterations", "Iterations", 3, 0, 25}
+    , iterations_{"iterations", "Iterations",
+                  util::ordinalCount(3, 25).set("How many iterations to use"_help)}
     , dataRange_{"dataRange",
                  "Data range",
                  0.,

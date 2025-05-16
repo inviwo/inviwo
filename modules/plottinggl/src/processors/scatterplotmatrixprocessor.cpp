@@ -97,16 +97,17 @@ const ProcessorInfo ScatterPlotMatrixProcessor::processorInfo_{
     "Plotting",                               // Category
     CodeState::Stable,                        // Code state
     "GL, Plotting",                           // Tags
-};
+    "This processor creates a scatter plot matrix for a given DataFrame."_help};
 const ProcessorInfo& ScatterPlotMatrixProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     : Processor()
-    , dataFrame_("dataFrame")
-    , brushing_("brushing_", {{{BrushingTarget::Row},
-                               BrushingModification::Filtered,
-                               InvalidationLevel::InvalidOutput}})
-    , outport_("outport")
+    , dataFrame_("dataFrame", "Data input for plotting"_help)
+    , brushing_("brushing_", "Inport for brushing & linking interactions"_help,
+                {{{BrushingTarget::Row},
+                  BrushingModification::Filtered,
+                  InvalidationLevel::InvalidOutput}})
+    , outport_("outport", "Rendered image of the scatter plot matrix"_help)
     , numParams_(0)
     , scatterPlotproperties_("scatterPlotproperties", "Properties")
     , color_("colorCol", "Color column", dataFrame_, ColumnOptionProperty::AddNoneOption::Yes, 3)

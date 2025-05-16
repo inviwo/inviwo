@@ -39,23 +39,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageEdgeDarken, Image Edge Darken}
- * ![](org.inviwo.ImageEdgeDarken.png?classIdentifier=org.inviwo.ImageEdgeDarken)
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Darken__ Enables/disables effect.
- *   * __Intensity__ Controls intensity.
- */
-
 /**
- * \class ImageEdgeDarken
- * \brief Darken edges in an image.
+ * @brief Darken edges in an image.
  */
 class IVW_MODULE_POSTPROCESSING_API ImageEdgeDarken : public ImageGLProcessor {
 public:

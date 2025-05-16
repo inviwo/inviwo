@@ -37,16 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.RedGreenProcessor, Red Green Processor}
- * ![](org.inviwo.RedGreenProcessor.png?classIdentifier=org.inviwo.RedGreenProcessor)
- *
- * ...
- *
- * ### Outports
- *   * __outportGreen__ ...
- *   * __outportRed__
- *
- */
 class IVW_MODULE_BASEGL_API RedGreenProcessor : public Processor {
 public:
     virtual const ProcessorInfo& getProcessorInfo() const override;

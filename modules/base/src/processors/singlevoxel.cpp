@@ -67,51 +67,57 @@ const ProcessorInfo SingleVoxel::processorInfo_{
     "Information",             // Category
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
-};
+    "Sample a volume at a given position and output the result in a property."_help};
 
 const ProcessorInfo& SingleVoxel::getProcessorInfo() const { return processorInfo_; }
 
 SingleVoxel::SingleVoxel()
     : Processor()
     , volume_("volume")
-    , position_("position", "Position", dvec3(0.0), dvec3(0.0), dvec3(1.0))
-    , doubleProperty_("doubleProperty", "Voxel value", 0, std::numeric_limits<double>::lowest(),
-                      std::numeric_limits<double>::max(), 0.0001, InvalidationLevel::Valid,
-                      PropertySemantics::Text)
-    , dvec2Property_("dvec2Property", "Voxel value", dvec2(0),
-                     dvec2(std::numeric_limits<double>::lowest()),
-                     dvec2(std::numeric_limits<double>::max()), dvec2(0.0001),
-                     InvalidationLevel::Valid, PropertySemantics::Text)
-    , dvec3Property_("dvec3Property", "Voxel value", dvec3(0),
-                     dvec3(std::numeric_limits<double>::lowest()),
-                     dvec3(std::numeric_limits<double>::max()), dvec3(0.0001),
-                     InvalidationLevel::Valid, PropertySemantics::Text)
-    , dvec4Property_("dvec4Property", "Voxel value", dvec4(0),
-                     dvec4(std::numeric_limits<double>::lowest()),
-                     dvec4(std::numeric_limits<double>::max()), dvec4(0.0001),
-                     InvalidationLevel::Valid, PropertySemantics::Text)
-    , space_("space", "Space") {
+    , position_("position", "Position",
+                util::ordinalSymmetricVector(dvec3{0.0}, dvec3{1.0}).set("sampling position"_help))
+    , doubleProperty_(
+          "doubleProperty", "Voxel value",
+          util::ordinalSymmetricVector(0.0)
+              .setInc(0.0001)
+              .set("resulting sample (number of channels depending on input volume)"_help)
+              .set(InvalidationLevel::Valid)
+              .set(PropertySemantics::Text))
+    , dvec2Property_(
+          "dvec2Property", "Voxel value",
+          util::ordinalSymmetricVector(dvec2{0.0})
+              .setInc(dvec2{0.0001})
+              .set("resulting sample (number of channels depending on input volume)"_help)
+              .set(InvalidationLevel::Valid)
+              .set(PropertySemantics::Text))
+
+    , dvec3Property_(
+          "dvec3Property", "Voxel value",
+          util::ordinalSymmetricVector(dvec3{0.0})
+              .setInc(dvec3{0.0001})
+              .set("resulting sample (number of channels depending on input volume)"_help)
+              .set(InvalidationLevel::Valid)
+              .set(PropertySemantics::Text))
+    , dvec4Property_(
+          "dvec4Property", "Voxel value",
+          util::ordinalSymmetricVector(dvec4{0.0})
+              .setInc(dvec4{0.0001})
+              .set("resulting sample (number of channels depending on input volume)"_help)
+              .set(InvalidationLevel::Valid)
+              .set(PropertySemantics::Text))
+    , space_("space", "Space", "domain of sample position (model, world, or data)"_help,
+             {{"model", "Model", CoordinateSpace::Model},
+              {"world", "World", CoordinateSpace::World},
+              {"data", "Data", CoordinateSpace::Data}}) {
+
     addPort(volume_);
-    addProperty(space_);
-    addProperty(position_);
-    addProperty(doubleProperty_);
-    addProperty(dvec2Property_);
-    addProperty(dvec3Property_);
-    addProperty(dvec4Property_);
+    addProperties(space_, position_, doubleProperty_, dvec2Property_, dvec3Property_,
+                  dvec4Property_);
 
     doubleProperty_.setVisible(true);
     dvec2Property_.setVisible(false);
     dvec3Property_.setVisible(false);
     dvec4Property_.setVisible(false);
-
-    doubleProperty_.setSemantics(PropertySemantics("Text"));
-    dvec2Property_.setSemantics(PropertySemantics("Text"));
-    dvec3Property_.setSemantics(PropertySemantics("Text"));
-    dvec4Property_.setSemantics(PropertySemantics("Text"));
-
-    space_.addOption("model", "Model", CoordinateSpace::Model);
-    space_.addOption("world", "World", CoordinateSpace::World);
-    space_.addOption("data", "Data", CoordinateSpace::Data);
 
     setAllPropertiesCurrentStateAsDefault();
 }

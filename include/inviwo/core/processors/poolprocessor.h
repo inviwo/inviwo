@@ -55,6 +55,7 @@ namespace pool {
 /** PoolProcesor implementation details */
 namespace detail {
 
+/** Helper class to manage state for the background jobs */
 struct State;
 template <typename Result, typename Done>
 struct StateTemplate;
@@ -80,7 +81,7 @@ public:
     operator bool() const noexcept { return stop_.load(); }
 
 private:
-    friend detail::State;
+    friend ::inviwo::pool::detail::State;
     Stop(const std::atomic<bool>& stop) : stop_{stop} {}
     const std::atomic<bool>& stop_;
 };
@@ -108,7 +109,7 @@ public:
     void operator()(size_t i, size_t max) const noexcept;
 
 private:
-    friend detail::State;
+    friend ::inviwo::pool::detail::State;
     Progress(detail::State& state, size_t id) : state_{state}, id_{id} {}
     detail::State& state_;
     const size_t id_;
@@ -240,7 +241,7 @@ public:
     virtual std::string handleError();
 
     /**
-     * @retuns the last error return by handleError if any. The error is clear at any invalidation.
+     * @return the last error return by handleError if any. The error is clear at any invalidation.
      */
     const std::optional<std::string>& error() const;
 
@@ -287,7 +288,7 @@ public:
     bool delayInvalidation() const { return options_.contains(pool::Option::DelayInvalidation); }
 
 private:
-    friend pool::detail::State;
+    friend ::inviwo::pool::detail::State;
 
     struct Submission {
         std::shared_ptr<pool::detail::State> state;

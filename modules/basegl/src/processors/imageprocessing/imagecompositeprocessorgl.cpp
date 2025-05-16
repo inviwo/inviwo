@@ -52,6 +52,7 @@ const ProcessorInfo ImageCompositeProcessorGL::processorInfo_{
     "Image Operation",                       // Category
     CodeState::Stable,                       // Code state
     Tags::GL,                                // Tags
+    "Do a depth based compositing of two images"_help,
 };
 const ProcessorInfo& ImageCompositeProcessorGL::getProcessorInfo() const { return processorInfo_; }
 

@@ -44,10 +44,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshColorFromNormals, Mesh Color From Normals}
- * ![](org.inviwo.MeshColorFromNormals.png?classIdentifier=org.inviwo.MeshColorFromNormals)
- * Removes all the color buffers and copies the normals into a new color buffer
- */
 class IVW_MODULE_BASE_API MeshColorFromNormals : public Processor {
 public:
     enum class Transform { None, Abs, Shift };

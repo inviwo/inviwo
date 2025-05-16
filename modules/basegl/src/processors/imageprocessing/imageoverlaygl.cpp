@@ -68,6 +68,8 @@ const ProcessorInfo ImageOverlayGL::processorInfo_{
     "Image Operation",            // Category
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
+    R"(Places one or more input images on top of the source image.
+    ![](org.inviwo.ImageOverlayGL.png?classIdentifier=org.inviwo.ImageOverlayGL))"_unindentHelp,
 };
 const ProcessorInfo& ImageOverlayGL::getProcessorInfo() const { return processorInfo_; }
 
@@ -76,16 +78,23 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f),
            InvalidationLevel::Valid)
-    , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f),
-            InvalidationLevel::Valid)
-    , absolutePos_("absolutePos", "Position (absolute)", ivec2(10), ivec2(0), ivec2(2048), ivec2(1),
-                   InvalidationLevel::Valid)
+    , size_("size", "Size",
+            util::ordinalLength(vec2(0.48f), vec2(1.0f))
+                .set(InvalidationLevel::Valid)
+                .set("Size of the overlay image."_help))
+    , absolutePos_("absolutePos", "Position (absolute)",
+                   util::ordinalCount(ivec2(10), ivec2(2048))
+                       .setMin(ivec2(1))
+                       .set(InvalidationLevel::Valid)
+                       .set("Position of the overlay image."_help))
     , absoluteSize_(
           "absoluteSize", "Size (absolute)",
           util::ordinalCount(ivec2(10), ivec2(2048)).setMin(ivec2(1)).set(InvalidationLevel::Valid))
-    , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f),
-                 InvalidationLevel::Valid)
-    , blendMode_("blendMode", "Blending Mode",
+    , anchorPos_("anchor", "Anchor",
+                 util::ordinalSymmetricVector(vec2(0.0f), vec2(1.0f))
+                     .set("Anchor of the overlay image for alignment."_help)
+                     .set(InvalidationLevel::Valid))
+    , blendMode_("blendMode", "Blending Mode", "Blend mode used for mixing the overlay image."_help,
                  {{"replace", "Replace", BlendMode::Replace}, {"over", "Blend", BlendMode::Over}},
                  1, InvalidationLevel::InvalidResources)
     , positioningMode_("positioningMode", "Positioning Mode",
@@ -199,12 +208,14 @@ void OverlayProperty::updateVisibilityState() {
 
 ImageOverlayGL::ImageOverlayGL()
     : Processor()
-    , inport_("inport")
-    , overlayPort_("overlay")
-    , outport_("outport")
+    , inport_("inport", "Source image."_help)
+    , overlayPort_("overlay", "Overlay images (multi-port)."_help)
+    , outport_("outport", "The output image."_help)
     , enabled_("enabled", "Overlay Enabled", true)
-    , overlayInteraction_("overlayInteraction", "Overlay Interaction", false)
-    , passThroughEvent_("passTroughEvent", "Pass Events on to Main View", false)
+    , overlayInteraction_("overlayInteraction", "Overlay Interaction",
+                          "Allow interactions on overlay images."_help, false)
+    , passThroughEvent_("passTroughEvent", "Pass Events on to Main View",
+                        "Events unhandled by the overlay will be passed"_help, false)
     , overlayProperty_("overlay", "Overlay")
     , border_("border", "Border", true)
     , borderColor_("borderColor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))

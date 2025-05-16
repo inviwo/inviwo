@@ -41,25 +41,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeRegionMapper, Volume Region Map}
- * ![](org.inviwo.VolumeRegionMapper.png?classIdentifier=org.inviwo.VolumeRegionMapper)
- * Voxel values are remapped to values provided in columns of a DataFrame. Requires two columns.
- * First column contains the source indices and the second column contains the matching destination
- * indices.
- *
- * ### Inports
- *   * __inport__          Input volume
- *   * __mappingIndices__  DataFrame with at least two columns used for mapping the input volume
- *
- * ### Outports
- *   * __outport__         Resulting volume after mapping the voxels of the input volume.
- *
- * ### Properties
- * * __from__             DataFrame column index for source values
- * * __to__               DataFrame column index for destination values
- * * __useMissingValue__  If set, unmapped values are set to __missingValue__
- * * __missingValue__     Value specifying missing values
- */
 class IVW_MODULE_VOLUME_API VolumeRegionMapper : public Processor {
 public:
     VolumeRegionMapper();

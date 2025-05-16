@@ -60,24 +60,6 @@
 namespace inviwo {
 class Volume;
 
-/** \docpage{org.inviwo.LightVolumeGL, Light Volume}
- * ![](org.inviwo.LightVolumeGL.png?classIdentifier=org.inviwo.LightVolumeGL)
- *
- * ...
- *
- * ### Inports
- *   * __inport__ ...
- *
- * ### Outports
- *   * __outport__ ...
- *
- * ### Properties
- *   * __Light Volume Size__ ...
- *   * __Support Light Color__ ...
- *   * __Float Precision__ ...
- *   * __Transfer function__ ...
- *
- */
 class IVW_MODULE_BASEGL_API LightVolumeGL : public Processor {
 public:
     LightVolumeGL();

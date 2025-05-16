@@ -39,21 +39,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeShifter, Volume Shifter}
- * ![](org.inviwo.VolumeShifter.png?classIdentifier=org.inviwo.VolumeShifter)
- * Shifts the voxel data within the volume by a pre-defined offset. Voxel data is wrapped. This
- * processor does not change any other properties, e.g. dimensions, of the volume.
- *
- * ### Inports
- *   * __volume__  input volume
- *
- * ### Outports
- *   * __outport__  resulting volume with shifted voxel data
- *
- * ### Properties
- *   * __enable__  if not enabled, the input volume is forwarded
- *   * __offset__  shifting offset
- */
 class IVW_MODULE_BASE_API VolumeShifter : public Processor {
 public:
     VolumeShifter();

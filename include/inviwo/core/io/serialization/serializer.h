@@ -58,11 +58,13 @@ using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 class IVW_CORE_API Serializer : public SerializeBase {
 public:
     /**
-     * \brief Initializes serializer with a file name that will be used to set relative paths to
+     * @brief Initializes serializer with a file name that will be used to set relative paths to
      * data.
      *
      * The specified file name will not be used to write any content until writeFile() is called.
      * @param fileName full path to xml file.
+     * @param rootElement Name of the root element to use (default: InviwoWorkspace).
+     * @param alloc Allocator to use for memory resources.
      * @throws SerializationException
      */
     explicit Serializer(const std::filesystem::path& fileName,

@@ -48,9 +48,20 @@ const ProcessorInfo ImageHueSaturationLuminance::processorInfo_{
     "Image Hue Saturation Luminance",          // Display name
     "Image Operation",                         // Category
     CodeState::Stable,                         // Code state
-    Tags::None,                                // Tags
+    Tags::GL,                                  // Tags
+    R"(Controls hue, saturation and luminance of an image.
+    Input image is in RGB color space. The colors are then converted into HSL and the following
+    manipulations are performed:
+  
+      hsl.r = mod(hsl.r + hue, 1.0);
+      hsl.g = clamp(hsl.g + sat, 0.0, 1.0);
+      hsl.b = clamp(hsl.b + lum, 0.0, 1.0);
+  
+    Finally, the image is transformed back into RGB.)"_unindentHelp,
 };
-const ProcessorInfo& ImageHueSaturationLuminance::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageHueSaturationLuminance::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageHueSaturationLuminance::ImageHueSaturationLuminance()
     : ImageGLProcessor("huesaturationluminance.frag")

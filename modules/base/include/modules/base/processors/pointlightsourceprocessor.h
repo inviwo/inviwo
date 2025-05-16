@@ -141,22 +141,6 @@ private:
     int interactionEventOption_;
 };
 
-/** \docpage{org.inviwo.Pointlightsource, Point light source}
- * ![](org.inviwo.Pointlightsource.png?classIdentifier=org.inviwo.Pointlightsource)
- *
- * Produces a point light source, spreading light in all directions the given position.
- *
- *
- * ### Properties
- *   * __Light power (%)__ Increases/decreases light strength
- *   * __Light radius__ Radius of the sphere used to determine the size of the point light
- *   * __Interaction Events__ Allow light source to be moved using interaction events
- *   * __Camera__  Link camera in order to specify position in view space and perform interaction
- *   * __Color__ RGB color
- *   * __Light Source Position__ Center point of light source
- *   * __Enabled__ Turn light on or off
- *
- */
 class IVW_MODULE_BASE_API PointLightSourceProcessor : public Processor {
 public:
     PointLightSourceProcessor();
@@ -170,9 +154,7 @@ protected:
 
     /**
      * Update light source parameters. Transformation will be given in texture space.
-     *
      * @param lightSource
-     * @return
      */
     void updatePointLightSource(PointLight* lightSource);
 

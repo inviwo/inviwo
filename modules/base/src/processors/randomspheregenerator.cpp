@@ -84,12 +84,13 @@ const ProcessorInfo RandomSphereGenerator::processorInfo_{
     "Mesh Creation",                     // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
+    "Create a grid of randomly generated spheres."_help,
 };
 const ProcessorInfo& RandomSphereGenerator::getProcessorInfo() const { return processorInfo_; }
 
 RandomSphereGenerator::RandomSphereGenerator()
     : Processor()
-    , meshOut_("mesh")
+    , meshOut_("mesh", "generated sphere meshes with randomized colors and radii"_help)
     , seed_("seed", "Seed", 0, 0, std::mt19937::max())
     , reseed_("reseed_", "Seed")
     , scale_("scale", "Scale", 12.0f, 0.001f, 100.0f, 0.1f)

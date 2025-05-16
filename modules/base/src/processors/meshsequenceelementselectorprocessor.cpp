@@ -53,6 +53,7 @@ const ProcessorInfo MeshSequenceElementSelectorProcessor::processorInfo_{
     "Data Selector",                    // Category
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
+    "Select a specific volume out of a sequence of meshes"_help,
 };
 const ProcessorInfo& MeshSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;

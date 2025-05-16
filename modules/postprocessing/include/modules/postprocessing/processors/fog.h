@@ -41,27 +41,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.Fog, Fog}
- * ![](org.inviwo.Fog.png?classIdentifier=org.inviwo.Fog)
- * Use any image with a proper depth channel as input. It will apply a colored fog to the
- * color-layer based on the normalized and linearized depth. The fog is computed from an exponential
- * function and the shape/curve of this exponential function is controlled by the density.
- *
- * ### Inports
- *   * __ImageInport__ Input Image.
- *
- * ### Outports
- *   * __ImageOutport__ Output Image.
- *
- * ### Properties
- *   * __Color__    The color of the fog
- *   * __Density__  The density of the fog
- *   * __Range__    range of the fog [0,1] with respect to near and far clip plane of the camera
- */
-
 /**
- * \class Fog
- * \brief Fog post process. (Computed using depth-layer and applied to color-layer)
+ * @brief Fog post process. (Computed using depth-layer and applied to color-layer)
  */
 class IVW_MODULE_POSTPROCESSING_API Fog : public Processor {
 public:

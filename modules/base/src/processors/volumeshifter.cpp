@@ -65,14 +65,17 @@ const ProcessorInfo VolumeShifter::processorInfo_{
     "Volume Operation",          // Category
     CodeState::Experimental,     // Code state
     Tags::CPU,                   // Tags
+    R"(Shifts the voxel data within the volume by a pre-defined offset. Voxel data is wrapped. This
+    processor does not change any other properties, e.g. dimensions, of the volume.
+    )"_unindentHelp,
 };
 const ProcessorInfo& VolumeShifter::getProcessorInfo() const { return processorInfo_; }
 
 VolumeShifter::VolumeShifter()
     : Processor()
-    , inport_("volume")
-    , outport_("outport")
-    , enabled_("enabled", "Enabled", true)
+    , inport_("volume", "input volume"_help)
+    , outport_("outport", "resulting volume with shifted voxel data"_help)
+    , enabled_("enabled", "Enabled", "if not enabled, the input volume is forwarded"_help, true)
     , offset_("offset", "Offset", vec3(0.0f), vec3(-1.0f), vec3(1.0f)) {
 
     addPort(inport_);

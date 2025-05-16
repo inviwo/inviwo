@@ -54,33 +54,30 @@ const ProcessorInfo ImageResample::processorInfo_{
     "Image Operation",           // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
+    R"(Resamples the input image, which corresponds to upscaling or 
+    downscaling to the respective target resolution.)"_unindentHelp,
 };
 const ProcessorInfo& ImageResample::getProcessorInfo() const { return processorInfo_; }
 
 ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")
-    , interpolationType_("interpolationType", "Interpolation Type")
-    , outputSizeMode_("outputSizeMode", "Output Size Mode")
+    , interpolationType_("interpolationType", "Interpolation Type",
+                         "Determines the interpolation for resampling (bilinear or bicubic)"_help,
+                         {{"bilinear", "Bilinear", 0}, {"bicubic", "Bicubic", 1}}, 0)
+    , outputSizeMode_("outputSizeMode", "Output Size Mode",
+                      "Determines the size of the resampled image (set by inport, resize"_help,
+                      {{"inportDimension", "Inport Dimensions", 0},
+                       {"resizeEvents", "Resize Events", 1},
+                       {"custom", "Custom Dimensions", 2}},
+                      0)
     , targetResolution_("targetResolution", "Target Resolution", ivec2(256, 256), ivec2(32, 32),
                         ivec2(4096, 4096), ivec2(1, 1)) {
 
-    interpolationType_.addOption("bilinear", "Bilinear", 0);
-    interpolationType_.addOption("bicubic", "Bicubic", 1);
-    interpolationType_.set(0);
     interpolationType_.onChange([this]() { interpolationTypeChanged(); });
-    interpolationType_.setCurrentStateAsDefault();
-    addProperty(interpolationType_);
-
-    outputSizeMode_.addOption("inportDimension", "Inport Dimensions", 0);
-    outputSizeMode_.addOption("resizeEvents", "Resize Events", 1);
-    outputSizeMode_.addOption("custom", "Custom Dimensions", 2);
-    outputSizeMode_.set(0);
-    outputSizeMode_.setCurrentStateAsDefault();
     outputSizeMode_.onChange([this]() { dimensionSourceChanged(); });
-    addProperty(outputSizeMode_);
-
     targetResolution_.onChange([this]() { dimensionChanged(); });
-    addProperty(targetResolution_);
+
+    addProperties(interpolationType_, outputSizeMode_, targetResolution_);
 }
 
 ImageResample::~ImageResample() = default;

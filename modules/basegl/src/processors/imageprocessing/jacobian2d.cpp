@@ -51,14 +51,20 @@ const ProcessorInfo Jacobian2D::processorInfo_{
     "Image Operation",        // Category
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
-};
+    "Computes the Jacobian of a two channel image."_help};
 const ProcessorInfo& Jacobian2D::getProcessorInfo() const { return processorInfo_; }
 
 Jacobian2D::Jacobian2D()
     : ImageGLProcessor("img_jacobian.frag")
-    , renormalization_("renormalization", "Renormalization", true)
-    , inverse_("inverse", "Invert Jacobian (J^-1)", false, InvalidationLevel::InvalidResources) {
+    , renormalization_("renormalization", "Renormalization",
+                       "Re-normalize results by taking the grid spacing into account"_help, true)
+    , inverse_("inverse", "Invert Jacobian (J^-1)",
+               "If enabled, the processor outputs the inverse of the Jacobian"_help, false,
+               InvalidationLevel::InvalidResources) {
     dataFormat_ = DataVec4Float32::get();
+
+    inport_.setHelp("Input image (only first two channels are used)"_help);
+    outport_.setHelp("Resulting Jacobian (du, dv) or its inverse (if enabled)"_help);
 
     addProperty(renormalization_);
 }

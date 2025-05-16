@@ -55,7 +55,7 @@ const ProcessorInfo& ImageEdgeDarken::getProcessorInfo() const { return processo
 
 ImageEdgeDarken::ImageEdgeDarken()
     : ImageGLProcessor("edgedarken.frag")
-    , darken_("darken", "Darken", true)
+    , darken_("darken", "Darken", "Enables/disables effect."_help, true)
     , intensity_("intensity", "Intensity", 1.f, 0.f, 2.f, 0.01f) {
 
     addProperty(darken_);

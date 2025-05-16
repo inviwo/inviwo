@@ -39,25 +39,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageHighPass, Image High Pass}
- * ![](org.inviwo.ImageHighPass.png?classIdentifier=org.inviwo.ImageHighPass)
- * Applies a high pass filter on the input image.
- *
- * ### Inports
- *   * __inputImage__ Input image
- *
- * ### Outports
- *   * __outputImage__ Filtered input image
- *
- * ### Properties
- *   * __Kernel Size__ Size of the applied high pass filter
- *   * __Sharpen__ Toggles additional sharpening operation
- */
-
 /**
- * \class ImageHighPass
- *
- * \brief Applies a high pass filter on the input image.
+ * @brief Applies a high pass filter on the input image.
  */
 class IVW_MODULE_BASEGL_API ImageHighPass : public ImageGLProcessor {
 public:

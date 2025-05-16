@@ -54,6 +54,7 @@ const ProcessorInfo VolumeLaplacianProcessor::processorInfo_{
     "Volume Operation",                     // Category
     CodeState::Experimental,                // Code state
     Tags::CPU,                              // Tags
+    "Computes the Laplacian of the input volume."_help,
 };
 const ProcessorInfo& VolumeLaplacianProcessor::getProcessorInfo() const { return processorInfo_; }
 

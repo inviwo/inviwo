@@ -49,13 +49,14 @@ const ProcessorInfo DataFrameMetaData::processorInfo_{
     "DataFrame",                     // Category
     CodeState::Experimental,         // Code state
     "CPU, DataFrame",                // Tags
+    "Augment a DataFrame with column-specific metadata like minimum and maximum values."_help,
 };
 const ProcessorInfo& DataFrameMetaData::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameMetaData::DataFrameMetaData()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "Input DataFrame to be augmented"_help)
+    , outport_("outport", "Copy of the input DataFrame along with column MetaData"_help)
     , columns_("columns", "Column MetaData", inport_) {
 
     addPort(inport_);

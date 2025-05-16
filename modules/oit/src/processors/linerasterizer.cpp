@@ -84,14 +84,17 @@ const ProcessorInfo LineRasterizer::processorInfo_{
     "Mesh Rendering",             // Category
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
+    "Render input meshes as lines, allows for order-independent transparency."_help,
 };
 const ProcessorInfo& LineRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 LineRasterizer::LineRasterizer()
     : Rasterizer()
-    , inport_("geometry")
+    , inport_("geometry", "Input meshes"_help)
     , lineSettings_("lineSettings", "Line Settings")
-    , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
+    , forceOpaque_("forceOpaque", "Shade Opaque",
+                   "use simple depth checks instead of fragment lists"_help, false,
+                   InvalidationLevel::InvalidResources)
     , overwriteColor_("overwriteColor", "Overwrite Color", false,
                       InvalidationLevel::InvalidResources)
     , constantColor_{"constantColor",
