@@ -36,6 +36,7 @@
 #include <inviwo/core/util/glmvec.h>
 
 #include <string_view>
+#include <memory>
 
 namespace inviwo {
 
