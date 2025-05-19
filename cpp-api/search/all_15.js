@@ -131,7 +131,7 @@ var searchData=
   ['volumeramprecision_128',['VolumeRAMPrecision',['../classinviwo_1_1VolumeRAMPrecision.html',1,'inviwo']]],
   ['volumeramsubset_129',['VolumeRAMSubSet',['../classinviwo_1_1VolumeRAMSubSet.html',1,'inviwo']]],
   ['volumerasterizer_130',['VolumeRasterizer',['../classinviwo_1_1VolumeRasterizer.html',1,'inviwo']]],
-  ['volumeraycaster_131',['VolumeRaycaster',['../classinviwo_1_1VolumeRaycaster.html#autotoc_md201',1,'Properties (from VolumeRaycaster)'],['../classinviwo_1_1VolumeRaycaster.html',1,'inviwo::VolumeRaycaster']]],
+  ['volumeraycaster_131',['VolumeRaycaster',['../classinviwo_1_1VolumeRaycaster.html',1,'inviwo']]],
   ['volumeraycasterbase_132',['VolumeRaycasterBase',['../classinviwo_1_1VolumeRaycasterBase.html',1,'inviwo']]],
   ['volumeraycastvisualizer_133',['VolumeRaycastVisualizer',['../classinviwo_1_1VolumeRaycastVisualizer.html',1,'inviwo']]],
   ['volumeregionmapper_134',['VolumeRegionMapper',['../classinviwo_1_1VolumeRegionMapper.html',1,'inviwo']]],

@@ -111,11 +111,9 @@ $(function(){initNavTree('classinviwo_1_1VolumeSliceGL.html',''); initResizable(
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1VolumeSliceGL-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::VolumeSliceGL Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::VolumeSliceGL Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;volumeslicegl.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::VolumeSliceGL:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -715,57 +713,7 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorNetworkEva
 friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></tr>
 <tr class="separator:a2ee140459222d207768dd50042fa99f7 inherit pro_attribs_classinviwo_1_1ProcessorObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><img src="org.inviwo.VolumeSliceGL.png?classIdentifier=org.inviwo.VolumeSliceGL" alt="" class="inline"/> This processor visualizes an arbitrary 2D slice from an input volume.</p>
-<p>Note: The output dimensions generally differ from the input <a class="el" href="classinviwo_1_1Volume.html">Volume</a> dimensions. Use <a class="el" href="classinviwo_1_1Volume.html">Volume</a> Slice Extracter to extract slices with the same dimensions as the <a class="el" href="classinviwo_1_1Volume.html">Volume</a>.</p>
-<h3><a class="anchor" id="autotoc_md202"></a>
-Inports</h3>
-<ul>
-<li><b>volume</b> The input volume</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md203"></a>
-Outports</h3>
-<ul>
-<li><b>outport</b> The extracted volume slice</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md204"></a>
-Properties</h3>
-<ul>
-<li><b>Slice along axis</b> Defines the volume axis or plane normal for the output slice</li>
-<li><b>X <a class="el" href="classinviwo_1_1Volume.html">Volume</a> Position</b> Position of the slice if the x axis is chosen</li>
-<li><b>Y <a class="el" href="classinviwo_1_1Volume.html">Volume</a> Position</b> Position of the slice if the y axis is chosen</li>
-<li><b>Z <a class="el" href="classinviwo_1_1Volume.html">Volume</a> Position</b> Position of the slice if the z axis is chosen</li>
-<li><b><a class="el" href="classinviwo_1_1Plane.html">Plane</a> Normal</b> Defines the normal of the slice plane (if slice axis is set to "Plane
-                     Equation")</li>
-<li><b><a class="el" href="classinviwo_1_1Plane.html">Plane</a> Position</b> Defines the origin of the slice plane (if slice axis is set to "Plane
-                       Equation")</li>
-<li><b>Transformations</b><ul>
-<li><b>Rotation (ccw)</b> Defines the rotation of the output image</li>
-<li><b>Angle</b> Angle of rotation if "Free Rotation" is chosen as rotation</li>
-<li><b>Scale</b> Scaling factor applied to the volume slice</li>
-<li><b>Horizontal Flip</b> Flips the output image left and right</li>
-<li><b>Vertical Flip</b> Flips the output image up and down</li>
-<li><b><a class="el" href="classinviwo_1_1Volume.html">Volume</a> <a class="el" href="classinviwo_1_1Texture.html">Texture</a> Wrapping</b> <a class="el" href="classinviwo_1_1Texture.html">Texture</a> wrapping mode used for extracting the image slice (use fill color, repeat edge values, repeat the contents, mirror contents)</li>
-<li><b>Fill Color</b> Defines the color which is used if the texture wrapping is set to "Fill
-                      with Color"</li>
-</ul>
-</li>
-<li><b>Position Selection</b><ul>
-<li><b>Enable Picking</b> Enables selecting the position selection with the mouse</li>
-<li><b>Show Position Indicator</b> Toggles the visibility of the position indicator</li>
-<li><b>Indicator Color</b> Custom color of the position indicator</li>
-</ul>
-</li>
-<li><b>Transfer Function Properties</b><ul>
-<li><b>Enable Transfer Function</b> Toggles whether the transfer function is applied onto the extracted volume slice</li>
-<li><b>Transfer Function</b> Defines the transfer function for mapping voxel values to color and opacity</li>
-<li><b>Alpha Offset</b> Offset</li>
-</ul>
-</li>
-<li><b>World Position</b> Outputs the world position of the slice plane (read-only)</li>
-<li><b>Handle interaction events</b> Toggles whether this processor will handle interaction events like mouse buttons or key presses </li>
-</ul>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="adfe592e93bf38a9864751dd1c80e794a" name="adfe592e93bf38a9864751dd1c80e794a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adfe592e93bf38a9864751dd1c80e794a">&#9670;&#160;</a></span>deserialize()</h2>
 

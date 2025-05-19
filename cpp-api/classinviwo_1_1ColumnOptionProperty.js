@@ -1,6 +1,8 @@
 var classinviwo_1_1ColumnOptionProperty =
 [
+    [ "ColumnOptionProperty", "classinviwo_1_1ColumnOptionProperty.html#a141e59ff1b1ff65b2e7d8da8425c2fcc", null ],
     [ "ColumnOptionProperty", "classinviwo_1_1ColumnOptionProperty.html#a40794fd79a2d272632b3b2470a683be1", null ],
+    [ "ColumnOptionProperty", "classinviwo_1_1ColumnOptionProperty.html#a6d6e4ce19679d9da837bd6a4167b5318", null ],
     [ "ColumnOptionProperty", "classinviwo_1_1ColumnOptionProperty.html#ab6da9b284353a72f273bf6ece441e7d5", null ],
     [ "clone", "classinviwo_1_1ColumnOptionProperty.html#a944ecefa79ab61ad70d16535a459adda", null ],
     [ "getSelectedColumnHeader", "classinviwo_1_1ColumnOptionProperty.html#a2e8ea840ec1b91e5d5c90ebc121a5208", null ],

@@ -109,11 +109,9 @@ $(function(){initNavTree('classinviwo_1_1ImageStackVolumeSource.html',''); initR
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1ImageStackVolumeSource-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::ImageStackVolumeSource Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::ImageStackVolumeSource Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;imagestackvolumesource.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for inviwo::ImageStackVolumeSource:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -668,24 +666,7 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorNetworkEva
 friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></tr>
 <tr class="separator:a2ee140459222d207768dd50042fa99f7 inherit pro_attribs_classinviwo_1_1ProcessorObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Converts a stack of 2D images to a 3D volume <img src="org.inviwo.ImageStackVolumeSource.png?classIdentifier=org.inviwo.ImageStackVolumeSource" alt="" class="inline"/></p>
-<p>The format of the volume will be equivalent to the first input image. The volume resolution will be equal to the size of the first image times the number of images. The physical size of the volume is determined by the the voxel spacing property.</p>
-<p>The input images are converted to a volume representation based on the input channel selection. Single channels, i.e. red, green, blue, alpha, and grayscale, will result in a scalar volume whereas rgb and rgba will yield a vec3 or vec4 volume, respectively.</p>
-<h3><a class="anchor" id="autotoc_md28"></a>
-Outports</h3>
-<ul>
-<li><b>volume</b> <a class="el" href="classinviwo_1_1Volume.html">Volume</a> generated from a stack of input images.</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md29"></a>
-Properties</h3>
-<ul>
-<li><b>File Pattern</b> Pattern used for multi-file matching of images</li>
-<li><b>Skip Unsupported Files</b> If true, matching files with unsupported image formats are not considered. Otherwise an empty volume slice will be inserted for each file.</li>
-<li><b>Voxel Spacing</b> Used to match the sampling distance of the acquired data and affects the physical size of the volume.</li>
-<li><b><a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Information</b> Metadata of the generated volume data set. </li>
-</ul>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a69fe12a8842557282ff31fa82d54424b" name="a69fe12a8842557282ff31fa82d54424b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69fe12a8842557282ff31fa82d54424b">&#9670;&#160;</a></span>deserialize()</h2>
 

@@ -1,9 +1,5 @@
 var annotated_dup =
 [
-    [ "fmt", null, [
-      [ "formatter< inviwo::ByteSize< T >, char >", "structfmt_1_1formatter_3_01inviwo_1_1ByteSize_3_01T_01_4_00_01char_01_4.html", null ],
-      [ "is_range< inviwo::flags::flags< T >, Char >", "structfmt_1_1is__range_3_01inviwo_1_1flags_1_1flags_3_01T_01_4_00_01Char_01_4.html", null ]
-    ] ],
     [ "inviwo", "namespaceinviwo.html", [
       [ "algorithm", null, [
         [ "EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper" ],
@@ -1867,10 +1863,6 @@ var annotated_dup =
       [ "WorldTransformDeprecated", "classinviwo_1_1WorldTransformDeprecated.html", "classinviwo_1_1WorldTransformDeprecated" ],
       [ "XMLWriter", "classinviwo_1_1XMLWriter.html", "classinviwo_1_1XMLWriter" ],
       [ "ZoomOptions", "structinviwo_1_1ZoomOptions.html", null ]
-    ] ],
-    [ "pybind11", null, [
-      [ "polymorphic_type_hook< inviwo::Processor >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Processor_01_4.html", null ],
-      [ "polymorphic_type_hook< inviwo::Property >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Property_01_4.html", null ]
     ] ],
     [ "std", "namespacestd.html", [
       [ "hash< inviwo::FileExtension >", "structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html", null ],

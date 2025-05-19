@@ -1193,7 +1193,6 @@ var hierarchy =
     [ "std::false_type", null, [
       [ "inviwo::util::detail::is_string< T, std::void_t< typename T::value_type, typename T::traits_type, typename T::allocator_type > >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1value7755dbb39d4055ac2098ae9658d61cc2.html", null ],
       [ "inviwo::util::is_dereferenceable< T, std::void_t< decltype(*std::declval< T >())> >", "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html", null ],
-      [ "fmt::is_range< inviwo::flags::flags< T >, Char >", "structfmt_1_1is__range_3_01inviwo_1_1flags_1_1flags_3_01T_01_4_00_01Char_01_4.html", null ],
       [ "inviwo::util::detail::is_string< T, Enable >", "structinviwo_1_1util_1_1detail_1_1is__string.html", [
         [ "inviwo::util::is_string< T >", "structinviwo_1_1util_1_1is__string.html", null ]
       ] ],
@@ -1248,7 +1247,6 @@ var hierarchy =
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
     ] ],
-    [ "fmt::formatter< inviwo::ByteSize< T >, char >", "structfmt_1_1formatter_3_01inviwo_1_1ByteSize_3_01T_01_4_00_01char_01_4.html", null ],
     [ "inviwo::FragmentListRenderer", "classinviwo_1_1FragmentListRenderer.html", null ],
     [ "inviwo::ffmpeg::Frame", "classinviwo_1_1ffmpeg_1_1Frame.html", null ],
     [ "inviwo::FrameBufferObject", "classinviwo_1_1FrameBufferObject.html", null ],
@@ -2655,8 +2653,6 @@ var hierarchy =
     [ "inviwo::plot::ScatterPlotGL::Points", "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html", null ],
     [ "inviwo::Polygon< T >", "classinviwo_1_1Polygon.html", null ],
     [ "inviwo::utilgl::PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
-    [ "pybind11::polymorphic_type_hook< inviwo::Processor >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Processor_01_4.html", null ],
-    [ "pybind11::polymorphic_type_hook< inviwo::Property >", "structpybind11_1_1polymorphic__type__hook_3_01inviwo_1_1Property_01_4.html", null ],
     [ "inviwo::PortConnection", "classinviwo_1_1PortConnection.html", null ],
     [ "inviwo::PortInspector", "classinviwo_1_1PortInspector.html", null ],
     [ "inviwo::PortInspectorFactoryObject", "classinviwo_1_1PortInspectorFactoryObject.html", null ],

@@ -108,7 +108,7 @@ $(function(){initNavTree('classinviwo_1_1WebBrowserProcessor.html',''); initResi
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classinviwo_1_1WebBrowserProcessor-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::WebBrowserProcessor Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::WebBrowserProcessor Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -678,21 +678,7 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Render webpage into the color and picking layers (OpenGL). </p>
-<p><img src="org.inviwo.WebBrowser.png?classIdentifier=org.inviwo.WebBrowser" alt="" class="inline"/> Display webpage, including transparency, on top of optional background and enable synchronization of properties.</p>
-<p>Synchronization from Invwo to web page requires its html element id, i.e. </p><div class="fragment"><div class="line">&lt;input type=&quot;text&quot; id=&quot;stringProperty&quot;&gt;.</div>
-</div><!-- fragment --><p> Synchronization from web page to Inviwo requires that you add javascript code. Added properties can be linked. Their display name might change but it will not affect their identifier. Example of code to add to HTML-page: </p><div class="fragment"><div class="line">&lt;script language=&quot;JavaScript&quot;&gt;</div>
-<div class="line">function onTextInput(val) {</div>
-<div class="line">    window.cefQuery({</div>
-<div class="line">       request: &#39;&lt;Properties&gt;&lt;Property type=&quot;org.inviwo.stringProperty&quot;</div>
-<div class="line">            identifier=&quot;PropertySyncExample.stringProperty&quot;&gt;&lt;value content=&quot;&#39; + val + &#39;&quot;</div>
-<div class="line">             &lt;/Property&gt;&lt;/Properties&gt;&#39;,</div>
-<div class="line">       onSuccess: function(response) {</div>
-<div class="line">             document.getElementById(&quot;stringProperty&quot;).focus();},</div>
-<div class="line">       onFailure: function(error_code, error_message) {}</div>
-<div class="line">    });</div>
-<div class="line">}</div>
-<div class="line">&lt;/script&gt;</div>
-</div><!-- fragment --> </div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a52b0fa77968f521537f992fe2ab71b19" name="a52b0fa77968f521537f992fe2ab71b19"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a52b0fa77968f521537f992fe2ab71b19">&#9670;&#160;</a></span>deserialize()</h2>
 

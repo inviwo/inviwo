@@ -109,7 +109,7 @@ $(function(){initNavTree('classinviwo_1_1LineRasterizer.html',''); initResizable
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classinviwo_1_1LineRasterizer-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::LineRasterizer Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::LineRasterizer Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -692,29 +692,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Renders input geometry with 2D lines. </p>
-<p><img src="org.inviwo.LineRasterizer.png?classIdentifier=org.inviwo.LineRasterizer" alt="" class="inline"/> Render input meshes as lines, allows for order-independent transparency.</p>
-<h3><a class="anchor" id="autotoc_md250"></a>
-Inports</h3>
-<ul>
-<li><b>geometry</b> Input meshes</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md251"></a>
-Outports</h3>
-<ul>
-<li><b>rasterization</b> rasterization functor rendering either opaquely or into fragment buffer</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md252"></a>
-Properties</h3>
-<ul>
-<li><b><a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> <a class="el" href="classinviwo_1_1Transform.html">Transform</a></b> Additional world/model transform applied to all input lines</li>
-<li><b>Line Width</b> width of the rendered lines (in pixel)</li>
-<li><b>Antialising</b> width of the antialiased line edge (in pixel), this determines the softness along the edge</li>
-<li><b>Miter Limit</b> limit for cutting of sharp corners</li>
-<li><b>Round Caps</b> if enabled, round caps are drawn at the end of each line</li>
-<li><b>Pseudo Lighting</b> enables radial shading as depth cue, i.e. tube like appearance</li>
-<li><b>Round Depth Profile</b> modify line depth matching a round depth profile</li>
-<li><b>Shade opaque</b> use simple depth checks instead of fragment lists </li>
-</ul>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="acb41175019193720ac10bc820de4e6ad" name="acb41175019193720ac10bc820de4e6ad"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb41175019193720ac10bc820de4e6ad">&#9670;&#160;</a></span>boundingBox()</h2>
@@ -859,7 +836,6 @@ Properties</h3>
   <table class="params">
     <tr><td class="paramname">imageSize</td><td>Size in pixels. </td></tr>
     <tr><td class="paramname">worldMatrixTransform</td><td>Additional transform to be applied before rendering. </td></tr>
-    <tr><td class="paramname">setUniforms</td><td>Binds the fragment list buffer and sets required uniforms. </td></tr>
   </table>
   </dd>
 </dl>

@@ -2163,6 +2163,7 @@ template&lt;typename T&gt; </div>
 <p>create a submenu containing entries for TF presets of all transfer functions found in the path <code>PathType::TransferFunctions</code>. Upon selecting a menu entry, the respective preset will be loaded by <code class="param">property</code>. The submenu will be disabled if <code class="param">property</code> is read-only. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">parent</td><td>parent owning the menu </td></tr>
     <tr><td class="paramname">menu</td><td>parent menu to which the TF preset submenu should be added </td></tr>
     <tr><td class="paramname">property</td><td>this property will load the TF presets once the menu entries are triggered </td></tr>
   </table>
@@ -6624,7 +6625,6 @@ template&lt;typename T = double, typename U = T&gt; </div>
 </div><div class="memdoc">
 <p>A factory function for configuring a <a class="el" href="classinviwo_1_1OrdinalRefProperty.html">OrdinalRefProperty</a> representing a generic vector, with a symmetric range around zero, and Ignored boundary constraints. The invalidation level defaults to InvalidOutput, and the property semantics to SpinBox. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">value</td><td>the default value for the property </td></tr>
     <tr><td class="paramname">minMax</td><td>used to construct the range of the property like min = T{-minMax}, max = T{minMax}. The constraint behavior will be Ignore. </td></tr>
   </table>
   </dd>

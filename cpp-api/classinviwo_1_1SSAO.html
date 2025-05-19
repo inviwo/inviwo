@@ -108,7 +108,7 @@ $(function(){initNavTree('classinviwo_1_1SSAO.html',''); initResizable(true); })
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classinviwo_1_1SSAO-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::SSAO Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::SSAO Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -672,30 +672,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Screen space ambient occlusion post process. (Computed using depth layer) </p>
-<p><img src="org.inviwo.SSAO.png?classIdentifier=org.inviwo.SSAO" alt="" class="inline"/> Use any image with a proper depth channel as input. It will compute Screen space ambient occlusion (<a class="el" href="classinviwo_1_1SSAO.html" title="Screen space ambient occlusion post process. (Computed using depth layer)">SSAO</a>) using the depth and then apply the occlusion to the color-layer.</p>
-<h3><a class="anchor" id="autotoc_md294"></a>
-Inports</h3>
-<ul>
-<li><b>ImageInport</b> Input <a class="el" href="classinviwo_1_1Image.html">Image</a>.</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md295"></a>
-Outports</h3>
-<ul>
-<li><b><a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a></b> Output <a class="el" href="classinviwo_1_1Image.html">Image</a>.</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md296"></a>
-Properties</h3>
-<ul>
-<li><b>Technique</b> <a class="el" href="classinviwo_1_1SSAO.html" title="Screen space ambient occlusion post process. (Computed using depth layer)">SSAO</a> Technique.</li>
-<li><b>Radius</b> Radius of hemisphere used to compute the ambient occlusion.</li>
-<li><b>Intensity</b> Intensity of the ambient occlusion.</li>
-<li><b>Angle Bias</b> Offsets the minimum angle of samples used in the computation. (Good for hiding AO effects on low-tess geometry)</li>
-<li><b>Directions</b> Number of directions used to sample the hemisphere.</li>
-<li><b>Steps/Dir</b> Number of samples used for each direction.</li>
-<li><b>Use Normal</b> Orients the hemisphere using an approximated surface normal.</li>
-<li><b>Enable Blur</b> Apply a bilateral blur filter.</li>
-<li><b>Blur Sharpness</b> Controls the sharpness of the blur, small number -&gt; large filter </li>
-</ul>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a66d60302344dd4d3c07b5b09851fd80b" name="a66d60302344dd4d3c07b5b09851fd80b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a66d60302344dd4d3c07b5b09851fd80b">&#9670;&#160;</a></span>getProcessorInfo()</h2>

@@ -109,7 +109,7 @@ $(function(){initNavTree('classinviwo_1_1ImageMixer.html',''); initResizable(tru
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1ImageMixer-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">inviwo::ImageMixer Class Reference<div class="ingroups"><a class="el" href="group__processors.html">Processors</a></div></div></div>
+  <div class="headertitle"><div class="title">inviwo::ImageMixer Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -664,52 +664,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Mixes two input images according to the chosen blend mode. </p>
-<p>Mixes the two input images according to the chosen blend mode. <img src="org.inviwo.ImageMixer.png?classIdentifier=org.inviwo.ImageMixer" alt="" class="inline"/> The output is defined by function <code>f(a,b)</code> which is given by the blend mode:</p>
-<p>Supported blend modes for determining <code>f(a,b)</code> </p><table class="doxtable">
-<tr>
-<td>Mix</td><td><code>a * (1 - weight) + b * weight</code> </td></tr>
-<tr>
-<td>Over</td><td><code>f(a,b) = b over a</code>, regular front-to-back blending </td></tr>
-<tr>
-<td>Multiply</td><td><code>f(a,b) = a * b</code> </td></tr>
-<tr>
-<td>Screen</td><td><code>f(a,b) = 1 - (1 - a) * (1 - b)</code> </td></tr>
-<tr>
-<td>Overlay</td><td><code>f(a,b) = 2 * a *b, if a &lt; 0.5</code>, and </td></tr>
-<tr>
-<td></td><td><code>f(a,b) = 1 - 2(1 - a)(1 - b)</code>, otherwise (combination of Multiply and Screen) </td></tr>
-<tr>
-<td>HardLight</td><td>Overlay where a and b are swapped </td></tr>
-<tr>
-<td>Divide</td><td><code>f(a,b) = a/b</code> </td></tr>
-<tr>
-<td>Addition</td><td><code>f(a,b) = a + b</code>, clamped to [0,1] </td></tr>
-<tr>
-<td>Subtraction</td><td><code>f(a,b) = a - b</code>, clamped to [0,1] </td></tr>
-<tr>
-<td>Difference</td><td><code>f(a,b) = |a - b|</code> </td></tr>
-<tr>
-<td>DarkenOnly</td><td><code>f(a,b) = min(a, b)</code>, per component </td></tr>
-<tr>
-<td>BrightenOnly</td><td><code>f(a,b) = max(a, b)</code>, per component </td></tr>
-</table>
-<h3><a class="anchor" id="autotoc_md133"></a>
-Inports</h3>
-<ul>
-<li><b>ImageInport</b> Input image A.</li>
-<li><b>ImageInport</b> Input image B.</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md134"></a>
-Outports</h3>
-<ul>
-<li><b><a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a></b> The mixed image.</li>
-</ul>
-<h3><a class="anchor" id="autotoc_md135"></a>
-Properties</h3>
-<ul>
-<li><b>Blend Mode</b> Blend mode used for mixing the input images.</li>
-<li><b>Weight</b> Weighting factor for mixing the blending result with input image A. </li>
-</ul>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5e4a2684243ea1b08f03c6d68a2311d4" name="a5e4a2684243ea1b08f03c6d68a2311d4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5e4a2684243ea1b08f03c6d68a2311d4">&#9670;&#160;</a></span>getProcessorInfo()</h2>
