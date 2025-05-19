@@ -117,11 +117,19 @@ workspace for example usage.
             if event:
                 i = pickevent.pickedId
 
-                # show context menu with a single entry for the triangle
+                # show context menu with an entry for the triangle, a separator, and a callback
+                submenu_items: tuple = (ivw.ContextMenuAction(f"Triangle {i}",
+                                                              f"{self.getIdentifier()}.tri{i}"),
+                                        ivw.ContextMenuSeparator(),
+                                        ivw.ContextMenuAction(f"Second Callback",
+                                                              f"{self.getIdentifier()}.callback")
+                                        )
                 entries: list = [
-                    ivw.ContextMenuEntry(f"Triangle {i}", f"{self.getIdentifier()}.tri{i}")
+                    ivw.ContextMenuSubmenu("Picking Submenu",
+                                           childEntries=submenu_items,
+                                           iconPath=":/svgicons/treelist.svg")
                 ]
-                event.showContextMenu(entries)
+                event.showContextMenu(pickevent.position, entries)
                 event.markAsUsed()
 
         if (pickevent.state == ivw.PickingState.Updated):

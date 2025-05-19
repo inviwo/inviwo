@@ -248,26 +248,70 @@ void exposeEvents(pybind11::module& m) {
 
     exposeFlags<TouchState>(m, touchState, "TouchStates");
 
-    auto contextMenuAction = py::enum_<ContextMenuAction>(m, "ContextMenuAction")
-                                 .value("Empty", ContextMenuAction::Empty)
-                                 .value("Image", ContextMenuAction::Image)
-                                 .value("View", ContextMenuAction::View)
-                                 .value("Widget", ContextMenuAction::Widget)
-                                 .value("Custom", ContextMenuAction::Custom);
+    auto contextMenuCategory = py::enum_<ContextMenuCategory>(m, "ContextMenuCategory")
+                                   .value("Empty", ContextMenuCategory::Empty)
+                                   .value("Image", ContextMenuCategory::Image)
+                                   .value("View", ContextMenuCategory::View)
+                                   .value("Widget", ContextMenuCategory::Widget)
+                                   .value("Custom", ContextMenuCategory::Callback);
 
-    exposeFlags<ContextMenuAction>(m, contextMenuAction, "ContextMenuActions");
+    exposeFlags<ContextMenuCategory>(m, contextMenuCategory, "ContextMenuCategories");
 
-    py::classh<ContextMenuEntry>(m, "ContextMenuEntry")
+    py::classh<ContextMenuSeparator>(m, "ContextMenuSeparator").def(py::init<>());
+    py::classh<ContextMenuSubmenu>(m, "ContextMenuSubmenu")
         .def(py::init<>())
-        .def(py::init<std::string, std::string>(), py::arg("label"), py::arg("id"))
+        .def(py::init([](std::string label, const py::tuple& childEntries, std::string iconPath) {
+                 std::vector<ContextMenuEntry> entries;
+                 for (const auto& entry : childEntries) {
+                     if (pybind11::isinstance<ContextMenuAction>(entry)) {
+                         try {
+                             entries.push_back(pybind11::cast<ContextMenuAction>(entry));
+                         } catch (pybind11::cast_error& e) {
+                             throw pybind11::type_error(
+                                 fmt::format("Expected a ContextMenuAction: {}", e.what()));
+                         }
+                     } else if (pybind11::isinstance<ContextMenuSeparator>(entry)) {
+                         entries.emplace_back(ContextMenuSeparator{});
+                     } else if (pybind11::isinstance<ContextMenuSubmenu>(entry)) {
+                         try {
+                             entries.push_back(pybind11::cast<ContextMenuSubmenu>(entry));
+                         } catch (pybind11::cast_error& e) {
+                             throw pybind11::type_error(
+                                 fmt::format("Expected a ContextMenuSubmenu: {}", e.what()));
+                         }
+                     } else {
+                         throw pybind11::type_error(
+                             "Expected a ContextMenuAction, ContextMenuSeparator, or "
+                             "ContextMenuSubmenu");
+                     }
+                 }
+                 return ContextMenuSubmenu{
+                     .label = label, .iconPath = iconPath, .childEntries = entries};
+             }),
+             py::arg("label"), py::arg("childEntries"), py::arg("iconPath") = std::nullopt)
+        .def_readwrite("label", &ContextMenuSubmenu::label)
+        .def_readwrite("iconPath", &ContextMenuSubmenu::iconPath);
+
+    py::classh<ContextMenuAction>(m, "ContextMenuAction")
+        .def(py::init<>())
+        .def(py::init<std::string, std::string, std::optional<std::string>>(), py::arg("label"),
+             py::arg("id"), py::arg("iconPath") = std::nullopt)
         .def(py::init([](const py::tuple& args) {
-            if (args.size() != 2) {
-                throw pybind11::value_error("Expected a tuple of 2 (label, id)");
+            if (args.size() == 2) {
+                return ContextMenuAction{.label = args[0].cast<std::string>(),
+                                         .id = args[1].cast<std::string>()};
+            } else if (args.size() == 3) {
+                return ContextMenuAction{.label = args[0].cast<std::string>(),
+                                         .id = args[1].cast<std::string>(),
+                                         .iconPath = args[2].cast<std::string>()};
+            } else {
+                throw pybind11::value_error(
+                    "Expected a tuple of size 2 or 3 (label, id, iconPath (optional)");
             }
-            return ContextMenuEntry{args[0].cast<std::string>(), args[1].cast<std::string>()};
         }))
-        .def_readwrite("label", &ContextMenuEntry::label)
-        .def_readwrite("id", &ContextMenuEntry::id);
+        .def_readwrite("label", &ContextMenuAction::label)
+        .def_readwrite("id", &ContextMenuAction::id)
+        .def_readwrite("iconPath", &ContextMenuAction::iconPath);
 
     py::classh<Event>(m, "Event")
         .def("clone", &Event::clone)
@@ -302,15 +346,12 @@ void exposeEvents(pybind11::module& m) {
         .def("setToolTip", &InteractionEvent::setToolTip)
         .def(
             "showContextMenu",
-            [](InteractionEvent* e, std::vector<ContextMenuEntry> entries,
-               ContextMenuActions actions) { e->showContextMenu(entries, actions); },
-            py::arg("entries"), py::arg("actions") = ContextMenuActions{ContextMenuAction::Custom})
-        .def(
-            "showContextMenu2",
-            [](InteractionEvent* e, std::vector<ContextMenuEntry> entries) {
-                e->showContextMenu(entries, ContextMenuAction::Custom);
+            [](InteractionEvent* self, dvec2 normalizedPosition,
+               std::vector<ContextMenuEntry> entries, ContextMenuCategories actions) {
+                self->showContextMenu(normalizedPosition, entries, actions);
             },
-            py::arg("entries"));
+            py::arg("normalizedPosition"), py::arg("entries"),
+            py::arg("actions") = ContextMenuCategories{ContextMenuCategory::Callback});
 
     py::classh<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")
         .def(py::init<IvwKey, KeyState, KeyModifiers, uint32_t, const std::string&>(),
@@ -323,7 +364,8 @@ void exposeEvents(pybind11::module& m) {
         .def_property("nativeVirtualKey", &KeyboardEvent::getNativeVirtualKey,
                       &KeyboardEvent::setNativeVirtualKey)
         .def_property("text", &KeyboardEvent::text, &KeyboardEvent::setText)
-        .def_property_readonly_static("chash", [](py::object) { return KeyboardEvent::chash(); });
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return KeyboardEvent::chash(); });
 
     py::classh<MouseInteractionEvent, InteractionEvent>(m, "MouseInteractionEvent")
         .def_property("buttonState", &MouseInteractionEvent::buttonState,
@@ -348,7 +390,8 @@ void exposeEvents(pybind11::module& m) {
              py::arg("depth") = 1.0)
         .def_property("button", &MouseEvent::button, &MouseEvent::setButton)
         .def_property("state", &MouseEvent::state, &MouseEvent::setState)
-        .def_property_readonly_static("chash", [](py::object) { return MouseEvent::chash(); });
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return MouseEvent::chash(); });
 
     py::classh<WheelEvent, MouseInteractionEvent>(m, "WheelEvent")
         .def(py::init<MouseButtons, KeyModifiers, dvec2, dvec2, uvec2, double>(),
@@ -357,7 +400,8 @@ void exposeEvents(pybind11::module& m) {
              py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
              py::arg("depth") = 1.0)
         .def_property("delta", &WheelEvent::delta, &WheelEvent::setDelta)
-        .def_property_readonly_static("chash", [](py::object) { return WheelEvent::chash(); });
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return WheelEvent::chash(); });
 
     py::classh<TouchPoint>(m, "TouchPoint")
         .def(py::init<>())
@@ -407,7 +451,8 @@ void exposeEvents(pybind11::module& m) {
         .def_property_readonly("getDevice", &TouchEvent::getDevice)
 
         .def("findClosestTwoTouchPoints", &TouchEvent::findClosestTwoTouchPoints)
-        .def_property_readonly_static("chash", [](py::object) { return TouchEvent::chash(); })
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return TouchEvent::chash(); })
         .def_static("getPickingState", &TouchEvent::getPickingState);
 
     py::classh<ResizeEvent, Event>(m, "ResizeEvent")
@@ -416,20 +461,15 @@ void exposeEvents(pybind11::module& m) {
         .def(py::init<ResizeEvent>())
         .def_property("size", &ResizeEvent::size, &ResizeEvent::setSize)
         .def_property("previousSize", &ResizeEvent::previousSize, &ResizeEvent::setPreviousSize)
-        .def_property_readonly_static("chash", [](py::object) { return ResizeEvent::chash(); });
-
-    py::classh<ContextMenuEvent, MouseEvent>(m, "ContextMenuEvent")
-        .def(py::init<std::string_view, MouseButton, MouseState, MouseButtons, KeyModifiers, dvec2,
-                      uvec2, double>(),
-             py::arg("id"), py::arg("button") = MouseButton::Left,
-             py::arg("state") = MouseState::Press,
-             py::arg("buttonState") = MouseButtons{MouseButton::None},
-             py::arg("modifiers") = KeyModifiers{KeyModifier::None},
-             py::arg("normalizedPosition") = dvec2(0), py::arg("canvasSize") = uvec2(0),
-             py::arg("depth") = 1.0)
-        .def_property_readonly("id", &ContextMenuEvent::getId)
         .def_property_readonly_static("chash",
-                                      [](py::object) { return ContextMenuEvent::chash(); });
+                                      [](const py::object&) { return ResizeEvent::chash(); });
+
+    py::classh<ContextMenuEvent, Event>(m, "ContextMenuEvent")
+        .def(py::init<std::string_view, InteractionEvent*>(), py::arg("id"), py::arg("event"))
+        .def_property_readonly("id", &ContextMenuEvent::getId)
+        .def("getEvent", &ContextMenuEvent::getEvent, py::return_value_policy::reference)
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return ContextMenuEvent::chash(); });
 
     py::classh<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
     py::classh<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
@@ -437,7 +477,8 @@ void exposeEvents(pybind11::module& m) {
     py::classh<ViewEvent, Event>(m, "ViewEvent")
         .def(py::init<typename ViewEvent::Action>())
         .def_property_readonly("action", &ViewEvent::getAction)
-        .def_property_readonly_static("chash", [](py::object) { return ViewEvent::chash(); });
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return ViewEvent::chash(); });
 }
 
 }  // namespace inviwo
