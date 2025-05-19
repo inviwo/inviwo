@@ -38,28 +38,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageBrightnessContrast, Image Brightness Contrast}
- * ![](org.inviwo.ImageBrightnessContrast.png?classIdentifier=org.inviwo.ImageBrightnessContrast)
- * Controls brightness and contrast of an image.
- * The following manipulations are applied:
- *
- *     out.rgb = in.rgb - 0.5) * contrast + 0.5 + brightness
- *     out.a = in.a
- *
- * ### Inports
- *   * __ImageInport__ Input image.
- *
- * ### Outports
- *   * __ImageOutport__ Output image.
- *
- * ### Properties
- *   * __Brightness__ Controls brightness.
- *   * __Contrast__ Controls contrast.
- */
-
 /**
- * \class ImageBrightnessContrast
- * \brief Controls brightness and contrast of an image.
+ * @brief Controls brightness and contrast of an image.
  */
 class IVW_MODULE_POSTPROCESSING_API ImageBrightnessContrast : public ImageGLProcessor {
 public:

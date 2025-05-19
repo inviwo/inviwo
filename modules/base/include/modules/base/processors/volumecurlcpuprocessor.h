@@ -37,20 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeCurlCPUProcessor, Volume Curl CPUProcessor}
- * ![](org.inviwo.VolumeCurlCPUProcessor.png?classIdentifier=org.inviwo.VolumeCurlCPUProcessor)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 class IVW_MODULE_BASE_API VolumeCurlCPUProcessor : public Processor {
 public:
     VolumeCurlCPUProcessor();

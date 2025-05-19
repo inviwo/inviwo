@@ -77,19 +77,25 @@ const ProcessorInfo PresentationProcessor::processorInfo_{
     "UI",                                // Category
     CodeState::Stable,                   // Code state
     "CPU, UI, Presentation",             // Tags
+    "Allows switching between slide images and a regular image inport (e.g. rendered image)"_help,
 };
 const ProcessorInfo& PresentationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PresentationProcessor::PresentationProcessor()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , presentationMode_("presentationMode", "Presentation Mode", false)
+    , inport_("inport", "regular image inport connected to the rendering network"_help)
+    , outport_("outport", "either the regular inport image or a slide depending on Slide Mode"_help)
+    , presentationMode_(
+          "presentationMode", "Presentation Mode",
+          "if true the current slide is shown, otherwise the image of the inport"_help, false)
     , imageFilePattern_("imageFilePattern", "Slide Images",
+                        "Pattern used for multi-file matching including path"_help,
                         filesystem::getPath(PathType::Images, "/*"), "")
-    , findFilesButton_("findFiles", "Update File List")
+    , findFilesButton_("findFiles", "Update File List",
+                       "Reload the list of matching slide images"_help)
     , slideIndex_("slideIndex", "Slide Index", 1, 1, 1, 1)
-    , imageFileName_("imageFileName", "Image File Name")
+    , imageFileName_("imageFileName", "Image File Name",
+                     "Name of the selected file (read-only)"_help)
     , interactions_("interactions", "Interactions")
     , toggleMode_(
           "toggleMode", "Toggle Mode",

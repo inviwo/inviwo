@@ -45,17 +45,6 @@ namespace inviwo {
 class InviwoApplication;
 class Mesh;
 
-/** \docpage{org.inviwo.GeometrySource, Mesh Source}
- * ![](org.inviwo.GeometrySource.png?classIdentifier=org.inviwo.GeometrySource)
- *
- * Loads a mesh
- *
- * ### Outports
- *   * __Outport__ The loaded mesh
- *
- * ### Properties
- *   * __File name__ File to load.
- */
 class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
     MeshSource(InviwoApplication* app, const std::filesystem::path& filePath = {});

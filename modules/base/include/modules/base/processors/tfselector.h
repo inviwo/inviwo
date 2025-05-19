@@ -51,24 +51,6 @@ class Deserializer;
 class Property;
 class PropertyOwner;
 
-/** \docpage{org.inviwo.TFSelector, TFSelector}
- * ![](org.inviwo.TFSelector.png?classIdentifier=org.inviwo.TFSelector)
- * allows to select a transfer function from a number of presets which can be added and modified by
- * the user. The image is passed through without any modifications.
- *
- * ### Inports
- *   * __inport__   Input image
- *
- * ### Outports
- *   * __outport__  Unchanged input image
- *
- * ### Properties
- *   * __TF out__   selected transfer function (read-only)
- *   * __Selected__ option property to select the TF
- *   * __Cycle__    if true, the first TF will be the successor of the last available TF
- *   * __Presets__  list of TF presets
- */
-
 /**
  * \class TFSelector
  * \brief processor for selecting a transfer function from a number of customizable presets

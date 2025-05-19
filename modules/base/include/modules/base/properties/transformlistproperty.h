@@ -70,12 +70,11 @@ public:
     mat4 getMatrix() const;
 };
 
-/** \docpage{org.inviwo.TransformListProperty, Transform List Property}
- * ![](org.inviwo.TransformListProperty.png?classIdentifier=org.inviwo.TransformListProperty)
- * List of transformations being applied on each other.
- */
 class IVW_MODULE_BASE_API TransformListProperty : public CompositeProperty {
 public:
+    TransformListProperty(std::string_view identifier, std::string_view displayName, Document help,
+                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                          PropertySemantics semantics = PropertySemantics::Default);
     TransformListProperty(std::string_view identifier, std::string_view displayName,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                           PropertySemantics semantics = PropertySemantics::Default);

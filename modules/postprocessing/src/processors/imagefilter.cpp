@@ -62,7 +62,7 @@ ImageFilter::ImageFilter()
     : Processor()
     , inport_("inputImage")
     , outport_("outputImage")
-    , enable_("enable", "Enable", true)
+    , enable_("enable", "Enable", "Turn filter on/off."_help, true)
     , filter_("filter", "Filter",
               {{"ssharpen", "Strong sharpen", 0},
                {"lsharpen", "Light sharpen", 1},

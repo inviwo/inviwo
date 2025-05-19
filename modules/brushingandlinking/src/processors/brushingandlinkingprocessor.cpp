@@ -63,6 +63,7 @@ const ProcessorInfo BrushingAndLinkingProcessor::processorInfo_{
     "Brushing And Linking",                    // Category
     CodeState::Stable,                         // Code state
     "Brushing, Linking",                       // Tags
+    "Central point for handling and linking brushing and linking events."_help,
 };
 const ProcessorInfo& BrushingAndLinkingProcessor::getProcessorInfo() const {
     return processorInfo_;
@@ -70,8 +71,8 @@ const ProcessorInfo& BrushingAndLinkingProcessor::getProcessorInfo() const {
 
 BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
+    , inport_("inport", "brushing and linking port for hierarchical interactions"_help)
+    , outport_("outport", R"(brushing and linking port for connecting "linked" processors)"_help)
     , clearSelection_(
           "clearSelection", "Clear Selection", [&]() { outport_.getManager().clearSelected(); },
           InvalidationLevel::Valid)

@@ -37,22 +37,8 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.VectorMagnitude, Vector Magnitude}
- * ![](org.inviwo.VectorMagnitude.png?classIdentifier=org.inviwo.VectorMagnitude)
- * Calculates the magnitude of the input volume.
- *
- * ### Inports
- *   * __inputVolume__ Input volume
- *
- * ### Outports
- *   * __outputVolume__ Gradient magnitude of the input volume
- *
- */
-
 /**
- * \class VectorMagnitudeProcessor
- *
- * \brief takes and ImageInport and renders it into a OpenGL window i.e. a canvas.
+ * @brief takes and ImageInport and renders it into a OpenGL window i.e. a canvas.
  */
 class IVW_MODULE_BASEGL_API VectorMagnitudeProcessor : public VolumeGLProcessor {
 public:

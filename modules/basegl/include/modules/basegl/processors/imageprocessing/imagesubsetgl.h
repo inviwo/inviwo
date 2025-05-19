@@ -47,24 +47,6 @@ class Event;
 class MouseEvent;
 class TouchEvent;
 
-/** \docpage{org.inviwo.ImageSubsetGL, Image Subset}
- * ![](org.inviwo.ImageSubsetGL.png?classIdentifier=org.inviwo.ImageSubsetGL)
- *
- * Extracts a region of an image. First color layer, depth layer, and picking layer are
- * copied.
- * The region can be moved using mouse/touch interaction.
- *
- * ### Inports
- *   * __image.inport__ Image to extract region from.
- *
- * ### Outports
- *   * __image.outport__ Extracted region.
- *
- * ### Properties
- *   * __Range X__ Min/max pixel along horizontal axis.
- *   * __Range Y__ Min/max pixel along vertical axis.
- *
- */
 class IVW_MODULE_BASEGL_API ImageSubsetGL : public Processor {
 public:
     ImageSubsetGL();

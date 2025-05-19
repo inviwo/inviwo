@@ -66,7 +66,8 @@ const ProcessorInfo DataFrameColumnToColorVector::processorInfo_{
     "DataFrame Column To Color Vector",         // Display name
     "Plotting",                                 // Category
     CodeState::Stable,                          // Code state
-    "CPU, Plotting, DataFrame"                  // Tags
+    "CPU, Plotting, DataFrame",                 // Tags
+    "This processor maps column values of a DataFrame to colors using a 1D transfer function."_help,
 };
 const ProcessorInfo& DataFrameColumnToColorVector::getProcessorInfo() const {
     return processorInfo_;
@@ -74,10 +75,10 @@ const ProcessorInfo& DataFrameColumnToColorVector::getProcessorInfo() const {
 
 DataFrameColumnToColorVector::DataFrameColumnToColorVector()
     : Processor()
-    , dataFrame_("dataFrame")
-    , colors_("colors")
+    , dataFrame_("dataFrame", "input data"_help)
+    , colors_("colors", "resulting vector of colors matching the selected DataFrame column"_help)
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_)
-    , tf_("tf", "Color Mapping",
+    , tf_("tf", "Color Mapping", "mapping data values to colors via a transfer function"_help,
           TransferFunction(
               {{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}})) {
 

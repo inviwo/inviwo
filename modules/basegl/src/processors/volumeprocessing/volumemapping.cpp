@@ -48,16 +48,23 @@ const ProcessorInfo VolumeMapping::processorInfo_{
     "Volume Operation",          // Category
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
-};
+    "Maps the voxel values of an input volume to an alpha-only volume "
+    "by applying a transfer function."_help};
 const ProcessorInfo& VolumeMapping::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMapping::VolumeMapping()
     : VolumeGLProcessor("volume_mapping.frag")
-    , tfProperty_("transferFunction", "Transfer function", &inport_) {
+    , tfProperty_("transferFunction", "Transfer function",
+                  "Defines the transfer function for mapping voxel values to opacity"_help,
+                  TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_) {
     addProperty(tfProperty_);
+
+    outport_.setHelp(
+        "Output volume containing the alpha channel "
+        "after applying the transfer function to the input"_help);
 }
 
-VolumeMapping::~VolumeMapping() {}
+VolumeMapping::~VolumeMapping() = default;
 
 void VolumeMapping::preProcess(TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader_, cont, tfProperty_);

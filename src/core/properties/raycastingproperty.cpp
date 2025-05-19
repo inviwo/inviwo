@@ -36,7 +36,10 @@ std::string_view RaycastingProperty::getClassIdentifier() const { return classId
 RaycastingProperty::RaycastingProperty(std::string_view identifier, std::string_view displayName,
                                        InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName,
+                        "Raycasting parameters including rendering type (DVR / isosurfaces), "
+                        "compositing, sampling rate, etc."_help,
+                        invalidationLevel, std::move(semantics))
     , renderingType_("renderingType", "Rendering",
                      {{"dvr", "Direct Volume Rendering", RenderingType::Dvr},
                       {"dvriso", "DVR + Isosurfaces", RenderingType::DvrIsosurface},

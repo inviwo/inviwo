@@ -51,25 +51,8 @@ class PickingEvent;
 
 namespace plot {
 
-/** \docpage{org.inviwo.PersistenceDiagramPlotProcessor, Persistence Diagram Plot Processor}
- * ![](org.inviwo.PersistenceDiagramPlotProcessor.png?classIdentifier=org.inviwo.PersistenceDiagramPlotProcessor)
- * Plots a persistence diagram of extremum-saddle pairs. It uses x-y pairs and draws vertical lines
- * from y_low(x) = x to y_high(x) = y. Thus, the x coordinate of each pair corresponds
- * to the birth of the extremum pair as well as the lower y coordinate. The higher y coordinate
- * matches the point of death.
- *
- * ### Inports
- *   * __DataFrame__  DataFrame with at least two columns corresponding to birth and death of
- *                    extremum-saddle pairs
- *   * __BrushingAndLinking__   inport for brushing & linking interactions
- *
- * ### Outports
- *   * __outport__    rendered image of the persistence diagram
- */
-
 /**
- * \class PersistenceDiagramPlotProcessor
- * \brief plots a persistence diagram of extremum-saddle pairs with vertical lines
+ * @brief plots a persistence diagram of extremum-saddle pairs with vertical lines
  */
 class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotProcessor : public Processor {
 public:

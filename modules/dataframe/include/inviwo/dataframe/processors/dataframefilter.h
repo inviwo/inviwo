@@ -48,25 +48,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.DataFrameFilter, DataFrame Filter}
- * ![](org.inviwo.DataFrameFilter.png?classIdentifier=org.inviwo.DataFrameFilter)
- * Creates a new DataFrame by filtering the input DataFrame using either filters or Brushing and
- * Linking. Filtered rows are optionally propagated using Brushing and Linking.
- *
- * ### Inports
- *   * __inport__   filters are applied to this source DataFrame
- *   * __brushing__   inport for brushing & linking filtering
- *
- * ### Outports
- *   * __outport__ filtered DataFrame
- *
- * ### Properties
- *   * __Brushing Mode__ Determines how Brushing and Linking is considered when filtering.
- *      - @c None         no brushing and linking
- *      - @c FilterOnly   filtered rows are propagated to B&L, B&L filter state is not considered
- *      - @c ApplyOnly    apply B&L filter state to DataFrame, no brushing actions are sent
- *      - @c FilterApply  propagate filtered rows and apply B&L filter state
- */
 class IVW_MODULE_DATAFRAME_API DataFrameFilter : public Processor {
 public:
     enum class BrushingMode {

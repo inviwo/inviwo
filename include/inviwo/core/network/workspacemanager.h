@@ -98,12 +98,12 @@ public:
 
     /**
      * Save the current workspace to a stream
-     * \param stream the stream to write to.
-     * \param refPath a reference that can be use by the serializer to store relative paths.
+     * @param stream the stream to write to.
+     * @param refPath a reference that can be use by the serializer to store relative paths.
      *      The same refPath should be given when loading. Most often this should be the path to the
      *      saved file.
-     * \param exceptionHandler A callback for handling errors.
-     * \param mode to indicate if we are saving to disk or undo-stack
+     * @param exceptionHandler A callback for handling errors.
+     * @param mode to indicate if we are saving to disk or undo-stack
      */
     void save(std::ostream& stream, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
@@ -111,12 +111,12 @@ public:
 
     /**
      * Save the current workspace to a stream
-     * \param xml the string to write to.
-     * \param refPath a reference that can be use by the serializer to store relative paths.
+     * @param xml the string to write to.
+     * @param refPath a reference that can be use by the serializer to store relative paths.
      *      The same refPath should be given when loading. Most often this should be the path to the
      *      saved file.
-     * \param exceptionHandler A callback for handling errors.
-     * \param mode to indicate if we are saving to disk or undo-stack
+     * @param exceptionHandler A callback for handling errors.
+     * @param mode to indicate if we are saving to disk or undo-stack
      */
     void save(std::pmr::string& xml, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
@@ -124,9 +124,9 @@ public:
 
     /**
      * Save the current workspace to a file
-     * \param path the file to save into.
-     * \param exceptionHandler A callback for handling errors.
-     * \param mode to indicate if we are saving to disk or undo-stack
+     * @param path the file to save into.
+     * @param exceptionHandler A callback for handling errors.
+     * @param mode to indicate if we are saving to disk or undo-stack
      */
     void save(const std::filesystem::path& path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
@@ -134,11 +134,12 @@ public:
 
     /**
      * Load a workspace from a stream
-     * \param stream the stream to read from.
-     * \param refPath a reference that can be use by the deserializer to calculate relative
+     * @param stream the stream to read from.
+     * @param refPath a reference that can be use by the deserializer to calculate relative
      *      paths. The same refPath should be given when loading. Most often this should be the
      *      path to the saved file.
-     * \param exceptionHandler A callback for handling errors.
+     * @param exceptionHandler A callback for handling errors.
+     * @param mode to indicate if we are saving to disk or undo-stack
      */
     void load(std::istream& stream, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
@@ -146,11 +147,12 @@ public:
 
     /**
      * Load a workspace from a string
-     * \param xml the string to read from.
-     * \param refPath a reference that can be use by the deserializer to calculate relative
+     * @param xml the string to read from.
+     * @param refPath a reference that can be use by the deserializer to calculate relative
      *      paths. The same refPath should be given when loading. Most often this should be the
      *      path to the saved file.
-     * \param exceptionHandler A callback for handling errors.
+     * @param exceptionHandler A callback for handling errors.
+     * @param mode to indicate if we are saving to disk or undo-stack
      */
     void load(const std::pmr::string& xml, const std::filesystem::path& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
@@ -158,8 +160,9 @@ public:
 
     /**
      * Load a workspace from a file
-     * \param path the file to read from.
-     * \param exceptionHandler A callback for handling errors.
+     * @param path the file to read from.
+     * @param exceptionHandler A callback for handling errors.
+     * @param mode to indicate if we are saving to disk or undo-stack
      */
     void load(const std::filesystem::path& path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),

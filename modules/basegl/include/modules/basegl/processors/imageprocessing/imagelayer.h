@@ -39,21 +39,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageLayer, Image Layer}
- * ![](org.inviwo.ImageLayer.png?classIdentifier=org.inviwo.ImageLayer)
- * Outputs a specific layer of the source image as color image. Depth and picking layers are
- * forwarded unmodified.
- *
- * ### Inports
- *   * __inport__    input image
- *
- * ### Outports
- *   * __outport__   output image containing the selected input layer as color layer
- *
- * ### Properties
- *   * __Output Layer__  Determines which layer of the input image is used as new color layer
- */
-
 /**
  * \class ImageLayer
  * \brief extracts the selected layer from the source image and outputs it as color layer.

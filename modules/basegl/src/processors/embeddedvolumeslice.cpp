@@ -90,19 +90,28 @@ const ProcessorInfo EmbeddedVolumeSlice::processorInfo_{
     "Volume Operation",                // Category
     CodeState::Stable,                 // Code state
     Tags::GL,                          // Tags
+    "Render an arbitrary slice of a volume in place, "
+    "i.e. the slice will be oriented as it would have been in the volume."_help,
 };
 const ProcessorInfo& EmbeddedVolumeSlice::getProcessorInfo() const { return processorInfo_; }
 
 EmbeddedVolumeSlice::EmbeddedVolumeSlice()
     : Processor()
-    , inport_{"volume"}
-    , backgroundPort_{"background"}
-    , outport_{"outport"}
+    , inport_{"volume", "The input volume"_help}
+    , backgroundPort_{"background", "Optional background image"_help}
+    , outport_{"outport", "Rendered slice"_help}
     , shader_{"embeddedvolumeslice.vert", "embeddedvolumeslice.frag", Shader::Build::No}
-    , planeNormal_{"planeNormal",          "Plane Normal",      vec3(1.f, 0.f, 0.f),
-                   vec3(-1.f, -1.f, -1.f), vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f)}
-    , planePosition_{"planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f)}
-    , transferFunction_{"transferFunction", "Transfer Function", &inport_}
+    , planeNormal_{"planeNormal", "Plane Normal",
+                   util::ordinalSymmetricVector(vec3(1.f, 0.f, 0.f), vec3(1.f, 1.f, 1.f))
+                       .set("Defines the normal of the plane in texture/data space [0,1]"_help)}
+    , planePosition_{"planePosition", "Plane Position",
+                     util::ordinalSymmetricVector(vec3(0.5f), vec3(1.0f))
+                         .setMin(vec3(0.f))
+                         .set("Defines a point in the plane in texture/data space [0,1]"_help)}
+    , transferFunction_{"transferFunction", "Transfer Function",
+                        "Defines the transfer function for mapping "
+                        "voxel values to color and opacity"_help,
+                        TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {

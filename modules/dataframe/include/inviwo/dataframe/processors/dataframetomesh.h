@@ -88,7 +88,7 @@ public:
 
     /**
      * Generate mesh buffers for the given DataFrame set \p df based on the internal properties.
-     * @param array   DataFrame used as data source
+     * @param df   DataFrame used as data source
      * @see updateSources
      */
     Mesh::BufferVector getBuffers(const DataFrame& df);

@@ -62,15 +62,16 @@ const ProcessorInfo OrdinalPropertyAnimator::processorInfo_{
     "Various",                             // Category
     CodeState::Experimental,               // Code state
     Tags::CPU,                             // Tags
+    "Generate a periodically updating property. Useful for animations"_help,
 };
 const ProcessorInfo& OrdinalPropertyAnimator::getProcessorInfo() const { return processorInfo_; }
 
 OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     : Processor()
-    , type_("property", "Property")
-    , create_("add", "Add")
+    , type_("property", "Property", "The type of ordinal property"_help)
+    , create_("add", "Add", "Add property."_help)
     , delay_("delay", "Delay (ms)", 16, 10, 10000, 1)
-    , play_("play", "Play")
+    , play_("play", "Play", "Activate animation"_help)
     , timer_(std::chrono::milliseconds{delay_}, [this]() {
         NetworkLock lock(this);
         for (auto p : props_) {

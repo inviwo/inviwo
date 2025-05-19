@@ -40,24 +40,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
- * ![](org.inviwo.ImageLowPass.png?classIdentifier=org.inviwo.ImageLowPass)
- *
- * Applies a low pass filter on the input image.
- *
- *
- * ### Inports
- *   * __inputImage__ Input image.
- *
- * ### Outports
- *   * __outputImage__ Lowpass filtered image.
- *
- * ### Properties
- *   * __Kernel Size__ Size of the kernel to use.
- *   * __Use Gaussian weights__ Whether to use Gaussian weights or constant weights.
- *   * __Sigma__ Controls the shape of the Gaussian bell curve.
- */
-
 /**
  * \class ImageLowPass
  *

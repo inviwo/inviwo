@@ -59,29 +59,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.GLUITestProcessor, GLUITest Processor}
- * ![](org.inviwo.GLUITestProcessor.png?classIdentifier=org.inviwo.GLUITestProcessor)
- * Test processor for demonstrating GLUI functionality.
- *
- * ### Inports
- *   * __inport__  Input image
- *
- * ### Outports
- *   * __outport__ Input image with the UI rendered on top.
- *
- * ### UI Properties
- *   * __UI Visible__   UI visibility, i.e. whether the UI is rendered or not
- *   * __UI Color__     main color of the UI
- *   * __UI Interaction Color__
- *   * __Text Color__   color of the text labels
- *   * __Hover Color__  highlight color when hovering UI elements
- *   * __Layout Spacing__      spacing in between UI elements
- *   * __Layout Margins__      margins applied to the layout (top, left, bottom, right)
- */
-
 /**
- * \class GLUITestProcessor
- * \brief provides a simple user interface based on GLUI
+ * @brief provides a simple user interface based on GLUI
  */
 class IVW_MODULE_USERINTERFACEGL_API GLUITestProcessor : public Processor {
 public:

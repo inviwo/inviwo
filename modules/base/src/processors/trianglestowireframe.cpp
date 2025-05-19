@@ -56,10 +56,13 @@ const ProcessorInfo TrianglesToWireframe::processorInfo_{
     "Mesh Operation",                   // Category
     CodeState::Stable,                  // Code state
     Tags::CPU,                          // Tags
+    R"(Converts an input mesh to a wireframe mesh. 
+    Converts triangle faces in the input mesh to lines,
+    keeps lines from the inout mesh as is.)"_unindentHelp,
 };
 const ProcessorInfo& TrianglesToWireframe::getProcessorInfo() const { return processorInfo_; }
 
-TrianglesToWireframe::TrianglesToWireframe() : Processor() {
+TrianglesToWireframe::TrianglesToWireframe() : Processor(), mesh_{"mesh"}, wireframe_{"wireframe"} {
     addPort(mesh_);
     addPort(wireframe_);
 }

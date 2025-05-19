@@ -39,11 +39,15 @@ const ProcessorInfo Source::processorInfo_{
     "HDF Source",              // Display name
     "Data Input",              // Category
     CodeState::Stable,         // Code state
-    Tags::None,                // Tags
+    Tags::CPU | Tag{"HDF5"},   // Tags
+    "Open a handle to a HDF File"_help,
 };
 const ProcessorInfo& Source::getProcessorInfo() const { return processorInfo_; }
 
-Source::Source() : Processor(), file_("filename", "HDF File"), port_("outport") {
+Source::Source()
+    : Processor()
+    , file_("filename", "HDF File", "File to open"_help)
+    , port_("outport", "A HDF5 file handle"_help) {
     addPort(port_);
     addProperty(file_);
 }

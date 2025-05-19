@@ -134,7 +134,7 @@ const ProcessorInfo SSAO::processorInfo_{
     "Postprocessing",                                          // Category
     CodeState::Stable,                                         // Code state
     "GL, Postprocessing, Image Operation, Ambient Occlusion",  // Tags
-};
+    "Applies screen space ambient occlusion (SSAO) to the input image based on its depth."_help};
 
 const ProcessorInfo& SSAO::getProcessorInfo() const { return processorInfo_; }
 
@@ -143,15 +143,30 @@ SSAO::SSAO()
     , inport_("inport")
     , outport_("outport")
     , enable_("enable", "Enable SSAO", true)
-    , technique_("option", "SSAO Technique")
-    , radius_("radius", "Radius", 2.f, 0.f, 128.f, 0.05f)
-    , intensity_("intensity", "Intensity", 1.5f, 0.f, 5.f)
-    , bias_("bias", "Angle Bias", 0.1f, 0.f, 0.5f, 0.01f)
-    , directions_("directions", "Directions", 8, 4, 32)
-    , steps_("steps", "Steps / Dir", 4, 2, 32)
-    , useNormal_("normal", "Use Normal", true)
-    , enableBlur_("enableBlur", "Enable Blur", true)
-    , blurSharpness_("blurSharpness", "Blur Sharpness", 40.f, 0.f, 200.f)
+    , technique_("option", "SSAO Technique", {{"hbao-classic", "HBAO Classic", 1}})
+    , radius_("radius", "Radius",
+              util::ordinalLength(2.f, 128.f)
+                  .setInc(0.05f)
+                  .set("Radius of hemisphere used to compute the ambient occlusion."_help))
+    , intensity_("intensity", "Intensity",
+                 util::ordinalLength(1.5f, 5.f).set("Intensity of the ambient occlusion."_help))
+    , bias_("bias", "Angle Bias",
+            util::ordinalLength(0.1f, 0.5f)
+                .set("Offsets the minimum angle of samples used in the computation. "
+                     "(Good for hiding AO effects on low-tess geometry)"_help))
+    , directions_("directions", "Directions",
+                  util::ordinalCount(8, 32).setMin(4).set(
+                      "Number of directions used to sample the hemisphere."_help))
+    , steps_("steps", "Steps / Dir",
+             util::ordinalCount(4, 32).setMin(2).set(
+                 "Number of samples used for each direction."_help))
+    , useNormal_("normal", "Use Normal",
+                 "Orients the hemisphere using an approximated surface normal."_help, true)
+    , enableBlur_("enableBlur", "Enable Blur", " Apply a bilateral blur filter."_help, true)
+    , blurSharpness_(
+          "blurSharpness", "Blur Sharpness",
+          util::ordinalLength(40.f, 200.f)
+              .set("Controls the sharpness of the blur, small number -> large filter"_help))
     , camera_("camera", "Camera")
     , depthLinearize_("fullscreenquad.vert", "depthlinearize.frag", Shader::Build::No)
     , hbaoCalc_("fullscreenquad.vert", "hbao.frag", Shader::Build::No)
@@ -160,23 +175,10 @@ SSAO::SSAO()
     , hbaoBlurVert_("fullscreenquad.vert", "hbao_blur.frag", Shader::Build::No)
     , hbaoUbo_(0) {
 
-    technique_.addOption("hbao-classic", "HBAO Classic", 1);
-    technique_.set(1);
-    technique_.setCurrentStateAsDefault();
-
     addPort(inport_);
     addPort(outport_);
-    addProperty(enable_);
-    addProperty(technique_);
-    addProperty(radius_);
-    addProperty(intensity_);
-    addProperty(bias_);
-    addProperty(directions_);
-    addProperty(steps_);
-    addProperty(useNormal_);
-    addProperty(blurSharpness_);
-    addProperty(enableBlur_);
-    addProperty(camera_);
+    addProperties(enable_, technique_, radius_, intensity_, bias_, directions_, steps_, useNormal_,
+                  blurSharpness_, enableBlur_, camera_);
 
     initHbao();
 

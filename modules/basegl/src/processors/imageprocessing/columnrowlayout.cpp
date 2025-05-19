@@ -83,6 +83,8 @@ const ProcessorInfo ColumnLayout::processorInfo_{
     "Image Operation",          // Category
     CodeState::Stable,          // Code state
     Tags::GL | Tag("Layout"),   // Tags
+    "Horizontal layout which puts multiple input images next to each other. "
+    "Interactions are forwarded to the respective areas."_help,
 };
 const ProcessorInfo& ColumnLayout::getProcessorInfo() const { return processorInfo_; }
 
@@ -92,6 +94,8 @@ const ProcessorInfo RowLayout::processorInfo_{
     "Image Operation",         // Category
     CodeState::Stable,         // Code state
     Tags::GL | Tag("Layout"),  // Tags
+    "Horizontal layout which puts multiple input images next to each other. "
+    "Interactions are forwarded to the respective areas"_help,
 };
 const ProcessorInfo& RowLayout::getProcessorInfo() const { return processorInfo_; }
 

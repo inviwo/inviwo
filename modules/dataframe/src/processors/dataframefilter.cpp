@@ -71,18 +71,26 @@ const ProcessorInfo DataFrameFilter::processorInfo_{
     "DataFrame",                                   // Category
     CodeState::Experimental,                       // Code state
     Tags::CPU | Tag("DataFrame") | Tag("Filter"),  // Tags
+    R"(Creates a new DataFrame by filtering the input DataFrame using either filters or Brushing and
+    Linking. Filtered rows are optionally propagated using Brushing and Linking.)"_unindentHelp,
 };
 const ProcessorInfo& DataFrameFilter::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameFilter::DataFrameFilter()
     : Processor()
-    , inport_("inport")
-    , brushing_("brushing", {{{BrushingTarget::Row},
-                              BrushingModification::Filtered,
-                              InvalidationLevel::InvalidOutput}})
-    , outport_("outport")
+    , inport_("inport", "filters are applied to this source DataFrame"_help)
+    , brushing_("brushing", "inport for brushing & linking filtering"_help,
+                {{{BrushingTarget::Row},
+                  BrushingModification::Filtered,
+                  InvalidationLevel::InvalidOutput}})
+    , outport_("outport", "filtered DataFrame"_help)
     , enabled_("enabled", "Enabled", true)
     , brushingMode_("brushingMode", "Brushing and Linking",
+                    R"(Determines how Brushing and Linking is considered when filtering.
+        - **None**         no brushing and linking
+        - **FilterOnly**   filtered rows are propagated to B&L, B&L filter state is not considered
+        - **ApplyOnly**    apply B&L filter state to DataFrame, no brushing actions are sent
+        - **FilterApply**  propagate filtered rows and apply B&L filter state)"_unindentHelp,
                     {{"none", "None", BrushingMode::None},
                      {"filterOnly", "Filter Only", BrushingMode::FilterOnly},
                      {"applyOnly", "Apply Only", BrushingMode::ApplyOnly},

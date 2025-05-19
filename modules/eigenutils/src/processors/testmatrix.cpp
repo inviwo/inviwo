@@ -52,6 +52,7 @@ const ProcessorInfo TestMatrix::processorInfo_{
     "Eigen",                  // Category
     CodeState::Stable,        // Code state
     "Testing",                // Tags
+    "Creates a matrix for testing purposes like regression testing."_help,
 };
 const ProcessorInfo& TestMatrix::getProcessorInfo() const { return processorInfo_; }
 

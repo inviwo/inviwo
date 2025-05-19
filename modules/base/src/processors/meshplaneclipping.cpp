@@ -57,16 +57,20 @@ const ProcessorInfo MeshPlaneClipping::processorInfo_{
     "Mesh Creation",                 // Category
     CodeState::Experimental,         // Code state
     Tags::None,                      // Tags
+    "Clips a mesh against multiple planes in world space."_help,
 };
 const ProcessorInfo& MeshPlaneClipping::getProcessorInfo() const { return processorInfo_; }
 
 MeshPlaneClipping::MeshPlaneClipping()
     : Processor()
-    , inputMesh_("inputMesh")
-    , planes_("inputPlanes")
-    , outputMesh_("outputMesh")
-    , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
-    , capClippedHoles_("capClippedHoles", "Cap clipped holes", true) {
+    , inputMesh_("inputMesh", "Mesh to clip."_help)
+    , planes_("inputPlanes", "Clipping planes in world space."_help)
+    , outputMesh_("outputMesh", "Clipped mesh."_help)
+    , clippingEnabled_("clippingEnabled", "Enable Clipping", "Enable clipping."_help, true)
+    , capClippedHoles_("capClippedHoles", "Cap clipped holes",
+                       "Replaces removed parts with triangles aligned with the plane. "
+                       "Input mesh must be manifold."_help,
+                       true) {
 
     addPort(inputMesh_);
     addPort(planes_);

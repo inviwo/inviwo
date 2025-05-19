@@ -59,43 +59,8 @@ enum Mode {
 };
 }
 
-/** \docpage{org.inviwo.ImageMixer, Image Mixer}
- * Mixes the two input images according to the chosen blend mode.
- * ![](org.inviwo.ImageMixer.png?classIdentifier=org.inviwo.ImageMixer)
- * The output is defined by function <tt>f(a,b)</tt> which is given by the blend mode:
- *
- * Supported blend modes for determining <tt>f(a,b)</tt>
- * <table>
- *   <tr><td>Mix</td><td><tt>a * (1 - weight) + b * weight</tt></td></tr>
- *   <tr><td>Over</td><td><tt>f(a,b) = b over a</tt>, regular front-to-back blending</td></tr>
- *   <tr><td>Multiply</td><td><tt>f(a,b) = a * b</tt></td></tr>
- *   <tr><td>Screen</td><td><tt>f(a,b) = 1 - (1 - a) * (1 - b)</tt></td></tr>
- *   <tr><td>Overlay</td><td><tt>f(a,b) = 2 * a *b, if a < 0.5</tt>, and</td></tr>
- *      <tr><td></td><td><tt>f(a,b) = 1 - 2(1 - a)(1 - b)</tt>, otherwise (combination of Multiply
- * and Screen)</td></tr> <tr><td>HardLight</td><td>Overlay where a and b are swapped</td></tr>
- *   <tr><td>Divide</td><td><tt>f(a,b) = a/b</tt></td></tr>
- *   <tr><td>Addition</td><td><tt>f(a,b) = a + b</tt>, clamped to [0,1]</td></tr>
- *   <tr><td>Subtraction</td><td><tt>f(a,b) = a - b</tt>, clamped to [0,1]</td></tr>
- *   <tr><td>Difference</td><td><tt>f(a,b) = |a - b|</tt></td></tr>
- *   <tr><td>DarkenOnly</td><td><tt>f(a,b) = min(a, b)</tt>, per component</td></tr>
- *   <tr><td>BrightenOnly</td><td><tt>f(a,b) = max(a, b)</tt>, per component</td></tr>
- * </table>
- *
- * ### Inports
- *   * __ImageInport__ Input image A.
- *   * __ImageInport__ Input image B.
- *
- * ### Outports
- *   * __ImageOutport__ The mixed image.
- *
- * ### Properties
- *   * __Blend Mode__ Blend mode used for mixing the input images.
- *   * __Weight__     Weighting factor for mixing the blending result with input image A.
- */
-
-/*! \class ImageMixer
- *
- * \brief Mixes two input images according to the chosen blend mode.
+/**
+ * @brief Mixes two input images according to the chosen blend mode.
  */
 class IVW_MODULE_BASEGL_API ImageMixer : public Processor {
 public:

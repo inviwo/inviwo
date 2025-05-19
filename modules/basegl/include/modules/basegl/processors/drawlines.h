@@ -45,27 +45,8 @@
 namespace inviwo {
 class Event;
 
-/** \docpage{org.inviwo.DrawLines, Draw Lines}
- * ![](org.inviwo.DrawLines.png?classIdentifier=org.inviwo.DrawLines)
- *
- * Interactive 2D line drawing
- *
- * Hold Ctrl+D and click/move Left Mouse Button to Draw
- *
- * ### Inports
- *   * __ImageInport__ The input image.
- *
- * ### Outports
- *   * __ImageOutport__ The output image.
- *
- * ### Properties
- *   * __LineSize__ Defines size of all lines.
- *   * __LineColor__ Defines color of all lines.
- *   * __ClearButton__ Button to clear all lines.
- */
-
 /**
- * \brief Interactive 2D line drawing
+ * @brief Interactive 2D line drawing
  *
  * Hold Ctrl+D and click/move Left Mouse Button to Draw
  */

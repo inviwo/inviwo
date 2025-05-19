@@ -44,21 +44,6 @@ namespace inviwo {
 
 namespace hdf5 {
 
-/** \docpage{org.inviwo.HDFPathSelection, HDF Path Selection}
- * ![](org.inviwo.HDFPathSelection.png?classIdentifier=org.inviwo.HDFPathSelection)
- *
- * ...
- *
- * ### Inports
- *   * __inport__ A HDF5 file handle
- *
- * ### Outports
- *   * __outport__ A HDF5 file handle
- *
- * ### Properties
- *   * __Select Group__ The subgroup to output
- *
- */
 class IVW_MODULE_HDF5_API PathSelection : public Processor {
 public:
     PathSelection();

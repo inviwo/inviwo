@@ -38,19 +38,6 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.VolumeDiff, Volume Difference}
- * ![](org.inviwo.VolumeDiff.png?classIdentifier=org.inviwo.VolumeDiff)
- * Computes the difference between two volumes by subtracting the second volume from the first one.
- *
- * ### Inports
- *   * __inputVolume__ Input volume 1
- *   * __volume2__ Input volume 2
- *
- * ### Outports
- *   * __outputVolume__ Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0)
- * / 2.0</tt>
- *
- */
 class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor {
 public:
     VolumeDiff();

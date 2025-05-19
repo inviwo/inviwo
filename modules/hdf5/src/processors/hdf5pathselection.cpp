@@ -39,12 +39,16 @@ const ProcessorInfo PathSelection::processorInfo_{
     "HDF5 Path Selection",            // Display name
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
-    Tags::None,                       // Tags
+    Tags::CPU | Tag{"HDF5"},          // Tags
+    "Select a specific path in a HDF5 dataset"_help,
 };
 const ProcessorInfo& PathSelection::getProcessorInfo() const { return processorInfo_; }
 
 PathSelection::PathSelection()
-    : Processor(), inport_("inport"), outport_("outport"), selection_("selection", "Select Group") {
+    : Processor()
+    , inport_("inport", "A HDF5 file handle"_help)
+    , outport_("outport", "A HDF5 file handle"_help)
+    , selection_("selection", "Select Group", "The subgroup to output"_help) {
     addPort(inport_);
     addPort(outport_);
 

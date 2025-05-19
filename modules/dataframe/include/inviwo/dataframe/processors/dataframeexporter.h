@@ -51,15 +51,6 @@ namespace inviwo {
 class DataFrame;
 class FileExtension;
 
-/** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
- * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
- * This processor exports a DataFrame into a CSV or XML file.
- *
- * ### Inports
- *   * __<Inport>__ source DataFrame which is saved as CSV or XML file
- *
- */
-
 class IVW_MODULE_DATAFRAME_API DataFrameExporter : public Processor {
 public:
     DataFrameExporter();

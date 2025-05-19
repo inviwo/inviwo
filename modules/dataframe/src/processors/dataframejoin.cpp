@@ -57,15 +57,22 @@ const ProcessorInfo DataFrameJoin::processorInfo_{
     "DataFrame",                 // Category
     CodeState::Experimental,     // Code state
     "CPU, DataFrame",            // Tags
+    R"(Merges two DataFrames according to the selected join type. This processor supports appending 
+    either rows or columns as well as standard database joins, i.e. inner, left outer, right outer,
+    full outer, and cross joins.
+    
+    For row joins, the column count, column headers, and types must match. Similarly, when joining
+    columns the number of rows must match (unless the fill missing rows option is checked).
+    )"_unindentHelp,
 };
 const ProcessorInfo& DataFrameJoin::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameJoin::DataFrameJoin()
     : Processor()
-    , inportLeft_("top")
-    , inportRight_("bottom")
-    , outport_("outport")
-    , join_("join", "Join Type",
+    , inportLeft_("top", "DataFrame used as left table in join"_help)
+    , inportRight_("bottom", "DataFrame used as right table in join"_help)
+    , outport_("outport", "Joined DataFrame"_help)
+    , join_("join", "Join Type", "Type of join"_help,
             {{"appendColumns", "Append Columns", JoinType::AppendColumns},
              {"appendRows", "Append Rows", JoinType::AppendRows},
              {"inner", "Inner Join", JoinType::Inner},

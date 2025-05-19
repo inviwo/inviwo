@@ -48,6 +48,7 @@ const ProcessorInfo VolumeSequenceElementSelectorProcessor::processorInfo_{
     "Data Selector",                     // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
+    "Select a specific volume out of a sequence of volumes"_help,
 };
 const ProcessorInfo& VolumeSequenceElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;

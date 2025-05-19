@@ -53,6 +53,7 @@ const ProcessorInfo MeshSource::processorInfo_{
     "Data Input",                 // Category
     CodeState::Stable,            // Code state
     Tags::CPU,                    // Tags
+    "Loads a mesh"_help,
 };
 const ProcessorInfo& MeshSource::getProcessorInfo() const { return processorInfo_; }
 

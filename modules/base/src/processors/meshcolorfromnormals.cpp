@@ -65,7 +65,9 @@ const ProcessorInfo MeshColorFromNormals::processorInfo_{
     "Mesh Processing",                  // Category
     CodeState::Experimental,            // Code state
     Tags::None,                         // Tags
+    "Removes all the color buffers and copies the normals into a new color buffer."_help,
 };
+
 const ProcessorInfo& MeshColorFromNormals::getProcessorInfo() const { return processorInfo_; }
 
 MeshColorFromNormals::MeshColorFromNormals()

@@ -45,11 +45,16 @@ FontProperty::FontProperty(std::string_view identifier, std::string_view display
                            std::string_view fontFaceName, int size, float lineSpacing,
                            vec2 anchorPos, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, "Text font options"_help, invalidationLevel,
+                        std::move(semantics))
     , fontFace_("fontFace", "Font Face", fontFaceName)
     , fontSize_("fontSize", "Font Size", size, 0, 144, 1)
     , lineSpacing_("lineSpacing", "Line Spacing", lineSpacing, -1.0f, 2.0f)
-    , anchorPos_("anchor", "Anchor", anchorPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
+    , anchorPos_("anchor", "Anchor",
+                 R"(What point of the text to put at "Position". Relative from -1,1. )"
+                 R"(0 means the text is centered on "Position")"_help,
+                 anchorPos, {vec2(-1.5f), ConstraintBehavior::Ignore},
+                 {vec2(1.5f), ConstraintBehavior::Ignore}, vec2(0.01f)) {
 
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
 

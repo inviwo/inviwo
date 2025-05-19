@@ -49,26 +49,6 @@ namespace inviwo {
 
 class SpotLight;
 
-/** \docpage{org.inviwo.Spotlightsource, Spot light source}
- * ![](org.inviwo.Spotlightsource.png?classIdentifier=org.inviwo.Spotlightsource)
- *
- * Produces a spot light source, spreading light in the shape of a cone.
- * The direction of the cone will be computed as glm::normalize(vec3(0) - lightPos)
- * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
- * view space.
- *
- *
- *
- *
- * ### Properties
- *   * __Light Source Position__ Start point of the cone.
- *   * __Light power (%)__ Increases/decreases light strength.
- *   * __Light size__ ...
- *   * __Light Cone Radius Angle__ Cone radius angle of the light source
- *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
- *   * __Light Fall Off Angle__ Fall off angle of the light source
- *
- */
 class IVW_MODULE_BASE_API SpotLightSourceProcessor : public Processor {
 public:
     SpotLightSourceProcessor();

@@ -54,6 +54,7 @@ const ProcessorInfo Tonemapping::processorInfo_{
     "Image Operation",         // Category
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
+    "Applies HDR tonemapping to the input image."_help,
 };
 const ProcessorInfo& Tonemapping::getProcessorInfo() const { return processorInfo_; }
 
@@ -67,8 +68,11 @@ Tonemapping::Tonemapping()
                {"reinhard", "Reinhard", 2},
                {"uncharted2", "Uncharted 2", 3}},
               0, InvalidationLevel::InvalidResources)
-    , exposure_("exposure", "Exposure", 1.f, 0.01f, 64.f)
-    , gamma_("gamma", "Gamma", 2.2f, 0.5f, 8.0f) {
+    , exposure_("exposure", "Exposure",
+                util::ordinalScale(1.f, 64.f).set("Controls exposure if the image."_help))
+    , gamma_("gamma", "Gamma",
+             util::ordinalScale(2.2f, 8.0f)
+                 .set("Controls the gamma (1.0 / gamma) (default is 2.2)."_help)) {
     addProperty(method_);
     addProperty(exposure_);
     addProperty(gamma_);

@@ -82,16 +82,20 @@ const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "Data Creation",                 // Category
     CodeState::Stable,               // Code state
     "CPU, DataFrame, Volume",        // Tags
+    "Converts a volume into a DataFrame."_help,
 };
 const ProcessorInfo& VolumeToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToDataFrame::VolumeToDataFrame()
     : Processor()
-    , inport_{"volume"}
-    , outport_{"dataframe"}
+    , inport_{"volume", "Source Volume"_help}
+    , outport_{"dataframe", "Generated DataFrame"_help}
 
     , mode_{"mode",
             "Mode",
+            "The processor can operate in 4 modes: Analytics, where data for each voxel in the"
+            "specified ranges is outputted, or XDir, YDir, and ZDir where one column for each"
+            "line of voxels in the specified direction is outputted"_help,
             {{"analytics", "Analytics", Mode::Analytics},
              {"xdir", "XDir", Mode::XDir},
              {"ydir", "YDir", Mode::YDir},

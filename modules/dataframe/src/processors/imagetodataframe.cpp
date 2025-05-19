@@ -82,27 +82,32 @@ const ProcessorInfo ImageToDataFrame::processorInfo_{
     "Data Creation",                // Category
     CodeState::Stable,              // Code state
     "CPU, DataFrame, Image",        // Tags
+    "Converts an image into a DataFrame."_help,
 };
 const ProcessorInfo& ImageToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 ImageToDataFrame::ImageToDataFrame()
     : Processor()
-    , inport_("image", true)
-    , outport_("dataframe")
+    , inport_("image", "Source Image"_help, OutportDeterminesSize::Yes)
+    , outport_("dataframe", "Generated DataFrame"_help)
     , mode_{"mode",
             "Mode",
+            "The processor can operate in 3 modes: Analytics, where data for each pixel is"
+            "outputted, or Rows/Columns where one column for each line of pixel in the"
+            "specified direction is outputted."_help,
             {{"analytics", "Analytics", Mode::Analytics},
              {"rows", "Rows", Mode::Rows},
              {"columns", "Columns", Mode::Columns}},
             0}
     , layer_{"layer",
              "Layer",
+             "The image layer to use"_help,
              {{"color", "Color", LayerType::Color},
               {"depth", "Depth", LayerType::Depth},
               {"picking", "Picking", LayerType::Picking}},
              0}
     , layerIndex_{"colorIndex", "Color Index", 0, 0, 0, 1}
-    , range_{"range", "Range", 0, 1, 0, 1, 1, 1} {
+    , range_{"range", "Range", "range of rows/columns to use."_help, 0, 1, 0, 1, 1, 1} {
 
     addPort(inport_);
     addPort(outport_);

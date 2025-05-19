@@ -76,6 +76,8 @@ const ProcessorInfo DrawLines::processorInfo_{
     "Drawing",               // Category
     CodeState::Stable,       // Code state
     Tags::GL,                // Tags
+    R"(Interactive 2D line drawing.
+    Hold Ctrl+D and click/move Left Mouse Button to Draw)"_unindentHelp,
 };
 const ProcessorInfo& DrawLines::getProcessorInfo() const { return processorInfo_; }
 
@@ -83,9 +85,12 @@ DrawLines::DrawLines()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , lineSize_("lineSize", "Line Size", 1.f, 1.f, 10.f)
-    , lineColor_("lineColor", "Line Color", vec4(1.f))
-    , clearButton_("clearButton", "Clear Lines")
+    , lineSize_("lineSize", "Line Size",
+                util::ordinalScale(1.f, 10.f).set("Defines size of all lines."_help))
+    , lineColor_("lineColor", "Line Color",
+                 util::ordinalColor(vec4(1.f)).set("Defines color of all lines."_help))
+    , clearButton_("clearButton", "Clear Lines", "Clear all lines."_help,
+                   [this]() { clearLines(); })
     , mouseDraw_(
           "mouseDraw", "Draw Line", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
           MouseStates(flags::any), KeyModifier::Control)
@@ -100,14 +105,8 @@ DrawLines::DrawLines()
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(lineSize_);
-    lineColor_.setSemantics(PropertySemantics::Color);
-    addProperty(lineColor_);
-    clearButton_.onChange([this]() { clearLines(); });
-    addProperty(clearButton_);
+    addProperties(lineSize_, lineColor_, clearButton_, mouseDraw_, keyEnableDraw_);
 
-    addProperty(mouseDraw_);
-    addProperty(keyEnableDraw_);
     lineShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     lines_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());

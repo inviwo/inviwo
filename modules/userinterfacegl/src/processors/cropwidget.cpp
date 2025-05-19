@@ -113,16 +113,19 @@ const ProcessorInfo CropWidget::processorInfo_{
     "UI",                     // Category
     CodeState::Stable,        // Code state
     "GL, UI, Clipping",       // Tags
+    "Provides interaction handles for interactively cropping a volume."_help,
 };
 const ProcessorInfo& CropWidget::getProcessorInfo() const { return processorInfo_; }
 
 CropWidget::CropWidget()
     : Processor()
-    , inport_("inport")
-    , volume_("volume")
-    , outport_("outport")
+    , inport_("inport", "input image"_help)
+    , volume_("volume", "input volume used to determine the bounding box"_help)
+    , outport_("outport",
+               "output image with the interaction handles rendered on top of the input image"_help)
 
-    , uiSettings_("uiSettings", "UI Settings")
+    , uiSettings_("uiSettings", "UI Settings",
+                  "various properties for adjusting the visual appearance"_help)
     , showWidget_("showWidget", "Show Widget", true)
     , showCropPlane_("showClipPlane", "Crop Plane Visible", true)
     , handleColor_("handleColor", "Handle Color", util::ordinalColor(vec4(0.8f, 0.4f, 0.1f, 1.0f)))
@@ -131,19 +134,19 @@ CropWidget::CropWidget()
     , scale_("scale", "Scale", 0.15f, 0.001f, 2.0f, 0.05f)
 
     , cropAxes_({{{CartesianCoordinateAxis::X,
-                   {"cropAxisX", "Crop X"},
+                   {"cropAxisX", "Crop X", "enable and adjust crop range along the x axis"_help},
                    {"cropAxisXEnabled", "Enabled", true},
                    {"cropX", "Range", 0, 256, 0, 256, 1, 1},
                    {"cropXOut", "Crop X", 0, 256, 0, 256, 1, 1},
                    AnnotationInfo()},
                   {CartesianCoordinateAxis::Y,
-                   {"cropAxisY", "Crop Y"},
+                   {"cropAxisY", "Crop Y", "enable and adjust crop range along the y axis"_help},
                    {"cropAxisYEnabled", "Enabled", true},
                    {"cropY", "Range", 0, 256, 0, 256, 1, 1},
                    {"cropYOut", "Crop Y", 0, 256, 0, 256, 1, 1},
                    AnnotationInfo()},
                   {CartesianCoordinateAxis::Z,
-                   {"cropAxisZ", "Crop Z"},
+                   {"cropAxisZ", "Crop Z", "enable and adjust crop range along the z axis"_help},
                    {"cropAxisZEnabled", "Enabled", true},
                    {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
                    {"cropZOut", "Crop Z", 0, 256, 0, 256, 1, 1},

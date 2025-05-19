@@ -38,21 +38,6 @@
 namespace inviwo {
 class TextureUnitContainer;
 
-/** \docpage{org.inviwo.ImageGradient, Image Gradient}
- * ![](org.inviwo.ImageGradient.png?classIdentifier=org.inviwo.ImageGradient)
- * Computes the gradient of one channel of the input image.
- *
- * ### Inports
- *   * __inputImage__ Input image
- *
- * ### Outports
- *   * __outputImage__ Resulting gradient
- *
- * ### Properties
- *   * __Channel__ Selects the channel used for the gradient computation
- *   * __Renormalization__ Re-normalize results by taking the grid spacing into account
- */
-
 /**
  * \class ImageGradient
  * \brief Computes the gradient of one channel of the input image.

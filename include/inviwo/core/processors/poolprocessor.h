@@ -49,12 +49,13 @@ namespace inviwo {
 
 class PoolProcessor;
 
-/** PoolProcesor utilities*/
+/** PoolProcessor utilities*/
 namespace pool {
 
-/** PoolProcesor implementation details */
+/** PoolProcessor implementation details */
 namespace detail {
 
+/** Helper class to manage state for the background jobs */
 struct State;
 template <typename Result, typename Done>
 struct StateTemplate;
@@ -80,9 +81,9 @@ public:
     operator bool() const noexcept { return stop_.load(); }
 
 private:
-    friend detail::State;
-    Stop(const std::atomic<bool>& stop) : stop_{stop} {}
-    const std::atomic<bool>& stop_;
+    friend ::inviwo::pool::detail::State;
+    explicit Stop(const std::atomic<bool>& stop) : stop_{stop} {}
+    const std::atomic<bool>& stop_;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 };
 
 /**
@@ -108,7 +109,7 @@ public:
     void operator()(size_t i, size_t max) const noexcept;
 
 private:
-    friend detail::State;
+    friend ::inviwo::pool::detail::State;
     Progress(detail::State& state, size_t id) : state_{state}, id_{id} {}
     detail::State& state_;
     const size_t id_;
@@ -119,15 +120,16 @@ private:
  * \see PoolProcessor
  */
 enum class Option {
-    KeepOldResults =
-        1 << 0,  ///< Also call done for old jobs, by default old jobs will be discarded.
-    QueuedDispatch =
-        1 << 1,  ///< Don't submit new jobs while old ones are running. The last submission will be
-                 ///< queued and submitted when the current one is finished
-    DelayDispatch =
-        1 << 2,  ///< Wait for a small delay (500ms) of inactivity before submitting a job
-    DelayInvalidation = 1 << 3  ///< Delay invalidation of outports until the job is finished. This
-                                ///< will override the default processor invalidation.
+    /// Also call done for old jobs, by default old jobs will be discarded.
+    KeepOldResults = 1 << 0,  
+    /// Don't submit new jobs while old ones are running. The last submission will be
+    /// queued and submitted when the current one is finished
+    QueuedDispatch = 1 << 1,
+    /// Wait for a small delay (500ms) of inactivity before submitting a job  
+    DelayDispatch = 1 << 2, 
+    /// Delay invalidation of outports until the job is finished. This
+    /// will override the default processor invalidation.
+    DelayInvalidation = 1 << 3 
 };
 
 }  // namespace pool
@@ -240,7 +242,7 @@ public:
     virtual std::string handleError();
 
     /**
-     * @retuns the last error return by handleError if any. The error is clear at any invalidation.
+     * @return the last error return by handleError if any. The error is clear at any invalidation.
      */
     const std::optional<std::string>& error() const;
 
@@ -287,7 +289,7 @@ public:
     bool delayInvalidation() const { return options_.contains(pool::Option::DelayInvalidation); }
 
 private:
-    friend pool::detail::State;
+    friend ::inviwo::pool::detail::State;
 
     struct Submission {
         std::shared_ptr<pool::detail::State> state;

@@ -62,14 +62,17 @@ const ProcessorInfo ImageLayer::processorInfo_{
     "Image Operation",        // Category
     CodeState::Stable,        // Code state
     "GL, Image, Layer",       // Tags
+    R"(Outputs a specific layer of the source image as color image. 
+    Depth and picking layers are forwarded unmodified.)"_unindentHelp,
 };
 const ProcessorInfo& ImageLayer::getProcessorInfo() const { return processorInfo_; }
 
 ImageLayer::ImageLayer()
     : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , outputLayer_("outputLayer", "Output Layer")
+    , inport_("inport", "input image"_help)
+    , outport_("outport", "output image containing the selected input layer as color layer"_help)
+    , outputLayer_("outputLayer", "Output Layer",
+                   "Determines which layer of the input image is used as new color layer"_help)
     , shader_("img_identity.vert", "img_copy.frag") {
 
     addPort(inport_);

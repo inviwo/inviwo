@@ -46,27 +46,6 @@
 namespace inviwo {
 class PickingEvent;
 
-/** \docpage{org.inviwo.EmbeddedVolumeSlice, Embedded Volume Slice}
- * ![](org.inviwo.EmbeddedVolumeSlice.png?classIdentifier=org.inviwo.EmbeddedVolumeSlice)
- *
- * Render an arbitrary slice of a volume in place, i.e. the slice will be oriented as it would
- * have been in the volume.
- *
- * ### Inports
- *   * __volume__ The input volume
- *   * __background__ Optional background image
- * ### Outports
- *   * __outport__ Rendered slice
- *
- * ### Properties
- *   * __Plane Normal__ Defines the normal of the plane in texture/data space [0,1]
- *   * __Plane Position__ Defines a point in the plane in texture/data space [0,1]
- *   * __Transfer Function__ Defines the transfer function for mapping voxel values to color and
- *                           opacity
- *   * __Camera__ Camera used for rendering
- *   * __Trackball__ Trackball for handling interaction
- */
-
 class IVW_MODULE_BASEGL_API EmbeddedVolumeSlice : public Processor {
 public:
     EmbeddedVolumeSlice();

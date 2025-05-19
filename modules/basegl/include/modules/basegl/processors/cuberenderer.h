@@ -47,30 +47,8 @@
 namespace inviwo {
 class Shader;
 
-/** \docpage{org.inviwo.CubeRenderer, Cube Renderer}
- * ![](org.inviwo.CubeRenderer.png?classIdentifier=org.inviwo.CubeRenderer)
- * This processor renders a set of point meshes using cubical glyphs in OpenGL.
- * The glyphs are resolution independent and consist only of a single point.
- * The size of each point is given in the w coordinate of the vertex position unless
- * globally overwritten by the property.
- *
- * ### Inports
- *   * __geometry__ Input meshes
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __image__    output image containing the rendered cubes and the optional input image
- *
- * ### Properties
- *   * __Overwrite Cube Size__   enable a fixed user-defined size for all cubes
- *   * __Custom Size__          size of the rendered cubes (in world coordinates)
- *   * __Overwrite Color__     if enabled, all cubes will share the same custom color
- *   * __Custom Color__        custom color when overwriting the input colors
- */
-
 /**
- * \class CubeRenderer
- * \brief Renders input geometry with 3D cube glyphs using OpenGL shaders
+ * @brief Renders input geometry with 3D cube glyphs using OpenGL shaders
  */
 class IVW_MODULE_BASEGL_API CubeRenderer : public Processor {
 public:
