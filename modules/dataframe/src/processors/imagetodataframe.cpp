@@ -82,7 +82,7 @@ const ProcessorInfo ImageToDataFrame::processorInfo_{
     "Data Creation",                // Category
     CodeState::Stable,              // Code state
     "CPU, DataFrame, Image",        // Tags
-    "This processor converts an image into a DataFrame."_help,
+    "Converts an image into a DataFrame."_help,
 };
 const ProcessorInfo& ImageToDataFrame::getProcessorInfo() const { return processorInfo_; }
 

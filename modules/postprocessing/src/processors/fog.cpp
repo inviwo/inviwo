@@ -57,10 +57,9 @@ const ProcessorInfo Fog::processorInfo_{
     "Postprocessing",       // Category
     CodeState::Stable,      // Code state
     "GL, Image Operation",  // Tags
-    R"(Use any image with a proper depth channel as input. It will apply a colored fog to the
-    color-layer based on the normalized and linearized depth. The fog is computed from an 
-    exponential function and the shape/curve of this exponential function is controlled by
-    the density.)"_unindentHelp,
+    R"(Applies a depth-based fog effect to the input image using its depth information.
+    The fog is computed using an exponential function and the shape/curve of this exponential
+    function is controlled by the density.)"_unindentHelp,
 };
 const ProcessorInfo& Fog::getProcessorInfo() const { return processorInfo_; }
 

@@ -50,7 +50,8 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.DataFrameColumnProperty"};
 
     /**
-     * Constructor, no options will be created unless \p noneOption is set to AddNoneOption::Yes
+     * Constructor. If @p noneOption is set to AddNoneOption::Yes, an additional option ("None")
+     * is added to allow for not selecting any column.
      *
      * @param identifier
      * @param displayName
@@ -62,7 +63,7 @@ public:
                          AddNoneOption noneOption = AddNoneOption::No, int defaultIndex = 0);
 
     /**
-     * Constructor, no options will be created unless \p noneOption is set to AddNoneOption::Yes
+     * Constructor, no options will be created unless @p noneOption is set to AddNoneOption::Yes
      *
      * @param identifier
      * @param displayName
@@ -73,7 +74,7 @@ public:
                          AddNoneOption noneOption = AddNoneOption::No, int defaultIndex = 0);
 
     /**
-     * Constructor using an inport \p port to populate the options. The onChange event of \p port
+     * Constructor using an inport @p port to populate the options. The onChange event of @p port
      * will trigger an update of the options.
      *
      * @param identifier
@@ -88,7 +89,7 @@ public:
                          int defaultIndex = 0);
 
     /**
-     * Constructor using an inport \p port to populate the options. The onChange event of \p port
+     * Constructor using an inport @p port to populate the options. The onChange event of @p port
      * will trigger an update of the options.
      *
      * @param identifier
@@ -107,7 +108,7 @@ public:
     virtual ~ColumnOptionProperty() = default;
 
     /**
-     * Populate the options with the data owned by \p port. The onChange event of \p port
+     * Populate the options with the data owned by @p port. The onChange event of @p port
      * will trigger an update of the options.
      *
      * @note A reference to the port will be kept, so the port must outlive the scope of the
@@ -116,12 +117,12 @@ public:
     void setPort(DataFrameInport& port);
 
     /**
-     * Replace the options based on the columns in \p dataframe
+     * Replace the options based on the columns in @p dataframe
      */
     void setOptions(const DataFrame& dataframe);
 
     /**
-     * Set the \p index of the selected column when the property options are updated. If \p index is
+     * Set the @p index of the selected column when the property options are updated. If @p index is
      * negative and the property has a "None" option, that one will be the new default.
      *
      * @param index

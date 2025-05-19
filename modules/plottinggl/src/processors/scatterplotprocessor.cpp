@@ -67,7 +67,7 @@ const ProcessorInfo ScatterPlotProcessor::processorInfo_{
     "Plotting",                         // Category
     CodeState::Stable,                  // Code state
     "GL, Plotting",                     // Tags
-    "This processor plots a scatter plot for a given DataFrame."_help,
+    "Renders a scatter plot for a given DataFrame."_help,
 };
 
 const ProcessorInfo& ScatterPlotProcessor::getProcessorInfo() const { return processorInfo_; }

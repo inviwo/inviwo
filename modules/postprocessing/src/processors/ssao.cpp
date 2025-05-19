@@ -134,9 +134,7 @@ const ProcessorInfo SSAO::processorInfo_{
     "Postprocessing",                                          // Category
     CodeState::Stable,                                         // Code state
     "GL, Postprocessing, Image Operation, Ambient Occlusion",  // Tags
-    " * Use any image with a proper depth channel as input. "
-    "It will compute Screen space ambient occlusion (SSAO) using the "
-    "depth and then apply the occlusion to the color-layer."_help};
+    "Applies screen space ambient occlusion (SSAO) to the input image based on its depth."_help};
 
 const ProcessorInfo& SSAO::getProcessorInfo() const { return processorInfo_; }
 

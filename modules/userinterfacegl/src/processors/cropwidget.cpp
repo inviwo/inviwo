@@ -113,7 +113,7 @@ const ProcessorInfo CropWidget::processorInfo_{
     "UI",                     // Category
     CodeState::Stable,        // Code state
     "GL, UI, Clipping",       // Tags
-    "Processor for providing interaction handles for cropping a volume."_help,
+    "Provides interaction handles for interactively cropping a volume."_help,
 };
 const ProcessorInfo& CropWidget::getProcessorInfo() const { return processorInfo_; }
 

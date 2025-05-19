@@ -40,7 +40,8 @@ const ProcessorInfo VolumeRegionMapper::processorInfo_{
     "Volume Operation",                                           // Category
     CodeState::Stable,                                            // Code state
     Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
-    R"(Voxel values are remapped to values provided in columns of a DataFrame. Requires two columns.
+    R"(Remaps the voxels of the input volume based on a DataFrame.
+    The voxel values are remapped to values provided in columns of a DataFrame. Requires two columns.
     First column contains the source indices and the second column contains the matching destination
     indices.)"_unindentHelp,
 };

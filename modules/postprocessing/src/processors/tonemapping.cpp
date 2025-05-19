@@ -54,7 +54,7 @@ const ProcessorInfo Tonemapping::processorInfo_{
     "Image Operation",         // Category
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
-    "Applies some tonemapping operation on the input image"_help,
+    "Applies HDR tonemapping to the input image."_help,
 };
 const ProcessorInfo& Tonemapping::getProcessorInfo() const { return processorInfo_; }
 

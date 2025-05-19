@@ -87,7 +87,7 @@ const ProcessorInfo VolumeSequenceToDataFrame::processorInfo_{
     "Data Creation",                         // Category
     CodeState::Experimental,                 // Code state
     "CPU, DataFrame, Volume",                // Tags
-    "This processor converts a volume sequence into a DataFrame."_help,
+    "Converts a volume sequence into a DataFrame."_help,
 };
 
 const ProcessorInfo& VolumeSequenceToDataFrame::getProcessorInfo() const { return processorInfo_; }

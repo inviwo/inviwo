@@ -82,7 +82,7 @@ const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "Data Creation",                 // Category
     CodeState::Stable,               // Code state
     "CPU, DataFrame, Volume",        // Tags
-    "This processor converts a volume into a DataFrame."_help,
+    "Converts a volume into a DataFrame."_help,
 };
 const ProcessorInfo& VolumeToDataFrame::getProcessorInfo() const { return processorInfo_; }
 

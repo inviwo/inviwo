@@ -97,8 +97,8 @@ const ProcessorInfo CanvasWithPropertiesProcessor::processorInfo_{
     "Data Output",                               // Category
     CodeState::Experimental,                     // Code state
     Tags::GL,                                    // Tags
-    R"(Show a processor widget with a split pane with a image on the left, 
-    and a list of PropertyWidgets on the right)"_unindentHelp,
+    R"(Show a processor widget with a split pane containing an image on the left 
+    and a list of PropertyWidgets on the right.)"_unindentHelp,
 };
 const ProcessorInfo& CanvasWithPropertiesProcessor::getProcessorInfo() const {
     return processorInfo_;

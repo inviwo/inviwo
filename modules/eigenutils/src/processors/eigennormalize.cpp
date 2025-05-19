@@ -49,10 +49,10 @@ const ProcessorInfo EigenNormalize::processorInfo_{
     "Eigen",                      // Category
     CodeState::Experimental,      // Code state
     "Eigen",                      // Tags
-    R"(A processor to normalize an Eigen::MatrixXf, supports following methods:
-    - MaxElement: Divide in element in the matrix by the value of the largest element
-    - MniMaxElement: Normalize each element based on the min and max value of the matrix
-    - Normalize: Uses the Eigens provided normalization method)"_unindentHelp,
+    R"(Normalizes an Eigen::MatrixXf and supports the following methods:
+    - `MaxElement`: Divide in element in the matrix by the value of the largest element
+    - `MniMaxElement`: Normalize each element based on the min and max value of the matrix
+    - `Normalize`: Uses the Eigens provided normalization method)"_unindentHelp,
 };
 const ProcessorInfo& EigenNormalize::getProcessorInfo() const { return processorInfo_; }
 

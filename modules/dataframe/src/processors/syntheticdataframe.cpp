@@ -70,7 +70,7 @@ const ProcessorInfo SyntheticDataFrame::processorInfo_{
     "Data Creation",                  // Category
     CodeState::Stable,                // Code state
     "CPU, Plotting, DataFrame",       // Tags
-    "This processor generates a DataFrame filled with random values."_help};
+    "Generates a DataFrame filled with random values."_help};
 const ProcessorInfo& SyntheticDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 SyntheticDataFrame::SyntheticDataFrame()

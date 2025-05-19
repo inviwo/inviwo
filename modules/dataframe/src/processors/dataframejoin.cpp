@@ -57,7 +57,7 @@ const ProcessorInfo DataFrameJoin::processorInfo_{
     "DataFrame",                 // Category
     CodeState::Experimental,     // Code state
     "CPU, DataFrame",            // Tags
-    R"(Merges two DataFrames according to selected join type. This processor supports appending 
+    R"(Merges two DataFrames according to the selected join type. This processor supports appending 
     either rows or columns as well as standard database joins, i.e. inner, left outer, right outer,
     full outer, and cross joins.
     

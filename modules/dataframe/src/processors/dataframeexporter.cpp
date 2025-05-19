@@ -66,7 +66,7 @@ const ProcessorInfo DataFrameExporter::processorInfo_{
     "Data Output",                       // Category
     CodeState::Stable,                   // Code state
     "CPU, DataFrame, Export, CSV, XML",  // Tags
-    "This processor exports a DataFrame into a CSV or XML file."_help,
+    "Exports a DataFrame into a CSV or XML file."_help,
 };
 
 const ProcessorInfo& DataFrameExporter::getProcessorInfo() const { return processorInfo_; }

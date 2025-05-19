@@ -97,7 +97,7 @@ const ProcessorInfo ScatterPlotMatrixProcessor::processorInfo_{
     "Plotting",                               // Category
     CodeState::Stable,                        // Code state
     "GL, Plotting",                           // Tags
-    "This processor creates a scatter plot matrix for a given DataFrame."_help};
+    "Creates a scatter plot matrix for a given DataFrame supporting Brushing and Linking."_help};
 const ProcessorInfo& ScatterPlotMatrixProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()

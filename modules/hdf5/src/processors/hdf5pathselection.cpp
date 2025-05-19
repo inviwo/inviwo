@@ -40,6 +40,7 @@ const ProcessorInfo PathSelection::processorInfo_{
     "Data Input",                     // Category
     CodeState::Stable,                // Code state
     Tags::CPU | Tag{"HDF5"},          // Tags
+    "Select a specific path in a HDF5 dataset"_help,
 };
 const ProcessorInfo& PathSelection::getProcessorInfo() const { return processorInfo_; }
 
