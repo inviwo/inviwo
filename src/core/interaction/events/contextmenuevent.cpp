@@ -28,14 +28,29 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/contextmenuevent.h>
+#include <inviwo/core/interaction/events/interactionevent.h>
 
 namespace inviwo {
 
-ContextMenuEvent::ContextMenuEvent(std::string_view id, MouseButton button, MouseState state,
-                                   MouseButtons buttonState, KeyModifiers modifiers,
-                                   dvec2 normalizedPosition, uvec2 canvasSize, double depth)
-    : MouseEvent{button, state, buttonState, modifiers, normalizedPosition, canvasSize, depth}
-    , id_{id} {}
+ContextMenuEvent::ContextMenuEvent(std::string_view id, InteractionEvent* event)
+    : id_{id}, owner_{nullptr}, event_{event} {}
+
+ContextMenuEvent::ContextMenuEvent(std::string_view id, std::unique_ptr<InteractionEvent> event)
+    : ContextMenuEvent(std::move(id), event.get()) {
+    owner_ = std::move(event);
+}
+
+ContextMenuEvent::ContextMenuEvent(const ContextMenuEvent& rhs)
+    : Event{rhs}, id_{rhs.id_}, owner_{event_->clone()}, event_{owner_.get()} {}
+
+ContextMenuEvent& ContextMenuEvent::operator=(const ContextMenuEvent& that) {
+    if (this != &that) {
+        Event::operator=(that);
+        owner_.reset(that.event_->clone());
+        event_ = owner_.get();
+    }
+    return *this;
+}
 
 ContextMenuEvent::~ContextMenuEvent() = default;
 
@@ -44,5 +59,7 @@ ContextMenuEvent* ContextMenuEvent::clone() const { return new ContextMenuEvent(
 std::string_view ContextMenuEvent::getId() const { return id_; }
 
 uint64_t ContextMenuEvent::hash() const { return chash(); }
+
+InteractionEvent* ContextMenuEvent::getEvent() const { return event_; }
 
 }  // namespace inviwo

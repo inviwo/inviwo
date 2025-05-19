@@ -30,7 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/util/constexprhash.h>
 #include <inviwo/core/util/glmvec.h>
 
@@ -41,19 +42,15 @@ namespace inviwo {
 /**
  * A ContextMenuEvent is triggered when a custom context menu entry is selected.
  *
- * \see ContextMenuEntry
+ * @see ContextMenuAction
  */
-class IVW_CORE_API ContextMenuEvent : public MouseEvent {
+class IVW_CORE_API ContextMenuEvent : public Event {
 public:
-    explicit ContextMenuEvent(std::string_view id, MouseButton button = MouseButton::Right,
-                              MouseState state = MouseState::Release,
-                              MouseButtons buttonState = MouseButtons(flags::empty),
-                              KeyModifiers modifiers = KeyModifiers(flags::empty),
-                              dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
-                              double depth = 1.0);
-    ContextMenuEvent(const ContextMenuEvent&) = default;
+    ContextMenuEvent(std::string_view id, InteractionEvent* event);
+    ContextMenuEvent(std::string_view id, std::unique_ptr<InteractionEvent> event);
+    ContextMenuEvent(const ContextMenuEvent& rhs);
     ContextMenuEvent(ContextMenuEvent&&) = default;
-    ContextMenuEvent& operator=(const ContextMenuEvent&) = default;
+    ContextMenuEvent& operator=(const ContextMenuEvent& that);
     ContextMenuEvent& operator=(ContextMenuEvent&&) = default;
 
     virtual ~ContextMenuEvent();
@@ -70,8 +67,23 @@ public:
         return util::constexpr_hash("org.inviwo.ContextMenuEvent");
     }
 
+    InteractionEvent* getEvent() const;
+
+    template <typename EventType>
+    EventType* getEventAs() const;
+
 private:
     std::string id_;
+    std::unique_ptr<InteractionEvent> owner_;
+    InteractionEvent* event_;
 };
+
+template <typename EventType>
+EventType* ContextMenuEvent::getEventAs() const {
+    if (event_ && event_->hash() == EventType::chash()) {
+        return static_cast<EventType*>(event_);
+    }
+    return nullptr;
+}
 
 }  // namespace inviwo

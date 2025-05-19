@@ -132,8 +132,7 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 InteractionEventMapperQt::InteractionEventMapperQt(
     QObject* parent, EventPropagator* propagator, std::function<size2_t()> canvasDimensions,
     std::function<size2_t()> imageDimensions, std::function<double(dvec2)> depth,
-    std::function<void(QMouseEvent*, ContextMenuActions, std::span<ContextMenuEntry>)> contextMenu,
-    std::function<void(Qt::CursorShape)> cursorChange)
+    ContextMenuCallback contextMenu, std::function<void(Qt::CursorShape)> cursorChange)
     : QObject(parent)
     , propagator_{propagator}
     , canvasDimensions_{canvasDimensions}
@@ -181,7 +180,7 @@ bool InteractionEventMapperQt::mapMousePressEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Press,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
-    setCallbacks(&mouseEvent, e);
+    addCallbacksTo(&mouseEvent);
     e->accept();
 
     propagator_->propagateEvent(&mouseEvent, nullptr);
@@ -199,7 +198,7 @@ bool InteractionEventMapperQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
-    setCallbacks(&mouseEvent, e);
+    addCallbacksTo(&mouseEvent);
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
     if (e->button() == Qt::RightButton) blockContextMenu_ = true;
@@ -215,13 +214,14 @@ bool InteractionEventMapperQt::mapMouseReleaseEvent(QMouseEvent* e) {
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           imageDimensions_(), depth_(pos));
-    setCallbacks(&mouseEvent, e);
+    addCallbacksTo(&mouseEvent);
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
 
     // Only show context menu when we have not used the event and the mouse has not been dragged.
     if (e->button() == Qt::RightButton && !mouseEvent.hasBeenUsed() && !blockContextMenu_) {
-        contextMenu_(e, ContextMenuActions{flags::any}, {});
+        contextMenu_(utilqt::toGLM(e->globalPosition().toPoint()), {},
+                     ContextMenuCategories{flags::any}, &mouseEvent);
     }
     blockContextMenu_ = false;
 
@@ -235,7 +235,7 @@ bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
 
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
                           utilqt::getModifiers(e), pos, imageDimensions_(), depth_(pos));
-    setCallbacks(&mouseEvent, e);
+    addCallbacksTo(&mouseEvent);
     e->accept();
     propagator_->propagateEvent(&mouseEvent, nullptr);
     if (e->button() == Qt::RightButton) blockContextMenu_ = true;
@@ -260,7 +260,7 @@ bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
 
     WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
                           imageDimensions_(), depth_(pos));
-    setCallbacks(&wheelEvent, nullptr);
+    addCallbacksTo(&wheelEvent);
     e->accept();
     propagator_->propagateEvent(&wheelEvent, nullptr);
 
@@ -418,18 +418,17 @@ bool InteractionEventMapperQt::mapPinchTriggered(QPinchGesture* gesture) {
     return true;
 }
 
-void InteractionEventMapperQt::setCallbacks(MouseInteractionEvent* e, QMouseEvent* mouseEvent) {
+void InteractionEventMapperQt::addCallbacksTo(MouseInteractionEvent* e) {
     // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a while)
-    e->setToolTipCallback([this](std::string_view tooltip) -> void { toolTipText_ = tooltip; });
-    e->setMouseCursorCallback([this](MouseCursor c) -> void {
+    e->setToolTipCallback([this](std::string_view tooltip) { toolTipText_ = tooltip; });
+    e->setMouseCursorCallback([this](MouseCursor c) {
         if (cursorChange_) cursorChange_(util::toCursorShape(c));
     });
-    if (mouseEvent) {
-        e->setContextMenuCallback(
-            [this, mouseEvent](std::span<ContextMenuEntry> entries, ContextMenuActions actions) {
-                contextMenu_(mouseEvent, actions, entries);
-            });
-    }
+
+    e->setContextMenuCallback([this](dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
+                                     ContextMenuCategories categories, InteractionEvent* event) {
+        contextMenu_(normalizedPosition, entries, categories, event);
+    });
 }
 
 bool InteractionEventMapperQt::showToolTip(QHelpEvent* e) {

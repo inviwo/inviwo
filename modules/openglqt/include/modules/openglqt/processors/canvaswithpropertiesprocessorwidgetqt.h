@@ -99,7 +99,7 @@ protected:
 
     virtual void propagateResizeEvent() override;
 
-    bool contextMenu(QMenu& menu, ContextMenuActions actions);
+    bool contextMenu(QMenu& menu, ContextMenuCategories actions);
 
     // ProcessorWidget overrides
     virtual void updateVisible(bool visible) override;

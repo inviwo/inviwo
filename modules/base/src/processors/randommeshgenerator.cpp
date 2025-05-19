@@ -269,10 +269,15 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
         auto* mouseEvent = event->getAs<MouseEvent>();
         if (mouseEvent->button() & MouseButton::Right &&
             mouseEvent->state() & MouseState::Release) {
-            std::array entries = {
-                ContextMenuEntry{"Randomize Mesh Seed", fmt::format("{}.reseed", getIdentifier())}};
-            mouseEvent->showContextMenu(entries,
-                                        ContextMenuAction::Custom | ContextMenuAction::View);
+            std::vector<ContextMenuEntry> entries = {ContextMenuSubmenu{
+                .label = "Mesh Operations",
+                .iconPath = ":/svgicons/treelist.svg",
+                .childEntries = {
+                    ContextMenuAction{.label = "Randomize Mesh Seed",
+                                      .id = fmt::format("{}.reseed", getIdentifier())},
+                }}};
+            mouseEvent->showContextMenu(mouseEvent->posNormalized(), entries,
+                                        ContextMenuCategory::Callback | ContextMenuCategory::View);
             mouseEvent->setUsed(true);
         }
     } else if (event->hash() == ContextMenuEvent::chash()) {

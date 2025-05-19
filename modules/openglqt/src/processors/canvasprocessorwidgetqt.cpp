@@ -97,7 +97,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     const ivec2 logicalDim = pysicalDim / dpr;
     canvas_->setEventPropagator(this);
     canvas_->onContextMenu(
-        [this](QMenu& menu, ContextMenuActions actions) { return contextMenu(menu, actions); });
+        [this](QMenu& menu, ContextMenuCategories actions) { return contextMenu(menu, actions); });
 
     setCentralWidget(canvas_.get());
 
@@ -182,12 +182,12 @@ void CanvasProcessorWidgetQt::propagateEvent(Event* event, Outport* source) {
 
 void CanvasProcessorWidgetQt::propagateResizeEvent() { canvas_->triggerResizeEventPropagation(); }
 
-bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuActions actions) {
-    if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
+bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuCategories actions) {
+    if (auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
         if (!canvasProcessor->isContextMenuAllowed()) return false;
     }
 
-    if (actions & ContextMenuAction::Widget) {
+    if (actions.contains(ContextMenuCategory::Widget)) {
         if (!menu.actions().empty()) {
             menu.addSeparator();
         }
@@ -203,13 +203,13 @@ bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuActions action
         connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
                 &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
 
-        auto ontop = menu.addAction("On Top");
+        auto* ontop = menu.addAction("On Top");
         ontop->setCheckable(true);
         ontop->setChecked(isOnTop());
         connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
     }
 
-    if (actions & ContextMenuAction::View) {
+    if (actions.contains(ContextMenuCategory::View)) {
         if (!menu.actions().empty()) {
             menu.addSeparator();
         }

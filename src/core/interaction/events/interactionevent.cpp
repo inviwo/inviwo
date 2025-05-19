@@ -50,10 +50,10 @@ void InteractionEvent::setToolTip(std::string_view tooltip) const {
 void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
 auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
 
-void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,
-                                       ContextMenuActions actions) {
+void InteractionEvent::showContextMenu(dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
+                                       ContextMenuCategories categories) {
     if (contextMenuCallback_) {
-        contextMenuCallback_(entries, actions);
+        contextMenuCallback_(normalizedPosition, entries, categories, this);
     }
 }
 

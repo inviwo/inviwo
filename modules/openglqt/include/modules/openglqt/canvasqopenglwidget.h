@@ -87,7 +87,7 @@ public:
      * The callback can add more functionality to the context menu.
      * If the function returns true the menu will be shown, else it will be discarded.
      */
-    void onContextMenu(std::function<bool(QMenu&, ContextMenuActions)> callback);
+    void onContextMenu(std::function<bool(QMenu&, ContextMenuCategories)> callback);
 
     // this is needed when we have have changed connections, and need to update the image port
     // sizes. This is called by  CanvasProcessorWidgetQt::propagateResizeEvent() for example.
@@ -104,7 +104,7 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
 private:
-    std::function<bool(QMenu&, ContextMenuActions)> contextMenuCallback_;
+    std::function<bool(QMenu&, ContextMenuCategories)> contextMenuCallback_;
 
     std::string name_;
 };

@@ -84,7 +84,7 @@ protected:
     virtual void propagateEvent(Event* e, Outport* source) override;
 
     virtual void propagateResizeEvent() override;
-    bool contextMenu(QMenu& menu, ContextMenuActions actions);
+    bool contextMenu(QMenu& menu, ContextMenuCategories actions);
 
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;

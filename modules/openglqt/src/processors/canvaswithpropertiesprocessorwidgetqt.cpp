@@ -96,7 +96,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     canvas_->setEventPropagator(this);
     canvas_->setMinimumSize(16, 16);
     canvas_->onContextMenu(
-        [this](QMenu& menu, ContextMenuActions actions) { return contextMenu(menu, actions); });
+        [this](QMenu& menu, ContextMenuCategories actions) { return contextMenu(menu, actions); });
 
     splitter->addWidget(canvas_.get());
 
@@ -225,8 +225,9 @@ void CanvasWithPropertiesProcessorWidgetQt::propagateResizeEvent() {
     canvas_->triggerResizeEventPropagation();
 }
 
-bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuActions actions) {
-    if (actions & ContextMenuAction::Widget) {
+bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu,
+                                                        ContextMenuCategories actions) {
+    if (actions.contains(ContextMenuCategory::Widget)) {
         if (!menu.actions().empty()) {
             menu.addSeparator();
         }
@@ -242,13 +243,13 @@ bool CanvasWithPropertiesProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenu
         connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
                 &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
 
-        auto ontop = menu.addAction("On Top");
+        auto* ontop = menu.addAction("On Top");
         ontop->setCheckable(true);
         ontop->setChecked(isOnTop());
         connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
     }
 
-    if (actions & ContextMenuAction::View) {
+    if (actions.contains(ContextMenuCategory::View)) {
         if (!menu.actions().empty()) {
             menu.addSeparator();
         }

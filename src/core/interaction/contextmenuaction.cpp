@@ -32,20 +32,20 @@
 
 namespace inviwo {
 
-std::string_view enumToStr(ContextMenuAction a) {
+std::string_view enumToStr(ContextMenuCategory a) {
     switch (a) {
-        case ContextMenuAction::Empty:
+        case ContextMenuCategory::Empty:
             return "Empty";
-        case ContextMenuAction::Image:
+        case ContextMenuCategory::Image:
             return "Image";
-        case ContextMenuAction::View:
+        case ContextMenuCategory::View:
             return "View";
-        case ContextMenuAction::Widget:
+        case ContextMenuCategory::Widget:
             return "Widget";
-        case ContextMenuAction::Custom:
-            return "Custom";
+        case ContextMenuCategory::Callback:
+            return "Callback";
     }
-    throw Exception(SourceContext{}, "Found invalid ContextMenuAction enum value '{}'",
+    throw Exception(SourceContext{}, "Found invalid ContextMenuCategory enum value '{}'",
                     static_cast<int>(a));
 }
 

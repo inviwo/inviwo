@@ -38,52 +38,68 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <vector>
+#include <optional>
+#include <variant>
 
 namespace inviwo {
 
+struct ContextMenuAction;
+struct ContextMenuSeparator;
+struct ContextMenuSubmenu;
+using ContextMenuEntry = std::variant<ContextMenuAction, ContextMenuSubmenu, ContextMenuSeparator>;
+
 /**
- * Datastructure for a custom menu entry in a context menu. An empty label will result in a menu
- * separator instead of a menu entry. The id should be unique, for example
+ * Datastructure for a custom menu action in a context menu. The id should be unique, for example
  * <tt><getIdentifier()>.myAction</tt>. Otherwise it cannnot be guaranteed that the correct
- * InteractionHandler/Processor handles the corresponding ContextMenuEvent. If a menu entry is
+ * InteractionHandler/Processor handles the corresponding ContextMenuEvent. If a menu action is
  * triggered, a ContextMenuEvent with the id will be propagated through the processor network.
  *
- * \see ContextMenuEvent
+ * @see ContextMenuEvent ContextMenuSeparator ContextMenuSubmenu
  */
-struct ContextMenuEntry {
+struct ContextMenuAction {
     std::string label;
     std::string id;
+    std::optional<std::string> iconPath;
+};
+
+struct ContextMenuSeparator {};
+
+struct ContextMenuSubmenu {
+    std::string label;
+    std::optional<std::string> iconPath;
+    std::vector<ContextMenuEntry> childEntries;
 };
 
 /**
- * Various categories for default and custom actions in a context menu.
+ * Various categories for default and custom callbacks in a context menu.
  */
-enum class ContextMenuAction : int {
+enum class ContextMenuCategory : int {
     Empty = 0,
-    Image = 1 << 0,   //!< Save and copy image layers \see utilqt::addImageActions
-    View = 1 << 1,    //!< Adjust camera view \see utilqt::addViewActions
-    Widget = 1 << 2,  //!< Show/hide canvas, fullscreen \see CanvasProcessorWidgetQt::contextMenu
-    Custom = 1 << 3,  //!< Additional custom actions
+    Image = 1 << 0,     //!< Save and copy image layers @see utilqt::addImageActions
+    View = 1 << 1,      //!< Adjust camera view @see utilqt::addViewActions
+    Widget = 1 << 2,    //!< Show/hide canvas, fullscreen @see CanvasProcessorWidgetQt::contextMenu
+    Callback = 1 << 3,  //!< Additional actions for custom callbacks triggering ContextMenuEvent
 };
 
-ALLOW_FLAGS_FOR_ENUM(ContextMenuAction)
-using ContextMenuActions = flags::flags<ContextMenuAction>;
+ALLOW_FLAGS_FOR_ENUM(ContextMenuCategory)
+using ContextMenuCategories = flags::flags<ContextMenuCategory>;
 
 namespace util {
 
-constexpr ContextMenuActions defaultMenuActions =
-    ContextMenuAction::Image | ContextMenuAction::View | ContextMenuAction::Widget;
+constexpr ContextMenuCategories defaultMenuCategories =
+    ContextMenuCategory::Image | ContextMenuCategory::View | ContextMenuCategory::Widget;
 
 }  // namespace util
 
-IVW_CORE_API std::string_view enumToStr(ContextMenuAction a);
+IVW_CORE_API std::string_view enumToStr(ContextMenuCategory a);
 
-inline std::string_view format_as(ContextMenuAction a) { return enumToStr(a); }
+inline std::string_view format_as(ContextMenuCategory a) { return enumToStr(a); }
 
 }  // namespace inviwo
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
-struct fmt::formatter<inviwo::ContextMenuActions>
-    : inviwo::FlagsFormatter<inviwo::ContextMenuActions> {};
+struct fmt::formatter<inviwo::ContextMenuCategories>
+    : inviwo::FlagsFormatter<inviwo::ContextMenuCategories> {};
 #endif
