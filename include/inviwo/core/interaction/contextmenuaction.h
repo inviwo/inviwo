@@ -51,7 +51,7 @@ using ContextMenuEntry = std::variant<ContextMenuAction, ContextMenuSubmenu, Con
 
 /**
  * Datastructure for a custom menu action in a context menu. The id should be unique, for example
- * <tt><getIdentifier()>.myAction</tt>. Otherwise it cannnot be guaranteed that the correct
+ * <tt>"<getIdentifier()>.myAction"</tt>. Otherwise it cannnot be guaranteed that the correct
  * InteractionHandler/Processor handles the corresponding ContextMenuEvent. If a menu action is
  * triggered, a ContextMenuEvent with the id will be propagated through the processor network.
  *
@@ -60,21 +60,21 @@ using ContextMenuEntry = std::variant<ContextMenuAction, ContextMenuSubmenu, Con
 struct ContextMenuAction {
     std::string label;
     std::string id;
-    std::optional<std::string> iconPath;
+    std::optional<std::string> iconPath = std::nullopt;
 };
 
 struct ContextMenuSeparator {};
 
 struct ContextMenuSubmenu {
     std::string label;
-    std::optional<std::string> iconPath;
+    std::optional<std::string> iconPath = std::nullopt;
     std::vector<ContextMenuEntry> childEntries;
 };
 
 /**
  * Various categories for default and custom callbacks in a context menu.
  */
-enum class ContextMenuCategory : int {
+enum class ContextMenuCategory : int {  // NOLINT(performance-enum-size)
     Empty = 0,
     Image = 1 << 0,     //!< Save and copy image layers @see utilqt::addImageActions
     View = 1 << 1,      //!< Adjust camera view @see utilqt::addViewActions

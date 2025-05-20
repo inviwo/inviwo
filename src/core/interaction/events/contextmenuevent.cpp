@@ -36,12 +36,12 @@ ContextMenuEvent::ContextMenuEvent(std::string_view id, InteractionEvent* event)
     : id_{id}, owner_{nullptr}, event_{event} {}
 
 ContextMenuEvent::ContextMenuEvent(std::string_view id, std::unique_ptr<InteractionEvent> event)
-    : ContextMenuEvent(std::move(id), event.get()) {
+    : ContextMenuEvent(id, event.get()) {
     owner_ = std::move(event);
 }
 
 ContextMenuEvent::ContextMenuEvent(const ContextMenuEvent& rhs)
-    : Event{rhs}, id_{rhs.id_}, owner_{event_->clone()}, event_{owner_.get()} {}
+    : Event{rhs}, id_{rhs.id_}, owner_{rhs.event_->clone()}, event_{owner_.get()} {}
 
 ContextMenuEvent& ContextMenuEvent::operator=(const ContextMenuEvent& that) {
     if (this != &that) {

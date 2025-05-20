@@ -265,8 +265,7 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
         return;
     }
 
-    if (event->hash() == MouseEvent::chash()) {
-        auto* mouseEvent = event->getAs<MouseEvent>();
+    if (auto* mouseEvent = event->getAs<MouseEvent>()) {
         if (mouseEvent->button() & MouseButton::Right &&
             mouseEvent->state() & MouseState::Release) {
             std::vector<ContextMenuEntry> entries = {ContextMenuSubmenu{
@@ -280,8 +279,7 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
                                         ContextMenuCategory::Callback | ContextMenuCategory::View);
             mouseEvent->setUsed(true);
         }
-    } else if (event->hash() == ContextMenuEvent::chash()) {
-        auto* menuEvent = event->getAs<ContextMenuEvent>();
+    } else if (auto* menuEvent = event->getAs<ContextMenuEvent>()) {
         if (menuEvent->getId().starts_with(getIdentifier())) {
             if (menuEvent->getId().ends_with(".reseed")) {
                 reseed_.pressButton();

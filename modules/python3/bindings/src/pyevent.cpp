@@ -265,7 +265,7 @@ void exposeEvents(pybind11::module& m) {
                  for (const auto& entry : childEntries) {
                      if (pybind11::isinstance<ContextMenuAction>(entry)) {
                          try {
-                             entries.push_back(pybind11::cast<ContextMenuAction>(entry));
+                             entries.emplace_back(pybind11::cast<ContextMenuAction>(entry));
                          } catch (pybind11::cast_error& e) {
                              throw pybind11::type_error(
                                  fmt::format("Expected a ContextMenuAction: {}", e.what()));
@@ -274,7 +274,7 @@ void exposeEvents(pybind11::module& m) {
                          entries.emplace_back(ContextMenuSeparator{});
                      } else if (pybind11::isinstance<ContextMenuSubmenu>(entry)) {
                          try {
-                             entries.push_back(pybind11::cast<ContextMenuSubmenu>(entry));
+                             entries.emplace_back(pybind11::cast<ContextMenuSubmenu>(entry));
                          } catch (pybind11::cast_error& e) {
                              throw pybind11::type_error(
                                  fmt::format("Expected a ContextMenuSubmenu: {}", e.what()));
@@ -286,7 +286,7 @@ void exposeEvents(pybind11::module& m) {
                      }
                  }
                  return ContextMenuSubmenu{
-                     .label = label, .iconPath = iconPath, .childEntries = entries};
+                     .label = std::move(label), .iconPath = iconPath, .childEntries = entries};
              }),
              py::arg("label"), py::arg("childEntries"), py::arg("iconPath") = std::nullopt)
         .def_readwrite("label", &ContextMenuSubmenu::label)
@@ -299,7 +299,8 @@ void exposeEvents(pybind11::module& m) {
         .def(py::init([](const py::tuple& args) {
             if (args.size() == 2) {
                 return ContextMenuAction{.label = args[0].cast<std::string>(),
-                                         .id = args[1].cast<std::string>()};
+                                         .id = args[1].cast<std::string>(),
+                                         .iconPath = std::nullopt};
             } else if (args.size() == 3) {
                 return ContextMenuAction{.label = args[0].cast<std::string>(),
                                          .id = args[1].cast<std::string>(),

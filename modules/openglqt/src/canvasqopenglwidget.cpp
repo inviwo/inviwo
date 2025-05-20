@@ -103,14 +103,14 @@ void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
                 ContextMenuEvent menuEvent{menuAction.id, event};
                 callback(menuEvent);
             } catch (Exception& e) {
-                log::exception(e, "Error: {}", e.getFullMessage());
+                log::exception(e);
             } catch (fmt::format_error& e) {
                 log::report(LogLevel::Error, {}, "Error using fmt formatting: {}\n{}", e.what(),
                             util::fmtHelp.view());
             } catch (std::exception& e) {
-                log::report(LogLevel::Error, {}, "Error: {}", e.what());
+                log::exception(e);
             } catch (...) {
-                log::report(LogLevel::Error, {}, "Error: Unknown error");
+                log::exception();
             }
         });
     };
