@@ -33,12 +33,15 @@
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 #include <warn/pop>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pybindmodule.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <ivwdataframe/pydataframe.h>
 
@@ -48,11 +51,14 @@ INVIWO_PYBIND_MODULE(ivwdataframe, m) {
 
     py::module::import("inviwopy");
 
-    using namespace inviwo;
-
     m.doc() = R"doc(
         DataFrame Module API
         )doc";
 
-    exposeDataFrame(m);
+#ifdef INVIWO_ALL_DYN_LINK
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
+#endif
+
+    inviwo::exposeDataFrame(m);
 }
