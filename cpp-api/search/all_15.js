@@ -68,7 +68,7 @@ var searchData=
   ['versionconverter_65',['VersionConverter',['../classinviwo_1_1VersionConverter.html',1,'inviwo']]],
   ['verticalanglelimit_5f_66',['verticalAngleLimit_',['../classinviwo_1_1Trackball.html#a526ca34ef81a62cd2dda14ab641aac8f',1,'inviwo::Trackball']]],
   ['verticallabel_67',['VerticalLabel',['../classinviwo_1_1VerticalLabel.html',1,'inviwo']]],
-  ['view_68',['View',['../structinviwo_1_1ViewManager_1_1View.html',1,'inviwo::ViewManager']]],
+  ['view_68',['View',['../structinviwo_1_1ViewManager_1_1View.html',1,'inviwo::ViewManager::View'],['../namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea4351cfebe4b61d8aa5efa1d020710005',1,'inviwo::View']]],
   ['view_69',['view',['../structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4',1,'inviwo::StrBuffer']]],
   ['viewevent_70',['ViewEvent',['../classinviwo_1_1ViewEvent.html',1,'inviwo']]],
   ['viewmanager_71',['ViewManager',['../classinviwo_1_1ViewManager.html',1,'inviwo']]],

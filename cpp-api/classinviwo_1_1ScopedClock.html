@@ -144,7 +144,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>time_point</b> = std
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7a53b343abf7c9e2799bf8fcc17bc272" id="r_a7a53b343abf7c9e2799bf8fcc17bc272"><td class="memItemLeft" align="right" valign="top"><a id="a7a53b343abf7c9e2799bf8fcc17bc272" name="a7a53b343abf7c9e2799bf8fcc17bc272"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ScopedClock</b> (Callback message, Duration logIfAtLeast={}, LogLevel logLevel=LogLevel::Info, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current())</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ScopedClock</b> (<a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> message, Duration logIfAtLeast={}, LogLevel logLevel=LogLevel::Info, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current())</td></tr>
 <tr class="separator:a7a53b343abf7c9e2799bf8fcc17bc272"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45532e7ed6fd03acb0139c1242522f41" id="r_a45532e7ed6fd03acb0139c1242522f41"><td class="memItemLeft" align="right" valign="top"><a id="a45532e7ed6fd03acb0139c1242522f41" name="a45532e7ed6fd03acb0139c1242522f41"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ScopedClock</b> (const <a class="el" href="classinviwo_1_1ScopedClock.html">ScopedClock</a> &amp;)=delete</td></tr>
@@ -194,7 +194,7 @@ duration&#160;</td><td class="memItemRight" valign="bottom"><b>accumulatedTime_<
 <tr class="separator:a113941308dcd170eac2c5acdc26fde3f inherit pro_attribs_classinviwo_1_1Clock"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename Callback&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt;<br />
 class inviwo::ScopedClock&lt; Clock, Callback &gt;</div><p>Scoped clock which prints the elapsed time when the instance is destroyed, i.e. <a class="el" href="#a517bb97a245612c104d1a0c0b3dd19df">print()</a> is called by the destructor.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceinviwo.html#a805f6499529f32e5da1c8c4d09bd12f5">ScopedClockCPU</a>, <a class="el" href="namespaceinviwo.html#aa9bc4adec8778181ef760044d0d2688a">ScopedClockGL</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -204,10 +204,10 @@ class inviwo::ScopedClock&lt; Clock, Callback &gt;</div><p>Scoped clock which pr
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename Callback&gt; </div>
+template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classinviwo_1_1ScopedClock.html">inviwo::ScopedClock</a>&lt; <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, Callback &gt;::print </td>
+          <td class="memname">void <a class="el" href="classinviwo_1_1ScopedClock.html">inviwo::ScopedClock</a>&lt; <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &gt;::print </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -224,10 +224,10 @@ template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, t
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename Callback&gt; </div>
+template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classinviwo_1_1ScopedClock.html">inviwo::ScopedClock</a>&lt; <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, Callback &gt;::printAndReset </td>
+          <td class="memname">void <a class="el" href="classinviwo_1_1ScopedClock.html">inviwo::ScopedClock</a>&lt; <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &gt;::printAndReset </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>

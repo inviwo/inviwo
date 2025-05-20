@@ -11,7 +11,7 @@ var searchData=
   ['onchangescoped_8',['onChangeScoped',['../classinviwo_1_1Property.html#a2728d6de489f511a5e59e3fa8a7f079a',1,'inviwo::Property']]],
   ['onclear_9',['onClear',['../classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77',1,'inviwo::WorkspaceManager']]],
   ['onconnect_10',['onConnect',['../classinviwo_1_1Outport.html#aff76d718168ee4089bb7c8e27f877c97',1,'inviwo::Outport']]],
-  ['oncontextmenu_11',['onContextMenu',['../classinviwo_1_1CanvasQOpenGLWidget.html#ab641ee854f88cc1e5b60b5ab71b63244',1,'inviwo::CanvasQOpenGLWidget']]],
+  ['oncontextmenu_11',['onContextMenu',['../classinviwo_1_1CanvasQOpenGLWidget.html#ade8b488d96dee741b9f95fc6923f7159',1,'inviwo::CanvasQOpenGLWidget']]],
   ['ondisconnect_12',['onDisconnect',['../classinviwo_1_1Outport.html#a7c58b5401f6b1e9c2849e6c248f60e99',1,'inviwo::Outport']]],
   ['ondisplaynamechange_13',['onDisplayNameChange',['../classinviwo_1_1Processor.html#a844e4563ca31441fa933c2d031a9e5cc',1,'inviwo::Processor']]],
   ['onidentifierchange_14',['onIdentifierChange',['../classinviwo_1_1Processor.html#ae040682770c4afbfcffabfc5dcb871cf',1,'inviwo::Processor']]],

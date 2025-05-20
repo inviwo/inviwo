@@ -257,6 +257,9 @@ var hierarchy =
     [ "inviwo::ContextHolder", "classinviwo_1_1ContextHolder.html", [
       [ "inviwo::CanvasContextHolder", "classinviwo_1_1CanvasContextHolder.html", null ]
     ] ],
+    [ "inviwo::ContextMenuAction", "structinviwo_1_1ContextMenuAction.html", null ],
+    [ "inviwo::ContextMenuSeparator", "structinviwo_1_1ContextMenuSeparator.html", null ],
+    [ "inviwo::ContextMenuSubmenu", "structinviwo_1_1ContextMenuSubmenu.html", null ],
     [ "inviwo::conversion_tester< F >", "structinviwo_1_1conversion__tester.html", null ],
     [ "inviwo::ConvertibleLink", "structinviwo_1_1ConvertibleLink.html", null ],
     [ "inviwo::Data< Self, Repr >", "classinviwo_1_1Data.html", null ],
@@ -891,6 +894,7 @@ var hierarchy =
     [ "inviwo::ffmpeg::Error", "structinviwo_1_1ffmpeg_1_1Error.html", null ],
     [ "inviwo::log::error< Args >", "structinviwo_1_1log_1_1error.html", null ],
     [ "inviwo::Event", "classinviwo_1_1Event.html", [
+      [ "inviwo::ContextMenuEvent", "classinviwo_1_1ContextMenuEvent.html", null ],
       [ "inviwo::InteractionEvent", "classinviwo_1_1InteractionEvent.html", [
         [ "inviwo::GestureEvent", "classinviwo_1_1GestureEvent.html", null ],
         [ "inviwo::KeyboardEvent", "classinviwo_1_1KeyboardEvent.html", null ],

@@ -802,8 +802,8 @@ IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>debugBre
 <tr class="memdesc:a818947e6c0c72cbdeb18b6631686091b"><td class="mdescLeft">&#160;</td><td class="mdescRight">convenience function for converting a std::chrono::duration to a string calling msToString(double).  <br /></td></tr>
 <tr class="separator:a818947e6c0c72cbdeb18b6631686091b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ae96fde3297f17dfb039ec5235f3fc9" id="r_a8ae96fde3297f17dfb039ec5235f3fc9"><td class="memTemplParams" colspan="2"><a id="a8ae96fde3297f17dfb039ec5235f3fc9" name="a8ae96fde3297f17dfb039ec5235f3fc9"></a>
-template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename Callback&gt; </td></tr>
-<tr class="memitem:a8ae96fde3297f17dfb039ec5235f3fc9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>makeScopedClock</b> (Callback callback, typename Clock::duration logIfAtLeast={}, LogLevel logLevel=LogLevel::Info, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current()) -&gt; <a class="el" href="classinviwo_1_1ScopedClock.html">ScopedClock</a>&lt; <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, Callback &gt;</td></tr>
+template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </td></tr>
+<tr class="memitem:a8ae96fde3297f17dfb039ec5235f3fc9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>makeScopedClock</b> (<a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> callback, typename Clock::duration logIfAtLeast={}, LogLevel logLevel=LogLevel::Info, <a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a> context=std::source_location::current()) -&gt; <a class="el" href="classinviwo_1_1ScopedClock.html">ScopedClock</a>&lt; <a class="el" href="classinviwo_1_1Clock.html">Clock</a>, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &gt;</td></tr>
 <tr class="separator:a8ae96fde3297f17dfb039ec5235f3fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af50f1ee0db698dd508d510fd4f5cdff3" id="r_af50f1ee0db698dd508d510fd4f5cdff3"><td class="memTemplParams" colspan="2"><a id="af50f1ee0db698dd508d510fd4f5cdff3" name="af50f1ee0db698dd508d510fd4f5cdff3"></a>
 template&lt;typename <a class="el" href="classinviwo_1_1Clock.html">Clock</a> = Clock&gt; </td></tr>
@@ -828,18 +828,18 @@ template&lt;typename T&gt; </td></tr>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a8e899795167608c2807a39787eee6c5f"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><b>enumName</b> ()</td></tr>
 <tr class="separator:a8e899795167608c2807a39787eee6c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a" id="r_aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplParams" colspan="2">template&lt;typename Iterable, typename Callback&gt; </td></tr>
-<tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aeb6b8dfc1fe3a44825c0a2dbbc2ae65a">forEach</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback)</td></tr>
+<tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a" id="r_aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplParams" colspan="2">template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </td></tr>
+<tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aeb6b8dfc1fe3a44825c0a2dbbc2ae65a">forEach</a> (const Iterable &amp;iterable, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;callback)</td></tr>
 <tr class="separator:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5152f1acc0ccd5f17aef14a459df80b0" id="r_a5152f1acc0ccd5f17aef14a459df80b0"><td class="memTemplParams" colspan="2">template&lt;typename Iterable, typename Callback, typename OnDoneCallback&gt; </td></tr>
-<tr class="memitem:a5152f1acc0ccd5f17aef14a459df80b0"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5152f1acc0ccd5f17aef14a459df80b0">forEachParallelAsync</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs, OnDoneCallback &amp;&amp;onTaskDone)</td></tr>
+<tr class="memitem:a5152f1acc0ccd5f17aef14a459df80b0" id="r_a5152f1acc0ccd5f17aef14a459df80b0"><td class="memTemplParams" colspan="2">template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>, typename OnDoneCallback&gt; </td></tr>
+<tr class="memitem:a5152f1acc0ccd5f17aef14a459df80b0"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5152f1acc0ccd5f17aef14a459df80b0">forEachParallelAsync</a> (const Iterable &amp;iterable, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;callback, size_t jobs, OnDoneCallback &amp;&amp;onTaskDone)</td></tr>
 <tr class="separator:a5152f1acc0ccd5f17aef14a459df80b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa67d76735eef23f9b566af1e6cadeff4" id="r_aa67d76735eef23f9b566af1e6cadeff4"><td class="memTemplParams" colspan="2"><a id="aa67d76735eef23f9b566af1e6cadeff4" name="aa67d76735eef23f9b566af1e6cadeff4"></a>
-template&lt;typename Iterable, typename Callback&gt; </td></tr>
-<tr class="memitem:aa67d76735eef23f9b566af1e6cadeff4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>forEachParallelAsync</b> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs=0)</td></tr>
+template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </td></tr>
+<tr class="memitem:aa67d76735eef23f9b566af1e6cadeff4"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>forEachParallelAsync</b> (const Iterable &amp;iterable, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;callback, size_t jobs=0)</td></tr>
 <tr class="separator:aa67d76735eef23f9b566af1e6cadeff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc3ba8edf9868ee32bb79ba5f1c1b114" id="r_adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memTemplParams" colspan="2">template&lt;typename Iterable, typename Callback&gt; </td></tr>
-<tr class="memitem:adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#adc3ba8edf9868ee32bb79ba5f1c1b114">forEachParallel</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs=0)</td></tr>
+<tr class="memitem:adc3ba8edf9868ee32bb79ba5f1c1b114" id="r_adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memTemplParams" colspan="2">template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </td></tr>
+<tr class="memitem:adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#adc3ba8edf9868ee32bb79ba5f1c1b114">forEachParallel</a> (const Iterable &amp;iterable, <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;callback, size_t jobs=0)</td></tr>
 <tr class="separator:adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32b94d32a4f96dd412446b35fa058db6" id="r_a32b94d32a4f96dd412446b35fa058db6"><td class="memTemplParams" colspan="2"><a id="a32b94d32a4f96dd412446b35fa058db6" name="a32b94d32a4f96dd412446b35fa058db6"></a>
 template&lt;class F, class... Args&gt; </td></tr>
@@ -1875,6 +1875,8 @@ constexpr std::array&lt; std::string_view, 4 &gt;&#160;</td><td class="memItemRi
 <tr class="memitem:a56b407ab7fe241ff85c95d78cd2d440d" id="r_a56b407ab7fe241ff85c95d78cd2d440d"><td class="memItemLeft" align="right" valign="top"><a id="a56b407ab7fe241ff85c95d78cd2d440d" name="a56b407ab7fe241ff85c95d78cd2d440d"></a>
 constexpr std::array&lt; Unit, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>defaultAxesUnits</b> = {Unit{}, Unit{}, Unit{}, Unit{}}</td></tr>
 <tr class="separator:a56b407ab7fe241ff85c95d78cd2d440d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a274bdd654a4bd5e2fc042b49668d9558" id="r_a274bdd654a4bd5e2fc042b49668d9558"><td class="memItemLeft" align="right" valign="top">constexpr ContextMenuCategories&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a274bdd654a4bd5e2fc042b49668d9558">defaultMenuCategories</a></td></tr>
+<tr class="separator:a274bdd654a4bd5e2fc042b49668d9558"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bcd5c22b1d7609d0bfa1ac9c2366137" id="r_a5bcd5c22b1d7609d0bfa1ac9c2366137"><td class="memTemplParams" colspan="2"><a id="a5bcd5c22b1d7609d0bfa1ac9c2366137" name="a5bcd5c22b1d7609d0bfa1ac9c2366137"></a>
 template&lt;template&lt; class... &gt; class Op, class... Args&gt; </td></tr>
 <tr class="memitem:a5bcd5c22b1d7609d0bfa1ac9c2366137"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_detected_v</b> = is_detected&lt;Op, Args...&gt;::value</td></tr>
@@ -3400,7 +3402,7 @@ template&lt;typename M, typename T = typename M::value_type&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Iterable, typename Callback&gt; </div>
+template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void inviwo::util::forEach </td>
@@ -3410,7 +3412,7 @@ template&lt;typename Iterable, typename Callback&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Callback &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3430,7 +3432,7 @@ template&lt;typename Iterable, typename Callback&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Iterable, typename Callback&gt; </div>
+template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void inviwo::util::forEachParallel </td>
@@ -3440,7 +3442,7 @@ template&lt;typename Iterable, typename Callback&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Callback &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>, </td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -3467,7 +3469,7 @@ template&lt;typename Iterable, typename Callback&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Iterable, typename Callback, typename OnDoneCallback&gt; </div>
+template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a>, typename OnDoneCallback&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; std::future&lt; void &gt; &gt; inviwo::util::forEachParallelAsync </td>
@@ -3477,7 +3479,7 @@ template&lt;typename Iterable, typename Callback, typename OnDoneCallback&gt; </
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Callback &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>, </td>
+          <td class="paramtype"><a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">Callback</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>callback</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8177,6 +8179,33 @@ template&lt;typename... T&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="a274bdd654a4bd5e2fc042b49668d9558" name="a274bdd654a4bd5e2fc042b49668d9558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a274bdd654a4bd5e2fc042b49668d9558">&#9670;&#160;</a></span>defaultMenuCategories</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ContextMenuCategories inviwo::util::defaultMenuCategories</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">    <a class="code hl_enumvalue" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309eabe53a0541a6d36f6ecb879fa2c584b08">ContextMenuCategory::Image</a> | <a class="code hl_enumvalue" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea4351cfebe4b61d8aa5efa1d020710005">ContextMenuCategory::View</a> | <a class="code hl_enumvalue" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea6ed562a0d4381eef12d92c87520f3208">ContextMenuCategory::Widget</a></div>
+<div class="ttc" id="anamespaceinviwo_html_a8ba4246a92ec0b0fab2ff967ae66309ea4351cfebe4b61d8aa5efa1d020710005"><div class="ttname"><a href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea4351cfebe4b61d8aa5efa1d020710005">inviwo::ContextMenuCategory::View</a></div><div class="ttdeci">@ View</div><div class="ttdoc">Adjust camera view.</div><div class="ttdef"><b>Definition</b> contextmenuaction.h:80</div></div>
+<div class="ttc" id="anamespaceinviwo_html_a8ba4246a92ec0b0fab2ff967ae66309ea6ed562a0d4381eef12d92c87520f3208"><div class="ttname"><a href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea6ed562a0d4381eef12d92c87520f3208">inviwo::ContextMenuCategory::Widget</a></div><div class="ttdeci">@ Widget</div><div class="ttdoc">Show/hide canvas, fullscreen.</div><div class="ttdef"><b>Definition</b> contextmenuaction.h:81</div></div>
+<div class="ttc" id="anamespaceinviwo_html_a8ba4246a92ec0b0fab2ff967ae66309eabe53a0541a6d36f6ecb879fa2c584b08"><div class="ttname"><a href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309eabe53a0541a6d36f6ecb879fa2c584b08">inviwo::ContextMenuCategory::Image</a></div><div class="ttdeci">@ Image</div><div class="ttdoc">Save and copy image layers.</div><div class="ttdef"><b>Definition</b> contextmenuaction.h:79</div></div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a6c6f2c783a1cc78c23c5060fc9e8425e" name="a6c6f2c783a1cc78c23c5060fc9e8425e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c6f2c783a1cc78c23c5060fc9e8425e">&#9670;&#160;</a></span>fmtHelp</h2>
 

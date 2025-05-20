@@ -105,6 +105,7 @@ $(function(){initNavTree('classinviwo_1_1InteractionEventMapperQt.html',''); ini
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classinviwo_1_1InteractionEventMapperQt-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::InteractionEventMapperQt Class Reference</div></div>
@@ -124,11 +125,17 @@ $(function(){initNavTree('classinviwo_1_1InteractionEventMapperQt.html',''); ini
   <img src="classinviwo_1_1InteractionEventMapperQt.png" alt=""/>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a3228f6afd967f489de9cf57ef9f2f242" id="r_a3228f6afd967f489de9cf57ef9f2f242"><td class="memItemLeft" align="right" valign="top"><a id="a3228f6afd967f489de9cf57ef9f2f242" name="a3228f6afd967f489de9cf57ef9f2f242"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ContextMenuCallback</b> = InteractionEvent::ContextMenuCallback</td></tr>
+<tr class="separator:a3228f6afd967f489de9cf57ef9f2f242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5d6a278695ff5c1b7d1ae0350fa61157" id="r_a5d6a278695ff5c1b7d1ae0350fa61157"><td class="memItemLeft" align="right" valign="top"><a id="a5d6a278695ff5c1b7d1ae0350fa61157" name="a5d6a278695ff5c1b7d1ae0350fa61157"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>InteractionEventMapperQt</b> (QObject *parent, <a class="el" href="classinviwo_1_1EventPropagator.html">EventPropagator</a> *propagator, std::function&lt; size2_t()&gt; canvasDimensions, std::function&lt; size2_t()&gt; imageDimensions, std::function&lt; double(dvec2)&gt; depth, std::function&lt; void(QMouseEvent *)&gt; contextMenu, std::function&lt; void(Qt::CursorShape)&gt; cursorChange)</td></tr>
-<tr class="separator:a5d6a278695ff5c1b7d1ae0350fa61157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68f6dfcd6dc1b48ad84724fe29257d69" id="r_a68f6dfcd6dc1b48ad84724fe29257d69"><td class="memItemLeft" align="right" valign="top"><a id="a68f6dfcd6dc1b48ad84724fe29257d69" name="a68f6dfcd6dc1b48ad84724fe29257d69"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>InteractionEventMapperQt</b> (QObject *parent, <a class="el" href="classinviwo_1_1EventPropagator.html">EventPropagator</a> *propagator, std::function&lt; size2_t()&gt; canvasDimensions, std::function&lt; size2_t()&gt; imageDimensions, std::function&lt; double(dvec2)&gt; depth, ContextMenuCallback contextMenu, std::function&lt; void(Qt::CursorShape)&gt; cursorChange)</td></tr>
+<tr class="separator:a68f6dfcd6dc1b48ad84724fe29257d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab162c2da91d9a7b6dc3ba58926821b07" id="r_ab162c2da91d9a7b6dc3ba58926821b07"><td class="memItemLeft" align="right" valign="top"><a id="ab162c2da91d9a7b6dc3ba58926821b07" name="ab162c2da91d9a7b6dc3ba58926821b07"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>eventFilter</b> (QObject *obj, QEvent *ev) override</td></tr>
 <tr class="separator:ab162c2da91d9a7b6dc3ba58926821b07"><td class="memSeparator" colspan="2">&#160;</td></tr>

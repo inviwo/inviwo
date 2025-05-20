@@ -277,6 +277,10 @@ var namespaceinviwo =
     [ "ConsoleLogger", "classinviwo_1_1ConsoleLogger.html", null ],
     [ "ConsoleWidget", "classinviwo_1_1ConsoleWidget.html", null ],
     [ "ContextHolder", "classinviwo_1_1ContextHolder.html", null ],
+    [ "ContextMenuAction", "structinviwo_1_1ContextMenuAction.html", null ],
+    [ "ContextMenuEvent", "classinviwo_1_1ContextMenuEvent.html", "classinviwo_1_1ContextMenuEvent" ],
+    [ "ContextMenuSeparator", "structinviwo_1_1ContextMenuSeparator.html", null ],
+    [ "ContextMenuSubmenu", "structinviwo_1_1ContextMenuSubmenu.html", null ],
     [ "conversion_tester", "structinviwo_1_1conversion__tester.html", null ],
     [ "ConverterException", "classinviwo_1_1ConverterException.html", null ],
     [ "ConvertibleLink", "structinviwo_1_1ConvertibleLink.html", null ],
@@ -1486,6 +1490,13 @@ var namespaceinviwo =
       [ "Mutable", "namespaceinviwo.html#ae77b6d9d2b2e55861c15fff3dc8854fbad924522d30d6615e9f71e91504364a9d", null ],
       [ "Immutable", "namespaceinviwo.html#ae77b6d9d2b2e55861c15fff3dc8854fba11efd9ae6f76e706e3f1b34d97584ebc", null ],
       [ "Ignore", "namespaceinviwo.html#ae77b6d9d2b2e55861c15fff3dc8854fbafd038fc7f319e48f3115d92bf5bdbef9", null ]
+    ] ],
+    [ "ContextMenuCategory", "namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309e", [
+      [ "Empty", "namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309eace2c8aed9c2fa0cfbed56cbda4d8bf07", null ],
+      [ "Image", "namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309eabe53a0541a6d36f6ecb879fa2c584b08", null ],
+      [ "View", "namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea4351cfebe4b61d8aa5efa1d020710005", null ],
+      [ "Widget", "namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea6ed562a0d4381eef12d92c87520f3208", null ],
+      [ "Callback", "namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f", null ]
     ] ],
     [ "CoordinateSpace", "namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8", [
       [ "Data", "namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8af6068daa29dbb05a7ead1e3b5a48bbee", null ],

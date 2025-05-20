@@ -1,5 +1,11 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9fa6375eb8ecced6f69a4e3b410b9d83":[4,0,0,1,13,1],
+"classinviwo_1_1animation_1_1AnimationViewQt.html":[2,0,0,0,14],
+"classinviwo_1_1animation_1_1AnimationViewQt.html":[4,0,0,1,15],
+"classinviwo_1_1animation_1_1AnimationsModel.html":[2,0,0,0,11],
+"classinviwo_1_1animation_1_1AnimationsModel.html":[4,0,0,1,12],
+"classinviwo_1_1animation_1_1BaseKeyframe.html":[2,0,0,0,15],
 "classinviwo_1_1animation_1_1BaseKeyframe.html":[4,0,0,1,16],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html":[2,0,0,0,16],
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html":[4,0,0,1,17],
@@ -243,11 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[4,0,0,1,91,3],
 "classinviwo_1_1buffertraits_1_1ColorsBuffer.html":[1,1,0,4],
 "classinviwo_1_1buffertraits_1_1CurvatureBuffer.html":[1,1,0,6],
-"classinviwo_1_1buffertraits_1_1IndexBuffer.html":[1,1,0,7],
-"classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3],
-"classinviwo_1_1buffertraits_1_1PickingBuffer.html":[1,1,0,9],
-"classinviwo_1_1buffertraits_1_1PositionsBufferBase.html":[1,1,0,2],
-"classinviwo_1_1buffertraits_1_1RadiiBuffer.html":[1,1,0,8],
-"classinviwo_1_1buffertraits_1_1ScalarMetaBuffer.html":[1,1,0,10],
-"classinviwo_1_1buffertraits_1_1TexCoordBuffer.html":[1,1,0,5]
+"classinviwo_1_1buffertraits_1_1IndexBuffer.html":[1,1,0,7]
 };
