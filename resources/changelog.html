@@ -33,6 +33,9 @@
 </style>
 </head>
 <body>
+<h2>2025-05-20 New ContextMenuEvent</h2>
+<p>A customized context menu can now be shown in a canvas with <code class="notranslate">InteractionEvent::showContextMenu()</code>. Each menu action comes with an id that should be unique like <code class="notranslate">"&lt;getIdentifier()&gt;.myAction"</code>. Otherwise it cannnot be guaranteed that the correct InteractionHandler/Processor handles the corresponding <code class="notranslate">ContextMenuEvent</code>. If a menu action is triggered, a <code class="notranslate">ContextMenuEvent</code> with the corresponding id will be propagated through the processor network.<br>
+See <code class="notranslate">RandomMeshGenerator::invokeEvent()</code> and <code class="notranslate">PythonPickingExample.py</code> for its usage in C++ and Python respectively. The convexhull example workspace illustrates the usage of the <code class="notranslate">PythonPickingExample</code> processor.</p>
 <h2>2025-05-05 CameraWidget</h2>
 <p>The CameraWidget gained new functionality to animate the camera either in a continuous fashion or by swinging back and forth.<br>
 <a target="_blank" rel="noopener noreferrer" href="resources/changelog/camera-cube.jpg"><img src="resources/changelog/camera-cube.jpg" alt="Camera Cube" style="max-width: 100%;"></a><br>
