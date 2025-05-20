@@ -33,10 +33,10 @@
 #include <inviwo/core/common/inviwomodule.h>       // for InviwoModule
 #include <inviwo/core/common/modulemanager.h>      // for ModuleManager
 
-#include <inviwo/core/util/exception.h>          // for Exception
-#include <inviwo/core/util/logcentral.h>         // for LogCentral, LogError
-#include <inviwo/core/util/stdextensions.h>      // for erase_remove
-#include <inviwo/core/util/stringconversion.h>   // for replaceInString, spl...
+#include <inviwo/core/util/exception.h>         // for Exception
+#include <inviwo/core/util/logcentral.h>        // for LogCentral, LogError
+#include <inviwo/core/util/stdextensions.h>     // for erase_remove
+#include <inviwo/core/util/stringconversion.h>  // for replaceInString, spl...
 #include <inviwo/core/util/filesystem.h>
 #include <modules/webbrowser/renderhandlergl.h>  // for RenderHandlerGL, Ren...
 #include <modules/webbrowser/webbrowserutil.h>   // for CefString, cef_log_s...
@@ -139,8 +139,8 @@ WebBrowserClient::WebBrowserClient(InviwoApplication* app)
     , stringResourceProvider_{std::make_unique<StringResourceProvider>()} {
 
     resourceManager_->AddProvider(stringResourceProvider_.get(), 50, "StringResourceProvider");
-    resourceManager_->AddDirectoryProvider("https://inviwo/app/", filesystem::findBasePath().string(), 99,
-                                           std::string());
+    resourceManager_->AddDirectoryProvider("https://inviwo/app/",
+                                           filesystem::findBasePath().string(), 99, std::string());
     onModulesRegisteredCallback_ = app->getModuleManager().onModulesDidRegister([&, app]() {
         // Ensure that all module resources have been registered before setting up resources
         detail::setupResourceManager(resourceManager_, app);
@@ -200,16 +200,17 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 CefRefPtr<CefResourceRequestHandler> WebBrowserClient::GetResourceRequestHandler(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
-    [[maybe_unused]] bool is_navigation, [[maybe_unused]] bool is_download,
-    [[maybe_unused]] const CefString& request_initiator,
+    [[maybe_unused]] CefRefPtr<CefBrowser> browser, [[maybe_unused]] CefRefPtr<CefFrame> frame,
+    [[maybe_unused]] CefRefPtr<CefRequest> request, [[maybe_unused]] bool is_navigation,
+    [[maybe_unused]] bool is_download, [[maybe_unused]] const CefString& request_initiator,
     [[maybe_unused]] bool& disable_default_handling) {
     return this;
 }
 
 bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                      CefRefPtr<CefRequest> request, bool /*user_gesture*/,
-                                      bool /*is_redirect*/) {
+                                      [[maybe_unused]] CefRefPtr<CefRequest> request,
+                                      [[maybe_unused]] bool user_gesture,
+                                      [[maybe_unused]] bool is_redirect) {
     CEF_REQUIRE_UI_THREAD();
 
     router_->OnBeforeBrowse(browser, frame);

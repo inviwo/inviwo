@@ -95,8 +95,6 @@ private:
 
     std::string identifier_;
 
-    std::function<void(ModuleContainer&)> reloadCallback_;
-
     std::unique_ptr<FileObserver> observer_;
     std::unique_ptr<SharedLibrary> sharedLibrary_;
     std::unique_ptr<InviwoModuleFactoryObject> factoryObject_;

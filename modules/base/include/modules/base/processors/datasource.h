@@ -158,9 +158,9 @@ protected:
     virtual std::shared_ptr<DataType> transform(std::shared_ptr<ReaderType> data);
 
     // Called when we load new data.
-    virtual void dataLoaded(std::shared_ptr<DataType> data) {};
+    virtual void dataLoaded([[maybe_unused]] std::shared_ptr<DataType> data) {};
     // Called when we deserialized old data.
-    virtual void dataDeserialized(std::shared_ptr<DataType> data) {};
+    virtual void dataDeserialized([[maybe_unused]] std::shared_ptr<DataType> data) {};
 
     DataReaderFactory* rf_;
     PortType port_;
