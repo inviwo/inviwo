@@ -77,14 +77,14 @@ class LibFileObserver : public FileObserver {
 public:
     LibFileObserver(InviwoApplication* app, const std::filesystem::path& filename,
                     std::function<void(const std::filesystem::path&)> callback)
-        : FileObserver(app) {
+        : FileObserver(app), fileChangeCallback_{callback} {
 
         startFileObservation(filename);
     }
     virtual ~LibFileObserver() = default;
 
 private:
-    virtual void fileChanged(const std::filesystem::path& filename) {
+    virtual void fileChanged(const std::filesystem::path& filename) override {
         fileChangeCallback_(filename);
     }
 
@@ -99,7 +99,6 @@ ModuleContainer::ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo)
     , protectedModule_{mfo->protectedModule == ProtectedModule::on}
     , protectedLibrary_{true}
     , identifier_{toLower(mfo->name)}
-    , reloadCallback_{nullptr}
     , observer_{nullptr}
     , sharedLibrary_{nullptr}
     , factoryObject_{std::move(mfo)}
@@ -111,7 +110,6 @@ ModuleContainer::ModuleContainer(const std::filesystem::path& libFile, bool runt
     , protectedModule_{false}
     , protectedLibrary_{false}
     , identifier_{}
-    , reloadCallback_{nullptr}
     , observer_{nullptr}
     , sharedLibrary_{nullptr}
     , factoryObject_{nullptr}
@@ -189,7 +187,7 @@ void ModuleContainer::setReloadCallback(InviwoApplication* app,
                                         std::function<void(ModuleContainer&)> callback) {
     if (!libFile_.empty()) {
         observer_ = std::make_unique<LibFileObserver>(
-            app, libFile_, [this](const std::filesystem::path&) { reloadCallback_(*this); });
+            app, libFile_, [this, callback](const std::filesystem::path&) { callback(*this); });
     }
 }
 
