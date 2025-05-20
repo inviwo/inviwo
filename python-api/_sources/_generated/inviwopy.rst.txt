@@ -25,6 +25,13 @@
       CanvasProcessor
       CodeState
       ConsoleLogger
+      ContextMenuAction
+      ContextMenuCategories
+      ContextMenuCategoriesIterator
+      ContextMenuCategory
+      ContextMenuEvent
+      ContextMenuSeparator
+      ContextMenuSubmenu
       DataReader
       DataReaderFactory
       DataWriter
