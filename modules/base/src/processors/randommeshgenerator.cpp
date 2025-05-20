@@ -39,6 +39,9 @@
 #include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
 #include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
 #include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
+#include <inviwo/core/interaction/events/interactionevent.h>            // for InteractionEvent
+#include <inviwo/core/interaction/events/contextmenuevent.h>            // for ContextMenuEvent
+#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
 #include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
 #include <inviwo/core/interaction/pickingstate.h>                       // for PickingPressItem
 #include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
@@ -78,6 +81,11 @@ const ProcessorInfo RandomMeshGenerator::processorInfo_{
     "Mesh Creation",                   // Category
     CodeState::Stable,                 // Code state
     Tags::CPU,                         // Tags
+    R"(
+    Creates a mesh consisting of randomly created objects. The individual objects can be
+    transformed if picking is enabled. This processor also uses a custom context menu to
+    randomize the seed.
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& RandomMeshGenerator::getProcessorInfo() const { return processorInfo_; }
@@ -87,7 +95,7 @@ RandomMeshGenerator::RandomMeshGenerator()
     , mesh_("mesh")
     , rand_()
     , seed_("seed", "Seed", 0, 0, std::mt19937::max())
-    , reseed_("reseed_", "Seed")
+    , reseed_("reseed_", "Randomize Seed")
     , scale_("scale", "Scale", 1.0f, 0.001f, 1000.0f, 0.1f)
     , size_("size", "Size", 1.0f, 0.001f, 1000.0f, 0.1f)
     , numberOfBoxes_("numberOf_", "Number of Boxes", 1, 0, 100)
@@ -149,35 +157,6 @@ RandomMeshGenerator::RandomMeshGenerator()
         seed_.set(static_cast<glm::i64>(rand(0.0f, static_cast<float>(seed_.getMaxValue()))));
         rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
     });
-}
-
-float RandomMeshGenerator::rand(const float min, const float max) {
-    return min + dis_(rand_) * (max - min);
-}
-
-vec3 RandomMeshGenerator::randVec3(const float min, const float max) {
-    float x = rand(min, max);
-    float y = rand(min, max);
-    float z = rand(min, max);
-    return vec3(x, y, z);
-}
-
-void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
-    // Add picking ids
-    auto bufferRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(mesh.getBuffer(0)->getSize());
-    auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
-    auto& data = bufferRAM->getDataContainer();
-    std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
-    mesh.addBuffer(BufferType::PickingAttrib, pickBuffer);
-}
-
-void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
-    if (p->getPressState() == PickingPressState::Move &&
-        p->getPressItems().count(PickingPressItem::Primary)) {
-        callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
-        p->markAsUsed();
-        invalidate(InvalidationLevel::InvalidOutput);
-    }
 }
 
 void RandomMeshGenerator::process() {
@@ -278,6 +257,65 @@ void RandomMeshGenerator::process() {
     }
 
     mesh_.setData(mesh);
+}
+
+void RandomMeshGenerator::invokeEvent(Event* event) {
+    Processor::invokeEvent(event);
+    if (event->hasBeenUsed()) {
+        return;
+    }
+
+    if (auto* mouseEvent = event->getAs<MouseEvent>()) {
+        if (mouseEvent->button() & MouseButton::Right &&
+            mouseEvent->state() & MouseState::Release) {
+            std::vector<ContextMenuEntry> entries = {ContextMenuSubmenu{
+                .label = "Mesh Operations",
+                .iconPath = ":/svgicons/treelist.svg",
+                .childEntries = {
+                    ContextMenuAction{.label = "Randomize Mesh Seed",
+                                      .id = fmt::format("{}.reseed", getIdentifier())},
+                }}};
+            mouseEvent->showContextMenu(mouseEvent->posNormalized(), entries,
+                                        ContextMenuCategory::Callback | ContextMenuCategory::View);
+            mouseEvent->setUsed(true);
+        }
+    } else if (auto* menuEvent = event->getAs<ContextMenuEvent>()) {
+        if (menuEvent->getId().starts_with(getIdentifier())) {
+            if (menuEvent->getId().ends_with(".reseed")) {
+                reseed_.pressButton();
+            }
+            menuEvent->setUsed(true);
+        }
+    }
+}
+
+float RandomMeshGenerator::rand(const float min, const float max) {
+    return min + dis_(rand_) * (max - min);
+}
+
+vec3 RandomMeshGenerator::randVec3(const float min, const float max) {
+    const float x = rand(min, max);
+    const float y = rand(min, max);
+    const float z = rand(min, max);
+    return {x, y, z};
+}
+
+void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
+    // Add picking ids
+    auto bufferRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(mesh.getBuffer(0)->getSize());
+    auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
+    auto& data = bufferRAM->getDataContainer();
+    std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
+    mesh.addBuffer(BufferType::PickingAttrib, pickBuffer);
+}
+
+void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
+    if (p->getPressState() & PickingPressState::Move &&
+        p->getPressItems().count(PickingPressItem::Primary)) {
+        callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
+        p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
 }
 
 }  // namespace inviwo

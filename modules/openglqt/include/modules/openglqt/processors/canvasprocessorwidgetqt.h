@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>              // for Processor, Processor::NameDisp...
 #include <inviwo/core/util/glmvec.h>                       // for ivec2, size2_t
 #include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/contextmenuaction.h>
 
 #include <functional>  // for function
 #include <memory>      // for unique_ptr
@@ -83,7 +84,7 @@ protected:
     virtual void propagateEvent(Event* e, Outport* source) override;
 
     virtual void propagateResizeEvent() override;
-    bool contextMenu(QMenu& menu);
+    bool contextMenu(QMenu& menu, ContextMenuCategories actions);
 
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;

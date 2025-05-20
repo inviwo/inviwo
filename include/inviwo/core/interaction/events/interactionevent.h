@@ -33,15 +33,18 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
+#include <inviwo/core/interaction/contextmenuaction.h>
+#include <inviwo/core/util/glmvec.h>
 
 #include <functional>
 #include <string_view>
+#include <span>
 
 namespace inviwo {
 
 class IVW_CORE_API InteractionEvent : public Event {
 public:
-    InteractionEvent(KeyModifiers modifiers = KeyModifiers(flags::empty));
+    explicit InteractionEvent(KeyModifiers modifiers = KeyModifiers(flags::empty));
     InteractionEvent(const InteractionEvent& rhs) = default;
     InteractionEvent& operator=(const InteractionEvent& that) = default;
     virtual InteractionEvent* clone() const override = 0;
@@ -68,9 +71,29 @@ public:
     void setToolTipCallback(ToolTipCallback callback);
     const ToolTipCallback& getToolTipCallback() const;
 
+    /**
+     * Show a context menu at the given @p normalizedPosition. The custom menu @p entries are added
+     * before any other default actions based on @p categories. When any of the custom menu actions
+     * in the @p entries is triggered, a ContexMenuEvent with the corresponding entry ID will be
+     * propagated through the processor network.
+     * @param normalizedPosition  position in normalized coordinates
+     * @param entries     list of custom menu items
+     * @param categories  determines which menu actions should be included in the context menu
+     *
+     * @see ContextMenuCategories
+     */
+    void showContextMenu(dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
+                         ContextMenuCategories categories = ContextMenuCategory::Callback);
+
+    using ContextMenuCallback = std::function<void(dvec2, std::span<ContextMenuEntry>,
+                                                   ContextMenuCategories, InteractionEvent*)>;
+    void setContextMenuCallback(ContextMenuCallback callback);
+    const ContextMenuCallback& getContexMenuCallback() const;
+
 protected:
     KeyModifiers modifiers_;
     ToolTipCallback tooltip_;
+    ContextMenuCallback contextMenuCallback_;
 };
 
 }  // namespace inviwo

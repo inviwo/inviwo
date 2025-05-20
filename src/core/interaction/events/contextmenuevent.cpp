@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,39 @@
  *
  *********************************************************************************/
 
+#include <inviwo/core/interaction/events/contextmenuevent.h>
 #include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
+ContextMenuEvent::ContextMenuEvent(std::string_view id, InteractionEvent* event)
+    : id_{id}, owner_{nullptr}, event_{event} {}
 
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
-
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
+ContextMenuEvent::ContextMenuEvent(std::string_view id, std::unique_ptr<InteractionEvent> event)
+    : ContextMenuEvent(id, event.get()) {
+    owner_ = std::move(event);
 }
 
-void InteractionEvent::setToolTip(std::string_view tooltip) const {
-    if (tooltip_) tooltip_(tooltip);
-}
+ContextMenuEvent::ContextMenuEvent(const ContextMenuEvent& rhs)
+    : Event{rhs}, id_{rhs.id_}, owner_{rhs.event_->clone()}, event_{owner_.get()} {}
 
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
-
-void InteractionEvent::showContextMenu(dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
-                                       ContextMenuCategories categories) {
-    if (contextMenuCallback_) {
-        contextMenuCallback_(normalizedPosition, entries, categories, this);
+ContextMenuEvent& ContextMenuEvent::operator=(const ContextMenuEvent& that) {
+    if (this != &that) {
+        Event::operator=(that);
+        owner_.reset(that.event_->clone());
+        event_ = owner_.get();
     }
+    return *this;
 }
 
-void InteractionEvent::setContextMenuCallback(ContextMenuCallback callback) {
-    contextMenuCallback_ = std::move(callback);
-}
-auto InteractionEvent::getContexMenuCallback() const -> const ContextMenuCallback& {
-    return contextMenuCallback_;
-}
+ContextMenuEvent::~ContextMenuEvent() = default;
+
+ContextMenuEvent* ContextMenuEvent::clone() const { return new ContextMenuEvent(*this); }
+
+std::string_view ContextMenuEvent::getId() const { return id_; }
+
+uint64_t ContextMenuEvent::hash() const { return chash(); }
+
+InteractionEvent* ContextMenuEvent::getEvent() const { return event_; }
 
 }  // namespace inviwo

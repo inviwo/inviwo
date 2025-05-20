@@ -1,5 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-05-20 New ContextMenuEvent
+A customized context menu can now be shown in a canvas with `InteractionEvent::showContextMenu()`. Each menu action comes with an id that should be unique like `"<getIdentifier()>.myAction"`. Otherwise it cannnot be guaranteed that the correct InteractionHandler/Processor handles the corresponding `ContextMenuEvent`. If a menu action is triggered, a `ContextMenuEvent` with the corresponding id will be propagated through the processor network.
+See `RandomMeshGenerator::invokeEvent()` and `PythonPickingExample.py` for its usage in C++ and Python respectively. The convexhull example workspace illustrates the usage of the `PythonPickingExample` processor.
+
 ## 2025-05-05 CameraWidget
 The CameraWidget gained new functionality to animate the camera either in a continuous fashion or by swinging back and forth.
 ![Camera Cube](resources/changelog/camera-cube.jpg)

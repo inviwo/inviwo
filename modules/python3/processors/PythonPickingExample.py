@@ -96,8 +96,42 @@ workspace for example usage.
 
         self.outport.setData(mesh)
 
-    def callback(self, pickevent):
+    def invokeEvent(self, event: ivw.Event) -> None:
+        super().invokeEvent(event)
+        if event.hasBeenUsed():
+            return
+
+        # catch context menu events that start with the processor identifier
+        if event.hash() == ivw.ContextMenuEvent.chash:
+            if event.id.startswith(self.getIdentifier()):
+                ivw.logWarn(f"Context menu action triggered: '{event.id}'")
+                event.markAsUsed()
+
+    def callback(self, pickevent: ivw.PickingEvent) -> None:
         print("pick: ", pickevent.pickedId)
+
+        if (not pickevent.getMovedSincePressed()
+            and pickevent.pressItem == ivw.PickingPressItem.Secondary
+                and pickevent.pressState == ivw.PickingPressState.Release):
+            event: ivw.InteractionEvent = pickevent.getEvent()
+            if event:
+                i = pickevent.pickedId
+
+                # show context menu with an entry for the triangle, a separator, and a callback
+                submenu_items: tuple = (ivw.ContextMenuAction(f"Triangle {i}",
+                                                              f"{self.getIdentifier()}.tri{i}"),
+                                        ivw.ContextMenuSeparator(),
+                                        ivw.ContextMenuAction(f"Second Callback",
+                                                              f"{self.getIdentifier()}.callback")
+                                        )
+                entries: list = [
+                    ivw.ContextMenuSubmenu("Picking Submenu",
+                                           childEntries=submenu_items,
+                                           iconPath=":/svgicons/treelist.svg")
+                ]
+                event.showContextMenu(pickevent.position, entries)
+                event.markAsUsed()
+
         if (pickevent.state == ivw.PickingState.Updated):
             i = pickevent.pickedId
             p1 = self.positions[i * 3 + 0]

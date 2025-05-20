@@ -112,6 +112,8 @@ void exposePickingMapper(pybind11::module& m) {
         .def_property_readonly("previousNDC", &PickingEvent::getPreviousNDC)
         .def_property_readonly("pressedNDC", &PickingEvent::getPressedNDC)
         .def("getWorldSpaceDeltaAtPressDepth", &PickingEvent::getWorldSpaceDeltaAtPressDepth)
+        .def("getMovedSincePressed", &PickingEvent::getMovedSincePressed,
+             py::arg("deltaDistance") = 3.0)
         .def_property_readonly("canvasSize", &PickingEvent::getCanvasSize)
         .def_property_readonly("state", &PickingEvent::getState)
         .def_property_readonly("pressState", &PickingEvent::getPressState)
@@ -119,9 +121,10 @@ void exposePickingMapper(pybind11::module& m) {
         .def_property_readonly("pressItems", &PickingEvent::getPressItems)
         .def_property_readonly("hoverState", &PickingEvent::getHoverState)
         .def_property_readonly("modifiers", &PickingEvent::modifiers)
-        .def("getEvent", &PickingEvent::getEvent)
+        .def("getEvent", &PickingEvent::getEvent, py::return_value_policy::reference)
         .def("setToolTip", &PickingEvent::setToolTip)
-        .def_property_readonly_static("chash", &PickingEvent::chash);
+        .def_property_readonly_static("chash",
+                                      [](const py::object&) { return PickingEvent::chash(); });
 
     py::classh<PickingMapper>(m, "PickingMapper")
         .def(py::init([](Processor* p, size_t size, pybind11::function callback) {

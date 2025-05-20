@@ -31,7 +31,9 @@
 #include <modules/openglqt/openglqtmoduledefine.h>  // for IVW_MODULE_OPENGLQT_API
 
 #include <inviwo/core/interaction/events/touchevent.h>  // for TouchPoint
-#include <inviwo/core/util/glmvec.h>                    // for size2_t, dvec2, vec2
+#include <inviwo/core/interaction/events/interactionevent.h>
+#include <inviwo/core/interaction/contextmenuaction.h>
+#include <inviwo/core/util/glmvec.h>  // for size2_t, dvec2, vec2
 
 #include <functional>  // for function
 #include <string>      // for string
@@ -60,11 +62,12 @@ class MouseInteractionEvent;
  */
 class IVW_MODULE_OPENGLQT_API InteractionEventMapperQt : public QObject {
 public:
+    using ContextMenuCallback = InteractionEvent::ContextMenuCallback;
+
     InteractionEventMapperQt(QObject* parent, EventPropagator* propagator,
                              std::function<size2_t()> canvasDimensions,
                              std::function<size2_t()> imageDimensions,
-                             std::function<double(dvec2)> depth,
-                             std::function<void(QMouseEvent*)> contextMenu,
+                             std::function<double(dvec2)> depth, ContextMenuCallback contextMenu,
                              std::function<void(Qt::CursorShape)> cursorChange);
     virtual bool eventFilter(QObject* obj, QEvent* ev) override;
 
@@ -86,13 +89,13 @@ private:
 
     bool showToolTip(QHelpEvent* e);
 
-    void setCallbacks(MouseInteractionEvent* e);
+    void addCallbacksTo(MouseInteractionEvent* e);
 
     EventPropagator* propagator_;
     std::function<size2_t()> canvasDimensions_;
     std::function<size2_t()> imageDimensions_;
     std::function<double(dvec2)> depth_;
-    std::function<void(QMouseEvent*)> contextMenu_;
+    ContextMenuCallback contextMenu_;
     std::function<void(Qt::CursorShape)> cursorChange_;
     bool blockContextMenu_ = false;
 

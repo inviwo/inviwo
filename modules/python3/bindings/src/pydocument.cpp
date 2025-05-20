@@ -78,9 +78,9 @@ void exposeDocument(pybind11::module& m) {
         .def(py::init<const UnorderedStringMap<std::string>&>(), py::arg("attributes"))
         .def(py::init<std::string_view, const UnorderedStringMap<std::string>&>(), py::arg("name"),
              py::arg("attributes"))
-        .def_property_readonly_static("first", &Document::PathComponent::first)
-        .def_property_readonly_static("last", &Document::PathComponent::last)
-        .def_property_readonly_static("end", &Document::PathComponent::end);
+        .def_static("first", &Document::PathComponent::first)
+        .def_static("last", &Document::PathComponent::last)
+        .def_static("end", &Document::PathComponent::end);
 
     py::classh<Document::DocumentHandle>(doc, "DocumentHandle")
         .def("get", &Document::DocumentHandle::get)

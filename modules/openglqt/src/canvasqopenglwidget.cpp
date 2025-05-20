@@ -33,20 +33,26 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for LayerType
 #include <inviwo/core/interaction/events/event.h>         // for Event
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/interaction/events/contextmenuevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>  // for EventPropagator
 #include <inviwo/core/interaction/pickingcontroller.h>       // for PickingController
 #include <inviwo/core/network/networklock.h>                 // for NetworkLock
 #include <inviwo/core/properties/boolproperty.h>             // for BoolProperty
 #include <inviwo/core/util/canvas.h>                         // for Canvas::ContextID, Canvas
 #include <inviwo/core/util/glmvec.h>                         // for size2_t, dvec2
+#include <inviwo/core/util/glm.h>                            // for invertY
 #include <inviwo/core/util/raiiutils.h>                      // for OnScopeExit, OnScopeExit::Ex...
 #include <inviwo/core/util/rendercontext.h>                  // for CanvasContextHolder, RenderC...
 #include <inviwo/core/util/settings/systemsettings.h>        // for SystemSettings
+#include <inviwo/core/util/logcentral.h>                     // for log::exception, log::report...
+#include <inviwo/core/util/stdextensions.h>                  // for util::overloaded
 #include <modules/opengl/canvasgl.h>                         // for CanvasGL
 #include <modules/opengl/openglcapabilities.h>               // for OpenGLCapabilities
 #include <modules/openglqt/hiddencanvasqt.h>                 // for HiddenCanvasQt
 #include <modules/openglqt/interactioneventmapperqt.h>       // for InteractionEventMapperQt
 #include <modules/qtwidgets/inviwoqtutils.h>                 // for toGLM, addImageActions, Widg...
+#include <modules/qtwidgets/eventconverterqt.h>
 
 #include <utility>  // for move
 
@@ -68,6 +74,54 @@ namespace inviwo {
 class Image;
 class Outport;
 
+namespace {
+
+dvec2 normalizePosition(QPointF pos, size2_t dim) {
+    return util::invertY(utilqt::toGLM(pos), dim) / dvec2(dim - size2_t(1));
+}
+
+void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
+                    InteractionEvent* event,
+                    const std::function<void(ContextMenuEvent&)>& callback) {
+
+    auto addSeparator = [menu](const ContextMenuSeparator&) { menu->addSeparator(); };
+    auto addSubmenu = [menu, event, callback](const ContextMenuSubmenu& menuEntry) {
+        auto* submenu = menu->addMenu(utilqt::toQString(menuEntry.label));
+        if (menuEntry.iconPath) {
+            submenu->setIcon(QIcon(utilqt::toQString(*menuEntry.iconPath)));
+        }
+        addMenuEntries(submenu, menuEntry.childEntries, event, callback);
+    };
+    auto addMenuAction = [menu, event, callback](const ContextMenuAction& menuAction) {
+        auto* action = menu->addAction(utilqt::toQString(menuAction.label));
+        if (menuAction.iconPath) {
+            action->setIcon(QIcon(utilqt::toQString(*menuAction.iconPath)));
+        }
+        QObject::connect(action, &QAction::triggered, [event, callback, menuAction]() {
+            try {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+                ContextMenuEvent menuEvent{menuAction.id, event};
+                callback(menuEvent);
+            } catch (Exception& e) {
+                log::exception(e);
+            } catch (fmt::format_error& e) {
+                log::report(LogLevel::Error, {}, "Error using fmt formatting: {}\n{}", e.what(),
+                            util::fmtHelp.view());
+            } catch (std::exception& e) {
+                log::exception(e);
+            } catch (...) {
+                log::exception();
+            }
+        });
+    };
+
+    for (const auto& entry : menuEntries) {
+        std::visit(util::overloaded(addSeparator, addMenuAction, addSubmenu), entry);
+    }
+}
+
+}  // namespace
+
 CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
     : QOpenGLWidget{parent}, CanvasGL{}, name_{name} {
 
@@ -80,24 +134,35 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         this, this, [this]() { return utilqt::toGLM(size()); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
-        [this](QMouseEvent* e) {
+        [this](dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
+               ContextMenuCategories actions, InteractionEvent* triggerEvent) {
             if (!contextMenuCallback_) return;
 
             QMenu menu(this);
-            if (auto image = image_.lock()) {
-                utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
-                menu.addSeparator();
+            if (actions.contains(ContextMenuCategory::Callback)) {
+                addMenuEntries(&menu, entries, triggerEvent, [this](ContextMenuEvent& menuEvent) {
+                    propagateEvent(&menuEvent, nullptr);
+                });
             }
-            if (contextMenuCallback_(menu)) {
-                menu.exec(e->globalPosition().toPoint());
+
+            if (auto image = image_.lock(); image && actions.contains(ContextMenuCategory::Image)) {
+                if (!menu.actions().empty()) {
+                    menu.addSeparator();
+                }
+                utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
+            }
+            if (contextMenuCallback_(menu, actions)) {
+                const dvec2 pixelPos = dvec2{normalizedPosition.x, 1.0 - normalizedPosition.y} *
+                                       utilqt::toGLM(size().toSizeF());
+                menu.exec(mapToGlobal(utilqt::toQPoint(pixelPos).toPoint()));
             }
         },
         [this](Qt::CursorShape cursor) { setCursor(cursor); });
 
     auto& settings = InviwoApplication::getPtr()->getSystemSettings();
     auto setHandleTouch = [this, &settings, interactionEventMapper]() {
-        auto& touch = settings.enableTouchProperty_;
-        auto& gestures = settings.enableGesturesProperty_;
+        const auto& touch = settings.enableTouchProperty_;
+        const auto& gestures = settings.enableGesturesProperty_;
 
         if (gestures.get()) {
             grabGesture(Qt::PanGesture);
@@ -210,7 +275,8 @@ void CanvasQOpenGLWidget::releaseContext() {
     context()->moveToThread(QApplication::instance()->thread());
 }
 
-void CanvasQOpenGLWidget::onContextMenu(std::function<bool(QMenu&)> callback) {
+void CanvasQOpenGLWidget::onContextMenu(
+    std::function<bool(QMenu&, ContextMenuCategories)> callback) {
     contextMenuCallback_ = std::move(callback);
 }
 
