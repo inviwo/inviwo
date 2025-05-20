@@ -176,8 +176,8 @@ VolumeSliceGL::VolumeSliceGL()
                            {"free", "Free Rotation", 4}},
                           0, InvalidationLevel::Valid)
     , imageRotation_("imageRotation", "Angle",
-                     R"(Angle of rotation if "Free Rotation" is chosen as rotation)"_help, 0,
-                     {0, ConstraintBehavior::Ignore},
+                     R"(Angle of rotation if "Free Rotation" is chosen as rotation)"_help, 0.0f,
+                     {0.0f, ConstraintBehavior::Ignore},
                      {glm::radians(360.f), ConstraintBehavior::Ignore})
     , flipHorizontal_("flipHorizontal", "Horizontal Flip",
                       "Flips the output image left and right"_help, false)
