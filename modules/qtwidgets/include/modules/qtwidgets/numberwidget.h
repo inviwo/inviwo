@@ -151,8 +151,7 @@ private:
 };
 
 template <typename T>
-class IVW_MODULE_QTWIDGETS_API NumberWidget final : public BaseNumberWidget,
-                                                    public OrdinalBaseWidget<T> {
+class NumberWidget final : public BaseNumberWidget, public OrdinalBaseWidget<T> {
 public:
     NumberWidget();
     explicit NumberWidget(const NumberWidgetConfig& config);
