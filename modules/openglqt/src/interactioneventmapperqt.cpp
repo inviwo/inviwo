@@ -220,8 +220,7 @@ bool InteractionEventMapperQt::mapMouseReleaseEvent(QMouseEvent* e) {
 
     // Only show context menu when we have not used the event and the mouse has not been dragged.
     if (e->button() == Qt::RightButton && !mouseEvent.hasBeenUsed() && !blockContextMenu_) {
-        contextMenu_(utilqt::toGLM(e->globalPosition().toPoint()), {},
-                     ContextMenuCategories{flags::any}, &mouseEvent);
+        contextMenu_(pos, {}, ContextMenuCategories{flags::any}, &mouseEvent);
     }
     blockContextMenu_ = false;
 

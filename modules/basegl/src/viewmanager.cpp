@@ -39,6 +39,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>        // for TouchPoint, TouchEvent
 #include <inviwo/core/interaction/events/touchstate.h>        // for TouchState, TouchState::Fin...
 #include <inviwo/core/interaction/events/wheelevent.h>        // for WheelEvent
+#include <inviwo/core/interaction/events/contextmenuevent.h>  // for ContextMenuEvent
 #include <inviwo/core/util/exception.h>                       // for Exception
 #include <inviwo/core/util/glmvec.h>                          // for dvec2, uvec2, ivec2, dvec3
 #include <inviwo/core/util/sourcecontext.h>                   // for SourceContext
@@ -83,6 +84,41 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
     };
 
     auto e = pe->getEvent();
+    bool propagated = false;
+    switch (e->hash()) {
+        case MouseEvent::chash():
+            propagated = propagateMouseEvent(static_cast<MouseEvent*>(e), prop, true);
+            break;
+        case WheelEvent::chash():
+            propagated = propagateWheelEvent(static_cast<WheelEvent*>(e), prop, true);
+            break;
+        case GestureEvent::chash():
+            propagated = propagateGestureEvent(static_cast<GestureEvent*>(e), prop, true);
+            break;
+        case TouchEvent::chash():
+            propagated = propagateTouchEvent(static_cast<TouchEvent*>(e), prop, true);
+            break;
+        default:
+            propagated = false;
+            break;
+    }
+
+    return propagated;
+}
+
+bool ViewManager::propagateContextMenuEvent(ContextMenuEvent* ce, Propagator propagator) {
+
+    auto prop = [&](Event* newEvent, size_t ind) {
+        if (newEvent) {
+            ContextMenuEvent newCe(ce->getId(), static_cast<InteractionEvent*>(newEvent));
+
+            propagator(&newCe, ind);
+            if (newCe.hasBeenUsed()) ce->markAsUsed();
+            for (auto p : newCe.getVisitedProcessors()) ce->markAsVisited(p);
+        }
+    };
+
+    auto e = ce->getEvent();
     bool propagated = false;
     switch (e->hash()) {
         case MouseEvent::chash():
@@ -240,6 +276,9 @@ bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
         }
         case TouchEvent::chash(): {
             return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator, false);
+        }
+        case ContextMenuEvent::chash(): {
+            return propagateContextMenuEvent(static_cast<ContextMenuEvent*>(event), propagator);
         }
         default:
             return false;
