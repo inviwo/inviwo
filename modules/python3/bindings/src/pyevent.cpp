@@ -262,7 +262,7 @@ void exposeEvents(pybind11::module& m) {
         .def(py::init<>())
         .def(py::init([](std::string label, const py::tuple& childEntries, std::string iconPath) {
                  std::vector<ContextMenuEntry> entries;
-                 for (const auto& entry : childEntries) {
+                 for (auto&& entry : childEntries) {
                      if (pybind11::isinstance<ContextMenuAction>(entry)) {
                          try {
                              entries.emplace_back(pybind11::cast<ContextMenuAction>(entry));
