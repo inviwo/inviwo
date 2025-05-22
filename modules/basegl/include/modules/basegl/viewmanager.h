@@ -78,8 +78,8 @@ public:
 
     struct View {
         View(const ivec2& p, const ivec2& s) : pos(p), size(s) {};
-        View(const ivec4& m)
-            : pos(m.x, m.y), size(m.z, m.w) {};  // NOLINT(google-explicit-constructor)
+        View(const ivec4& m)  // NOLINT(google-explicit-constructor)
+            : pos(m.x, m.y), size(m.z, m.w) {};
 
         ivec2 pos;
         ivec2 size;
