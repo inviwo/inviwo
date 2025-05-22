@@ -79,11 +79,11 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
 
             propagator(&newPe, ind);
             if (newPe.hasBeenUsed()) pe->markAsUsed();
-            for (auto p : newPe.getVisitedProcessors()) pe->markAsVisited(p);
+            for (auto* p : newPe.getVisitedProcessors()) pe->markAsVisited(p);
         }
     };
 
-    auto e = pe->getEvent();
+    auto* e = pe->getEvent();
     bool propagated = false;
     switch (e->hash()) {
         case MouseEvent::chash():
@@ -114,11 +114,11 @@ bool ViewManager::propagateContextMenuEvent(ContextMenuEvent* ce, Propagator pro
 
             propagator(&newCe, ind);
             if (newCe.hasBeenUsed()) ce->markAsUsed();
-            for (auto p : newCe.getVisitedProcessors()) ce->markAsVisited(p);
+            for (auto* p : newCe.getVisitedProcessors()) ce->markAsVisited(p);
         }
     };
 
-    auto e = ce->getEvent();
+    auto* e = ce->getEvent();
     bool propagated = false;
     switch (e->hash()) {
         case MouseEvent::chash():
