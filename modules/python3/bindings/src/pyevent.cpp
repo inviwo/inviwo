@@ -347,11 +347,9 @@ void exposeEvents(pybind11::module& m) {
         .def("setToolTip", &InteractionEvent::setToolTip)
         .def(
             "showContextMenu",
-            [](InteractionEvent* self, dvec2 normalizedPosition,
-               std::vector<ContextMenuEntry> entries, ContextMenuCategories actions) {
-                self->showContextMenu(normalizedPosition, entries, actions);
-            },
-            py::arg("normalizedPosition"), py::arg("entries"),
+            [](InteractionEvent* self, std::vector<ContextMenuEntry> entries,
+               ContextMenuCategories actions) { self->showContextMenu(entries, actions); },
+            py::arg("entries"),
             py::arg("actions") = ContextMenuCategories{ContextMenuCategory::Callback});
 
     py::classh<KeyboardEvent, InteractionEvent>(m, "KeyboardEvent")

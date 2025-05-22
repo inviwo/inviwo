@@ -129,7 +129,7 @@ workspace for example usage.
                                            childEntries=submenu_items,
                                            iconPath=":/svgicons/treelist.svg")
                 ]
-                event.showContextMenu(pickevent.position, entries)
+                event.showContextMenu(entries)
                 event.markAsUsed()
 
         if (pickevent.state == ivw.PickingState.Updated):

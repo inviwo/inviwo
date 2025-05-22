@@ -134,8 +134,8 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         this, this, [this]() { return utilqt::toGLM(size()); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
-        [this](dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
-               ContextMenuCategories actions, InteractionEvent* triggerEvent) {
+        [this](std::span<ContextMenuEntry> entries, ContextMenuCategories actions,
+               InteractionEvent* triggerEvent) {
             if (!contextMenuCallback_) return;
 
             QMenu menu(this);
@@ -152,9 +152,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
                 utilqt::addImageActions(menu, *image, layerType_, layerIdx_);
             }
             if (contextMenuCallback_(menu, actions)) {
-                const dvec2 pixelPos = dvec2{normalizedPosition.x, 1.0 - normalizedPosition.y} *
-                                       utilqt::toGLM(size().toSizeF());
-                menu.exec(mapToGlobal(utilqt::toQPoint(pixelPos).toPoint()));
+                menu.exec(QCursor::pos());
             }
         },
         [this](Qt::CursorShape cursor) { setCursor(cursor); });

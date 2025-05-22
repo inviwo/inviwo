@@ -275,7 +275,7 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
                     ContextMenuAction{.label = "Randomize Mesh Seed",
                                       .id = fmt::format("{}.reseed", getIdentifier())},
                 }}};
-            mouseEvent->showContextMenu(mouseEvent->posNormalized(), entries,
+            mouseEvent->showContextMenu(entries,
                                         ContextMenuCategory::Callback | ContextMenuCategory::View);
             mouseEvent->setUsed(true);
         }
