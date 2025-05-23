@@ -72,21 +72,20 @@ public:
     const ToolTipCallback& getToolTipCallback() const;
 
     /**
-     * Show a context menu at the given @p normalizedPosition. The custom menu @p entries are added
+     * Show a context menu at the current mouse position. The custom menu @p entries are added
      * before any other default actions based on @p categories. When any of the custom menu actions
      * in the @p entries is triggered, a ContexMenuEvent with the corresponding entry ID will be
      * propagated through the processor network.
-     * @param normalizedPosition  position in normalized coordinates
      * @param entries     list of custom menu items
      * @param categories  determines which menu actions should be included in the context menu
      *
      * @see ContextMenuCategories
      */
-    void showContextMenu(dvec2 normalizedPosition, std::span<ContextMenuEntry> entries,
+    void showContextMenu(std::span<ContextMenuEntry> entries,
                          ContextMenuCategories categories = ContextMenuCategory::Callback);
 
-    using ContextMenuCallback = std::function<void(dvec2, std::span<ContextMenuEntry>,
-                                                   ContextMenuCategories, InteractionEvent*)>;
+    using ContextMenuCallback =
+        std::function<void(std::span<ContextMenuEntry>, ContextMenuCategories, InteractionEvent*)>;
     void setContextMenuCallback(ContextMenuCallback callback);
     const ContextMenuCallback& getContexMenuCallback() const;
 

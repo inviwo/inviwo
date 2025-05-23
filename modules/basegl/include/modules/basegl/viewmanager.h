@@ -44,6 +44,7 @@
 
 namespace inviwo {
 
+class ContextMenuEvent;
 class Event;
 class GestureEvent;
 class MouseEvent;
@@ -76,8 +77,9 @@ public:
     using Propagator = std::function<void(Event*, size_t ind)>;
 
     struct View {
-        View(const ivec2& p, const ivec2& s) : pos(p), size(s){};
-        View(const ivec4& m) : pos(m.x, m.y), size(m.z, m.w){};
+        View(const ivec2& p, const ivec2& s) : pos(p), size(s) {};
+        View(const ivec4& m)  // NOLINT(google-explicit-constructor)
+            : pos(m.x, m.y), size(m.z, m.w) {};
 
         ivec2 pos;
         ivec2 size;
@@ -164,6 +166,7 @@ private:
     };
 
     bool propagatePickingEvent(PickingEvent* pe, Propagator propagator);
+    bool propagateContextMenuEvent(ContextMenuEvent* pe, Propagator propagator);
     bool propagateMouseEvent(MouseEvent* me, Propagator propagator, bool isFromPicking);
     bool propagateWheelEvent(WheelEvent* we, Propagator propagator, bool isFromPicking);
     bool propagateGestureEvent(GestureEvent* ge, Propagator propagator, bool isFromPicking);
