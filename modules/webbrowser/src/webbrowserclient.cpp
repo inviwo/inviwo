@@ -211,7 +211,7 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
                                       [[maybe_unused]] CefRefPtr<CefRequest> request,
                                       [[maybe_unused]] bool user_gesture,
                                       [[maybe_unused]] bool is_redirect) {
-    CEF_REQUIRE_UI_THREAD();
+    CEF_REQUIRE_UI_THREAD();  // NOLINT
 
     router_->OnBeforeBrowse(browser, frame);
     return false;

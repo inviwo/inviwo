@@ -339,8 +339,8 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     // Find unique files and directories in specified search paths
     auto librarySearchPaths = util::getLibrarySearchPaths();
 
-    auto modules =
-        findRuntimeModules(librarySearchPaths, isEnabled, isRuntimeModuleReloadingEnabled());
+    auto modules = findRuntimeModules(librarySearchPaths, std::move(isEnabled),
+                                      isRuntimeModuleReloadingEnabled());
 
     registerModules(std::move(modules));
 }

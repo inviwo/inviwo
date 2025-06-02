@@ -35,7 +35,6 @@ namespace inviwo {
 ContextMenuEvent::ContextMenuEvent(std::string_view id, KeyModifiers modifiers, std::any data)
     : id_{id}, modifiers_{modifiers}, data_{std::move(data)} {}
 
-
 ContextMenuEvent::~ContextMenuEvent() = default;
 
 ContextMenuEvent* ContextMenuEvent::clone() const { return new ContextMenuEvent(*this); }

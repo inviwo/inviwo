@@ -77,7 +77,7 @@ class LibFileObserver : public FileObserver {
 public:
     LibFileObserver(InviwoApplication* app, const std::filesystem::path& filename,
                     std::function<void(const std::filesystem::path&)> callback)
-        : FileObserver(app), fileChangeCallback_{callback} {
+        : FileObserver(app), fileChangeCallback_{std::move(callback)} {
 
         startFileObservation(filename);
     }

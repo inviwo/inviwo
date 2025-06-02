@@ -39,7 +39,7 @@ SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : SelectionColorProperty(identifier, displayName, Document{}, checked, color, alpha,
-                             invalidationLevel, semantics) {}
+                             invalidationLevel, std::move(semantics)) {}
 
 SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                std::string_view displayName, Document help,
