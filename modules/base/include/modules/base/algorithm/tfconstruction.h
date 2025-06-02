@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,51 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/base/pythonbindings/io/volumewriting.h>
-#include <modules/base/pythonbindings/algorithm/volumeoperations.h>
-#include <modules/base/algorithm/tfconstruction.h>
+#include <modules/base/basemoduledefine.h>
 
-#include <modules/python3/pybindmodule.h>
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/util/glmvec.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <pybind11/stl.h>
-#include <warn/pop>
+#include <vector>
+#include <span>
 
-namespace py = pybind11;
+namespace inviwo::util {
 
-INVIWO_PYBIND_MODULE(ivwbase, m) {
-    m.doc() = R"doc(
-        Base Module API
-    
-        .. rubric:: Modules
-        
-        .. autosummary::
-            :toctree: .
-            
-            io
-            algorithm
-        )doc";
+struct SawToothOptions {
+    std::span<const double> points;
+    dvec2 range = dvec2(0.0, 1.0);
+    double alpha = 1.0;
+    double delta = 0.01;
+    double shift = 0.0;
+};
 
-    auto ioMod = m.def_submodule("io", "Input and Output functions");
-    auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
+IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts);
 
-    inviwo::exposeVolumeWriteMethods(ioMod);
-    inviwo::exposeVolumeOperations(utilMod);
-
-    utilMod.def(
-        "tfSawTooth",
-        [](py::iterable iterable, glm::dvec2 range, double alpha, double delta, double shift) {
-            std::vector<double> points;
-            for (auto i : iterable) {
-                points.push_back(i.cast<double>());
-            }
-            inviwo::util::SawToothOptions opts{points, range, alpha, delta, shift};
-            return inviwo::util::tfSawTooth(opts);
-        },
-        py::arg("points"), py::arg("range") = glm::dvec2{0.0, 1.0}, py::arg("alpha") = 1.0,
-        py::arg("delta") = 0.01, py::arg("shift") = 0.0);
-}
+}  // namespace inviwo::util

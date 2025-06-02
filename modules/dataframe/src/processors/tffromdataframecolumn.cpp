@@ -29,6 +29,8 @@
 
 #include <inviwo/dataframe/processors/tffromdataframecolumn.h>
 
+#include <modules/base/algorithm/tfconstruction.h>
+
 #include <algorithm>
 #include <ranges>
 
@@ -91,48 +93,15 @@ void TFFromDataFrameColumn::process() {
         pos_.assign(std::begin(newPos), std::end(newPos));
     }
 
-    static constexpr auto clamp = [](double pos) { return std::clamp(pos, 0.0, 1.0); };
-    auto shift = [s = shift_.get()](double pos) { return pos + s; };
-    const auto normalize = [range = range_.get()](double pos) {
-        return (pos - range.x) / (range.y - range.x);
-    };
-    auto points = pos_ | std::views::transform(shift) | std::views::transform(normalize) |
-                  std::views::transform(clamp) | std::ranges::to<std::vector>();
+    auto data = util::tfSawTooth({
+        .points = pos_,
+        .range = range_.get(),
+        .alpha = alpha_.get(),
+        .delta = delta_.get(),
+        .shift = shift_.get(),
+    });
 
-    std::ranges::sort(points);
-    auto dups = std::ranges::unique(points);
-    points.erase(dups.begin(), dups.end());
-
-    if (points.empty()) {
-        tf_.get().clear();
-    } else {
-        std::vector<TFPrimitiveData> data;
-        const auto delta = delta_.get();
-        const auto low = vec4{0.0};
-        const auto high = vec4{1.0, 1.0, 1.0, alpha_.get()};
-
-        if (points.front() > 0.0) {
-            const auto p0 = points.front() - delta;
-            data.emplace_back(clamp(p0), glm::mix(low, high, (clamp(p0) - p0) / delta));
-        }
-        for (auto&& [a, b] : std::views::zip(points, points | std::views::drop(1))) {
-            data.emplace_back(a, high);
-            if (b - a > 2 * delta) {
-                data.emplace_back(a + delta, low);
-                data.emplace_back(b - delta, low);
-            } else if (b - a > delta) {
-                data.emplace_back((b + a) / 2.0, glm::mix(high, low, (b - a - delta) / delta));
-            }
-        }
-        data.emplace_back(points.back(), high);
-
-        if (points.back() < 1.0) {
-            const auto pn = points.back() + delta;
-            data.emplace_back(clamp(pn), glm::mix(low, high, (pn - clamp(pn)) / delta));
-        }
-
-        tf_.get().set(data);
-    }
+    tf_.get().set(data);
 }
 
 }  // namespace inviwo
