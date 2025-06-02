@@ -1,8 +1,5 @@
 var NAVTREEINDEX27 =
 {
-"classinviwo_1_1plot_1_1ParallelCoordinates.html":[4,0,0,19,27],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9":[2,0,0,14,26,0],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9":[4,0,0,19,27,0],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL.html":[2,0,0,14,32],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL.html":[4,0,0,19,33],
 "classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html":[2,0,0,14,32,0],
@@ -249,5 +246,8 @@ var NAVTREEINDEX27 =
 "namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8a6adac929b615be2e0d213eb9d1ad15ba":[2,0,0,1372,4],
 "namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8a88fa71f0a6e0dfedbb46d91cc0b37a50":[2,0,0,1372,3],
 "namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8aa559b87068921eec05086ce5485e9784":[2,0,0,1372,1],
-"namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8af5a7924e621e84c9280a9a27e1bcb7f6":[2,0,0,1372,2]
+"namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8af5a7924e621e84c9280a9a27e1bcb7f6":[2,0,0,1372,2],
+"namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8af6068daa29dbb05a7ead1e3b5a48bbee":[2,0,0,1372,0],
+"namespaceinviwo.html#a5faa497893ca8cf218056f66cb9a5a40":[2,0,0,1397],
+"namespaceinviwo.html#a6b12ce78c933ef18516ceab6d64afbf5":[2,0,0,1386]
 };

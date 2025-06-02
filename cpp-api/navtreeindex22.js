@@ -1,8 +1,5 @@
 var NAVTREEINDEX22 =
 {
-"classinviwo_1_1TransferFunctionProperty.html":[1,4,24],
-"classinviwo_1_1TransferFunctionProperty.html#a197e1364cdb4450c941ad5528cf97d66":[1,4,24,4],
-"classinviwo_1_1TransferFunctionProperty.html#a6a233c127391c410e55b42b6c485ca32":[1,4,24,3],
 "classinviwo_1_1TransferFunctionProperty.html#aaac430d426603c7b939219c2c37ef390":[1,4,24,1],
 "classinviwo_1_1TransferFunctionProperty.html#aacc0d44e59b42492a84d7624ab389c30":[1,4,24,5],
 "classinviwo_1_1TransferFunctionProperty.html#aad039b57388d7b2488f69beca5dca53b":[1,4,24,0],
@@ -249,5 +246,8 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1VolumeCreator.html":[2,0,0,1269],
 "classinviwo_1_1VolumeCreator.html":[4,0,0,1276],
 "classinviwo_1_1VolumeCreator.html#a91d87afab69efc8f35dd646ae6efad0f":[2,0,0,1269,0],
-"classinviwo_1_1VolumeCreator.html#a91d87afab69efc8f35dd646ae6efad0f":[4,0,0,1276,0]
+"classinviwo_1_1VolumeCreator.html#a91d87afab69efc8f35dd646ae6efad0f":[4,0,0,1276,0],
+"classinviwo_1_1VolumeCurlCPUProcessor.html":[2,0,0,1270],
+"classinviwo_1_1VolumeCurlCPUProcessor.html":[4,0,0,1277],
+"classinviwo_1_1VolumeCurlCPUProcessor.html#ab2387aaac506d22a3c11d7db86d448c6":[2,0,0,1270,0]
 };

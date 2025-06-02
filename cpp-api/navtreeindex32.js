@@ -1,8 +1,5 @@
 var NAVTREEINDEX32 =
 {
-"structinviwo_1_1TetraMeshBuffers.html":[2,0,0,1135],
-"structinviwo_1_1TetraMeshBuffers.html":[4,0,0,1142],
-"structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf":[2,0,0,1135,4],
 "structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf":[4,0,0,1142,4],
 "structinviwo_1_1TetraMeshBuffers.html#a2adbb58bdbcdd199ec504b5393e9d963":[2,0,0,1135,0],
 "structinviwo_1_1TetraMeshBuffers.html#a2adbb58bdbcdd199ec504b5393e9d963":[4,0,0,1142,0],
@@ -43,17 +40,11 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1ValueWrapper.html":[2,0,0,1238],
 "structinviwo_1_1ValueWrapper.html":[4,0,0,1245],
 "structinviwo_1_1ValueWrapper.html#a50961ad3f4c97dc0cbbfe471ef7d7e4c":[2,0,0,1238,1],
-"structinviwo_1_1ValueWrapper.html#a50961ad3f4c97dc0cbbfe471ef7d7e4c":[2,0,0,1239,1],
 "structinviwo_1_1ValueWrapper.html#a50961ad3f4c97dc0cbbfe471ef7d7e4c":[4,0,0,1245,1],
-"structinviwo_1_1ValueWrapper.html#a50961ad3f4c97dc0cbbfe471ef7d7e4c":[4,0,0,1246,1],
 "structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009":[2,0,0,1238,0],
-"structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009":[2,0,0,1239,0],
 "structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009":[4,0,0,1245,0],
-"structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009":[4,0,0,1246,0],
 "structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4":[2,0,0,1238,2],
-"structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4":[2,0,0,1239,2],
 "structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4":[4,0,0,1245,2],
-"structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4":[4,0,0,1246,2],
 "structinviwo_1_1ValueWrapper_3_01TransferFunction_01_4.html":[2,0,0,1239],
 "structinviwo_1_1ValueWrapper_3_01TransferFunction_01_4.html":[4,0,0,1246],
 "structinviwo_1_1ViewEvent_1_1FitData.html":[2,0,0,1257,0],
@@ -249,5 +240,14 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1resource_1_1PY.html":[4,0,0,22,1],
 "structinviwo_1_1resource_1_1RAM.html":[4,0,0,22,2],
 "structinviwo_1_1shuntingyard_1_1TokenBase.html":[4,0,0,23,2],
-"structinviwo_1_1statsutil_1_1RegresionResult.html":[2,0,0,17,0]
+"structinviwo_1_1statsutil_1_1RegresionResult.html":[2,0,0,17,0],
+"structinviwo_1_1statsutil_1_1RegresionResult.html":[4,0,0,24,0],
+"structinviwo_1_1statsutil_1_1RegresionResult.html#a607fa956c5d2416235f2202020e0ed39":[2,0,0,17,0,1],
+"structinviwo_1_1statsutil_1_1RegresionResult.html#a607fa956c5d2416235f2202020e0ed39":[4,0,0,24,0,1],
+"structinviwo_1_1statsutil_1_1RegresionResult.html#af75e71a460e914d99aba73d6941c1896":[2,0,0,17,0,0],
+"structinviwo_1_1statsutil_1_1RegresionResult.html#af75e71a460e914d99aba73d6941c1896":[4,0,0,24,0,0],
+"structinviwo_1_1unitgroups_1_1Group.html":[4,0,0,26,0],
+"structinviwo_1_1util_1_1BufferDispatcher.html":[2,0,0,19,2],
+"structinviwo_1_1util_1_1BufferDispatcher.html":[4,0,0,27,6],
+"structinviwo_1_1util_1_1BuildInfo.html":[2,0,0,19,3]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX12 =
 {
-"classinviwo_1_1MetaData.html":[4,0,0,665],
-"classinviwo_1_1MetaDataFactory.html":[2,0,0,659],
 "classinviwo_1_1MetaDataFactory.html":[4,0,0,666],
 "classinviwo_1_1MetaDataMap.html":[2,0,0,660],
 "classinviwo_1_1MetaDataMap.html":[4,0,0,667],
@@ -249,5 +247,7 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1OpenGLCapabilities.html":[2,0,0,716],
 "classinviwo_1_1OpenGLCapabilities.html":[4,0,0,723],
 "classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[2,0,0,716,0],
-"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[4,0,0,723,0]
+"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[4,0,0,723,0],
+"classinviwo_1_1OpenGLException.html":[2,0,0,717],
+"classinviwo_1_1OpenGLException.html":[4,0,0,724]
 };

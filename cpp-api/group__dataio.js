@@ -16,9 +16,7 @@ var group__dataio =
     [ "inviwo::DataWriterType< T >", "classinviwo_1_1DataWriterType.html", [
       [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
     ] ],
-    [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", [
-      [ "readData", "classinviwo_1_1RawVolumeReader.html#a3b20c9c2a09079fe825920d3f3fd08d3", null ]
-    ] ],
+    [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
     [ "inviwo::TextFileReader", "classinviwo_1_1TextFileReader.html", [
       [ "read", "classinviwo_1_1TextFileReader.html#a5d85a6c7f74a6b75c4faa7b482edf5f5", null ],
       [ "read", "classinviwo_1_1TextFileReader.html#aaf0c5d25218422413b74567840764bad", null ]

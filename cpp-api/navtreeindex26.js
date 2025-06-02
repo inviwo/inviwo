@@ -1,8 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3],
-"classinviwo_1_1buffertraits_1_1PickingBuffer.html":[1,1,0,9],
-"classinviwo_1_1buffertraits_1_1PositionsBufferBase.html":[1,1,0,2],
 "classinviwo_1_1buffertraits_1_1RadiiBuffer.html":[1,1,0,8],
 "classinviwo_1_1buffertraits_1_1ScalarMetaBuffer.html":[1,1,0,10],
 "classinviwo_1_1buffertraits_1_1TexCoordBuffer.html":[1,1,0,5],
@@ -249,5 +246,8 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1PCPMajorTickSettings.html":[4,0,0,19,31],
 "classinviwo_1_1plot_1_1PCPMinorTickSettings.html":[2,0,0,14,31],
 "classinviwo_1_1plot_1_1PCPMinorTickSettings.html":[4,0,0,19,32],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html":[2,0,0,14,26]
+"classinviwo_1_1plot_1_1ParallelCoordinates.html":[2,0,0,14,26],
+"classinviwo_1_1plot_1_1ParallelCoordinates.html":[4,0,0,19,27],
+"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9":[2,0,0,14,26,0],
+"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9":[4,0,0,19,27,0]
 };

@@ -1,8 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"classinviwo_1_1TetraMeshVolumeRaycaster.html":[4,0,0,1144],
-"classinviwo_1_1TetraMeshVolumeRaycaster.html#a74ed0cbbbec8ba008619194333c5cee0":[2,0,0,1137,0],
-"classinviwo_1_1TetraMeshVolumeRaycaster.html#a74ed0cbbbec8ba008619194333c5cee0":[4,0,0,1144,0],
 "classinviwo_1_1TetraMeshVolumeRaycaster.html#a7a319a2c221fc7b4d35bcaee718b298c":[2,0,0,1137,1],
 "classinviwo_1_1TetraMeshVolumeRaycaster.html#a7a319a2c221fc7b4d35bcaee718b298c":[4,0,0,1144,1],
 "classinviwo_1_1TextEditorDockWidget.html":[2,0,0,1141],
@@ -249,5 +246,8 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1TransferFunctionLayerWriter.html#a1736ce9f1cec6e3d8e6aa1f040b82966":[2,0,0,1214,0],
 "classinviwo_1_1TransferFunctionLayerWriter.html#a1736ce9f1cec6e3d8e6aa1f040b82966":[4,0,0,1221,0],
 "classinviwo_1_1TransferFunctionLayerWriterWrapper.html":[2,0,0,1215],
-"classinviwo_1_1TransferFunctionLayerWriterWrapper.html":[4,0,0,1222]
+"classinviwo_1_1TransferFunctionLayerWriterWrapper.html":[4,0,0,1222],
+"classinviwo_1_1TransferFunctionProperty.html":[1,4,24],
+"classinviwo_1_1TransferFunctionProperty.html#a197e1364cdb4450c941ad5528cf97d66":[1,4,24,4],
+"classinviwo_1_1TransferFunctionProperty.html#a6a233c127391c410e55b42b6c485ca32":[1,4,24,3]
 };

@@ -80,8 +80,6 @@ var NAVTREEINDEX9 =
 "classinviwo_1_1JSONModule.html":[4,0,0,532],
 "classinviwo_1_1JSONReader.html":[2,0,0,526],
 "classinviwo_1_1JSONReader.html":[4,0,0,533],
-"classinviwo_1_1JSONReader.html#aaa0ec1217ed0110c74fbc6f882d2e9ab":[2,0,0,526,0],
-"classinviwo_1_1JSONReader.html#aaa0ec1217ed0110c74fbc6f882d2e9ab":[4,0,0,533,0],
 "classinviwo_1_1JSONSupplier.html":[2,0,0,527],
 "classinviwo_1_1JSONSupplier.html":[4,0,0,534],
 "classinviwo_1_1JSONWriter.html":[2,0,0,528],
@@ -249,5 +247,7 @@ var NAVTREEINDEX9 =
 "classinviwo_1_1LayerRAMPrecision.html#a9c959e1c201cf404eb96db07211d3aa7":[1,1,20,3],
 "classinviwo_1_1LayerRamResizer.html":[2,0,0,567],
 "classinviwo_1_1LayerRamResizer.html":[4,0,0,574],
-"classinviwo_1_1LayerRamResizer.html#a5d9990e63b18ad9743f502b96a7f8f1f":[2,0,0,567,0]
+"classinviwo_1_1LayerRamResizer.html#a5d9990e63b18ad9743f502b96a7f8f1f":[2,0,0,567,0],
+"classinviwo_1_1LayerRamResizer.html#a5d9990e63b18ad9743f502b96a7f8f1f":[4,0,0,574,0],
+"classinviwo_1_1LayerRenderer.html":[2,0,0,568]
 };
