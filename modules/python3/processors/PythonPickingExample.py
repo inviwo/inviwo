@@ -42,8 +42,9 @@ class PythonPickingExample(ivw.Processor):
         self.count = ivw.properties.IntProperty("count", "count", 10, 0, 1000, 1)
         self.addProperty(self.count, owner=False)
 
-        self.tf = ivw.properties.TransferFunctionProperty("tf", "TF", ivw.doc.Document(),
-                                                          ivw.data.TransferFunction())
+        self.tf = ivw.properties.TransferFunctionProperty(
+            "tf", "TF", ivw.doc.Document(), ivw.data.TransferFunction()
+        )
         self.addProperty(self.tf, owner=False)
 
         # initialize PickingMapper and set callback function
@@ -57,13 +58,15 @@ class PythonPickingExample(ivw.Processor):
             category="Python",
             codeState=ivw.CodeState.Stable,
             tags=ivw.Tags("PY, Example"),
-            help=ivw.md2doc(r'''
+            help=ivw.md2doc(
+                r"""
 Example processor in Python demonstrating picking and tooltips for random triangles with
 `inviwopy.PickingMapper`.
 
 See [python3/pythonpicking.inv](file:~modulePath~/data/workspaces/pythonpicking.inv)
 workspace for example usage.
-''')
+"""
+            ),
         )
 
     def getProcessorInfo(self):
@@ -72,9 +75,10 @@ workspace for example usage.
     def process(self):
         count = self.count.value
 
-        self.positions = (np.random.normal(0, 1, (3 * count, 3))
-                          + np.repeat(np.random.normal(0, 5, (count, 3)), 3, axis=0)
-                          ).astype(np.float32)
+        self.positions = (
+            np.random.normal(0, 1, (3 * count, 3))
+            + np.repeat(np.random.normal(0, 5, (count, 3)), 3, axis=0)
+        ).astype(np.float32)
 
         ctmp = np.asarray([self.tf.value.sample(i / count) for i in range(count)])
         color = np.repeat(ctmp, 3, axis=0)
@@ -110,29 +114,37 @@ workspace for example usage.
     def callback(self, pickevent: ivw.PickingEvent) -> None:
         print("pick: ", pickevent.pickedId)
 
-        if (not pickevent.getMovedSincePressed()
+        if (
+            not pickevent.getMovedSincePressed()
             and pickevent.pressItem == ivw.PickingPressItem.Secondary
-                and pickevent.pressState == ivw.PickingPressState.Release):
+            and pickevent.pressState == ivw.PickingPressState.Release
+        ):
             event: ivw.InteractionEvent = pickevent.getEvent()
             if event:
                 i = pickevent.pickedId
 
                 # show context menu with an entry for the triangle, a separator, and a callback
-                submenu_items: tuple = (ivw.ContextMenuAction(f"Triangle {i}",
-                                                              f"{self.getIdentifier()}.tri{i}"),
-                                        ivw.ContextMenuSeparator(),
-                                        ivw.ContextMenuAction(f"Second Callback",
-                                                              f"{self.getIdentifier()}.callback")
-                                        )
+                submenu_items: tuple = (
+                    ivw.ContextMenuAction(
+                        f"{self.getIdentifier()}.tri{i}" f"Triangle {i}",
+                    ),
+                    ivw.ContextMenuSeparator(),
+                    ivw.ContextMenuAction(
+                        f"{self.getIdentifier()}.callback",
+                        f"Second Callback",
+                    ),
+                )
                 entries: list = [
-                    ivw.ContextMenuSubmenu("Picking Submenu",
-                                           childEntries=submenu_items,
-                                           iconPath=":/svgicons/treelist.svg")
+                    ivw.ContextMenuSubmenu(
+                        "Picking Submenu",
+                        childEntries=submenu_items,
+                        iconPath=":/svgicons/treelist.svg",
+                    )
                 ]
                 event.showContextMenu(entries)
                 event.markAsUsed()
 
-        if (pickevent.state == ivw.PickingState.Updated):
+        if pickevent.state == ivw.PickingState.Updated:
             i = pickevent.pickedId
             p1 = self.positions[i * 3 + 0]
             p2 = self.positions[i * 3 + 1]

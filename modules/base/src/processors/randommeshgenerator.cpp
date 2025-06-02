@@ -272,8 +272,8 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
                 .label = "Mesh Operations",
                 .iconPath = ":/svgicons/treelist.svg",
                 .childEntries = {
-                    ContextMenuAction{.label = "Randomize Mesh Seed",
-                                      .id = fmt::format("{}.reseed", getIdentifier())},
+                    ContextMenuAction{.id = fmt::format("{}.reseed", getIdentifier()),
+                                      .label = "Randomize Mesh Seed"},
                 }}};
             mouseEvent->showContextMenu(entries,
                                         ContextMenuCategory::Callback | ContextMenuCategory::View);

@@ -166,7 +166,6 @@ private:
     };
 
     bool propagatePickingEvent(PickingEvent* pe, Propagator propagator);
-    bool propagateContextMenuEvent(ContextMenuEvent* pe, Propagator propagator);
     bool propagateMouseEvent(MouseEvent* me, Propagator propagator, bool isFromPicking);
     bool propagateWheelEvent(WheelEvent* we, Propagator propagator, bool isFromPicking);
     bool propagateGestureEvent(GestureEvent* ge, Propagator propagator, bool isFromPicking);

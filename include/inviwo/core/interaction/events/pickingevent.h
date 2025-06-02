@@ -207,6 +207,19 @@ public:
      */
     void setToolTip(std::string_view tooltip) const;
 
+    /**
+     * Show a context menu at the current mouse position. The custom menu @p entries are added
+     * before any other default actions based on @p categories. When any of the custom menu actions
+     * in the @p entries is triggered, a ContexMenuEvent with the corresponding entry ID will be
+     * propagated through the processor network.
+     * @param entries     list of custom menu items
+     * @param categories  determines which menu actions should be included in the context menu
+     *
+     * @see ContextMenuCategories
+     */
+    void showContextMenu(std::span<ContextMenuEntry> entries,
+                         ContextMenuCategories categories = ContextMenuCategory::Callback);
+
     const InteractionEvent::ToolTipCallback& getToolTipCallback() const;
 
     virtual void print(std::ostream& ss) const override;
