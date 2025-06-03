@@ -61,7 +61,7 @@ private:
     DoubleProperty shift_;
     DoubleMinMaxProperty range_;
 
-    std::vector<double> pos_;
+    std::vector<TFPrimitiveData> pos_;
 };
 
 }  // namespace inviwo
