@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/processors/tffromdataframecolumn.h>
-
+#include <inviwo/core/util/glmvec.h>
 #include <modules/base/algorithm/tfconstruction.h>
 
 #include <algorithm>
@@ -88,15 +88,16 @@ void TFFromDataFrameColumn::process() {
         const auto range = col->getRange();
         range_.set(range);
 
-        auto newPos = bnl_.getSelectedIndices() |
-                      std::views::transform([&](auto i) { return col->getAsDouble(i); });
+        auto newPos =
+            bnl_.getSelectedIndices() | std::views::transform([&](auto i) {
+                return TFPrimitiveData{col->getAsDouble(i), glm::vec4{1, 1, 1, alpha_.get()}};
+            });
         pos_.assign(std::begin(newPos), std::end(newPos));
     }
 
     auto data = util::tfSawTooth({
         .points = pos_,
         .range = range_.get(),
-        .alpha = alpha_.get(),
         .delta = delta_.get(),
         .shift = shift_.get(),
     });

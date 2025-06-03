@@ -39,13 +39,16 @@
 namespace inviwo::util {
 
 struct SawToothOptions {
-    std::span<const double> points;
+    std::span<const TFPrimitiveData> points;
     dvec2 range = dvec2(0.0, 1.0);
-    double alpha = 1.0;
     double delta = 0.01;
     double shift = 0.0;
+    vec4 low = vec4{0.0, 0.0, 0.0, 0.0};
 };
 
 IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts);
+
+IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfMax(std::span<const TFPrimitiveData> a,
+                                                       std::span<const TFPrimitiveData> b);
 
 }  // namespace inviwo::util
