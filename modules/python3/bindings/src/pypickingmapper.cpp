@@ -123,6 +123,12 @@ void exposePickingMapper(pybind11::module& m) {
         .def_property_readonly("modifiers", &PickingEvent::modifiers)
         .def("getEvent", &PickingEvent::getEvent, py::return_value_policy::reference)
         .def("setToolTip", &PickingEvent::setToolTip)
+        .def(
+            "showContextMenu",
+            [](PickingEvent* self, std::vector<ContextMenuEntry> entries,
+               ContextMenuCategories actions) { self->showContextMenu(entries, actions); },
+            py::arg("entries"),
+            py::arg("actions") = ContextMenuCategories{ContextMenuCategory::Callback})
         .def_property_readonly_static("chash",
                                       [](const py::object&) { return PickingEvent::chash(); });
 

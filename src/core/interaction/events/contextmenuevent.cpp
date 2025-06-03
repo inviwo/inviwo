@@ -32,25 +32,8 @@
 
 namespace inviwo {
 
-ContextMenuEvent::ContextMenuEvent(std::string_view id, InteractionEvent* event)
-    : id_{id}, owner_{nullptr}, event_{event} {}
-
-ContextMenuEvent::ContextMenuEvent(std::string_view id, std::unique_ptr<InteractionEvent> event)
-    : ContextMenuEvent(id, event.get()) {
-    owner_ = std::move(event);
-}
-
-ContextMenuEvent::ContextMenuEvent(const ContextMenuEvent& rhs)
-    : Event{rhs}, id_{rhs.id_}, owner_{rhs.event_->clone()}, event_{owner_.get()} {}
-
-ContextMenuEvent& ContextMenuEvent::operator=(const ContextMenuEvent& that) {
-    if (this != &that) {
-        Event::operator=(that);
-        owner_.reset(that.event_->clone());
-        event_ = owner_.get();
-    }
-    return *this;
-}
+ContextMenuEvent::ContextMenuEvent(std::string_view id, KeyModifiers modifiers, std::any data)
+    : id_{id}, modifiers_{modifiers}, data_{std::move(data)} {}
 
 ContextMenuEvent::~ContextMenuEvent() = default;
 
@@ -60,6 +43,10 @@ std::string_view ContextMenuEvent::getId() const { return id_; }
 
 uint64_t ContextMenuEvent::hash() const { return chash(); }
 
-InteractionEvent* ContextMenuEvent::getEvent() const { return event_; }
+const std::any& ContextMenuEvent::data() const { return data_; }
+void ContextMenuEvent::setData(std::any data) { data_ = std::move(data); }
+
+KeyModifiers ContextMenuEvent::modifiers() const { return modifiers_; }
+void ContextMenuEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
 }  // namespace inviwo

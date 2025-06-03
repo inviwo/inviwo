@@ -60,7 +60,8 @@ void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
 }
 
 bool PropertyWidgetCEF::onQuery(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64_t /*query_id*/,
+    CefRefPtr<CefBrowser> /*browser*/, CefRefPtr<CefFrame> /*frame*/,
+    int64_t /*query_id*/,  // NOLINT
     const CefString& request, bool /*persistent*/,
     CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
 

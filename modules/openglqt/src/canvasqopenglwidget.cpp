@@ -81,27 +81,28 @@ dvec2 normalizePosition(QPointF pos, size2_t dim) {
 }
 
 void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
-                    InteractionEvent* event,
-                    const std::function<void(ContextMenuEvent&)>& callback) {
+                    const std::function<void(ContextMenuEvent&)>& propagator) {
 
     auto addSeparator = [menu](const ContextMenuSeparator&) { menu->addSeparator(); };
-    auto addSubmenu = [menu, event, callback](const ContextMenuSubmenu& menuEntry) {
+    auto addSubmenu = [menu, propagator](const ContextMenuSubmenu& menuEntry) {
         auto* submenu = menu->addMenu(utilqt::toQString(menuEntry.label));
         if (menuEntry.iconPath) {
             submenu->setIcon(QIcon(utilqt::toQString(*menuEntry.iconPath)));
         }
-        addMenuEntries(submenu, menuEntry.childEntries, event, callback);
+        addMenuEntries(submenu, menuEntry.childEntries, propagator);
     };
-    auto addMenuAction = [menu, event, callback](const ContextMenuAction& menuAction) {
+    auto addMenuAction = [menu, propagator](const ContextMenuAction& menuAction) {
         auto* action = menu->addAction(utilqt::toQString(menuAction.label));
         if (menuAction.iconPath) {
             action->setIcon(QIcon(utilqt::toQString(*menuAction.iconPath)));
         }
-        QObject::connect(action, &QAction::triggered, [event, callback, menuAction]() {
+        QObject::connect(action, &QAction::triggered, [propagator, menuAction]() {
             try {
                 RenderContext::getPtr()->activateDefaultRenderContext();
-                ContextMenuEvent menuEvent{menuAction.id, event};
-                callback(menuEvent);
+                ContextMenuEvent menuEvent{
+                    menuAction.id, utilqt::getModifiers(QGuiApplication::keyboardModifiers()),
+                    menuAction.data};
+                propagator(menuEvent);
             } catch (Exception& e) {
                 log::exception(e);
             } catch (fmt::format_error& e) {
@@ -140,7 +141,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
 
             QMenu menu(this);
             if (actions.contains(ContextMenuCategory::Callback)) {
-                addMenuEntries(&menu, entries, triggerEvent, [this](ContextMenuEvent& menuEvent) {
+                addMenuEntries(&menu, entries, [this](ContextMenuEvent& menuEvent) {
                     propagateEvent(&menuEvent, nullptr);
                 });
             }

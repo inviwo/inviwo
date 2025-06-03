@@ -63,8 +63,8 @@ std::shared_ptr<BufferGL> BufferCLGL2GLConverter::createFrom(
                                       src->getBufferTarget(), src->getBufferGL());
 }
 
-void BufferCLGL2GLConverter::update(std::shared_ptr<const BufferCLGL> source,
-                                    std::shared_ptr<BufferGL> destination) const {
+void BufferCLGL2GLConverter::update(std::shared_ptr<const BufferCLGL>,
+                                    std::shared_ptr<BufferGL>) const {
     // Do nothing since they share data
 }
 

@@ -106,41 +106,6 @@ bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator)
     return propagated;
 }
 
-bool ViewManager::propagateContextMenuEvent(ContextMenuEvent* ce, Propagator propagator) {
-
-    auto prop = [&](Event* newEvent, size_t ind) {
-        if (newEvent) {
-            ContextMenuEvent newCe(ce->getId(), static_cast<InteractionEvent*>(newEvent));
-
-            propagator(&newCe, ind);
-            if (newCe.hasBeenUsed()) ce->markAsUsed();
-            for (auto* p : newCe.getVisitedProcessors()) ce->markAsVisited(p);
-        }
-    };
-
-    auto* e = ce->getEvent();
-    bool propagated = false;
-    switch (e->hash()) {
-        case MouseEvent::chash():
-            propagated = propagateMouseEvent(static_cast<MouseEvent*>(e), prop, true);
-            break;
-        case WheelEvent::chash():
-            propagated = propagateWheelEvent(static_cast<WheelEvent*>(e), prop, true);
-            break;
-        case GestureEvent::chash():
-            propagated = propagateGestureEvent(static_cast<GestureEvent*>(e), prop, true);
-            break;
-        case TouchEvent::chash():
-            propagated = propagateTouchEvent(static_cast<TouchEvent*>(e), prop, true);
-            break;
-        default:
-            propagated = false;
-            break;
-    }
-
-    return propagated;
-}
-
 bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator, bool isFromPicking) {
     selectedView_ = eventState_.getView(*this, me);
 
@@ -276,9 +241,6 @@ bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
         }
         case TouchEvent::chash(): {
             return propagateTouchEvent(static_cast<TouchEvent*>(event), propagator, false);
-        }
-        case ContextMenuEvent::chash(): {
-            return propagateContextMenuEvent(static_cast<ContextMenuEvent*>(event), propagator);
         }
         default:
             return false;

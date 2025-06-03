@@ -1544,9 +1544,18 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
         return;
     }
 
-    app_->getWorkspaceManager()->clear();
-    // clear dangling pointers to processors with processor widgets
-    visibleWidgetState_.processors.clear();
+    try {
+        app_->getWorkspaceManager()->clear();
+        // clear dangling pointers to processors with processor widgets
+        visibleWidgetState_.processors.clear();
+    } catch (const Exception& e) {
+        log::exception(e);
+    } catch (const std::exception& e) {
+        log::exception(e);
+    } catch (...) {
+        log::exception();
+    }
+
     hideWelcomeScreen();
 
     saveWindowState();

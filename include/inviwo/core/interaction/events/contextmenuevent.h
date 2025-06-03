@@ -37,6 +37,7 @@
 
 #include <string_view>
 #include <memory>
+#include <any>
 
 namespace inviwo {
 
@@ -47,11 +48,10 @@ namespace inviwo {
  */
 class IVW_CORE_API ContextMenuEvent : public Event {
 public:
-    ContextMenuEvent(std::string_view id, InteractionEvent* event);
-    ContextMenuEvent(std::string_view id, std::unique_ptr<InteractionEvent> event);
-    ContextMenuEvent(const ContextMenuEvent& rhs);
+    ContextMenuEvent(std::string_view id, KeyModifiers modifiers, std::any data);
+    ContextMenuEvent(const ContextMenuEvent& rhs) = default;
     ContextMenuEvent(ContextMenuEvent&&) = default;
-    ContextMenuEvent& operator=(const ContextMenuEvent& that);
+    ContextMenuEvent& operator=(const ContextMenuEvent& that) = default;
     ContextMenuEvent& operator=(ContextMenuEvent&&) = default;
 
     virtual ~ContextMenuEvent();
@@ -68,23 +68,16 @@ public:
         return util::constexpr_hash("org.inviwo.ContextMenuEvent");
     }
 
-    InteractionEvent* getEvent() const;
+    KeyModifiers modifiers() const;
+    void setModifiers(KeyModifiers modifiers);
 
-    template <typename EventType>
-    EventType* getEventAs() const;
+    const std::any& data() const;
+    void setData(std::any data);
 
 private:
     std::string id_;
-    std::unique_ptr<InteractionEvent> owner_;
-    InteractionEvent* event_;
+    KeyModifiers modifiers_;
+    std::any data_;
 };
-
-template <typename EventType>
-EventType* ContextMenuEvent::getEventAs() const {
-    if (event_ && event_->hash() == EventType::chash()) {
-        return static_cast<EventType*>(event_);
-    }
-    return nullptr;
-}
 
 }  // namespace inviwo

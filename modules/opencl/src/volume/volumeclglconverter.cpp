@@ -71,8 +71,8 @@ std::shared_ptr<VolumeCLGL> VolumeGL2CLGLConverter::createFrom(
     return std::make_shared<VolumeCLGL>(volumeGL->getTexture());
 }
 
-void VolumeGL2CLGLConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
-                                    std::shared_ptr<VolumeCLGL> volumeDst) const {
+void VolumeGL2CLGLConverter::update(std::shared_ptr<const VolumeGL>,
+                                    std::shared_ptr<VolumeCLGL>) const {
     // Do nothing since they are sharing data
 }
 
@@ -120,8 +120,8 @@ std::shared_ptr<VolumeGL> VolumeCLGL2GLConverter::createFrom(
     return std::make_shared<VolumeGL>(src->getTexture());
 }
 
-void VolumeCLGL2GLConverter::update(std::shared_ptr<const VolumeCLGL> source,
-                                    std::shared_ptr<VolumeGL> destination) const {
+void VolumeCLGL2GLConverter::update(std::shared_ptr<const VolumeCLGL>,
+                                    std::shared_ptr<VolumeGL>) const {
     // Do nothing since they share data
 }
 

@@ -294,17 +294,36 @@ void exposeEvents(pybind11::module& m) {
 
     py::classh<ContextMenuAction>(m, "ContextMenuAction")
         .def(py::init<>())
-        .def(py::init<std::string, std::string, std::optional<std::string>>(), py::arg("label"),
-             py::arg("id"), py::arg("iconPath") = std::nullopt)
+        .def(py::init([](std::string id, std::string label, std::optional<std::string> iconPath) {
+                 return ContextMenuAction{
+                     .id = std::move(id),
+                     .label = std::move(label),
+                     .iconPath = std::move(iconPath),
+                 };
+             }),
+             py::arg("id"), py::arg("label"), py::arg("iconPath") = std::nullopt)
+        .def(py::init([](std::string id, std::string label, std::optional<std::string> iconPath,
+                         const py::object& data) {
+                 return ContextMenuAction{.id = std::move(id),
+                                          .label = std::move(label),
+                                          .iconPath = std::move(iconPath),
+                                          .data = data};
+             }),
+             py::arg("id"), py::arg("label"), py::arg("iconPath"), py::arg("data"))
         .def(py::init([](const py::tuple& args) {
             if (args.size() == 2) {
-                return ContextMenuAction{.label = args[0].cast<std::string>(),
-                                         .id = args[1].cast<std::string>(),
+                return ContextMenuAction{.id = args[0].cast<std::string>(),
+                                         .label = args[1].cast<std::string>(),
                                          .iconPath = std::nullopt};
             } else if (args.size() == 3) {
-                return ContextMenuAction{.label = args[0].cast<std::string>(),
-                                         .id = args[1].cast<std::string>(),
+                return ContextMenuAction{.id = args[0].cast<std::string>(),
+                                         .label = args[1].cast<std::string>(),
                                          .iconPath = args[2].cast<std::string>()};
+            } else if (args.size() == 4) {
+                return ContextMenuAction{.id = args[0].cast<std::string>(),
+                                         .label = args[1].cast<std::string>(),
+                                         .iconPath = args[2].cast<std::string>(),
+                                         .data = args[3].cast<py::object>()};
             } else {
                 throw pybind11::value_error(
                     "Expected a tuple of size 2 or 3 (label, id, iconPath (optional)");
@@ -312,7 +331,17 @@ void exposeEvents(pybind11::module& m) {
         }))
         .def_readwrite("label", &ContextMenuAction::label)
         .def_readwrite("id", &ContextMenuAction::id)
-        .def_readwrite("iconPath", &ContextMenuAction::iconPath);
+        .def_readwrite("iconPath", &ContextMenuAction::iconPath)
+        .def_property(
+            "data",
+            [](ContextMenuEvent& e) {
+                if (const auto* obj = std::any_cast<py::object>(&e.data())) {
+                    return *obj;
+                } else {
+                    return py::object{};
+                }
+            },
+            [](ContextMenuEvent& e, const py::object& data) { e.setData(data); });
 
     py::classh<Event>(m, "Event")
         .def("clone", &Event::clone)
@@ -464,9 +493,22 @@ void exposeEvents(pybind11::module& m) {
                                       [](const py::object&) { return ResizeEvent::chash(); });
 
     py::classh<ContextMenuEvent, Event>(m, "ContextMenuEvent")
-        .def(py::init<std::string_view, InteractionEvent*>(), py::arg("id"), py::arg("event"))
+        .def(py::init([](std::string_view id, KeyModifiers modifiers, const py::object& data) {
+            return ContextMenuEvent{id, modifiers, data};
+        }))
         .def_property_readonly("id", &ContextMenuEvent::getId)
-        .def("getEvent", &ContextMenuEvent::getEvent, py::return_value_policy::reference)
+        .def_property("modifiers", &ContextMenuEvent::modifiers, &ContextMenuEvent::setModifiers)
+        .def_property(
+            "data",
+            [](ContextMenuEvent& e) {
+                if (const auto* obj = std::any_cast<py::object>(&e.data())) {
+                    return *obj;
+                } else {
+                    return py::object{};
+                }
+            },
+            [](ContextMenuEvent& e, const py::object& data) { e.setData(data); })
+
         .def_property_readonly_static("chash",
                                       [](const py::object&) { return ContextMenuEvent::chash(); });
 

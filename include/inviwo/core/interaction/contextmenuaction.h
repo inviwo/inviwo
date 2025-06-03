@@ -41,6 +41,7 @@
 #include <vector>
 #include <optional>
 #include <variant>
+#include <any>
 
 namespace inviwo {
 
@@ -50,17 +51,18 @@ struct ContextMenuSubmenu;
 using ContextMenuEntry = std::variant<ContextMenuAction, ContextMenuSubmenu, ContextMenuSeparator>;
 
 /**
- * Datastructure for a custom menu action in a context menu. The id should be unique, for example
- * <tt>"<getIdentifier()>.myAction"</tt>. Otherwise it cannnot be guaranteed that the correct
+ * Data structure for a custom menu action in a context menu. The id should be unique, for example
+ * <tt>"<getIdentifier()>.myAction"</tt>. Otherwise it cannot be guaranteed that the correct
  * InteractionHandler/Processor handles the corresponding ContextMenuEvent. If a menu action is
  * triggered, a ContextMenuEvent with the id will be propagated through the processor network.
  *
  * @see ContextMenuEvent ContextMenuSeparator ContextMenuSubmenu
  */
 struct ContextMenuAction {
-    std::string label;
     std::string id;
+    std::string label = {};
     std::optional<std::string> iconPath = std::nullopt;
+    std::any data = {};
 };
 
 struct ContextMenuSeparator {};

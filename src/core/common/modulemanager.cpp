@@ -312,6 +312,8 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
 
             if (!valid(file)) continue;
 
+            if (!isEnabled(util::stripModuleFileNameDecoration(file))) continue;
+
             try {
                 modules.emplace_back(file, runtimeReloading);
             } catch (const Exception& e) {
@@ -337,7 +339,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     // Find unique files and directories in specified search paths
     auto librarySearchPaths = util::getLibrarySearchPaths();
 
-    auto modules = findRuntimeModules(librarySearchPaths, ModuleManager::getEnabledFilter(),
+    auto modules = findRuntimeModules(librarySearchPaths, std::move(isEnabled),
                                       isRuntimeModuleReloadingEnabled());
 
     registerModules(std::move(modules));

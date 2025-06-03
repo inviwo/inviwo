@@ -69,8 +69,8 @@ std::shared_ptr<LayerGL> LayerCLGL2GLConverter::createFrom(
     return std::make_shared<LayerGL>(src->getTexture(), src->getLayerType());
 }
 
-void LayerCLGL2GLConverter::update(std::shared_ptr<const LayerCLGL> source,
-                                   std::shared_ptr<LayerGL> destination) const {
+void LayerCLGL2GLConverter::update(std::shared_ptr<const LayerCLGL>,
+                                   std::shared_ptr<LayerGL>) const {
     // Do nothing since they share data
 }
 
@@ -113,8 +113,8 @@ std::shared_ptr<LayerCLGL> LayerGL2CLGLConverter::createFrom(
     return std::make_shared<LayerCLGL>(layerGL->getTexture(), layerGL->getLayerType());
 }
 
-void LayerGL2CLGLConverter::update(std::shared_ptr<const LayerGL> layerSrc,
-                                   std::shared_ptr<LayerCLGL> layerDst) const {
+void LayerGL2CLGLConverter::update(std::shared_ptr<const LayerGL>,
+                                   std::shared_ptr<LayerCLGL>) const {
     // Nothing to do since the texture is the same
 }
 
