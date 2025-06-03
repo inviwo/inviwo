@@ -1,5 +1,7 @@
 var NAVTREEINDEX16 =
 {
+"classinviwo_1_1PropertyEditorWidgetQt.html":[2,0,0,888],
+"classinviwo_1_1PropertyEditorWidgetQt.html":[4,0,0,895],
 "classinviwo_1_1PropertyEditorWidgetQt.html#a7b7ec72e66d511473380f8af86f3af04":[2,0,0,888,1],
 "classinviwo_1_1PropertyEditorWidgetQt.html#a7b7ec72e66d511473380f8af86f3af04":[4,0,0,895,1],
 "classinviwo_1_1PropertyEditorWidgetQt.html#a856b45b1cba2862eea5f888cdc95bf73":[2,0,0,888,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1RawVolumeRAMLoader.html":[4,0,0,979],
 "classinviwo_1_1RawVolumeReader.html":[1,0,4],
 "classinviwo_1_1RaycastingComponent.html":[2,0,0,974],
-"classinviwo_1_1RaycastingComponent.html":[4,0,0,981],
-"classinviwo_1_1RaycastingComponent.html#a45214793e70c7a6b7bfd8a96dd65c01c":[2,0,0,974,2],
-"classinviwo_1_1RaycastingComponent.html#a45214793e70c7a6b7bfd8a96dd65c01c":[4,0,0,981,2]
+"classinviwo_1_1RaycastingComponent.html":[4,0,0,981]
 };

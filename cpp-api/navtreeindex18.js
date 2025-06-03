@@ -1,5 +1,7 @@
 var NAVTREEINDEX18 =
 {
+"classinviwo_1_1ShaderType.html":[4,0,0,1047],
+"classinviwo_1_1ShaderWidget.html":[2,0,0,1041],
 "classinviwo_1_1ShaderWidget.html":[4,0,0,1048],
 "classinviwo_1_1SharedLibrary.html":[2,0,0,1042],
 "classinviwo_1_1SharedLibrary.html":[4,0,0,1049],
@@ -247,7 +249,5 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SpotLight.html#ae38d434ef5ac15b11259ba30c561ce6b":[4,0,0,1084,9],
 "classinviwo_1_1SpotLight.html#ae38fd477e4e6f11f8181ff600b697667":[2,0,0,1077,6],
 "classinviwo_1_1SpotLight.html#ae38fd477e4e6f11f8181ff600b697667":[4,0,0,1084,6],
-"classinviwo_1_1SpotLightSourceProcessor.html":[2,0,0,1078],
-"classinviwo_1_1SpotLightSourceProcessor.html":[4,0,0,1085],
-"classinviwo_1_1SpotLightSourceProcessor.html#a3a4fada09fb7d08ea3442fa514625886":[2,0,0,1078,0]
+"classinviwo_1_1SpotLightSourceProcessor.html":[2,0,0,1078]
 };

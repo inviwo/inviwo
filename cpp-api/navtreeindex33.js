@@ -1,5 +1,7 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1util_1_1BufferDispatcher.html":[4,0,0,27,6],
+"structinviwo_1_1util_1_1BuildInfo.html":[2,0,0,19,3],
 "structinviwo_1_1util_1_1BuildInfo.html":[4,0,0,27,7],
 "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html":[2,0,0,19,5,0],
 "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html":[4,0,0,27,9,0],

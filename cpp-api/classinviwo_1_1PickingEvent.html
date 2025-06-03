@@ -164,6 +164,7 @@ const <a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *
 template&lt;typename EventType&gt; </td></tr>
 <tr class="memitem:acf2f68372f9e81204313462af9b406a7 template"><td class="memItemLeft" align="right" valign="top">EventType *&#160;</td><td class="memItemRight" valign="bottom"><b>getEventAs</b> () const</td></tr>
 <tr class="memitem:a6d7ed5ef73c155856dc61cfdb99023bb" id="r_a6d7ed5ef73c155856dc61cfdb99023bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d7ed5ef73c155856dc61cfdb99023bb">setToolTip</a> (std::string_view tooltip) const</td></tr>
+<tr class="memitem:ab1a7b9dcc189248e4e8d693415822463" id="r_ab1a7b9dcc189248e4e8d693415822463"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1a7b9dcc189248e4e8d693415822463">showContextMenu</a> (std::span&lt; ContextMenuEntry &gt; entries, ContextMenuCategories categories=<a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">ContextMenuCategory::Callback</a>)</td></tr>
 <tr class="memitem:ade276caedd30d124e7676b0d1a1854ff" id="r_ade276caedd30d124e7676b0d1a1854ff"><td class="memItemLeft" align="right" valign="top"><a id="ade276caedd30d124e7676b0d1a1854ff" name="ade276caedd30d124e7676b0d1a1854ff"></a>
 const InteractionEvent::ToolTipCallback &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getToolTipCallback</b> () const</td></tr>
 <tr class="memitem:a3a8c85954163fcaf0f01717aded7bbc1" id="r_a3a8c85954163fcaf0f01717aded7bbc1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a8c85954163fcaf0f01717aded7bbc1">print</a> (std::ostream &amp;ss) const override</td></tr>
@@ -695,6 +696,35 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Display a tool tip using the optionally set tool tip callback. If no tool tip callback is set, the function does nothing. The supported formation depends on the used back end, but simple html is usually supported. Calling the function with an empty sting will hide any existing tool tip. </p>
+
+</div>
+</div>
+<a id="ab1a7b9dcc189248e4e8d693415822463" name="ab1a7b9dcc189248e4e8d693415822463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a7b9dcc189248e4e8d693415822463">&#9670;&#160;</a></span>showContextMenu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::PickingEvent::showContextMenu </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; ContextMenuEntry &gt;</td>          <td class="paramname"><span class="paramname"><em>entries</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ContextMenuCategories</td>          <td class="paramname"><span class="paramname"><em>categories</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="namespaceinviwo.html#a8ba4246a92ec0b0fab2ff967ae66309ea406c70d61a3eefd08d468bd8a7b1b77f">ContextMenuCategory::Callback</a></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Show a context menu at the current mouse position. The custom menu <code class="param">entries</code> are added before any other default actions based on <code class="param">categories</code>. When any of the custom menu actions in the <code class="param">entries</code> is triggered, a ContexMenuEvent with the corresponding entry ID will be propagated through the processor network. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entries</td><td>list of custom menu items </td></tr>
+    <tr><td class="paramname">categories</td><td>determines which menu actions should be included in the context menu</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>ContextMenuCategories </dd></dl>
 
 </div>
 </div>

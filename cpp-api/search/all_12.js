@@ -208,7 +208,7 @@ var searchData=
   ['sharedopenglresources_205',['SharedOpenGLResources',['../classinviwo_1_1SharedOpenGLResources.html',1,'inviwo']]],
   ['sharedsequencedata_206',['SharedSequenceData',['../structinviwo_1_1util_1_1SharedSequenceData.html',1,'inviwo::util']]],
   ['shouldpropagateto_207',['shouldPropagateTo',['../classinviwo_1_1Event.html#a4d9619ffb42945ef721584cff32719b5',1,'inviwo::Event::shouldPropagateTo()'],['../classinviwo_1_1ResizeEvent.html#a7ecf98daab180fbf60ac7fb7e83b23b6',1,'inviwo::ResizeEvent::shouldPropagateTo()'],['../classinviwo_1_1RasterizeEvent.html#a663e6e23fd8336a7b4173816a7efbb10',1,'inviwo::RasterizeEvent::shouldPropagateTo()']]],
-  ['showcontextmenu_208',['showContextMenu',['../classinviwo_1_1InteractionEvent.html#a0b2ac439ab25da609c6bbdb25eb54ec7',1,'inviwo::InteractionEvent']]],
+  ['showcontextmenu_208',['showContextMenu',['../classinviwo_1_1InteractionEvent.html#a0b2ac439ab25da609c6bbdb25eb54ec7',1,'inviwo::InteractionEvent::showContextMenu()'],['../classinviwo_1_1PickingEvent.html#ab1a7b9dcc189248e4e8d693415822463',1,'inviwo::PickingEvent::showContextMenu()']]],
   ['shower_209',['Shower',['../structinviwo_1_1util_1_1detail_1_1Shower.html',1,'inviwo::util::detail']]],
   ['showwidget_210',['showWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#a58036ee88428169eb2d9ffafe1e20651',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::showWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a4c7312a582203617782bb2e6f2171764',1,'inviwo::MinMaxPropertySettingsWidgetQt::showWidget()']]],
   ['shrinktofit_211',['shrinkToFit',['../classinviwo_1_1BitSet.html#a1a22072dce8f85d4d2b4d9b001b44590',1,'inviwo::BitSet']]],
