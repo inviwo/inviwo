@@ -310,6 +310,16 @@ void exposeEvents(pybind11::module& m) {
                                           .data = data};
              }),
              py::arg("id"), py::arg("label"), py::arg("iconPath"), py::arg("data"))
+        .def(py::init([](std::string id, std::string label, std::optional<std::string> iconPath,
+                         const py::object& data, bool enabled) {
+                 return ContextMenuAction{.id = std::move(id),
+                                          .label = std::move(label),
+                                          .iconPath = std::move(iconPath),
+                                          .data = data,
+                                          .enabled = enabled};
+             }),
+             py::arg("id"), py::arg("label"), py::arg("iconPath"), py::arg("data"),
+             py::arg("enabled"))
         .def(py::init([](const py::tuple& args) {
             if (args.size() == 2) {
                 return ContextMenuAction{.id = args[0].cast<std::string>(),
@@ -324,6 +334,12 @@ void exposeEvents(pybind11::module& m) {
                                          .label = args[1].cast<std::string>(),
                                          .iconPath = args[2].cast<std::string>(),
                                          .data = args[3].cast<py::object>()};
+            } else if (args.size() == 5) {
+                return ContextMenuAction{.id = args[0].cast<std::string>(),
+                                         .label = args[1].cast<std::string>(),
+                                         .iconPath = args[2].cast<std::string>(),
+                                         .data = args[3].cast<py::object>(),
+                                         .enabled = args[4].cast<bool>()};
             } else {
                 throw pybind11::value_error(
                     "Expected a tuple of size 2 or 3 (label, id, iconPath (optional)");
@@ -341,7 +357,8 @@ void exposeEvents(pybind11::module& m) {
                     return py::object{};
                 }
             },
-            [](ContextMenuEvent& e, const py::object& data) { e.setData(data); });
+            [](ContextMenuEvent& e, const py::object& data) { e.setData(data); })
+        .def_readwrite("enabled", &ContextMenuAction::enabled);
 
     py::classh<Event>(m, "Event")
         .def("clone", &Event::clone)

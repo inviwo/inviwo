@@ -63,6 +63,7 @@ struct ContextMenuAction {
     std::string label = {};
     std::optional<std::string> iconPath = std::nullopt;
     std::any data = {};
+    bool enabled = true;
 };
 
 struct ContextMenuSeparator {};

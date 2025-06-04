@@ -96,6 +96,7 @@ void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
         if (menuAction.iconPath) {
             action->setIcon(QIcon(utilqt::toQString(*menuAction.iconPath)));
         }
+        action->setEnabled(menuAction.enabled);
         QObject::connect(action, &QAction::triggered, [propagator, menuAction]() {
             try {
                 RenderContext::getPtr()->activateDefaultRenderContext();
