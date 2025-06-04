@@ -39,6 +39,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 #include <utility>
 #include <memory>
@@ -311,5 +313,14 @@ IVW_CORE_API bool hasRadiiBuffer(const Mesh* mesh);
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Mesh>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Mesh>;
+
+extern template class IVW_CORE_TMPL_EXP DataInport<Mesh>;
+extern template class IVW_CORE_TMPL_EXP DataInport<Mesh, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<Mesh, 0, true>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Mesh>>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Mesh>, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Mesh>, 0, true>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<Mesh>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<DataSequence<Mesh>>;
 
 }  // namespace inviwo

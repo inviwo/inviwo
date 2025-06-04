@@ -35,6 +35,7 @@
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -256,7 +257,42 @@ HistogramCache::Result Layer::calculateHistograms(
     return histograms_.calculateHistograms(histCalc(*this), whenDone);
 }
 
+Document util::layerInfo(const Layer& layer) {
+    using H = utildoc::TableBuilder::Header;
+    using P = Document::PathComponent;
+    Document doc;
+    doc.append("b", "Layer", {{"style", "color:white;"}});
+
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+
+    tb(H("Format"), layer.getDataFormat()->getString());
+    tb(H("Dimension"), layer.getDimensions());
+    tb(H("SwizzleMask"), layer.getSwizzleMask());
+    tb(H("Interpolation"), layer.getInterpolation());
+    tb(H("Wrapping"), layer.getWrapping());
+    tb(H("Data Range"), layer.dataMap.dataRange);
+    tb(H("Value Range"), layer.dataMap.valueRange);
+    tb(H("Value"),
+       fmt::format("{}{: [}", layer.dataMap.valueAxis.name, layer.dataMap.valueAxis.unit));
+    tb(H("Axis 1"), fmt::format("{}{: [}", layer.axes[0].name, layer.axes[0].unit));
+    tb(H("Axis 2"), fmt::format("{}{: [}", layer.axes[1].name, layer.axes[1].unit));
+
+    tb(H("Basis"), layer.getBasis());
+    tb(H("Offset"), layer.getOffset());
+
+    return doc;
+}
+
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;
 template class IVW_CORE_TMPL_INST DataWriterType<Layer>;
+
+template class IVW_CORE_TMPL_INST DataInport<Layer>;
+template class IVW_CORE_TMPL_INST DataInport<Layer, 0, false>;
+template class IVW_CORE_TMPL_INST DataInport<Layer, 0, true>;
+template class IVW_CORE_TMPL_INST DataInport<DataSequence<Layer>>;
+template class IVW_CORE_TMPL_INST DataInport<DataSequence<Layer>, 0, false>;
+template class IVW_CORE_TMPL_INST DataInport<DataSequence<Layer>, 0, true>;
+template class IVW_CORE_TMPL_INST DataOutport<Layer>;
+template class IVW_CORE_TMPL_INST DataOutport<DataSequence<Layer>>;
 
 }  // namespace inviwo
