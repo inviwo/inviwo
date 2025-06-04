@@ -114,10 +114,10 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(TFPrimitiveSet&& rhs) noexcept {
 }
 void TFPrimitiveSet::set(std::span<const TFPrimitiveData> points) {
     auto sbegin = points.begin();
-    auto send = points.end();
+    const auto send = points.end();
 
     auto dbegin = values_.begin();
-    auto dend = values_.end();
+    const auto dend = values_.end();
 
     while (dbegin != dend && sbegin != send) {
         verifyPoint(*sbegin);
@@ -126,14 +126,17 @@ void TFPrimitiveSet::set(std::span<const TFPrimitiveData> points) {
     while (sbegin != send) {
         add(*sbegin++);
     }
-    while (dbegin != dend) {
-        remove(--dend);
+    const size_t targetSize = points.size();
+    while (values_.size() > targetSize) {
+        remove(--values_.end());
     }
 }
 
 void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
+    const size_t targetSize = std::distance(sbegin, send);
+
     auto dbegin = values_.begin();
-    auto dend = values_.end();
+    const auto dend = values_.end();
 
     while (dbegin != dend && sbegin != send) {
         verifyPoint(*sbegin);
@@ -142,8 +145,8 @@ void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
     while (sbegin != send) {
         add(*sbegin++);
     }
-    while (dbegin != dend) {
-        remove(--dend);
+    while (values_.size() > targetSize) {
+        remove(--values_.end());
     }
 }
 
