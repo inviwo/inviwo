@@ -61,7 +61,8 @@ void PlotCamera::setSize(vec2 size) {
         size_ = size;
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto* p = util::getCameraWidthProperty(*camprop_)) {
+            if (auto* p =
+                    dynamic_cast<FloatVec2RefProperty*>(camprop_->getCameraProperty("size"))) {
                 p->propertyModified();
             }
         }
