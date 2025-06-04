@@ -77,4 +77,25 @@ void ProcessorTrampoline::propagateEvent(Event* event, Outport* source) {
     PYBIND11_OVERLOAD(void, Processor, propagateEvent, event, source);
 }
 
+void ProcessorTrampoline::serialize(Serializer& s) const {
+
+    const pybind11::gil_scoped_acquire gil;
+    const auto override = pybind11::get_override(static_cast<const Processor*>(this), "serialize");
+    if (override) {
+        auto o = override.template operator()<pybind11::return_value_policy::reference>(s);
+    }
+    Processor::serialize(s);
+}
+
+void ProcessorTrampoline::deserialize(Deserializer& d) {
+
+    const pybind11::gil_scoped_acquire gil;
+    const auto override =
+        pybind11::get_override(static_cast<const Processor*>(this), "deserialize");
+    if (override) {
+        override.template operator()<pybind11::return_value_policy::reference>(d);
+    }
+    Processor::deserialize(d);
+}
+
 }  // namespace inviwo

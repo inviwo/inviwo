@@ -65,6 +65,7 @@
 #include <inviwopy/pymesh.h>
 #include <inviwopy/pytfprimitiveset.h>
 #include <inviwopy/pypickingmapper.h>
+#include <inviwopy/pyserialization.h>
 #include <inviwopy/pylogging.h>
 #include <inviwopy/pyevent.h>
 #include <inviwopy/pycamera.h>
@@ -127,6 +128,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
     exposeBitset(dataModule);
+    exposeSerialization(m);
     exposeTFPrimitiveSet(dataModule);  // defines TFPrimitiveData used in exposeProperties
     exposeProperties(propertiesModule);
     exposePropertyOwner(propertiesModule);
