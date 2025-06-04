@@ -204,8 +204,12 @@ extern template class IVW_CORE_TMPL_EXP DataWriterType<Volume>;
 extern template class IVW_CORE_TMPL_EXP DataReaderType<VolumeSequence>;
 
 extern template class IVW_CORE_TMPL_EXP DataInport<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataInport<Volume, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<Volume, 0, true>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Volume>>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Volume>, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Volume>, 0, true>;
 extern template class IVW_CORE_TMPL_EXP DataOutport<Volume>;
-extern template class IVW_CORE_TMPL_EXP DataInport<VolumeSequence>;
-extern template class IVW_CORE_TMPL_EXP DataOutport<VolumeSequence>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<DataSequence<Volume>>;
 
 }  // namespace inviwo

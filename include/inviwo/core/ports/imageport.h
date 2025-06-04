@@ -139,6 +139,9 @@ using ImageInport = BaseImageInport<1>;
  */
 using ImageMultiInport = BaseImageInport<0>;
 
+extern template class IVW_CORE_TMPL_EXP BaseImageInport<0>;
+extern template class IVW_CORE_TMPL_EXP BaseImageInport<1>;
+
 template <>
 struct PortTraits<BaseImageInport<1>> {
     static std::string_view classIdentifier() {

@@ -291,4 +291,7 @@ Document ImageOutport::getInfo() const {
     return doc;
 }
 
+template class IVW_CORE_TMPL_INST BaseImageInport<0>;
+template class IVW_CORE_TMPL_INST BaseImageInport<1>;
+
 }  // namespace inviwo
