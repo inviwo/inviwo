@@ -68,4 +68,12 @@ const DataFormatBase* BufferBase::getDataFormat() const {
     return getLastOr(&BufferRepresentation::getDataFormat, defaultDataFormat_);
 }
 
+template class IVW_CORE_TMPL_INST DataReaderType<BufferBase>;
+template class IVW_CORE_TMPL_INST DataWriterType<BufferBase>;
+
+template class IVW_CORE_TMPL_INST DataInport<BufferBase>;
+template class IVW_CORE_TMPL_INST DataInport<BufferBase, 0, false>;
+template class IVW_CORE_TMPL_INST DataInport<BufferBase, 0, true>;
+template class IVW_CORE_TMPL_INST DataOutport<BufferBase>;
+
 }  // namespace inviwo
