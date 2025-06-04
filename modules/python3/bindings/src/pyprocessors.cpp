@@ -301,7 +301,9 @@ void exposeProcessors(pybind11::module& m) {
         .def("getDirectPredecessors", [](Processor* p) { return util::getDirectPredecessors(p); })
         .def("getDirectSuccessors", [](Processor* p) { return util::getDirectSuccessors(p); })
         .def("getPredecessors", [](Processor* p) { return util::getPredecessors(p); })
-        .def("getSuccessors", [](Processor* p) { return util::getSuccessors(p); });
+        .def("getSuccessors", [](Processor* p) { return util::getSuccessors(p); })
+        .def("serialize", &Processor::serialize)
+        .def("deserialize", &Processor::deserialize);
 
     py::classh<CanvasProcessor, Processor>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)

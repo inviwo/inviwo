@@ -75,6 +75,9 @@ public:
     virtual void invokeEvent(Event* event) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
 private:
     mutable std::optional<ProcessorInfo> info_;
 };
