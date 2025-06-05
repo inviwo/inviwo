@@ -29,9 +29,19 @@
 
 #include <inviwopy/pyport.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
+#include <warn/pop>
+
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
 
 #include <modules/python3/pythonoutport.h>
@@ -40,13 +50,7 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <pybind11/functional.h>
-#include <warn/pop>
+#include <modules/python3/pyportutils.h>
 
 #include <utility>
 
@@ -125,6 +129,9 @@ void exposePort(pybind11::module& m) {
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})
         .def("getData", &PythonOutport::getData)
         .def("setData", &PythonOutport::setData);
+
+    exposeInport<DataInport<std::vector<std::string>>>(m, "StringVector");
+    exposeOutport<DataOutport<std::vector<std::string>>>(m, "StringVector");
 }
 
 }  // namespace inviwo
