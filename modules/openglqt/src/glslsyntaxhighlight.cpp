@@ -62,13 +62,13 @@ GLSLSyntaxHighlight::GLSLSyntaxHighlight()
     , builtinFuncColor("bultinFunc", "Built-in Function", util::ordinalColor(syntax::builtinFuncs))
     , commentColor("comment", "Comment", util::ordinalColor(syntax::comment))
     , preProcessorColor("preProcessor", "Pre-Processor", util::ordinalColor(syntax::preProcessor))
-    , litteralColor("literal", "String Literal", util::ordinalColor(syntax::literal))
+    , literalColor("literal", "String Literal", util::ordinalColor(syntax::literal))
     , constantColor("constants", "Constant", util::ordinalColor(syntax::constant))
     , mainColor("main", "Main Function", util::ordinalColor(syntax::main)) {
 
     addProperties(font, fontSize, textColor, backgroundColor, highLightColor, commentColor,
                   typeColor, keywordColor, builtinVarColor, builtinFuncColor, preProcessorColor,
-                  litteralColor, constantColor, mainColor);
+                  literalColor, constantColor, mainColor);
 
     load();
 }
@@ -319,9 +319,9 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlig
     mainformat.setBackground(bgColor);
     mainformat.setForeground(utilqt::toQColor(settings.mainColor));
 
-    QTextCharFormat litteralFormat;
-    litteralFormat.setBackground(bgColor);
-    litteralFormat.setForeground(utilqt::toQColor(settings.litteralColor));
+    QTextCharFormat literalFormat;
+    literalFormat.setBackground(bgColor);
+    literalFormat.setForeground(utilqt::toQColor(settings.literalColor));
 
     sh.clear();
 
@@ -343,7 +343,7 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlig
 
     sh.addPattern(constantsformat, "\\b([0-9]+\\.)?[0-9]+([eE][+-]?[0-9]+)?");
 
-    sh.addPattern(litteralFormat, R"("([^"\\]|\\.)*")");
+    sh.addPattern(literalFormat, R"("([^"\\]|\\.)*")");
 
     sh.addPattern(commentformat, "\\/\\/.*$");
     sh.addMultBlockPattern(commentformat, R"(/\*)"sv, R"(\*/)"sv);
