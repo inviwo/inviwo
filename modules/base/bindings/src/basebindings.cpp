@@ -45,6 +45,8 @@
 namespace py = pybind11;
 
 INVIWO_PYBIND_MODULE(ivwbase, m) {
+    py::module::import("inviwopy");
+
     m.doc() = R"doc(
         Base Module API
     
