@@ -56,7 +56,7 @@ public:
     FloatVec4Property backgroundColor;
     FloatVec4Property highLightColor;
     FloatVec4Property keywordColor;
-    FloatVec4Property litteralColor;
+    FloatVec4Property literalColor;
     FloatVec4Property constantColor;
     FloatVec4Property commentColor;
     FloatVec4Property typeColor;

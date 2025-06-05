@@ -51,11 +51,10 @@ class SyntaxHighlighter;
 
 class IVW_MODULE_QTWIDGETS_API CodeEdit : public QPlainTextEdit {
 public:
-    CodeEdit(QWidget* parent = nullptr);
+    explicit CodeEdit(QWidget* parent = nullptr);
     virtual ~CodeEdit() = default;
 
-    // QPlainTextEdit overrides
-    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual bool event(QEvent* event) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
     void setLineAnnotationColor(std::function<vec4(int, vec4)>);
@@ -65,23 +64,25 @@ public:
 
 protected:
     void lineNumberAreaPaintEvent(QPaintEvent* event);
-    int lineNumberAreaWidth();
-
-    class LineNumberArea : public QWidget {
-    public:
-        LineNumberArea(CodeEdit* editor) : QWidget(editor) { codeEdit_ = editor; }
-        QSize sizeHint() const override { return QSize(codeEdit_->lineNumberAreaWidth(), 0); }
-
-    protected:
-        void paintEvent(QPaintEvent* event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
-        CodeEdit* codeEdit_;
-    };
+    int lineNumberAreaWidth() const;
 
     void resizeEvent(QResizeEvent* event) override;
 
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
     void updateLineNumberArea(const QRect&, int);
+
+    class LineNumberArea : public QWidget {
+    public:
+        explicit LineNumberArea(CodeEdit* editor) : QWidget(editor) { codeEdit_ = editor; }
+        QSize sizeHint() const override { return QSize(codeEdit_->lineNumberAreaWidth(), 0); }
+
+    protected:
+        void paintEvent(QPaintEvent* event) override { codeEdit_->lineNumberAreaPaintEvent(event); }
+
+    private:
+        CodeEdit* codeEdit_;
+    };
 
     QWidget* lineNumberArea_;
     vec4 textColor_;
