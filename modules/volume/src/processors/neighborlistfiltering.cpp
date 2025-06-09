@@ -116,7 +116,7 @@ void NeighborListFiltering::process() {
                 ++step;
             }
 
-            output->addColumn("NN Dist", std::move(stepsFromCenter), Unit{}, dvec2{0, step});
+            output->addColumn("NN Dist", std::move(stepsFromCenter), Unit{}, dvec2{-1.0, step});
             outport_.setData(output);
         });
 }

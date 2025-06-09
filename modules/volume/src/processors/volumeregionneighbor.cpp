@@ -165,6 +165,11 @@ auto calc(const std::shared_ptr<const Volume>& volume) -> std::shared_ptr<DataFr
     auto df = std::make_shared<DataFrame>();
 
     const size_t poolSize = util::getPoolSize();
+
+    if (poolSize == 0) {
+        throw Exception("Need a non-zero thread pool to run");
+    }
+
     const auto dims = volume->getDimensions();
     const util::IndexMapper3D im{dims};
 
