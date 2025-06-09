@@ -165,12 +165,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
 
     registerSettings(systemSettings_.get());
 
-    // Keep the pool at size 0 if are quiting directly to make sure that we don't have
-    // unfinished results in the worker threads
-    if (!commandLineParser_->getQuitApplicationAfterStartup()) {
-        resizePool(systemSettings_->poolSize_);
-        systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
-    }
+    resizePool(systemSettings_->poolSize_);
+    systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
 
     // initialize singletons
     init(this);
