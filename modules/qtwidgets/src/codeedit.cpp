@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/syntaxhighlighter.h>  // for SyntaxHighlighter, text
 
 #include <utility>  // for move
+#include <ranges>
 
 #include <QFont>            // for QFont
 #include <QFontMetrics>     // for QFontMetrics
@@ -188,7 +189,7 @@ void removeIndent(QTextCursor cursor, QPlainTextEdit* parent) {
         int removedSpaces = 0;
         // remove up to singleIndent spaces from the beginning of each line
         for (auto& line : lines) {
-            int spaces = spacesToRemove(line);
+            const int spaces = spacesToRemove(line);
             line.remove(0, spaces);
             removedSpaces += spaces;
         }
@@ -229,7 +230,7 @@ void removeIndent(QTextCursor cursor, QPlainTextEdit* parent) {
 bool CodeEdit::event(QEvent* event) {
     // need to handle tab key events here, since QWidget moves the focus with Shift + Tab
     if (event->type() == QEvent::KeyPress) {
-        auto* keyEvent = static_cast<QKeyEvent*>(event);
+        auto* keyEvent = dynamic_cast<QKeyEvent*>(event);
         if (!(keyEvent->modifiers().testFlags(Qt::ControlModifier | Qt::AltModifier))) {
             if (keyEvent->key() == Qt::Key_Backtab ||
                 (keyEvent->key() == Qt::Key_Tab &&

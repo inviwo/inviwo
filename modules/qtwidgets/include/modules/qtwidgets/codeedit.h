@@ -74,8 +74,8 @@ protected:
 
     class LineNumberArea : public QWidget {
     public:
-        explicit LineNumberArea(CodeEdit* editor) : QWidget(editor) { codeEdit_ = editor; }
-        QSize sizeHint() const override { return QSize(codeEdit_->lineNumberAreaWidth(), 0); }
+        explicit LineNumberArea(CodeEdit* editor) : QWidget(editor), codeEdit_{editor} {}
+        QSize sizeHint() const override { return {codeEdit_->lineNumberAreaWidth(), 0}; }
 
     protected:
         void paintEvent(QPaintEvent* event) override { codeEdit_->lineNumberAreaPaintEvent(event); }

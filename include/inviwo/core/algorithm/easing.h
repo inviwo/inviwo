@@ -160,6 +160,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::quadraticEaseInOut(x);
             }
+            break;
         }
         case EasingType::cubic: {
             switch (easing.mode) {
@@ -170,6 +171,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::cubicEaseInOut(x);
             }
+            break;
         }
         case EasingType::quartic: {
             switch (easing.mode) {
@@ -180,6 +182,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::quarticEaseInOut(x);
             }
+            break;
         }
         case EasingType::quintic: {
             switch (easing.mode) {
@@ -190,6 +193,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::quinticEaseInOut(x);
             }
+            break;
         }
         case EasingType::sine: {
             switch (easing.mode) {
@@ -200,6 +204,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::sineEaseInOut(x);
             }
+            break;
         }
         case EasingType::circular: {
             switch (easing.mode) {
@@ -210,6 +215,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::circularEaseInOut(x);
             }
+            break;
         }
         case EasingType::exponential: {
             switch (easing.mode) {
@@ -220,6 +226,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::exponentialEaseInOut(x);
             }
+            break;
         }
         case EasingType::elastic: {
             switch (easing.mode) {
@@ -230,6 +237,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::elasticEaseInOut(x);
             }
+            break;
         }
         case EasingType::back: {
             switch (easing.mode) {
@@ -240,6 +248,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::backEaseInOut(x);
             }
+            break;
         }
         case EasingType::bounce: {
             switch (easing.mode) {
@@ -250,6 +259,7 @@ constexpr T ease(const T& x, Easing easing) {
                 case EasingMode::inOut:
                     return glm::bounceEaseInOut(x);
             }
+            break;
         }
     }
     throw Exception(SourceContext{}, "Got invalid Easing {}, {}", static_cast<int>(easing.mode),
