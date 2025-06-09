@@ -54,14 +54,14 @@ JavascriptSyntaxHighlight::JavascriptSyntaxHighlight()
     , backgroundColor("background", "Background", util::ordinalColor(syntax::background))
     , highLightColor("highLight", "HighLight", util::ordinalColor(syntax::highLight))
     , keywordColor("keyword", "Keyword", util::ordinalColor(syntax::keyword))
-    , litteralColor("literal", "String Literal", util::ordinalColor(syntax::literal))
+    , literalColor("literal", "String Literal", util::ordinalColor(syntax::literal))
     , constantColor("constant", "Constant", util::ordinalColor(syntax::constant))
     , commentColor("comment", "Comment", util::ordinalColor(syntax::comment))
     , typeColor{"type", "type", util::ordinalColor(syntax::type)}
     , functionColor{"function", "Function", util::ordinalColor(syntax::builtinFuncs)}
     , functionCallColor{"functionCall", "Function Call", util::ordinalColor(syntax::builtinFuncs)} {
     addProperties(font, fontSize, textColor, backgroundColor, highLightColor, keywordColor,
-                  litteralColor, constantColor, commentColor, typeColor, functionColor,
+                  literalColor, constantColor, commentColor, typeColor, functionColor,
                   functionCallColor);
 
     load();
@@ -109,9 +109,9 @@ std::vector<std::shared_ptr<std::function<void()>>> setJavascriptSyntaxHighlight
     commentformat.setBackground(bgColor);
     commentformat.setForeground(utilqt::toQColor(settings.commentColor));
 
-    QTextCharFormat litteralFormat;
-    litteralFormat.setBackground(bgColor);
-    litteralFormat.setForeground(utilqt::toQColor(settings.litteralColor));
+    QTextCharFormat literalFormat;
+    literalFormat.setBackground(bgColor);
+    literalFormat.setForeground(utilqt::toQColor(settings.literalColor));
 
     QTextCharFormat typeFormat;
     typeFormat.setBackground(bgColor);
@@ -142,7 +142,7 @@ std::vector<std::shared_ptr<std::function<void()>>> setJavascriptSyntaxHighlight
     sh.addPattern(commentformat, "//[^\n]*");
     sh.addPattern(commentformat, "/\\*.*?\\*/");
 
-    sh.addPattern(litteralFormat, R"(".*?"|'.*?'|`.*?`)");
+    sh.addPattern(literalFormat, R"(".*?"|'.*?'|`.*?`)");
 
     sh.update();
 

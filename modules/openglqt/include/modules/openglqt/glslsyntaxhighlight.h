@@ -57,7 +57,7 @@ public:
     FloatVec4Property builtinFuncColor;
     FloatVec4Property commentColor;
     FloatVec4Property preProcessorColor;
-    FloatVec4Property litteralColor;
+    FloatVec4Property literalColor;
     FloatVec4Property constantColor;
     FloatVec4Property mainColor;
 };

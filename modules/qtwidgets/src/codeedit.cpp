@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/syntaxhighlighter.h>  // for SyntaxHighlighter, text
 
 #include <utility>  // for move
+#include <ranges>
 
 #include <QFont>            // for QFont
 #include <QFontMetrics>     // for QFontMetrics
@@ -116,16 +117,139 @@ void CodeEdit::setAnnotationSpace(std::function<int(int)> func) {
 
 SyntaxHighlighter& CodeEdit::syntaxHighlighter() { return *sh_; }
 
-void CodeEdit::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->key() == Qt::Key_Tab) {
-        keyEvent->accept();
-        insertPlainText("    ");
+namespace detail {
+
+constexpr int singleIndent = 4;
+
+void addIndent(QTextCursor cursor) {
+    if (cursor.hasSelection()) {
+        const int start = cursor.position();
+        const int end = cursor.anchor();
+
+        cursor.setPosition(start, QTextCursor::MoveAnchor);
+        const int startBlock = cursor.block().blockNumber();
+        cursor.setPosition(end, QTextCursor::MoveAnchor);
+        const int endBlock = cursor.block().blockNumber();
+
+        const int lineCount = std::abs(endBlock - startBlock) + 1;
+        const QTextCursor::MoveOperation direction =
+            start < end ? QTextCursor::PreviousBlock : QTextCursor::NextBlock;
+
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        for (int i = 0; i < lineCount; ++i) {
+            cursor.insertText(QString{" "}.repeated(singleIndent));
+            cursor.movePosition(direction);
+        }
+
+        // restore previous selection
+        if (start > end) {
+            cursor.setPosition(end + singleIndent, QTextCursor::MoveAnchor);
+            cursor.setPosition(start + singleIndent * lineCount, QTextCursor::KeepAnchor);
+        } else {
+            cursor.setPosition(end + singleIndent * lineCount, QTextCursor::MoveAnchor);
+            cursor.setPosition(start + singleIndent, QTextCursor::KeepAnchor);
+        }
     } else {
-        QPlainTextEdit::keyPressEvent(keyEvent);
+        cursor.insertText(QString{" "}.repeated(singleIndent));
     }
 }
 
-int CodeEdit::lineNumberAreaWidth() {
+int spacesToRemove(const QString& str) {
+    if (str.isEmpty()) return 0;
+    int spaces = 0;
+    while (str[spaces] == ' ' && spaces < singleIndent) {
+        ++spaces;
+    }
+    return spaces;
+}
+
+void removeIndent(QTextCursor cursor, QPlainTextEdit* parent) {
+    if (cursor.hasSelection()) {
+        const int start = cursor.position();
+        const int end = cursor.anchor();
+
+        // select entire lines based on the selection
+        if (start > end) {
+            cursor.setPosition(end);
+            cursor.movePosition(QTextCursor::StartOfBlock);
+            cursor.setPosition(start, QTextCursor::KeepAnchor);
+            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        } else {
+            cursor.setPosition(end);
+            cursor.movePosition(QTextCursor::EndOfBlock);
+            cursor.setPosition(start, QTextCursor::KeepAnchor);
+            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+        }
+
+        // selectedText() contains paragraph separators U+2029 instead of line breaks
+        QStringList lines =
+            cursor.selectedText().replace(QChar{QChar::ParagraphSeparator}, "\n").split('\n');
+        const int removedFromFirstLine = !lines.empty() ? spacesToRemove(lines.front()) : 0;
+
+        int removedSpaces = 0;
+        // remove up to singleIndent spaces from the beginning of each line
+        for (auto& line : lines) {
+            const int spaces = spacesToRemove(line);
+            line.remove(0, spaces);
+            removedSpaces += spaces;
+        }
+
+        cursor.insertText(lines.join('\n'));
+
+        // restore previous selection
+        if (start > end) {
+            cursor.setPosition(end - removedFromFirstLine, QTextCursor::MoveAnchor);
+            cursor.setPosition(start - removedSpaces, QTextCursor::KeepAnchor);
+        } else {
+            cursor.setPosition(end - removedSpaces, QTextCursor::MoveAnchor);
+            cursor.setPosition(start - removedFromFirstLine, QTextCursor::KeepAnchor);
+        }
+        // update visual selection in text editor
+        parent->setTextCursor(cursor);
+    } else {
+        const int start = cursor.position();
+        cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, singleIndent);
+        const QString str = cursor.selectedText();
+        // determine the number of spaces to remove from the end of the string
+        int spaces = 0;
+        for (const auto& c : str | std::views::reverse) {
+            if (c != ' ') {
+                break;
+            }
+            ++spaces;
+        }
+        if (spaces > 0) {
+            cursor.setPosition(start - spaces, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+        }
+    }
+}
+
+}  // namespace detail
+
+bool CodeEdit::event(QEvent* event) {
+    // need to handle tab key events here, since QWidget moves the focus with Shift + Tab
+    if (event->type() == QEvent::KeyPress) {
+        auto* keyEvent = dynamic_cast<QKeyEvent*>(event);
+        if (!(keyEvent->modifiers().testFlags(Qt::ControlModifier | Qt::AltModifier))) {
+            if (keyEvent->key() == Qt::Key_Backtab ||
+                (keyEvent->key() == Qt::Key_Tab &&
+                 keyEvent->modifiers().testFlag(Qt::ShiftModifier))) {
+                keyEvent->accept();
+                detail::removeIndent(textCursor(), this);
+                return true;
+            } else if (keyEvent->key() == Qt::Key_Tab) {
+                keyEvent->accept();
+                detail::addIndent(textCursor());
+                return true;
+            }
+        }
+    }
+
+    return QPlainTextEdit::event(event);
+}
+
+int CodeEdit::lineNumberAreaWidth() const {
     int digits = 1;
     int max = qMax(1, blockCount());
     while (max >= 10) {

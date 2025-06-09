@@ -56,11 +56,11 @@ PythonSyntaxHighlight::PythonSyntaxHighlight()
     , backgroundColor("background", "Background", util::ordinalColor(syntax::background))
     , highLightColor("highLight", "HighLight", util::ordinalColor(syntax::highLight))
     , keywordColor("type", "Type", util::ordinalColor(syntax::keyword))
-    , litteralColor("literal", "String Literal", util::ordinalColor(syntax::literal))
+    , literalColor("literal", "String Literal", util::ordinalColor(syntax::literal))
     , constantColor("constant", "Constant", util::ordinalColor(syntax::constant))
     , commentColor("comment", "Comment", util::ordinalColor(syntax::comment)) {
     addProperties(font, fontSize, textColor, backgroundColor, highLightColor, keywordColor,
-                  litteralColor, constantColor, commentColor);
+                  literalColor, constantColor, commentColor);
 
     load();
 }
@@ -96,9 +96,9 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighl
     commentformat.setBackground(bgColor);
     commentformat.setForeground(utilqt::toQColor(settings.commentColor));
 
-    QTextCharFormat litteralFormat;
-    litteralFormat.setBackground(bgColor);
-    litteralFormat.setForeground(utilqt::toQColor(settings.litteralColor));
+    QTextCharFormat literalFormat;
+    literalFormat.setBackground(bgColor);
+    literalFormat.setForeground(utilqt::toQColor(settings.literalColor));
 
     sh.clear();
 
@@ -110,12 +110,12 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighl
     sh.addWordBoundaryPattern(keywordformat, pythonKeywords);
     sh.addPattern(constantsformat, "\\b([0-9]+\\.)?[0-9]+([eE][+-]?[0-9]+)?");
 
-    sh.addPattern(litteralFormat, R"("([^"\\]|\\.)*")");
-    sh.addPattern(litteralFormat, R"('([^'\\]|\\.)*')");
+    sh.addPattern(literalFormat, R"("([^"\\]|\\.)*")");
+    sh.addPattern(literalFormat, R"('([^'\\]|\\.)*')");
 
     sh.addPattern(commentformat, "#.*$");
-    sh.addMultBlockPattern(litteralFormat, R"(""")"sv, R"(""")"sv);
-    sh.addMultBlockPattern(litteralFormat, R"(''')"sv, R"(''')"sv);
+    sh.addMultBlockPattern(literalFormat, R"(""")"sv, R"(""")"sv);
+    sh.addMultBlockPattern(literalFormat, R"(''')"sv, R"(''')"sv);
 
     sh.update();
 
