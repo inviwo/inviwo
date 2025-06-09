@@ -29,13 +29,16 @@
 
 #include <modules/base/algorithm/tfconstruction.h>
 
+#include <glm/geometric.hpp>  // glm::cross, glm::mix
+
 #include <algorithm>
 #include <ranges>
 #include <set>
+#include <optional>
 
 namespace inviwo::util {
 
-std::vector<TFPrimitiveData> inviwo::util::tfSawTooth(const SawToothOptions& opts) {
+std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts) {
     static constexpr auto clamp = [](double pos) { return std::clamp(pos, 0.0, 1.0); };
     static constexpr auto clamptf = [](TFPrimitiveData data) {
         return TFPrimitiveData{clamp(data.pos), data.color};
