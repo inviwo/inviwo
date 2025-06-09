@@ -41,7 +41,7 @@ namespace inviwo {
 const ProcessorInfo NeighborListFiltering::processorInfo_{
     "org.inviwo.NeighborListFiltering",  // Class identifier
     "Neighbor List Filtering",           // Display name
-    "Undefined",                         // Category
+    "Filtering",                         // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
     R"(Takes a list of neighbor pairs and a center selection,
@@ -96,9 +96,12 @@ void NeighborListFiltering::process() {
             selected.emplace(static_cast<ValueType>(center_.get()));
             visited.emplace(static_cast<ValueType>(center_.get()));
 
-            for (int step = 0; !selected.empty(); ++step) {
+            int step = 0;
+            while (!selected.empty()) {
                 for (auto i : selected) {
-                    stepsFromCenter[i] = step;
+                    if (i < stepsFromCenter.size()) {
+                        stepsFromCenter[i] = step;
+                    }
                 }
                 tmp = selected;
                 selected.clear();
@@ -110,10 +113,10 @@ void NeighborListFiltering::process() {
                         }
                     }
                 }
+                ++step;
             }
 
-            output->addColumn("NN Dist", std::move(stepsFromCenter), Unit{}, dvec2{0, 10});
-
+            output->addColumn("NN Dist", std::move(stepsFromCenter), Unit{}, dvec2{0, step});
             outport_.setData(output);
         });
 }

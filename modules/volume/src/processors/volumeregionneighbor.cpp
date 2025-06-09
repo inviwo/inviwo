@@ -44,10 +44,10 @@ namespace inviwo {
 const ProcessorInfo VolumeRegionNeighbor::processorInfo_{
     "org.inviwo.VolumeRegionNeighbor",                            // Class identifier
     "Volume Region Neighbor",                                     // Display name
-    "Undefined",                                                  // Category
+    "Volume Operation",                                           // Category
     CodeState::Stable,                                            // Code state
     Tags::CPU | Tag{"Volume"} | Tag{"Atlas"} | Tag{"DataFrame"},  // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    R"(Given an atlas volume, constructs a list of all neighboring region index pairs)"_unindentHelp,
 };
 
 const ProcessorInfo& VolumeRegionNeighbor::getProcessorInfo() const { return processorInfo_; }
@@ -55,10 +55,12 @@ const ProcessorInfo& VolumeRegionNeighbor::getProcessorInfo() const { return pro
 VolumeRegionNeighbor::VolumeRegionNeighbor()
     : PoolProcessor{}
     , inport_{"inputVolume", "The input volume"_help}
-    , scalarField_{"scalarField"}
+    , scalarField_{"scalarField",
+                   "Used together with the cutoff to only consider neighbors "
+                   "that connects at sufficiently high value"_help}
     , outport_{"seedPoints"}
     , useCutoff_{"useCutoff", "Use Cutoff", false}
-    , cutoff_{"cutoff", "Cutoff", util::ordinalSymmetricVector(0.0)} {
+    , cutoff_{"cutoff", "Cutoff", util::ordinalSymmetricVector(100.0)} {
 
     scalarField_.setOptional(true);
 
@@ -69,19 +71,18 @@ VolumeRegionNeighbor::VolumeRegionNeighbor()
 namespace {
 
 template <typename Index, typename Functor, Index... Is>
-constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
+constexpr auto build_array_impl(const Functor& func, std::integer_sequence<Index, Is...>) noexcept {
     return std::array{func(std::integral_constant<Index, Is>{})...};
 }
 
 template <std::size_t N, typename Index = std::size_t, typename Functor>
-constexpr auto build_array(Functor&& func) noexcept {
-    return build_array_impl<Index>(std::forward<Functor>(func),
-                                   std::make_integer_sequence<Index, N>());
+constexpr auto build_array(const Functor& func) noexcept {
+    return build_array_impl<Index>(func, std::make_integer_sequence<Index, N>());
 }
 
 template <typename Ret = void, typename Functor, typename... Args>
 constexpr auto wrappingDispatch(const Wrapping3D& wrapping, Functor&& func, Args&&... args) {
-    using DispatchFunctor = Ret (*)(Functor && func, Args && ...);
+    using DispatchFunctor = Ret (*)(Functor&& func, Args&&...);
 
     constexpr auto table = build_array<2>([](auto x) constexpr {
         using XT = decltype(x);
@@ -135,8 +136,8 @@ template <typename C>
 void forEachVoxelParallelState(const size3_t dims, size_t jobs, C callback) {
     std::vector<std::future<void>> futures;
     for (size_t job = 0; job < jobs; ++job) {
-        size3_t start = size3_t(0, 0, job * dims.z / jobs);
-        size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
+        const size3_t start = size3_t(0, 0, job * dims.z / jobs);
+        const size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
 
         futures.push_back(util::dispatchPool([&callback, start, stop, job]() {
             size3_t pos{0};
@@ -156,11 +157,11 @@ void forEachVoxelParallelState(const size3_t dims, size_t jobs, C callback) {
     }
 }
 
-static constexpr auto neighbors =
+constexpr auto neighbors =
     std::array{size3_t{0, 0, 1}, size3_t{0, 1, 0}, size3_t{0, 1, 1}, size3_t{1, 0, 0},
                size3_t{1, 0, 1}, size3_t{1, 1, 0}, size3_t{1, 1, 1}};
 
-auto calc(std::shared_ptr<const Volume> volume) -> std::shared_ptr<DataFrame> {
+auto calc(const std::shared_ptr<const Volume>& volume) -> std::shared_ptr<DataFrame> {
     auto df = std::make_shared<DataFrame>();
 
     const size_t poolSize = util::getPoolSize();
@@ -215,7 +216,7 @@ auto calc(std::shared_ptr<const Volume> volume) -> std::shared_ptr<DataFrame> {
     return df;
 }
 
-auto calc(std::shared_ptr<const Volume> volume, std::shared_ptr<const Volume> scalars,
+auto calc(const std::shared_ptr<const Volume>& volume, const std::shared_ptr<const Volume>& scalars,
           double cutoff) -> std::shared_ptr<DataFrame> {
     auto df = std::make_shared<DataFrame>();
 
@@ -227,7 +228,7 @@ auto calc(std::shared_ptr<const Volume> volume, std::shared_ptr<const Volume> sc
         throw Exception("Expected both volumes to have the same dimensions");
     }
 
-    auto* sf = scalars->getRepresentation<VolumeRAM>();
+    const auto* sf = scalars->getRepresentation<VolumeRAM>();
 
     volume->getRepresentation<VolumeRAM>()
         ->dispatch<void, dispatching::filter::UnsignedIntegerScalars>([&](auto vr) {
@@ -292,14 +293,14 @@ void VolumeRegionNeighbor::process() {
         outport_.setData(nullptr);
         dispatchOne([vol = inport_.getData(), sf = scalarField_.getData(),
                      cutoff = cutoff_.get()]() { return calc(vol, sf, cutoff); },
-                    [this](std::shared_ptr<DataFrame> result) {
+                    [this](const std::shared_ptr<DataFrame>& result) {
                         outport_.setData(result);
                         newResults();
                     });
     } else {
         outport_.setData(nullptr);
         dispatchOne([vol = inport_.getData()]() { return calc(vol); },
-                    [this](std::shared_ptr<DataFrame> result) {
+                    [this](const std::shared_ptr<DataFrame>& result) {
                         outport_.setData(result);
                         newResults();
                     });

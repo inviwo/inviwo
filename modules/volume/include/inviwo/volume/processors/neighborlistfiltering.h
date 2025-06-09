@@ -37,7 +37,6 @@
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-
 namespace inviwo {
 
 class IVW_MODULE_VOLUME_API NeighborListFiltering : public Processor {
