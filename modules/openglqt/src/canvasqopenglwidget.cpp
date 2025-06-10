@@ -136,8 +136,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         this, this, [this]() { return utilqt::toGLM(size()); },
         [this]() { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
-        [this](std::span<ContextMenuEntry> entries, ContextMenuCategories actions,
-               InteractionEvent* triggerEvent) {
+        [this](std::span<ContextMenuEntry> entries, ContextMenuCategories actions) {
             if (!contextMenuCallback_) return;
 
             QMenu menu(this);

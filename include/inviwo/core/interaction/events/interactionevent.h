@@ -85,7 +85,7 @@ public:
                          ContextMenuCategories categories = ContextMenuCategory::Callback);
 
     using ContextMenuCallback =
-        std::function<void(std::span<ContextMenuEntry>, ContextMenuCategories, InteractionEvent*)>;
+        std::function<void(std::span<ContextMenuEntry>, ContextMenuCategories)>;
     void setContextMenuCallback(ContextMenuCallback callback);
     const ContextMenuCallback& getContexMenuCallback() const;
 
