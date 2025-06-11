@@ -458,7 +458,6 @@ void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::str
     try {
         repaint();
         qApp->processEvents();
-        app_->waitForPool();
 
         while (app_->getProcessorNetwork()->runningBackgroundJobs() > 0) {
             qApp->processEvents();
@@ -482,7 +481,6 @@ void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::str
 void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::string_view fileName) {
     repaint();
     qApp->processEvents();
-    app_->waitForPool();
     QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
     screenGrab.save(utilqt::toQString(path / fileName), "png");
 }

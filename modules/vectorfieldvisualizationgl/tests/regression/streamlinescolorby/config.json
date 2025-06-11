@@ -1,0 +1,10 @@
+{
+	"image_test" :  {
+		"differenceTolerance" : {
+			 "coloronport.png" : 0.1,
+			 "constant.png" : 0.1,
+			 "curvature.png" : 0.1,
+			 "velocity.png" : 0.1
+		}
+	}
+}
