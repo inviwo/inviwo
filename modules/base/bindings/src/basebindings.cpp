@@ -29,12 +29,16 @@
 
 #include <modules/base/pythonbindings/io/volumewriting.h>
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
+#include <modules/base/algorithm/tfconstruction.h>
+
 #include <modules/python3/pybindmodule.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
+#include <pybind11/stl.h>
+#include <pybind11/typing.h>
 #include <warn/pop>
 
 namespace py = pybind11;
@@ -57,4 +61,32 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
 
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
+
+    utilMod.def(
+        "tfSawTooth",
+        [](const py::typing::Iterable<inviwo::TFPrimitiveData>& iterable, glm::dvec2 range, double delta,
+           double shift, glm::vec4 low) {
+            std::vector<inviwo::TFPrimitiveData> points;
+            for (auto i : iterable) {
+                points.push_back(i.cast<inviwo::TFPrimitiveData>());
+            }
+            const inviwo::util::SawToothOptions opts{points, range, delta, shift, low};
+            return inviwo::util::tfSawTooth(opts);
+        },
+        py::arg("points"), py::arg("range") = glm::dvec2{0.0, 1.0}, py::arg("delta") = 0.01,
+        py::arg("shift") = 0.0, py::arg("low") = glm::vec4(0.0));
+
+    utilMod.def("tfMax", [](const py::typing::Iterable<inviwo::TFPrimitiveData>& a,
+                            const py::typing::Iterable<inviwo::TFPrimitiveData>& b) {
+        std::vector<inviwo::TFPrimitiveData> aPoints;
+        for (auto i : a) {
+            aPoints.push_back(i.cast<inviwo::TFPrimitiveData>());
+        }
+        std::vector<inviwo::TFPrimitiveData> bPoints;
+        for (auto i : b) {
+            bPoints.push_back(i.cast<inviwo::TFPrimitiveData>());
+        }
+
+        return inviwo::util::tfMax(aPoints, bPoints);
+    });
 }

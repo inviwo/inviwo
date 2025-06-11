@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/meshutils.h
     include/modules/base/algorithm/pointgeneration.h
     include/modules/base/algorithm/randomutils.h
+    include/modules/base/algorithm/tfconstruction.h
     include/modules/base/algorithm/volume/marchingcubes.h
     include/modules/base/algorithm/volume/marchingcubesopt.h
     include/modules/base/algorithm/volume/marchingtetrahedron.h
@@ -172,6 +173,7 @@ set(SOURCE_FILES
     src/algorithm/meshutils.cpp
     src/algorithm/pointgeneration.cpp
     src/algorithm/randomutils.cpp
+    src/algorithm/tfconstruction.cpp
     src/algorithm/volume/marchingcubes.cpp
     src/algorithm/volume/marchingcubesopt.cpp
     src/algorithm/volume/marchingtetrahedron.cpp
