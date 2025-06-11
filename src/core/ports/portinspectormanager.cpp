@@ -215,7 +215,9 @@ void PortInspectorManager::removePortInspector(Outport* outport) {
 
 void PortInspectorManager::removePortInspector(PortInspectorMap::iterator it) {
     auto portInspector = std::move(it->second);
-    portInspector->getCanvasProcessor()->getProcessorWidget()->setVisible(false);
+    if (auto* w = portInspector->getCanvasProcessor()->getProcessorWidget()) {
+        w->setVisible(false);
+    }
 
     // Remove processors from the network
     removeNetwork(portInspector.get(), app_->getProcessorNetwork());
