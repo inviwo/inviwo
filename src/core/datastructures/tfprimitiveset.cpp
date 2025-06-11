@@ -429,10 +429,8 @@ vec4 TFPrimitiveSet::interpolateColor(double t) const {
         return back().getColor();
     }
 
-    auto next = it--;
-    const auto x =
-        static_cast<float>((t - it->getPosition()) / (next->getPosition() - it->getPosition()));
-    return glm::mix(it->getColor(), next->getColor(), x);
+    const auto next = it--;
+    return util::interpolateColor(it->getData(), next->getData(), t);
 }
 
 void TFPrimitiveSet::interpolateAndStoreColors(std::span<vec4> data) const {

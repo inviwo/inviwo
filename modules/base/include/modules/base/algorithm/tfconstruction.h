@@ -48,6 +48,17 @@ struct SawToothOptions {
 
 IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts);
 
+IVW_MODULE_BASE_API std::optional<double> intersection(const TFPrimitiveData& f1,
+                                                       const TFPrimitiveData& f2,
+                                                       const TFPrimitiveData& g1,
+                                                       const TFPrimitiveData& g2, double epsilon);
+
+enum class IntersectDir : std::uint8_t { Left, Right };
+IVW_MODULE_BASE_API std::optional<double> intersection(const TFPrimitiveData& p1,
+                                                       const TFPrimitiveData& p2,
+                                                       const TFPrimitiveData& point,
+                                                       IntersectDir dir);
+
 IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfMax(std::span<const TFPrimitiveData> a,
                                                        std::span<const TFPrimitiveData> b,
                                                        dvec2 range = dvec2(0.0, 1.0),
