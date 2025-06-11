@@ -746,6 +746,7 @@ var hierarchy =
         [ "inviwo::MeshVolumeRenderer", "classinviwo_1_1MeshVolumeRenderer.html", null ],
         [ "inviwo::MovieExport", "classinviwo_1_1MovieExport.html", null ],
         [ "inviwo::MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html", null ],
+        [ "inviwo::NeighborListFiltering", "classinviwo_1_1NeighborListFiltering.html", null ],
         [ "inviwo::NoiseGenerator2D", "classinviwo_1_1NoiseGenerator2D.html", null ],
         [ "inviwo::NoiseGenerator3D", "classinviwo_1_1NoiseGenerator3D.html", null ],
         [ "inviwo::OrdinalPropertyAnimator", "classinviwo_1_1OrdinalPropertyAnimator.html", null ],
@@ -765,6 +766,7 @@ var hierarchy =
           [ "inviwo::VolumeDownsample", "classinviwo_1_1VolumeDownsample.html", null ],
           [ "inviwo::VolumeLaplacianProcessor", "classinviwo_1_1VolumeLaplacianProcessor.html", null ],
           [ "inviwo::VolumeRaycaster", "classinviwo_1_1VolumeRaycaster.html", null ],
+          [ "inviwo::VolumeRegionNeighbor", "classinviwo_1_1VolumeRegionNeighbor.html", null ],
           [ "inviwo::VolumeRegionStatistics", "classinviwo_1_1VolumeRegionStatistics.html", null ],
           [ "inviwo::VolumeVoronoiSegmentation", "classinviwo_1_1VolumeVoronoiSegmentation.html", null ]
         ] ],
