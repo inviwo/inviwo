@@ -49,6 +49,8 @@ struct SawToothOptions {
 IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts);
 
 IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfMax(std::span<const TFPrimitiveData> a,
-                                                       std::span<const TFPrimitiveData> b);
+                                                       std::span<const TFPrimitiveData> b,
+                                                       dvec2 range = dvec2(0.0, 1.0),
+                                                       double epsilon = 1e-6);
 
 }  // namespace inviwo::util

@@ -91,133 +91,202 @@ std::vector<TFPrimitiveData> inviwo::util::tfSawTooth(const SawToothOptions& opt
 }
 
 namespace {
-// Helper view to iterate over adjacent pairs (sliding window size 2)
-template <std::ranges::forward_range R>
-auto adjacent_pairs(R&& r) {
-    return std::views::zip(r, std::views::drop(r, 1));
+
+vec4 interpolateColor(const TFPrimitiveData& p1, const TFPrimitiveData& p2, double x) {
+    if (std::abs(p1.pos - p2.pos) < 1e-8) return glm::mix(p1.color, p2.color, 0.5);
+
+    const double t = (x - p1.pos) / (p2.pos - p1.pos);
+    return glm::mix(p1.color, p2.color, t);
 }
 
-vec4 interpolate(const TFPrimitiveData& p1, const TFPrimitiveData& p2, double x) {
-    double t = (x - p1.pos) / (p2.pos - p1.pos);
-    return p1.color + t * (p2.color - p1.color);
+vec4 valueAt(std::span<const TFPrimitiveData> line, double x) {
+    if (line.empty()) return vec4{0.0f};
+
+    if (x <= line.front().pos) return line.front().color;
+    if (x >= line.back().pos) return line.back().color;
+
+    auto it = std::upper_bound(line.begin(), line.end(), x,
+                               [](double x, const TFPrimitiveData& pt) { return x < pt.pos; });
+
+    const auto& p2 = *it;
+    const auto& p1 = *(it - 1);
+    return interpolateColor(p1, p2, x);
 }
 
-bool get_intersection(const TFPrimitiveData& a1, const TFPrimitiveData& a2,
-                      const TFPrimitiveData& b1, const TFPrimitiveData& b2, TFPrimitiveData& out,
-                      double EPS) {
-    double dx1 = a2.pos - a1.pos;
-    double dy1 = a2.color.a - a1.color.a;
-    double dx2 = b2.pos - b1.pos;
-    double dy2 = b2.color.a - b1.color.a;
+std::optional<double> intersection(const TFPrimitiveData& f1, const TFPrimitiveData& f2,
+                                   const TFPrimitiveData& g1, const TFPrimitiveData& g2,
+                                   double epsilon) {
+    const auto fp1 = dvec2{f1.pos, f1.color.a};
+    const auto fp2 = dvec2{f2.pos, f2.color.a};
 
-    double denom = dx1 * dy2 - dy1 * dx2;
-    if (std::abs(denom) < EPS) return false;
+    const auto gp1 = dvec2{g1.pos, g1.color.a};
+    const auto gp2 = dvec2{g2.pos, g2.color.a};
 
-    double t = ((b1.pos - a1.pos) * dy2 - (b1.color.a - a1.color.a) * dx2) / denom;
-    double x = a1.pos + t * dx1;
+    const double df = (fp2.y - fp1.y) / (fp2.x - fp1.x);
+    const double dg = (gp2.y - gp1.y) / (gp2.x - gp1.x);
 
-    if (x < std::max(std::min(a1.pos, a2.pos), std::min(b1.pos, b2.pos)) - EPS ||
-        x > std::min(std::max(a1.pos, a2.pos), std::max(b1.pos, b2.pos)) + EPS)
-        return false;
+    if (std::abs(df - dg) < epsilon) {
+        return std::nullopt;  // parallel or identical
+    }
 
-    out = {x, interpolate(a1, a2, x)};
-    return true;
+    const double b_f = fp1.y - df * fp1.x;
+    const double b_g = gp1.y - dg * gp1.x;
+    const double xInter = (b_g - b_f) / (df - dg);
+
+    const double start = std::max(fp1.x, gp1.x);
+    const double end = std::min(fp2.x, gp2.x);
+
+    if (xInter >= start - epsilon && xInter <= end + epsilon) {
+        return xInter;
+    }
+
+    return std::nullopt;
 }
 
-vec4 amax(const vec4& v1, const vec4& v2) { return v1.a >= v2.a ? v1 : v2; }
+enum class IntersectDir { Left, Right };
+std::optional<double> intersection(const TFPrimitiveData& p1, const TFPrimitiveData& p2,
+                                   const TFPrimitiveData& point, IntersectDir dir) {
+    const double y1 = p1.color.a;
+    const double y2 = p2.color.a;
+
+    const double yp = point.color.a;
+
+    // Check if the segment crosses y = yp
+    if ((y1 - yp) * (y2 - yp) >= 0) {
+        return std::nullopt;  // No crossing
+    }
+
+    // Linear interpolation
+    const double t = (yp - y1) / (y2 - y1);
+    const double x = p1.pos + t * (p2.pos - p1.pos);
+
+    if (dir == IntersectDir::Left && x > point.pos) {
+        return std::nullopt;
+    } else if (dir == IntersectDir::Right && x < point.pos) {
+        return std::nullopt;
+    } else {
+        return x;
+    }
+}
+struct BreakPoint {
+    enum class Type : std::uint8_t { Node, Intersection };
+    double pos;
+    Type type;
+
+    auto operator<=>(const BreakPoint& other) const { return pos <=> other.pos; }
+};
 
 }  // namespace
 
 std::vector<TFPrimitiveData> tfMax(std::span<const TFPrimitiveData> f,
-                                   std::span<const TFPrimitiveData> g) {
+                                   std::span<const TFPrimitiveData> g, dvec2 range,
+                                   double epsilon) {
+    if (f.empty()) {
+        return {g.begin(), g.end()};
+    }
 
-    constexpr double EPS = 1e-9;
-    constexpr double INF = std::numeric_limits<double>::infinity();
+    if (g.empty()) {
+        return {f.begin(), f.end()};
+    }
 
-    auto f_pairs = adjacent_pairs(f);
-    auto g_pairs = adjacent_pairs(g);
+    std::set<BreakPoint> breakpoints;
 
-    auto f_it = f_pairs.cbegin();
-    auto f_end = f_pairs.cend();
+    for (const auto& pt : f) breakpoints.emplace(pt.pos, BreakPoint::Type::Node);
+    for (const auto& pt : g) breakpoints.emplace(pt.pos, BreakPoint::Type::Node);
 
-    auto g_it = g_pairs.cbegin();
-    auto g_end = g_pairs.cend();
+    for (size_t i = 1; i < f.size(); ++i) {
+        for (size_t j = 1; j < g.size(); ++j) {
+            if (auto maybe_cross = intersection(f[i - 1], f[i], g[j - 1], g[j], epsilon)) {
+                breakpoints.emplace(*maybe_cross, BreakPoint::Type::Intersection);
+            }
+        }
+    }
+    for (size_t i = 1; i < f.size(); ++i) {
+        if (auto maybe_cross = intersection(f[i - 1], f[i], g.front(), IntersectDir::Left)) {
+            breakpoints.emplace(*maybe_cross, BreakPoint::Type::Intersection);
+        }
+        if (auto maybe_cross = intersection(f[i - 1], f[i], g.back(), IntersectDir::Right)) {
+            breakpoints.emplace(*maybe_cross, BreakPoint::Type::Intersection);
+        }
+    }
+    for (size_t i = 1; i < g.size(); ++i) {
+        if (auto maybe_cross = intersection(g[i - 1], g[i], f.front(), IntersectDir::Left)) {
+            breakpoints.emplace(*maybe_cross, BreakPoint::Type::Intersection);
+        }
+        if (auto maybe_cross = intersection(g[i - 1], g[i], f.back(), IntersectDir::Right)) {
+            breakpoints.emplace(*maybe_cross, BreakPoint::Type::Intersection);
+        }
+    }
 
+    enum class Last : std::uint8_t { F, G };
     std::vector<TFPrimitiveData> result;
-    constexpr TFPrimitiveData max = TFPrimitiveData{INF, vec4{0}};
-    auto maxPair = std::tie(max, max);
+    Last last = Last::F;
+    for (const auto& bp : breakpoints) {
+        const auto cf = valueAt(f, bp.pos);
+        const auto cg = valueAt(g, bp.pos);
 
-    while (f_it != f_end || g_it != g_end) {
-        // Get current segments if available
-        auto [f1, f2] = f_it != f_end ? *f_it : maxPair;
-        auto [g1, g2] = g_it != g_end ? *g_it : maxPair;
-
-        // Determine current interval
-        double start = std::max(f1.pos, g1.pos);
-        double end = std::min(f2.pos, g2.pos);
-
-        if (f1.pos < g1.pos && f2.pos <= g1.pos) {
-            // f only
-            if (result.empty() || std::abs(result.back().pos - f1.pos) > EPS) {
-                result.push_back(f1);
-            }
-            result.push_back(f2);
-            ++f_it;
-            continue;
-        }
-        if (g1.pos < f1.pos && g2.pos <= f1.pos) {
-            // g only
-            if (result.empty() || std::abs(result.back().pos - g1.pos) > EPS) {
-                result.push_back(g1);
-            }
-            result.push_back(g2);
-            ++g_it;
-            continue;
-        }
-
-        if (end - start < EPS) {
-            if (f2.pos <= g2.pos) {
-                ++f_it;
+        if (bp.type == BreakPoint::Type::Intersection) {
+            if (last == Last::F) {
+                result.emplace_back(bp.pos, cf);
+                if (bp.pos + epsilon < range[1]) {
+                    result.emplace_back(bp.pos + epsilon, valueAt(g, bp.pos + epsilon));
+                }
+                last = Last::G;
             } else {
-                ++g_it;
+                result.emplace_back(bp.pos, cg);
+                if (bp.pos + epsilon < range[1]) {
+                    result.emplace_back(bp.pos + epsilon, valueAt(f, bp.pos + epsilon));
+                }
+                last = Last::F;
             }
-            continue;
-        }
-
-        // Compute both at start and end
-        const vec4 yf_start = interpolate(f1, f2, start);
-        const vec4 yg_start = interpolate(g1, g2, start);
-        const vec4 yf_end = interpolate(f1, f2, end);
-        const vec4 yg_end = interpolate(g1, g2, end);
-
-        const TFPrimitiveData p1 = {start, amax(yf_start, yg_start)};
-        const TFPrimitiveData p2 = {end, amax(yf_end, yg_end)};
-
-        TFPrimitiveData cross;
-        if (get_intersection(f1, f2, g1, g2, cross, EPS) && cross.pos > start + EPS &&
-            cross.pos < end - EPS) {
-            const TFPrimitiveData left = {start, amax(yf_start, yg_start)};
-            const TFPrimitiveData mid = {cross.pos, cross.color};
-            const TFPrimitiveData right = {end, amax(yf_end, yg_end)};
-            if (result.empty() || std::abs(result.back().pos - left.pos) > EPS) {
-                result.push_back(left);
-            }
-            result.push_back(mid);
-            result.push_back(right);
         } else {
-            if (result.empty() || std::abs(result.back().pos - p1.pos) > EPS) {
-                result.push_back(p1);
+            if (cf.a >= cg.a) {
+                result.emplace_back(bp.pos, cf);
+                last = Last::F;
+            } else {
+                result.emplace_back(bp.pos, cg);
+                last = Last::G;
             }
-            result.push_back(p2);
         }
+    }
 
-        if (f2.pos <= g2.pos) {
-            ++f_it;
+    // remove from the front
+    for (int i = 1; i < static_cast<int>(result.size()); ++i) {
+        if (result[i].color == result[i - 1].color) {
+            result.erase(result.begin() + i - 1);
         } else {
-            ++g_it;
+            break;
+        }
+    }
+
+    // remove from the end
+    for (int i = static_cast<int>(result.size()) - 1; i >= 1; --i) {
+        if (result[i].color == result[i - 1].color) {
+            result.erase(result.begin() + i);
+        } else {
+            break;
+        }
+    }
+
+    // remove in the middle
+    const auto error = [](const std::vector<TFPrimitiveData>& points, int i) {
+        const auto& prev = points[i - 1];
+        const auto& curr = points[i];
+        const auto& next = points[i + 1];
+
+        const double x = (curr.pos - prev.pos) / (next.pos - prev.pos);
+        return glm::compMax(glm::abs(glm::mix(prev.color, next.color, x) - curr.color));
+    };
+
+    for (int i = 1; i < static_cast<int>(result.size()) - 1;) {
+        if (error(result, i) < epsilon) {
+            result.erase(result.begin() + i);
+        } else {
+            ++i;
         }
     }
 
     return result;
 }
+
 }  // namespace inviwo::util

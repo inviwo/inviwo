@@ -64,20 +64,20 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
 
     utilMod.def(
         "tfSawTooth",
-        [](py::typing::Iterable<inviwo::TFPrimitiveData> iterable, glm::dvec2 range, double delta,
+        [](const py::typing::Iterable<inviwo::TFPrimitiveData>& iterable, glm::dvec2 range, double delta,
            double shift, glm::vec4 low) {
             std::vector<inviwo::TFPrimitiveData> points;
             for (auto i : iterable) {
                 points.push_back(i.cast<inviwo::TFPrimitiveData>());
             }
-            inviwo::util::SawToothOptions opts{points, range, delta, shift, low};
+            const inviwo::util::SawToothOptions opts{points, range, delta, shift, low};
             return inviwo::util::tfSawTooth(opts);
         },
         py::arg("points"), py::arg("range") = glm::dvec2{0.0, 1.0}, py::arg("delta") = 0.01,
         py::arg("shift") = 0.0, py::arg("low") = glm::vec4(0.0));
 
-    utilMod.def("tfMax", [](py::typing::Iterable<inviwo::TFPrimitiveData> a,
-                            py::typing::Iterable<inviwo::TFPrimitiveData> b) {
+    utilMod.def("tfMax", [](const py::typing::Iterable<inviwo::TFPrimitiveData>& a,
+                            const py::typing::Iterable<inviwo::TFPrimitiveData>& b) {
         std::vector<inviwo::TFPrimitiveData> aPoints;
         for (auto i : a) {
             aPoints.push_back(i.cast<inviwo::TFPrimitiveData>());
