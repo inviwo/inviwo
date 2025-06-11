@@ -43,7 +43,7 @@ in vec4 texCoord_;
 
 void main() {
     vec4 voxel = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
-    vec4 color = texture2D(tfLookup, vec2(voxel[channel1], voxel[channel2]));
+    vec4 color = texture(tfLookup, vec2(voxel[channel1], voxel[channel2]));
     FragData0 = color;
     gl_FragDepth = 1.0;
 }

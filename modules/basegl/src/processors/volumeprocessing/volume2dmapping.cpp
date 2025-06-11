@@ -60,6 +60,13 @@ Volume2DMapping::Volume2DMapping()
     addPort(tfLookup_);
     outport_.setHelp(
         "Output volume after applying the 2D transfer function to two input channels."_help);
+
+    tfLookup_.onChange([this]() {
+        if (tfLookup_.hasData()) {
+            dataFormat_ = tfLookup_.getData()->getDataFormat();
+            markInvalid();
+        }
+    });
 }
 
 void Volume2DMapping::preProcess(TextureUnitContainer& cont) {
@@ -67,10 +74,9 @@ void Volume2DMapping::preProcess(TextureUnitContainer& cont) {
     utilgl::setUniforms(shader_, channel_[0], channel_[1]);
 }
 
-void Volume2DMapping::afterInportChanged() {
-    if (inport_.hasData()) {
-        dataFormat_ = inport_.getData()->getDataFormat();
-    }
+void Volume2DMapping::postProcess() {
+    volume_->dataMap = tfLookup_.getData()->dataMap;
+    volume_->setSwizzleMask(tfLookup_.getData()->getSwizzleMask());
 }
 
 }  // namespace inviwo

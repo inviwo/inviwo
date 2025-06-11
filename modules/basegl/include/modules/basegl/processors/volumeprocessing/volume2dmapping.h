@@ -47,7 +47,7 @@ public:
 
 private:
     virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void afterInportChanged();
+    virtual void postProcess() override;
 
     LayerInport tfLookup_;
     std::array<OptionPropertyInt, 2> channel_;
