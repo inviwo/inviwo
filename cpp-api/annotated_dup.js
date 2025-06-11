@@ -1771,6 +1771,7 @@ var annotated_dup =
       [ "ViewEvent", "classinviwo_1_1ViewEvent.html", "classinviwo_1_1ViewEvent" ],
       [ "ViewManager", "classinviwo_1_1ViewManager.html", "classinviwo_1_1ViewManager" ],
       [ "Volume", "classinviwo_1_1Volume.html", "classinviwo_1_1Volume" ],
+      [ "Volume2DMapping", "classinviwo_1_1Volume2DMapping.html", null ],
       [ "VolumeBinary", "classinviwo_1_1VolumeBinary.html", "classinviwo_1_1VolumeBinary" ],
       [ "VolumeBorders", "classinviwo_1_1VolumeBorders.html", null ],
       [ "VolumeBoundaryPlanes", "classinviwo_1_1VolumeBoundaryPlanes.html", "classinviwo_1_1VolumeBoundaryPlanes" ],

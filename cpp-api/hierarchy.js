@@ -839,6 +839,7 @@ var hierarchy =
           [ "inviwo::Vector3DCurl", "classinviwo_1_1Vector3DCurl.html", null ],
           [ "inviwo::Vector3DDivergence", "classinviwo_1_1Vector3DDivergence.html", null ],
           [ "inviwo::VectorMagnitudeProcessor", "classinviwo_1_1VectorMagnitudeProcessor.html", null ],
+          [ "inviwo::Volume2DMapping", "classinviwo_1_1Volume2DMapping.html", null ],
           [ "inviwo::VolumeBinary", "classinviwo_1_1VolumeBinary.html", null ],
           [ "inviwo::VolumeDiff", "classinviwo_1_1VolumeDiff.html", null ],
           [ "inviwo::VolumeGradientMagnitude", "classinviwo_1_1VolumeGradientMagnitude.html", null ],
