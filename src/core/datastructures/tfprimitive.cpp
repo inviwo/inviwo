@@ -140,5 +140,25 @@ void TFPrimitive::deserialize(Deserializer& d) {
     d.deserialize("rgba", color);
     setData({pos, color});
 }
+vec4 util::interpolateColor(const TFPrimitiveData& p1, const TFPrimitiveData& p2, double x) {
+    if (std::abs(p1.pos - p2.pos) < 1e-8) return glm::mix(p1.color, p2.color, 0.5);
+
+    const double t = (x - p1.pos) / (p2.pos - p1.pos);
+    return glm::mix(p1.color, p2.color, t);
+}
+
+vec4 util::interpolateColor(std::span<const TFPrimitiveData> line, double x) {
+    if (line.empty()) return vec4{0.0f};
+
+    if (x <= line.front().pos) return line.front().color;
+    if (x >= line.back().pos) return line.back().color;
+
+    auto it = std::upper_bound(line.begin(), line.end(), x,
+                               [](double x, const TFPrimitiveData& pt) { return x < pt.pos; });
+
+    const auto& p2 = *it;
+    const auto& p1 = *(it - 1);
+    return interpolateColor(p1, p2, x);
+}
 
 }  // namespace inviwo

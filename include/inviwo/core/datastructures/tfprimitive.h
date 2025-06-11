@@ -34,6 +34,8 @@
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/observer.h>
 
+#include <span>
+
 namespace inviwo {
 
 class TFPrimitive;
@@ -107,5 +109,11 @@ inline const TFPrimitiveData& TFPrimitive::getData() const { return data_; }
 inline double TFPrimitive::getPosition() const { return data_.pos; }
 inline float TFPrimitive::getAlpha() const { return data_.color.a; }
 inline const vec4& TFPrimitive::getColor() const { return data_.color; }
+
+namespace util {
+IVW_CORE_API vec4 interpolateColor(const TFPrimitiveData& p1, const TFPrimitiveData& p2, double x);
+IVW_CORE_API vec4 interpolateColor(std::span<const TFPrimitiveData> line, double x);
+
+};  // namespace util
 
 }  // namespace inviwo
