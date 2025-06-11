@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,23 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/stdextensions.h>
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/sampler3d.glsl"
+#include "utils/classification.glsl"
 
-#include <sstream>
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
+uniform sampler2D tfLookup;
 
-namespace inviwo {
+uniform int channel1 = 0;
+uniform int channel2 = 1;
 
-bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outport* /*source*/) {
-    return true;
+in vec4 texCoord_;
+
+void main() {
+    vec4 voxel = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
+    vec4 color = texture(tfLookup, vec2(voxel[channel1], voxel[channel2]));
+    FragData0 = color;
+    gl_FragDepth = 1.0;
 }
-
-bool Event::markAsVisited(Processor* p) { return util::push_back_unique(visitedProcessors_, p); }
-
-void Event::markAsVisited(Event& e) {
-    visitedProcessors_.reserve(visitedProcessors_.size() + e.visitedProcessors_.size());
-    for (auto p : e.visitedProcessors_) {
-        util::push_back_unique(visitedProcessors_, p);
-    }
-}
-
-bool Event::hasVisitedProcessor(Processor* p) const {
-    return util::contains(visitedProcessors_, p);
-}
-
-const std::vector<Processor*>& Event::getVisitedProcessors() const { return visitedProcessors_; }
-
-void Event::print(std::ostream& ss) const { ss << "Unknown Event. Hash:" << hash(); }
-
-std::string format_as(const Event& e) {
-    std::ostringstream oss;
-    e.print(oss);
-    return oss.str();
-}
-
-}  // namespace inviwo

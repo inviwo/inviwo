@@ -53,7 +53,7 @@ auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { re
 void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,
                                        ContextMenuCategories categories) {
     if (contextMenuCallback_) {
-        contextMenuCallback_(entries, categories, this);
+        contextMenuCallback_(entries, categories);
     }
 }
 

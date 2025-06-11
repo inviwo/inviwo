@@ -50,28 +50,28 @@
 namespace inviwo {
 
 PortInspector* PortInspectorManager::borrow(Outport* outport) {
-    auto it = std::find_if(unUsedInspectors_.begin(), unUsedInspectors_.end(), [&](const auto& pi) {
+    auto it = std::find_if(unusedInspectors_.begin(), unusedInspectors_.end(), [&](const auto& pi) {
         return pi->getPortClassName() == outport->getClassIdentifier();
     });
-    if (it != unUsedInspectors_.end()) {
+    if (it != unusedInspectors_.end()) {
         return it->get();
     } else {
         auto factory = app_->getPortInspectorFactory();
         if (auto portInspector = factory->create(outport->getClassIdentifier())) {
-            unUsedInspectors_.push_back(std::move(portInspector));
-            return unUsedInspectors_.back().get();
+            unusedInspectors_.push_back(std::move(portInspector));
+            return unusedInspectors_.back().get();
         } else {
             return nullptr;
         }
     }
 }
 std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* outport) {
-    auto it = std::find_if(unUsedInspectors_.begin(), unUsedInspectors_.end(), [&](const auto& pi) {
+    auto it = std::find_if(unusedInspectors_.begin(), unusedInspectors_.end(), [&](const auto& pi) {
         return pi->getPortClassName() == outport->getClassIdentifier();
     });
-    if (it != unUsedInspectors_.end()) {
+    if (it != unusedInspectors_.end()) {
         auto pi = std::move(*it);
-        unUsedInspectors_.erase(it);
+        unusedInspectors_.erase(it);
         return pi;
     } else {
         auto factory = app_->getPortInspectorFactory();
@@ -215,12 +215,14 @@ void PortInspectorManager::removePortInspector(Outport* outport) {
 
 void PortInspectorManager::removePortInspector(PortInspectorMap::iterator it) {
     auto portInspector = std::move(it->second);
-    portInspector->getCanvasProcessor()->getProcessorWidget()->setVisible(false);
+    if (auto* w = portInspector->getCanvasProcessor()->getProcessorWidget()) {
+        w->setVisible(false);
+    }
 
     // Remove processors from the network
     removeNetwork(portInspector.get(), app_->getProcessorNetwork());
 
-    unUsedInspectors_.push_back(std::move(portInspector));
+    unusedInspectors_.push_back(std::move(portInspector));
 }
 
 std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outport* outport) {
@@ -281,7 +283,7 @@ void PortInspectorManager::clear() {
         }
     }
     portInspectors_.clear();
-    unUsedInspectors_.clear();
+    unusedInspectors_.clear();
     embeddedProcessors_.clear();
 }
 

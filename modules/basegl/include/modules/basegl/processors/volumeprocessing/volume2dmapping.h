@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,30 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/util/stdextensions.h>
+#pragma once
 
-#include <sstream>
+#include <modules/basegl/baseglmoduledefine.h>
+
+#include <inviwo/core/processors/processorinfo.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/layerport.h>
 
 namespace inviwo {
 
-bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outport* /*source*/) {
-    return true;
-}
+class IVW_MODULE_BASEGL_API Volume2DMapping : public VolumeGLProcessor {
+public:
+    Volume2DMapping();
 
-bool Event::markAsVisited(Processor* p) { return util::push_back_unique(visitedProcessors_, p); }
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-void Event::markAsVisited(Event& e) {
-    visitedProcessors_.reserve(visitedProcessors_.size() + e.visitedProcessors_.size());
-    for (auto p : e.visitedProcessors_) {
-        util::push_back_unique(visitedProcessors_, p);
-    }
-}
+private:
+    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void postProcess() override;
 
-bool Event::hasVisitedProcessor(Processor* p) const {
-    return util::contains(visitedProcessors_, p);
-}
-
-const std::vector<Processor*>& Event::getVisitedProcessors() const { return visitedProcessors_; }
-
-void Event::print(std::ostream& ss) const { ss << "Unknown Event. Hash:" << hash(); }
-
-std::string format_as(const Event& e) {
-    std::ostringstream oss;
-    e.print(oss);
-    return oss.str();
-}
+    LayerInport tfLookup_;
+    std::array<OptionPropertyInt, 2> channel_;
+};
 
 }  // namespace inviwo

@@ -92,7 +92,7 @@ private:
     void removePortInspector(PortInspectorMap::iterator it);
 
     PortInspectorMap portInspectors_;
-    std::vector<std::unique_ptr<PortInspector>> unUsedInspectors_;
+    std::vector<std::unique_ptr<PortInspector>> unusedInspectors_;
 
     UnorderedStringMap<std::vector<std::string>> embeddedProcessors_;
 

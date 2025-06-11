@@ -87,6 +87,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/tuberendering.h
     include/modules/basegl/processors/volumemasker.h
     include/modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h
+    include/modules/basegl/processors/volumeprocessing/volume2dmapping.h
     include/modules/basegl/processors/volumeprocessing/volumebinary.h
     include/modules/basegl/processors/volumeprocessing/volumecombiner.h
     include/modules/basegl/processors/volumeprocessing/volumediff.h
@@ -217,6 +218,7 @@ set(SOURCE_FILES
     src/processors/tuberendering.cpp
     src/processors/volumemasker.cpp
     src/processors/volumeprocessing/vectormagnitudeprocessor.cpp
+    src/processors/volumeprocessing/volume2dmapping.cpp
     src/processors/volumeprocessing/volumebinary.cpp
     src/processors/volumeprocessing/volumecombiner.cpp
     src/processors/volumeprocessing/volumediff.cpp
@@ -312,8 +314,8 @@ set(SHADER_FILES
     glsl/pointrenderer.frag
     glsl/pointrenderer.geom
     glsl/pointrenderer.vert
-    glsl/raycasting/raycaster-template.frag
     glsl/raycasting/iso.glsl
+    glsl/raycasting/raycaster-template.frag
     glsl/sphereglyph.frag
     glsl/sphereglyph.geom
     glsl/sphereglyph.vert
@@ -324,6 +326,7 @@ set(SHADER_FILES
     glsl/tuberendering.geom
     glsl/tuberendering.vert
     glsl/vectormagnitudeprocessor.frag
+    glsl/volume_2dmapping.frag
     glsl/volume_binary.frag
     glsl/volume_difference.frag
     glsl/volume_gpu.geom

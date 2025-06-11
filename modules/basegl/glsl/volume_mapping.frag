@@ -36,11 +36,13 @@ uniform sampler3D volume;
 uniform VolumeParameters volumeParameters;
 uniform sampler2D transferFunction;
 
+uniform int channel = 0;
+
 in vec4 texCoord_;
 
 void main() {
     vec4 v1 = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
-    float a = applyTF(transferFunction, v1).a;
-    FragData0 = vec4(a, a, a, a);
+    float a = applyTF(transferFunction, v1, channel).a;
+    FragData0 = vec4(a);
     gl_FragDepth = 1.0;
 }
