@@ -33,6 +33,7 @@
 
 #include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
 #include <inviwo/core/properties/transferfunctionproperty.h>               // for TransferFuncti...
+#include <inviwo/core/properties/optionproperty.h>                         // for OptionPropertyInt
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 
 namespace inviwo {
@@ -47,9 +48,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    TransferFunctionProperty tfProperty_;
-
     virtual void preProcess(TextureUnitContainer& cont) override;
+
+    TransferFunctionProperty tfProperty_;
+    OptionPropertyInt channel_;
 };
 
 }  // namespace inviwo

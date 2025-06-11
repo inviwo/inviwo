@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>               // for TransferFuncti...
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 #include <modules/opengl/texture/textureutils.h>                           // for bindAndSetUnif...
+#include <modules/opengl/shader/shaderutils.h>                             // for setUniforms
 
 #include <string>       // for string
 #include <string_view>  // for string_view
@@ -53,11 +54,14 @@ const ProcessorInfo VolumeMapping::processorInfo_{
 const ProcessorInfo& VolumeMapping::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMapping::VolumeMapping()
-    : VolumeGLProcessor("volume_mapping.frag")
-    , tfProperty_("transferFunction", "Transfer function",
+    : VolumeGLProcessor{"volume_mapping.frag"}
+    , tfProperty_{"transferFunction", "Transfer function",
                   "Defines the transfer function for mapping voxel values to opacity"_help,
-                  TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_) {
-    addProperty(tfProperty_);
+                  TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_}
+    , channel_{"channel", "Channel", "Selected channel for the TF lookup"_help,
+               util::enumeratedOptions("Channel", 4)} {
+
+    addProperties(tfProperty_, channel_);
 
     outport_.setHelp(
         "Output volume containing the alpha channel "
@@ -68,6 +72,7 @@ VolumeMapping::~VolumeMapping() = default;
 
 void VolumeMapping::preProcess(TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader_, cont, tfProperty_);
+    utilgl::setUniforms(shader_, channel_);
 }
 
 }  // namespace inviwo
