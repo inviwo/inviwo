@@ -900,8 +900,8 @@ target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${IVW_INCLUDE_DIR}>
 )
 
-find_package(BZip2 REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(BZip2 REQUIRED)
 find_package(liblzma CONFIG REQUIRED)
 find_path(BXZSTR_INCLUDE_DIRS "bxzstr.hpp" PATH_SUFFIXES "include/bxzstr")
 target_include_directories(inviwo-core SYSTEM PRIVATE ${BXZSTR_INCLUDE_DIRS})
@@ -921,9 +921,6 @@ find_package(flags CONFIG REQUIRED)
 find_package(tracywrap CONFIG REQUIRED)
 find_package(FastFloat CONFIG REQUIRED)
 find_package(curlcpp CONFIG REQUIRED)
-find_package(BZip2 REQUIRED)
-find_package(ZLIB REQUIRED)
-find_package(liblzma CONFIG REQUIRED)
 
 if(APPLE)
     find_library(CORESERVICES_LIBRARY CoreServices)
@@ -1029,11 +1026,10 @@ install(DIRECTORY ${IVW_ROOT_DIR}/cmake/templates
     COMPONENT Development
 )
 
-
-set(packages fmt glm tclap roaring llnl-units utf8cpp warn ticpp md4c sml flags tracywrap FastFloat bzip2 zlib liblzma)
-if(WIN32)
-    list(APPEND packages stackwalker)
-endif()
+set(packages
+    ZLIB BZip2 liblzma fmt glm tclap roaring llnl-units utf8cpp
+    warn ticpp md4c sml flags tracywrap FastFloat curlcpp
+)
 
 set(preconfig [=[
 file(GLOB configs LIST_DIRECTORIES true ${IVW_SHARE_DIR}/*)
