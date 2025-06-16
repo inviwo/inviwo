@@ -75,9 +75,9 @@ void exposeSerialization(pybind11::module& m) {
 
         .def(
             "serialize",
-            [](Serializer& s, std::string_view key, py::typing::Iterable<double> data,
+            [](Serializer& s, std::string_view key, const py::typing::Iterable<double>& data,
                std::string_view itemKey) {
-                std::vector<double> vData;
+                std::vector<double> vData{};
                 for (auto i : data) {
                     vData.emplace_back(i.cast<double>());
                 }
@@ -94,9 +94,9 @@ void exposeSerialization(pybind11::module& m) {
 
         .def(
             "serialize",
-            [](Serializer& s, std::string_view key, py::typing::Iterable<int> data,
+            [](Serializer& s, std::string_view key, const py::typing::Iterable<int>& data,
                std::string_view itemKey) {
-                std::vector<int> vData;
+                std::vector<int> vData{};
                 for (auto i : data) {
                     vData.emplace_back(i.cast<int>());
                 }
@@ -106,9 +106,9 @@ void exposeSerialization(pybind11::module& m) {
 
         .def(
             "serialize",
-            [](Serializer& s, std::string_view key, py::typing::Iterable<std::string> data,
+            [](Serializer& s, std::string_view key, const py::typing::Iterable<std::string>& data,
                std::string_view itemKey) {
-                std::vector<std::string> vData;
+                std::vector<std::string> vData{};
                 for (auto i : data) {
                     vData.emplace_back(i.cast<std::string>());
                 }
@@ -125,7 +125,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializeString",
             [](Deserializer& d, std::string_view key, SerializationTarget target) {
-                std::string data;
+                std::string data{};
                 d.deserialize(key, data, target);
                 return data;
             },
@@ -133,7 +133,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializePath",
             [](Deserializer& d, std::string_view key, SerializationTarget target) {
-                std::filesystem::path data;
+                std::filesystem::path data{};
                 d.deserialize(key, data, target);
                 return data;
             },
@@ -142,7 +142,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializeDouble",
             [](Deserializer& d, std::string_view key, SerializationTarget target) {
-                double data;
+                double data{};
                 d.deserialize(key, data, target);
                 return data;
             },
@@ -151,7 +151,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializeDoubleVector",
             [](Deserializer& d, std::string_view key, std::string_view itemKey) {
-                std::vector<double> vData;
+                std::vector<double> vData{};
                 d.deserialize(key, vData, itemKey);
                 return vData;
             },
@@ -160,7 +160,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializeInt",
             [](Deserializer& d, std::string_view key, SerializationTarget target) {
-                int data;
+                int data{};
                 d.deserialize(key, data, target);
                 return data;
             },
@@ -169,7 +169,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializeIntVector",
             [](Deserializer& d, std::string_view key, std::string_view itemKey) {
-                std::vector<int> vData;
+                std::vector<int> vData{};
                 d.deserialize(key, vData, itemKey);
                 return vData;
             },
@@ -177,7 +177,7 @@ void exposeSerialization(pybind11::module& m) {
         .def(
             "deserializeStringVector",
             [](Deserializer& d, std::string_view key, std::string_view itemKey) {
-                std::vector<std::string> vData;
+                std::vector<std::string> vData{};
                 d.deserialize(key, vData, itemKey);
                 return vData;
             },

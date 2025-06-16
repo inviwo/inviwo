@@ -188,7 +188,7 @@ private:
 
 namespace util {
 IVW_CORE_API Document layerInfo(const Layer& layer);
-}
+}  // namespace util
 
 template <>
 struct DataTraits<Layer> {
