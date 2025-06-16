@@ -26,42 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/dataframe/dataframemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/columnoptionproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <modules/base/basemoduledefine.h>
 
-namespace inviwo {
+#include <inviwo/core/datastructures/tfprimitive.h>
+#include <inviwo/core/util/glmvec.h>
 
-class IVW_MODULE_DATAFRAME_API TFFromDataFrameColumn : public Processor {
-public:
-    TFFromDataFrameColumn();
+#include <vector>
+#include <span>
 
-    virtual void process() override;
+namespace inviwo::util {
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    DataInport<DataFrame> dataFrame_;
-    BrushingAndLinkingInport bnl_;
-    ColumnOptionProperty column_;
-    BoolProperty lock_;
-    TransferFunctionProperty tf_;
-    DoubleProperty alpha_;
-    DoubleProperty delta_;
-    DoubleProperty shift_;
-    DoubleMinMaxProperty range_;
-
-    std::vector<TFPrimitiveData> pos_;
+struct SawToothOptions {
+    std::span<const TFPrimitiveData> points;
+    dvec2 range = dvec2(0.0, 1.0);
+    double delta = 0.01;
+    double shift = 0.0;
+    vec4 low = vec4{0.0, 0.0, 0.0, 0.0};
 };
 
-}  // namespace inviwo
+IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts);
+
+IVW_MODULE_BASE_API std::optional<double> intersection(const TFPrimitiveData& f1,
+                                                       const TFPrimitiveData& f2,
+                                                       const TFPrimitiveData& g1,
+                                                       const TFPrimitiveData& g2, double epsilon);
+
+enum class IntersectDir : std::uint8_t { Left, Right };
+IVW_MODULE_BASE_API std::optional<double> intersection(const TFPrimitiveData& p1,
+                                                       const TFPrimitiveData& p2,
+                                                       const TFPrimitiveData& point,
+                                                       IntersectDir dir);
+
+IVW_MODULE_BASE_API std::vector<TFPrimitiveData> tfMax(std::span<const TFPrimitiveData> a,
+                                                       std::span<const TFPrimitiveData> b,
+                                                       dvec2 range = dvec2(0.0, 1.0),
+                                                       double epsilon = 1e-6);
+
+}  // namespace inviwo::util

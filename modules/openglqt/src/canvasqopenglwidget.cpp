@@ -76,10 +76,6 @@ class Outport;
 
 namespace {
 
-dvec2 normalizePosition(QPointF pos, size2_t dim) {
-    return util::invertY(utilqt::toGLM(pos), dim) / dvec2(dim - size2_t(1));
-}
-
 void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
                     const std::function<void(ContextMenuEvent&)>& propagator) {
 

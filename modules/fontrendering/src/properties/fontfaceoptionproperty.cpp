@@ -48,7 +48,7 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : FontFaceOptionProperty(identifier, displayName, help, font::getFont(fontType).string(),
-                             invalidationLevel, semantics) {}
+                             invalidationLevel, std::move(semantics)) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                std::string_view displayName,
@@ -56,14 +56,15 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : FontFaceOptionProperty(identifier, displayName, {}, font::getFont(fontType).string(),
-                             invalidationLevel, semantics) {}
+                             invalidationLevel, std::move(semantics)) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                std::string_view displayName, Document help,
                                                std::string_view fontFaceName,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : OptionProperty<std::filesystem::path>(identifier, displayName, invalidationLevel, semantics) {
+    : OptionProperty<std::filesystem::path>(identifier, displayName, std::move(help),
+                                            invalidationLevel, std::move(semantics)) {
 
     auto fonts = font::getAvailableFonts();
 
@@ -82,7 +83,7 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : FontFaceOptionProperty(identifier, displayName, {}, fontFaceName, invalidationLevel,
-                             semantics) {}
+                             std::move(semantics)) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(const FontFaceOptionProperty& rhs)
     : OptionProperty<std::filesystem::path>(rhs) {}
