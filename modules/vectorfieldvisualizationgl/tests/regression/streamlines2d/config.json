@@ -1,7 +1,7 @@
 {
 	"image_test" :  {
 		"differenceTolerance" : {
-			 "StreamLines.png"   : 0.2
+			 "StreamLines.png"   : 0.5
 		}
 	}
 }

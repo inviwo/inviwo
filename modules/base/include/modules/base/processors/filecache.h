@@ -110,8 +110,11 @@ public:
     explicit CacheBase(InviwoApplication* app);
     virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
     virtual void onProcessorNetworkEvaluationBegin() override;
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty) override;
 
     virtual bool hasCache(std::string_view key) = 0;
+    virtual const std::string& loadedKey() const = 0;
 
 protected:
     void writeXML() const;
@@ -237,6 +240,8 @@ private:
                                     })
                                     .value_or(false);
     }
+
+    const std::string& loadedKey() const override { return loadedKey_; }
 
     InportType inport_;
     OutportType outport_;
