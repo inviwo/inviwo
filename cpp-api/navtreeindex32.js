@@ -1,5 +1,7 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1StringComparePMR.html":[4,0,0,1107],
+"structinviwo_1_1StringHash.html":[2,0,0,1101],
 "structinviwo_1_1StringHash.html":[4,0,0,1108],
 "structinviwo_1_1StringLessPMR.html":[2,0,0,1102],
 "structinviwo_1_1StringLessPMR.html":[4,0,0,1109],
@@ -247,7 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html":[2,0,0,988],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html":[4,0,0,995],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[2,0,0,989],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[4,0,0,996],
-"structinviwo_1_1resource_1_1GL.html":[4,0,0,22,0],
-"structinviwo_1_1resource_1_1PY.html":[4,0,0,22,1]
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[4,0,0,996]
 };

@@ -1,5 +1,7 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1resource_1_1GL.html":[4,0,0,22,0],
+"structinviwo_1_1resource_1_1PY.html":[4,0,0,22,1],
 "structinviwo_1_1resource_1_1RAM.html":[4,0,0,22,2],
 "structinviwo_1_1shuntingyard_1_1TokenBase.html":[4,0,0,23,2],
 "structinviwo_1_1statsutil_1_1RegresionResult.html":[2,0,0,17,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX33 =
 "structstd_1_1hash_3_01typename_01inviwo_1_1BrushingTarget_01_4.html":[2,0,1,10],
 "structstd_1_1hash_3_01typename_01inviwo_1_1BrushingTarget_01_4.html":[4,0,1,10],
 "structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html":[2,0,1,11],
-"structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html":[4,0,1,11],
-"structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[2,0,1,12],
-"structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html":[4,0,1,12]
+"structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html":[4,0,1,11]
 };

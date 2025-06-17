@@ -1,5 +1,7 @@
 var NAVTREEINDEX12 =
 {
+"classinviwo_1_1MetaData.html":[4,0,0,665],
+"classinviwo_1_1MetaDataFactory.html":[2,0,0,659],
 "classinviwo_1_1MetaDataFactory.html":[4,0,0,666],
 "classinviwo_1_1MetaDataMap.html":[2,0,0,660],
 "classinviwo_1_1MetaDataMap.html":[4,0,0,667],
@@ -247,7 +249,5 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[2,0,0,715,1],
 "classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[4,0,0,722,1],
 "classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[2,0,0,715,0],
-"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[4,0,0,722,0],
-"classinviwo_1_1OpenGLCapabilities.html":[2,0,0,717],
-"classinviwo_1_1OpenGLCapabilities.html":[4,0,0,724]
+"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[4,0,0,722,0]
 };
