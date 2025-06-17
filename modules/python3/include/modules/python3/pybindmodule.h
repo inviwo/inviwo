@@ -45,28 +45,18 @@
 #define INVIWO_PYBIND_MODULE(name, variable) PYBIND11_MODULE(name, variable)
 #else
 #define INVIWO_PYBIND_MODULE(name, variable)                                                 \
-    static ::pybind11::module_::module_def PYBIND11_CONCAT(pybind11_module_def_, name);      \
-    static void PYBIND11_CONCAT(pybind11_init_, name)(::pybind11::module_&);                 \
-    static PyObject PYBIND11_CONCAT(*pybind11_init_wrapper_, name)() {                       \
-        auto m = ::pybind11::module_::create_extension_module(                               \
-            PYBIND11_TOSTRING(name), nullptr, &PYBIND11_CONCAT(pybind11_module_def_, name)); \
-        try {                                                                                \
-            PYBIND11_CONCAT(pybind11_init_, name)(m);                                        \
-            return m.ptr();                                                                  \
-        }                                                                                    \
-        PYBIND11_CATCH_INIT_EXCEPTIONS                                                       \
-    }                                                                                        \
-    PYBIND11_EMBEDDED_MODULE_IMPL(name)                                                      \
+    PYBIND11_MODULE_PYINIT(name, {})                                                         \
     void PYBIND11_CONCAT(inviwo_static_pybind_init_, name)() {                               \
         if (Py_IsInitialized() != 0) {                                                       \
-            pybind11::pybind11_fail(                                                         \
-                "Can't add new modules after the interpreter has been initialized");         \
+            pybind11::pybind11_fail("Can't add new module '" PYBIND11_TOSTRING(              \
+                name) "' after the interpreter has been initialized");                       \
         }                                                                                    \
-        auto result = PyImport_AppendInittab(PYBIND11_TOSTRING(name),                        \
-                                             PYBIND11_CONCAT(pybind11_init_impl_, name));    \
+        auto result =                                                                        \
+            PyImport_AppendInittab(PYBIND11_TOSTRING(name), PYBIND11_CONCAT(PyInit_, name)); \
         if (result == -1) {                                                                  \
-            pybind11::pybind11_fail("Insufficient memory to add a new module");              \
+            pybind11::pybind11_fail(                                                         \
+                "Insufficient memory to add a new module '" PYBIND11_TOSTRING(name) "'");    \
         }                                                                                    \
     }                                                                                        \
-    void PYBIND11_CONCAT(pybind11_init_, name)(::pybind11::module_ & variable)
+    PYBIND11_MODULE_EXEC(name, variable)
 #endif

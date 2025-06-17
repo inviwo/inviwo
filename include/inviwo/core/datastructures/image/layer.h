@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
@@ -42,6 +43,8 @@
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
@@ -183,10 +186,31 @@ private:
     HistogramCache histograms_;
 };
 
+namespace util {
+IVW_CORE_API Document layerInfo(const Layer& layer);
+}  // namespace util
+
+template <>
+struct DataTraits<Layer> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.Layer"; }
+    static constexpr std::string_view dataName() { return "Layer"; }
+    static constexpr uvec3 colorCode() { return {95, 204, 114}; }
+    static Document info(const Layer& layer) { return util::layerInfo(layer); }
+};
+
 using LayerSequence = DataSequence<Layer>;
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
+
+extern template class IVW_CORE_TMPL_EXP DataInport<Layer>;
+extern template class IVW_CORE_TMPL_EXP DataInport<Layer, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<Layer, 0, true>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Layer>>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Layer>, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<DataSequence<Layer>, 0, true>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<Layer>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<DataSequence<Layer>>;
 
 }  // namespace inviwo

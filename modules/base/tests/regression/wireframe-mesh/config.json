@@ -1,0 +1,8 @@
+{
+	"image_test" :  {
+		"differenceTolerance" : {
+			 "filled.png"   : 0.1,
+			 "wireframe.png" : 0.1
+		}
+	}
+}

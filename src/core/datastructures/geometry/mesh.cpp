@@ -442,6 +442,15 @@ std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info) {
 template class IVW_CORE_TMPL_INST DataReaderType<Mesh>;
 template class IVW_CORE_TMPL_INST DataWriterType<Mesh>;
 
+template class IVW_CORE_TMPL_INST DataInport<Mesh>;
+template class IVW_CORE_TMPL_INST DataInport<Mesh, 0, false>;
+template class IVW_CORE_TMPL_INST DataInport<Mesh, 0, true>;
+template class IVW_CORE_TMPL_INST DataInport<DataSequence<Mesh>>;
+template class IVW_CORE_TMPL_INST DataInport<DataSequence<Mesh>, 0, false>;
+template class IVW_CORE_TMPL_INST DataInport<DataSequence<Mesh>, 0, true>;
+template class IVW_CORE_TMPL_INST DataOutport<Mesh>;
+template class IVW_CORE_TMPL_INST DataOutport<DataSequence<Mesh>>;
+
 namespace meshutil {
 
 bool hasPickIDBuffer(const Mesh* mesh) {

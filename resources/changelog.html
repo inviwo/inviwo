@@ -157,7 +157,7 @@ Here we have reloaded the network and can note that the <code class="notranslate
 <div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(<span class="pl-k">const</span> Exception&amp;)</pre></div>
 </li>
 <li>
-<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(<span class="pl-k">const</span> std::<span class="pl-c1">exception</span>&amp;)</pre></div>
+<div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(<span class="pl-k">const</span> std::exception&amp;)</pre></div>
 </li>
 <li>
 <div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-en">log::exception</span>(std::string_view)</pre></div>
@@ -355,10 +355,10 @@ The functionality earlier found in <code class="notranslate">InviwoApplcationQt<
 <h2>2022-09-29 Pre-compiled headers overhaul</h2>
 <p>The generation of pre-compiled headers (PCH) was changed from Cotire to CMake. This enables using PCH in combination with Qt6.<br>
 A single PCH file is generated for inviwo core including a number of standard includes. In addition, there is a PCH file for the qtwidgets modules with some Qt headers. These PCH files ar reused by all modules by default when depending on qtwidgets or core respectively, and assuming <code class="notranslate">IVW_CFG_PRECOMPILED_HEADERS</code> is checked. Use the <code class="notranslate">NO_PCH</code> option when calling <code class="notranslate">ivw_create_module()</code> to prevent the default PCH from being used in a module.</p>
-<div class="highlight highlight-source-cmake"><pre class="notranslate">ivw_create_module(NO_PCH <span class="pl-k">${SOURCE_FILES}</span> <span class="pl-k">${HEADER_FILES}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-en">ivw_create_module</span>(<span class="pl-s">NO_PCH</span> <span class="pl-smi">${SOURCE_FILES}</span> <span class="pl-smi">${HEADER_FILES}</span>)</pre></div>
 <p>It is also possible to instead use a custom PCH by manually calling <code class="notranslate">ivw_compile_optimize_on_target()</code> after <code class="notranslate">ivw_create_module(NO_PCH ...)</code>.</p>
-<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-k">set</span>(PCH_HEADERS header_1.h header_2.h ...)
-ivw_compile_optimize_on_target(inviwo-mymodule HEADERS <span class="pl-k">${PCH_HEADERS}</span>)</pre></div>
+<div class="highlight highlight-source-cmake"><pre class="notranslate"><span class="pl-c1">set</span>(<span class="pl-s">PCH_HEADERS</span> <span class="pl-s">header_1.h</span> <span class="pl-s">header_2.h</span> <span class="pl-s">...</span>)
+<span class="pl-en">ivw_compile_optimize_on_target</span>(<span class="pl-s">inviwo-mymodule</span> <span class="pl-s">HEADERS</span> <span class="pl-smi">${PCH_HEADERS}</span>)</pre></div>
 <p>This will include files listed in <code class="notranslate">${PCH_HEADERS}</code> and all headers marked for PCH inclusion of all target dependendencies as listed in the respective <code class="notranslate">IVW_PCH_HEADERS</code> target properties. In contrast,  using<code class="notranslate">target_precompile_headers()</code> instead will only consider the given header files. Note that using <code class="notranslate">PUBLIC</code> or <code class="notranslate">INTERFACE</code> with <code class="notranslate">target_precompile_headers()</code> enforces the usage of PCH ontor all other targets depending on this one.</p>
 <h2>2022-09-14 Include cleanup and refactoring</h2>
 <p>We cleaned up, removed, and broke some include dependencies in inviwo core to reduce the overall compile time.<br>
@@ -506,11 +506,11 @@ Brushing &amp; Linking (B&amp;L) was completely reworked. Now the B&amp;L inport
 <div class="highlight highlight-source-c++"><pre class="notranslate"><span class="pl-k">void</span> <span class="pl-en">MyProcessor::process</span>() {
 
     <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">isSelectionModified</span>()) {
-        <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; selected = brushingPort_.<span class="pl-c1">getSelectedIndices</span>();
+        <span class="pl-k">const</span> BitSet&amp; selected = brushingPort_.<span class="pl-c1">getSelectedIndices</span>();
         ...
     }
     <span class="pl-k">if</span> (brushingPort_.<span class="pl-c1">isHighlightModified</span>()) {
-        <span class="pl-k">const</span> <span class="pl-bu">BitSet</span>&amp; highlighted = brushingPort_.<span class="pl-c1">getHighlightedIndices</span>();
+        <span class="pl-k">const</span> BitSet&amp; highlighted = brushingPort_.<span class="pl-c1">getHighlightedIndices</span>();
         ...
     }
     <span class="pl-c"><span class="pl-c">//</span> or check for individual modifications</span>
@@ -1006,11 +1006,11 @@ The functions in question have been marked as deprecated (<code class="notransla
 <p>The UserInterfaceGL module has experienced some major updates. For one, sliders and range sliders are now available within <code class="notranslate">glui</code> and secondly touch interaction is now supported. This includes all glui elements (buttons, sliders, ...) as well as the widgets for camera manipulation (Camera Widget), widgets for volume cropping (Cropping Widget), and the presentation mode (Presentation Processor). The <code class="notranslate">Presentation Processor</code> can be used, e.g. during demonstrations, as it allows to show images in a PowerPoint fashion instead of its regular image input.</p>
 <p>So far, the following UI elements are supported by glui:</p>
 <ul class="contains-task-list">
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> box layout (vertical and horizontal)</li>
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> checkboxes</li>
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> buttons and toolbuttons, which feature only an icon</li>
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> sliders (vertical and horizontal)</li>
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> range sliders (vertical and horizontal)</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> box layout (vertical and horizontal)</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> checkboxes</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> buttons and toolbuttons, which feature only an icon</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> sliders (vertical and horizontal)</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> range sliders (vertical and horizontal)</li>
 </ul>
 <p>For all UI elements, matching property widgets exist, i.e. <code class="notranslate">glui::BoolPropertyWidget</code>, <code class="notranslate">glui::ButtonPropertyWidget</code>, <code class="notranslate">glui::IntPropertyWidget</code>, <code class="notranslate">glui::FloatPropertyWidget</code>, <code class="notranslate">glui::IntMinMaxPropertyWidget</code>, and <code class="notranslate">glui::FloatMinMaxPropertyWidget</code>. This allows to link the UI elements with the respective properties.</p>
 <p>For examples and usage see <code class="notranslate">readme.md</code> in the UserInterfaceGL module and check out <code class="notranslate">modules/UserInterfaceGL/processors/GLUITestProcessor.h</code>.</p>

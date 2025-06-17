@@ -30,11 +30,9 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
@@ -44,37 +42,5 @@ using LayerMultiInport = DataInport<Layer, 0>;
 using LayerFlatMultiInport = DataInport<Layer, 0, true>;
 
 using LayerSequenceOutport = DataOutport<LayerSequence>;
-
-template <>
-struct DataTraits<Layer> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.Layer"; }
-    static constexpr std::string_view dataName() { return "Layer"; }
-    static constexpr uvec3 colorCode() { return {95, 204, 114}; }
-    static Document info(const Layer& layer) {
-        using H = utildoc::TableBuilder::Header;
-        using P = Document::PathComponent;
-        Document doc;
-        doc.append("b", "Layer", {{"style", "color:white;"}});
-
-        utildoc::TableBuilder tb(doc.handle(), P::end());
-
-        tb(H("Format"), layer.getDataFormat()->getString());
-        tb(H("Dimension"), layer.getDimensions());
-        tb(H("SwizzleMask"), layer.getSwizzleMask());
-        tb(H("Interpolation"), layer.getInterpolation());
-        tb(H("Wrapping"), layer.getWrapping());
-        tb(H("Data Range"), layer.dataMap.dataRange);
-        tb(H("Value Range"), layer.dataMap.valueRange);
-        tb(H("Value"),
-           fmt::format("{}{: [}", layer.dataMap.valueAxis.name, layer.dataMap.valueAxis.unit));
-        tb(H("Axis 1"), fmt::format("{}{: [}", layer.axes[0].name, layer.axes[0].unit));
-        tb(H("Axis 2"), fmt::format("{}{: [}", layer.axes[1].name, layer.axes[1].unit));
-
-        tb(H("Basis"), layer.getBasis());
-        tb(H("Offset"), layer.getOffset());
-
-        return doc;
-    }
-};
 
 }  // namespace inviwo

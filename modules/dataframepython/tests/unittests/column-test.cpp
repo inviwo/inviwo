@@ -36,6 +36,7 @@
 #include <inviwo/dataframepython/dataframepythonmodule.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>

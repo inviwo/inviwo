@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,4 @@
  *
  *********************************************************************************/
 
-#include <ivwdataframe/ivwdataframe.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <warn/pop>
-
-#include <modules/python3/python3module.h>
-#include <modules/python3/pybindutils.h>
-#include <modules/python3/pythoninterpreter.h>
-#include <modules/python3/pybindmodule.h>
 #include <modules/python3/opaquetypes.h>
-
-#include <ivwdataframe/pydataframe.h>
-
-namespace py = pybind11;
-
-INVIWO_PYBIND_MODULE(ivwdataframe, m) {
-
-    py::module::import("inviwopy");
-
-    m.doc() = R"doc(
-        DataFrame Module API
-        )doc";
-
-#ifdef INVIWO_ALL_DYN_LINK
-    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
-    py::implicitly_convertible<py::list, std::vector<std::string>>();
-#endif
-
-    inviwo::exposeDataFrame(m);
-}

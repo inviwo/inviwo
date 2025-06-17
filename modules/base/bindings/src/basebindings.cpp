@@ -32,6 +32,7 @@
 #include <modules/base/algorithm/tfconstruction.h>
 
 #include <modules/python3/pybindmodule.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -44,6 +45,8 @@
 namespace py = pybind11;
 
 INVIWO_PYBIND_MODULE(ivwbase, m) {
+    py::module::import("inviwopy");
+
     m.doc() = R"doc(
         Base Module API
     
@@ -58,6 +61,11 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
 
     auto ioMod = m.def_submodule("io", "Input and Output functions");
     auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
+
+#ifdef INVIWO_ALL_DYN_LINK
+    py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+    py::implicitly_convertible<py::list, std::vector<std::string>>();
+#endif
 
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);

@@ -36,6 +36,11 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/assertion.h>
 
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
 namespace inviwo {
 
 class DataFormatBase;
@@ -213,5 +218,13 @@ Document Buffer<T, Target>::getInfo() const {
     doc.append("b", "Buffer", {{"style", "color:white;"}});
     return doc;
 }
+
+extern template class IVW_CORE_TMPL_EXP DataReaderType<BufferBase>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<BufferBase>;
+
+extern template class IVW_CORE_TMPL_EXP DataInport<BufferBase>;
+extern template class IVW_CORE_TMPL_EXP DataInport<BufferBase, 0, false>;
+extern template class IVW_CORE_TMPL_EXP DataInport<BufferBase, 0, true>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<BufferBase>;
 
 }  // namespace inviwo

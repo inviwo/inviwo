@@ -52,12 +52,6 @@ function(ivw_add_py_wrapper target)
             set_target_properties(${target} PROPERTIES 
                 DEBUG_POSTFIX ""
                 LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-            
-                # pybind will set the visibility to hidden by default, but we run into 
-                # problems with dynamic cast of our templated precision types on OSX 
-                # if hidden is used. So until we figure out how to manage that make 
-                # the visibility default.
-                CXX_VISIBILITY_PRESET "default"
             )
         else()
             add_library(${target} STATIC ${ARGN})
