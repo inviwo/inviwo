@@ -163,3 +163,76 @@ if(IVW_ENABLE_PYTHON)
     find_package(pybind11 CONFIG REQUIRED)
     ivw_vcpkg_install(pybind11 MODULE Core EXT)
 endif()
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/bzip2-config.cmake [=[
+if(TARGET BZip2::BZip2)
+    return()
+endif()
+
+# Compute the installation prefix relative to this file.
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+if(_IMPORT_PREFIX STREQUAL "/")
+  set(_IMPORT_PREFIX "")
+endif()
+
+add_library(BZip2::BZip2 SHARED IMPORTED)
+
+set_target_properties(BZip2::BZip2 PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES ${_IMPORT_PREFIX}/include
+)
+
+set_target_properties(BZip2::BZip2 PROPERTIES
+  IMPORTED_CONFIGURATIONS "DEBUG;RELEASE"
+  IMPORTED_IMPLIB_DEBUG "${_IMPORT_PREFIX}/debug/lib/bz2d.lib"
+  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/debug/bin/bz2d.dll"
+  IMPORTED_IMPLIB_RELEASE "${_IMPORT_PREFIX}/lib/bz2.lib"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/bz2.dll"
+)
+
+set(BZip2_FOUND TRUE)
+]=])
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/bzip2-config.cmake
+    DESTINATION ${IVW_SHARE_INSTALL_DIR}/bzip2
+)
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake [=[
+if(TARGET ZLIB::ZLIB)
+    return()
+endif()
+
+# Compute the installation prefix relative to this file.
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+if(_IMPORT_PREFIX STREQUAL "/")
+  set(_IMPORT_PREFIX "")
+endif()
+
+add_library(ZLIB::ZLIB SHARED IMPORTED)
+
+set_target_properties(ZLIB::ZLIB PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES ${_IMPORT_PREFIX}/include
+)
+
+set_target_properties(ZLIB::ZLIB PROPERTIES
+  IMPORTED_CONFIGURATIONS "DEBUG;RELEASE"
+  IMPORTED_IMPLIB_DEBUG "${_IMPORT_PREFIX}/debug/lib/zlibd.lib"
+  IMPORTED_LOCATION_DEBUG "${_IMPORT_PREFIX}/debug/bin/zlibd.dll"
+  IMPORTED_IMPLIB_RELEASE "${_IMPORT_PREFIX}/lib/zlib.lib"
+  IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/bin/zlib.dll"
+)
+
+set(ZLIB_INCLUDE_DIR ${_IMPORT_PREFIX}/include)
+set(ZLIB_LIBRARY_DEBUG "${_IMPORT_PREFIX}/debug/lib/zlibd.lib")
+set(ZLIB_LIBRARY_RELEASE "${_IMPORT_PREFIX}/bin/zlib.dll")
+set(ZLIB_FOUND TRUE)
+]=])
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake
+    DESTINATION ${IVW_SHARE_INSTALL_DIR}/zlib
+)
