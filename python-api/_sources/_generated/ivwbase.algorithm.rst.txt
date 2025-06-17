@@ -10,4 +10,6 @@ ivwbase.algorithm
    
       curlVolume
       divergenceVolume
+      tfMax
+      tfSawTooth
    

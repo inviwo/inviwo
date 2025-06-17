@@ -4,3 +4,9 @@
 .. automodule:: ivwbase
 
    
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      StringVector
+   

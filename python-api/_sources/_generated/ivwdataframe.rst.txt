@@ -31,5 +31,6 @@
       Int64Column
       IntColumn
       Size_tColumn
+      StringVector
       UIntColumn
    

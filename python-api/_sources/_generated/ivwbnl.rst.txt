@@ -18,4 +18,5 @@
       BrushingTarget
       BrushingTargetsInvalidationLevel
       IndexList
+      StringVector
    

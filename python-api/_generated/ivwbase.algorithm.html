@@ -48,8 +48,11 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">ivwbase.algorithm</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ivwbase.algorithm.curlVolume"><code class="docutils literal notranslate"><span class="pre">curlVolume()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ivwbase.algorithm.divergenceVolume"><code class="docutils literal notranslate"><span class="pre">divergenceVolume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbase.algorithm.tfMax"><code class="docutils literal notranslate"><span class="pre">tfMax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwbase.algorithm.tfSawTooth"><code class="docutils literal notranslate"><span class="pre">tfSawTooth()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="ivwbase.html#ivwbase.StringVector"><code class="docutils literal notranslate"><span class="pre">StringVector</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ivwbnl.html">ivwbnl</a></li>
@@ -93,6 +96,12 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#ivwbase.algorithm.divergenceVolume" title="ivwbase.algorithm.divergenceVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divergenceVolume</span></code></a>(arg0)</p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ivwbase.algorithm.tfMax" title="ivwbase.algorithm.tfMax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tfMax</span></code></a>(arg0, arg1)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ivwbase.algorithm.tfSawTooth" title="ivwbase.algorithm.tfSawTooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tfSawTooth</span></code></a>(points, range, delta, shift, low)</p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py function">
@@ -103,6 +112,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="ivwbase.algorithm.divergenceVolume">
 <span class="sig-prename descclassname"><span class="pre">ivwbase.algorithm.</span></span><span class="sig-name descname"><span class="pre">divergenceVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.Volume" title="inviwopy.data.Volume"><span class="pre">inviwopy.data.Volume</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="inviwopy.data.html#inviwopy.data.Volume" title="inviwopy.data.Volume"><span class="pre">inviwopy.data.Volume</span></a></span></span><a class="headerlink" href="#ivwbase.algorithm.divergenceVolume" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwbase.algorithm.tfMax">
+<span class="sig-prename descclassname"><span class="pre">ivwbase.algorithm.</span></span><span class="sig-name descname"><span class="pre">tfMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">collections.abc.Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="inviwopy.data.html#inviwopy.data.TFPrimitiveData" title="inviwopy.data.TFPrimitiveData"><span class="pre">inviwopy.data.TFPrimitiveData</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">collections.abc.Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="inviwopy.data.html#inviwopy.data.TFPrimitiveData" title="inviwopy.data.TFPrimitiveData"><span class="pre">inviwopy.data.TFPrimitiveData</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="inviwopy.data.html#inviwopy.data.TFPrimitiveData" title="inviwopy.data.TFPrimitiveData"><span class="pre">inviwopy.data.TFPrimitiveData</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbase.algorithm.tfMax" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ivwbase.algorithm.tfSawTooth">
+<span class="sig-prename descclassname"><span class="pre">ivwbase.algorithm.</span></span><span class="sig-name descname"><span class="pre">tfSawTooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">points:</span> <span class="pre">collections.abc.Iterable[inviwopy.data.TFPrimitiveData],</span> <span class="pre">range:</span> <span class="pre">inviwopy.glm.dvec2</span> <span class="pre">=</span> <span class="pre">[0</span> <span class="pre">1],</span> <span class="pre">delta:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">=</span> <span class="pre">0.01,</span> <span class="pre">shift:</span> <span class="pre">typing.SupportsFloat</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">low:</span> <span class="pre">inviwopy.glm.vec4</span> <span class="pre">=</span> <span class="pre">[0</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">0]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="inviwopy.data.html#inviwopy.data.TFPrimitiveData" title="inviwopy.data.TFPrimitiveData"><span class="pre">inviwopy.data.TFPrimitiveData</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ivwbase.algorithm.tfSawTooth" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
