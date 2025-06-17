@@ -89,7 +89,7 @@ var NAVTREEINDEX =
 "structinviwo_1_1Mesh_1_1MeshInfo.html",
 "structinviwo_1_1StringHash.html",
 "structinviwo_1_1resource_1_1RAM.html",
-"topics.html"
+"structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

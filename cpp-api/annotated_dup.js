@@ -488,6 +488,7 @@ var annotated_dup =
         [ "rank", "structinviwo_1_1util_1_1rank.html", null ],
         [ "rank< const T >", "structinviwo_1_1util_1_1rank_3_01const_01T_01_4.html", null ],
         [ "same_extent", "structinviwo_1_1util_1_1same__extent.html", null ],
+        [ "SawToothOptions", "structinviwo_1_1util_1_1SawToothOptions.html", null ],
         [ "sequence", "structinviwo_1_1util_1_1sequence.html", "structinviwo_1_1util_1_1sequence" ],
         [ "SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
         [ "TempFileHandle", "classinviwo_1_1util_1_1TempFileHandle.html", null ],

@@ -3116,6 +3116,7 @@ var hierarchy =
     [ "inviwo::SafeCStr< N >", "classinviwo_1_1SafeCStr.html", null ],
     [ "inviwo::util::same_extent< T, U >", "structinviwo_1_1util_1_1same__extent.html", null ],
     [ "inviwo::utilqt::Save< T >", "structinviwo_1_1utilqt_1_1Save.html", null ],
+    [ "inviwo::util::SawToothOptions", "structinviwo_1_1util_1_1SawToothOptions.html", null ],
     [ "inviwo::util::ColumnMapper::ScaleAndOffset", "structinviwo_1_1util_1_1ColumnMapper_1_1ScaleAndOffset.html", null ],
     [ "inviwo::utilgl::ScissorBox", "structinviwo_1_1utilgl_1_1ScissorBox.html", null ],
     [ "inviwo::utilgl::ScissorState", "structinviwo_1_1utilgl_1_1ScissorState.html", null ],
