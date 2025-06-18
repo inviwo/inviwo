@@ -89,7 +89,7 @@ runs:
       uses: jurplel/install-qt-action@v4.3.0
       if: runner.os == 'Linux'
       with:
-        version: '6.9.*'
+        version: '6.9.0'
         dir: ${{ github.workspace }}
         setup-python: false
         arch: linux_gcc_64
@@ -99,7 +99,7 @@ runs:
       uses: jurplel/install-qt-action@v4.3.0
       if: runner.os != 'Linux'
       with:
-        version: '6.9.*'
+        version: '6.9.0'
         dir: ${{ github.workspace }}
         setup-python: false
         archives: 'qtbase qtsvg'
