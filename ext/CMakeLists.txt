@@ -197,6 +197,7 @@ set(BZip2_FOUND TRUE)
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/bzip2-config.cmake
     DESTINATION ${IVW_SHARE_INSTALL_DIR}/bzip2
+    COMPONENT Application
 )
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake [=[
@@ -235,4 +236,5 @@ set(ZLIB_FOUND TRUE)
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake
     DESTINATION ${IVW_SHARE_INSTALL_DIR}/zlib
+    COMPONENT Application
 )
