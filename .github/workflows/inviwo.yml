@@ -277,7 +277,6 @@ jobs:
           --config build/pyconfig.ini \
           --build_type RelWithDebInfo \
           --output regression/macos/${{ github.ref }} \
-          --modules inviwo/modules \
           --summary
 
     - name: Push report

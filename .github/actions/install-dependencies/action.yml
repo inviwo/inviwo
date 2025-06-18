@@ -74,7 +74,7 @@ runs:
         echo "CXX=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang++" >> $GITHUB_ENV
 
     - name: "Setup Python"
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v5.6.0
       with:
         python-version: '>=3.10'
         architecture: 'x64'
@@ -86,20 +86,20 @@ runs:
       run: pip3 install -r inviwo/requirements.txt
 
     - name: "Install Qt"
-      uses: jurplel/install-qt-action@v4.1.1
+      uses: jurplel/install-qt-action@v4.3.0
       if: runner.os == 'Linux'
       with:
-        version: '6.8.*'
+        version: '6.9.*'
         dir: ${{ github.workspace }}
         setup-python: false
         arch: linux_gcc_64
         archives: 'qtbase qtsvg icu'
 
     - name: "Install Qt"
-      uses: jurplel/install-qt-action@v4.1.1
+      uses: jurplel/install-qt-action@v4.3.0
       if: runner.os != 'Linux'
       with:
-        version: '6.8.*'
+        version: '6.9.*'
         dir: ${{ github.workspace }}
         setup-python: false
         archives: 'qtbase qtsvg'
