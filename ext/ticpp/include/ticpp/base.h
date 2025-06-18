@@ -282,7 +282,7 @@ public:
         };
 
         return (fun(args) && ...);
-    };
+    }
 
     // Return true if the next characters in the stream are any of the endTag sequences.
     // Ignore case only works for english, and should only be relied on when comparing
