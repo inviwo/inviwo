@@ -476,9 +476,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
     util::setPosition(newProcessor.get(), util::getPosition(oldProcessor));
 
     network->addProcessor(newProcessor);
-    auto old = replaceProcessor(network, *newProcessor, oldProcessor);
-    newProcessor->setIdentifier(old->getIdentifier());
-    return old;
+    return replaceProcessor(network, *newProcessor, oldProcessor);
 }
 
 std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor& newProcessor,
@@ -566,6 +564,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
     // create all new connections
     for (auto& con : newConnections) network->addConnection(con);
 
+    newProcessor.setIdentifier(old->getIdentifier());
     return old;
 }
 
