@@ -1,0 +1,2555 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<InviwoWorkspace version="3">
+    <InviwoSetup>
+        <Modules>
+            <Module name="Base" version="11">
+                <Processors>
+                    <Processor content="org.inviwo.VolumeHistogram2D"/>
+                    <Processor content="org.inviwo.VolumeSource"/>
+                </Processors>
+            </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL"/>
+                </Processors>
+            </Module>
+            <Module name="BaseGL" version="9">
+                <Processors>
+                    <Processor content="org.inviwo.LayerColorMapping"/>
+                    <Processor content="org.inviwo.LayerRenderer"/>
+                    <Processor content="org.inviwo.VolumeGradientMagnitude"/>
+                </Processors>
+            </Module>
+        </Modules>
+    </InviwoSetup>
+    <ProcessorNetwork>
+        <ProcessorNetworkVersion content="21"/>
+        <Processors>
+            <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource2" displayName="Volume Source">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.FileProperty" identifier="filename">
+                        <absolutePath content="C:/dev/inviwo/inviwo/data/volumes/boron.dat"/>
+                        <workspaceRelativePath content="../../../../../data/volumes/boron.dat"/>
+                        <ivwdataRelativePath content="volumes/boron.dat"/>
+                        <selectedExtension>
+                            <extension content="*"/>
+                            <description content="All Files"/>
+                        </selectedExtension>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                        <selectedIdentifier content="Inviwo dat file format (*.dat)"/>
+                    </Property>
+                    <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
+                        <visible content="0"/>
+                        <Properties>
+                            <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
+                                <displayName content="Sequence Index"/>
+                                <semantics semantics="Default"/>
+                                <visible content="1"/>
+                                <readonly content="0"/>
+                                <minConstraint content="0"/>
+                                <maxConstraint content="0"/>
+                                <minvalue content="1"/>
+                                <maxvalue content="1"/>
+                                <increment content="1"/>
+                                <value content="1"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="75"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeHistogram2D" identifier="Histogram2D2" displayName="Histogram 2D">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="histogramResolution">
+                        <value content="512"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="channel2">
+                        <selectedIdentifier content="volume2Channel1"/>
+                    </Property>
+                    <Property type="org.inviwo.DataRangeProperty" identifier="dataRange">
+                        <Properties>
+                            <Property type="org.inviwo.DoubleMinMaxProperty" identifier="dataRange">
+                                <displayName content="Data range"/>
+                                <semantics semantics="Text"/>
+                                <visible content="1"/>
+                                <readonly content="1"/>
+                                <range x="-1.7976931348623157e+308" y="1.7976931348623157e+308"/>
+                                <increment content="0.001"/>
+                                <minSeparation content="0"/>
+                                <value x="0" y="38248"/>
+                            </Property>
+                            <Property type="org.inviwo.DoubleMinMaxProperty" identifier="valueRange">
+                                <displayName content="Value range"/>
+                                <semantics semantics="Text"/>
+                                <visible content="1"/>
+                                <readonly content="1"/>
+                                <range x="-1.7976931348623157e+308" y="1.7976931348623157e+308"/>
+                                <increment content="0.001"/>
+                                <minSeparation content="0"/>
+                                <value x="0" y="38248"/>
+                            </Property>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useCustomRange">
+                                <Properties/>
+                                <collapsed content="1"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="750" y="225"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeGradientMagnitude" identifier="VolumeGradientMagnitude" displayName="Volume Gradient Magnitude">
+                <PortGroups/>
+                <Properties/>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="625" y="150"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeHistogram2D" identifier="Histogram2D" displayName="Histogram 2D log">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="histogramResolution">
+                        <value content="512"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="channel2">
+                        <selectedIdentifier content="volume2Channel1"/>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumUChar" identifier="scaling">
+                        <selectedIdentifier content="log"/>
+                    </Property>
+                    <Property type="org.inviwo.DataRangeProperty" identifier="dataRange">
+                        <Properties>
+                            <Property type="org.inviwo.DoubleMinMaxProperty" identifier="dataRange">
+                                <displayName content="Data range"/>
+                                <semantics semantics="Text"/>
+                                <visible content="1"/>
+                                <readonly content="1"/>
+                                <range x="-1.7976931348623157e+308" y="1.7976931348623157e+308"/>
+                                <increment content="0.001"/>
+                                <minSeparation content="0"/>
+                                <value x="0" y="38248"/>
+                            </Property>
+                            <Property type="org.inviwo.DoubleMinMaxProperty" identifier="valueRange">
+                                <displayName content="Value range"/>
+                                <semantics semantics="Text"/>
+                                <visible content="1"/>
+                                <readonly content="1"/>
+                                <range x="-1.7976931348623157e+308" y="1.7976931348623157e+308"/>
+                                <increment content="0.001"/>
+                                <minSeparation content="0"/>
+                                <value x="0" y="38248"/>
+                            </Property>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useCustomRange">
+                                <Properties/>
+                                <collapsed content="1"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="225"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LayerRenderer" identifier="LayerRenderer2" displayName="Layer Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-24.5" y="-24.5" z="-24.5"/>
+                                <maxvalue x="25.5" y="25.5" z="25.5"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.5" y="-0.5" z="-0.5"/>
+                                <maxvalue x="1.5" y="1.5" z="1.5"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="near">
+                                <minvalue content="0.00026"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="0.5" y="0.5" z="2.8285866"/>
+                            <lookTo x="0.5" y="0.5" z="0.5"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.0026"/>
+                            <far content="26"/>
+                            <aspectRatio content="1"/>
+                            <width content="1"/>
+                        </Camera>
+                    </Property>
+                    <Property type="org.inviwo.CameraTrackball" identifier="trackball">
+                        <Properties>
+                            <Property type="org.inviwo.BoolProperty" identifier="allowHorziontalRotation">
+                                <value content="0"/>
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="allowVerticalRotation">
+                                <value content="0"/>
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="trackballPan">
+                                <Event>
+                                    <buttons content="1"/>
+                                </Event>
+                            </Property>
+                        </Properties>
+                        <collapsed content="0"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="750" y="400"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LayerRenderer" identifier="LayerRenderer" displayName="Layer Renderer">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType">
+                                <selectedIdentifier content="OrthographicCamera"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-24.5" y="-24.5" z="-24.5"/>
+                                <maxvalue x="25.5" y="25.5" z="25.5"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-0.5" y="-0.5" z="-0.5"/>
+                                <maxvalue x="1.5" y="1.5" z="1.5"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="near">
+                                <minvalue content="0.00026"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="OrthographicCamera">
+                            <lookFrom x="0.5" y="0.5" z="2.8285866"/>
+                            <lookTo x="0.5" y="0.5" z="0.5"/>
+                            <lookUp x="0" y="1" z="0"/>
+                            <near content="0.0026"/>
+                            <far content="26"/>
+                            <aspectRatio content="1"/>
+                            <width content="1"/>
+                        </Camera>
+                    </Property>
+                    <Property type="org.inviwo.CameraTrackball" identifier="trackball">
+                        <Properties>
+                            <Property type="org.inviwo.BoolProperty" identifier="allowHorziontalRotation">
+                                <value content="0"/>
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="allowVerticalRotation">
+                                <value content="0"/>
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="trackballPan">
+                                <Event>
+                                    <buttons content="1"/>
+                                </Event>
+                            </Property>
+                        </Properties>
+                        <collapsed content="0"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="400"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LayerColorMapping" identifier="LayerColorMapping2" displayName="Layer Color Mapping">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction">
+                        <MetaDataMap>
+                            <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState"/>
+                        </MetaDataMap>
+                        <TransferFunction>
+                            <maskMin content="0"/>
+                            <maskMax content="1"/>
+                            <type content="0"/>
+                            <Points>
+                                <Point>
+                                    <pos content="0"/>
+                                    <rgba x="0.267004" y="0.004874" z="0.329415" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.0039215689"/>
+                                    <rgba x="0.26851" y="0.009605" z="0.335427" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.0078431377"/>
+                                    <rgba x="0.269944" y="0.014625" z="0.341379" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.011764706"/>
+                                    <rgba x="0.271305" y="0.019942" z="0.347269" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.015686275"/>
+                                    <rgba x="0.272594" y="0.025563" z="0.353093" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.019607844"/>
+                                    <rgba x="0.273809" y="0.031497" z="0.358853" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.023529412"/>
+                                    <rgba x="0.274952" y="0.037752" z="0.364543" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.027450981"/>
+                                    <rgba x="0.276022" y="0.044167" z="0.370164" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.031372551"/>
+                                    <rgba x="0.277018" y="0.050344" z="0.375715" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.035294119"/>
+                                    <rgba x="0.277941" y="0.056324" z="0.381191" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.039215688"/>
+                                    <rgba x="0.278791" y="0.062145" z="0.386592" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.043137256"/>
+                                    <rgba x="0.279566" y="0.067836" z="0.391917" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.047058824"/>
+                                    <rgba x="0.280267" y="0.073417" z="0.397163" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.050980393"/>
+                                    <rgba x="0.280894" y="0.078907" z="0.402329" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.054901961"/>
+                                    <rgba x="0.281446" y="0.08432" z="0.407414" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.05882353"/>
+                                    <rgba x="0.281924" y="0.089666" z="0.412415" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.062745102"/>
+                                    <rgba x="0.282327" y="0.094955" z="0.417331" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.06666667"/>
+                                    <rgba x="0.282656" y="0.100196" z="0.42216" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.070588239"/>
+                                    <rgba x="0.28291" y="0.105393" z="0.426902" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.074509807"/>
+                                    <rgba x="0.283091" y="0.110553" z="0.431554" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.078431375"/>
+                                    <rgba x="0.283197" y="0.11568" z="0.436115" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.082352944"/>
+                                    <rgba x="0.283229" y="0.120777" z="0.440584" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.086274512"/>
+                                    <rgba x="0.283187" y="0.125848" z="0.44496" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.090196081"/>
+                                    <rgba x="0.283072" y="0.130895" z="0.449241" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.094117649"/>
+                                    <rgba x="0.282884" y="0.13592" z="0.453427" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.098039217"/>
+                                    <rgba x="0.282623" y="0.140926" z="0.457517" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.10196079"/>
+                                    <rgba x="0.28229" y="0.145912" z="0.46151" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.10588235"/>
+                                    <rgba x="0.281887" y="0.150881" z="0.465405" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.10980392"/>
+                                    <rgba x="0.281412" y="0.155834" z="0.469201" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.11372549"/>
+                                    <rgba x="0.280868" y="0.160771" z="0.472899" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.11764706"/>
+                                    <rgba x="0.280255" y="0.165693" z="0.476498" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.12156863"/>
+                                    <rgba x="0.279574" y="0.170599" z="0.479997" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.1254902"/>
+                                    <rgba x="0.278826" y="0.17549" z="0.483397" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.12941177"/>
+                                    <rgba x="0.278012" y="0.180367" z="0.486697" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.13333334"/>
+                                    <rgba x="0.277134" y="0.185228" z="0.489898" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.13725491"/>
+                                    <rgba x="0.276194" y="0.190074" z="0.493001" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.14117648"/>
+                                    <rgba x="0.275191" y="0.194905" z="0.496005" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.14509805"/>
+                                    <rgba x="0.274128" y="0.199721" z="0.498911" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.14901961"/>
+                                    <rgba x="0.273006" y="0.20452" z="0.501721" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.15294118"/>
+                                    <rgba x="0.271828" y="0.209303" z="0.504434" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.15686275"/>
+                                    <rgba x="0.270595" y="0.214069" z="0.507052" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.16078432"/>
+                                    <rgba x="0.269308" y="0.218818" z="0.509577" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.16470589"/>
+                                    <rgba x="0.267968" y="0.223549" z="0.512008" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.16862746"/>
+                                    <rgba x="0.26658" y="0.228262" z="0.514349" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.17254902"/>
+                                    <rgba x="0.265145" y="0.232956" z="0.516599" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.17647059"/>
+                                    <rgba x="0.263663" y="0.237631" z="0.518762" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.18039216"/>
+                                    <rgba x="0.262138" y="0.242286" z="0.520837" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.18431373"/>
+                                    <rgba x="0.260571" y="0.246922" z="0.522828" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.1882353"/>
+                                    <rgba x="0.258965" y="0.251537" z="0.524736" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.19215687"/>
+                                    <rgba x="0.257322" y="0.25613" z="0.526563" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.19607843"/>
+                                    <rgba x="0.255645" y="0.260703" z="0.528312" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.2"/>
+                                    <rgba x="0.253935" y="0.265254" z="0.529983" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.20392157"/>
+                                    <rgba x="0.252194" y="0.269783" z="0.531579" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.20784314"/>
+                                    <rgba x="0.250425" y="0.27429" z="0.533103" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.21176471"/>
+                                    <rgba x="0.248629" y="0.278775" z="0.534556" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.21568628"/>
+                                    <rgba x="0.246811" y="0.283237" z="0.535941" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.21960784"/>
+                                    <rgba x="0.244972" y="0.287675" z="0.53726" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.22352941"/>
+                                    <rgba x="0.243113" y="0.292092" z="0.538516" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.22745098"/>
+                                    <rgba x="0.241237" y="0.296485" z="0.539709" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.23137255"/>
+                                    <rgba x="0.239346" y="0.300855" z="0.540844" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.23529412"/>
+                                    <rgba x="0.237441" y="0.305202" z="0.541921" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.23921569"/>
+                                    <rgba x="0.235526" y="0.309527" z="0.542944" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.24313726"/>
+                                    <rgba x="0.233603" y="0.313828" z="0.543914" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.24705882"/>
+                                    <rgba x="0.231674" y="0.318106" z="0.544834" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.25098041"/>
+                                    <rgba x="0.229739" y="0.322361" z="0.545706" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.25490198"/>
+                                    <rgba x="0.227802" y="0.326594" z="0.546532" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.25882354"/>
+                                    <rgba x="0.225863" y="0.330805" z="0.547314" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.26274511"/>
+                                    <rgba x="0.223925" y="0.334994" z="0.548053" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.26666668"/>
+                                    <rgba x="0.221989" y="0.339161" z="0.548752" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.27058825"/>
+                                    <rgba x="0.220057" y="0.343307" z="0.549413" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.27450982"/>
+                                    <rgba x="0.21813" y="0.347432" z="0.550038" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.27843139"/>
+                                    <rgba x="0.21621" y="0.351535" z="0.550627" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.28235295"/>
+                                    <rgba x="0.214298" y="0.355619" z="0.551184" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.28627452"/>
+                                    <rgba x="0.212395" y="0.359683" z="0.55171" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.29019609"/>
+                                    <rgba x="0.210503" y="0.363727" z="0.552206" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.29411766"/>
+                                    <rgba x="0.208623" y="0.367752" z="0.552675" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.29803923"/>
+                                    <rgba x="0.206756" y="0.371758" z="0.553117" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3019608"/>
+                                    <rgba x="0.204903" y="0.375746" z="0.553533" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.30588236"/>
+                                    <rgba x="0.203063" y="0.379716" z="0.553925" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.30980393"/>
+                                    <rgba x="0.201239" y="0.38367" z="0.554294" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3137255"/>
+                                    <rgba x="0.19943" y="0.387607" z="0.554642" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.31764707"/>
+                                    <rgba x="0.197636" y="0.391528" z="0.554969" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.32156864"/>
+                                    <rgba x="0.19586" y="0.395433" z="0.555276" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.32549021"/>
+                                    <rgba x="0.1941" y="0.399323" z="0.555565" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.32941177"/>
+                                    <rgba x="0.192357" y="0.403199" z="0.555836" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.33333334"/>
+                                    <rgba x="0.190631" y="0.407061" z="0.556089" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.33725491"/>
+                                    <rgba x="0.188923" y="0.41091" z="0.556326" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.34117648"/>
+                                    <rgba x="0.187231" y="0.414746" z="0.556547" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.34509805"/>
+                                    <rgba x="0.185556" y="0.41857" z="0.556753" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.34901962"/>
+                                    <rgba x="0.183898" y="0.422383" z="0.556944" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.35294119"/>
+                                    <rgba x="0.182256" y="0.426184" z="0.55712" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.35686275"/>
+                                    <rgba x="0.180629" y="0.429975" z="0.557282" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.36078432"/>
+                                    <rgba x="0.179019" y="0.433756" z="0.55743" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.36470589"/>
+                                    <rgba x="0.177423" y="0.437527" z="0.557565" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.36862746"/>
+                                    <rgba x="0.175841" y="0.44129" z="0.557685" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.37254903"/>
+                                    <rgba x="0.174274" y="0.445044" z="0.557792" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3764706"/>
+                                    <rgba x="0.172719" y="0.448791" z="0.557885" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.38039216"/>
+                                    <rgba x="0.171176" y="0.45253" z="0.557965" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.38431373"/>
+                                    <rgba x="0.169646" y="0.456262" z="0.55803" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3882353"/>
+                                    <rgba x="0.168126" y="0.459988" z="0.558082" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.39215687"/>
+                                    <rgba x="0.166617" y="0.463708" z="0.558119" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.39607844"/>
+                                    <rgba x="0.165117" y="0.467423" z="0.558141" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.40000001"/>
+                                    <rgba x="0.163625" y="0.471133" z="0.558148" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.40392157"/>
+                                    <rgba x="0.162142" y="0.474838" z="0.55814" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.40784314"/>
+                                    <rgba x="0.160665" y="0.47854" z="0.558115" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.41176471"/>
+                                    <rgba x="0.159194" y="0.482237" z="0.558073" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.41568628"/>
+                                    <rgba x="0.157729" y="0.485932" z="0.558013" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.41960785"/>
+                                    <rgba x="0.15627" y="0.489624" z="0.557936" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.42352942"/>
+                                    <rgba x="0.154815" y="0.493313" z="0.55784" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.42745098"/>
+                                    <rgba x="0.153364" y="0.497" z="0.557724" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.43137255"/>
+                                    <rgba x="0.151918" y="0.500685" z="0.557587" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.43529412"/>
+                                    <rgba x="0.150476" y="0.504369" z="0.55743" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.43921569"/>
+                                    <rgba x="0.149039" y="0.508051" z="0.55725" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.44313726"/>
+                                    <rgba x="0.147607" y="0.511733" z="0.557049" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.44705883"/>
+                                    <rgba x="0.14618" y="0.515413" z="0.556823" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.4509804"/>
+                                    <rgba x="0.144759" y="0.519093" z="0.556572" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.45490196"/>
+                                    <rgba x="0.143343" y="0.522773" z="0.556295" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.45882353"/>
+                                    <rgba x="0.141935" y="0.526453" z="0.555991" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.4627451"/>
+                                    <rgba x="0.140536" y="0.530132" z="0.555659" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.46666667"/>
+                                    <rgba x="0.139147" y="0.533812" z="0.555298" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.47058824"/>
+                                    <rgba x="0.13777" y="0.537492" z="0.554906" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.47450981"/>
+                                    <rgba x="0.136408" y="0.541173" z="0.554483" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.47843137"/>
+                                    <rgba x="0.135066" y="0.544853" z="0.554029" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.48235294"/>
+                                    <rgba x="0.133743" y="0.548535" z="0.553541" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.48627451"/>
+                                    <rgba x="0.132444" y="0.552216" z="0.553018" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.49019608"/>
+                                    <rgba x="0.131172" y="0.555899" z="0.552459" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.49411765"/>
+                                    <rgba x="0.129933" y="0.559582" z="0.551864" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.49803922"/>
+                                    <rgba x="0.128729" y="0.563265" z="0.551229" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.50196081"/>
+                                    <rgba x="0.127568" y="0.566949" z="0.550556" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.50588238"/>
+                                    <rgba x="0.126453" y="0.570633" z="0.549841" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.50980395"/>
+                                    <rgba x="0.125394" y="0.574318" z="0.549086" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.51372552"/>
+                                    <rgba x="0.124395" y="0.578002" z="0.548287" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.51764709"/>
+                                    <rgba x="0.123463" y="0.581687" z="0.547445" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.52156866"/>
+                                    <rgba x="0.122606" y="0.585371" z="0.546557" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.52549022"/>
+                                    <rgba x="0.121831" y="0.589055" z="0.545623" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.52941179"/>
+                                    <rgba x="0.121148" y="0.592739" z="0.544641" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.53333336"/>
+                                    <rgba x="0.120565" y="0.596422" z="0.543611" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.53725493"/>
+                                    <rgba x="0.120092" y="0.600104" z="0.54253" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.5411765"/>
+                                    <rgba x="0.119738" y="0.603785" z="0.5414" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.54509807"/>
+                                    <rgba x="0.119512" y="0.607464" z="0.540218" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.54901963"/>
+                                    <rgba x="0.119423" y="0.611141" z="0.538982" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.5529412"/>
+                                    <rgba x="0.119483" y="0.614817" z="0.537692" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.55686277"/>
+                                    <rgba x="0.119699" y="0.61849" z="0.536347" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.56078434"/>
+                                    <rgba x="0.120081" y="0.622161" z="0.534946" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.56470591"/>
+                                    <rgba x="0.120638" y="0.625828" z="0.533488" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.56862748"/>
+                                    <rgba x="0.12138" y="0.629492" z="0.531973" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.57254905"/>
+                                    <rgba x="0.122312" y="0.633153" z="0.530398" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.57647061"/>
+                                    <rgba x="0.123444" y="0.636809" z="0.528763" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.58039218"/>
+                                    <rgba x="0.12478" y="0.640461" z="0.527068" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.58431375"/>
+                                    <rgba x="0.126326" y="0.644107" z="0.525311" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.58823532"/>
+                                    <rgba x="0.128087" y="0.647749" z="0.523491" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.59215689"/>
+                                    <rgba x="0.130067" y="0.651384" z="0.521608" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.59607846"/>
+                                    <rgba x="0.132268" y="0.655014" z="0.519661" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.60000002"/>
+                                    <rgba x="0.134692" y="0.658636" z="0.517649" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.60392159"/>
+                                    <rgba x="0.137339" y="0.662252" z="0.515571" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.60784316"/>
+                                    <rgba x="0.14021" y="0.665859" z="0.513427" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.61176473"/>
+                                    <rgba x="0.143303" y="0.669459" z="0.511215" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.6156863"/>
+                                    <rgba x="0.146616" y="0.67305" z="0.508936" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.61960787"/>
+                                    <rgba x="0.150148" y="0.676631" z="0.506589" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.62352943"/>
+                                    <rgba x="0.153894" y="0.680203" z="0.504172" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.627451"/>
+                                    <rgba x="0.157851" y="0.683765" z="0.501686" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.63137257"/>
+                                    <rgba x="0.162016" y="0.687316" z="0.499129" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.63529414"/>
+                                    <rgba x="0.166383" y="0.690856" z="0.496502" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.63921571"/>
+                                    <rgba x="0.170948" y="0.694384" z="0.493803" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.64313728"/>
+                                    <rgba x="0.175707" y="0.6979" z="0.491033" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.64705884"/>
+                                    <rgba x="0.180653" y="0.701402" z="0.488189" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.65098041"/>
+                                    <rgba x="0.185783" y="0.704891" z="0.485273" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.65490198"/>
+                                    <rgba x="0.19109" y="0.708366" z="0.482284" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.65882355"/>
+                                    <rgba x="0.196571" y="0.711827" z="0.479221" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.66274512"/>
+                                    <rgba x="0.202219" y="0.715272" z="0.476084" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.66666669"/>
+                                    <rgba x="0.20803" y="0.718701" z="0.472873" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.67058825"/>
+                                    <rgba x="0.214" y="0.722114" z="0.469588" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.67450982"/>
+                                    <rgba x="0.220124" y="0.725509" z="0.466226" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.67843139"/>
+                                    <rgba x="0.226397" y="0.728888" z="0.462789" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.68235296"/>
+                                    <rgba x="0.232815" y="0.732247" z="0.459277" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.68627453"/>
+                                    <rgba x="0.239374" y="0.735588" z="0.455688" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.6901961"/>
+                                    <rgba x="0.24607" y="0.73891" z="0.452024" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.69411767"/>
+                                    <rgba x="0.252899" y="0.742211" z="0.448284" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.69803923"/>
+                                    <rgba x="0.259857" y="0.745492" z="0.444467" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.7019608"/>
+                                    <rgba x="0.266941" y="0.748751" z="0.440573" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.70588237"/>
+                                    <rgba x="0.274149" y="0.751988" z="0.436601" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.70980394"/>
+                                    <rgba x="0.281477" y="0.755203" z="0.432552" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.71372551"/>
+                                    <rgba x="0.288921" y="0.758394" z="0.428426" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.71764708"/>
+                                    <rgba x="0.296479" y="0.761561" z="0.424223" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.72156864"/>
+                                    <rgba x="0.304148" y="0.764704" z="0.419943" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.72549021"/>
+                                    <rgba x="0.311925" y="0.767822" z="0.415586" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.72941178"/>
+                                    <rgba x="0.319809" y="0.770914" z="0.411152" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.73333335"/>
+                                    <rgba x="0.327796" y="0.77398" z="0.40664" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.73725492"/>
+                                    <rgba x="0.335885" y="0.777018" z="0.402049" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.74117649"/>
+                                    <rgba x="0.344074" y="0.780029" z="0.397381" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.74509805"/>
+                                    <rgba x="0.35236" y="0.783011" z="0.392636" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.74901962"/>
+                                    <rgba x="0.360741" y="0.785964" z="0.387814" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.75294119"/>
+                                    <rgba x="0.369214" y="0.788888" z="0.382914" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.75686276"/>
+                                    <rgba x="0.377779" y="0.791781" z="0.377939" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.76078433"/>
+                                    <rgba x="0.386433" y="0.794644" z="0.372886" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.7647059"/>
+                                    <rgba x="0.395174" y="0.797475" z="0.367757" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.76862746"/>
+                                    <rgba x="0.404001" y="0.800275" z="0.362552" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.77254903"/>
+                                    <rgba x="0.412913" y="0.803041" z="0.357269" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.7764706"/>
+                                    <rgba x="0.421908" y="0.805774" z="0.35191" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.78039217"/>
+                                    <rgba x="0.430983" y="0.808473" z="0.346476" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.78431374"/>
+                                    <rgba x="0.440137" y="0.811138" z="0.340967" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.78823531"/>
+                                    <rgba x="0.449368" y="0.813768" z="0.335384" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.79215688"/>
+                                    <rgba x="0.458674" y="0.816363" z="0.329727" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.79607844"/>
+                                    <rgba x="0.468053" y="0.818921" z="0.323998" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.80000001"/>
+                                    <rgba x="0.477504" y="0.821444" z="0.318195" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.80392158"/>
+                                    <rgba x="0.487026" y="0.823929" z="0.312321" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.80784315"/>
+                                    <rgba x="0.496615" y="0.826376" z="0.306377" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.81176472"/>
+                                    <rgba x="0.506271" y="0.828786" z="0.300362" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.81568629"/>
+                                    <rgba x="0.515992" y="0.831158" z="0.294279" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.81960785"/>
+                                    <rgba x="0.525776" y="0.833491" z="0.288127" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.82352942"/>
+                                    <rgba x="0.535621" y="0.835785" z="0.281908" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.82745099"/>
+                                    <rgba x="0.545524" y="0.838039" z="0.275626" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.83137256"/>
+                                    <rgba x="0.555484" y="0.840254" z="0.269281" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.83529413"/>
+                                    <rgba x="0.565498" y="0.84243" z="0.262877" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.8392157"/>
+                                    <rgba x="0.575563" y="0.844566" z="0.256415" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.84313726"/>
+                                    <rgba x="0.585678" y="0.846661" z="0.249897" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.84705883"/>
+                                    <rgba x="0.595839" y="0.848717" z="0.243329" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.8509804"/>
+                                    <rgba x="0.606045" y="0.850733" z="0.236712" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.85490197"/>
+                                    <rgba x="0.616293" y="0.852709" z="0.230052" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.85882354"/>
+                                    <rgba x="0.626579" y="0.854645" z="0.223353" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.86274511"/>
+                                    <rgba x="0.636902" y="0.856542" z="0.21662" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.86666667"/>
+                                    <rgba x="0.647257" y="0.8584" z="0.209861" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.87058824"/>
+                                    <rgba x="0.657642" y="0.860219" z="0.203082" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.87450981"/>
+                                    <rgba x="0.668054" y="0.861999" z="0.196293" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.87843138"/>
+                                    <rgba x="0.678489" y="0.863742" z="0.189503" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.88235295"/>
+                                    <rgba x="0.688944" y="0.865448" z="0.182725" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.88627452"/>
+                                    <rgba x="0.699415" y="0.867117" z="0.175971" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.89019608"/>
+                                    <rgba x="0.709898" y="0.868751" z="0.169257" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.89411765"/>
+                                    <rgba x="0.720391" y="0.87035" z="0.162603" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.89803922"/>
+                                    <rgba x="0.730889" y="0.871916" z="0.156029" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.90196079"/>
+                                    <rgba x="0.741388" y="0.873449" z="0.149561" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.90588236"/>
+                                    <rgba x="0.751884" y="0.874951" z="0.143228" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.90980393"/>
+                                    <rgba x="0.762373" y="0.876424" z="0.137064" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.9137255"/>
+                                    <rgba x="0.772852" y="0.877868" z="0.131109" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.91764706"/>
+                                    <rgba x="0.783315" y="0.879285" z="0.125405" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.92156863"/>
+                                    <rgba x="0.79376" y="0.880678" z="0.120005" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.9254902"/>
+                                    <rgba x="0.804182" y="0.882046" z="0.114965" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.92941177"/>
+                                    <rgba x="0.814576" y="0.883393" z="0.110347" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.93333334"/>
+                                    <rgba x="0.82494" y="0.88472" z="0.106217" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.93725491"/>
+                                    <rgba x="0.83527" y="0.886029" z="0.102646" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.94117647"/>
+                                    <rgba x="0.845561" y="0.887322" z="0.099702" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.94509804"/>
+                                    <rgba x="0.85581" y="0.888601" z="0.097452" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.94901961"/>
+                                    <rgba x="0.866013" y="0.889868" z="0.095953" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.95294118"/>
+                                    <rgba x="0.876168" y="0.891125" z="0.09525" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.95686275"/>
+                                    <rgba x="0.886271" y="0.892374" z="0.095374" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.96078432"/>
+                                    <rgba x="0.89632" y="0.893616" z="0.096335" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.96470588"/>
+                                    <rgba x="0.906311" y="0.894855" z="0.098125" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.96862745"/>
+                                    <rgba x="0.916242" y="0.896091" z="0.100717" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.97254902"/>
+                                    <rgba x="0.926106" y="0.89733" z="0.104071" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.97647059"/>
+                                    <rgba x="0.935904" y="0.89857" z="0.108131" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.98039216"/>
+                                    <rgba x="0.945636" y="0.899815" z="0.112838" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.98431373"/>
+                                    <rgba x="0.9553" y="0.901065" z="0.118128" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.98823529"/>
+                                    <rgba x="0.964894" y="0.902323" z="0.123941" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.99215686"/>
+                                    <rgba x="0.974417" y="0.90359" z="0.130215" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.99607843"/>
+                                    <rgba x="0.983868" y="0.904867" z="0.136897" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="1"/>
+                                    <rgba x="0.993248" y="0.906157" z="0.143936" w="1"/>
+                                </Point>
+                            </Points>
+                        </TransferFunction>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="750" y="325"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LayerColorMapping" identifier="LayerColorMapping" displayName="Layer Color Mapping">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction">
+                        <MetaDataMap>
+                            <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState"/>
+                        </MetaDataMap>
+                        <TransferFunction>
+                            <maskMin content="0"/>
+                            <maskMax content="1"/>
+                            <type content="0"/>
+                            <Points>
+                                <Point>
+                                    <pos content="0"/>
+                                    <rgba x="0.267004" y="0.004874" z="0.329415" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.0039215689"/>
+                                    <rgba x="0.26851" y="0.009605" z="0.335427" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.0078431377"/>
+                                    <rgba x="0.269944" y="0.014625" z="0.341379" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.011764706"/>
+                                    <rgba x="0.271305" y="0.019942" z="0.347269" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.015686275"/>
+                                    <rgba x="0.272594" y="0.025563" z="0.353093" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.019607844"/>
+                                    <rgba x="0.273809" y="0.031497" z="0.358853" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.023529412"/>
+                                    <rgba x="0.274952" y="0.037752" z="0.364543" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.027450981"/>
+                                    <rgba x="0.276022" y="0.044167" z="0.370164" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.031372551"/>
+                                    <rgba x="0.277018" y="0.050344" z="0.375715" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.035294119"/>
+                                    <rgba x="0.277941" y="0.056324" z="0.381191" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.039215688"/>
+                                    <rgba x="0.278791" y="0.062145" z="0.386592" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.043137256"/>
+                                    <rgba x="0.279566" y="0.067836" z="0.391917" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.047058824"/>
+                                    <rgba x="0.280267" y="0.073417" z="0.397163" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.050980393"/>
+                                    <rgba x="0.280894" y="0.078907" z="0.402329" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.054901961"/>
+                                    <rgba x="0.281446" y="0.08432" z="0.407414" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.05882353"/>
+                                    <rgba x="0.281924" y="0.089666" z="0.412415" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.062745102"/>
+                                    <rgba x="0.282327" y="0.094955" z="0.417331" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.06666667"/>
+                                    <rgba x="0.282656" y="0.100196" z="0.42216" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.070588239"/>
+                                    <rgba x="0.28291" y="0.105393" z="0.426902" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.074509807"/>
+                                    <rgba x="0.283091" y="0.110553" z="0.431554" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.078431375"/>
+                                    <rgba x="0.283197" y="0.11568" z="0.436115" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.082352944"/>
+                                    <rgba x="0.283229" y="0.120777" z="0.440584" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.086274512"/>
+                                    <rgba x="0.283187" y="0.125848" z="0.44496" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.090196081"/>
+                                    <rgba x="0.283072" y="0.130895" z="0.449241" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.094117649"/>
+                                    <rgba x="0.282884" y="0.13592" z="0.453427" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.098039217"/>
+                                    <rgba x="0.282623" y="0.140926" z="0.457517" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.10196079"/>
+                                    <rgba x="0.28229" y="0.145912" z="0.46151" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.10588235"/>
+                                    <rgba x="0.281887" y="0.150881" z="0.465405" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.10980392"/>
+                                    <rgba x="0.281412" y="0.155834" z="0.469201" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.11372549"/>
+                                    <rgba x="0.280868" y="0.160771" z="0.472899" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.11764706"/>
+                                    <rgba x="0.280255" y="0.165693" z="0.476498" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.12156863"/>
+                                    <rgba x="0.279574" y="0.170599" z="0.479997" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.1254902"/>
+                                    <rgba x="0.278826" y="0.17549" z="0.483397" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.12941177"/>
+                                    <rgba x="0.278012" y="0.180367" z="0.486697" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.13333334"/>
+                                    <rgba x="0.277134" y="0.185228" z="0.489898" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.13725491"/>
+                                    <rgba x="0.276194" y="0.190074" z="0.493001" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.14117648"/>
+                                    <rgba x="0.275191" y="0.194905" z="0.496005" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.14509805"/>
+                                    <rgba x="0.274128" y="0.199721" z="0.498911" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.14901961"/>
+                                    <rgba x="0.273006" y="0.20452" z="0.501721" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.15294118"/>
+                                    <rgba x="0.271828" y="0.209303" z="0.504434" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.15686275"/>
+                                    <rgba x="0.270595" y="0.214069" z="0.507052" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.16078432"/>
+                                    <rgba x="0.269308" y="0.218818" z="0.509577" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.16470589"/>
+                                    <rgba x="0.267968" y="0.223549" z="0.512008" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.16862746"/>
+                                    <rgba x="0.26658" y="0.228262" z="0.514349" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.17254902"/>
+                                    <rgba x="0.265145" y="0.232956" z="0.516599" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.17647059"/>
+                                    <rgba x="0.263663" y="0.237631" z="0.518762" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.18039216"/>
+                                    <rgba x="0.262138" y="0.242286" z="0.520837" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.18431373"/>
+                                    <rgba x="0.260571" y="0.246922" z="0.522828" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.1882353"/>
+                                    <rgba x="0.258965" y="0.251537" z="0.524736" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.19215687"/>
+                                    <rgba x="0.257322" y="0.25613" z="0.526563" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.19607843"/>
+                                    <rgba x="0.255645" y="0.260703" z="0.528312" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.2"/>
+                                    <rgba x="0.253935" y="0.265254" z="0.529983" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.20392157"/>
+                                    <rgba x="0.252194" y="0.269783" z="0.531579" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.20784314"/>
+                                    <rgba x="0.250425" y="0.27429" z="0.533103" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.21176471"/>
+                                    <rgba x="0.248629" y="0.278775" z="0.534556" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.21568628"/>
+                                    <rgba x="0.246811" y="0.283237" z="0.535941" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.21960784"/>
+                                    <rgba x="0.244972" y="0.287675" z="0.53726" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.22352941"/>
+                                    <rgba x="0.243113" y="0.292092" z="0.538516" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.22745098"/>
+                                    <rgba x="0.241237" y="0.296485" z="0.539709" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.23137255"/>
+                                    <rgba x="0.239346" y="0.300855" z="0.540844" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.23529412"/>
+                                    <rgba x="0.237441" y="0.305202" z="0.541921" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.23921569"/>
+                                    <rgba x="0.235526" y="0.309527" z="0.542944" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.24313726"/>
+                                    <rgba x="0.233603" y="0.313828" z="0.543914" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.24705882"/>
+                                    <rgba x="0.231674" y="0.318106" z="0.544834" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.25098041"/>
+                                    <rgba x="0.229739" y="0.322361" z="0.545706" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.25490198"/>
+                                    <rgba x="0.227802" y="0.326594" z="0.546532" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.25882354"/>
+                                    <rgba x="0.225863" y="0.330805" z="0.547314" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.26274511"/>
+                                    <rgba x="0.223925" y="0.334994" z="0.548053" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.26666668"/>
+                                    <rgba x="0.221989" y="0.339161" z="0.548752" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.27058825"/>
+                                    <rgba x="0.220057" y="0.343307" z="0.549413" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.27450982"/>
+                                    <rgba x="0.21813" y="0.347432" z="0.550038" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.27843139"/>
+                                    <rgba x="0.21621" y="0.351535" z="0.550627" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.28235295"/>
+                                    <rgba x="0.214298" y="0.355619" z="0.551184" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.28627452"/>
+                                    <rgba x="0.212395" y="0.359683" z="0.55171" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.29019609"/>
+                                    <rgba x="0.210503" y="0.363727" z="0.552206" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.29411766"/>
+                                    <rgba x="0.208623" y="0.367752" z="0.552675" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.29803923"/>
+                                    <rgba x="0.206756" y="0.371758" z="0.553117" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3019608"/>
+                                    <rgba x="0.204903" y="0.375746" z="0.553533" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.30588236"/>
+                                    <rgba x="0.203063" y="0.379716" z="0.553925" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.30980393"/>
+                                    <rgba x="0.201239" y="0.38367" z="0.554294" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3137255"/>
+                                    <rgba x="0.19943" y="0.387607" z="0.554642" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.31764707"/>
+                                    <rgba x="0.197636" y="0.391528" z="0.554969" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.32156864"/>
+                                    <rgba x="0.19586" y="0.395433" z="0.555276" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.32549021"/>
+                                    <rgba x="0.1941" y="0.399323" z="0.555565" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.32941177"/>
+                                    <rgba x="0.192357" y="0.403199" z="0.555836" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.33333334"/>
+                                    <rgba x="0.190631" y="0.407061" z="0.556089" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.33725491"/>
+                                    <rgba x="0.188923" y="0.41091" z="0.556326" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.34117648"/>
+                                    <rgba x="0.187231" y="0.414746" z="0.556547" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.34509805"/>
+                                    <rgba x="0.185556" y="0.41857" z="0.556753" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.34901962"/>
+                                    <rgba x="0.183898" y="0.422383" z="0.556944" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.35294119"/>
+                                    <rgba x="0.182256" y="0.426184" z="0.55712" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.35686275"/>
+                                    <rgba x="0.180629" y="0.429975" z="0.557282" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.36078432"/>
+                                    <rgba x="0.179019" y="0.433756" z="0.55743" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.36470589"/>
+                                    <rgba x="0.177423" y="0.437527" z="0.557565" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.36862746"/>
+                                    <rgba x="0.175841" y="0.44129" z="0.557685" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.37254903"/>
+                                    <rgba x="0.174274" y="0.445044" z="0.557792" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3764706"/>
+                                    <rgba x="0.172719" y="0.448791" z="0.557885" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.38039216"/>
+                                    <rgba x="0.171176" y="0.45253" z="0.557965" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.38431373"/>
+                                    <rgba x="0.169646" y="0.456262" z="0.55803" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.3882353"/>
+                                    <rgba x="0.168126" y="0.459988" z="0.558082" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.39215687"/>
+                                    <rgba x="0.166617" y="0.463708" z="0.558119" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.39607844"/>
+                                    <rgba x="0.165117" y="0.467423" z="0.558141" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.40000001"/>
+                                    <rgba x="0.163625" y="0.471133" z="0.558148" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.40392157"/>
+                                    <rgba x="0.162142" y="0.474838" z="0.55814" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.40784314"/>
+                                    <rgba x="0.160665" y="0.47854" z="0.558115" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.41176471"/>
+                                    <rgba x="0.159194" y="0.482237" z="0.558073" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.41568628"/>
+                                    <rgba x="0.157729" y="0.485932" z="0.558013" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.41960785"/>
+                                    <rgba x="0.15627" y="0.489624" z="0.557936" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.42352942"/>
+                                    <rgba x="0.154815" y="0.493313" z="0.55784" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.42745098"/>
+                                    <rgba x="0.153364" y="0.497" z="0.557724" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.43137255"/>
+                                    <rgba x="0.151918" y="0.500685" z="0.557587" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.43529412"/>
+                                    <rgba x="0.150476" y="0.504369" z="0.55743" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.43921569"/>
+                                    <rgba x="0.149039" y="0.508051" z="0.55725" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.44313726"/>
+                                    <rgba x="0.147607" y="0.511733" z="0.557049" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.44705883"/>
+                                    <rgba x="0.14618" y="0.515413" z="0.556823" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.4509804"/>
+                                    <rgba x="0.144759" y="0.519093" z="0.556572" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.45490196"/>
+                                    <rgba x="0.143343" y="0.522773" z="0.556295" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.45882353"/>
+                                    <rgba x="0.141935" y="0.526453" z="0.555991" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.4627451"/>
+                                    <rgba x="0.140536" y="0.530132" z="0.555659" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.46666667"/>
+                                    <rgba x="0.139147" y="0.533812" z="0.555298" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.47058824"/>
+                                    <rgba x="0.13777" y="0.537492" z="0.554906" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.47450981"/>
+                                    <rgba x="0.136408" y="0.541173" z="0.554483" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.47843137"/>
+                                    <rgba x="0.135066" y="0.544853" z="0.554029" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.48235294"/>
+                                    <rgba x="0.133743" y="0.548535" z="0.553541" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.48627451"/>
+                                    <rgba x="0.132444" y="0.552216" z="0.553018" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.49019608"/>
+                                    <rgba x="0.131172" y="0.555899" z="0.552459" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.49411765"/>
+                                    <rgba x="0.129933" y="0.559582" z="0.551864" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.49803922"/>
+                                    <rgba x="0.128729" y="0.563265" z="0.551229" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.50196081"/>
+                                    <rgba x="0.127568" y="0.566949" z="0.550556" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.50588238"/>
+                                    <rgba x="0.126453" y="0.570633" z="0.549841" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.50980395"/>
+                                    <rgba x="0.125394" y="0.574318" z="0.549086" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.51372552"/>
+                                    <rgba x="0.124395" y="0.578002" z="0.548287" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.51764709"/>
+                                    <rgba x="0.123463" y="0.581687" z="0.547445" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.52156866"/>
+                                    <rgba x="0.122606" y="0.585371" z="0.546557" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.52549022"/>
+                                    <rgba x="0.121831" y="0.589055" z="0.545623" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.52941179"/>
+                                    <rgba x="0.121148" y="0.592739" z="0.544641" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.53333336"/>
+                                    <rgba x="0.120565" y="0.596422" z="0.543611" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.53725493"/>
+                                    <rgba x="0.120092" y="0.600104" z="0.54253" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.5411765"/>
+                                    <rgba x="0.119738" y="0.603785" z="0.5414" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.54509807"/>
+                                    <rgba x="0.119512" y="0.607464" z="0.540218" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.54901963"/>
+                                    <rgba x="0.119423" y="0.611141" z="0.538982" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.5529412"/>
+                                    <rgba x="0.119483" y="0.614817" z="0.537692" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.55686277"/>
+                                    <rgba x="0.119699" y="0.61849" z="0.536347" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.56078434"/>
+                                    <rgba x="0.120081" y="0.622161" z="0.534946" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.56470591"/>
+                                    <rgba x="0.120638" y="0.625828" z="0.533488" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.56862748"/>
+                                    <rgba x="0.12138" y="0.629492" z="0.531973" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.57254905"/>
+                                    <rgba x="0.122312" y="0.633153" z="0.530398" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.57647061"/>
+                                    <rgba x="0.123444" y="0.636809" z="0.528763" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.58039218"/>
+                                    <rgba x="0.12478" y="0.640461" z="0.527068" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.58431375"/>
+                                    <rgba x="0.126326" y="0.644107" z="0.525311" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.58823532"/>
+                                    <rgba x="0.128087" y="0.647749" z="0.523491" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.59215689"/>
+                                    <rgba x="0.130067" y="0.651384" z="0.521608" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.59607846"/>
+                                    <rgba x="0.132268" y="0.655014" z="0.519661" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.60000002"/>
+                                    <rgba x="0.134692" y="0.658636" z="0.517649" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.60392159"/>
+                                    <rgba x="0.137339" y="0.662252" z="0.515571" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.60784316"/>
+                                    <rgba x="0.14021" y="0.665859" z="0.513427" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.61176473"/>
+                                    <rgba x="0.143303" y="0.669459" z="0.511215" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.6156863"/>
+                                    <rgba x="0.146616" y="0.67305" z="0.508936" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.61960787"/>
+                                    <rgba x="0.150148" y="0.676631" z="0.506589" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.62352943"/>
+                                    <rgba x="0.153894" y="0.680203" z="0.504172" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.627451"/>
+                                    <rgba x="0.157851" y="0.683765" z="0.501686" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.63137257"/>
+                                    <rgba x="0.162016" y="0.687316" z="0.499129" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.63529414"/>
+                                    <rgba x="0.166383" y="0.690856" z="0.496502" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.63921571"/>
+                                    <rgba x="0.170948" y="0.694384" z="0.493803" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.64313728"/>
+                                    <rgba x="0.175707" y="0.6979" z="0.491033" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.64705884"/>
+                                    <rgba x="0.180653" y="0.701402" z="0.488189" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.65098041"/>
+                                    <rgba x="0.185783" y="0.704891" z="0.485273" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.65490198"/>
+                                    <rgba x="0.19109" y="0.708366" z="0.482284" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.65882355"/>
+                                    <rgba x="0.196571" y="0.711827" z="0.479221" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.66274512"/>
+                                    <rgba x="0.202219" y="0.715272" z="0.476084" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.66666669"/>
+                                    <rgba x="0.20803" y="0.718701" z="0.472873" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.67058825"/>
+                                    <rgba x="0.214" y="0.722114" z="0.469588" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.67450982"/>
+                                    <rgba x="0.220124" y="0.725509" z="0.466226" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.67843139"/>
+                                    <rgba x="0.226397" y="0.728888" z="0.462789" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.68235296"/>
+                                    <rgba x="0.232815" y="0.732247" z="0.459277" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.68627453"/>
+                                    <rgba x="0.239374" y="0.735588" z="0.455688" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.6901961"/>
+                                    <rgba x="0.24607" y="0.73891" z="0.452024" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.69411767"/>
+                                    <rgba x="0.252899" y="0.742211" z="0.448284" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.69803923"/>
+                                    <rgba x="0.259857" y="0.745492" z="0.444467" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.7019608"/>
+                                    <rgba x="0.266941" y="0.748751" z="0.440573" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.70588237"/>
+                                    <rgba x="0.274149" y="0.751988" z="0.436601" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.70980394"/>
+                                    <rgba x="0.281477" y="0.755203" z="0.432552" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.71372551"/>
+                                    <rgba x="0.288921" y="0.758394" z="0.428426" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.71764708"/>
+                                    <rgba x="0.296479" y="0.761561" z="0.424223" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.72156864"/>
+                                    <rgba x="0.304148" y="0.764704" z="0.419943" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.72549021"/>
+                                    <rgba x="0.311925" y="0.767822" z="0.415586" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.72941178"/>
+                                    <rgba x="0.319809" y="0.770914" z="0.411152" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.73333335"/>
+                                    <rgba x="0.327796" y="0.77398" z="0.40664" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.73725492"/>
+                                    <rgba x="0.335885" y="0.777018" z="0.402049" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.74117649"/>
+                                    <rgba x="0.344074" y="0.780029" z="0.397381" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.74509805"/>
+                                    <rgba x="0.35236" y="0.783011" z="0.392636" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.74901962"/>
+                                    <rgba x="0.360741" y="0.785964" z="0.387814" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.75294119"/>
+                                    <rgba x="0.369214" y="0.788888" z="0.382914" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.75686276"/>
+                                    <rgba x="0.377779" y="0.791781" z="0.377939" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.76078433"/>
+                                    <rgba x="0.386433" y="0.794644" z="0.372886" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.7647059"/>
+                                    <rgba x="0.395174" y="0.797475" z="0.367757" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.76862746"/>
+                                    <rgba x="0.404001" y="0.800275" z="0.362552" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.77254903"/>
+                                    <rgba x="0.412913" y="0.803041" z="0.357269" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.7764706"/>
+                                    <rgba x="0.421908" y="0.805774" z="0.35191" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.78039217"/>
+                                    <rgba x="0.430983" y="0.808473" z="0.346476" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.78431374"/>
+                                    <rgba x="0.440137" y="0.811138" z="0.340967" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.78823531"/>
+                                    <rgba x="0.449368" y="0.813768" z="0.335384" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.79215688"/>
+                                    <rgba x="0.458674" y="0.816363" z="0.329727" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.79607844"/>
+                                    <rgba x="0.468053" y="0.818921" z="0.323998" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.80000001"/>
+                                    <rgba x="0.477504" y="0.821444" z="0.318195" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.80392158"/>
+                                    <rgba x="0.487026" y="0.823929" z="0.312321" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.80784315"/>
+                                    <rgba x="0.496615" y="0.826376" z="0.306377" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.81176472"/>
+                                    <rgba x="0.506271" y="0.828786" z="0.300362" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.81568629"/>
+                                    <rgba x="0.515992" y="0.831158" z="0.294279" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.81960785"/>
+                                    <rgba x="0.525776" y="0.833491" z="0.288127" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.82352942"/>
+                                    <rgba x="0.535621" y="0.835785" z="0.281908" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.82745099"/>
+                                    <rgba x="0.545524" y="0.838039" z="0.275626" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.83137256"/>
+                                    <rgba x="0.555484" y="0.840254" z="0.269281" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.83529413"/>
+                                    <rgba x="0.565498" y="0.84243" z="0.262877" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.8392157"/>
+                                    <rgba x="0.575563" y="0.844566" z="0.256415" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.84313726"/>
+                                    <rgba x="0.585678" y="0.846661" z="0.249897" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.84705883"/>
+                                    <rgba x="0.595839" y="0.848717" z="0.243329" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.8509804"/>
+                                    <rgba x="0.606045" y="0.850733" z="0.236712" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.85490197"/>
+                                    <rgba x="0.616293" y="0.852709" z="0.230052" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.85882354"/>
+                                    <rgba x="0.626579" y="0.854645" z="0.223353" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.86274511"/>
+                                    <rgba x="0.636902" y="0.856542" z="0.21662" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.86666667"/>
+                                    <rgba x="0.647257" y="0.8584" z="0.209861" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.87058824"/>
+                                    <rgba x="0.657642" y="0.860219" z="0.203082" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.87450981"/>
+                                    <rgba x="0.668054" y="0.861999" z="0.196293" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.87843138"/>
+                                    <rgba x="0.678489" y="0.863742" z="0.189503" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.88235295"/>
+                                    <rgba x="0.688944" y="0.865448" z="0.182725" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.88627452"/>
+                                    <rgba x="0.699415" y="0.867117" z="0.175971" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.89019608"/>
+                                    <rgba x="0.709898" y="0.868751" z="0.169257" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.89411765"/>
+                                    <rgba x="0.720391" y="0.87035" z="0.162603" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.89803922"/>
+                                    <rgba x="0.730889" y="0.871916" z="0.156029" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.90196079"/>
+                                    <rgba x="0.741388" y="0.873449" z="0.149561" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.90588236"/>
+                                    <rgba x="0.751884" y="0.874951" z="0.143228" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.90980393"/>
+                                    <rgba x="0.762373" y="0.876424" z="0.137064" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.9137255"/>
+                                    <rgba x="0.772852" y="0.877868" z="0.131109" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.91764706"/>
+                                    <rgba x="0.783315" y="0.879285" z="0.125405" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.92156863"/>
+                                    <rgba x="0.79376" y="0.880678" z="0.120005" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.9254902"/>
+                                    <rgba x="0.804182" y="0.882046" z="0.114965" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.92941177"/>
+                                    <rgba x="0.814576" y="0.883393" z="0.110347" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.93333334"/>
+                                    <rgba x="0.82494" y="0.88472" z="0.106217" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.93725491"/>
+                                    <rgba x="0.83527" y="0.886029" z="0.102646" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.94117647"/>
+                                    <rgba x="0.845561" y="0.887322" z="0.099702" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.94509804"/>
+                                    <rgba x="0.85581" y="0.888601" z="0.097452" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.94901961"/>
+                                    <rgba x="0.866013" y="0.889868" z="0.095953" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.95294118"/>
+                                    <rgba x="0.876168" y="0.891125" z="0.09525" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.95686275"/>
+                                    <rgba x="0.886271" y="0.892374" z="0.095374" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.96078432"/>
+                                    <rgba x="0.89632" y="0.893616" z="0.096335" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.96470588"/>
+                                    <rgba x="0.906311" y="0.894855" z="0.098125" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.96862745"/>
+                                    <rgba x="0.916242" y="0.896091" z="0.100717" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.97254902"/>
+                                    <rgba x="0.926106" y="0.89733" z="0.104071" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.97647059"/>
+                                    <rgba x="0.935904" y="0.89857" z="0.108131" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.98039216"/>
+                                    <rgba x="0.945636" y="0.899815" z="0.112838" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.98431373"/>
+                                    <rgba x="0.9553" y="0.901065" z="0.118128" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.98823529"/>
+                                    <rgba x="0.964894" y="0.902323" z="0.123941" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.99215686"/>
+                                    <rgba x="0.974417" y="0.90359" z="0.130215" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="0.99607843"/>
+                                    <rgba x="0.983868" y="0.904867" z="0.136897" w="1"/>
+                                </Point>
+                                <Point>
+                                    <pos content="1"/>
+                                    <rgba x="0.993248" y="0.906157" z="0.143936" w="1"/>
+                                </Point>
+                            </Points>
+                        </TransferFunction>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="325"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="GradientMagnitude2" displayName="Gradient Magnitude">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="750" y="450"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="1260" y="840"/>
+                        <dimensions x="256" y="256"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="GradientMagnitudeLog" displayName="Gradient Magnitude">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="450"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="979" y="838"/>
+                        <dimensions x="256" y="256"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection src="VolumeSource2.data" dst="Histogram2D.inport1"/>
+            <Connection src="VolumeGradientMagnitude.outputVolume" dst="Histogram2D.inport2"/>
+            <Connection src="VolumeSource2.data" dst="VolumeGradientMagnitude.inputVolume"/>
+            <Connection src="LayerRenderer.outport" dst="GradientMagnitudeLog.inport"/>
+            <Connection src="Histogram2D.outport" dst="LayerColorMapping.inport"/>
+            <Connection src="LayerColorMapping.outport" dst="LayerRenderer.layers"/>
+            <Connection src="LayerRenderer2.outport" dst="GradientMagnitude2.inport"/>
+            <Connection src="LayerColorMapping2.outport" dst="LayerRenderer2.layers"/>
+            <Connection src="VolumeSource2.data" dst="Histogram2D2.inport1"/>
+            <Connection src="VolumeGradientMagnitude.outputVolume" dst="Histogram2D2.inport2"/>
+            <Connection src="Histogram2D2.outport" dst="LayerColorMapping2.inport"/>
+        </Connections>
+        <PropertyLinks>
+            <PropertyLink src="LayerRenderer.camera" dst="LayerRenderer2.camera"/>
+            <PropertyLink src="GradientMagnitudeLog.inputSize.dimensions" dst="GradientMagnitude2.inputSize.dimensions"/>
+            <PropertyLink src="LayerRenderer2.camera" dst="LayerRenderer.camera"/>
+            <PropertyLink src="GradientMagnitude2.inputSize.dimensions" dst="GradientMagnitudeLog.inputSize.dimensions"/>
+        </PropertyLinks>
+    </ProcessorNetwork>
+    <PortInspectors/>
+    <WorkspaceAnnotations>
+        <Properties>
+            <Property type="org.inviwo.StringProperty" identifier="author">
+                <value content="Inviwo Team"/>
+            </Property>
+            <Property type="org.inviwo.StringProperty" identifier="tags">
+                <value content="Example;"/>
+            </Property>
+            <Property type="org.inviwo.StringProperty" identifier="categories">
+                <value content="Examples;"/>
+            </Property>
+        </Properties>
+        <Canvases>
+            <CanvasImage>
+                <name content="Gradient Magnitude"/>
+                <size x="256" y="256"/>
+                <base64 content="/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD8+qKKK/UD9ICiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiigKW6DNABRUi27t0FSLZSH+Bj+GKdiXJIr0Va+xSD+ED6mj7JJ6r/wB9UWYudFXafSl2mrBtJPb8DTTbuvUUWYcyIdtG33p5Rh2ppBpDuJt96TFHNFAwwaKKKBhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUVct9PV+Z544FHJBOT+QqyLjT7T/AFMRmcfxzf4U7GTqdErmfBZzXJ/dRM/uBx+dW10goMzTJH7A5NFxrE0o2g4HoOAKpNMznJJNPRC9+XkXtllB0DSkdyaQ3qr9yJF+ozVAtSZNFx8ncuNfSt0fA9qiad26sT+NQZozSuUopEm9vWjefWo8kU7NIdh4kYd6UTN3NQk5pQaYWLHm560HDVXDc08SYouKwrJUZGKeZqYXz2oGriUUUUigooooAKKKKACiiigAooooAKKKKACiiigAoop0cbzSLHGpd2IVVUZJJ6ACgD//2Q=="/>
+            </CanvasImage>
+            <CanvasImage>
+                <name content="Gradient Magnitude"/>
+                <size x="256" y="256"/>
+                <base64 content="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"/>
+            </CanvasImage>
+        </Canvases>
+        <Network>
+            <name content="Network"/>
+            <size x="256" y="256"/>
+            <base64 content="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"/>
+        </Network>
+    </WorkspaceAnnotations>
+    <AnimationController>
+        <Properties>
+            <Property type="org.inviwo.CompositeProperty" identifier="PlayOptions">
+                <Properties/>
+                <collapsed content="1"/>
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="RenderOptions">
+                <Properties>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="image">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="ffmpeg">
+                        <Properties>
+                            <Property type="org.inviwo.FileProperty" identifier="file">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="exporter">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <collapsed content="1"/>
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="controlOptions">
+                <Properties/>
+                <collapsed content="1"/>
+            </Property>
+        </Properties>
+    </AnimationController>
+    <MainAnimationIndex content="0"/>
+    <Animations>
+        <Animation>
+            <name content="Animation 1"/>
+        </Animation>
+    </Animations>
+</InviwoWorkspace>
