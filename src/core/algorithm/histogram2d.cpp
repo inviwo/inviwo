@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,15 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/algorithm/histogram2d.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/datastructures/datamapper.h>
+namespace inviwo::util::detail {
 
-#include <iterator>
-#include <vector>
-#include <bitset>
-#include <array>
+DataMapper histogramDataMap(const DataMapper& datamap, double effectiveRange) {
+    const dvec2 effectiveDataRange{datamap.dataRange.x, datamap.dataRange.x + effectiveRange};
+    const dvec2 effectiveValueRange{datamap.valueRange.x,
+                                    datamap.mapFromDataToValue(effectiveDataRange.y)};
+    return DataMapper{effectiveDataRange, effectiveValueRange, datamap.valueAxis};
+}
 
-namespace inviwo {
-enum class HistogramMode : int { Off = 0, All, P99, P95, P90, Log };
-constexpr size_t numberOfHistogramModes = 6;
-
-using HistogramSelection = std::bitset<32>;
-constexpr HistogramSelection histogramSelectionAll{0xffffffff};
-
-struct IVW_CORE_API Statistics {
-    double min{0.0};
-    double max{0.0};
-    double mean{0.0};
-    double standardDeviation{0.0};
-    std::vector<double> percentiles;
-};
-
-struct IVW_CORE_API Histogram1D {
-    std::vector<size_t> counts;
-    size_t totalCounts{0};
-    size_t maxCount{0};
-    DataMapper dataMap{};
-    size_t underflow{0};
-    size_t overflow{0};
-
-    Statistics dataStats;
-    Statistics histStats;
-};
-
-struct IVW_CORE_API Histogram2D {
-    std::vector<size_t> counts;
-    size2_t dimensions{0};
-    size_t totalCounts{0};
-    size_t maxCount{0};
-    std::array<DataMapper,2> dataMap{};
-    size_t underflow{0};
-    size_t overflow{0};
-};
-
-}  // namespace inviwo
+}  // namespace inviwo::util::detail
