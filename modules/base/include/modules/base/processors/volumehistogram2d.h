@@ -39,22 +39,22 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API Histogram2D : public Processor {
+class IVW_MODULE_BASE_API VolumeHistogram2D : public Processor {
 public:
-    Histogram2D();
+    VolumeHistogram2D();
 
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    enum class Scaling { Linear, Log };
+    enum class Scaling : std::uint8_t { Linear, Log };
 
 private:
     VolumeInport inport1_;
     VolumeInport inport2_;
     LayerOutport outport_;
-        
+
     IntProperty histogramResolution_;
     OptionPropertyInt channel1_;
     OptionPropertyInt channel2_;

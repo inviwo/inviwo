@@ -65,7 +65,6 @@ set(HEADER_FILES
     include/modules/base/processors/filecache.h
     include/modules/base/processors/gridplanes.h
     include/modules/base/processors/heightfieldmapper.h
-    include/modules/base/processors/histogram2d.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imagedistancetransform.h
     include/modules/base/processors/imageexport.h
@@ -129,6 +128,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumedownsample.h
     include/modules/base/processors/volumeexport.h
     include/modules/base/processors/volumegradientcpuprocessor.h
+    include/modules/base/processors/volumehistogram2d.h
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
     include/modules/base/processors/volumesequenceelementselectorprocessor.h
@@ -216,7 +216,6 @@ set(SOURCE_FILES
     src/processors/filecache.cpp
     src/processors/gridplanes.cpp
     src/processors/heightfieldmapper.cpp
-    src/processors/histogram2d.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imagedistancetransform.cpp
     src/processors/imageexport.cpp
@@ -278,6 +277,7 @@ set(SOURCE_FILES
     src/processors/volumedownsample.cpp
     src/processors/volumeexport.cpp
     src/processors/volumegradientcpuprocessor.cpp
+    src/processors/volumehistogram2d.cpp
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
     src/processors/volumesequenceelementselectorprocessor.cpp
