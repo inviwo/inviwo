@@ -247,7 +247,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
                       GL_NEAREST);
 
     bool pickingCopied = false;
-    for (GLuint i = 1; i < sourceFBO->maxColorAttachments(); i++) {
+    for (GLuint i = 1; i < FrameBufferObject::maxColorAttachments(); i++) {
         if (sourceBuffers[i] != 0 && targetBuffers[i] != 0) {
             glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
             glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
@@ -398,7 +398,7 @@ void ImageGL::reAttachAllLayers() {
     if (pickingLayerGL_) {
         pickingLayerGL_->getTexture()->bind();
         pickingAttachmentID_ = frameBufferObject_.attachColorTexture(
-            pickingLayerGL_->getTexture().get(), frameBufferObject_.maxColorAttachments() - 1);
+            pickingLayerGL_->getTexture().get(), FrameBufferObject::maxColorAttachments() - 1);
         colorAndPickingAttachmentIDs_.insert(colorAndPickingAttachmentIDs_.begin() + 1,
                                              *pickingAttachmentID_);
     }
