@@ -94,6 +94,7 @@
 #include <modules/base/processors/layercontour.h>
 #include <modules/base/processors/layerdistancetransform.h>
 #include <modules/base/processors/imagedistancetransform.h>
+#include <modules/base/processors/layerexport.h>
 #include <modules/base/processors/layerinformation.h>
 #include <modules/base/processors/layersequenceelementselector.h>
 #include <modules/base/processors/layersequencesource.h>
@@ -228,6 +229,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerCombiner>();
     registerProcessor<LayerContour>();
     registerProcessor<LayerDistanceTransform>();
+    registerProcessor<LayerExport>();
     registerProcessor<LayerInformation>();
     registerProcessor<LayerSequenceElementSelector>();
     registerProcessor<LayerSequenceSource>();
