@@ -203,8 +203,8 @@ void VolumeHistogram2D::process() {
     const dvec2 effectiveRange{effectiveRange1, effectiveRange2};
     const size2_t numbins{numbins1, numbins2};
 
-    const Histogram2D hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
-                                                         dispatching::filter::All>(
+    const auto hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
+                                                  dispatching::filter::All>(
         vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2>() {
             auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
             auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
