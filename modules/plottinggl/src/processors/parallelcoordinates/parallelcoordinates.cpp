@@ -82,6 +82,7 @@
 #include <modules/opengl/shader/shaderobject.h>                                 // for ShaderObject
 #include <modules/opengl/texture/textureunit.h>                                 // for TextureUn...
 #include <modules/opengl/texture/textureutils.h>                                // for activateA...
+#include <modules/opengl/openglcapabilities.h>                                  // for OpenGLCap...
 #include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>  // for PCPAxisSe...
 #include <modules/plottinggl/utils/axisrenderer.h>                              // for AxisRenderer
 #include <modules/userinterfacegl/glui/element.h>                               // for UIOrienta...
@@ -621,6 +622,22 @@ void ParallelCoordinates::drawLines(size2_t size) {
                     utilgl::BlendModeEquationState(GL_NONE, GL_NONE, GL_FUNC_ADD));
         };
     }();
+
+    // Disable blending for picking buffer when using additive or subtractive blending
+    // Note: requires OpenGL 4.0 or the ARB_draw_buffers_blend extension
+    if ((blendMode_ == BlendMode::Additive || blendMode_ == BlendMode::Subtractive) &&
+        outport_.getData()->getPickingLayer()) {
+        // The picking buffer, if existing, is attached to GL_DRAW_BUFFER1
+        // see ImageGL::reattachAllLayers()
+        const GLint pickingBuf = 1;
+        if (OpenGLCapabilities::getOpenGLVersion() >= 400) {
+            glBlendFunci(pickingBuf, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendEquationSeparatei(pickingBuf, GL_FUNC_ADD, GL_FUNC_ADD);
+        } else if (OpenGLCapabilities::isExtensionSupported("ARB_draw_buffers_blend")) {
+            glBlendFunciARB(pickingBuf, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendEquationSeparateiARB(pickingBuf, GL_FUNC_ADD, GL_FUNC_ADD);
+        }
+    }
 
     // Draw lines
 
