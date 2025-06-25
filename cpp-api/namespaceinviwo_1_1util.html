@@ -291,6 +291,8 @@ IVW_CORE_API std::vector&lt; double &gt;&#160;</td><td class="memItemRight" vali
 IVW_CORE_API <a class="el" href="structinviwo_1_1Statistics.html">Statistics</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateHistogramStats</b> (const std::vector&lt; size_t &gt; &amp;hist)</td></tr>
 <tr class="memitem:ae56ff35451c5eafad52c74568b0ae4f2" id="r_ae56ff35451c5eafad52c74568b0ae4f2"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:ae56ff35451c5eafad52c74568b0ae4f2 template"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae56ff35451c5eafad52c74568b0ae4f2">calculateHistograms</a> (std::span&lt; const T &gt; data, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMap, size_t bins)</td></tr>
+<tr class="memitem:a0dffd6ad2f9e35778bd9c30eb03d3e17" id="r_a0dffd6ad2f9e35778bd9c30eb03d3e17"><td class="memTemplParams" colspan="2">template&lt;typename T, typename U&gt; </td></tr>
+<tr class="memitem:a0dffd6ad2f9e35778bd9c30eb03d3e17 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structinviwo_1_1Histogram2D.html">Histogram2D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0dffd6ad2f9e35778bd9c30eb03d3e17">calculateHistogram2D</a> (std::span&lt; const T &gt; data1, size_t channel1, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMap1, std::span&lt; const U &gt; data2, size_t channel2, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMap2, size2_t bins)</td></tr>
 <tr class="memitem:a2bfdf4a3d482622cdc4e0c93413d8882" id="r_a2bfdf4a3d482622cdc4e0c93413d8882"><td class="memTemplParams" colspan="2"><a id="a2bfdf4a3d482622cdc4e0c93413d8882" name="a2bfdf4a3d482622cdc4e0c93413d8882"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a2bfdf4a3d482622cdc4e0c93413d8882 template"><td class="memItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memItemRight" valign="bottom"><b>linearMap</b> (T val, glm::vec&lt; 2, T &gt; from, glm::vec&lt; 2, T &gt; to) noexcept</td></tr>
@@ -2019,6 +2021,82 @@ template&lt;typename T&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Calculate a bounding box of the volume in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+
+</div>
+</div>
+<a id="a0dffd6ad2f9e35778bd9c30eb03d3e17" name="a0dffd6ad2f9e35778bd9c30eb03d3e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dffd6ad2f9e35778bd9c30eb03d3e17">&#9670;&#160;</a></span>calculateHistogram2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename U&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structinviwo_1_1Histogram2D.html">Histogram2D</a> inviwo::util::calculateHistogram2D </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const T &gt;</td>          <td class="paramname"><span class="paramname"><em>data1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>channel1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dataMap1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const U &gt;</td>          <td class="paramname"><span class="paramname"><em>data2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>channel2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dataMap2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size2_t</td>          <td class="paramname"><span class="paramname"><em>bins</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate a 2D histogram and statistics for two given spans <code class="param">data1</code> and <code class="param">data2</code> of type <code class="param">T</code> and <code class="param">U</code>, respectively. This function assumes that the data values between the two spans are aligned, that is <span class="tt">data1[n]</span> corresponds to <span class="tt">data2[n]</span>. Note that <code class="param">data1</code> and <code class="param">data2</code> must have the same dimensions. No interpolation is performed.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>underlying data type of the first dimension, can be a scalar or glm vector type </td></tr>
+    <tr><td class="paramname">U</td><td>underlying data type of the second dimension, can be a scalar or glm vector type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data1</td><td>first dimension </td></tr>
+    <tr><td class="paramname">channel1</td><td>channel of data1 used as first dimension </td></tr>
+    <tr><td class="paramname">dataMap1</td><td>provides the data range used for bin positions and size of the first dimension </td></tr>
+    <tr><td class="paramname">data2</td><td>second dimension </td></tr>
+    <tr><td class="paramname">channel2</td><td>channel of data1 used as second dimension </td></tr>
+    <tr><td class="paramname">dataMap2</td><td>provides the data range used for bin positions and size of the second dimension </td></tr>
+    <tr><td class="paramname">bins</td><td>upper limit of bins to use, actual number of bins might be lower based on data range and data types of <code class="param">T</code> and <code class="param">U</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>2D histogram of <code class="param">data1</code>[channel1] and <code class="param">data2</code>[channel2] </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classinviwo_1_1Exception.html">Exception</a></td><td>if the sizes of <code class="param">data1</code> and <code class="param">data2</code> do not match </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>util::detail::optimalBinCount </dd></dl>
 
 </div>
 </div>

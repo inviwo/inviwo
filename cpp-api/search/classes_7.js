@@ -36,7 +36,8 @@ var searchData=
   ['hiddencanvasqt_33',['HiddenCanvasQt',['../classinviwo_1_1HiddenCanvasQt.html',1,'inviwo']]],
   ['hideer_34',['Hideer',['../structinviwo_1_1util_1_1detail_1_1Hideer.html',1,'inviwo::util::detail']]],
   ['histogram1d_35',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
-  ['histogramcache_36',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
-  ['histogramtodataframe_37',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
-  ['htmlpropertywidgetqt_38',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
+  ['histogram2d_36',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
+  ['histogramcache_37',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
+  ['histogramtodataframe_38',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
+  ['htmlpropertywidgetqt_39',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
 ];

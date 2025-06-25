@@ -59,9 +59,10 @@ var searchData=
   ['highlight_56',['Highlight',['../namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1',1,'inviwo']]],
   ['highlight_57',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
   ['histogram1d_58',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
-  ['histogramcache_59',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
-  ['histogramtodataframe_60',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
-  ['hsl2rgb_61',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
-  ['hsv2rgb_62',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]],
-  ['htmlpropertywidgetqt_63',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
+  ['histogram2d_59',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
+  ['histogramcache_60',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],
+  ['histogramtodataframe_61',['HistogramToDataFrame',['../classinviwo_1_1HistogramToDataFrame.html',1,'inviwo']]],
+  ['hsl2rgb_62',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
+  ['hsv2rgb_63',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]],
+  ['htmlpropertywidgetqt_64',['HTMLPropertyWidgetQt',['../classinviwo_1_1HTMLPropertyWidgetQt.html',1,'inviwo']]]
 ];

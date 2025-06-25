@@ -79,17 +79,17 @@ var NAVTREEINDEX =
 "classinviwo_1_1TetraMeshBoundingBox.html#aa2a75cee9ea57b86cc3b2d71f5f2fb87",
 "classinviwo_1_1TransferFunctionLayerWriter.html",
 "classinviwo_1_1VolumeConverter.html",
-"classinviwo_1_1VolumeSliceGL.html",
-"classinviwo_1_1animation_1_1AnimationQtSupplier.html#a134e10dfca0ff4d0fe6572267a043934",
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#a997b3ae57696abf6c3244bbab12b2be8",
-"classinviwo_1_1plot_1_1PCPLabelSettings.html#a00146ad228fa4f6fa30ec386fc710bbb",
-"namespaceinviwo.html#a3f05e8e38553c6fe8297f20670c036ca",
-"namespaceinviwo_1_1util.html#a186c1e11a68572b7b72f108e6dbe1938",
-"namespaceinviwo_1_1utilqt.html#aa9365361b68923637d43f1fc60f4df26",
-"structinviwo_1_1MeshShaderCache_1_1Requirement.html",
-"structinviwo_1_1StringComparePMR.html",
-"structinviwo_1_1resource_1_1GL.html",
-"structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html"
+"classinviwo_1_1VolumeSliceExtractor.html",
+"classinviwo_1_1animation_1_1AnimationObserver.html",
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#a0aba91da17b61d95985e32247ec8ce29",
+"classinviwo_1_1plot_1_1PCPCaptionSettings.html#aa9edd334607b6c8db446b960a1d37069",
+"namespaceinviwo.html#a1c63bd1fc251c208f4fe52b5ab5e5224",
+"namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779",
+"namespaceinviwo_1_1utilqt.html#a7467b0293750542c0be5375676d2aa47",
+"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html",
+"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44",
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html",
+"structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';
