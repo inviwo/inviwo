@@ -78,7 +78,9 @@ public:
     explicit DataMapper(dvec2 dataRange, Axis valueAxis = {});
     DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis = {});
     DataMapper(const DataMapper& rhs);
+    DataMapper(DataMapper&& rhs) noexcept;
     DataMapper& operator=(const DataMapper& that);
+    DataMapper& operator=(DataMapper&& that) noexcept;
 
     /**
      * The `dataRange` is used to normalize the "raw" values to [0,1]

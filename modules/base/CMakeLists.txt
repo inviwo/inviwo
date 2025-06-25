@@ -128,6 +128,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumedownsample.h
     include/modules/base/processors/volumeexport.h
     include/modules/base/processors/volumegradientcpuprocessor.h
+    include/modules/base/processors/volumehistogram2d.h
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
     include/modules/base/processors/volumesequenceelementselectorprocessor.h
@@ -276,6 +277,7 @@ set(SOURCE_FILES
     src/processors/volumedownsample.cpp
     src/processors/volumeexport.cpp
     src/processors/volumegradientcpuprocessor.cpp
+    src/processors/volumehistogram2d.cpp
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
     src/processors/volumesequenceelementselectorprocessor.cpp

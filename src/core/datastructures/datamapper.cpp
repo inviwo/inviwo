@@ -45,7 +45,11 @@ DataMapper::DataMapper(dvec2 aDataRange, dvec2 aValueRange, Axis aValueAxis)
 
 DataMapper::DataMapper(const DataMapper& rhs) = default;
 
+DataMapper::DataMapper(DataMapper&&) noexcept = default;
+
 DataMapper& DataMapper::operator=(const DataMapper& that) = default;
+
+DataMapper& DataMapper::operator=(DataMapper&&) noexcept = default;
 
 dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format,
                                       SignedNormalization normalization) {

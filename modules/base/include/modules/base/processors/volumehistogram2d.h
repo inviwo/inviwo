@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,50 +29,37 @@
 
 #pragma once
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/datastructures/datamapper.h>
-
-#include <iterator>
-#include <vector>
-#include <bitset>
-#include <array>
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/layerport.h>
+#include <modules/base/properties/datarangeproperty.h>
 
 namespace inviwo {
-enum class HistogramMode : int { Off = 0, All, P99, P95, P90, Log };
-constexpr size_t numberOfHistogramModes = 6;
 
-using HistogramSelection = std::bitset<32>;
-constexpr HistogramSelection histogramSelectionAll{0xffffffff};
+class IVW_MODULE_BASE_API VolumeHistogram2D : public Processor {
+public:
+    VolumeHistogram2D();
 
-struct IVW_CORE_API Statistics {
-    double min{0.0};
-    double max{0.0};
-    double mean{0.0};
-    double standardDeviation{0.0};
-    std::vector<double> percentiles;
-};
+    virtual void process() override;
 
-struct IVW_CORE_API Histogram1D {
-    std::vector<size_t> counts;
-    size_t totalCounts{0};
-    size_t maxCount{0};
-    DataMapper dataMap{};
-    size_t underflow{0};
-    size_t overflow{0};
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    Statistics dataStats;
-    Statistics histStats;
-};
+    enum class Scaling : std::uint8_t { Linear, Log };
 
-struct IVW_CORE_API Histogram2D {
-    std::vector<size_t> counts;
-    size2_t dimensions{0};
-    size_t totalCounts{0};
-    size_t maxCount{0};
-    std::array<DataMapper,2> dataMap{};
-    size_t underflow{0};
-    size_t overflow{0};
+private:
+    VolumeInport inport1_;
+    VolumeInport inport2_;
+    LayerOutport outport_;
+
+    IntProperty histogramResolution_;
+    OptionPropertyInt channel1_;
+    OptionPropertyInt channel2_;
+    OptionProperty<Scaling> scaling_;
+    DataRangeProperty dataRange_;
 };
 
 }  // namespace inviwo
