@@ -71,7 +71,7 @@ std::vector<OptionPropertyIntOption> enumeratedOptions() {
     return res;
 }
 
-std::shared_ptr<Layer> createLayer(Histogram2D hist, dvec2 normalizationRange,
+std::shared_ptr<Layer> createLayer(const Histogram2D& hist, dvec2 normalizationRange,
                                    VolumeHistogram2D::Scaling scaling) {
     auto layerRep =
         std::make_shared<LayerRAMPrecision<float>>(LayerReprConfig{.dimensions = hist.dimensions});
