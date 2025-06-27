@@ -95,6 +95,7 @@ void LightVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
     const auto* pointlight = dynamic_cast<const PointLight*>(lightSource_.getData().get());
     utilgl::setShaderUniforms(shader,
                               LightingState{
+                                  .shadingMode = shadingMode_,
                                   .position = pointlight ? pointlight->getPosition() : vec3{1.0f},
                                   .ambient = ambientColor_,
                                   .diffuse = diffuseColor_,
