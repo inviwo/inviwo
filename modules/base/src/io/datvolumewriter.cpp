@@ -95,6 +95,9 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     glm::mat4 wtm = glm::transpose(data.getWorldMatrix());
 
     auto print = util::overloaded{
+        [&ss](std::string_view key, const std::string& val) {
+            fmt::print(ss, "{}: {}\n", key, val);
+        },
         [&ss](std::string_view key, std::string_view val) { fmt::print(ss, "{}: {}\n", key, val); },
         [&ss](std::string_view key, InterpolationType val) {
             fmt::print(ss, "{}: {}\n", key, val);
