@@ -29,6 +29,7 @@
 
 #include <modules/qtwidgets/tf/tflineedit.h>
 
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/glmvec.h>                              // for dvec2
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>  // for DoubleValueDragSpinBox
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -65,7 +66,11 @@ void TFLineEdit::setValidRange(const dvec2& range, double inc) {
     spinbox_.setMaximum(range.y);
 
     spinbox_.setSingleStep(inc);
-    spinbox_.setDecimals(utilqt::decimals(inc));
+
+    // set "full" precision here, to avoid any rounding issues when round tripping
+    // other wise the widget will round the value to the nearest specified number of digits,
+    // which when converting back with valueMappingEnabled can end up outside of bounds.
+    spinbox_.setDecimals(20);
 }
 
 dvec2 TFLineEdit::getValidRange() const { return dvec2{spinbox_.minimum(), spinbox_.maximum()}; }
@@ -99,7 +104,6 @@ double TFLineEdit::value() const {
         // renormalize value to [0,1]
         value = (value - valueRange_.x) / (valueRange_.y - valueRange_.x);
     }
-
     return value;
 }
 
