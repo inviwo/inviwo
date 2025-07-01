@@ -111,6 +111,8 @@ VolumeSliceExtractor::VolumeSliceExtractor()
                       "Flips the output image left and right"_help, false)
     , flipVertical_("flipVertical", "Vertical Flip", "Flips the output image up and down"_help,
                     false)
+    , channel_("channel", "Channel", "Channel used to for transfer function lookups"_help,
+               util::enumeratedOptions("Channel", 4))
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "Defines the transfer function for mapping voxel values to color and opacity"_help,
@@ -146,7 +148,7 @@ VolumeSliceExtractor::VolumeSliceExtractor()
     addPort(outport_);
 
     trafoGroup_.addProperties(flipHorizontal_, flipVertical_);
-    tfGroup_.addProperties(transferFunction_, tfAlphaOffset_);
+    tfGroup_.addProperties(channel_, transferFunction_, tfAlphaOffset_);
 
     addProperties(sliceAlongAxis_, sliceNumber_, format_, trafoGroup_, tfGroup_,
                   handleInteractionEvents_, stepSliceUp_, stepSliceDown_, mouseShiftSlice_,
@@ -237,6 +239,7 @@ struct SliceState {
     bool flipVertical;
     TransferFunction* tf = nullptr;
     float alphaOffset = 0.0f;
+    int channel = 0;
 };
 
 template <typename T, typename D, typename Func>
@@ -313,9 +316,9 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
     if (useTF) {
         using D = glm::vec<4, V>;
         auto mapData = [&dm = vrprecision->getOwner()->dataMap, tf = state.tf,
-                        offset = state.alphaOffset](T value) {
+                        channel = state.channel, offset = state.alphaOffset](T value) {
             auto sample = tf->sample(
-                glm::clamp(dm.mapFromDataToNormalized(util::glmcomp(value, 0)), 0.0, 1.0));
+                glm::clamp(dm.mapFromDataToNormalized(util::glmcomp(value, channel)), 0.0, 1.0));
             sample.a = glm::clamp(sample.a + offset, 0.0f, 1.0f);
             return util::glm_convert_normalized<D>(sample);
         };
@@ -335,6 +338,12 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
 void VolumeSliceExtractor::process() {
     auto vol = inport_.getData();
+
+    if (tfGroup_.isChecked() && channel_ >= vol->getDataFormat()->getComponents()) {
+        throw Exception(SourceContext{},
+                        "Channel for TF mapping is greater than the available channels {} >= {}",
+                        channel_.get() + 1, vol->getDataFormat()->getComponents());
+    }
 
     const auto dims(vol->getDimensions());
     double pos{sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
@@ -359,10 +368,10 @@ void VolumeSliceExtractor::process() {
             break;
     }
 
-    detail::SliceState state{sliceAlongAxis_,     static_cast<size_t>(sliceNumber_.get() - 1),
-                             &imageCache_,        flipHorizontal_,
-                             flipVertical_,       &transferFunction_.get(),
-                             tfAlphaOffset_.get()};
+    detail::SliceState state{sliceAlongAxis_,      static_cast<size_t>(sliceNumber_.get() - 1),
+                             &imageCache_,         flipHorizontal_,
+                             flipVertical_,        &transferFunction_.get(),
+                             tfAlphaOffset_.get(), channel_.get()};
 
     std::shared_ptr<Image> image;
 
