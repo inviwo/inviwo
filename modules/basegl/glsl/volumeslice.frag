@@ -38,6 +38,7 @@ uniform sampler2D transferFunction;
 
 uniform mat4 sliceRotation; // Rotates around slice axis (offset to center point)
 uniform float slice;
+uniform int channel = 0;
 
 uniform vec4 fillColor;
 
@@ -58,7 +59,7 @@ void main() {
     vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
 
 #ifdef TF_MAPPING_ENABLED
-    voxel = applyTF(transferFunction, voxel);
+    voxel = applyTF(transferFunction, voxel, channel);
     voxel.a += alphaOffset;
 #endif
 
