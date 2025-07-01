@@ -81,6 +81,7 @@ set(HEADER_FILES
     include/modules/base/processors/layercombiner.h
     include/modules/base/processors/layercontour.h
     include/modules/base/processors/layerdistancetransform.h
+    include/modules/base/processors/layerexport.h
     include/modules/base/processors/layerinformation.h
     include/modules/base/processors/layersequenceelementselector.h
     include/modules/base/processors/layersequencesource.h
@@ -232,6 +233,7 @@ set(SOURCE_FILES
     src/processors/layercombiner.cpp
     src/processors/layercontour.cpp
     src/processors/layerdistancetransform.cpp
+    src/processors/layerexport.cpp
     src/processors/layerinformation.cpp
     src/processors/layersequenceelementselector.cpp
     src/processors/layersequencesource.cpp
