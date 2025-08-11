@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 10,
   "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
   "configurePresets": [
     {
@@ -7,7 +7,7 @@
       "hidden" : true,
 
       "cacheVariables": {
-        // Config
+        "$comment": "Config",
         "IVW_CFG_PROFILING":              { "type": "BOOL", "value": "OFF" },
         "IVW_CFG_FORCE_ASSERTIONS":       { "type": "BOOL", "value": "OFF" },
         "IVW_CFG_BUILD_CHANGELOG":        { "type": "BOOL", "value": "OFF" },
@@ -18,7 +18,7 @@
         "IVW_CFG_TRACY_PROFILING":        { "type": "BOOL", "value": "ON" },
         "IVW_CFG_TRACY_MENORY_PROFILING": { "type": "BOOL", "value": "ON" },
 
-        // Disable targets not needed for the dome application.
+        "$comment1": "Disable targets not needed for the dome application",
         "IVW_APP_META_CLI":           { "type": "BOOL", "value": "OFF" },
         "IVW_APP_PYTHON":             { "type": "BOOL", "value": "OFF" },
         "IVW_APP_MINIMAL_QT":         { "type": "BOOL", "value": "OFF" },
@@ -38,24 +38,24 @@
       "inherits" : ["dome-config"],
 
       "cacheVariables": {
-        // We use a static build to make perf testing in tracy easier
+        "$comment": "We use a static build to make perf testing in tracy easier",
         "VCPKG_TARGET_TRIPLET":          "x64-windows-static-md",
         "VCPKG_MANIFEST_FEATURES":       "dome",
         "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF" },
         "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON" },
 
-        // Enable inviwo-dome
+        "$comment1": "Enable inviwo-dome",
         "IVW_CFG_PROJECT_NAME":       "inviwo-dome-node",
         "IVW_APP_INVIWO_DOME":        { "type": "BOOL", "value": "ON" },
 
-        // Packaging
+        "$comment2": "Packaging",
         "IVW_PACKAGE_INSTALLER":      { "type": "BOOL", "value": "OFF" },
         "IVW_PACKAGE_HEADERS":        { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "ON" },
         "X_VCPKG_APPLOCAL_DEPS_INSTALL":   { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_SELECT_APP":     "inviwo-dome",
 
-        // Disable all python (We can't use python in a static build yet)
+        "$comment3": "Disable all python (We can't use python in a static build yet)",
         "IVW_APP_PYTHON":             { "type": "BOOL", "value": "OFF" },
         "IVW_MODULE_DATAFRAMEPYTHON": { "type": "BOOL", "value": "ON" },
         "IVW_MODULE_MOLVISPYTHON":    { "type": "BOOL", "value": "OFF" },
@@ -65,7 +65,7 @@
         "IVW_MODULE_PYTHON3GL":       { "type": "BOOL", "value": "ON" },
         "IVW_MODULE_PYTHONTOOLS":     { "type": "BOOL", "value": "ON" },
 
-        // Diable all qt modules
+        "$comment4": "Diable all qt modules",
         "IVW_ENABLE_QT":              { "type": "BOOL", "value": "OFF" },
         "IVW_APP_QTBASE":             { "type": "BOOL", "value": "OFF" },
         "IVW_APP_INVIWO":             { "type": "BOOL", "value": "OFF" },
@@ -75,7 +75,7 @@
         "IVW_MODULE_QTWIDGETS":       { "type": "BOOL", "value": "OFF" },
         "IVW_MODULE_OPENGLQT":        { "type": "BOOL", "value": "OFF" },
 
-        // OpenCL Needs to use glfw
+        "$comment5": "OpenCL Needs to use glfw",
         "IVW_MODULE_GLFW":            { "type": "BOOL", "value": "ON" },
         "IVW_MODULE_OPENCL_OpenGLSupplier": "InviwoGLFWModule"
       }
@@ -91,7 +91,7 @@
         "VCPKG_MANIFEST_FEATURES":    "dome",
         "IVW_APP_INVIWO_DOME":        { "type": "BOOL", "value": "OFF" },
 
-        // Packaging
+        "$comment": "Packaging",
         "IVW_PACKAGE_INSTALLER":      { "type": "BOOL", "value": "OFF" },
         "IVW_PACKAGE_HEADERS":        { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "ON" },
@@ -104,29 +104,29 @@
       "inherits" : ["dome-config"],
 
       "cacheVariables": {
-        // We use a static build to make perf testing in tracy easier
+        "$comment": "We use a static build to make perf testing in tracy easier",
         "VCPKG_TARGET_TRIPLET":          "x64-windows-static-md",
         "VCPKG_MANIFEST_FEATURES":       "dome-tracy",
         "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF" },
         "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON" },
 
-        // Enable inviwo-dome
+        "$comment1": "Enable inviwo-dome",
         "IVW_CFG_PROJECT_NAME":       "inviwo-dome-node",
         "IVW_APP_INVIWO_DOME":        { "type": "BOOL", "value": "ON" },
 
-        // Packaging
+        "$comment2": "Packaging",
         "IVW_PACKAGE_INSTALLER":      { "type": "BOOL", "value": "OFF" },
         "IVW_PACKAGE_HEADERS":        { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_EMBED_PYTHON":   { "type": "BOOL", "value": "ON" },
         "IVW_PACKAGE_SELECT_APP":     "inviwo",
         "X_VCPKG_APPLOCAL_DEPS_INSTALL":   { "type": "BOOL", "value": "ON" },
 
-        // Diable all qt modules
+        "$comment3": "Diable all qt modules",
         "IVW_ENABLE_QT":              { "type": "BOOL", "value": "ON" },
         "IVW_APP_QTBASE":             { "type": "BOOL", "value": "ON" },
         "IVW_APP_INVIWO":             { "type": "BOOL", "value": "ON" },
 
-        // OpenCL Needs to use glfw
+        "$comment4": "OpenCL Needs to use glfw",
         "IVW_MODULE_GLFW":            { "type": "BOOL", "value": "ON" },
 
         "IVW_MODULE_OPENCL":          { "type": "BOOL", "value": "OFF" },
