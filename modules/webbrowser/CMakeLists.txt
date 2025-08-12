@@ -195,6 +195,11 @@ if (OS_MAC)
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
         "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+
+        COMMAND
+        /usr/bin/codesign --force --sign - --entitlements "${CMAKE_CURRENT_SOURCE_DIR}/webhelper/resources/mac/cef-entitlements.plist"
+        --timestamp\=none --generate-entitlement-der "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+
         VERBATIM
     )
     
