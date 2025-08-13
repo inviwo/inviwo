@@ -16,7 +16,7 @@ env:
   VCPKG_FEATURE_FLAGS: dependencygraph
   CCACHE_DEBUG: 1
   CCACHE_BASEDIR: ${{ github.workspace }}
-  CCACHE_IGNOREOPTIONS: "-fmodules-ts -fmodule-mapper=* -fdeps-format=*"
+  CCACHE_DIRECT: false
   CCACHE_LOGFILE: ${{ github.workspace }}/ccache.log
   CCACHE_NODEPEND: true
 
