@@ -17,7 +17,8 @@ env:
   CCACHE_DEBUG: 1
   CCACHE_BASEDIR: ${{ github.workspace }}
   CCACHE_DIRECT: false
-  CCACHE_LOGFILE: ${{ github.workspace }}/ccache.log
+  CCACHE_LOGFILE: ${{ github.workspace }}/ccache-debug/ccache.log
+  CCACHE_DEBUGDIR: ${{ github.workspace }}/ccache-debug
   CCACHE_NODEPEND: true
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
@@ -190,7 +191,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
-        path: ccache.log
+        path: ccache-debug/*
 
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
