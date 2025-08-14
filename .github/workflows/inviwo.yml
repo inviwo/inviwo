@@ -16,7 +16,7 @@ env:
   VCPKG_FEATURE_FLAGS: dependencygraph
   CCACHE_DEBUG: 1
   CCACHE_BASEDIR: ${{ github.workspace }}
-  CCACHE_DIRECT: false
+  CCACHE_NODIRECT: true
   CCACHE_LOGFILE: ${{ github.workspace }}/ccache-debug/ccache.log
   CCACHE_DEBUGDIR: ${{ github.workspace }}/ccache-debug
   CCACHE_NODEPEND: true
