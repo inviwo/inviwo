@@ -48,7 +48,7 @@ runs:
     - name: "Setup Ccache"
       id: ccache
       if: inputs.ccache
-      uses: petersteneteg/ccache-action@v2.2.0
+      uses: petersteneteg/ccache-action@v2.3.0
       with:
         variant: ccache
         max-size: "1500M"
