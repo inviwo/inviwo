@@ -122,25 +122,40 @@ function(ivw_vcpkg_install name)
         return()
     endif()
 
-    find_package(Python3 COMPONENTS Interpreter)
-    if(NOT Python3_Interpreter_FOUND)
-        if(NOT ivwVcpkgInstallPythonWarningShownOnce)
-            message(WARNING "Python3 not available.\n"
-                "Python is required to install vcpkg libraries. Please install Python3. If you "
-                "have a Python installation that is not found, consider "
-                "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
-            )
-            set(ivwVcpkgInstallPythonWarningShownOnce ON CACHE INTERNAL "vcpkg_install Python warning shown once")
-        endif()
-        return ()
-    endif()
-
     set(options EXT)
     set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     string(TOLOWER "${name}" lowercase_name)
+
+    # use a global property (IVW_VCPKG_INSTALLED_PACKAGES) to avoid installing
+    # the same package multiple times. This is comman with shared dependencies.
+    get_property(visited GLOBAL PROPERTY IVW_VCPKG_INSTALLED_PACKAGES)
+    if(NOT visited)
+        set(visited "")
+    endif()
+    if(lowercase_name IN_LIST visited)
+        return()
+    endif()
+    list(APPEND visited ${lowercase_name})
+    set_property(GLOBAL PROPERTY IVW_VCPKG_INSTALLED_PACKAGES ${visited})
+
+
+    if(NOT Python3_Interpreter_FOUND)
+        find_package(Python3 COMPONENTS Interpreter)
+        if(NOT Python3_Interpreter_FOUND)
+            if(NOT ivwVcpkgInstallPythonWarningShownOnce)
+                message(WARNING "Python3 not available.\n"
+                    "Python is required to install vcpkg libraries. Please install Python3. If you "
+                    "have a Python installation that is not found, consider "
+                    "setting Python3_ROOT_DIR to the root directory of your Python 3 installation."
+                )
+                set(ivwVcpkgInstallPythonWarningShownOnce ON CACHE INTERNAL "vcpkg_install Python warning shown once")
+            endif()
+            return ()
+        endif()
+    endif()
 
     set(install "--install" "${VCPKG_INSTALLED_DIR}")
     set(installdir "${VCPKG_INSTALLED_DIR}/")
@@ -283,6 +298,7 @@ function(ivw_vcpkg_install name)
 
     if(INFO_VCPKG_DEPENDENCIES)
         list(TRANSFORM INFO_VCPKG_DEPENDENCIES REPLACE ":.*" "")
+        list(REMOVE_DUPLICATES INFO_VCPKG_DEPENDENCIES)
         foreach(dep IN LISTS INFO_VCPKG_DEPENDENCIES)
             if(NOT dep MATCHES "^vcpkg-")
                 ivw_vcpkg_install(${dep} MODULE ${ARG_MODULE} ${ext})
