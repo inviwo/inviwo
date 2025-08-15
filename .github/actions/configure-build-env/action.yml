@@ -12,6 +12,10 @@ inputs:
     description: 'Setup ccache'
     required: false
     default: true
+  gh-token:
+    description: "github actions token for access to the octokit api to be able to remove onld caches"
+    default: false
+    required: false
 
 runs:
   using: "composite"
@@ -55,10 +59,10 @@ runs:
         verbose: 2
         save: "${{ github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
         append-timestamp: true
-        gh-token: ${{ secrets.GITHUB_TOKEN }}
-        key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}-
+        gh-token: ${{ inputs.gh-token }}
+        key: inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
         restore-keys: |
-          inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}-
+          inviwo-${{ inputs.triplet }}-${{ inputs.configuration }}
 
     - name: "Copy ccache"
       shell: bash

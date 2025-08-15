@@ -121,6 +121,7 @@ jobs:
       with:
         triplet: ${{ matrix.triplet }}
         configuration: ${{ matrix.configuration }}
+        gh-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Copy Preset
       shell: bash
