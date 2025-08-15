@@ -90,6 +90,7 @@ private:
     BoolProperty flipHorizontal_;
     BoolProperty flipVertical_;
 
+    OptionPropertyInt channel_;
     TransferFunctionProperty transferFunction_;
     FloatProperty tfAlphaOffset_;
 
