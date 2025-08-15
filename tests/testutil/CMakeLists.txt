@@ -18,10 +18,15 @@ target_sources(inviwo-testutil
 
 find_package(GTest CONFIG REQUIRED)
 find_package(warn CONFIG REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(BZip2 REQUIRED)
+
 target_link_libraries(inviwo-testutil PUBLIC
     warn::warn 
     GTest::gtest
     GTest::gmock
+    BZip2::BZip2
+    ZLIB::ZLIB
 )
 
 ivw_define_standard_properties(inviwo-testutil)
