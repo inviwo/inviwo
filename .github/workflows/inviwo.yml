@@ -131,6 +131,7 @@ jobs:
       run: >
         cmake -S inviwo -B build --preset gha-${{ matrix.linkage }}
         -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
         
     - name: "Build"
       timeout-minutes: 360
