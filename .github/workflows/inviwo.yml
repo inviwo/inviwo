@@ -107,6 +107,18 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Free Disk Space
+      if: matrix.system == 'linux'
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
+
     - name: "Clone Inviwo"
       uses: actions/checkout@v5
       with:
