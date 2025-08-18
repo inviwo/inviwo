@@ -70,8 +70,8 @@ if(IVW_CFG_USE_CCACHE_MSVC)
     # this expects a copy of ccache.exe to be in CMAKE_BINARY_DIR renamed to cl.exe
     set(CMAKE_VS_GLOBALS
         "CLToolExe=cl.exe"
-         "CLToolPath=${CMAKE_BINARY_DIR}"
-        "TrackFileAccess=false"
+        "CLToolPath=${CMAKE_BINARY_DIR}"
+        # "TrackFileAccess=false"
         "UseMultiToolTask=true"
         "DebugInformationFormat=OldStyle"
     )
