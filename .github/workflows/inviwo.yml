@@ -94,6 +94,12 @@ jobs:
             configuration: Debug
             run: './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
 
+          # Extra targets
+          - system: 'windows'
+            linkage: 'dynamic'
+            configuration: Release
+            targets: 'ALL_BUILD package DOXY-Inviwo DOXY-Python'
+
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
@@ -156,20 +162,6 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
-
-    - name: "Documentation"
-      timeout-minutes: 60
-      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      shell: bash
-      run: |
-        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target DOXY-Inviwo DOXY-Python
-
-    - name: "Package"
-      timeout-minutes: 120
-      if: ( matrix.system == 'windows' || matrix.system == 'linux') &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      shell: bash
-      run: |
-        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target package
 
     - name: "Run"
       shell: bash
