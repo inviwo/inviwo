@@ -14,12 +14,12 @@ env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
-  CCACHE_DEBUG: 1
   CCACHE_BASEDIR: ${{ github.workspace }}
   CCACHE_NODIRECT: true
-  CCACHE_LOGFILE: ${{ github.workspace }}/ccache-debug/ccache.log
-  CCACHE_DEBUGDIR: ${{ github.workspace }}/ccache-debug
   CCACHE_NODEPEND: true
+  # CCACHE_DEBUG: 1
+  # CCACHE_LOGFILE: ${{ github.workspace }}/ccache-debug/ccache.log
+  # CCACHE_DEBUGDIR: ${{ github.workspace }}/ccache-debug
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
@@ -29,6 +29,8 @@ env:
 jobs:
   build:
     name: "Build"
+    permissions:
+      actions: write # Allow the job to delete caches (https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps?apiVersion=2022-11-28#repository-permissions-for-actions)
     strategy:
       matrix:
         system: [windows, macos, linux]
@@ -201,7 +203,7 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Upload ccache-logs"
-      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
       uses: actions/upload-artifact@v4
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
