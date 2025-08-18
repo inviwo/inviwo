@@ -85,12 +85,44 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
                     std::move(semantics)} {}
 
 IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
-    : CompositeProperty{rhs}, isovalues_{rhs.isovalues_}, tf_{rhs.tf_} {
+    : CompositeProperty{rhs}
+    , PropertyObserver{rhs}
+    , TFPropertyObservable{rhs}
+    , TFPropertyObserver{rhs}
+    , isovalues_{rhs.isovalues_}
+    , tf_{rhs.tf_} {
 
     addProperties(isovalues_, tf_);
 
     tf_.TFPropertyObservable::addObserver(this);
     isovalues_.TFPropertyObservable::addObserver(this);
+}
+
+IsoTFProperty::IsoTFProperty(IsoTFProperty&& rhs)
+    : CompositeProperty{std::move(rhs)}
+    , PropertyObserver{std::move(rhs)}
+    , TFPropertyObservable{std::move(rhs)}
+    , TFPropertyObserver{std::move(rhs)}
+    , isovalues_{std::move(rhs.isovalues_)}
+    , tf_{std::move(rhs.tf_)} {
+
+    addProperties(isovalues_, tf_);
+
+    // The observers are moved so we do not need to re-add them
+}
+
+IsoTFProperty& IsoTFProperty::operator=(IsoTFProperty&& rhs) {
+    if (this != &rhs) {
+        CompositeProperty::operator=(std::move(rhs));
+        PropertyObserver::operator=(std::move(rhs));
+        TFPropertyObservable::operator=(std::move(rhs));
+        TFPropertyObserver::operator=(std::move(rhs));
+        isovalues_ = std::move(rhs.isovalues_);
+        tf_ = std::move(rhs.tf_);
+
+        // The observers are moved so we do not need to re-add them
+    }
+    return *this;
 }
 
 IsoTFProperty* IsoTFProperty::clone() const { return new IsoTFProperty(*this); }

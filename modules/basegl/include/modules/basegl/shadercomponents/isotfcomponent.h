@@ -62,19 +62,19 @@ class IsoTFComponent : public ShaderComponent {
 public:
     explicit IsoTFComponent(VolumeInport& volumeInport)
         : ShaderComponent(), isotfs{util::make_array<N>([&]([[maybe_unused]] size_t i) {
-//            if constexpr (N > 1) {
-//                auto prop =
-//                    IsoTFProperty{fmt::format("isotf{}", i), fmt::format("TF & Iso Values #{}", i),
-//                                  &volumeInport, InvalidationLevel::InvalidResources};
-//                prop.isovalues_.setIdentifier(fmt::format("isovalues{}", i))
-//                    .setDisplayName(fmt::format("Iso Values #{}", i));
-//                prop.tf_.setIdentifier(fmt::format("transferFunction{}", i))
-//                    .setDisplayName(fmt::format("Transfer Function #{}", i));
-//                return prop;
-//            } else {
+            if constexpr (N > 1) {
+                auto prop =
+                    IsoTFProperty{fmt::format("isotf{}", i), fmt::format("TF & Iso Values #{}", i),
+                                  &volumeInport, InvalidationLevel::InvalidResources};
+                prop.isovalues_.setIdentifier(fmt::format("isovalues{}", i))
+                    .setDisplayName(fmt::format("Iso Values #{}", i));
+                prop.tf_.setIdentifier(fmt::format("transferFunction{}", i))
+                    .setDisplayName(fmt::format("Transfer Function #{}", i));
+                return prop;
+            } else {
                 return IsoTFProperty{"isotf", "TF & Iso Values", &volumeInport,
                                      InvalidationLevel::InvalidResources};
-//            }
+            }
         })} {
         static_assert(N > 0, "there has to be at least one isotf");
     }

@@ -69,9 +69,9 @@ public:
     IsoValueProperty(std::string_view identifier, std::string_view displayName, TFData port,
                      PropertySemantics semantics = PropertySemantics::Default);
     IsoValueProperty(const IsoValueProperty& rhs);
-    IsoValueProperty(IsoValueProperty&& rhs) = delete;
+    IsoValueProperty(IsoValueProperty&& rhs);
     IsoValueProperty& operator=(const IsoValueProperty& rhs) = delete;
-    IsoValueProperty& operator=(IsoValueProperty&& rhs) = delete;
+    IsoValueProperty& operator=(IsoValueProperty&& rhs);
     virtual ~IsoValueProperty();
 
     virtual IsoValueProperty* clone() const override;
