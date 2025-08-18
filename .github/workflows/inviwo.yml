@@ -101,7 +101,7 @@ jobs:
     
     steps:
     - name: "Clone Inviwo"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         path: inviwo
         submodules: false
@@ -202,7 +202,7 @@ jobs:
     steps:
 
     - name: "Clone Inviwo"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         path: inviwo
 
@@ -260,7 +260,7 @@ jobs:
       run: ./inviwo-integrationtests
 
     - name: "Clone Regression"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: inviwo/regression
         ref: main
@@ -358,7 +358,7 @@ jobs:
     steps:
 
     - name: "Clone Inviwo"
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         path: inviwo
         submodules: false
@@ -534,7 +534,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: "Clone Inviwo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with: 
           ref: gh-pages
           path: inviwo
