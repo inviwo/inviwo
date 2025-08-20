@@ -8,6 +8,8 @@
       "cacheVariables": {
         "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
 
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},

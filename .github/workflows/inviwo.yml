@@ -14,7 +14,14 @@ env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VCPKG_FEATURE_FLAGS: dependencygraph
-  # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_NODIRECT: true
+  CCACHE_NODEPEND: true
+  # CCACHE_DEBUG: 1
+  # CCACHE_LOGFILE: ${{ github.workspace }}/ccache-debug/ccache.log
+  # CCACHE_DEBUGDIR: ${{ github.workspace }}/ccache-debug
+
+  # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -22,6 +29,8 @@ env:
 jobs:
   build:
     name: "Build"
+    permissions:
+      actions: write # Allow the job to delete caches (https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps?apiVersion=2022-11-28#repository-permissions-for-actions)
     strategy:
       matrix:
         system: [windows, macos, linux]
@@ -85,6 +94,12 @@ jobs:
             configuration: Debug
             run: './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
 
+          # Extra targets
+          - system: 'windows'
+            linkage: 'dynamic'
+            configuration: Release
+            targets: 'ALL_BUILD package DOXY-Inviwo DOXY-Python'
+
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
@@ -100,6 +115,18 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Free Disk Space
+      if: matrix.system == 'linux'
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
+
     - name: "Clone Inviwo"
       uses: actions/checkout@v5
       with:
@@ -114,6 +141,7 @@ jobs:
       with:
         triplet: ${{ matrix.triplet }}
         configuration: ${{ matrix.configuration }}
+        gh-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Copy Preset
       shell: bash
@@ -122,8 +150,7 @@ jobs:
     - name: "Configure CMake"
       shell: bash
       run: >
-        cmake -S inviwo -B build --preset gha-${{ matrix.linkage }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        cmake -S inviwo -B build --preset gha-${{ matrix.linkage }} -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
         
     - name: "Build"
       timeout-minutes: 360
@@ -133,20 +160,6 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
-
-    - name: "Documentation"
-      timeout-minutes: 60
-      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      shell: bash
-      run: |
-        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target DOXY-Inviwo DOXY-Python
-
-    - name: "Package"
-      timeout-minutes: 120
-      if: ( matrix.system == 'windows' || matrix.system == 'linux') &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      shell: bash
-      run: |
-        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target package
 
     - name: "Run"
       shell: bash
@@ -179,6 +192,13 @@ jobs:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
+    - name: "Upload ccache-logs"
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+        path: ccache-debug/*
+
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
       uses: actions/upload-artifact@v4
@@ -187,7 +207,7 @@ jobs:
         path: vcpkg/buildtrees/**/*.log
 
     - name: "Setup tmate session"
-      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
