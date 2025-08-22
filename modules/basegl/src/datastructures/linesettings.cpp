@@ -35,21 +35,21 @@
 namespace inviwo {
 class StipplingSettingsInterface;
 
-LineSettings::LineSettings(const LineSettingsInterface* other)
-    : lineWidth(other->getWidth())
-    , antialiasing(other->getAntialiasingWidth())
-    , miterLimit(other->getMiterLimit())
-    , roundCaps(other->getRoundCaps())
-    , pseudoLighting(other->getPseudoLighting())
-    , roundDepthProfile(other->getRoundDepthProfile())
-    , overrideColor{other->getOverrideColor()}
-    , overrideAlpha{other->getOverrideAlpha()}
-    , useMetaColor{other->getUseMetaColor()}
-    , stippling{&other->getStippling()}
-    , defaultColor{other->getDefaultColor()}
-    , overrideColorValue{other->getOverrideColorValue()}
-    , overrideAlphaValue{other->getOverrideAlphaValue()}
-    , metaColor{other->getMetaColor()} {}
+LineSettings::LineSettings(const LineSettingsInterface& other)
+    : lineWidth(other.getWidth())
+    , antialiasing(other.getAntialiasingWidth())
+    , miterLimit(other.getMiterLimit())
+    , roundCaps(other.getRoundCaps())
+    , pseudoLighting(other.getPseudoLighting())
+    , roundDepthProfile(other.getRoundDepthProfile())
+    , overrideColor{other.getOverrideColor()}
+    , overrideAlpha{other.getOverrideAlpha()}
+    , useMetaColor{other.getUseMetaColor()}
+    , stippling{&other.getStippling()}
+    , defaultColor{other.getDefaultColor()}
+    , overrideColorValue{other.getOverrideColorValue()}
+    , overrideAlphaValue{other.getOverrideAlphaValue()}
+    , metaColor{other.getMetaColor()} {}
 
 float LineSettings::getWidth() const { return lineWidth; }
 

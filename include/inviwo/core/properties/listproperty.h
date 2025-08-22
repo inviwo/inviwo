@@ -161,27 +161,6 @@ public:
     Property* constructProperty(size_t prefabIndex);
 
     /**
-     * @brief add \p property as new list entry. The type of the property must match one of the
-     * prefab objects. This function has no effect if the list size will exceed the maximum number
-     * of elements.
-     *
-     * @param property     property to be added
-     * @param owner        if true, the list property takes ownership of the property
-     * @throw Exception    if the type of \p property does not match any prefab object
-     */
-    virtual void addProperty(Property* property, bool owner = true) override;
-
-    /**
-     * @brief add \p property as new list entry. The type of the property must match one of the
-     * prefab objects. This function has no effect if the list size will exceed the maximum number
-     * of elements.
-     *
-     * @param property     property to be added
-     * @throw Exception    if the type of \p property does not match any prefab object
-     */
-    virtual void addProperty(Property& property) override;
-
-    /**
      * @brief insert \p property in the list at position \p index
      * If \p index is not valid, the property is appended. The type of the property must match one
      * of the prefab objects. This function has no effect if the list size will exceed the maximum
@@ -192,22 +171,9 @@ public:
      * @param owner        if true, the list property takes ownership of the property
      */
     virtual void insertProperty(size_t index, Property* property, bool owner = true) override;
-
-    /**
-     * @brief insert \p property in the list at position \p index
-     * If \p index is not valid, the property is appended. The type of the property must match one
-     * of the prefab objects. This function has no effect if the list size will exceed the maximum
-     * number of elements.
-     *
-     * @param index        insertion point for property
-     * @param property     property to be inserted
-     */
-    virtual void insertProperty(size_t index, Property& property) override;
-
-    virtual Property* removeProperty(std::string_view identifier) override;
-    virtual Property* removeProperty(Property* property) override;
-    virtual Property* removeProperty(Property& property) override;
-    virtual Property* removeProperty(size_t index) override;
+    using CompositeProperty::insertProperty;
+    virtual Property* removeProperty(std::vector<Property*>::iterator it) override;
+    using CompositeProperty::removeProperty;
     virtual bool move(Property* property, size_t newIndex) override;
 
     /**
