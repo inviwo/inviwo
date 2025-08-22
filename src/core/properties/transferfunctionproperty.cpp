@@ -71,8 +71,9 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
     , zoomV_("zoomV_", dvec2(0.0, 1.0))
     , histogramMode_("showHistogram_", port ? HistogramMode::All : HistogramMode::Off)
     , histogramSelection_("histogramSelection", histogramSelectionAll)
-    , lookup_{tf_.value}
-    , data_{std::move(port)} {
+    , lookup_{}
+    , data_{std::move(port)}
+    , invalidLookup_{true} {
 
     tf_.value.addObserver(this);
 }
@@ -101,8 +102,9 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     , zoomV_(rhs.zoomV_)
     , histogramMode_(rhs.histogramMode_)
     , histogramSelection_(rhs.histogramSelection_)
-    , lookup_{tf_.value}
-    , data_{rhs.data_} {
+    , lookup_{}
+    , data_{rhs.data_}
+    , invalidLookup_{true} {
 
     tf_.value.addObserver(this);
 }
@@ -261,17 +263,24 @@ void TransferFunctionProperty::set(const TransferFunctionProperty* p) { set(p->t
 void TransferFunctionProperty::set(const IsoTFProperty* p) { set(p->tf_.get()); }
 
 void TransferFunctionProperty::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) {
+    invalidLookup_ = true;
     propertyModified();
 }
 void TransferFunctionProperty::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) {
+    invalidLookup_ = true;
     propertyModified();
 }
 void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
+    invalidLookup_ = true;
     propertyModified();
 }
 void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) {
+    invalidLookup_ = true;
     propertyModified();
 }
-void TransferFunctionProperty::onTFMaskChanged(const TFPrimitiveSet&, dvec2) { propertyModified(); }
+void TransferFunctionProperty::onTFMaskChanged(const TFPrimitiveSet&, dvec2) {
+    invalidLookup_ = true;
+    propertyModified();
+}
 
 }  // namespace inviwo

@@ -85,7 +85,7 @@ VolumeRasterizer::VolumeRasterizer()
                           .set("Scaling factor for the opacity in the transfer function since the "
                                "sampling "
                                "distance is given in world coordinate space."_help)}
-    , tfLookup_{std::make_shared<TFLookupTable>(tf_.tf_.get())} {
+    , tfLookup_{std::make_shared<TFLookupTable>()} {
 
     addPorts(volumeInport_, meshInport_);
     addProperties(channel_, opacityScaling_, tf_);
@@ -105,6 +105,10 @@ void VolumeRasterizer::initializeResources() {
 }
 
 void VolumeRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+    if (tf_.tf_.isModified()) {
+        tfLookup_->calculate(tf_.tf_.get());
+    }
+
     const auto boundingMesh = meshInport_.getData();
 
     const mat4 meshDataToVolumeData =

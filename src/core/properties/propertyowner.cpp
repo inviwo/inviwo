@@ -105,6 +105,10 @@ Property* PropertyOwner::addProperty(std::unique_ptr<Property> property) {
     return insertProperty(properties_.size(), std::move(property));
 }
 
+void PropertyOwner::insertProperty(size_t index, Property& property) {
+    insertProperty(index, &property, false);
+}
+
 Property* PropertyOwner::insertProperty(size_t index, std::unique_ptr<Property> property) {
     insertProperty(index, property.get(), false);
     // Need to serialize everything for owned properties
@@ -153,9 +157,6 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     notifyObserversDidAddProperty(property, index);
 }
 
-void PropertyOwner::insertProperty(size_t index, Property& property) {
-    insertProperty(index, &property, false);
-}
 
 Property* PropertyOwner::removeProperty(std::string_view identifier) {
     return removeProperty(
@@ -178,18 +179,11 @@ Property* PropertyOwner::removeProperty(size_t index) {
     return removeProperty(begin() + index);
 }
 
-void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
-                                    bool recursiveSearch) const {
-    LambdaNetworkVisitor visitor{[&](Property& property) {
-        callback(property);
-        return recursiveSearch;
-    }};
-    for (auto* elem : properties_) {
-        elem->accept(visitor);
-    }
+Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
+    return removePropertyImpl(it);
 }
 
-Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
+Property* PropertyOwner::removePropertyImpl(std::vector<Property*>::iterator it) {
     Property* prop = nullptr;
     if (it != properties_.end()) {
         prop = *it;
@@ -218,7 +212,18 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
 
 void PropertyOwner::clear() {
     while (!properties_.empty()) {
-        removeProperty(--properties_.end());
+        removePropertyImpl(--properties_.end());
+    }
+}
+
+void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
+                                    bool recursiveSearch) const {
+    LambdaNetworkVisitor visitor{[&](Property& property) {
+        callback(property);
+        return recursiveSearch;
+    }};
+    for (auto* elem : properties_) {
+        elem->accept(visitor);
     }
 }
 
