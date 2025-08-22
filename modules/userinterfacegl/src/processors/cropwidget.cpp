@@ -170,7 +170,7 @@ CropWidget::CropWidget()
     , lastState_(-1)
     , volumeBasis_(1.0f)
     , volumeOffset_(-0.5f)
-    , lineRenderer_(&cropLineSettings_) {
+    , lineRenderer_() {
 
     addPort(volume_);
     addPort(inport_);
@@ -454,7 +454,7 @@ void CropWidget::renderAxis(const CropAxis& axis) {
                 mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
                 lineRenderer_.render(*linestrip_, camera_.get(), outport_.getDimensions(),
-                                     &cropLineSettings_);
+                                     cropLineSettings_);
             };
 
             if (drawLowerPlane) {

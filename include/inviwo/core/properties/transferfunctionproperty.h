@@ -245,6 +245,10 @@ public:
 
     template <typename T>
     const T* getRepresentation() {
+        if (invalidLookup_) {
+            lookup_.calculate(tf_);
+            invalidLookup_ = false;
+        }
         return lookup_.getRepresentation<T>();
     }
     size_t getLookUpTableSize() const { return lookup_.getSize(); }
@@ -278,6 +282,7 @@ private:
 
     TFLookupTable lookup_;
     TFData data_;
+    bool invalidLookup_;
 };
 
 }  // namespace inviwo

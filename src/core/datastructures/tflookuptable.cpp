@@ -31,30 +31,12 @@
 
 namespace inviwo {
 
-TFLookupTable::TFLookupTable(TransferFunction& tf, size_t size)
-    : tf_{&tf}, size_{size}, invalid_{true}, repr_{}, data_{} {
-    tf_->addObserver(this);
-}
+TFLookupTable::TFLookupTable(size_t size) : size_{size}, repr_{nullptr}, data_{nullptr} {}
 
-void TFLookupTable::setSize(size_t size) {
-    if (size != size_) {
-        size_ = size;
-        invalid_ = true;
-    }
-}
+void TFLookupTable::setSize(size_t size) { size_ = size; }
 size_t TFLookupTable::getSize() const { return size_; }
 
-const TransferFunction& TFLookupTable::getTransferFunction() const { return *tf_; }
-void TFLookupTable::setTransferFunction(TransferFunction& tf) {
-    if (tf_ != &tf) {
-        tf_->removeObserver(this);
-        tf_ = &tf;
-        tf_->addObserver(this);
-        invalid_ = true;
-    }
-}
-
-void TFLookupTable::calc() {
+void TFLookupTable::calculate(const TransferFunction& tf) {
     if (!repr_) {
         repr_ = std::make_shared<LayerRAMPrecision<vec4>>(size2_t{size_, 1});
     }
@@ -64,17 +46,8 @@ void TFLookupTable::calc() {
     if (!data_) {
         data_ = std::make_unique<Layer>(repr_);
     }
-    tf_->interpolateAndStoreColors(repr_->getView());
+    tf.interpolateAndStoreColors(repr_->getView());
     data_->invalidateAllOther(repr_.get());
-    invalid_ = false;
 }
-
-void TFLookupTable::onTFPrimitiveAdded(const TFPrimitiveSet&, TFPrimitive&) { invalid_ = true; }
-void TFLookupTable::onTFPrimitiveRemoved(const TFPrimitiveSet&, TFPrimitive&) { invalid_ = true; }
-void TFLookupTable::onTFPrimitiveChanged(const TFPrimitiveSet&, const TFPrimitive&) {
-    invalid_ = true;
-}
-void TFLookupTable::onTFTypeChanged(const TFPrimitiveSet&, TFPrimitiveSetType) { invalid_ = true; }
-void TFLookupTable::onTFMaskChanged(const TFPrimitiveSet&, dvec2) { invalid_ = true; }
 
 }  // namespace inviwo

@@ -74,7 +74,7 @@ LineRendererProcessor::LineRendererProcessor()
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
     , bnl_{}
-    , lineRenderer_{{bnl_.getRequirement()}, &lineSettings_} {
+    , lineRenderer_{{bnl_.getRequirement()}} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
@@ -104,7 +104,7 @@ void LineRendererProcessor::process() {
 void LineRendererProcessor::drawMeshes() {
     for (const auto& mesh : inport_) {
         lineRenderer_.renderWithUniforms(*mesh, camera_.get(), outport_.getDimensions(),
-                                         &lineSettings_, bnl_);
+                                         lineSettings_, bnl_);
     }
 }
 
