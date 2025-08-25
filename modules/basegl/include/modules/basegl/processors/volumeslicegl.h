@@ -120,9 +120,9 @@ private:
 
     CompositeProperty trafoGroup_;
     CompositeProperty pickGroup_;
-    CompositeProperty tfGroup_;
+    BoolCompositeProperty tfGroup_;
 
-    OptionPropertyInt sliceAlongAxis_;  // Axis enum
+    OptionPropertyInt sliceAlongAxis_;
     IntProperty sliceX_;
     IntProperty sliceY_;
     IntProperty sliceZ_;
@@ -144,7 +144,7 @@ private:
     FloatVec4Property indicatorColor_;
     FloatProperty indicatorSize_;
 
-    BoolProperty tfMappingEnabled_;
+    OptionPropertyInt channel_;
     TransferFunctionProperty transferFunction_;
     FloatProperty tfAlphaOffset_;
 

@@ -70,7 +70,7 @@ const ProcessorInfo TMIP::processorInfo_{
     "org.inviwo.TMIP",            // Class identifier
     "TMIP",                       // Display name
     "Volume Sequence Operation",  // Category
-    CodeState::Experimental,      // Code state
+    CodeState::Deprecated,        // Code state
     Tags::GL,                     // Tags
 };
 
@@ -200,7 +200,7 @@ void TMIP::initShader(Shader& s, int samplers) {
 }
 
 std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol,
-                                        std::shared_ptr<Volume> target,
+                                        [[maybe_unused]] std::shared_ptr<Volume> target,
                                         std::vector<std::shared_ptr<Volume>>::const_iterator start,
                                         std::vector<std::shared_ptr<Volume>>::const_iterator end) {
     s.activate();
