@@ -1032,8 +1032,6 @@ void InviwoMainWindow::addActions() {  // NOLINT
         networkMenuItem->addSeparator();
         auto perfs = networkMenuItem->addAction("Measure Performance");
         connect(perfs, &QAction::triggered, [this](bool /*state*/) {
-            NetworkLock lock(app_->getProcessorNetwork());
-
             const auto widgetProcessors = detail::getWidgetProcessors(app_);
 
             QWidget* widget = nullptr;
@@ -1045,23 +1043,29 @@ void InviwoMainWindow::addActions() {  // NOLINT
             }
 
             if (widget) {
-                auto pos = widget->rect().center();
-                auto gpos = widget->mapToGlobal(pos);
+                const auto pos1 = widget->rect().center();
+                const auto gpos1 = widget->mapToGlobal(pos1);
 
-                for (size_t i = 0; i < 100; ++i) {
-                    auto* me1 = new QMouseEvent(QEvent::MouseButtonPress, pos, gpos, Qt::LeftButton,
+                const auto pos2 = pos1 + QPoint(5, 0);
+                const auto gpos2 = widget->mapToGlobal(pos2);
+
+                for (size_t i = 0; i < 20; ++i) {
+                    auto* me1 = new QMouseEvent(QEvent::MouseButtonPress, pos1, gpos1,
+                                                Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+                    auto* me2 = new QMouseEvent(QEvent::MouseMove, pos1, gpos1, Qt::NoButton,
                                                 Qt::LeftButton, Qt::NoModifier);
-                    pos += QPoint(5, 0);
-                    gpos += QPoint(5, 0);
-                    auto* me2 = new QMouseEvent(QEvent::MouseMove, pos, gpos, Qt::NoButton,
-                                                Qt::LeftButton, Qt::NoModifier);
-                    auto* me3 = new QMouseEvent(QEvent::MouseButtonRelease, pos, gpos,
-                                                Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
 
                     QCoreApplication::postEvent(widget->windowHandle(), me1);
                     QCoreApplication::postEvent(widget->windowHandle(), me2);
-                    QCoreApplication::postEvent(widget->windowHandle(), me3);
+                    QCoreApplication::processEvents();
 
+                    auto* me3 = new QMouseEvent(QEvent::MouseMove, pos2, gpos2, Qt::NoButton,
+                                                Qt::LeftButton, Qt::NoModifier);
+                    auto* me4 = new QMouseEvent(QEvent::MouseButtonRelease, pos2, gpos2,
+                                                Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+
+                    QCoreApplication::postEvent(widget->windowHandle(), me3);
+                    QCoreApplication::postEvent(widget->windowHandle(), me4);
                     QCoreApplication::processEvents();
                 }
             }
