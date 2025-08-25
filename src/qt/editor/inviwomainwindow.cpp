@@ -103,6 +103,7 @@
 #include <QToolButton>
 #include <QStackedWidget>
 #include <QApplication>
+#include <QWindow>
 
 #include <fmt/std.h>
 #include <fmt/chrono.h>
@@ -485,7 +486,7 @@ void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::str
     screenGrab.save(utilqt::toQString(path / fileName), "png");
 }
 
-void InviwoMainWindow::addActions() { // NOLINT
+void InviwoMainWindow::addActions() {  // NOLINT
     auto menu = menuBar();
 
     auto fileMenuItem = menu->addMenu(tr("&File"));
@@ -1025,6 +1026,46 @@ void InviwoMainWindow::addActions() { // NOLINT
 
         networkToolBar->addAction(resetTimeMeasurementsAction);
         networkMenuItem->addAction(resetTimeMeasurementsAction);
+    }
+
+    {
+        networkMenuItem->addSeparator();
+        auto perfs = networkMenuItem->addAction("Measure Performance");
+        connect(perfs, &QAction::triggered, [this](bool /*state*/) {
+            NetworkLock lock(app_->getProcessorNetwork());
+
+            const auto widgetProcessors = detail::getWidgetProcessors(app_);
+
+            QWidget* widget = nullptr;
+            for (const auto& p : widgetProcessors) {
+                if (auto w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
+                    widget = w;
+                    break;
+                }
+            }
+
+            if (widget) {
+                auto pos = widget->rect().center();
+                auto gpos = widget->mapToGlobal(pos);
+
+                for (size_t i = 0; i < 100; ++i) {
+                    auto* me1 = new QMouseEvent(QEvent::MouseButtonPress, pos, gpos, Qt::LeftButton,
+                                                Qt::LeftButton, Qt::NoModifier);
+                    pos += QPoint(5, 0);
+                    gpos += QPoint(5, 0);
+                    auto* me2 = new QMouseEvent(QEvent::MouseMove, pos, gpos, Qt::NoButton,
+                                                Qt::LeftButton, Qt::NoModifier);
+                    auto* me3 = new QMouseEvent(QEvent::MouseButtonRelease, pos, gpos,
+                                                Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+
+                    QCoreApplication::postEvent(widget->windowHandle(), me1);
+                    QCoreApplication::postEvent(widget->windowHandle(), me2);
+                    QCoreApplication::postEvent(widget->windowHandle(), me3);
+
+                    QCoreApplication::processEvents();
+                }
+            }
+        });
     }
 #endif
 
