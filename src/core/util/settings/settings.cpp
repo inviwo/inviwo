@@ -44,12 +44,10 @@ Settings::Settings(const std::string& id, InviwoApplication* app)
 
 Settings::~Settings() = default;
 
-void Settings::addProperty(Property* property, bool owner) {
-    PropertyOwner::addProperty(property, owner);
+void Settings::insertProperty(size_t index, Property* property, bool owner) {
+    PropertyOwner::insertProperty(index, property, owner);
     property->onChange([this]() { save(); });
 }
-
-void Settings::addProperty(Property& property) { addProperty(&property, false); }
 
 const std::string& Settings::getIdentifier() const { return identifier_; }
 

@@ -88,39 +88,53 @@ std::vector<MeshShaderCache::Requirement> defaultRequirements(
 
 }  // namespace detail
 
-LineRenderer::LineRenderer(const LineSettingsInterface* settings) : LineRenderer({}, settings) {}
+LineRenderer::LineRenderer() : LineRenderer({}) {}
 
-LineRenderer::LineRenderer(const std::vector<MeshShaderCache::Requirement>& requirements,
-                           const LineSettingsInterface* settings)
-    : settings_(settings)
+LineRenderer::LineRenderer(const std::vector<MeshShaderCache::Requirement>& requirements)
+    : settings_{}
     , lineShaders_{{{ShaderType::Vertex, std::string{"linerenderer.vert"}},
                     {ShaderType::Geometry, std::string{"linerenderer.geom"}},
                     {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
 
                    detail::defaultRequirements(requirements),
                    [this](Shader& shader) -> void { configureShader(shader); }}
-    , tfLookup_{settings_.metaColor} {}
+    , tfLookup_{} {
+
+    if (settings_.getUseMetaColor()) {
+        tfLookup_.calculate(settings_.getMetaColor());
+    }
+}
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                          const LineSettingsInterface* settings) {
+                          const LineSettingsInterface& settings) {
     render(mesh, camera, screenDim, settings, [](Shader&) {});
 }
 
 void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                          const LineSettingsInterface* settings,
+                          const LineSettingsInterface& settings,
                           const std::function<void(Shader&)>& func) {
     if (mesh.getNumberOfBuffers() == 0) return;
+
     // Changing these settings require recompilation
-    if (settings_.getPseudoLighting() != settings->getPseudoLighting() ||
-        settings_.getRoundDepthProfile() != settings->getRoundDepthProfile() ||
-        settings_.getOverrideColor() != settings->getOverrideColor() ||
-        settings_.getOverrideAlpha() != settings->getOverrideAlpha() ||
-        settings_.getUseMetaColor() != settings->getUseMetaColor() ||
-        settings_.getStippling().getMode() != settings->getStippling().getMode()) {
-        settings_ = LineSettings(settings);
+    const bool recompile = settings_.getPseudoLighting() != settings.getPseudoLighting() ||
+                           settings_.getRoundDepthProfile() != settings.getRoundDepthProfile() ||
+                           settings_.getOverrideColor() != settings.getOverrideColor() ||
+                           settings_.getOverrideAlpha() != settings.getOverrideAlpha() ||
+                           settings_.getUseMetaColor() != settings.getUseMetaColor() ||
+                           settings_.getStippling().getMode() != settings.getStippling().getMode();
+
+    // Changes to these settings require updating the transfer function lookup
+    const bool updateLookup = settings_.getUseMetaColor() != settings.getUseMetaColor() ||
+                              settings_.getMetaColor() != settings.getMetaColor();
+
+    settings_ = LineSettings(settings);
+
+    if (settings_.getUseMetaColor() && updateLookup) {
+        tfLookup_.calculate(settings_.getMetaColor());
+    }
+
+    if (recompile) {
         configureShaders();
-    } else {
-        settings_ = LineSettings(settings);
     }
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

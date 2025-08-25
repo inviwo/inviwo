@@ -44,8 +44,7 @@ public:
     Settings(const std::string& id = "");
     virtual ~Settings();
 
-    virtual void addProperty(Property* property, bool owner = true) override;
-    virtual void addProperty(Property& property) override;
+    void insertProperty(size_t index, Property* property, bool owner) override;
 
     /**
      * Load setting from disk. Each derived class needs to take care of calling this in the

@@ -44,19 +44,54 @@
 namespace inviwo {
 
 PropertyOwner::PropertyOwner()
-    : PropertyOwnerObservable(), invalidationLevel_(InvalidationLevel::Valid) {}
+    : PropertyOwnerObservable()
+    , properties_{}
+    , eventProperties_{}
+    , compositeProperties_{}
+    , ownedProperties_{}
+    , invalidationLevel_{InvalidationLevel::Valid} {}
 
 PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
-    : PropertyOwnerObservable(), invalidationLevel_(rhs.invalidationLevel_) {
+    : PropertyOwnerObservable{rhs}
+    , properties_{}
+    , eventProperties_{}
+    , compositeProperties_{}
+    , ownedProperties_{}
+    , invalidationLevel_{rhs.invalidationLevel_} {
 
-    for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
-}
-
-PropertyOwner::~PropertyOwner() {
-    while (size() != 0) {
-        removeProperty(begin());
+    for (const auto& p : rhs.ownedProperties_) {
+        addProperty(p->clone());
     }
 }
+
+PropertyOwner::PropertyOwner(PropertyOwner&& rhs)
+    : PropertyOwnerObservable{std::move(rhs)}
+    , properties_{}
+    , eventProperties_{}
+    , compositeProperties_{}
+    , ownedProperties_{}
+    , invalidationLevel_(std::move(rhs.invalidationLevel_)) {
+
+    for (auto& p : rhs.ownedProperties_) {
+        addProperty(std::move(p));
+    }
+    rhs.ownedProperties_.clear();
+}
+
+PropertyOwner& PropertyOwner::operator=(PropertyOwner&& that) {
+    if (this != &that) {
+        PropertyOwnerObservable::operator=(std::move(that));
+        clear();
+
+        for (auto& p : that.ownedProperties_) {
+            addProperty(std::move(p));
+        }
+        that.ownedProperties_.clear();
+    }
+    return *this;
+}
+
+PropertyOwner::~PropertyOwner() { clear(); }
 
 void PropertyOwner::addProperty(Property* property, bool owner) {
     insertProperty(properties_.size(), property, owner);
@@ -68,6 +103,10 @@ void PropertyOwner::addProperty(Property& property) {
 
 Property* PropertyOwner::addProperty(std::unique_ptr<Property> property) {
     return insertProperty(properties_.size(), std::move(property));
+}
+
+void PropertyOwner::insertProperty(size_t index, Property& property) {
+    insertProperty(index, &property, false);
 }
 
 Property* PropertyOwner::insertProperty(size_t index, std::unique_ptr<Property> property) {
@@ -118,9 +157,6 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     notifyObserversDidAddProperty(property, index);
 }
 
-void PropertyOwner::insertProperty(size_t index, Property& property) {
-    insertProperty(index, &property, false);
-}
 
 Property* PropertyOwner::removeProperty(std::string_view identifier) {
     return removeProperty(
@@ -143,18 +179,11 @@ Property* PropertyOwner::removeProperty(size_t index) {
     return removeProperty(begin() + index);
 }
 
-void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
-                                    bool recursiveSearch) const {
-    LambdaNetworkVisitor visitor{[&](Property& property) {
-        callback(property);
-        return recursiveSearch;
-    }};
-    for (auto* elem : properties_) {
-        elem->accept(visitor);
-    }
+Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
+    return removePropertyImpl(it);
 }
 
-Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
+Property* PropertyOwner::removePropertyImpl(std::vector<Property*>::iterator it) {
     Property* prop = nullptr;
     if (it != properties_.end()) {
         prop = *it;
@@ -183,7 +212,18 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
 
 void PropertyOwner::clear() {
     while (!properties_.empty()) {
-        removeProperty(--properties_.end());
+        removePropertyImpl(--properties_.end());
+    }
+}
+
+void PropertyOwner::forEachProperty(std::function<void(Property&)> callback,
+                                    bool recursiveSearch) const {
+    LambdaNetworkVisitor visitor{[&](Property& property) {
+        callback(property);
+        return recursiveSearch;
+    }};
+    for (auto* elem : properties_) {
+        elem->accept(visitor);
     }
 }
 
