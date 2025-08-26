@@ -50,7 +50,11 @@ ContextHolder* RenderContext::setDefaultRenderContext(std::unique_ptr<ContextHol
 }
 
 void RenderContext::activateDefaultRenderContext() const {
-    if (defaultContext_) defaultContext_->activate();
+    if (defaultContext_) {
+        if (activeContext() != defaultContext_->contextId()) {
+            defaultContext_->activate();
+        }
+    }
 }
 
 void RenderContext::activateLocalRenderContext() const {
@@ -75,7 +79,9 @@ void RenderContext::activateLocalRenderContext() const {
             localContext = (*it).second.get();
         }
     }
-    localContext->activate();
+    if (activeContext() != localContext->contextId()) {
+        localContext->activate();
+    }
 }
 
 void RenderContext::clearContext() {
