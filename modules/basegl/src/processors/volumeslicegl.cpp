@@ -351,7 +351,7 @@ void VolumeSliceGL::initializeResources() {
 void VolumeSliceGL::invokeEvent(Event* event) {
     if (dynamic_cast<InteractionEvent*>(event) && !handleInteractionEvents_) return;
     Processor::invokeEvent(event);
-    if (event->hash() == ResizeEvent::chash()) {
+    if (event && event->hash() == ResizeEvent::chash()) {
         planeSettingsChanged();
     }
 }
@@ -490,7 +490,8 @@ void VolumeSliceGL::process() {
     }
 
     if (auto vol = inport_.getData();
-        vol && tfGroup_.isChecked() && channel_ >= vol->getDataFormat()->getComponents()) {
+        vol && tfGroup_.isChecked() &&
+        channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
         throw Exception(SourceContext{},
                         "Channel for TF mapping is greater than the available channels {} >= {}",
                         channel_.get() + 1, vol->getDataFormat()->getComponents());
