@@ -67,11 +67,9 @@
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
-#include <inviwo/qt/editor/processorprogressgraphicsitem.h>
 #include <inviwo/qt/editor/processorerroritem.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/helpwidget.h>
-#include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/editor/processormimedata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -129,7 +127,6 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
             const auto& id = processor->getIdentifier();
             const auto error = [&](std::string_view error) {
                 if (auto pgi = getProcessorGraphicsItem(processor)) {
-                    pgi->getStatusItem()->setRuntimeError();
                     pgi->setErrorText(error);
                 }
             };
@@ -590,14 +587,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     // add below pos
                     const auto bounds = util::getBoundingBox(added);
                     for (auto p : oldPos) {
-                        if ((p.x > pos.x - ProcessorGraphicsItem::size_.width() / 2) &&
+                        if ((p.x > pos.x - ProcessorGraphicsItem::size.width() / 2) &&
                             (p.x <
-                             pos.x + bounds.second.x + ProcessorGraphicsItem::size_.width() / 2)) {
+                             pos.x + bounds.second.x + ProcessorGraphicsItem::size.width() / 2)) {
                             pos.y = std::max(p.y, pos.y);
                         }
                     }
 
-                    const auto offset = pos + ivec2{0, 25 + ProcessorGraphicsItem::size_.height()} -
+                    const auto offset = pos + ivec2{0, 25 + ProcessorGraphicsItem::size.height()} -
                                         ivec2{bounds.first.x, bounds.first.y};
                     util::offsetPosition(added, offset);
                 });
@@ -1039,7 +1036,7 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
                 offset = clickedPosition_.second - center;
             } else if (pastePos_.first) {
                 pastePos_.second.x += (bounds.second.x - bounds.first.x) +
-                                      static_cast<int>(ProcessorGraphicsItem::size_.width()) +
+                                      static_cast<int>(ProcessorGraphicsItem::size.width()) +
                                       gridSpacing_;
                 offset = pastePos_.second - center;
             } else {  // add to bottom left
@@ -1048,7 +1045,7 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
                                    ivec2{(bounds.second.x - bounds.first.x) / 2,
                                          (bounds.second.y - bounds.first.y) / 2} +
                                    ivec2{0, gridSpacing_} +
-                                   ivec2{0, ProcessorGraphicsItem::size_.height()};
+                                   ivec2{0, ProcessorGraphicsItem::size.height()};
                 offset = pastePos_.second - center;
             }
             const QPointF p = snapToGrid(utilqt::toQPoint(offset));

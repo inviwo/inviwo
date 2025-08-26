@@ -45,8 +45,6 @@
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
-#include <inviwo/qt/editor/processorprogressgraphicsitem.h>
-#include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
@@ -78,6 +76,129 @@ int pointSizeToPixelSize(const int pointSize) {
 constexpr double labelMargin = 8.0;
 constexpr double tagMargin = 4.0;
 
+constexpr QRectF itemRect{
+    -ProcessorGraphicsItem::size.width() / 2, -ProcessorGraphicsItem::size.height() / 2,
+    ProcessorGraphicsItem::size.width(), ProcessorGraphicsItem::size.height()};
+
+constexpr QRectF countRect{itemRect.adjusted(120.0, -40.0, -5.0, 0.0)};
+
+constexpr QRectF progressRect{
+    QPointF{-(ProcessorGraphicsItem::size.width() / 2 - labelMargin), 9.0 - 2.5},
+    QPointF{ProcessorGraphicsItem::size.width() / 2 - labelMargin, 9.0 + 2.5}};
+
+constexpr QPointF statusPosition{itemRect.topRight() + QPointF(-9.0f, 9.0f)};
+
+class UpdateStatusEvent : public QEvent {
+public:
+    static QEvent::Type type() {
+        static int t = QEvent::registerEventType();
+        return static_cast<QEvent::Type>(t);
+    }
+
+    UpdateStatusEvent() : QEvent(type()) {}
+};
+
+enum class FontType { Name, Identifier, Tag, Count };
+
+const QFont& getFont(FontType type) {
+    static const QFont name = []() {
+        QFont f("Segoe", 10, QFont::ExtraBold, false);
+        f.setPixelSize(pointSizeToPixelSize(8));
+        return f;
+    }();
+
+    static const QFont identifier = []() {
+        QFont f("Segoe", 8, QFont::Normal, false);
+        f.setPixelSize(pointSizeToPixelSize(8));
+        return f;
+    }();
+
+    static const QFont tag = []() {
+        QFont f("Segoe", 8, QFont::Bold, false);
+        f.setPixelSize(pointSizeToPixelSize(8));
+        return f;
+    }();
+
+    switch (type) {
+        using enum FontType;
+        case Name:
+            return name;
+        case Identifier:
+            return identifier;
+        case Tag:
+            return tag;
+        case Count:
+            return identifier;
+    }
+    return identifier;
+}
+
+QString elide(std::string_view text, double width, FontType type) {
+    const QFontMetricsF fm{getFont(type)};
+    return fm.elidedText(utilqt::toQString(text), Qt::ElideMiddle, width);
+}
+
+void drawStatus(ProcessorGraphicsItem::State state, QPointF position, QPainter& p) {
+    static constexpr float size{10.0f};
+    static constexpr float lineWidth{1.0f};
+    static constexpr qreal ledRadius = size / 2.0f;
+    static constexpr QColor readyColor{68, 243, 68};
+    static constexpr QColor invalidColor{30, 81, 30};
+    static constexpr QColor errorColor{241, 49, 49};
+    static constexpr QColor runningColor{253, 211, 37};
+    static constexpr QColor borderColor{124, 124, 124};
+
+    const auto ledColor = [&]() {
+        switch (state) {
+            using enum ProcessorGraphicsItem::State;
+            case Ready:
+                return readyColor;
+            case Running:
+                return runningColor;
+            case Invalid:
+                return invalidColor;
+            case Error:
+                return errorColor;
+        }
+        return invalidColor;
+    }();
+
+    p.setPen(QPen(borderColor, lineWidth));
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.setBrush(QBrush(ledColor));
+    p.drawEllipse(position, ledRadius, ledRadius);
+}
+
+void drawCount(size_t count, QRectF position, QPainter& p) {
+    p.setFont(getFont(FontType::Count));
+    p.drawText(position, Qt::AlignRight | Qt::AlignBottom, QString::number(count));
+}
+
+void drawProgress(float progress, QRectF progressBarRect, QPainter& p) {
+    static constexpr QColor progressColor{192, 192, 192};
+    static constexpr QColor shadeColor1{76, 76, 76, 120};
+    static constexpr QColor shadeColor2{128, 128, 128, 120};
+
+    QLinearGradient progressGrad(progressBarRect.topLeft(), progressBarRect.topRight());
+    progressGrad.setColorAt(0.0f, progressColor);
+    const float left = std::max(0.0f, progress - 0.001f);
+    const float right = std::min(1.0f, progress + 0.001f);
+    progressGrad.setColorAt(left, progressColor);
+    progressGrad.setColorAt(right, Qt::black);
+    progressGrad.setColorAt(1.0f, Qt::black);
+    p.setPen(Qt::black);
+    p.setBrush(progressGrad);
+    p.drawRoundedRect(progressBarRect, 2.0, 2.0);
+
+    QLinearGradient shadingGrad(progressBarRect.topLeft(), progressBarRect.bottomLeft());
+    shadingGrad.setColorAt(0.0f, shadeColor1);
+    shadingGrad.setColorAt(0.3f, shadeColor2);
+    shadingGrad.setColorAt(1.0f, shadeColor2);
+    p.setPen(Qt::NoPen);
+    p.setBrush(shadingGrad);
+    p.drawRoundedRect(progressBarRect, 2.0, 2.0);
+}
+
 }  // namespace
 
 #if IVW_PROFILING
@@ -94,24 +215,27 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , tagText_{}
     , tagSize_{}
     , animation_{nullptr}
-    , progressItem_(nullptr)
-    , statusItem_{new ProcessorStatusGraphicsItem(this, processor_)}
-    , linkItem_{new ProcessorLinkGraphicsItem(this, size_.width() / 2.0 + 1.0)}
+    , linkItem_{new ProcessorLinkGraphicsItem(this, size.width() / 2.0 + 1.0)}
     , highlight_(false)
     , backgroundColor_(
           processor_->getProcessorInfo().codeState == CodeState::Deprecated ? "#562e14" : "#3b3d3d")
     , backgroundJobs_{0}
 #if IVW_PROFILING
-    , processCount_(0)
+    , processCount_{0}
+    , currentProcessCount_{0}
     , maxEvalTime_(0.0)
     , evalTime_(0.0)
     , totEvalTime_(0.0)
 #endif
-    , errorText_{nullptr} {
+    , state_{processor_->isReady() ? State::Ready : State::Invalid}
+    , runtimeError_{false}
+    , errorText_{nullptr}
+    , progress_{std::nullopt}
+    , dirty_{false} {
 
     setZValue(depth::processor);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
-    setRect(-size_.width() / 2, -size_.height() / 2, size_.width(), size_.height());
+    setRect(itemRect);
 
     const auto setLabels = [&]() {
         nameText_.setTextFormat(Qt::PlainText);
@@ -126,10 +250,10 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         }();
 
         nameText_.setText(
-            elide(processor_->getDisplayName(), size_.width() - 2.0 * labelMargin, FontType::Name));
+            elide(processor_->getDisplayName(), size.width() - 2.0 * labelMargin, FontType::Name));
 
         identifierText_.setText(elide(processor_->getIdentifier(),
-                                      size_.width() - 2.0 * labelMargin - tagSize_ - tagMargin,
+                                      size.width() - 2.0 * labelMargin - tagSize_ - tagMargin,
                                       FontType::Identifier));
         identifierSize_ = [&]() {
             const QFontMetricsF fm{getFont(FontType::Identifier)};
@@ -166,18 +290,13 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         addOutport(outport);
     }
 
-    statusItem_->setPos(rect().topRight() + QPointF(-9.0f, 9.0f));
-
     if (auto progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_)) {
-        progressItem_ =
-            new ProcessorProgressGraphicsItem(this, &(progressBarOwner->getProgressBar()));
-        progressItem_->setPos(QPointF(0.0f, 9.0f));
-
-        progressBarOwner->getProgressBar().ActivityIndicator::addObserver(statusItem_);
+        progressBarOwner->getProgressBar().ProgressBarObservable::addObserver(this);
+        progressBarOwner->getProgressBar().ActivityIndicator::addObserver(this);
     }
 
     if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)) {
-        activityInd->getActivityIndicator().addObserver(statusItem_);
+        activityInd->getActivityIndicator().addObserver(this);
     }
 
     setVisible(processorMeta_->isVisible());
@@ -187,18 +306,18 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     if (processor_->status() == ProcessorStatus::Error) {
         setErrorText(processor_->status().reason());
     }
-    statusItem_->updateState();
+
+    updateStatus();
 }
 
 QPointF ProcessorGraphicsItem::portOffset(PortType type, size_t index) {
     const QPointF offset = {12.5f, (type == PortType::In ? 1.0f : -1.0f) * 4.5f};
-    const QPointF delta = {12.5f, 0.0f};
+    static constexpr QPointF delta{12.5f, 0.0f};
     const QPointF rowDelta = {0.0f, (type == PortType::In ? -1.0f : 1.0f) * 12.5f};
-    const size_t portsPerRow = 10;
+    static constexpr size_t portsPerRow = 10;
 
-    auto poffset = QPointF{-ProcessorGraphicsItem::size_.width() / 2,
-                           (type == PortType::In ? -ProcessorGraphicsItem::size_.height() / 2
-                                                 : ProcessorGraphicsItem::size_.height() / 2)};
+    const auto poffset =
+        QPointF{-size.width() / 2, (type == PortType::In ? -size.height() / 2 : size.height() / 2)};
 
     return poffset + offset + rowDelta * static_cast<qreal>(index / portsPerRow) +
            delta * static_cast<qreal>(index % portsPerRow);
@@ -289,54 +408,16 @@ ProcessorGraphicsItem::~ProcessorGraphicsItem() = default;
 
 Processor* ProcessorGraphicsItem::getProcessor() const { return processor_; }
 
-const QFont& ProcessorGraphicsItem::getFont(FontType type) {
-    static const QFont name = []() {
-        QFont f("Segoe", 10, QFont::ExtraBold, false);
-        f.setPixelSize(pointSizeToPixelSize(8));
-        return f;
-    }();
-
-    static const QFont identifier = []() {
-        QFont f("Segoe", 8, QFont::Normal, false);
-        f.setPixelSize(pointSizeToPixelSize(8));
-        return f;
-    }();
-
-    static const QFont tag = []() {
-        QFont f("Segoe", 8, QFont::Bold, false);
-        f.setPixelSize(pointSizeToPixelSize(8));
-        return f;
-    }();
-
-    using enum ProcessorGraphicsItem::FontType;
-    switch (type) {
-        case Name:
-            return name;
-        case Identifier:
-            return identifier;
-        case Tag:
-            return tag;
-        case Count:
-            return identifier;
-    }
-    return identifier;
-}
-
-QString ProcessorGraphicsItem::elide(std::string_view text, double width, FontType type) {
-    const QFontMetricsF fm{getFont(type)};
-    return fm.elidedText(utilqt::toQString(text), Qt::ElideMiddle, width);
-}
-
 void ProcessorGraphicsItem::paint(QPainter* p,
                                   [[maybe_unused]] const QStyleOptionGraphicsItem* options,
                                   [[maybe_unused]] QWidget* widget) {
 
-    const float roundedCorners = 9.0f;
+    static constexpr float roundedCorners = 9.0f;
+    static constexpr QColor selectionColor{122, 25, 27};
+    static constexpr QColor borderColor{40, 40, 40};
 
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
-    QColor selectionColor("#7a191b");
-    QColor borderColor("#282828");
 
     if (isSelected()) {
         p->setBrush(selectionColor);
@@ -351,21 +432,27 @@ void ProcessorGraphicsItem::paint(QPainter* p,
     p->setPen(Qt::white);
     p->drawStaticText(QPointF{rect().left() + labelMargin, -14.0}, nameText_);
 
-    p->setFont(getFont(FontType::Identifier));
-    p->setPen(Qt::lightGray);
-    p->drawStaticText(QPointF{rect().left() + labelMargin, 2.0}, identifierText_);
+    if (!progress_) {
+        p->setFont(getFont(FontType::Identifier));
+        p->setPen(Qt::lightGray);
+        p->drawStaticText(QPointF{rect().left() + labelMargin, 2.0}, identifierText_);
 
-    p->setFont(getFont(FontType::Tag));
-    p->drawStaticText(QPointF{rect().left() + labelMargin + identifierSize_ + tagMargin, 2.0},
-                      tagText_);
+        p->setFont(getFont(FontType::Tag));
+        p->drawStaticText(QPointF{rect().left() + labelMargin + identifierSize_ + tagMargin, 2.0},
+                          tagText_);
+    }
+
+    drawStatus(state_, statusPosition, *p);
+    currentState_ = state_;
+
+    if (progress_) drawProgress(progress_.value(), progressRect, *p);
+    currentProgress_ = progress_;
 
 #if IVW_PROFILING
-    if (showCount_) {
-        p->setFont(getFont(FontType::Count));
-        p->drawText(rect().adjusted(120.0, -40.0, -5.0, 0.0), Qt::AlignRight | Qt::AlignBottom,
-                    QString::number(processCount_));
-    }
+    if (showCount_) drawCount(processCount_, countRect, *p);
+    currentProcessCount_ = processCount_;
 #endif
+    dirty_ = false;
 
     p->restore();
 }
@@ -467,7 +554,8 @@ void ProcessorGraphicsItem::updateWidgets() {
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
 void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) {
-    statusItem_->resetState();
+    runtimeError_ = false;
+    updateStatus();
 
     if (processor_->status() == ProcessorStatus::Error) {
         setErrorText(processor_->status().reason());
@@ -498,11 +586,12 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     clock_.reset();
     clock_.start();
     if (showCount_) {
-        update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
+        delayedUpdate();
     }
 #endif
 
-    statusItem_->resetState();
+    runtimeError_ = false;
+    updateStatus();
     if (errorText_) {
         errorText_->clear();
     }
@@ -518,18 +607,19 @@ void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
 }
 
 #if IVW_PROFILING
+
 void ProcessorGraphicsItem::resetTimeMeasurements() {
     processCount_ = 0;
     maxEvalTime_ = 0.0;
     evalTime_ = 0.0;
     totEvalTime_ = 0.0;
-    update(rect().adjusted(120.0, -40.0, -5.0, 0.0));
+    if (showCount_) {
+        delayedUpdate();
+    }
 }
 
 void ProcessorGraphicsItem::setShowCount(bool show) { showCount_ = show; }
 #endif
-
-ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const { return statusItem_; }
 
 void ProcessorGraphicsItem::setErrorText(std::string_view error) {
     // Avoid adding the error text when we use generateProcessorPreview
@@ -537,8 +627,12 @@ void ProcessorGraphicsItem::setErrorText(std::string_view error) {
     if (!errorText_) {
         errorText_ = std::make_unique<ProcessorErrorItem>(this);
     }
+
     errorText_->setText(error);
     errorText_->setActive(isSelected());
+
+    runtimeError_ = true;
+    updateStatus();
 }
 
 void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
@@ -577,5 +671,69 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 }
 
 void ProcessorGraphicsItem::setHighlight(bool val) { highlight_ = val; }
+
+void ProcessorGraphicsItem::activityIndicatorChanged(bool active) { updateStatus(active); }
+
+void ProcessorGraphicsItem::progressChanged(float p) {
+    if (currentProgress_ != p) {
+        progress_ = p;
+        delayedUpdate();
+    }
+}
+
+void ProcessorGraphicsItem::progressBarVisibilityChanged(bool visible) {
+    if (visible) {
+        if (!progress_.has_value()) {
+            progress_ = 0.0f;
+        }
+    } else {
+        progress_ = std::nullopt;
+    }
+
+    if (currentProgress_ != progress_) delayedUpdate();
+}
+
+void ProcessorGraphicsItem::updateStatus(bool running) {
+    if (runtimeError_) {
+        state_ = State::Error;
+    } else if (running) {
+        state_ = State::Running;
+    } else {
+        switch (processor_->status().status()) {
+            case ProcessorStatus::Ready:
+                state_ = State::Ready;
+                break;
+            case ProcessorStatus::NotReady:
+                state_ = State::Invalid;
+                break;
+            case ProcessorStatus::Error:
+                state_ = State::Error;
+                break;
+        }
+    }
+
+    if (currentState_ != state_) delayedUpdate();
+}
+
+void ProcessorGraphicsItem::delayedUpdate() {
+    if (!dirty_) {
+        dirty_ = true;
+        QCoreApplication::postEvent(this, new UpdateStatusEvent(), Qt::LowEventPriority);
+    }
+}
+
+bool ProcessorGraphicsItem::event(QEvent* e) {
+    if (e->type() == UpdateStatusEvent::type()) {
+        if (currentState_ != state_ || currentProgress_ != progress_
+#if IVW_PROFILING
+            || (showCount_ && currentProcessCount_ != processCount_)
+#endif
+        ) {
+            update();
+        }
+        return true;  // event handled
+    }
+    return QObject::event(e);
+}
 
 }  // namespace inviwo

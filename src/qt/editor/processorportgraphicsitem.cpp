@@ -29,7 +29,6 @@
 
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
-#include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>

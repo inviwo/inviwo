@@ -115,12 +115,12 @@ std::pair<Iter, Iter> selectAndSortPorts(Iter begin, Iter end, dvec2 pos, Pred p
     auto selectPorts =
         util::overloaded{[](Outport* p, dvec2 pos) {
                              return static_cast<double>(util::getPosition(p->getProcessor()).y) +
-                                        ProcessorGraphicsItem::size_.height() <
+                                        ProcessorGraphicsItem::size.height() <
                                     pos.y;
                          },
                          [](Inport* p, dvec2 pos) {
                              return static_cast<double>(util::getPosition(p->getProcessor()).y) -
-                                        ProcessorGraphicsItem::size_.height() >
+                                        ProcessorGraphicsItem::size.height() >
                                     pos.y;
                          }};
 
