@@ -72,6 +72,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFunctionP...
 #include <inviwo/core/properties/valuewrapper.h>                        // for PropertySerializa...
 #include <inviwo/core/util/formats.h>                                   // for DataFormat
+#include <inviwo/core/util/exception.h>                                 // for Exception, Source...
 #include <inviwo/core/util/glmmat.h>                                    // for mat4, mat3
 #include <inviwo/core/util/glmvec.h>                                    // for vec2, vec3, vec4
 #include <inviwo/core/util/raiiutils.h>                                 // for KeepTrueWhileInScope
@@ -141,7 +142,8 @@ VolumeSliceGL::VolumeSliceGL()
     , indicatorShader_("standard.vert", "standard.frag", Shader::Build::Yes)
     , trafoGroup_("trafoGroup", "Transformations", "Transformations to the output slice"_help)
     , pickGroup_("pickGroup", "Position Selection")
-    , tfGroup_("tfGroup", "Transfer Function Properties")
+    , tfGroup_("tfGroup", "Transfer Function Properties",
+               "Apply a transfer function to the extracted volume slice"_help, true)
     , sliceAlongAxis_("sliceAxis", "Slice along axis",
                       "Defines the volume axis or plane normal for the output slice"_help,
                       {{"x", "y-z plane (X axis)", static_cast<int>(CartesianCoordinateAxis::X)},
@@ -205,11 +207,12 @@ VolumeSliceGL::VolumeSliceGL()
                           .set("Custom color of the position indicator"_help))
     , indicatorSize_("indicatorSize", "Indicator Size", 4.0f, 0.0f, 100.0f, 0.01f,
                      InvalidationLevel::InvalidOutput)
-    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function",
-                        "Toggles whether the transfer function is applied "
-                        "onto the extracted volume slice"_help,
-                        true, InvalidationLevel::InvalidResources)
-    , transferFunction_("transferFunction", "Transfer Function", &inport_)
+    , channel_("channel", "Channel", "Channel used to for transfer function lookups"_help,
+               util::enumeratedOptions("Channel", 4))
+    , transferFunction_("transferFunction", "Transfer Function",
+                        TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 1.0f)},
+                                          {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                        &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)
     , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f),
@@ -251,20 +254,28 @@ VolumeSliceGL::VolumeSliceGL()
     , inverseSliceRotation_(1.0f)
     , volumeDimensions_(8u)
     , texToWorld_(1.0f) {
-    addPort(inport_);
-    addPort(outport_);
+
+    addPorts(inport_, outport_);
 
     inport_.onChange([this]() { updateMaxSliceNumber(); });
 
+    addProperties(sliceAlongAxis_, sliceX_, sliceY_, sliceZ_, planeNormal_, planePosition_,
+                  trafoGroup_, pickGroup_, tfGroup_, sampleQuery_, worldPosition_,
+                  handleInteractionEvents_, mouseShiftSlice_, stepSliceUp_, stepSliceDown_,
+                  mouseSetMarker_, mousePositionTracker_, gestureShiftSlice_);
+
+    trafoGroup_.addProperties(rotationAroundAxis_, imageRotation_, imageScale_, flipHorizontal_,
+                              flipVertical_, volumeWrapping_, fillColor_);
+    pickGroup_.addProperties(posPicking_, showIndicator_, indicatorColor_, indicatorSize_);
+    tfGroup_.addProperties(channel_, transferFunction_, tfAlphaOffset_);
+    sampleQuery_.addProperties(normalizedSample_, volumeSample_);
+
     sliceAlongAxis_.onChange([this]() { modeChange(); });
-    addProperties(sliceAlongAxis_, sliceX_, sliceY_, sliceZ_);
 
     // Invalidate selected voxel cursor when current slice changes
     sliceX_.onChange([this]() { sliceChange(); });
     sliceY_.onChange([this]() { sliceChange(); });
     sliceZ_.onChange([this]() { sliceChange(); });
-
-    addProperties(planeNormal_, planePosition_);
 
     planePosition_.onChange([this]() { positionChange(); });
     planeNormal_.onChange([this]() { planeSettingsChanged(); });
@@ -279,14 +290,8 @@ VolumeSliceGL::VolumeSliceGL()
         }
         shader_.build();
     });
-    shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    indicatorShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     imageRotation_.setVisible(false);
-
-    trafoGroup_.addProperties(rotationAroundAxis_, imageRotation_, imageScale_, flipHorizontal_,
-                              flipVertical_, volumeWrapping_, fillColor_);
 
     rotationAroundAxis_.onChange([this]() { rotationModeChange(); });
     imageRotation_.onChange([this]() { planeSettingsChanged(); });
@@ -294,31 +299,13 @@ VolumeSliceGL::VolumeSliceGL()
     flipHorizontal_.onChange([this]() { planeSettingsChanged(); });
     flipVertical_.onChange([this]() { planeSettingsChanged(); });
 
-    addProperty(trafoGroup_);
-
-    // Position Selection
-    pickGroup_.addProperties(posPicking_, showIndicator_, indicatorColor_, indicatorSize_);
-
     posPicking_.onChange([this]() { modeChange(); });
     indicatorColor_.onChange([this]() { invalidateMesh(); });
     indicatorSize_.onChange([this]() { invalidateMesh(); });
     showIndicator_.setReadOnly(posPicking_.get());
     indicatorColor_.setSemantics(PropertySemantics::Color);
 
-    addProperty(pickGroup_);
-
-    // Transfer Function
-    tfGroup_.addProperty(tfMappingEnabled_);
-    // Make sure that opacity does not affect the mapped color.
-    if (!transferFunction_.get().empty()) {
-        transferFunction_.get()[0].setAlpha(1.f);
-    }
-    transferFunction_.setCurrentStateAsDefault();
-    tfGroup_.addProperty(transferFunction_);
-    tfGroup_.addProperty(tfAlphaOffset_);
-    addProperty(tfGroup_);
-
-    sampleQuery_.onChange([&]() {
+    sampleQuery_.onChange([this]() {
         if (!sampleQuery_.isChecked()) {
             normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
             volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
@@ -332,31 +319,19 @@ VolumeSliceGL::VolumeSliceGL()
     volumeSample_.setSerializationMode(PropertySerializationMode::None);
     volumeSample_.setCurrentStateAsDefault();
 
-    sampleQuery_.addProperty(normalizedSample_);
-    sampleQuery_.addProperty(volumeSample_);
-    addProperty(sampleQuery_);
-
     worldPosition_.setReadOnly(true);
-    addProperty(worldPosition_);
     worldPosition_.onChange([this]() { updateFromWorldPosition(); });
-
-    addProperty(handleInteractionEvents_);
 
     mouseShiftSlice_.setVisible(false);
     mouseShiftSlice_.setCurrentStateAsDefault();
-    addProperty(mouseShiftSlice_);
-
-    addProperty(stepSliceUp_);
-    addProperty(stepSliceDown_);
-    addProperty(mouseSetMarker_);
-
     mousePositionTracker_.setVisible(false);
     mousePositionTracker_.setCurrentStateAsDefault();
-    addProperty(mousePositionTracker_);
-
     gestureShiftSlice_.setVisible(false);
     gestureShiftSlice_.setCurrentStateAsDefault();
-    addProperty(gestureShiftSlice_);
+
+    shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    indicatorShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 VolumeSliceGL::~VolumeSliceGL() = default;
@@ -364,14 +339,10 @@ VolumeSliceGL::~VolumeSliceGL() = default;
 void VolumeSliceGL::initializeResources() {
     updateMaxSliceNumber();
 
-    if (tfMappingEnabled_.get()) {
+    if (tfGroup_.isChecked()) {
         shader_.getFragmentShaderObject()->addShaderDefine("TF_MAPPING_ENABLED");
-        transferFunction_.setVisible(true);
-        tfAlphaOffset_.setVisible(true);
     } else {
         shader_.getFragmentShaderObject()->removeShaderDefine("TF_MAPPING_ENABLED");
-        transferFunction_.setVisible(false);
-        tfAlphaOffset_.setVisible(false);
     }
     shader_.build();
     planeSettingsChanged();
@@ -380,7 +351,7 @@ void VolumeSliceGL::initializeResources() {
 void VolumeSliceGL::invokeEvent(Event* event) {
     if (dynamic_cast<InteractionEvent*>(event) && !handleInteractionEvents_) return;
     Processor::invokeEvent(event);
-    if (event->getAs<ResizeEvent>()) {
+    if (event && event->hash() == ResizeEvent::chash()) {
         planeSettingsChanged();
     }
 }
@@ -518,6 +489,14 @@ void VolumeSliceGL::process() {
         }
     }
 
+    if (auto vol = inport_.getData();
+        vol && tfGroup_.isChecked() &&
+        channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
+        throw Exception(SourceContext{},
+                        "Channel for TF mapping is greater than the available channels {} >= {}",
+                        channel_.get() + 1, vol->getDataFormat()->getComponents());
+    }
+
     utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
     shader_.activate();
 
@@ -528,9 +507,11 @@ void VolumeSliceGL::process() {
     utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
     utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
 
-    if (tfMappingEnabled_) utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    if (tfGroup_.isChecked()) {
+        utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    }
 
-    utilgl::setUniforms(shader_, tfAlphaOffset_, fillColor_);
+    utilgl::setUniforms(shader_, channel_, tfAlphaOffset_, fillColor_);
     shader_.setUniform("sliceRotation", sliceRotation_);
     shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
     shader_.setUniform("dataToClip", mat4(1.0f));

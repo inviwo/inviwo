@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,44 +24,34 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
-#include "utils/sampler3d.glsl"
-#include "utils/classification.glsl"
+#include <modules/base/processors/layerexport.h>
 
-uniform sampler3D volume;
-uniform VolumeParameters volumeParameters;
+namespace inviwo {
 
-uniform sampler2D transferFunction;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo LayerExport::processorInfo_{
+    "org.inviwo.LayerExport",  // Class identifier
+    "Layer Export",            // Display name
+    "Data Output",             // Category
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
+    R"(A processor saving a Layer to disk.)"_unindentHelp,
+};
 
-uniform mat4 sliceRotation; // Rotates around slice axis (offset to center point)
-uniform float slice;
-uniform int channel = 0;
+const ProcessorInfo& LayerExport::getProcessorInfo() const { return processorInfo_; }
 
-uniform vec4 fillColor;
-
-uniform float alphaOffset = 0.0;
-
-in vec3 texCoord_;
-
-void main() {
-    // Rotate around center and translate back to origin
-    vec3 samplePos = (sliceRotation * vec4(texCoord_.x, texCoord_.y, slice, 1.0)).xyz;
-#ifdef COLOR_FILL_ENABLED
-    if ((samplePos.x < 0 || samplePos.x >= 1) || (samplePos.y < 0 || samplePos.y >= 1) || (samplePos.z < 0 || samplePos.z >= 1)) {
-       FragData0 = fillColor;
-       return;
-    }
-#endif
-  
-    vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
-
-#ifdef TF_MAPPING_ENABLED
-    voxel = applyTF(transferFunction, voxel, channel);
-    voxel.a += alphaOffset;
-#endif
-
-    FragData0 = voxel;
+LayerExport::LayerExport(InviwoApplication* app)
+    : DataExport<Layer, LayerInport>{util::getDataWriterFactory(app), "", "image"} {
 }
+
+const Layer* LayerExport::getData() {
+    if (auto layer = port_.getData()) {
+        return layer.get();
+    }
+    return nullptr;
+}
+
+}  // namespace inviwo

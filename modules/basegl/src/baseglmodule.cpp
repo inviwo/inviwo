@@ -101,7 +101,7 @@
 #include <modules/basegl/processors/splitimage.h>         // for Spl...
 #include <modules/basegl/processors/tuberendering.h>      // for Tub...
 #include <modules/basegl/processors/volumemasker.h>
-#include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>      // for Vec...
+#include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>  // for Vec...
 #include <modules/basegl/processors/volumeprocessing/volume2dmapping.h>
 #include <modules/basegl/processors/volumeprocessing/volumebinary.h>                  // for Vol...
 #include <modules/basegl/processors/volumeprocessing/volumecombiner.h>                // for Vol...
@@ -228,7 +228,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 9; }
+int BaseGLModule::getVersion() const { return 10; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -478,7 +478,7 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
 
             xml::visitMatchingNodesRecursive(
                 root, {"Processor", {{"type", "org.inviwo.SphereRenderer"}}}, [&](TxElement* prop) {
-                    if (auto color =
+                    if (auto* color =
                             xml::getElement(prop,
                                             "Properties/Property&identifier=sphereProperties/"
                                             "Properties/Property&identifier=color")) {
@@ -507,15 +507,15 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                 if (node->GetAttribute("type") != "org.inviwo.AxisAlignedCutPlane") {
                     return true;
                 }
-                if (auto disableTF =
+                if (auto* disableTF =
                         xml::getElement(node, "Properties/Property&identifier=disableTF")) {
 
                     disableTF->SetAttribute("identifier", "applyTF");
-                    if (auto elem = xml::getElement(disableTF, "displayName")) {
+                    if (auto* elem = xml::getElement(disableTF, "displayName")) {
                         elem->SetAttribute("content", "Apply TF");
                     }
                     // flip checked state
-                    if (auto value = xml::getElement(disableTF, "value")) {
+                    if (auto* value = xml::getElement(disableTF, "value")) {
                         if (value->GetAttribute("content") == "0") {
                             value->SetAttribute("content", "1");
                         } else {
@@ -530,13 +530,13 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                       std::tuple{"y", "yAxis", "Z Axis", "sliceY"},
                       std::tuple{"z", "zAxis", "Z Axis", "sliceZ"}}) {
 
-                    if (auto prop = xml::getElement(
+                    if (auto* prop = xml::getElement(
                             node, fmt::format("Properties/Property&identifier={}", path))) {
                         prop->SetAttribute("identifier", newIdentifier);
-                        if (auto elem = xml::getElement(prop, "displayName")) {
+                        if (auto* elem = xml::getElement(prop, "displayName")) {
                             elem->SetAttribute("content", newDisplayName);
                         }
-                        if (auto slice =
+                        if (auto* slice =
                                 xml::getElement(prop, "Properties/Property&identifier=slice")) {
                             slice->SetAttribute("identifier", sliceIdentifier);
                         }
@@ -565,6 +565,49 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                                              "entry");
             res |= xml::renamePortIdentifier(root, "org.inviwo.LightingRaycaster", "exit-points",
                                              "exit");
+            [[fallthrough]];
+        }
+        case 9: {
+            TraversingVersionConverter conv{[&](TxElement* node) {
+                if (const auto& key = node->Value(); key != "Processor") return true;
+                if (node->GetAttribute("type") != "org.inviwo.VolumeSliceGL") {
+                    return true;
+                }
+                if (auto* tfGroup =
+                        xml::getElement(node, "Properties/Property&identifier=tfGroup")) {
+                    if (auto* tf = xml::getElement(
+                            tfGroup, "Properties/Property&identifier=transferFunction")) {
+                        if (auto* value = xml::getElement(tf, "visible")) {
+                            value->SetAttribute("content", "1");
+                        }
+                    }
+                    if (auto* alphaOffset = xml::getElement(
+                            tfGroup, "Properties/Property&identifier=alphaOffset")) {
+                        if (auto* value = xml::getElement(alphaOffset, "visible")) {
+                            value->SetAttribute("content", "1");
+                        }
+                    }
+
+                    if (auto* properties = xml::getElement(tfGroup, "Properties")) {
+                        if (auto* tfMapping = xml::getElement(
+                                tfGroup, "Properties/Property&identifier=tfMappingEnabled")) {
+                            tfMapping->SetAttribute("identifier", "checked");
+                            tfMapping->SetAttribute("displayName", "");
+                            properties->InsertEndChild(*tfMapping);
+                        }
+                    }
+                    tfGroup->SetAttribute("type", "org.inviwo.BoolCompositeProperty");
+                    res = true;
+                }
+
+                return true;
+            }};
+
+            res |= xml::changeAttributeRecursive(
+                root, {{xml::Kind::processor("org.inviwo.VolumeSliceExtractor")}}, "type",
+                "org.inviwo.ImageMapping", "org.inviwo.ImageColorMapping");
+            conv.convert(root);
+
             return res;
         }
 
