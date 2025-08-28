@@ -228,10 +228,13 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , totEvalTime_(0.0)
 #endif
     , state_{processor_->isReady() ? State::Ready : State::Invalid}
+    , currentState_{state_}
     , runtimeError_{false}
     , errorText_{nullptr}
     , progress_{std::nullopt}
-    , dirty_{false} {
+    , currentProgress_{std::nullopt}
+    , dirty_{false}
+    , limitedUpdate_{} {
 
     setZValue(depth::processor);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
@@ -729,7 +732,7 @@ bool ProcessorGraphicsItem::event(QEvent* e) {
             || (showCount_ && currentProcessCount_ != processCount_)
 #endif
         ) {
-            update();
+            limitedUpdate_(this, this);
         }
         return true;  // event handled
     }

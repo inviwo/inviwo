@@ -47,6 +47,8 @@
 #include <QPropertyAnimation>
 #include <QStaticText>
 #include <QFont>
+#include <QTimer>
+#include <QElapsedTimer>
 #include <warn/pop>
 
 #include <optional>
@@ -55,6 +57,42 @@ class QGraphicsSimpleTextItem;
 class QGraphicsLineItem;
 
 namespace inviwo {
+
+template <size_t minIntervalMs, typename F>
+class RateLimitier {
+public:
+    RateLimitier(F function = {}) : function{std::move(function)}, timer_{}, callScheduled_{false} {
+        timer_.start();
+    }
+
+    template <typename... Args>
+    void operator()(QObject* owner, Args&&... args) {
+        if (!callScheduled_) {
+            if (timer_.hasExpired(minIntervalMs)) {
+                invoke(std::forward<Args>(args)...);
+            } else {
+                callScheduled_ = true;
+                QTimer::singleShot(minIntervalMs - timer_.elapsed(), owner,
+                                   [this, ... a = std::forward<Args>(args)]() {
+                                       invoke(a...);
+                                   });
+            }
+        }
+    }
+
+    F function;
+
+private:
+    template <typename... Args>
+    void invoke(Args&&... args) {
+        timer_.restart();
+        callScheduled_ = false;
+        std::invoke(function, std::forward<Args>(args)...);
+    }
+
+    QElapsedTimer timer_;
+    bool callScheduled_;
+};
 
 class Processor;
 class ProcessorLinkGraphicsItem;
@@ -186,8 +224,8 @@ private:
     std::shared_ptr<std::function<void(std::string_view, std::string_view)>> nameChange_;
 
 #if IVW_PROFILING
-    size_t currentProcessCount_;
     size_t processCount_;
+    size_t currentProcessCount_;
     double maxEvalTime_;
     double evalTime_;
     double totEvalTime_;
@@ -203,6 +241,7 @@ private:
     std::optional<float> progress_;
     std::optional<float> currentProgress_;
     bool dirty_;
+    RateLimitier<250, decltype([](QGraphicsItem* p) { p->update(); })> limitedUpdate_;
 };
 
 }  // namespace inviwo

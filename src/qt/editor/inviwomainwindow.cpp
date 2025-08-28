@@ -1032,6 +1032,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     {
         networkMenuItem->addSeparator();
         auto perfs = networkMenuItem->addAction("Measure Performance");
+        perfs->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_M);
         connect(perfs, &QAction::triggered, [this](bool /*state*/) {
             const auto widgetProcessors = detail::getWidgetProcessors(app_);
 
@@ -1054,25 +1055,26 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
                 Clock clock{};
                 for (size_t i = 0; i < steps; ++i) {
-                    QMouseEvent me1(QEvent::MouseButtonPress, pos1, gpos1,
-                                                Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-                    QMouseEvent me2(QEvent::MouseMove, pos1, gpos1, Qt::NoButton,
-                                                Qt::LeftButton, Qt::NoModifier);
+                    QMouseEvent me1(QEvent::MouseButtonPress, pos1, gpos1, Qt::LeftButton,
+                                    Qt::LeftButton, Qt::NoModifier);
+                    QMouseEvent me2(QEvent::MouseMove, pos1, gpos1, Qt::NoButton, Qt::LeftButton,
+                                    Qt::NoModifier);
 
                     QCoreApplication::sendEvent(widget->windowHandle(), &me1);
                     QCoreApplication::sendEvent(widget->windowHandle(), &me2);
 
-                    QMouseEvent me3(QEvent::MouseMove, pos2, gpos2, Qt::NoButton,
-                                                Qt::LeftButton, Qt::NoModifier);
-                    QMouseEvent me4(QEvent::MouseButtonRelease, pos2, gpos2,
-                                                Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+                    QMouseEvent me3(QEvent::MouseMove, pos2, gpos2, Qt::NoButton, Qt::LeftButton,
+                                    Qt::NoModifier);
+                    QMouseEvent me4(QEvent::MouseButtonRelease, pos2, gpos2, Qt::LeftButton,
+                                    Qt::NoButton, Qt::NoModifier);
 
                     QCoreApplication::sendEvent(widget->windowHandle(), &me3);
                     QCoreApplication::sendEvent(widget->windowHandle(), &me4);
                     QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
                 }
                 const auto duration =
-                    std::chrono::duration_cast<std::chrono::milliseconds>(clock.getElapsedTime());
+                    std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(
+                        clock.getElapsedTime());
                 log::info("Ran {} steps in {} ({} / step)", steps, duration, duration / steps);
             }
         });
