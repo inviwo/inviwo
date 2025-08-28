@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationObservable.html":[2,0,0,0,8],
+"classinviwo_1_1animation_1_1AnimationObservable.html":[4,0,0,1,9],
 "classinviwo_1_1animation_1_1AnimationObserver.html":[2,0,0,0,9],
 "classinviwo_1_1animation_1_1AnimationObserver.html":[4,0,0,1,10],
 "classinviwo_1_1animation_1_1AnimationQtSupplier.html":[2,0,0,0,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserver.html":[2,0,0,0,88],
 "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserver.html":[4,0,0,1,89],
 "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html":[2,0,0,0,89],
-"classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html":[4,0,0,1,90],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html":[2,0,0,0,90],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html":[4,0,0,1,91]
+"classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html":[4,0,0,1,90]
 };

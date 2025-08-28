@@ -559,6 +559,9 @@ var hierarchy =
         [ "inviwo::DataExport< Layer, ImageInport >", "classinviwo_1_1DataExport.html", [
           [ "inviwo::ImageExport", "classinviwo_1_1ImageExport.html", null ]
         ] ],
+        [ "inviwo::DataExport< Layer, LayerInport >", "classinviwo_1_1DataExport.html", [
+          [ "inviwo::LayerExport", "classinviwo_1_1LayerExport.html", null ]
+        ] ],
         [ "inviwo::DataExport< Mesh, MeshInport >", "classinviwo_1_1DataExport.html", [
           [ "inviwo::MeshExport", "classinviwo_1_1MeshExport.html", null ]
         ] ],

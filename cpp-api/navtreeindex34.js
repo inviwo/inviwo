@@ -1,5 +1,7 @@
 var NAVTREEINDEX34 =
 {
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html":[4,0,1,6],
+"structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html":[2,0,1,8],
 "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html":[4,0,1,8],
 "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html":[2,0,1,9],
 "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html":[4,0,1,9],

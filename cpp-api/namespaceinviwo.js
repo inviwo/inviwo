@@ -658,6 +658,7 @@ var namespaceinviwo =
     [ "LayerDisk", "classinviwo_1_1LayerDisk.html", "classinviwo_1_1LayerDisk" ],
     [ "LayerDisk2RAMConverter", "classinviwo_1_1LayerDisk2RAMConverter.html", null ],
     [ "LayerDistanceTransform", "classinviwo_1_1LayerDistanceTransform.html", "classinviwo_1_1LayerDistanceTransform" ],
+    [ "LayerExport", "classinviwo_1_1LayerExport.html", null ],
     [ "LayerGL", "classinviwo_1_1LayerGL.html", "classinviwo_1_1LayerGL" ],
     [ "LayerGL2PyConverter", "classinviwo_1_1LayerGL2PyConverter.html", null ],
     [ "LayerGL2RAMConverter", "classinviwo_1_1LayerGL2RAMConverter.html", null ],
