@@ -105,7 +105,7 @@ public:
      * @throw RangeException if \p index is not valid
      */
     Property* removeProperty(size_t index);
-    virtual Property* removeProperty(std::vector<Property*>::iterator it);
+    virtual Property* removeProperty(iterator it);
 
     virtual bool move(Property* property, size_t newIndex);
 
@@ -191,7 +191,8 @@ protected:
     std::vector<std::unique_ptr<Property>> ownedProperties_;
 
 private:
-    Property* removePropertyImpl(std::vector<Property*>::iterator it);
+    void insertPropertyImpl(iterator it, Property* property, bool owner);
+    Property* removePropertyImpl(iterator it);
     InvalidationLevel invalidationLevel_;
 };
 

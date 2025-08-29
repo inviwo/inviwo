@@ -131,14 +131,12 @@ private:
  *     class IVW_XXX_API ButtonObserver: public Observer {
  *     public:
  *         friend ButtonObservable;
- *         ButtonObserver() = default
  *         // Override to be notified when the observed button is pressed.
  *         virtual void onButtonPressed(){};
  *     };
  *
  *     class IVW_XXX_API ButtonObservable: public Observable<ButtonObserver> {
  *     protected:
- *         ButtonObservable() = default;
  *         void notifyObserversAboutButtonPressed() {
  *             forEachObserver([](ButtonObserver* o) { o->onButtonPressed(); });
  *         }
@@ -206,6 +204,8 @@ public:
 
     void addObserver(T* observer);
     void removeObserver(T* observer);
+
+    bool isObservedBy(T* observer) const;
 
     virtual void startBlockingNotifications() override final;
     virtual void stopBlockingNotifications() override final;
@@ -282,6 +282,11 @@ void Observable<T>::removeObserver(T* observer) {
     if (removeObserverInternal(observer)) {
         removeObservationHelper(observer);
     }
+}
+
+template <typename T>
+bool Observable<T>::isObservedBy(T* observer) const {
+    return std::find(observers_.begin(), observers_.end(), observer) != observers_.end();
 }
 
 template <typename T>

@@ -51,8 +51,6 @@ class Property;
 class IVW_CORE_API ProcessorObserver : public Observer {
 public:
     friend ProcessorObservable;
-    ProcessorObserver() = default;
-    virtual ~ProcessorObserver() = default;
 
     virtual void onAboutPropertyChange(Property*){};
     virtual void onProcessorInvalidationBegin(Processor*){};
@@ -99,9 +97,6 @@ class IVW_CORE_API ProcessorObservable : public Observable<ProcessorObserver> {
 protected:
     friend ProcessorNetworkEvaluator;
     friend Property;
-
-    ProcessorObservable() = default;
-    virtual ~ProcessorObservable() = default;
 
     void notifyObserversAboutPropertyChange(Property* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onAboutPropertyChange(p); });

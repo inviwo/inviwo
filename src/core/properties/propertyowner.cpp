@@ -65,28 +65,38 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
 }
 
 PropertyOwner::PropertyOwner(PropertyOwner&& rhs)
-    : PropertyOwnerObservable{std::move(rhs)}
+    : PropertyOwnerObservable{}
     , properties_{}
     , eventProperties_{}
     , compositeProperties_{}
-    , ownedProperties_{}
+    , ownedProperties_{std::move(rhs.ownedProperties_)}
     , invalidationLevel_(std::move(rhs.invalidationLevel_)) {
 
-    for (auto& p : rhs.ownedProperties_) {
-        addProperty(std::move(p));
+    for (auto& p : ownedProperties_) {
+        std::erase(rhs.properties_, p.get());
+        std::erase(rhs.eventProperties_, p.get());
+        std::erase(rhs.compositeProperties_, p.get());
+        insertPropertyImpl(properties_.end(), p.get(),false);
     }
-    rhs.ownedProperties_.clear();
+    rhs.clear();
+
+    PropertyOwnerObservable::operator=(std::move(rhs));
 }
 
 PropertyOwner& PropertyOwner::operator=(PropertyOwner&& that) {
     if (this != &that) {
-        PropertyOwnerObservable::operator=(std::move(that));
         clear();
 
-        for (auto& p : that.ownedProperties_) {
-            addProperty(std::move(p));
+        ownedProperties_ = std::move(that.ownedProperties_);
+        for (auto& p : ownedProperties_) {
+            std::erase(that.properties_, p.get());
+            std::erase(that.eventProperties_, p.get());
+            std::erase(that.compositeProperties_, p.get());
+            insertPropertyImpl(properties_.end(), p.get(),false);
         }
-        that.ownedProperties_.clear();
+        that.clear();
+
+        PropertyOwnerObservable::operator=(std::move(that));
     }
     return *this;
 }
@@ -139,7 +149,12 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     }
 
     notifyObserversWillAddProperty(this, property, index);
-    properties_.insert(properties_.begin() + index, property);
+    insertPropertyImpl(properties_.begin() + index, property, owner);
+    notifyObserversDidAddProperty(property, index);
+}
+
+void PropertyOwner::insertPropertyImpl(iterator it, Property* property, bool owner) {
+    properties_.insert(it, property);
     property->setOwner(this);
 
     if (dynamic_cast<EventProperty*>(property)) {
@@ -154,9 +169,7 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
         // Need to serialize everything for owned properties
         property->setSerializationMode(PropertySerializationMode::All);
     }
-    notifyObserversDidAddProperty(property, index);
 }
-
 
 Property* PropertyOwner::removeProperty(std::string_view identifier) {
     return removeProperty(
@@ -179,11 +192,9 @@ Property* PropertyOwner::removeProperty(size_t index) {
     return removeProperty(begin() + index);
 }
 
-Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
-    return removePropertyImpl(it);
-}
+Property* PropertyOwner::removeProperty(iterator it) { return removePropertyImpl(it); }
 
-Property* PropertyOwner::removePropertyImpl(std::vector<Property*>::iterator it) {
+Property* PropertyOwner::removePropertyImpl(iterator it) {
     Property* prop = nullptr;
     if (it != properties_.end()) {
         prop = *it;
