@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 // Owned by the MeshRenderProcessorGL Processor
@@ -33,9 +33,9 @@
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
 
-#if !defined(TEXCOORD_LAYER) && !defined(NORMALS_LAYER) \
-    && !defined(VIEW_NORMALS_LAYER) && !defined(COLOR_LAYER)
-#  define COLOR_LAYER
+#if !defined(TEXCOORD_LAYER) && !defined(NORMALS_LAYER) && !defined(VIEW_NORMALS_LAYER) && \
+    !defined(COLOR_LAYER)
+#define COLOR_LAYER
 #endif
 
 uniform LightParameters lighting;
@@ -43,10 +43,10 @@ uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];     // double buffering for gaussian filtering
 uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 #else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2];  // double buffering for gaussian filtering
 uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 #endif
 
@@ -68,66 +68,69 @@ uniform float r;
 uniform float lambda;
 
 #ifdef FOURIER
-    #include "opactopt/approximation/fourier.glsl"
+#include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximation/legendre.glsl"
+#include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximation/piecewise.glsl"
+#include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximation/powermoments.glsl"
+#include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximation/trigmoments.glsl"
+#include "opactopt/approximation/trigmoments.glsl"
 #endif
-
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if (color_.a == 0) {
+        discard;
+    }
 
     // Get linear depth
-    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
-    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
+    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
+    float depth =
+        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
 
     vec4 c = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
     c.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
-                                   normalize(normal_), normalize(toCameraDir_));
+                           normalize(normal_), normalize(toCameraDir_));
 
-    // Calculate g_i^2
-    #ifdef USE_IMPORTANCE_VOLUME
-        vec2 texCoord = gl_FragCoord.xy * reciprocalDimensions;
-        float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
-        float clipDepth = convertDepthViewToClip(camera, viewDepth);
-        vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
-        vec4 worldPos = camera.clipToWorld * clip;
-        worldPos /= worldPos.w;
-        vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-        float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
-    #else
-        float gi = color_.a;
-    #endif
+// Calculate g_i^2
+#ifdef USE_IMPORTANCE_VOLUME
+    vec2 texCoord = gl_FragCoord.xy * reciprocalDimensions;
+    float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
+    float clipDepth = convertDepthViewToClip(camera, viewDepth);
+    vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+    vec4 worldPos = camera.clipToWorld * clip;
+    worldPos /= worldPos.w;
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
+                  importanceVolumeParameters.reciprocalDimensions;
+    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz)
+                   .x;  // sample importance from volume
+#else
+    float gi = color_.a;
+#endif
 
     // find alpha
     float gisq = gi * gi;
     float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
     float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
-    Gd += 0.5 * gisq; // correct for importance sum approximation at discontinuity
-    float alpha = clamp(1 /
-                    (1 + pow(1 - gi, 2 * lambda)
-                    * (r * max(0, Gd - gisq)
-                    + q * max(0, gtot - Gd))),
-                    0.0, 0.9999); // set pixel alpha using opacity optimisation
+    Gd += 0.5 * gisq;  // correct for importance sum approximation at discontinuity
+    float alpha =
+        clamp(1 / (1 + pow(1 - gi, 2 * lambda) * (r * max(0, Gd - gisq) + q * max(0, gtot - Gd))),
+              0.0, 0.9999);  // set pixel alpha using opacity optimisation
 
     // find optical depth
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
-    float weight = alpha / sqrt(1 - alpha) * exp(-taud); // correct for optical depth approximation at discontinuity
+    float weight = alpha / sqrt(1 - alpha) *
+                   exp(-taud);  // correct for optical depth approximation at discontinuity
 
     c.rgb = weight * c.rgb;
-    c.a = weight; // save sum of weights in alpha channel for later division
+    c.a = weight;  // save sum of weights in alpha channel for later division
 
     FragData0 = c;
     PickingData = pickColor_;
