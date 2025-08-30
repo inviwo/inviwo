@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
@@ -49,20 +49,20 @@ layout(std430, binding = 11) buffer debugFragments {
 #endif
 
 uniform vec2 screenDim = vec2(512, 512);
-uniform float antialiasing = 0.5; // width of antialised edged [pixel]
-uniform float lineWidth = 2.0; // line width [pixel]
+uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
+uniform float lineWidth = 2.0;     // line width [pixel]
 
 // initialize camera matrices with the identity matrix to enable default rendering
 // without any transformation, i.e. all lines in clip space
-uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
-                                    mat4(1), mat4(1), vec3(0), 0, 1);
+uniform CameraParameters camera =
+    CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
 uniform vec2 reciprocalDimensions;
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];     // double buffering for gaussian filtering
 uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
 #else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
+uniform layout(size1x32) image2DArray importanceSumCoeffs[2];  // double buffering for gaussian filtering
 uniform layout(size1x32) image2DArray opticalDepthCoeffs;
 #endif
 
@@ -75,10 +75,11 @@ uniform VolumeParameters importanceVolumeParameters;
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
 
 in LineGeom {
-    vec2 texCoord; // x = distance to segment start, y = orth. distance to center (in screen coords)
+    vec2 texCoord;        // x = distance to segment start, y = orth. distance to center
+                          // (in screen coords)
     vec4 color;
     flat vec4 pickColor;
-    float segmentLength; // total length of the current line segment in screen space
+    float segmentLength;  // total length of the current line segment in screen space
     float distanceWorld;  // distance in world coords to segment start
 } fragment;
 
@@ -88,34 +89,35 @@ uniform float r;
 uniform float lambda;
 
 #ifdef FOURIER
-    #include "opactopt/approximation/fourier.glsl"
+#include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximation/legendre.glsl"
+#include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximation/piecewise.glsl"
+#include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximation/powermoments.glsl"
+#include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximation/trigmoments.glsl"
+#include "opactopt/approximation/trigmoments.glsl"
 #endif
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(fragment.color.a < 0.01) { discard; }
+    if (fragment.color.a < 0.01) {
+        discard;
+    }
 
     float linewidthHalf = lineWidth * 0.5;
 
     // make joins round by using the texture coords
     float distance = abs(fragment.texCoord.y);
-    if (fragment.texCoord.x < 0.0) { 
-        distance = length(fragment.texCoord); 
-    }
-    else if(fragment.texCoord.x > fragment.segmentLength) { 
-        distance = length(vec2(fragment.texCoord.x - fragment.segmentLength, fragment.texCoord.y)); 
+    if (fragment.texCoord.x < 0.0) {
+        distance = length(fragment.texCoord);
+    } else if (fragment.texCoord.x > fragment.segmentLength) {
+        distance = length(vec2(fragment.texCoord.x - fragment.segmentLength, fragment.texCoord.y));
     }
 
     float d = distance - linewidthHalf + antialiasing;
@@ -125,13 +127,14 @@ void main() {
     float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
-    float z_v = view_depth - cos(distance/maxDist * M_PI) * maxDist / screenDim.x*0.5;
+    float z_v = view_depth - cos(distance / maxDist * M_PI) * maxDist / screenDim.x * 0.5;
 #else
     // Get linear depth
-    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
-#endif // ENABLE_ROUND_DEPTH_PROFILE
+    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
+#endif  // ENABLE_ROUND_DEPTH_PROFILE
 
-    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
+    float depth =
+        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
@@ -141,8 +144,10 @@ void main() {
     vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
     vec4 worldPos = camera.clipToWorld * clip;
     worldPos /= worldPos.w;
-    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
+                  importanceVolumeParameters.reciprocalDimensions;
+    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz)
+                   .x;  // sample importance from volume
 #else
     float gi = fragment.color.a;
 #endif
@@ -157,22 +162,23 @@ void main() {
     float v = (fragment.distanceWorld * stippling.worldScale);
 #else
     // in screen space
-    float v = (fragment.texCoord.x + stippling.offset) / stippling.length;    
-#endif // STIPPLE_MODE
+    float v = (fragment.texCoord.x + stippling.offset) / stippling.length;
+#endif  // STIPPLE_MODE
 
     float t = fract(v) * (stippling.length) / stippling.spacing;
     if ((t > 0.0) && (t < 1.0)) {
         // renormalize t with respect to stippling length
-        t = min(t, 1.0-t) * (stippling.spacing) * 0.5;
+        t = min(t, 1.0 - t) * (stippling.spacing) * 0.5;
         d = max(d, t);
     }
-#endif // ENABLE_STIPPLING
+#endif  // ENABLE_STIPPLING
 
     // antialiasing around the edges
-    if( d > 0) {
-        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
+    if (d > 0) {
+        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics
+        // Techniques 2013]
         d /= antialiasing;
-        alphamul = exp(-d*d);
+        alphamul = exp(-d * d);
     }
 
     // Project importance
@@ -180,14 +186,15 @@ void main() {
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-    #ifdef DEBUG
-        if (ivec2(gl_FragCoord.xy) == debugCoords) {
-            FragmentInfo fi;
-            fi.depth = depth;
-            fi.importance = gi;
-            debugFrags[atomicAdd(nFragments, 1)] = fi;
-        }
-    #endif
+#ifdef DEBUG
+    if (ivec2(gl_FragCoord.xy) == debugCoords) {
+        FragmentInfo fi;
+        fi.depth = depth;
+        fi.importance = gi;
+        debugFrags[atomicAdd(nFragments, 1)] = fi;
+    }
+#endif
 
-    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
+    PickingData =
+        vec4(vec3(0), 1);  // write into intermediate image to indicate pixel is being written to
 }

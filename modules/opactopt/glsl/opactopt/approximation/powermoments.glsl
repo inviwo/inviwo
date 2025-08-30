@@ -65,15 +65,18 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         for (int i = 0; i < N; i++) {
             ivec3 coord = ivec3(gl_FragCoord.xy, i);
-            #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-                float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-            #else
-                float coeff = imageLoad(coeffTex, coord).x;
-            #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+            float coeff = imageLoad(coeffTex, coord).x;
+#endif
 
-            if (i == 0) b_0 = coeff;
-            else if (i % 2 == 1) b_odd[(i - 1) / 2] = coeff / b_0;
-            else b_even[(i - 2) / 2] = coeff / b_0;
+            if (i == 0)
+                b_0 = coeff;
+            else if (i % 2 == 1)
+                b_odd[(i - 1) / 2] = coeff / b_0;
+            else
+                b_even[(i - 2) / 2] = coeff / b_0;
         }
 
         float bias = 5e-7;
@@ -87,15 +90,18 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         for (int i = 0; i < N; i++) {
             ivec3 coord = ivec3(gl_FragCoord.xy, i);
-            #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-                float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-            #else
-                float coeff = imageLoad(coeffTex, coord).x;
-            #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+            float coeff = imageLoad(coeffTex, coord).x;
+#endif
 
-            if (i == 0) b_0 = coeff;
-            else if (i % 2 == 1) b_odd[(i - 1) / 2] = coeff / b_0;
-            else b_even[(i - 2) / 2] = coeff / b_0;
+            if (i == 0)
+                b_0 = coeff;
+            else if (i % 2 == 1)
+                b_odd[(i - 1) / 2] = coeff / b_0;
+            else
+                b_even[(i - 2) / 2] = coeff / b_0;
         }
 
         float bias = 5e-6;
@@ -109,15 +115,18 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         for (int i = 0; i < N; i++) {
             ivec3 coord = ivec3(gl_FragCoord.xy, i);
-            #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-                float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-            #else
-                float coeff = imageLoad(coeffTex, coord).x;
-            #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+            float coeff = imageLoad(coeffTex, coord).x;
+#endif
 
-            if (i == 0) b_0 = coeff;
-            else if (i % 2 == 1) b_odd[(i - 1) / 2] = coeff / b_0;
-            else b_even[(i - 2) / 2] = coeff / b_0;
+            if (i == 0)
+                b_0 = coeff;
+            else if (i % 2 == 1)
+                b_odd[(i - 1) / 2] = coeff / b_0;
+            else
+                b_even[(i - 2) / 2] = coeff / b_0;
         }
 
         float bias = 5e-5;
