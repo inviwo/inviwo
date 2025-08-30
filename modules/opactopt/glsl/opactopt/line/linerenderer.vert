@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -35,8 +35,8 @@ uniform GeometryParameters geometry;
 
 // initialize camera matrices with the identity matrix to enable default rendering
 // without any transformation, i.e. all lines in clip space
-uniform CameraParameters camera = CameraParameters( mat4(1), mat4(1), mat4(1), mat4(1),
-                                    mat4(1), mat4(1), vec3(0), 0, 1);
+uniform CameraParameters camera =
+    CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
 
 uniform bool pickingEnabled = false;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
@@ -47,7 +47,7 @@ out LineVert {
     flat uint pickID;
     flat uint index;
 } vertex;
- 
+
 void main() {
 #if defined(HAS_COLOR)
     vertex.color = in_Color;
@@ -59,7 +59,7 @@ void main() {
     gl_Position = camera.worldToClip * vertex.worldPosition;
 #if defined(HAS_PICKING)
     vertex.pickID = in_Picking;
-#else 
+#else
     vertex.pickID = 0;
 #endif
 }
