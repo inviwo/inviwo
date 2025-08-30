@@ -182,7 +182,8 @@ void MeshMappingVolume::process() {
                     vec3(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
 
                 if (glm::any(glm::lessThan(glm::floor(texpos), glm::zero<glm::vec3>())) ||
-                    glm::any(glm::greaterThanEqual(glm::ceil(texpos), glm::vec3(volume->getDimensions()))))
+                    glm::any(glm::greaterThanEqual(glm::ceil(texpos),
+                                                   glm::vec3(volume->getDimensions()))))
                     accessOutsideBounds = true;
 
                 double res;

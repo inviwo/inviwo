@@ -41,7 +41,7 @@ std::vector<OptionPropertyStringOption> generateApproximationStringOptions() {
     std::vector<OptionPropertyStringOption> options;
     options.reserve(n);
 
-    for (auto const& [key, val] : approximations) {
+    for (const auto& [key, val] : approximations) {
         OptionPropertyStringOption option(key, val.name, key);
         options.push_back(option);
     }
@@ -66,15 +66,17 @@ std::vector<float> generateLegendreCoefficients() {
 
 MomentSettings::MomentSettings()
     : momentSettingsBuffer_{2 * sizeof(float) + sizeof(glm::vec4),
-                                GLFormats::getGLFormat(GL_FLOAT, 1), GL_STATIC_READ,
-                                GL_SHADER_STORAGE_BUFFER} {
+                            GLFormats::getGLFormat(GL_FLOAT, 1), GL_STATIC_READ,
+                            GL_SHADER_STORAGE_BUFFER} {
     glm::vec4 wzp;
     computeWrappingZoneParameters(wzp, wrapping_zone_angle);
 
     momentSettingsBuffer_.bind();
     glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(glm::vec4), &wzp[0]);
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4), sizeof(float), &wrapping_zone_angle);
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) + sizeof(float), sizeof(float), &overestimation);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4), sizeof(float),
+                    &wrapping_zone_angle);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) + sizeof(float), sizeof(float),
+                    &overestimation);
     momentSettingsBuffer_.bindBase(13);
 }
 
@@ -104,9 +106,8 @@ float MomentSettings::circleToParameter(float angle, float* pOutMaxParameter /* 
  * Given an angle in radians providing the size of the wrapping zone, this function computes all
  * constants required by the shader.
  */
-void MomentSettings::computeWrappingZoneParameters(
-    glm::vec4& p_out_wrapping_zone_parameters,
-                                   float new_wrapping_zone_angle) {
+void MomentSettings::computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
+                                                   float new_wrapping_zone_angle) {
     p_out_wrapping_zone_parameters[0] = new_wrapping_zone_angle;
     p_out_wrapping_zone_parameters[1] = M_PI - 0.5f * new_wrapping_zone_angle;
     if (new_wrapping_zone_angle <= 0.0f) {

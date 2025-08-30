@@ -38,14 +38,14 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
     // pre integrate
     for (int i = bin; i <= N - 1; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        #if defined(COEFF_TEX_FIXED_POINT_FACTOR)
-            imageAtomicAdd(coeffTex, coord, int(val * COEFF_TEX_FIXED_POINT_FACTOR));
-        #elif defined(COEFF_TEX_ATOMIC_FLOAT)
-            imageAtomicAdd(coeffTex, coord, val);
-        #else
-            float currVal = imageLoad(coeffTex, coord).x;
-            imageStore(coeffTex, coord, vec4(currVal + val));
-        #endif
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
+        imageAtomicAdd(coeffTex, coord, int(val * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+        imageAtomicAdd(coeffTex, coord, val);
+#else
+        float currVal = imageLoad(coeffTex, coord).x;
+        imageStore(coeffTex, coord, vec4(currVal + val));
+#endif
     }
 }
 
@@ -58,17 +58,16 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
     int bin = min(int(depth * N), N - 1);
     ivec3 coord = ivec3(gl_FragCoord.xy, bin);
     ivec3 prevbincoord = ivec3(gl_FragCoord.xy, bin - 1);
-    #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        float binsum = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-        float prevbinsum = 0.0;
-        if (bin > 0)
-            prevbinsum = float(imageLoad(coeffTex, prevbincoord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-    #else
-        float binsum = imageLoad(coeffTex, coord).x;
-        float prevbinsum = 0.0;
-        if (bin > 0)
-            prevbinsum = imageLoad(coeffTex, prevbincoord).x;
-    #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+    float binsum = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+    float prevbinsum = 0.0;
+    if (bin > 0)
+        prevbinsum = float(imageLoad(coeffTex, prevbincoord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+    float binsum = imageLoad(coeffTex, coord).x;
+    float prevbinsum = 0.0;
+    if (bin > 0) prevbinsum = imageLoad(coeffTex, prevbincoord).x;
+#endif
     return prevbinsum + fract(depth * N) * (binsum - prevbinsum);
 }
 
@@ -78,9 +77,10 @@ float total(layout(r32i) iimage2DArray coeffTex, int N)
 float total(layout(size1x32) image2DArray coeffTex, int N)
 #endif
 {
-    #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1)).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-    #else
-        return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1)).x;
-    #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+    return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1)).x) /
+           COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+    return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1)).x;
+#endif
 }

@@ -29,9 +29,7 @@
 
 uniform ivec2 screenSize;
 uniform int radius;
-layout(std430, binding = 8) buffer gaussianKernelBuffer {
-    float kernel[];
-};
+layout(std430, binding = 8) buffer gaussianKernelBuffer { float kernel[]; };
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
@@ -53,17 +51,17 @@ smooth in vec4 fragPos;
 void main() {
     ivec2 coords = ivec2(gl_FragCoord.xy);
 
-    #if HORIZONTAL == 1
-        ivec2 dir = ivec2(1, 0);
-    #else
-        ivec2 dir = ivec2(0, 1);
-    #endif
+#if HORIZONTAL == 1
+    ivec2 dir = ivec2(1, 0);
+#else
+    ivec2 dir = ivec2(0, 1);
+#endif
 
-    #ifdef USE_PICK_IMAGE
-        if (texelFetch(imagePicking, coords, 0).a == 0.0) return;
-    #else
-        if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
-    #endif
+#ifdef USE_PICK_IMAGE
+    if (texelFetch(imagePicking, coords, 0).a == 0.0) return;
+#else
+    if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
+#endif
 
     for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
         ivec3 layer_coord = ivec3(coords, i);
@@ -71,32 +69,33 @@ void main() {
         float val = 0.0;
         float kernel_sum = 0.0;
         for (int j = -radius; j <= radius; j++) {
-            #if HORIZONTAL == 1
-                if (coords.x + j < 0 || coords.x + j >= screenSize.x) continue;
-            #else
-                if (coords.y + j < 0 || coords.y + j >= screenSize.y) continue;
-            #endif
+#if HORIZONTAL == 1
+            if (coords.x + j < 0 || coords.x + j >= screenSize.x) continue;
+#else
+            if (coords.y + j < 0 || coords.y + j >= screenSize.y) continue;
+#endif
 
-            #if defined(USE_ABUFFER)
-                if (getPixelLink(coords + j * dir) == 0) continue;
-            #elif defined(USE_PICK_IMAGE)
-                if (texelFetch(imagePicking, coords + j * dir, 0).a == 0.0) continue;
-            #else
-                if (imageLoad(importanceSumCoeffs[0], ivec3(coords + j * dir, 0)).x == 0) continue;
-            #endif
+#if defined(USE_ABUFFER)
+            if (getPixelLink(coords + j * dir) == 0) continue;
+#elif defined(USE_PICK_IMAGE)
+            if (texelFetch(imagePicking, coords + j * dir, 0).a == 0.0) continue;
+#else
+            if (imageLoad(importanceSumCoeffs[0], ivec3(coords + j * dir, 0)).x == 0) continue;
+#endif
 
-            float coeff = imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
+            float coeff =
+                imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
 
             val += kernel[abs(j)] * coeff;
             kernel_sum += kernel[abs(j)];
         }
         val /= kernel_sum;
 
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val));
-        #else
-            imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
-        #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val));
+#else
+        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
+#endif
     }
 
     discard;

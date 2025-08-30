@@ -62,7 +62,8 @@ const std::map<std::string, const ApproximationProperties> approximations{
     {"powermoments",
      {"Power moments", "POWER_MOMENTS", "opactopt/approximation/powermoments.glsl", 5, 9, 2}},
     {"trigmoments",
-     {"Trigonometric moments", "TRIG_MOMENTS", "opactopt/approximation/trigmoments.glsl", 5, 9, 2}}};
+     {"Trigonometric moments", "TRIG_MOMENTS", "opactopt/approximation/trigmoments.glsl", 5, 9,
+      2}}};
 
 double choose(double n, double k);
 std::vector<OptionPropertyStringOption> generateApproximationStringOptions();
@@ -80,7 +81,6 @@ private:
     void computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
                                        float new_wrapping_zone_angle);
 };
-
 
 }  // namespace Approximations
 

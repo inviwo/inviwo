@@ -50,14 +50,14 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
 
-        #if defined(COEFF_TEX_FIXED_POINT_FACTOR)
-            imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
-        #elif defined(COEFF_TEX_ATOMIC_FLOAT)
-            imageAtomicAdd(coeffTex, coord, projVal);
-        #else
-            float currVal = imageLoad(coeffTex, coord).x;
-            imageStore(coeffTex, coord, vec4(currVal + projVal));
-        #endif
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
+        imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+        imageAtomicAdd(coeffTex, coord, projVal);
+#else
+        float currVal = imageLoad(coeffTex, coord).x;
+        imageStore(coeffTex, coord, vec4(currVal + projVal));
+#endif
     }
 }
 
@@ -79,11 +79,11 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
             coeffIdx++;
         }
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-        #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-        #else
-            float coeff = imageLoad(coeffTex, coord).x;
-        #endif
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+        float coeff = imageLoad(coeffTex, coord).x;
+#endif
         sum += coeff * Q;
     }
 
