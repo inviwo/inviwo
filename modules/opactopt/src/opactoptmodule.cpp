@@ -35,7 +35,6 @@
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
 #include <inviwo/core/common/inviwomodule.h>      // for InviwoModule
 
-
 namespace inviwo {
 
 OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "OpactOpt") {

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 // Owned by the MeshRenderProcessorGL Processor
@@ -52,11 +52,15 @@ uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
+uniform layout(r32i)
+iimage2DArray importanceSumCoeffs[2];  // double buffering for gaussian filtering
+uniform layout(r32i)
+iimage2DArray opticalDepthCoeffs;
 #else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2]; // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
+uniform layout(size1x32)
+image2DArray importanceSumCoeffs[2];  // double buffering for gaussian filtering
+uniform layout(size1x32)
+image2DArray opticalDepthCoeffs;
 #endif
 
 #ifdef USE_IMPORTANCE_VOLUME
@@ -67,28 +71,31 @@ uniform VolumeParameters importanceVolumeParameters;
 in vec4 color_;
 
 #ifdef FOURIER
-    #include "opactopt/approximation/fourier.glsl"
+#include "opactopt/approximation/fourier.glsl"
 #endif
 #ifdef LEGENDRE
-    #include "opactopt/approximation/legendre.glsl"
+#include "opactopt/approximation/legendre.glsl"
 #endif
 #ifdef PIECEWISE
-    #include "opactopt/approximation/piecewise.glsl"
+#include "opactopt/approximation/piecewise.glsl"
 #endif
 #ifdef POWER_MOMENTS
-    #include "opactopt/approximation/powermoments.glsl"
+#include "opactopt/approximation/powermoments.glsl"
 #endif
 #ifdef TRIG_MOMENTS
-    #include "opactopt/approximation/trigmoments.glsl"
+#include "opactopt/approximation/trigmoments.glsl"
 #endif
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if(color_.a == 0) { discard; }
+    if (color_.a == 0) {
+        discard;
+    }
 
     // Get linear depth
-    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z); // view space depth
-    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane); // linear normalised depth
+    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
+    float depth =
+        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
@@ -98,8 +105,10 @@ void main() {
     vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
     vec4 worldPos = camera.clipToWorld * clip;
     worldPos /= worldPos.w;
-    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz * importanceVolumeParameters.reciprocalDimensions;
-    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x; // sample importance from volume
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
+                  importanceVolumeParameters.reciprocalDimensions;
+    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz)
+                   .x;  // sample importance from volume
 #else
     float gi = color_.a;
 #endif
@@ -108,14 +117,15 @@ void main() {
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-    #ifdef DEBUG
-        if (ivec2(gl_FragCoord.xy) == debugCoords) {
-            FragmentInfo fi;
-            fi.depth = depth;
-            fi.importance = gi;
-            debugFrags[atomicAdd(nFragments, 1)] = fi;
-        }
-    #endif
+#ifdef DEBUG
+    if (ivec2(gl_FragCoord.xy) == debugCoords) {
+        FragmentInfo fi;
+        fi.depth = depth;
+        fi.importance = gi;
+        debugFrags[atomicAdd(nFragments, 1)] = fi;
+    }
+#endif
 
-    PickingData = vec4(vec3(0), 1); // write into intermediate image to indicate pixel is being written to
+    PickingData =
+        vec4(vec3(0), 1);  // write into intermediate image to indicate pixel is being written to
 }
