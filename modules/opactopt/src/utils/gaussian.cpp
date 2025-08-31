@@ -36,15 +36,15 @@ namespace util {
 
 std::vector<float> generateGaussianKernel(const int radius, const float sigma) {
     std::vector<float> res(radius + 1, 0.0f);
-    float kernel_sum = 0.0f;
+    //float kernel_sum = 0.0f;
 
     // Calculate kernel
     for (int i = 0; i <= radius; i++) {
         float val = std::exp(-((float)(i * i)) / (2 * (sigma * sigma)));
         res[i] = val;
+        // kernel_sum += val;
     }
-    // Don't normalise since kernel will take care of it
-
+    // Don't normalise since shader will take care of it
     return res;
 }
 

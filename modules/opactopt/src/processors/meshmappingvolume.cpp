@@ -70,9 +70,8 @@ const ProcessorInfo& MeshMappingVolume::getProcessorInfo() const { return proces
 MeshMappingVolume::MeshMappingVolume()
     : Processor()
     , meshInport_("meshInport")
-    , volumeInport_("importanceVolume")
     , outport_("outport")
-
+    , volumeInport_("importanceVolume")
     , enabled_("enabled", "Enabled", true)
     , tf_("transferfunction", "Transfer Function",
           TransferFunction(
