@@ -69,11 +69,11 @@ const ProcessorInfo& OpacityOptimisation::getProcessorInfo() const { return proc
 
 OpacityOptimisation::OpacityOptimisation()
     : Processor()
+    , screenSize_{0, 0}
     , inport_("geometry", "Input meshes"_help)
     , imageInport_("imageInport", "Background image (optional)"_help)
     , outport_("image", "Output image containing the opacity optimised mesh"_help)
     , intermediateImage_({0, 0}, inviwo::DataVec4Float32::get())
-    , screenSize_{0, 0}
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , meshProperties_("geometry", "Mesh Rendering Properties")
     , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
@@ -127,9 +127,7 @@ OpacityOptimisation::OpacityOptimisation()
     , smoothV_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
     , clear_{"minimal.vert", "opactopt/clear.frag", Shader::Build::No}
     , normalise_{"minimal.vert", "opactopt/normalise.frag", Shader::Build::No}
-    , approximationProperties_{"approximationProperties", "Approximation Properties",
-                               "Controls approximation method, number of coefficients and "
-                               "smoothing of coefficients"_help}
+    , importanceVolume_{"importanceVolume", "Scalar field with importance data(optional)"_help}
     , q_{"q",
          "q",
          "Reduces occlusion in front of important data"_help,
@@ -157,6 +155,9 @@ OpacityOptimisation::OpacityOptimisation()
               0.01f,
               InvalidationLevel::InvalidOutput,
               PropertySemantics::SpinBox}
+    , approximationProperties_{"approximationProperties", "Approximation Properties",
+                               "Controls approximation method, number of coefficients and "
+                               "smoothing of coefficients"_help}
     , approximationMethod_{"approximationMethod", "Approximation Method",
                            "Method used to approximate importance sum and optical depth function.\n"
                            "* Fourier approximation is usually the most balanced between "
@@ -165,7 +166,6 @@ OpacityOptimisation::OpacityOptimisation()
                            "* Piecewise is the fastest method.\n"
                            "* Different methods may work better on different datasets."_help,
                            Approximations::generateApproximationStringOptions(), 0}
-    , importanceVolume_{"importanceVolume", "Scalar field with importance data(optional)"_help}
     , importanceSumCoefficients_{"importanceSumCoefficients",
                                  "Importance sum coefficients",
                                  "Number of importance sum coefficents, more importance sum "
@@ -200,10 +200,10 @@ OpacityOptimisation::OpacityOptimisation()
     , coeffTexFixedPointFactor_{"coeffTexFixedPointFactor",
                                 "Coefficient texture fixed point factor",
                                 "Fixed point multiplier (only used if GL_NV_shader_atomic_float not supported)"_help,
-                                1e6,
-                                std::make_pair(32, ConstraintBehavior::Editable),
-                                std::make_pair(1e10, ConstraintBehavior::Editable),
-                                1.0,
+                                1e6f,
+                                std::make_pair(32.0f, ConstraintBehavior::Editable),
+                                std::make_pair(1e10f, ConstraintBehavior::Editable),
+                                1.0f,
                                 InvalidationLevel::InvalidOutput,
                                 PropertySemantics::SpinBox}
     , importanceSumTexture_{{size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_),
@@ -220,7 +220,7 @@ OpacityOptimisation::OpacityOptimisation()
                  "structures"_help,
                  false}
     , gaussianRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
-    , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1, 0.001, 50}
+    , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1.0f, 0.001f, 50.0f}
     , legendreCoefficients_{
           Approximations::approximations.at("legendre").maxCoefficients * sizeof(int),
           GLFormats::getGLFormat(GL_INT, 1),  // dummy format
@@ -426,9 +426,7 @@ void OpacityOptimisation::buildShaders() {
     }
 
     for (auto& shader : pointShaders_) {
-        auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
-
         frag->clearShaderExtensions();
         frag->clearShaderDefines();
 
@@ -448,10 +446,7 @@ void OpacityOptimisation::buildShaders() {
 
     {
         Shader& shader = clear_;
-
-        auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
-
         frag->clearShaderExtensions();
         frag->clearShaderDefines();
 
@@ -468,10 +463,7 @@ void OpacityOptimisation::buildShaders() {
 
     {
         Shader& shader = normalise_;
-
-        auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
-
         frag->clearShaderExtensions();
         frag->clearShaderDefines();
 
@@ -491,9 +483,7 @@ void OpacityOptimisation::buildShaders() {
 
     bool horizontal = true;
     for (auto& shader : {&smoothH_, &smoothV_}) {
-        auto vert = shader->getVertexShaderObject();
         auto frag = shader->getFragmentShaderObject();
-
         frag->clearShaderExtensions();
         frag->clearShaderDefines();
 

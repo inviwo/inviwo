@@ -48,8 +48,8 @@ std::shared_ptr<Mesh> RawPointReader::readData(const std::filesystem::path& file
     auto mesh = std::make_shared<Mesh>();
     if (fin.good()) {
         fin.seekg(0, fin.end);
-        int bytes = fin.tellg();
-        int N = bytes / sizeof(vec3);
+        size_t bytes = fin.tellg();
+        size_t N = bytes / sizeof(vec3);
         std::vector<vec3> dest(N);
 
         fin.seekg(0, fin.beg);
