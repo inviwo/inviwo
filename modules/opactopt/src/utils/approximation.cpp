@@ -37,7 +37,7 @@ double choose(double n, double k) {
 }
 
 std::vector<OptionPropertyStringOption> generateApproximationStringOptions() {
-    int n = approximations.size();
+    size_t n = approximations.size();
     std::vector<OptionPropertyStringOption> options;
     options.reserve(n);
 
@@ -49,15 +49,15 @@ std::vector<OptionPropertyStringOption> generateApproximationStringOptions() {
 }
 
 std::vector<float> generateLegendreCoefficients() {
-    double maxDegree = Approximations::approximations.at("legendre").maxCoefficients - 1;
+    size_t maxDegree = Approximations::approximations.at("legendre").maxCoefficients - 1;
     std::vector<float> coeffs;
     coeffs.reserve((maxDegree + 1) * (maxDegree + 2) / 2);
 
-    for (double n = 0; n <= maxDegree; n += 1.0f) {
-        for (double k = 0; k <= n; k += 1.0f) {
-            double res = choose(n, k) * choose(n + k, k);
+    for (size_t n = 0; n <= maxDegree; n++) {
+        for (size_t k = 0; k <= n; k++) {
+            double res = choose(static_cast<double>(n), static_cast<double>(k)) * choose(static_cast<double>(n + k), static_cast<double>(k));
             res *= (int)(n + k) % 2 == 0 ? 1.0f : -1.0f;
-            coeffs.push_back((double)res);
+            coeffs.push_back(static_cast<float>(res));
         }
     }
 
@@ -109,14 +109,14 @@ float MomentSettings::circleToParameter(float angle, float* pOutMaxParameter /* 
 void MomentSettings::computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
                                                    float new_wrapping_zone_angle) {
     p_out_wrapping_zone_parameters[0] = new_wrapping_zone_angle;
-    p_out_wrapping_zone_parameters[1] = M_PI - 0.5f * new_wrapping_zone_angle;
+    p_out_wrapping_zone_parameters[1] = static_cast<float>(M_PI) - 0.5f * new_wrapping_zone_angle;
     if (new_wrapping_zone_angle <= 0.0f) {
         p_out_wrapping_zone_parameters[2] = 0.0f;
         p_out_wrapping_zone_parameters[3] = 0.0f;
     } else {
         float zone_end_parameter;
         float zone_begin_parameter =
-            circleToParameter(2.0f * M_PI - new_wrapping_zone_angle, &zone_end_parameter);
+            circleToParameter(2.0f * static_cast<float>(M_PI) - new_wrapping_zone_angle, &zone_end_parameter);
         p_out_wrapping_zone_parameters[2] = 1.0f / (zone_end_parameter - zone_begin_parameter);
         p_out_wrapping_zone_parameters[3] =
             1.0f - zone_end_parameter * p_out_wrapping_zone_parameters[2];

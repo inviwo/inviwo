@@ -71,7 +71,7 @@ std::vector<float> generateLegendreCoefficients();
 
 class MomentSettings {
 public:
-    const float wrapping_zone_angle = 0.1f * M_PI;
+    const float wrapping_zone_angle = 0.1f * static_cast<float>(M_PI);
     const float overestimation = 0.25;
     MomentSettings();
 
