@@ -121,7 +121,7 @@ TEST(CompositeProperty, ObserveMoveOwned) {
 
     MockPropertyOwnerObserver obs1;
 
-    ::testing::InSequence dummy;
+    const ::testing::InSequence dummy;
     EXPECT_CALL(obs1, onWillAddProperty).Times(1);
     EXPECT_CALL(obs1, onDidAddProperty).Times(1);
     EXPECT_CALL(obs1, onWillRemoveProperty).Times(1);

@@ -100,8 +100,8 @@ Property::Property(Property&& rhs)
     , readOnly_(std::move(rhs.readOnly_))
     , semantics_(std::move(rhs.semantics_))
     , visible_(std::move(rhs.visible_))
-    , propertyModified_(std::move(rhs.propertyModified_))
-    , invalidationLevel_(std::move(rhs.invalidationLevel_))
+    , propertyModified_{rhs.propertyModified_}
+    , invalidationLevel_{rhs.invalidationLevel_}
     , owner_(nullptr)
     , propertyWidgets_{}
     , initiatingWidget_(nullptr)
@@ -120,8 +120,8 @@ Property& Property::operator=(Property&& that) {
         readOnly_ = std::move(that.readOnly_);
         semantics_ = std::move(that.semantics_);
         visible_ = std::move(that.visible_);
-        propertyModified_ = std::move(that.propertyModified_);
-        invalidationLevel_ = std::move(that.invalidationLevel_);
+        propertyModified_ = that.propertyModified_;
+        invalidationLevel_ = that.invalidationLevel_;
         owner_ = nullptr;
         propertyWidgets_.clear();
         initiatingWidget_ = nullptr;
