@@ -52,15 +52,17 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
+#include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/exporter.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/util/timer.h>
-#include <inviwo/core/util/clock.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/keyboardutils.h>
 #include <modules/qtwidgets/processors/processordockwidgetqt.h>
+
+#include <inviwo/qt/applicationbase/measureperformance.h>
 
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/editorsettings.h>
@@ -104,7 +106,6 @@
 #include <QToolButton>
 #include <QStackedWidget>
 #include <QApplication>
-#include <QWindow>
 
 #include <fmt/std.h>
 #include <fmt/chrono.h>
@@ -1038,44 +1039,20 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
             QWidget* widget = nullptr;
             for (const auto& p : widgetProcessors) {
-                if (auto w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
-                    widget = w;
-                    break;
+                if (auto w = dynamic_cast<CanvasProcessorWidget*>(p->getProcessorWidget())) {
+                    if (auto qw = dynamic_cast<QWidget*>(w->getCanvas())) {
+                        widget = qw;
+                        break;
+                    }
                 }
             }
 
             if (widget) {
-                const auto pos1 = widget->rect().center();
-                const auto gpos1 = widget->mapToGlobal(pos1);
-
-                const auto pos2 = pos1 + QPoint(5, 0);
-                const auto gpos2 = widget->mapToGlobal(pos2);
-
                 static constexpr auto steps = size_t{100};
-
-                Clock clock{};
-                for (size_t i = 0; i < steps; ++i) {
-                    QMouseEvent me1(QEvent::MouseButtonPress, pos1, gpos1, Qt::LeftButton,
-                                    Qt::LeftButton, Qt::NoModifier);
-                    QMouseEvent me2(QEvent::MouseMove, pos1, gpos1, Qt::NoButton, Qt::LeftButton,
-                                    Qt::NoModifier);
-
-                    QCoreApplication::sendEvent(widget->windowHandle(), &me1);
-                    QCoreApplication::sendEvent(widget->windowHandle(), &me2);
-
-                    QMouseEvent me3(QEvent::MouseMove, pos2, gpos2, Qt::NoButton, Qt::LeftButton,
-                                    Qt::NoModifier);
-                    QMouseEvent me4(QEvent::MouseButtonRelease, pos2, gpos2, Qt::LeftButton,
-                                    Qt::NoButton, Qt::NoModifier);
-
-                    QCoreApplication::sendEvent(widget->windowHandle(), &me3);
-                    QCoreApplication::sendEvent(widget->windowHandle(), &me4);
-                    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-                }
-                const auto duration =
-                    std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(
-                        clock.getElapsedTime());
-                log::info("Ran {} steps in {} ({} / step)", steps, duration, duration / steps);
+                const auto duration = utilqt::measureSimulateMouseDrag(*widget, steps, {5, 0});
+                const auto ms =
+                    std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(duration);
+                log::info("Ran {} steps in {} ({} / step)", steps, ms, ms / steps);
             }
         });
     }
