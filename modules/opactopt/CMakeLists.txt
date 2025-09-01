@@ -39,6 +39,7 @@ set(SHADER_FILES
     glsl/opactopt/mesh/projectimportance.frag
     glsl/opactopt/mesh/approximportancesum.frag
     glsl/opactopt/mesh/approxblending.frag
+    glsl/opactopt/point/basicpointrenderer.vert
     glsl/opactopt/point/projectimportance.frag
     glsl/opactopt/point/approximportancesum.frag
     glsl/opactopt/point/approxblending.frag
