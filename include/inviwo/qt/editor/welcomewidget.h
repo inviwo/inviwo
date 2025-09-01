@@ -112,7 +112,9 @@ private:
     QPersistentModelIndex detailsIndex_;
     ChangeLog* changelog_;
     QToolButton* loadWorkspaceBtn_;
+    QMetaObject::Connection loadConnection_;
     QToolButton* appendWorkspaceBtn_;
+    QMetaObject::Connection appendConnection_;
     QToolButton* newButton_;
     QToolButton* openButton_;
     QToolButton* restoreButton_;

@@ -345,19 +345,20 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             };
             auto updateLoadButtons = [this](const QModelIndex& index) {
                 updateDetails(index);
-                loadWorkspaceBtn_->disconnect();
-                appendWorkspaceBtn_->disconnect();
+                loadWorkspaceBtn_->disconnect(loadConnection_);
+                appendWorkspaceBtn_->disconnect(appendConnection_);
 
                 if (index.isValid()) {
                     const auto filename = utilqt::getData(index, Role::FilePath).toString();
                     const auto isExample = utilqt::getData(index, Role::isExample).toBool();
                     const auto file = utilqt::toPath(filename);
 
-                    QObject::connect(
+                    loadConnection_ = QObject::connect(
                         loadWorkspaceBtn_, &QToolButton::clicked, this,
                         [this, file, isExample]() { emit loadWorkspace(file, isExample); });
-                    QObject::connect(appendWorkspaceBtn_, &QToolButton::clicked, this,
-                                     [this, file]() { emit appendWorkspace(file); });
+                    appendConnection_ =
+                        QObject::connect(appendWorkspaceBtn_, &QToolButton::clicked, this,
+                                         [this, file]() { emit appendWorkspace(file); });
                 }
             };
 
