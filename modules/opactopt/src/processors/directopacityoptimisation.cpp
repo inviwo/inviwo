@@ -118,11 +118,12 @@ OpacityOptimisation::OpacityOptimisation()
                              "opactopt/line/approximportancesum.frag", Shader::Build::No},
                             {"opactopt/line/linerenderer.vert", "linerenderer.geom",
                              "opactopt/line/approxblending.frag", Shader::Build::No}}
-    , pointShaders_{{"pointrenderer.vert", "opactopt/point/projectimportance.frag",
-                     Shader::Build::No},
-                    {"pointrenderer.vert", "opactopt/point/approximportancesum.frag",
-                     Shader::Build::No},
-                    {"pointrenderer.vert", "opactopt/point/approxblending.frag", Shader::Build::No}}
+    , pointShaders_{{"opactopt/point/basicpointrenderer.vert",
+                     "opactopt/point/projectimportance.frag", Shader::Build::No},
+                    {"opactopt/point/basicpointrenderer.vert",
+                     "opactopt/point/approximportancesum.frag", Shader::Build::No},
+                    {"opactopt/point/basicpointrenderer.vert", "opactopt/point/approxblending.frag",
+                     Shader::Build::No}}
     , smoothH_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
     , smoothV_{"minimal.vert", "opactopt/smooth.frag", Shader::Build::No}
     , clear_{"minimal.vert", "opactopt/clear.frag", Shader::Build::No}
