@@ -65,6 +65,9 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     CompositeProperty(const CompositeProperty& rhs) = default;
+    CompositeProperty(CompositeProperty&& rhs) = default;
+    CompositeProperty& operator=(const CompositeProperty& rhs) = delete;
+    CompositeProperty& operator=(CompositeProperty&& rhs) = default;
 
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;

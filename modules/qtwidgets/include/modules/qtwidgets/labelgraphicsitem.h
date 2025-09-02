@@ -48,9 +48,6 @@ class LabelGraphicsItem;
 
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObserver : public Observer {
 public:
-    LabelGraphicsItemObserver() = default;
-    virtual ~LabelGraphicsItemObserver() = default;
-
     /**
      * This method will be called when observed object changes.
      * Override it to add behavior.
@@ -62,8 +59,6 @@ public:
 class IVW_MODULE_QTWIDGETS_API LabelGraphicsItemObservable
     : public Observable<LabelGraphicsItemObserver> {
 public:
-    LabelGraphicsItemObservable() = default;
-    virtual ~LabelGraphicsItemObservable() = default;
     void notifyObserversChanged(LabelGraphicsItem*);
     void notifyObserversEdited(LabelGraphicsItem*);
 };

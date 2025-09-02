@@ -39,9 +39,6 @@ class Property;
 
 class IVW_CORE_API PropertyObserver : public Observer {
 public:
-    PropertyObserver() = default;
-    virtual ~PropertyObserver() = default;
-
     virtual void onSetIdentifier(Property* property, const std::string& identifier);
     virtual void onSetDisplayName(Property* property, const std::string& displayName);
     virtual void onSetSemantics(Property* property, const PropertySemantics& semantics);
@@ -51,8 +48,6 @@ public:
 
 class IVW_CORE_API PropertyObservable : public Observable<PropertyObserver> {
 protected:
-    PropertyObservable() = default;
-
     void notifyObserversOnSetIdentifier(Property* property, const std::string& identifier);
     void notifyObserversOnSetDisplayName(Property* property, const std::string& displayName);
     void notifyObserversOnSetSemantics(Property* property, const PropertySemantics& semantics);

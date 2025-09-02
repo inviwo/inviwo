@@ -47,7 +47,7 @@
 namespace inviwo::plot {
 
 BoxSelectionRenderer::BoxSelectionRenderer(const BoxSelectionProperty& settings)
-    : settings_(settings), lineRenderer_(&lineSettings_) {
+    : settings_(settings), lineRenderer_{} {
     lineSettings_.stippling.mode = StipplingSettingsInterface::Mode::ScreenSpace;
     lineSettings_.stippling.length = 5.f;
     lineSettings_.overrideColor = true;
@@ -73,7 +73,7 @@ void BoxSelectionRenderer::render(std::optional<std::array<dvec2, 2>> dragRect, 
             10000.0f,
             static_cast<float>(screenDim.x) / static_cast<float>(screenDim.y),
             static_cast<float>(screenDim.x)};
-        lineRenderer_.render(dragRectMesh_, camera_, screenDim, &lineSettings_);
+        lineRenderer_.render(dragRectMesh_, camera_, screenDim, lineSettings_);
     }
 }
 

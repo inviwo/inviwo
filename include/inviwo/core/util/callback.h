@@ -43,11 +43,24 @@ using BaseCallBack = std::function<void()>;
  * list.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
  * or
  * list.addLambdaCallback([](){});
+ *
+ * Copy or assign will clear any callback
+ * Move or move assign will move the callback
  */
 class CallBackList {
 public:
     CallBackList() = default;
-    virtual ~CallBackList() = default;
+    CallBackList(const CallBackList& rhs) : callBackList_{}, dispatcher_{rhs.dispatcher_} {};
+    CallBackList(CallBackList&&) = default;
+    CallBackList& operator=(const CallBackList& that) {
+        if (this != &that) {
+            callBackList_.clear();
+            dispatcher_ = that.dispatcher_;
+        }
+        return *this;
+    };
+    CallBackList& operator=(CallBackList&) = default;
+    ~CallBackList() = default;
 
     void startBlockingCallbacks() { ++callbacksBlocked_; }
     void stopBlockingCallbacks() { --callbacksBlocked_; }

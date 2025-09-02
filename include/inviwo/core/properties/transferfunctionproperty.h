@@ -193,6 +193,9 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
+    TransferFunctionProperty(TransferFunctionProperty&& rhs) = default;
+    TransferFunctionProperty& operator=(const TransferFunctionProperty& rhs) = delete;
+    TransferFunctionProperty& operator=(TransferFunctionProperty&& rhs) = default;
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
@@ -242,6 +245,10 @@ public:
 
     template <typename T>
     const T* getRepresentation() {
+        if (invalidLookup_) {
+            lookup_.calculate(tf_);
+            invalidLookup_ = false;
+        }
         return lookup_.getRepresentation<T>();
     }
     size_t getLookUpTableSize() const { return lookup_.getSize(); }
@@ -275,6 +282,7 @@ private:
 
     TFLookupTable lookup_;
     TFData data_;
+    bool invalidLookup_;
 };
 
 }  // namespace inviwo

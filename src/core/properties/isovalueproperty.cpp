@@ -62,6 +62,8 @@ IsoValueProperty::IsoValueProperty(std::string_view identifier, std::string_view
 
 IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
     : Property(rhs)
+    , TFPrimitiveSetObserver(rhs)
+    , TFPropertyObservable(rhs)
     , iso_{rhs.iso_}
     , zoomH_(rhs.zoomH_)
     , zoomV_(rhs.zoomV_)
@@ -71,6 +73,37 @@ IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
 
     iso_.value.addObserver(this);
 }
+
+IsoValueProperty::IsoValueProperty(IsoValueProperty&& rhs)
+    : Property(std::move(rhs))
+    , TFPrimitiveSetObserver(std::move(rhs))
+    , TFPropertyObservable(std::move(rhs))
+    , iso_{std::move(rhs.iso_)}
+    , zoomH_(std::move(rhs.zoomH_))
+    , zoomV_(std::move(rhs.zoomV_))
+    , histogramMode_(std::move(rhs.histogramMode_))
+    , histogramSelection_(std::move(rhs.histogramSelection_))
+    , data_{std::move(rhs.data_)} {
+
+    // The observers are moved so we do not need to re-add them
+}
+
+IsoValueProperty& IsoValueProperty::operator=(IsoValueProperty&& rhs) {
+    if (this != &rhs) {
+        Property::operator=(std::move(rhs));
+        TFPrimitiveSetObserver::operator=(std::move(rhs));
+        TFPropertyObservable::operator=(std::move(rhs));
+        iso_ = std::move(rhs.iso_);
+        zoomH_ = std::move(rhs.zoomH_);
+        zoomV_ = std::move(rhs.zoomV_);
+        histogramMode_ = std::move(rhs.histogramMode_);
+        histogramSelection_ = std::move(rhs.histogramSelection_);
+        data_ = std::move(rhs.data_);
+        // The observers are moved so we do not need to re-add them
+    }
+    return *this;
+}
+
 IsoValueProperty::~IsoValueProperty() = default;
 
 IsoValueProperty* IsoValueProperty::clone() const { return new IsoValueProperty(*this); }

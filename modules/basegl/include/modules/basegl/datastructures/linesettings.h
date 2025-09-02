@@ -46,7 +46,7 @@ public:
     /*
      * Copy settings of other.
      */
-    explicit LineSettings(const LineSettingsInterface* other);
+    explicit LineSettings(const LineSettingsInterface& other);
     virtual ~LineSettings() = default;
 
     float lineWidth = 1.f;

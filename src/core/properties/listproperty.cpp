@@ -199,14 +199,6 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
     return nullptr;
 }
 
-void ListProperty::addProperty(Property* property, bool owner) {
-    insertProperty(getProperties().size(), property, owner);
-}
-
-void ListProperty::addProperty(Property& property) {
-    insertProperty(getProperties().size(), &property, false);
-}
-
 void ListProperty::insertProperty(size_t index, Property* property, bool owner) {
     if (!util::contains_if(prefabs_.value.properties,
                            [&, id = property->getClassIdentifier()](auto& elem) {
@@ -225,30 +217,8 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
     }
 }
 
-void ListProperty::insertProperty(size_t index, Property& property) {
-    insertProperty(index, &property, false);
-}
-
-Property* ListProperty::removeProperty(std::string_view identifier) {
-    auto result = CompositeProperty::removeProperty(identifier);
-    invalidate(Property::getInvalidationLevel());
-    return result;
-}
-
-Property* ListProperty::removeProperty(Property* property) {
-    auto result = CompositeProperty::removeProperty(property);
-    invalidate(Property::getInvalidationLevel());
-    return result;
-}
-
-Property* ListProperty::removeProperty(Property& property) {
-    auto result = CompositeProperty::removeProperty(property);
-    invalidate(Property::getInvalidationLevel());
-    return result;
-}
-
-Property* ListProperty::removeProperty(size_t index) {
-    auto result = CompositeProperty::removeProperty(index);
+Property* ListProperty::removeProperty(std::vector<Property*>::iterator it) {
+    auto result = CompositeProperty::removeProperty(it);
     invalidate(Property::getInvalidationLevel());
     return result;
 }

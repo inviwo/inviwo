@@ -54,18 +54,36 @@ class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
 public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
-
+    PropertyOwner& operator=(const PropertyOwner& that) = delete;
     /**
      * \brief Removes all properties and notifies its observers of the removal.
      */
     virtual ~PropertyOwner();
 
-    virtual void addProperty(Property* property, bool owner = true);
-    virtual void addProperty(Property& property);
-    virtual Property* addProperty(std::unique_ptr<Property> property);
+    void addProperty(Property* property, bool owner = true);
+    void addProperty(Property& property);
+    Property* addProperty(std::unique_ptr<Property> property);
 
     template <typename... Ts>
     void addProperties(Ts&... properties);
+
+    /**
+     * \brief insert property \p property at position \p index
+     * If \p index is not valid, the property is appended.
+     *
+     * @param index      insertion point for property
+     * @param property   property to be inserted
+     */
+    void insertProperty(size_t index, Property& property);
+
+    /**
+     * \brief insert property \p property at position \p index
+     * If \p index is not valid, the property is appended.
+     *
+     * @param index      insertion point for property
+     * @param property   property to be inserted
+     */
+    Property* insertProperty(size_t index, std::unique_ptr<Property> property);
 
     /**
      * \brief insert property \p property at position \p index
@@ -77,34 +95,17 @@ public:
      */
     virtual void insertProperty(size_t index, Property* property, bool owner = true);
 
-    /**
-     * \brief insert property \p property at position \p index
-     * If \p index is not valid, the property is appended.
-     *
-     * @param index      insertion point for property
-     * @param property   property to be inserted
-     */
-    virtual void insertProperty(size_t index, Property& property);
-
-    /**
-     * \brief insert property \p property at position \p index
-     * If \p index is not valid, the property is appended.
-     *
-     * @param index      insertion point for property
-     * @param property   property to be inserted
-     */
-    virtual Property* insertProperty(size_t index, std::unique_ptr<Property> property);
-
-    virtual Property* removeProperty(std::string_view identifier);
-    virtual Property* removeProperty(Property* property);
-    virtual Property* removeProperty(Property& property);
+    Property* removeProperty(std::string_view identifier);
+    Property* removeProperty(Property* property);
+    Property* removeProperty(Property& property);
     /**
      * \brief remove property referred to by \p index
      *
      * @param index   index of property to be removed
      * @throw RangeException if \p index is not valid
      */
-    virtual Property* removeProperty(size_t index);
+    Property* removeProperty(size_t index);
+    virtual Property* removeProperty(iterator it);
 
     virtual bool move(Property* property, size_t newIndex);
 
@@ -169,7 +170,11 @@ public:
 protected:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
-    PropertyOwner& operator=(const PropertyOwner& that) = delete;
+    PropertyOwner(PropertyOwner&& rhs);
+    PropertyOwner& operator=(PropertyOwner&& that);
+
+    void forEachProperty(std::function<void(Property&)> callback,
+                         bool recursiveSearch = false) const;
 
     // Add the properties belonging the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are
@@ -185,11 +190,9 @@ protected:
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
 
-    void forEachProperty(std::function<void(Property&)> callback,
-                         bool recursiveSearch = false) const;
-
 private:
-    Property* removeProperty(std::vector<Property*>::iterator it);
+    void insertPropertyImpl(iterator it, Property* property, bool owner);
+    Property* removePropertyImpl(iterator it);
     InvalidationLevel invalidationLevel_;
 };
 

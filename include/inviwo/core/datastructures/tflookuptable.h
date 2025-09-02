@@ -39,9 +39,9 @@
 
 namespace inviwo {
 
-class IVW_CORE_API TFLookupTable : public TFPrimitiveSetObserver {
+class IVW_CORE_API TFLookupTable {
 public:
-    explicit TFLookupTable(TransferFunction& tf, size_t size = 1024);
+    explicit TFLookupTable(size_t size = 1024);
     TFLookupTable(const TFLookupTable&) = delete;
     TFLookupTable(TFLookupTable&&) noexcept = default;
     TFLookupTable& operator=(const TFLookupTable&) = delete;
@@ -51,30 +51,15 @@ public:
     void setSize(size_t size);
     size_t getSize() const;
 
-    const TransferFunction& getTransferFunction() const;
-    void setTransferFunction(TransferFunction& tf);
+    void calculate(const TransferFunction& tf);
 
     template <typename T>
-    const T* getRepresentation() {
-        if (invalid_) {
-            calc();
-        }
+    const T* getRepresentation() const {
         return data_->getRepresentation<T>();
     }
 
-protected:
-    virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
-    virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet& set, TFPrimitiveSetType type) override;
-    virtual void onTFMaskChanged(const TFPrimitiveSet& set, dvec2 mask) override;
-
 private:
-    void calc();
-
-    TransferFunction* tf_;  // Should not be null
     size_t size_;
-    bool invalid_;
     std::shared_ptr<LayerRAMPrecision<vec4>> repr_;
     std::unique_ptr<Layer> data_;
 };

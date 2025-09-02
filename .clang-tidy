@@ -2,6 +2,8 @@ Checks: >
   -*,
   bugprone-*,
     -bugprone-implicit-widening-of-multiplication-result,
+    -bugprone-exception-escape,
+    -bugprone-use-after-move,
   clang-diagnostic-*,
   clang-analyzer-*,
   cppcoreguidelines-*,

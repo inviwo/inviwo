@@ -53,9 +53,8 @@ namespace algorithm {
  */
 class IVW_MODULE_BASEGL_API LineRenderer {
 public:
-    explicit LineRenderer(const LineSettingsInterface* settings);
-    LineRenderer(const std::vector<MeshShaderCache::Requirement>& requirements,
-                 const LineSettingsInterface* settings);
+    explicit LineRenderer();
+    explicit LineRenderer(const std::vector<MeshShaderCache::Requirement>& requirements);
     ~LineRenderer() = default;
 
     /**
@@ -68,18 +67,18 @@ public:
      * @param settings @see LineSettingsInterface
      */
     void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                const LineSettingsInterface* settings);
+                const LineSettingsInterface& settings);
 
     template <typename... T>
     void renderWithUniforms(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                            const LineSettingsInterface* settings, const T&... args) {
+                            const LineSettingsInterface& settings, const T&... args) {
         render(mesh, camera, screenDim, settings,
                [&](Shader& shader) { utilgl::setUniforms(shader, args...); });
     }
 
 protected:
     void render(const Mesh& mesh, const Camera& camera, size2_t screenDim,
-                const LineSettingsInterface* settings, const std::function<void(Shader&)>& func);
+                const LineSettingsInterface& settings, const std::function<void(Shader&)>& func);
     // Call whenever PseudoLighting or RoundDepthProfile, or Stippling mode change
     void configureShaders();
     void setUniforms(Shader& shader, const Mesh& mesh, const Camera& camera, size2_t screenDim,

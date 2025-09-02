@@ -41,9 +41,6 @@ class PropertyOwnerObservable;
 class IVW_CORE_API PropertyOwnerObserver : public Observer {
 public:
     friend PropertyOwnerObservable;
-    PropertyOwnerObserver() = default;
-    virtual ~PropertyOwnerObserver() = default;
-
     /**
      * This methods will be called when observed object changes.
      * Override it to add behavior.
@@ -57,9 +54,6 @@ public:
 
 class IVW_CORE_API PropertyOwnerObservable : public Observable<PropertyOwnerObserver> {
 public:
-    PropertyOwnerObservable() = default;
-    virtual ~PropertyOwnerObservable() = default;
-
     void notifyObserversWillAddProperty(PropertyOwner* owner, Property* property, size_t index);
     void notifyObserversDidAddProperty(Property* property, size_t index);
 
