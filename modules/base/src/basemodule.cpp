@@ -60,6 +60,8 @@
 #include <modules/base/datavisualizer/layertoimagevisualizer.h>
 #include <modules/base/datavisualizer/imagetolayervisualizer.h>
 // Io
+#include <modules/base/io/amirameshreader.h>          // for AmiraMeshReader
+#include <modules/base/io/amiravolumereader.h>        // for AmiraVolumeReader
 #include <modules/base/io/binarystlwriter.h>          // for BinarySTLWriter
 #include <modules/base/io/datvolumesequencereader.h>  // for DatVolumeSeq...
 #include <modules/base/io/datvolumewriter.h>          // for DatVolumeWriter
@@ -342,6 +344,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataWriter(std::make_unique<StlWriter>());
     registerDataWriter(std::make_unique<BinarySTLWriter>());
     registerDataWriter(std::make_unique<WaveFrontWriter>());
+    registerDataReader(std::make_unique<AmiraMeshReader>());
+    registerDataReader(std::make_unique<AmiraVolumeReader>());
 
     registerDataVisualizer(std::make_unique<ImageInformationVisualizer>(app));
     registerDataVisualizer(std::make_unique<MeshInformationVisualizer>(app));
