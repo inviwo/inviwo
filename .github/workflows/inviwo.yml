@@ -103,8 +103,8 @@ jobs:
           - system: 'macos'
             linkage: 'dynamic'
             configuration: Release
-            targets: 'all package
-
+            targets: 'all package'
+            
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
