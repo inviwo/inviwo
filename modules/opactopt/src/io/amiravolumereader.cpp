@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2024-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,173 @@
 
 #include <modules/opactopt/io/amiravolumereader.h>
 
-#include <modules/basegl/algorithm/dataminmaxgl.h>
-#include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/io/rawvolumeramloader.h>
-#include <inviwo/core/util/formatconversion.h>
-
-#include <cstring>
-#include <format>
-
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/sourcecontext.h>
-#include <inviwo/core/util/glmvec.h>
+#include <modules/base/algorithm/dataminmax.h>
+
 #include <cstdio>
-#include <memory>
 #include <string>
+#include <string_view>
+#include <fmt/std.h>
+#include <fmt/format.h>
 
 namespace inviwo {
+
+namespace {
+
+/**
+ * Parse the AmiraMesh Lattice definition and return the dimensions.
+ *
+ * @param str  string containing the Lattice definition, i.e. "define Lattice x y z"
+ * @param path file path of the dataset
+ * @return dataset dimensions
+ */
+ivec3 parseLatticeDefinition(std::string_view str, const std::filesystem::path& path) {
+    // Find the Lattice definition, i.e., the dimensions of the uniform grid
+    if (auto pos = str.find("define Lattice"); pos != std::string_view::npos) {
+        auto substr = str.substr(pos, str.find('\n') - pos);
+        ivec3 dim{0};
+        if (sscanf(substr.data() + 14, "%d %d %d", &dim.x, &dim.y, &dim.z) != 3) {
+            throw DataReaderException(SourceContext{}, "Lattice definition is not valid: {:?} ({})",
+                                      substr, path);
+        }
+        if (glm::compMin(dim) <= 0) {
+            throw DataReaderException(SourceContext{}, "Invalid Lattice dimensions: {:?} ({})",
+                                      substr, path);
+        }
+        return dim;
+    } else {
+        throw DataReaderException(SourceContext{}, "Lattice definition not found: {}", path);
+    }
+}
+
+/**
+ * Parse the AmiraMesh Parameters and return the bounding box. Also ensure it is a uniform grid.
+ *
+ * @param str  string containing the entire Parameters data structure, i.e. "Parameters { ... }"
+ * @param path file path of the dataset
+ * @return min and max values of the bounding box
+ */
+std::pair<vec3, vec3> parseParameters(std::string_view str, const std::filesystem::path& path) {
+
+    if (auto ppos = str.find("Parameters {"); ppos != std::string_view::npos) {
+        auto params = str.substr(ppos, str.find('}') - ppos);
+        params.remove_prefix(12);
+
+        vec3 bboxMin{-1.0f};
+        vec3 bboxMax{1.0f};
+        if (auto pos = params.find("BoundingBox"); pos != std::string_view::npos) {
+            auto substr = params.substr(pos, params.find('\n') - pos);
+            if (sscanf(substr.data() + 11, "%g %g %g %g %g %g", &bboxMin.x, &bboxMax.x, &bboxMin.y,
+                       &bboxMax.y, &bboxMin.z, &bboxMax.z) != 6) {
+                throw DataReaderException(SourceContext{}, "BoundingBox is not valid: {:?} ({})",
+                                          substr, path);
+            }
+            if (glm::any(glm::greaterThan(bboxMin, bboxMax))) {
+                throw DataReaderException(SourceContext{}, "Invalid BoundingBox: {:?} ({})", substr,
+                                          path);
+            }
+        } else {
+            throw DataReaderException(SourceContext{}, "BoundingBox not found: {}", path);
+        }
+
+        if (!params.contains(R"(CoordType "uniform")")) {
+            throw DataReaderException(SourceContext{},
+                                      "Unsupported/missing CoordType, expected uniform: {}", path);
+        }
+
+        return {bboxMin, bboxMax};
+    } else {
+        throw DataReaderException(SourceContext{}, "Parameters not found: {}", path);
+    }
+}
+
+/**
+ * Extract data format from AmiraMesh Lattice string.
+ *
+ * @param str  string corresponding to the part of Lattice enclosed by {}, e.g. "float[2] Data" in
+ *             "Lattice { float Data } @1"
+ * @param path file path of the dataset
+ * @return DataFormat matching the Lattice data structure
+ */
+const DataFormatBase* getLatticeDataFormat(std::string_view str,
+                                           const std::filesystem::path& path) {
+    using namespace std::string_view_literals;
+    using enum NumericType;
+
+    auto tokens = util::splitStringView(str);
+    if (tokens.size() < 2) {
+        throw DataReaderException(SourceContext{}, "Invalid data format in Lattice: {:?} ({})", str,
+                                  path);
+    }
+
+    // check for data dimensionality
+    int dims = 1;
+    if (auto pos = tokens[0].find('[');
+        pos != std::string_view::npos && sscanf(tokens[0].data() + pos + 1, "%d", &dims) < 1) {
+        throw DataReaderException(SourceContext{}, "Invalid data dimensions in Lattice: {:?} ({})",
+                                  str, path);
+    }
+
+    const auto components = static_cast<size_t>(dims);
+    if (tokens[0].starts_with("byte"sv)) {
+        return DataFormatBase::get(UnsignedInteger, components, 8);
+    } else if (tokens[0].starts_with("short"sv)) {
+        return DataFormatBase::get(SignedInteger, components, 16);
+    } else if (tokens[0].starts_with("ushort"sv)) {
+        return DataFormatBase::get(UnsignedInteger, components, 16);
+    } else if (tokens[0].starts_with("int"sv)) {
+        return DataFormatBase::get(SignedInteger, components, 32);
+    } else if (tokens[0].starts_with("uint"sv)) {
+        return DataFormatBase::get(UnsignedInteger, components, 32);
+    } else if (tokens[0].starts_with("float"sv)) {
+        return DataFormatBase::get(Float, components, 32);
+    } else if (tokens[0].starts_with("double"sv)) {
+        return DataFormatBase::get(Float, components, 64);
+    } else {
+        throw DataReaderException(SourceContext{}, "Invalid data format in Lattice: {:?} ({})", str,
+                                  path);
+    }
+}
+
+/**
+ * Parse the first AmiraMesh Lattice and return the corresponding DataFormat and lattice identifier.
+ *
+ * @param str  string containing the entire Lattice data structure, i.e. "Lattice { byte Data } @1"
+ * @param path file path of the dataset
+ * @return DataFormat matching the Lattice data structure and identifier
+ */
+std::pair<const DataFormatBase*, int> parseLattice(std::string_view str,
+                                                   const std::filesystem::path& path) {
+    if (auto lpos = str.find("Lattice {"); lpos != std::string_view::npos) {
+        const size_t latticeEnd = str.find('}');
+
+        auto lattice = str.substr(lpos, latticeEnd - lpos - 1);
+        lattice.remove_prefix(9);
+
+        auto format = getLatticeDataFormat(util::trim(lattice), path);
+
+        int latticeIdentifier = 1;
+        if (auto pos = str.find('@', latticeEnd); pos != std::string_view::npos) {
+            auto substr = str.substr(pos, str.find('\n', latticeEnd) - pos);
+            sscanf(substr.data() + 1, "%d", &latticeIdentifier);
+        } else {
+            throw DataReaderException(SourceContext{}, "Lattice ID not found: {}", path);
+        }
+        return {format, latticeIdentifier};
+    } else {
+        throw DataReaderException(SourceContext{}, "Lattice information not found: {}", path);
+    }
+}
+
+}  // namespace
 
 AmiraVolumeReader::AmiraVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("am", "AMIRA volume reader"));
@@ -58,137 +203,79 @@ AmiraVolumeReader::AmiraVolumeReader() : DataReaderType<Volume>() {
 
 AmiraVolumeReader* AmiraVolumeReader::clone() const { return new AmiraVolumeReader(*this); }
 
-const char* FindAndJump(const char* buffer, const char* SearchString) {
-    const char* FoundLoc = strstr(buffer, SearchString);
-    if (FoundLoc) return FoundLoc + strlen(SearchString);
-    return buffer;
-}
+std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path& path) {
+    const auto filePath = downloadAndCacheIfUrl(path);
 
-std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path& filePath) {
-    auto& path = filePath;
+    checkExists(filePath);
 
-    FILE* fp = fopen(path.string().c_str(), "rb");
-    if (!fp) {
-        LogError(std::format("Could not find %s", path.string()));
-        return nullptr;
+    FILE* file = filesystem::fopen(filePath, "rb");
+    if (!file) {
+        throw DataReaderException(SourceContext{}, "Could not open file: {}", path);
+    }
+    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+
+    std::vector<char> buffer;
+
+    // Get the file size, so we can pre-allocate the string. HUGE speed impact.
+    long length = 0;
+    fseek(file, 0, SEEK_END);
+    length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    if (length <= 0) {
+        throw DataReaderException(SourceContext{}, "Empty AmiraMesh file: {}", path);
     }
 
-    // We read the first 2k bytes into memory to parse the header.
-    // The fixed buffer size looks a bit like a hack, and it is one, but it gets the job done.
-    char buffer[2048];
-    fread(buffer, sizeof(char), 2047, fp);
-    buffer[2047] = '\0';  // The following string routines prefer null-terminated strings
+    std::pmr::string data(length, '0');
+    if (std::fread(data.data(), length, 1, file) != 1) {
+        throw DataReaderException(SourceContext{}, "Could not read AmiraMesh file: {}", path);
+    }
+    std::string_view view = data;
 
-    if (!strstr(buffer, "# AmiraMesh BINARY-LITTLE-ENDIAN 2.1")) {
-        LogError("Not a proper AmiraMesh file.");
-        fclose(fp);
-        return nullptr;
+    if (!view.starts_with("# AmiraMesh BINARY-LITTLE-ENDIAN 2.1")) {
+        throw DataReaderException(SourceContext{}, "File is not an AmiraMesh file: {}", path);
     }
 
-    // Find the Lattice definition, i.e., the dimensions of the uniform grid
-    int xDim(0), yDim(0), zDim(0);
-    sscanf(FindAndJump(buffer, "define Lattice"), "%d %d %d", &xDim, &yDim, &zDim);
+    const ivec3 dim = parseLatticeDefinition(view, path);
+    auto [bboxMin, bboxMax] = parseParameters(view, path);
+    auto [format, latticeIdentifier] = parseLattice(view, path);
 
-    // Find the BoundingBox
-    float xmin(1.0f), ymin(1.0f), zmin(1.0f);
-    float xmax(-1.0f), ymax(-1.0f), zmax(-1.0f);
-    sscanf(FindAndJump(buffer, "BoundingBox"), "%g %g %g %g %g %g", &xmin, &xmax, &ymin, &ymax,
-           &zmin, &zmax);
-
-    // Is it a uniform grid? We need this only for the sanity check below.
-    const bool bIsUniform = (strstr(buffer, "CoordType \"uniform\"") != NULL);
-
-    // Type of the field: scalar, vector
-    int NumComponents(0);
-    if (strstr(buffer, "Lattice { float Data }")) {
-        // Scalar field
-        NumComponents = 1;
+    // locate data section and data matching the lattice identifier
+    size_t offset = 0;
+    if (auto dpos = view.find("# Data section follows"); dpos != std::string_view::npos) {
+        const std::string id = fmt::format("@{}", latticeIdentifier);
+        if (auto pos = view.find(id, dpos); pos != std::string_view::npos) {
+            // data starts after the lattice identifier followed by a newline character
+            offset = pos + id.size() + 1;
+        } else {
+            throw DataReaderException(SourceContext{}, "Data for Lattice @{} not found: {}",
+                                      latticeIdentifier, path);
+        }
     } else {
-        // A field with more than one component, i.e., a vector field
-        sscanf(FindAndJump(buffer, "Lattice { float["), "%d", &NumComponents);
-    }
-    printf("\tNumber of Components: %d\n", NumComponents);
-
-    const DataFormatBase* format = [NumComponents, filePath]() -> const DataFormatBase* {
-        switch (NumComponents) {
-            case 1:
-                return DataFloat32::get();
-            case 2:
-                return DataFloat64::get();
-            case 3:
-                return DataVec3Float32::get();
-            default:
-                throw DataReaderException(
-                    IVW_CONTEXT_CUSTOM("AmiraVolumeReader"),
-                    "Error: Unsupported format (bytes per voxel) in .am file: {}", filePath);
-        }
-    }();
-
-    // Sanity check
-    if (xDim <= 0 || yDim <= 0 || zDim <= 0 || xmin > xmax || ymin > ymax || zmin > zmax ||
-        !bIsUniform || NumComponents <= 0) {
-        LogError("Something went wrong");
-        fclose(fp);
-        return nullptr;
+        throw DataReaderException(SourceContext{}, "Data section not found: {}", path);
     }
 
-    // Find the beginning of the data section
-    const size_t idxStartData = strstr(buffer, "# Data section follows") - buffer;
-
-    // Read the data
-    //  - how much to read
-    const size_t NumToRead = xDim * yDim * zDim * NumComponents;
-    float* data = new float[NumToRead];
-    if (idxStartData > 0) {
-        // Set the file pointer to the beginning of "# Data section follows"
-        fseek(fp, static_cast<long>(idxStartData), SEEK_SET);
-        // Consume this line, which is "# Data section follows"
-        fgets(buffer, 2047, fp);
-        // Consume the next line, which is "@1"
-        fgets(buffer, 2047, fp);
-
-        if (data) {
-            // - do it
-            const size_t ActRead = fread((void*)data, sizeof(float), NumToRead, fp);
-            // - ok?
-            if (NumToRead != ActRead) {
-                printf(
-                    "Something went wrong while reading the binary data section.\nPremature end of "
-                    "file?\n");
-                delete[] data;
-                fclose(fp);
-                return nullptr;
-            }
-        }
+    const size_t bytesToRead = format->getSizeInBytes() * glm::compMul(size3_t{dim});
+    if (offset + bytesToRead > length) {
+        throw DataReaderException(SourceContext{}, "Premature end of file in data section: {}",
+                                  path);
     }
-    fclose(fp);
 
-    glm::mat3 basis(1.0f);
-    glm::mat4 wtm(1.0f);
+    auto volumeRam = createVolumeRAM(size3_t{dim}, format);
+    std::copy(data.data() + offset, data.data() + offset + bytesToRead,
+              static_cast<char*>(volumeRam->getData()));
 
-    basis[0][0] = (xmax - xmin) / (float)xDim;
-    basis[1][1] = (ymax - ymin) / (float)yDim;
-    basis[2][2] = (zmax - zmin) / (float)zDim;
+    auto volume = std::make_shared<Volume>(volumeRam);
+    volume->setBasis(glm::scale(bboxMax - bboxMin));
+    volume->setOffset(bboxMin);
 
-    // Center the data around origo.
-    glm::vec3 offset(xmin, ymin, zmin);
-
-    auto volRAM = createVolumeRAM(size3_t{xDim, yDim, zDim}, format, data);
-    auto volume = std::make_shared<Volume>(volRAM);
-    volume->setBasis(basis);
-    volume->setOffset(offset);
-    volume->setWorldMatrix(wtm);
-    auto loader = std::make_unique<RawVolumeRAMLoader>(path, idxStartData, ByteOrder::LittleEndian,
-                                                       Compression::Disabled);
-    utilgl::DataMinMaxGL minmaxGL;
-    auto minmax = minmaxGL.minMax(*volume);
-    auto compMinMax = dvec2{glm::compMin(minmax.first), glm::compMax(minmax.second)};
+    auto [min, max] = util::volumeMinMax(volumeRam.get());
+    auto compMinMax = dvec2{glm::compMin(min), glm::compMax(max)};
     volume->dataMap.dataRange = compMinMax;
     volume->dataMap.valueRange = compMinMax;
-    LogInfo("Min: " << minmax.first << ", Max: " << minmax.second);
 
-    std::string size = util::formatBytesToString(xDim * yDim * zDim * (format->getSizeInBytes()));
-    LogInfo("Loaded volume: " << filePath << " size: " << size);
+    log::info("Loaded AmiraMesh volume: {}, dimensions: {}", filePath, dim);
+
     return volume;
 }
 
