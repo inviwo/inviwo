@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/opactopt/io/amiravolumereader.h>
+#include <modules/base/io/amiravolumereader.h>
 
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/volume/volume.h>
