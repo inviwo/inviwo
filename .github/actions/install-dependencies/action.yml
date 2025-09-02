@@ -41,6 +41,8 @@ runs:
       shell: bash
       if: runner.os == 'macOS'
       run: |
+        xcrun simctl delete all
+        sudo rm -rf ~/Library/Developer/CoreSimulator/Caches/*
         brew install ninja nasm libomp
 
     - name: "Apt Install"
