@@ -458,12 +458,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest] # macos-latest,
+        os: [windows-latest, macos-latest]
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-          #- os: 'macos-latest'
-          #  installer: 'inviwo-installer-macos'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
         
     runs-on: ${{ matrix.os }}
     steps:
@@ -505,18 +505,18 @@ jobs:
       shell: bash
       run: |
         # Find the name of the installer 
-        DMG=$(ls Inviwo-*.dmg)
+        DMG=$(ls inviwo-*.dmg)
         # Mount installer image
         hdiutil attach $DMG
         # Install by copying Inviwo.app to applications folder
-        cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
+        cp -r /Volumes/${DMG%%.dmg}/inviwo.app /Applications/
         hdiutil detach /Volumes/${DMG%%.dmg}/
 
     - name: "Run Inviwo"
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        cd /Applications/Inviwo.app/Contents/MacOS/
+        cd /Applications/inviwo.app/Contents/MacOS/
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session"
