@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2024-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,7 @@
 #include <modules/opactopt/opactoptmoduledefine.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datareader.h>
-
-#include <any>          // for any
-#include <memory>       // for shared_ptr
-#include <string_view>  // for string_view
 
 namespace inviwo {
 

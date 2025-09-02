@@ -1,8 +1,9 @@
 /*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024 Inviwo Foundation
+ * Copyright (c) 2024-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +36,12 @@
 
 #include <memory>
 #include <filesystem>
-#include <fstream>
 
 namespace inviwo {
 
 /**
  * \ingroup dataio
- * \brief Inviwo Module OpactOpt
+ * \brief AmiraMesh reader
  */
 class IVW_MODULE_OPACTOPT_API AmiraMeshReader : public DataReaderType<Mesh> {
 public:
@@ -55,10 +55,6 @@ public:
 
 private:
     enum AmiraDataType { Lines, Vertices, VertexData };
-
-    void processLines(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
-    void processVertexData(std::ifstream& fs, std::shared_ptr<Mesh> mesh);
 };
 
 }  // namespace inviwo
