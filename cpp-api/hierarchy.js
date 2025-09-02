@@ -2419,7 +2419,6 @@ var hierarchy =
           [ "inviwo::TFEditorMaskMax", "classinviwo_1_1TFEditorMaskMax.html", null ],
           [ "inviwo::TFEditorMaskMin", "classinviwo_1_1TFEditorMaskMin.html", null ]
         ] ],
-        [ "inviwo::TFLookupTable", "classinviwo_1_1TFLookupTable.html", null ],
         [ "inviwo::TFPropertyDialog", "classinviwo_1_1TFPropertyDialog.html", null ],
         [ "inviwo::TransferFunctionProperty", "classinviwo_1_1TransferFunctionProperty.html", null ]
       ] ],
@@ -3580,6 +3579,7 @@ var hierarchy =
     [ "inviwo::TextureUnit", "classinviwo_1_1TextureUnit.html", null ],
     [ "inviwo::TextureUnitContainer", "classinviwo_1_1TextureUnitContainer.html", null ],
     [ "inviwo::TFData", "classinviwo_1_1TFData.html", null ],
+    [ "inviwo::TFLookupTable", "classinviwo_1_1TFLookupTable.html", null ],
     [ "inviwo::TFPrimitiveData", "structinviwo_1_1TFPrimitiveData.html", null ],
     [ "inviwo::TFPropertyConcept", "classinviwo_1_1TFPropertyConcept.html", [
       [ "inviwo::TFPropertyModel< U >", "classinviwo_1_1TFPropertyModel.html", null ]

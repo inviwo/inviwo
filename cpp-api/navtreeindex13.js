@@ -1,13 +1,5 @@
 var NAVTREEINDEX13 =
 {
-"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[2,0,0,717,0],
-"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[4,0,0,724,0],
-"classinviwo_1_1OpenGLCapabilities.html":[2,0,0,719],
-"classinviwo_1_1OpenGLCapabilities.html":[4,0,0,726],
-"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[2,0,0,719,0],
-"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[4,0,0,726,0],
-"classinviwo_1_1OpenGLException.html":[2,0,0,720],
-"classinviwo_1_1OpenGLException.html":[4,0,0,727],
 "classinviwo_1_1OpenGLInitException.html":[2,0,0,721],
 "classinviwo_1_1OpenGLInitException.html":[4,0,0,728],
 "classinviwo_1_1OpenGLModule.html":[2,0,0,722],
@@ -249,5 +241,13 @@ var NAVTREEINDEX13 =
 "classinviwo_1_1PickingControllerTouchState.html":[2,0,0,776],
 "classinviwo_1_1PickingControllerTouchState.html":[4,0,0,783],
 "classinviwo_1_1PickingEvent.html":[2,0,0,777],
-"classinviwo_1_1PickingEvent.html":[4,0,0,784]
+"classinviwo_1_1PickingEvent.html":[4,0,0,784],
+"classinviwo_1_1PickingEvent.html#a006dd2bfed8c38cabcc952ad5f902092":[2,0,0,777,3],
+"classinviwo_1_1PickingEvent.html#a006dd2bfed8c38cabcc952ad5f902092":[4,0,0,784,3],
+"classinviwo_1_1PickingEvent.html#a08eb834e18bac176bad6deef9672b5a3":[2,0,0,777,9],
+"classinviwo_1_1PickingEvent.html#a08eb834e18bac176bad6deef9672b5a3":[4,0,0,784,9],
+"classinviwo_1_1PickingEvent.html#a1161a7de7c3ba4bf6b6c3518f8c0bd0f":[2,0,0,777,7],
+"classinviwo_1_1PickingEvent.html#a1161a7de7c3ba4bf6b6c3518f8c0bd0f":[4,0,0,784,7],
+"classinviwo_1_1PickingEvent.html#a1581a23f28a1b0b0fbb39b0bf79b4679":[2,0,0,777,6],
+"classinviwo_1_1PickingEvent.html#a1581a23f28a1b0b0fbb39b0bf79b4679":[4,0,0,784,6]
 };

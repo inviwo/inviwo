@@ -1,11 +1,5 @@
 var NAVTREEINDEX23 =
 {
-"classinviwo_1_1VolumeComponent.html#a48021dbd2fd06e4be1471502f3682821":[4,0,0,1277,3],
-"classinviwo_1_1VolumeConverter.html":[2,0,0,1272],
-"classinviwo_1_1VolumeConverter.html":[4,0,0,1279],
-"classinviwo_1_1VolumeConverter.html#a730ca5e6c5576ab60706cae9d805c6bd":[2,0,0,1272,0],
-"classinviwo_1_1VolumeConverter.html#a730ca5e6c5576ab60706cae9d805c6bd":[4,0,0,1279,0],
-"classinviwo_1_1VolumeCreator.html":[2,0,0,1273],
 "classinviwo_1_1VolumeCreator.html":[4,0,0,1280],
 "classinviwo_1_1VolumeCreator.html#a91d87afab69efc8f35dd646ae6efad0f":[2,0,0,1273,0],
 "classinviwo_1_1VolumeCreator.html#a91d87afab69efc8f35dd646ae6efad0f":[4,0,0,1280,0],
@@ -249,5 +243,11 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1VolumeShader.html#a911af744b1315d414614e4c131bd73ff":[2,0,0,1329,0],
 "classinviwo_1_1VolumeShader.html#a911af744b1315d414614e4c131bd73ff":[4,0,0,1336,0],
 "classinviwo_1_1VolumeShifter.html":[2,0,0,1330],
-"classinviwo_1_1VolumeShifter.html":[4,0,0,1337]
+"classinviwo_1_1VolumeShifter.html":[4,0,0,1337],
+"classinviwo_1_1VolumeShifter.html#acdc22cfa3828f5b75f2817429e378631":[2,0,0,1330,0],
+"classinviwo_1_1VolumeShifter.html#acdc22cfa3828f5b75f2817429e378631":[4,0,0,1337,0],
+"classinviwo_1_1VolumeSliceExtractor.html":[2,0,0,1331],
+"classinviwo_1_1VolumeSliceExtractor.html":[4,0,0,1338],
+"classinviwo_1_1VolumeSliceExtractor.html#ae105c341c3412f5362185ec805139681":[2,0,0,1331,0],
+"classinviwo_1_1VolumeSliceExtractor.html#ae105c341c3412f5362185ec805139681":[4,0,0,1338,0]
 };

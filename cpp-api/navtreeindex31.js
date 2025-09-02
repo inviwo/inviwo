@@ -1,11 +1,5 @@
 var NAVTREEINDEX31 =
 {
-"structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html":[2,0,0,651,0],
-"structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html":[4,0,0,658,0],
-"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[2,0,0,651,1],
-"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[4,0,0,658,1],
-"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html":[2,0,0,651,2],
-"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html":[4,0,0,658,2],
 "structinviwo_1_1MeshRasterizer_1_1HatchingSettings.html":[2,0,0,651,3],
 "structinviwo_1_1MeshRasterizer_1_1HatchingSettings.html":[4,0,0,658,3],
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[2,0,0,655,0],
@@ -249,5 +243,11 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1StrBuffer.html#a599e74ee3c46ff688c9b7854d33b731a":[2,0,0,1097,0],
 "structinviwo_1_1StrBuffer.html#a599e74ee3c46ff688c9b7854d33b731a":[4,0,0,1104,0],
 "structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4":[2,0,0,1097,8],
-"structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4":[4,0,0,1104,8]
+"structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4":[4,0,0,1104,8],
+"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[2,0,0,1097,3],
+"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[4,0,0,1104,3],
+"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[2,0,0,1097,5],
+"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[4,0,0,1104,5],
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[2,0,0,1097,4],
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[4,0,0,1104,4]
 };

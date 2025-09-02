@@ -1,11 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"classinviwo_1_1VolumeShifter.html#acdc22cfa3828f5b75f2817429e378631":[2,0,0,1330,0],
-"classinviwo_1_1VolumeShifter.html#acdc22cfa3828f5b75f2817429e378631":[4,0,0,1337,0],
-"classinviwo_1_1VolumeSliceExtractor.html":[2,0,0,1331],
-"classinviwo_1_1VolumeSliceExtractor.html":[4,0,0,1338],
-"classinviwo_1_1VolumeSliceExtractor.html#ae105c341c3412f5362185ec805139681":[2,0,0,1331,0],
-"classinviwo_1_1VolumeSliceExtractor.html#ae105c341c3412f5362185ec805139681":[4,0,0,1338,0],
 "classinviwo_1_1VolumeSliceGL.html":[2,0,0,1332],
 "classinviwo_1_1VolumeSliceGL.html":[4,0,0,1339],
 "classinviwo_1_1VolumeSliceGL.html#a6b8966dd9977c1d1810313aeb50efd40":[2,0,0,1332,0],
@@ -157,7 +151,7 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a776bbe370716bb297d98e871d832003e":[4,0,0,0,0,0],
 "classinviwo_1_1algorithm_1_1LineRenderer.html":[4,0,0,0,1],
 "classinviwo_1_1algorithm_1_1LineRenderer.html#a187dbd9571116cf3ee4389723fd9e14b":[4,0,0,0,1,1],
-"classinviwo_1_1algorithm_1_1LineRenderer.html#aa1b1aeb5593b25d8350e2dc93d02293f":[4,0,0,0,1,0],
+"classinviwo_1_1algorithm_1_1LineRenderer.html#a1e932ecfe2203a119bc2b8add4749b44":[4,0,0,0,1,0],
 "classinviwo_1_1animation_1_1Animation.html":[2,0,0,0,0],
 "classinviwo_1_1animation_1_1Animation.html":[4,0,0,1,1],
 "classinviwo_1_1animation_1_1Animation.html#a0876e71ff595e57da35a9fa672ae9eb2":[2,0,0,0,0,5],
@@ -249,5 +243,11 @@ var NAVTREEINDEX24 =
 "classinviwo_1_1animation_1_1AnimationManager.html#a4b40677291492cc9e3408bac5476978d":[2,0,0,0,7,0],
 "classinviwo_1_1animation_1_1AnimationManager.html#a4b40677291492cc9e3408bac5476978d":[4,0,0,1,8,0],
 "classinviwo_1_1animation_1_1AnimationManager.html#a5b13ec3f1a0ac9d3a4354cef33a928f8":[2,0,0,0,7,1],
-"classinviwo_1_1animation_1_1AnimationManager.html#a5b13ec3f1a0ac9d3a4354cef33a928f8":[4,0,0,1,8,1]
+"classinviwo_1_1animation_1_1AnimationManager.html#a5b13ec3f1a0ac9d3a4354cef33a928f8":[4,0,0,1,8,1],
+"classinviwo_1_1animation_1_1AnimationObservable.html":[2,0,0,0,8],
+"classinviwo_1_1animation_1_1AnimationObservable.html":[4,0,0,1,9],
+"classinviwo_1_1animation_1_1AnimationObserver.html":[2,0,0,0,9],
+"classinviwo_1_1animation_1_1AnimationObserver.html":[4,0,0,1,10],
+"classinviwo_1_1animation_1_1AnimationQtSupplier.html":[2,0,0,0,10],
+"classinviwo_1_1animation_1_1AnimationQtSupplier.html":[4,0,0,1,11]
 };

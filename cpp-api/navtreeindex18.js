@@ -1,11 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"classinviwo_1_1ShaderObject.html#ad3f2012a17e1487a12a84e8648f285f2":[4,0,0,1047,5],
-"classinviwo_1_1ShaderObject.html#ae655465c3a4231867263f4a829ed79f9":[2,0,0,1040,7],
-"classinviwo_1_1ShaderObject.html#ae655465c3a4231867263f4a829ed79f9":[4,0,0,1047,7],
-"classinviwo_1_1ShaderObject.html#ae744d0fd0cc1218ff51d1c0cfcc52f2c":[2,0,0,1040,9],
-"classinviwo_1_1ShaderObject.html#ae744d0fd0cc1218ff51d1c0cfcc52f2c":[4,0,0,1047,9],
-"classinviwo_1_1ShaderResource.html":[2,0,0,1041],
 "classinviwo_1_1ShaderResource.html":[4,0,0,1048],
 "classinviwo_1_1ShaderType.html":[2,0,0,1043],
 "classinviwo_1_1ShaderType.html":[4,0,0,1050],
@@ -249,5 +243,11 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SpotLight.html#ab282b937949aea075e8e0683d9f1eff3":[4,0,0,1087,10],
 "classinviwo_1_1SpotLight.html#ac514b070b507c82d35631bc75e1954fd":[2,0,0,1080,4],
 "classinviwo_1_1SpotLight.html#ac514b070b507c82d35631bc75e1954fd":[4,0,0,1087,4],
-"classinviwo_1_1SpotLight.html#ac77a7f75094ad165e4c01f8e23108719":[2,0,0,1080,2]
+"classinviwo_1_1SpotLight.html#ac77a7f75094ad165e4c01f8e23108719":[2,0,0,1080,2],
+"classinviwo_1_1SpotLight.html#ac77a7f75094ad165e4c01f8e23108719":[4,0,0,1087,2],
+"classinviwo_1_1SpotLight.html#ade5613e3cb264189d166f8d5f48c0516":[2,0,0,1080,8],
+"classinviwo_1_1SpotLight.html#ade5613e3cb264189d166f8d5f48c0516":[4,0,0,1087,8],
+"classinviwo_1_1SpotLight.html#ae38d434ef5ac15b11259ba30c561ce6b":[2,0,0,1080,9],
+"classinviwo_1_1SpotLight.html#ae38d434ef5ac15b11259ba30c561ce6b":[4,0,0,1087,9],
+"classinviwo_1_1SpotLight.html#ae38fd477e4e6f11f8181ff600b697667":[2,0,0,1080,6]
 };

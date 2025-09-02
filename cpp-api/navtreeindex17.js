@@ -1,13 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"classinviwo_1_1Rasterizer.html#af655a9aaed160762644ee53381181f6b":[4,0,0,980,7],
-"classinviwo_1_1RawDataReaderDialogQt.html":[2,0,0,974],
-"classinviwo_1_1RawDataReaderDialogQt.html":[4,0,0,981],
-"classinviwo_1_1RawVolumeRAMLoader.html":[2,0,0,975],
-"classinviwo_1_1RawVolumeRAMLoader.html":[4,0,0,982],
-"classinviwo_1_1RawVolumeReader.html":[1,0,4],
-"classinviwo_1_1RaycastingComponent.html":[2,0,0,977],
-"classinviwo_1_1RaycastingComponent.html":[4,0,0,984],
 "classinviwo_1_1RaycastingComponent.html#a45214793e70c7a6b7bfd8a96dd65c01c":[2,0,0,977,2],
 "classinviwo_1_1RaycastingComponent.html#a45214793e70c7a6b7bfd8a96dd65c01c":[4,0,0,984,2],
 "classinviwo_1_1RaycastingComponent.html#a62a0a0aa215551628f098a378b491b68":[2,0,0,977,4],
@@ -191,10 +183,12 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1Serializer.html#aaa3f7c110082cff7101918df18800843":[4,0,0,1037,2],
 "classinviwo_1_1Settings.html":[2,0,0,1031],
 "classinviwo_1_1Settings.html":[4,0,0,1038],
-"classinviwo_1_1Settings.html#a399a5222d0a245366715317953d24350":[2,0,0,1031,0],
-"classinviwo_1_1Settings.html#a399a5222d0a245366715317953d24350":[4,0,0,1038,0],
-"classinviwo_1_1Settings.html#a58e660e86fe12e6c7559f2c613d2e1cd":[2,0,0,1031,1],
-"classinviwo_1_1Settings.html#a58e660e86fe12e6c7559f2c613d2e1cd":[4,0,0,1038,1],
+"classinviwo_1_1Settings.html#a399a5222d0a245366715317953d24350":[2,0,0,1031,1],
+"classinviwo_1_1Settings.html#a399a5222d0a245366715317953d24350":[4,0,0,1038,1],
+"classinviwo_1_1Settings.html#a3b24a369229b93902c1b3f3ab0ce298e":[2,0,0,1031,0],
+"classinviwo_1_1Settings.html#a3b24a369229b93902c1b3f3ab0ce298e":[4,0,0,1038,0],
+"classinviwo_1_1Settings.html#a58e660e86fe12e6c7559f2c613d2e1cd":[2,0,0,1031,2],
+"classinviwo_1_1Settings.html#a58e660e86fe12e6c7559f2c613d2e1cd":[4,0,0,1038,2],
 "classinviwo_1_1SettingsWidget.html":[2,0,0,1032],
 "classinviwo_1_1SettingsWidget.html":[4,0,0,1039],
 "classinviwo_1_1SettingsWidget.html#a750760255f3cd91ae1e05ee098f2d20d":[2,0,0,1032,0],
@@ -249,5 +243,11 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1ShaderObject.html#aa6fceb7de9928852e6bdd3bda404581c":[4,0,0,1047,2],
 "classinviwo_1_1ShaderObject.html#ad321ce15496dec171e41cf28aa4eec44":[2,0,0,1040,6],
 "classinviwo_1_1ShaderObject.html#ad321ce15496dec171e41cf28aa4eec44":[4,0,0,1047,6],
-"classinviwo_1_1ShaderObject.html#ad3f2012a17e1487a12a84e8648f285f2":[2,0,0,1040,5]
+"classinviwo_1_1ShaderObject.html#ad3f2012a17e1487a12a84e8648f285f2":[2,0,0,1040,5],
+"classinviwo_1_1ShaderObject.html#ad3f2012a17e1487a12a84e8648f285f2":[4,0,0,1047,5],
+"classinviwo_1_1ShaderObject.html#ae655465c3a4231867263f4a829ed79f9":[2,0,0,1040,7],
+"classinviwo_1_1ShaderObject.html#ae655465c3a4231867263f4a829ed79f9":[4,0,0,1047,7],
+"classinviwo_1_1ShaderObject.html#ae744d0fd0cc1218ff51d1c0cfcc52f2c":[2,0,0,1040,9],
+"classinviwo_1_1ShaderObject.html#ae744d0fd0cc1218ff51d1c0cfcc52f2c":[4,0,0,1047,9],
+"classinviwo_1_1ShaderResource.html":[2,0,0,1041]
 };

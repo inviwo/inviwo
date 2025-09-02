@@ -1,11 +1,5 @@
 var NAVTREEINDEX32 =
 {
-"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[2,0,0,1097,3],
-"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[4,0,0,1104,3],
-"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[2,0,0,1097,5],
-"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[4,0,0,1104,5],
-"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[2,0,0,1097,4],
-"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[4,0,0,1104,4],
 "structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[2,0,0,1097,7],
 "structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[4,0,0,1104,7],
 "structinviwo_1_1StringComparePMR.html":[2,0,0,1102],
@@ -249,5 +243,11 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[4,0,0,20,0,2],
 "structinviwo_1_1pyutil_1_1ModulePath.html":[2,0,0,16,0],
 "structinviwo_1_1pyutil_1_1ModulePath.html":[4,0,0,21,0],
-"structinviwo_1_1representation__traits.html":[2,0,0,987]
+"structinviwo_1_1representation__traits.html":[2,0,0,987],
+"structinviwo_1_1representation__traits.html":[4,0,0,994],
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[2,0,0,988],
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[4,0,0,995],
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[2,0,0,989],
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[4,0,0,996],
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html":[2,0,0,990]
 };

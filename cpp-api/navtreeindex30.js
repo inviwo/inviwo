@@ -1,11 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"namespaceinviwo_1_1utilqt.html#a717ceef4640ba5f545b9a9683de486b2":[2,0,0,23,12],
-"namespaceinviwo_1_1utilqt.html#a73e1a57c35c71d21d9ce81582395f687":[2,0,0,23,17],
-"namespaceinviwo_1_1utilqt.html#a7467b0293750542c0be5375676d2aa47":[2,0,0,23,23],
-"namespaceinviwo_1_1utilqt.html#a75fff05adc3230c287f783f1339e5d38":[2,0,0,23,20],
-"namespaceinviwo_1_1utilqt.html#a7740e56d786b88aca6119cdbdd71047a":[2,0,0,23,4],
-"namespaceinviwo_1_1utilqt.html#a8d6723b64f4534fdf1cd43ea07ce5df6":[2,0,0,23,8],
 "namespaceinviwo_1_1utilqt.html#aa09451ba243f1be606192c27596a8b0f":[2,0,0,23,10],
 "namespaceinviwo_1_1utilqt.html#aa9365361b68923637d43f1fc60f4df26":[2,0,0,23,14],
 "namespaceinviwo_1_1utilqt.html#aa9fdc5daccf5dbffb15b28e87095d475":[2,0,0,23,21],
@@ -249,5 +243,11 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1LineNumberResolver.html#a63ddfa65e64c6b8b3890e6f2ed662733":[2,0,0,599,0],
 "structinviwo_1_1LineNumberResolver.html#a63ddfa65e64c6b8b3890e6f2ed662733":[4,0,0,606,0],
 "structinviwo_1_1LineNumberResolver.html#a6f1fe54c2822709e9bb2f4be2234d794":[2,0,0,599,1],
-"structinviwo_1_1LineNumberResolver.html#a6f1fe54c2822709e9bb2f4be2234d794":[4,0,0,606,1]
+"structinviwo_1_1LineNumberResolver.html#a6f1fe54c2822709e9bb2f4be2234d794":[4,0,0,606,1],
+"structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html":[2,0,0,651,0],
+"structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html":[4,0,0,658,0],
+"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[2,0,0,651,1],
+"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[4,0,0,658,1],
+"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html":[2,0,0,651,2],
+"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html":[4,0,0,658,2]
 };

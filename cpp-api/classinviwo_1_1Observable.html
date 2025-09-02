@@ -116,6 +116,8 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (T *observer)</td></tr>
 <tr class="memitem:acbabbb01670a61065bfb2b58950feea3" id="r_acbabbb01670a61065bfb2b58950feea3"><td class="memItemLeft" align="right" valign="top"><a id="acbabbb01670a61065bfb2b58950feea3" name="acbabbb01670a61065bfb2b58950feea3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (T *observer)</td></tr>
+<tr class="memitem:a9c2b6c99bcb2b03e77e2cfe03442406b" id="r_a9c2b6c99bcb2b03e77e2cfe03442406b"><td class="memItemLeft" align="right" valign="top"><a id="a9c2b6c99bcb2b03e77e2cfe03442406b" name="a9c2b6c99bcb2b03e77e2cfe03442406b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isObservedBy</b> (T *observer) const</td></tr>
 <tr class="memitem:aceded27239088ecdeca8e590770614d9" id="r_aceded27239088ecdeca8e590770614d9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () override final</td></tr>
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () override final</td></tr>
 </table><table class="memberdecls">
@@ -138,14 +140,12 @@ class inviwo::Observable&lt; T &gt;</div><p>Class to support observer pattern.</
 <div class="line"><span class="keyword">class </span>IVW_XXX_API ButtonObserver: <span class="keyword">public</span> Observer {</div>
 <div class="line"><span class="keyword">public</span>:</div>
 <div class="line">    <span class="keyword">friend</span> ButtonObservable;</div>
-<div class="line">    ButtonObserver() = <span class="keywordflow">default</span></div>
 <div class="line">    <span class="comment">// Override to be notified when the observed button is pressed.</span></div>
 <div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onButtonPressed(){};</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">class </span>IVW_XXX_API ButtonObservable: <span class="keyword">public</span> Observable&lt;ButtonObserver&gt; {</div>
 <div class="line"><span class="keyword">protected</span>:</div>
-<div class="line">    ButtonObservable() = <span class="keywordflow">default</span>;</div>
 <div class="line">    <span class="keywordtype">void</span> notifyObserversAboutButtonPressed() {</div>
 <div class="line">        forEachObserver([](ButtonObserver* o) { o-&gt;onButtonPressed(); });</div>
 <div class="line">    }</div>

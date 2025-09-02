@@ -1,13 +1,5 @@
 var NAVTREEINDEX12 =
 {
-"classinviwo_1_1MeshVolumeRenderer.html#a23e25a38aabf8b6ed5a412c7c905a054":[4,0,0,666,0],
-"classinviwo_1_1MetaData.html":[2,0,0,660],
-"classinviwo_1_1MetaData.html":[4,0,0,667],
-"classinviwo_1_1MetaDataFactory.html":[2,0,0,661],
-"classinviwo_1_1MetaDataFactory.html":[4,0,0,668],
-"classinviwo_1_1MetaDataMap.html":[2,0,0,662],
-"classinviwo_1_1MetaDataMap.html":[4,0,0,669],
-"classinviwo_1_1MetaDataOwner.html":[2,0,0,663],
 "classinviwo_1_1MetaDataOwner.html":[4,0,0,670],
 "classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80":[2,0,0,663,0],
 "classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80":[4,0,0,670,0],
@@ -249,5 +241,13 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[2,0,0,717,2],
 "classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[4,0,0,724,2],
 "classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[2,0,0,717,1],
-"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[4,0,0,724,1]
+"classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991":[4,0,0,724,1],
+"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[2,0,0,717,0],
+"classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d":[4,0,0,724,0],
+"classinviwo_1_1OpenGLCapabilities.html":[2,0,0,719],
+"classinviwo_1_1OpenGLCapabilities.html":[4,0,0,726],
+"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[2,0,0,719,0],
+"classinviwo_1_1OpenGLCapabilities_1_1GLSLShaderVersion.html":[4,0,0,726,0],
+"classinviwo_1_1OpenGLException.html":[2,0,0,720],
+"classinviwo_1_1OpenGLException.html":[4,0,0,727]
 };
