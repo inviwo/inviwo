@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,32 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/opactopt/opactoptmoduledefine.h>
+#include <modules/base/basemoduledefine.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/io/datareader.h>
+
+#include <memory>
+#include <filesystem>
 
 namespace inviwo {
 
 /**
  * \ingroup dataio
- * \brief AmiraMesh scalar field (volume) reader
+ * \brief AmiraMesh reader
  */
-class IVW_MODULE_OPACTOPT_API AmiraVolumeReader : public DataReaderType<Volume> {
+class IVW_MODULE_BASE_API AmiraMeshReader : public DataReaderType<Mesh> {
 public:
-    AmiraVolumeReader();
-    AmiraVolumeReader(const AmiraVolumeReader& rhs) = default;
-    AmiraVolumeReader& operator=(const AmiraVolumeReader& that) = default;
-    virtual AmiraVolumeReader* clone() const override;
-    virtual ~AmiraVolumeReader() = default;
+    AmiraMeshReader();
+    AmiraMeshReader(const AmiraMeshReader& rhs) = default;
+    AmiraMeshReader& operator=(const AmiraMeshReader& that) = default;
+    virtual AmiraMeshReader* clone() const override;
+    virtual ~AmiraMeshReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
+    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
+
+private:
+    enum AmiraDataType { Lines, Vertices, VertexData };
 };
 
 }  // namespace inviwo
