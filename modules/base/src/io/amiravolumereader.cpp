@@ -60,9 +60,10 @@ namespace {
 ivec3 parseLatticeDefinition(std::string_view str, const std::filesystem::path& path) {
     // Find the Lattice definition, i.e., the dimensions of the uniform grid
     if (auto pos = str.find("define Lattice"); pos != std::string_view::npos) {
-        auto substr = str.substr(pos, str.find('\n') - pos);
+        auto substr = str.substr(pos, str.find('\n', pos) - pos);
         ivec3 dim{0};
-        if (sscanf(substr.data() + 14, "%d %d %d", &dim.x, &dim.y, &dim.z) != 3) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+        if (std::sscanf(substr.data() + 14, "%d %d %d", &dim.x, &dim.y, &dim.z) != 3) {
             throw DataReaderException(SourceContext{}, "Lattice definition is not valid: {:?} ({})",
                                       substr, path);
         }
@@ -93,8 +94,9 @@ std::pair<vec3, vec3> parseParameters(std::string_view str, const std::filesyste
         vec3 bboxMax{1.0f};
         if (auto pos = params.find("BoundingBox"); pos != std::string_view::npos) {
             auto substr = params.substr(pos, params.find('\n') - pos);
-            if (sscanf(substr.data() + 11, "%g %g %g %g %g %g", &bboxMin.x, &bboxMax.x, &bboxMin.y,
-                       &bboxMax.y, &bboxMin.z, &bboxMax.z) != 6) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+            if (std::sscanf(substr.data() + 11, "%g %g %g %g %g %g", &bboxMin.x, &bboxMax.x,
+                            &bboxMin.y, &bboxMax.y, &bboxMin.z, &bboxMax.z) != 6) {
                 throw DataReaderException(SourceContext{}, "BoundingBox is not valid: {:?} ({})",
                                           substr, path);
             }
@@ -138,11 +140,13 @@ const DataFormatBase* getLatticeDataFormat(std::string_view str,
 
     // check for data dimensionality
     int dims = 1;
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-vararg)
     if (auto pos = tokens[0].find('[');
-        pos != std::string_view::npos && sscanf(tokens[0].data() + pos + 1, "%d", &dims) < 1) {
+        pos != std::string_view::npos && std::sscanf(tokens[0].data() + pos + 1, "%d", &dims) < 1) {
         throw DataReaderException(SourceContext{}, "Invalid data dimensions in Lattice: {:?} ({})",
                                   str, path);
     }
+    // NOLINTEND(cppcoreguidelines-pro-type-vararg)
 
     const auto components = static_cast<size_t>(dims);
     if (tokens[0].starts_with("byte"sv)) {
@@ -180,12 +184,13 @@ std::pair<const DataFormatBase*, int> parseLattice(std::string_view str,
         auto lattice = str.substr(lpos, latticeEnd - lpos - 1);
         lattice.remove_prefix(9);
 
-        auto format = getLatticeDataFormat(util::trim(lattice), path);
+        const auto* format = getLatticeDataFormat(util::trim(lattice), path);
 
         int latticeIdentifier = 1;
         if (auto pos = str.find('@', latticeEnd); pos != std::string_view::npos) {
             auto substr = str.substr(pos, str.find('\n', latticeEnd) - pos);
-            sscanf(substr.data() + 1, "%d", &latticeIdentifier);
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+            std::sscanf(substr.data() + 1, "%d", &latticeIdentifier);
         } else {
             throw DataReaderException(SourceContext{}, "Lattice ID not found: {}", path);
         }
@@ -214,12 +219,9 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     }
     const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
-    std::vector<char> buffer;
-
     // Get the file size, so we can pre-allocate the string. HUGE speed impact.
-    long length = 0;
     fseek(file, 0, SEEK_END);
-    length = ftell(file);
+    const auto length = std::ftell(file); // NOLINT(google-runtime-int)
     fseek(file, 0, SEEK_SET);
 
     if (length <= 0) {
@@ -230,7 +232,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     if (std::fread(data.data(), length, 1, file) != 1) {
         throw DataReaderException(SourceContext{}, "Could not read AmiraMesh file: {}", path);
     }
-    std::string_view view = data;
+    const std::string_view view = data;
 
     if (!view.starts_with("# AmiraMesh BINARY-LITTLE-ENDIAN 2.1")) {
         throw DataReaderException(SourceContext{}, "File is not an AmiraMesh file: {}", path);
@@ -256,7 +258,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     }
 
     const size_t bytesToRead = format->getSizeInBytes() * glm::compMul(size3_t{dim});
-    if (offset + bytesToRead > length) {
+    if (offset + bytesToRead > static_cast<size_t>(length)) {
         throw DataReaderException(SourceContext{}, "Premature end of file in data section: {}",
                                   path);
     }

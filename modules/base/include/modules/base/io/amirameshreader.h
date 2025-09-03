@@ -41,19 +41,22 @@ namespace inviwo {
 /**
  * \ingroup dataio
  * \brief AmiraMesh reader
+ * Supports only reading line sets ("HxLineSet")
  */
 class IVW_MODULE_BASE_API AmiraMeshReader : public DataReaderType<Mesh> {
 public:
     AmiraMeshReader();
     AmiraMeshReader(const AmiraMeshReader& rhs) = default;
+    AmiraMeshReader(AmiraMeshReader&& rhs) noexcept = default;
     AmiraMeshReader& operator=(const AmiraMeshReader& that) = default;
+    AmiraMeshReader& operator=(AmiraMeshReader&& that) noexcept = default;
     virtual AmiraMeshReader* clone() const override;
     virtual ~AmiraMeshReader() = default;
 
     virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
 private:
-    enum AmiraDataType { Lines, Vertices, VertexData };
+    enum AmiraDataType : std::uint8_t { Lines, Vertices, VertexData };
 };
 
 }  // namespace inviwo
