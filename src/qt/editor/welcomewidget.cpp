@@ -345,8 +345,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             };
             auto updateLoadButtons = [this](const QModelIndex& index) {
                 updateDetails(index);
-                loadWorkspaceBtn_->disconnect(loadConnection_);
-                appendWorkspaceBtn_->disconnect(appendConnection_);
+                disconnect(loadConnection_);
+                disconnect(appendConnection_);
 
                 if (index.isValid()) {
                     const auto filename = utilqt::getData(index, Role::FilePath).toString();

@@ -83,22 +83,22 @@ constexpr QRectF itemRect{
 constexpr QRectF countRect{itemRect.adjusted(120.0, -40.0, -5.0, 0.0)};
 
 constexpr QRectF progressRect{
-    QPointF{-(ProcessorGraphicsItem::size.width() / 2 - labelMargin), 9.0 - 2.5},
-    QPointF{ProcessorGraphicsItem::size.width() / 2 - labelMargin, 9.0 + 2.5}};
+    QPointF{-((ProcessorGraphicsItem::size.width() / 2.0) - labelMargin), 9.0 - 2.5},
+    QPointF{(ProcessorGraphicsItem::size.width() / 2.0) - labelMargin, 9.0 + 2.5}};
 
 constexpr QPointF statusPosition{itemRect.topRight() + QPointF(-9.0f, 9.0f)};
 
 class UpdateStatusEvent : public QEvent {
 public:
     static QEvent::Type type() {
-        static int t = QEvent::registerEventType();
+        static const int t = QEvent::registerEventType();
         return static_cast<QEvent::Type>(t);
     }
 
     UpdateStatusEvent() : QEvent(type()) {}
 };
 
-enum class FontType { Name, Identifier, Tag, Count };
+enum class FontType : std::uint8_t { Name, Identifier, Tag, Count };
 
 const QFont& getFont(FontType type) {
     static const QFont name = []() {
@@ -215,7 +215,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , tagText_{}
     , tagSize_{}
     , animation_{nullptr}
-    , linkItem_{new ProcessorLinkGraphicsItem(this, size.width() / 2.0 + 1.0)}
+    , linkItem_{new ProcessorLinkGraphicsItem(this, (size.width() / 2.0) + 1.0)}
     , highlight_(false)
     , backgroundColor_(
           processor_->getProcessorInfo().codeState == CodeState::Deprecated ? "#562e14" : "#3b3d3d")
@@ -252,11 +252,11 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
             return fm.tightBoundingRect(tags).width();
         }();
 
-        nameText_.setText(
-            elide(processor_->getDisplayName(), size.width() - 2.0 * labelMargin, FontType::Name));
+        nameText_.setText(elide(processor_->getDisplayName(), size.width() - (2.0 * labelMargin),
+                                FontType::Name));
 
         identifierText_.setText(elide(processor_->getIdentifier(),
-                                      size.width() - 2.0 * labelMargin - tagSize_ - tagMargin,
+                                      size.width() - (2.0 * labelMargin) - tagSize_ - tagMargin,
                                       FontType::Identifier));
         identifierSize_ = [&]() {
             const QFontMetricsF fm{getFont(FontType::Identifier)};

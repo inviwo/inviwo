@@ -61,7 +61,8 @@ namespace inviwo {
 template <size_t minIntervalMs, typename F>
 class RateLimitier {
 public:
-    RateLimitier(F function = {}) : function{std::move(function)}, timer_{}, callScheduled_{false} {
+    explicit RateLimitier(F function = {})
+        : function{std::move(function)}, timer_{}, callScheduled_{false} {
         timer_.start();
     }
 
@@ -73,9 +74,7 @@ public:
             } else {
                 callScheduled_ = true;
                 QTimer::singleShot(minIntervalMs - timer_.elapsed(), owner,
-                                   [this, ... a = std::forward<Args>(args)]() {
-                                       invoke(a...);
-                                   });
+                                   [this, ... a = std::forward<Args>(args)]() { invoke(a...); });
             }
         }
     }
@@ -142,7 +141,7 @@ public:
 
     static constexpr QSizeF size{150.0, 50.0};
 
-    enum class PortType { In, Out };
+    enum class PortType : std::uint8_t { In, Out };
     static QPointF portOffset(PortType type, size_t index);
     QPointF portPosition(PortType type, size_t index);
 
@@ -150,7 +149,7 @@ public:
         ownedWidgets_.push_back(std::move(widget));
     }
 
-    enum class State { Error, Invalid, Running, Ready };
+    enum class State : std::uint8_t { Error, Invalid, Running, Ready };
 
 protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;

@@ -67,7 +67,7 @@ void simulateMouseDrag(QWidget& widget, size_t count, QPoint length) {
 
 std::chrono::high_resolution_clock::duration measureSimulateMouseDrag(QWidget& widget, size_t count,
                                                                       QPoint length) {
-    Clock clock{};
+    const Clock clock{};
     utilqt::simulateMouseDrag(widget, count, length);
     return clock.getElapsedTime();
 }

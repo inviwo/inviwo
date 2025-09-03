@@ -491,30 +491,30 @@ void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::str
 void InviwoMainWindow::addActions() {  // NOLINT
     auto menu = menuBar();
 
-    auto fileMenuItem = menu->addMenu(tr("&File"));
+    auto* fileMenuItem = menu->addMenu(tr("&File"));
     menu->addMenu(editMenu_);
-    auto viewMenuItem = menu->addMenu(tr("&View"));
-    auto networkMenuItem = menu->addMenu(tr("&Network"));
+    auto* viewMenuItem = menu->addMenu(tr("&View"));
+    auto* networkMenuItem = menu->addMenu(tr("&Network"));
     menu->addMenu(toolsMenu_);
-    auto windowMenuItem = menu->addMenu("&Window");
-    auto helpMenuItem = menu->addMenu(tr("&Help"));
+    auto* windowMenuItem = menu->addMenu("&Window");
+    auto* helpMenuItem = menu->addMenu(tr("&Help"));
 
-    auto workspaceToolBar = addToolBar("File");
+    auto* workspaceToolBar = addToolBar("File");
     workspaceToolBar->setObjectName("fileToolBar");
     workspaceToolBar->setMovable(false);
     workspaceToolBar->setFloatable(false);
 
-    auto editToolBar = addToolBar("Edit");
+    auto* editToolBar = addToolBar("Edit");
     editToolBar->setObjectName("editToolBar");
     editToolBar->setMovable(false);
     editToolBar->setFloatable(false);
 
-    auto findToolBar = addToolBar("Edit");
+    auto* findToolBar = addToolBar("Edit");
     findToolBar->setObjectName("findToolBar");
     findToolBar->setMovable(false);
     findToolBar->setFloatable(false);
 
-    auto networkToolBar = addToolBar("Network");
+    auto* networkToolBar = addToolBar("Network");
     networkToolBar->setObjectName("networkToolBar");
     networkToolBar->setMovable(false);
     networkToolBar->setFloatable(false);
@@ -522,7 +522,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     // file menu entries
 
     {
-        auto welcomeAction =
+        auto* welcomeAction =
             new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
         welcomeAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_N);
         welcomeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -534,7 +534,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
 
     {
-        auto newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Workspace"), this);
+        auto* newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Workspace"), this);
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(newAction);
@@ -548,7 +548,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
 
     {
-        auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Workspace"), this);
+        auto* openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Workspace"), this);
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(openAction);
@@ -562,7 +562,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
 
     {
-        auto saveAction = new QAction(QIcon(":/svgicons/save.svg"), tr("&Save Workspace"), this);
+        auto* saveAction = new QAction(QIcon(":/svgicons/save.svg"), tr("&Save Workspace"), this);
         saveAction->setShortcut(QKeySequence::Save);
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         addAction(saveAction);
@@ -573,7 +573,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
 
     {
-        auto saveAsAction =
+        auto* saveAsAction =
             new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Workspace As"), this);
         saveAsAction->setShortcut(QKeySequence::SaveAs);
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -584,7 +584,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
 
     {
-        auto workspaceActionSaveAsCopy =
+        auto* workspaceActionSaveAsCopy =
             new QAction(QIcon(":/svgicons/save-as-copy.svg"), tr("&Save Workspace As Copy"), this);
         connect(workspaceActionSaveAsCopy, &QAction::triggered, this,
                 &InviwoMainWindow::saveWorkspaceAsCopy);
@@ -592,7 +592,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
 
     {
-        auto appendAction =
+        auto* appendAction =
             new QAction(QIcon(":/svgicons/open-append.svg"), tr("&Append Workspace"), this);
         addAction(appendAction);
         connect(appendAction, &QAction::triggered, this, [this]() {
@@ -603,7 +603,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         fileMenuItem->addAction(appendAction);
     }
     {
-        auto snapshot = fileMenuItem->addAction("Save Snapshots ...");
+        auto* snapshot = fileMenuItem->addAction("Save Snapshots ...");
         connect(snapshot, &QAction::triggered, [this](bool /*state*/) {
             InviwoFileDialog saveFileDialog(nullptr, "Save Snapshots ...", "images");
             saveFileDialog.setFileMode(FileMode::Directory);
@@ -617,9 +617,9 @@ void InviwoMainWindow::addActions() {  // NOLINT
         });
     }
     {
-        auto exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
+        auto* exportNetworkMenu = fileMenuItem->addMenu("&Export Network");
 
-        auto backgroundVisibleAction = exportNetworkMenu->addAction("Background Visible");
+        auto* backgroundVisibleAction = exportNetworkMenu->addAction("Background Visible");
         backgroundVisibleAction->setCheckable(true);
         backgroundVisibleAction->setChecked(true);
         exportNetworkMenu->addSeparator();
@@ -657,10 +657,10 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
     {
         fileMenuItem->addSeparator();
-        auto recentWorkspaceMenu = fileMenuItem->addMenu(tr("&Recent Workspaces"));
+        auto* recentWorkspaceMenu = fileMenuItem->addMenu(tr("&Recent Workspaces"));
 
         // action for clearing the recent file menu
-        auto clearRecentWorkspaces = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
+        auto* clearRecentWorkspaces = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
         clearRecentWorkspaces->setEnabled(false);
         connect(clearRecentWorkspaces, &QAction::triggered, this,
                 [this, recentWorkspaceMenu, clearRecentWorkspaces]() {
@@ -1032,15 +1032,15 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
     {
         networkMenuItem->addSeparator();
-        auto perfs = networkMenuItem->addAction("Measure Performance");
+        auto* perfs = networkMenuItem->addAction("Measure Performance");
         perfs->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_M);
         connect(perfs, &QAction::triggered, [this](bool /*state*/) {
             const auto widgetProcessors = detail::getWidgetProcessors(app_);
 
             QWidget* widget = nullptr;
             for (const auto& p : widgetProcessors) {
-                if (auto w = dynamic_cast<CanvasProcessorWidget*>(p->getProcessorWidget())) {
-                    if (auto qw = dynamic_cast<QWidget*>(w->getCanvas())) {
+                if (auto* w = dynamic_cast<CanvasProcessorWidget*>(p->getProcessorWidget())) {
+                    if (auto* qw = dynamic_cast<QWidget*>(w->getCanvas())) {
                         widget = qw;
                         break;
                     }
