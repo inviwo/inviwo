@@ -60,10 +60,11 @@ const ProcessorInfo OpacityOptimisation::processorInfo_{
     "Mesh Rendering",                  // Category
     CodeState::Experimental,           // Code state
     Tags::GL,                          // Tags
-    "Performs approximate opacity optimisation using a direct"
-    " rendering approach. The processor takes a mesh as input,"
-    " and optionally an importance volume and background"
-    "texture. The output is an opacity optimised image."_help};
+    R"(Performs approximate opacity optimisation using a direct
+    rendering approach. The processor takes a mesh as input,
+    and optionally an importance volume and background
+    texture. The output is an opacity optimised image.)"_unindentHelp,
+};
 
 const ProcessorInfo& OpacityOptimisation::getProcessorInfo() const { return processorInfo_; }
 
@@ -130,7 +131,7 @@ OpacityOptimisation::OpacityOptimisation()
     , normalise_{"minimal.vert", "opactopt/normalise.frag", Shader::Build::No}
     , importanceVolume_{"importanceVolume", "Scalar field with importance data(optional)"_help}
     , q_{"q",
-         "q",
+         "Occlusion Reduction",
          "Reduces occlusion in front of important data"_help,
          0.0f,
          std::make_pair(0.0f, ConstraintBehavior::Editable),
@@ -139,7 +140,7 @@ OpacityOptimisation::OpacityOptimisation()
          InvalidationLevel::InvalidOutput,
          PropertySemantics::SpinBox}
     , r_{"r",
-         "r",
+         "Clutter Reduction",
          "Reduces clutter behind important data"_help,
          0.0f,
          std::make_pair(0.0f, ConstraintBehavior::Editable),
@@ -148,7 +149,7 @@ OpacityOptimisation::OpacityOptimisation()
          InvalidationLevel::InvalidOutput,
          PropertySemantics::SpinBox}
     , lambda_{"lambda",
-              "lambda",
+              "Importance λ",
               "Controls emphasis of important structures"_help,
               1.0f,
               std::make_pair(0.01f, ConstraintBehavior::Editable),
@@ -160,12 +161,11 @@ OpacityOptimisation::OpacityOptimisation()
                                "Controls approximation method, number of coefficients and "
                                "smoothing of coefficients"_help}
     , approximationMethod_{"approximationMethod", "Approximation Method",
-                           "Method used to approximate importance sum and optical depth function.\n"
-                           "* Fourier approximation is usually the most balanced between "
-                           "performance "
-                           "and accuracy\n"
-                           "* Piecewise is the fastest method.\n"
-                           "* Different methods may work better on different datasets."_help,
+                           R"(Method used to approximate importance sum and optical depth function.
+                              * Fourier approximation is usually the most balanced between performance
+                                and accuracy
+                              * Piecewise is the fastest method.
+                              * Different methods may work better on different datasets.)"_unindentHelp,
                            Approximations::generateApproximationStringOptions(), 0}
     , importanceSumCoefficients_{"importanceSumCoefficients",
                                  "Importance sum coefficients",
@@ -240,8 +240,9 @@ OpacityOptimisation::OpacityOptimisation()
 
     approximationProperties_.addProperties(approximationMethod_, importanceSumCoefficients_,
                                            opticalDepthCoefficients_);
-    if (!OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float"))
+    if (!OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float")) {
         approximationProperties_.addProperty(coeffTexFixedPointFactor_);
+    }
     approximationProperties_.addProperties(normalisedBlending_, smoothing_);
 
     approximationMethod_.setDefault("fourier");
@@ -303,15 +304,14 @@ OpacityOptimisation::OpacityOptimisation()
     for (auto& shader : {&smoothH_, &smoothV_, &normalise_}) {
         shader->onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
-
-    initializeResources();
-    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
 OpacityOptimisation::~OpacityOptimisation() = default;
 
 void OpacityOptimisation::initializeResources() {
-    for (auto& ist : importanceSumTexture_) ist.initialize(nullptr);
+    for (auto& ist : importanceSumTexture_) {
+        ist.initialize(nullptr);
+    }
     opticalDepthTexture_.initialize(nullptr);
 
     buildShaders();
@@ -325,42 +325,46 @@ void OpacityOptimisation::buildShaders() {
     std::vector<std::pair<std::string, std::string>> commonFragShaderDefines;
     std::vector<std::string> commonFragShaderExtensions;
 
-    commonFragShaderExtensions.push_back("GL_EXT_shader_image_load_store");
-    if (OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float"))
-        commonFragShaderExtensions.push_back("GL_NV_shader_atomic_float");
+    commonFragShaderExtensions.emplace_back("GL_EXT_shader_image_load_store");
+    if (OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float")) {
+        commonFragShaderExtensions.emplace_back("GL_NV_shader_atomic_float");
+    }
 
     // set approximation defines
-    commonFragShaderDefines.push_back(std::make_pair("N_IMPORTANCE_SUM_COEFFICIENTS",
-                                                     std::to_string(importanceSumCoefficients_)));
-    commonFragShaderDefines.push_back(
-        std::make_pair("N_OPTICAL_DEPTH_COEFFICIENTS", std::to_string(opticalDepthCoefficients_)));
-    commonFragShaderDefines.push_back(std::make_pair(ap_->shaderDefineName, ""));
-    if (OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float"))
-        commonFragShaderDefines.push_back(std::make_pair("COEFF_TEX_ATOMIC_FLOAT", ""));
-    else
-        commonFragShaderDefines.push_back(std::make_pair(
-            "COEFF_TEX_FIXED_POINT_FACTOR", std::to_string(coeffTexFixedPointFactor_)));
+    commonFragShaderDefines.emplace_back("N_IMPORTANCE_SUM_COEFFICIENTS",
+                                         std::to_string(importanceSumCoefficients_));
+    commonFragShaderDefines.emplace_back("N_OPTICAL_DEPTH_COEFFICIENTS",
+                                         std::to_string(opticalDepthCoefficients_));
+    commonFragShaderDefines.emplace_back(ap_->shaderDefineName, "");
+    if (OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float")) {
+        commonFragShaderDefines.emplace_back("COEFF_TEX_ATOMIC_FLOAT", "");
+    } else {
+        commonFragShaderDefines.emplace_back("COEFF_TEX_FIXED_POINT_FACTOR",
+                                             std::to_string(coeffTexFixedPointFactor_));
+    }
+
+    auto addExtensionsAndDefines = [&commonFragShaderDefines,
+                                    &commonFragShaderExtensions](ShaderObject* fragShader) {
+        fragShader->clearShaderExtensions();
+        fragShader->clearShaderDefines();
+        for (const auto& extension : commonFragShaderExtensions) {
+            fragShader->addShaderExtension(extension, true);
+        }
+        for (const auto& [name, value] : commonFragShaderDefines) {
+            fragShader->setShaderDefine(name, true, value);
+        }
+    };
 
     for (auto& shader : meshShaders_) {
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
 
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
-
         utilgl::addShaderDefines(shader, lightingProperty_);
 
         vert->setShaderDefine("OVERRIDE_COLOR_BUFFER", overrideColorBuffer_);
+
+        addExtensionsAndDefines(frag);
         frag->setShaderDefine("COLOR_LAYER", colorLayer_);
-
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
         // set opacity optimisation defines
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
@@ -371,24 +375,13 @@ void OpacityOptimisation::buildShaders() {
         auto vert = shader.getVertexShaderObject();
         auto frag = shader.getFragmentShaderObject();
 
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
-
-        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
-        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
-
         utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
 
         vert->setShaderDefine("HAS_COLOR", true);
 
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
+        addExtensionsAndDefines(frag);
+        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
+        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
         // set opacity optimisation defines
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
@@ -400,26 +393,15 @@ void OpacityOptimisation::buildShaders() {
         auto geom = shader.getGeometryShaderObject();
         auto frag = shader.getFragmentShaderObject();
 
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
-
-        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
-        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
-
         utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
 
         vert->setShaderDefine("HAS_COLOR", true);
 
         geom->setShaderDefine("ENABLE_ADJACENCY", true, "1");
 
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
+        addExtensionsAndDefines(frag);
+        frag->setShaderDefine("ENABLE_PSEUDO_LIGHTING", lineSettings_.getPseudoLighting());
+        frag->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", lineSettings_.getRoundDepthProfile());
         // set opacity optimisation defines
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
@@ -428,17 +410,8 @@ void OpacityOptimisation::buildShaders() {
 
     for (auto& shader : pointShaders_) {
         auto frag = shader.getFragmentShaderObject();
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
 
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
+        addExtensionsAndDefines(frag);
         // set opacity optimisation defines
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
@@ -448,34 +421,14 @@ void OpacityOptimisation::buildShaders() {
     {
         Shader& shader = clear_;
         auto frag = shader.getFragmentShaderObject();
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
-
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
+        addExtensionsAndDefines(frag);
         shader.build();
     }
 
     {
         Shader& shader = normalise_;
         auto frag = shader.getFragmentShaderObject();
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
-
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
+        addExtensionsAndDefines(frag);
         frag->setShaderDefine("NORMALISE", normalisedBlending_);
         frag->setShaderDefine("BACKGROUND_AVAILABLE", imageInport_.hasData());
 
@@ -485,17 +438,7 @@ void OpacityOptimisation::buildShaders() {
     bool horizontal = true;
     for (auto& shader : {&smoothH_, &smoothV_}) {
         auto frag = shader->getFragmentShaderObject();
-        frag->clearShaderExtensions();
-        frag->clearShaderDefines();
-
-        // add common extensions
-        for (const auto& extension : commonFragShaderExtensions)
-            frag->addShaderExtension(extension, true);
-
-        // add common defines
-        for (const auto& define : commonFragShaderDefines)
-            frag->setShaderDefine(define.first, true, define.second);
-
+        addExtensionsAndDefines(frag);
         frag->setShaderDefine("HORIZONTAL", true, std::to_string(int(horizontal)));
         shader->build();
 
@@ -586,14 +529,15 @@ void OpacityOptimisation::process() {
 
     // normalise
     utilgl::activateAndClearTarget(outport_);
-    blending = utilgl::BlendModeState(GL_ONE, GL_ZERO);
+    glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ZERO);
 
     normalise_.activate();
     utilgl::bindAndSetUniforms(normalise_, textureUnits_, intermediateImage_, "image",
                                ImageType::ColorOnly);
-    if (imageInport_.hasData())
+    if (imageInport_.hasData()) {
         utilgl::bindAndSetUniforms(normalise_, textureUnits_, *imageInport_.getData(), "bg",
                                    ImageType::ColorDepth);
+    }
     setUniforms(normalise_);
     utilgl::singleDrawImagePlaneRect();
 
