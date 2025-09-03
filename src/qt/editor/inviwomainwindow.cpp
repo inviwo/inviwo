@@ -1672,7 +1672,7 @@ ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }
 void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { dragMoveEvent(event); }
 
 void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
-    auto* mimeData = event->mimeData();
+    const auto* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = mimeData->urls();
         std::filesystem::path filename = utilqt::toPath(urlList.front().toLocalFile());
