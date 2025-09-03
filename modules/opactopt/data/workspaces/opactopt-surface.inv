@@ -1,0 +1,1233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<InviwoWorkspace version="3">
+    <InviwoSetup>
+        <Modules>
+            <Module name="Base" version="11">
+                <Processors>
+                    <Processor content="org.inviwo.GeometrySource"/>
+                    <Processor content="org.inviwo.VolumeSource"/>
+                </Processors>
+            </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL"/>
+                </Processors>
+            </Module>
+            <Module name="BaseGL" version="10">
+                <Processors>
+                    <Processor content="org.inviwo.Background"/>
+                </Processors>
+            </Module>
+            <Module name="OpactOpt" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.OpacityOptimisation"/>
+                    <Processor content="org.inviwo.MeshMappingVolume"/>
+                </Processors>
+            </Module>
+        </Modules>
+    </InviwoSetup>
+    <ProcessorNetwork>
+        <ProcessorNetworkVersion content="21"/>
+        <Processors>
+            <Processor type="org.inviwo.OpacityOptimisation" identifier="OpacityOptimisation" displayName="Opacity Optimisation">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-486.76236" y="-449.18488" z="-496.33704"/>
+                                <maxvalue x="487.27518" y="449.1176" z="496.1875"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-19.224356" y="-17.999664" z="-19.925245"/>
+                                <maxvalue x="19.737146" y="17.932434" z="19.775736"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="5161.1274"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="PerspectiveCamera">
+                            <lookFrom x="-19.164421" y="-31.99424" z="1.2738444"/>
+                            <lookTo x="0.25639534" y="-0.033615112" z="-0.074754715"/>
+                            <lookUp x="0.026095996" y="0.026309486" z="0.9993132"/>
+                            <near content="20"/>
+                            <far content="50"/>
+                            <aspectRatio content="1.0933334"/>
+                            <fov content="38"/>
+                        </Camera>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="q">
+                        <value content="100"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="r">
+                        <value content="200"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="lambda">
+                        <value content="1.5"/>
+                    </Property>
+                    <Property type="org.inviwo.CompositeProperty" identifier="approximationProperties">
+                        <Properties>
+                            <Property type="org.inviwo.IntProperty" identifier="importanceSumCoefficients">
+                                <value content="9"/>
+                            </Property>
+                            <Property type="org.inviwo.IntProperty" identifier="opticalDepthCoefficients">
+                                <value content="9"/>
+                            </Property>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="smoothing">
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <value content="1"/>
+                                    </Property>
+                                    <Property type="org.inviwo.IntProperty" identifier="gaussianKernelRadius">
+                                        <value content="10"/>
+                                    </Property>
+                                    <Property type="org.inviwo.FloatProperty" identifier="gaussianKernelSigma">
+                                        <value content="5"/>
+                                    </Property>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CompositeProperty" identifier="geometry">
+                        <Properties>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="overrideColor">
+                                <visible content="0"/>
+                                <value x="0.7490196" y="0.6627451" z="0.18039216" w="1"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.LineSettingsProperty" identifier="lineSettings">
+                        <Properties>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useMetaColor">
+                                <Properties>
+                                    <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.SimpleLightingProperty" identifier="lighting">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyEnumInt" identifier="shadingMode">
+                                <selectedIdentifier content="none"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="350" y="375"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.Background" identifier="Background" displayName="Background">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle">
+                        <selectedIdentifier content="uniformColor"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                        <value x="1" y="1" z="1" w="1"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor2">
+                        <value x="0" y="0" z="0" w="1"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="550" y="125"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.MeshMappingVolume" identifier="MeshMappingVolume" displayName="Mesh Mapping Volume">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.TransferFunctionProperty" identifier="transferfunction">
+                        <MetaDataMap>
+                            <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                                <MetaData content="0"/>
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                                <MetaData content="1"/>
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                                <MetaData x="1363" y="311"/>
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                                <MetaData x="878" y="471"/>
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                                <MetaData content="0"/>
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                                <MetaData content="0"/>
+                            </MetaDataItem>
+                        </MetaDataMap>
+                        <TransferFunction>
+                            <maskMin content="0"/>
+                            <maskMax content="1"/>
+                            <type content="0"/>
+                            <Points>
+                                <Point>
+                                    <pos content="0"/>
+                                    <rgba x="0" y="0.1" z="1" w="0.0079"/>
+                                </Point>
+                                <Point>
+                                    <pos content="1"/>
+                                    <rgba x="1" y="0.03" z="0.03" w="1"/>
+                                </Point>
+                            </Points>
+                        </TransferFunction>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="component">
+                        <displayName content="Component"/>
+                        <semantics semantics="Default"/>
+                        <visible content="1"/>
+                        <readonly content="0"/>
+                        <options>
+                            <option>
+                                <id content="component1"/>
+                                <name content="Component 1"/>
+                                <value content="0"/>
+                            </option>
+                        </options>
+                        <selectedIdentifier content="component1"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="350" y="250"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.OpacityOptimisation" identifier="OpacityOptimisation2" displayName="Opacity Optimisation">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <Properties>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookFrom">
+                                <minvalue x="-486.76236" y="-449.18488" z="-496.33704"/>
+                                <maxvalue x="487.27518" y="449.1176" z="496.1875"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3RefProperty" identifier="lookTo">
+                                <minvalue x="-19.224356" y="-17.999664" z="-19.925245"/>
+                                <maxvalue x="19.737146" y="17.932434" z="19.775736"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatRefProperty" identifier="far">
+                                <maxvalue content="5161.1274"/>
+                            </Property>
+                        </Properties>
+                        <Camera type="PerspectiveCamera">
+                            <lookFrom x="-19.164421" y="-31.99424" z="1.2738444"/>
+                            <lookTo x="0.25639534" y="-0.033615112" z="-0.074754715"/>
+                            <lookUp x="0.026095996" y="0.026309486" z="0.9993132"/>
+                            <near content="20"/>
+                            <far content="50"/>
+                            <aspectRatio content="1.0933334"/>
+                            <fov content="38"/>
+                        </Camera>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="q">
+                        <value content="100"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="r">
+                        <value content="200"/>
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="lambda">
+                        <value content="1.5"/>
+                    </Property>
+                    <Property type="org.inviwo.CompositeProperty" identifier="approximationProperties">
+                        <Properties>
+                            <Property type="org.inviwo.IntProperty" identifier="importanceSumCoefficients">
+                                <value content="9"/>
+                            </Property>
+                            <Property type="org.inviwo.IntProperty" identifier="opticalDepthCoefficients">
+                                <value content="9"/>
+                            </Property>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="smoothing">
+                                <Properties>
+                                    <Property type="org.inviwo.BoolProperty" identifier="checked">
+                                        <value content="1"/>
+                                    </Property>
+                                    <Property type="org.inviwo.IntProperty" identifier="gaussianKernelRadius">
+                                        <value content="10"/>
+                                    </Property>
+                                    <Property type="org.inviwo.FloatProperty" identifier="gaussianKernelSigma">
+                                        <value content="5"/>
+                                    </Property>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.CompositeProperty" identifier="geometry">
+                        <Properties>
+                            <Property type="org.inviwo.BoolProperty" identifier="overrideColorBuffer">
+                                <value content="1"/>
+                            </Property>
+                            <Property type="org.inviwo.FloatVec4Property" identifier="overrideColor">
+                                <value x="0.7490196" y="0.6627451" z="0.18039216" w="1"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.LineSettingsProperty" identifier="lineSettings">
+                        <Properties>
+                            <Property type="org.inviwo.BoolCompositeProperty" identifier="useMetaColor">
+                                <Properties>
+                                    <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor"/>
+                                </Properties>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.SimpleLightingProperty" identifier="lighting">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyEnumInt" identifier="shadingMode">
+                                <selectedIdentifier content="none"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="375"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas2" displayName="Canvas">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1"/>
+                                <value x="410" y="375"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="525" y="475"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="1230" y="696"/>
+                        <dimensions x="410" y="375"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1"/>
+                                <value x="410" y="375"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID"/>
+                        <semantics semantics="Default"/>
+                        <visible content="0"/>
+                        <readonly content="0"/>
+                        <minConstraint content="2"/>
+                        <maxConstraint content="1"/>
+                        <minvalue content="0"/>
+                        <maxvalue content="0"/>
+                        <increment content="1"/>
+                        <value content="0"/>
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content=""/>
+                        <workspaceRelativePath content=""/>
+                        <ivwdataRelativePath content=""/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="350" y="475"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="818" y="727"/>
+                        <dimensions x="410" y="375"/>
+                        <visibility content="1"/>
+                        <fullScreen content="0"/>
+                        <onTop content="1"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.GeometrySource" identifier="MeshSource" displayName="Mesh Source">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.FileProperty" identifier="filename">
+                        <displayName content="Geometry file"/>
+                        <absolutePath content="C:/dev/inviwo/inviwo/modules/opactopt/data/meshes/Tornado_surfaces.obj"/>
+                        <workspaceRelativePath content="../meshes/Tornado_surfaces.obj"/>
+                        <ivwdataRelativePath content="../modules/opactopt/data/meshes/Tornado_surfaces.obj"/>
+                        <selectedExtension>
+                            <extension content="*"/>
+                            <description content="All Files"/>
+                        </selectedExtension>
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                        <options>
+                            <option>
+                                <id content="3D GameStudio Heightmap (HMP) (*.hmp)"/>
+                                <name content="3 D Game Studio Heightmap ( HMP) (*.hmp)"/>
+                                <value>
+                                    <extension content="hmp"/>
+                                    <description content="3D GameStudio Heightmap (HMP)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="3mf (*.3mf)"/>
+                                <name content="3mf (*.3mf)"/>
+                                <value>
+                                    <extension content="3mf"/>
+                                    <description content="3mf"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="AC3D (*.ac)"/>
+                                <name content="AC3 D (*.ac)"/>
+                                <value>
+                                    <extension content="ac"/>
+                                    <description content="AC3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="AC3D (*.ac3d)"/>
+                                <name content="AC3 D (*.ac3d)"/>
+                                <value>
+                                    <extension content="ac3d"/>
+                                    <description content="AC3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="AC3D (*.acc)"/>
+                                <name content="AC3 D (*.acc)"/>
+                                <value>
+                                    <extension content="acc"/>
+                                    <description content="AC3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="AMIRA mesh reader (*.am)"/>
+                                <name content="AMIRA mesh reader (*.am)"/>
+                                <value>
+                                    <extension content="am"/>
+                                    <description content="AMIRA mesh reader"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="ASE (*.ase)"/>
+                                <name content="ASE (*.ase)"/>
+                                <value>
+                                    <extension content="ase"/>
+                                    <description content="ASE"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="ASE (*.ask)"/>
+                                <name content="ASE (*.ask)"/>
+                                <value>
+                                    <extension content="ask"/>
+                                    <description content="ASE"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Additive manufacturing file format(AMF) (*.amf)"/>
+                                <name content="Additive manufacturing file format( AMF) (*.amf)"/>
+                                <value>
+                                    <extension content="amf"/>
+                                    <description content="Additive manufacturing file format(AMF)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Alias/Wavefront (*.obj)"/>
+                                <name content="Alias/ Wavefront (*.obj)"/>
+                                <value>
+                                    <extension content="obj"/>
+                                    <description content="Alias/Wavefront"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Assimp Binary (*.assbin)"/>
+                                <name content="Assimp Binary (*.assbin)"/>
+                                <value>
+                                    <extension content="assbin"/>
+                                    <description content="Assimp Binary"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Autodesk FBX (*.fbx)"/>
+                                <name content="Autodesk FBX (*.fbx)"/>
+                                <value>
+                                    <extension content="fbx"/>
+                                    <description content="Autodesk FBX"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="BVH  (MoCap) (*.bvh)"/>
+                                <name content="BVH  ( Mo Cap) (*.bvh)"/>
+                                <value>
+                                    <extension content="bvh"/>
+                                    <description content="BVH  (MoCap)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Blender 3D  (http://www.blender3d.org) (*.blend)"/>
+                                <name content="Blender 3 D  (http://www.blender3d.org) (*.blend)"/>
+                                <value>
+                                    <extension content="blend"/>
+                                    <description content="Blender 3D  (http://www.blender3d.org)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="BlitzBasic 3D (*.b3d)"/>
+                                <name content="Blitz Basic 3 D (*.b3d)"/>
+                                <value>
+                                    <extension content="b3d"/>
+                                    <description content="BlitzBasic 3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="CharacterStudio Motion  (MoCap) (*.csm)"/>
+                                <name content="Character Studio Motion  ( Mo Cap) (*.csm)"/>
+                                <value>
+                                    <extension content="csm"/>
+                                    <description content="CharacterStudio Motion  (MoCap)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Collada (*.dae)"/>
+                                <name content="Collada (*.dae)"/>
+                                <value>
+                                    <extension content="dae"/>
+                                    <description content="Collada"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Collada (*.xml)"/>
+                                <name content="Collada (*.xml)"/>
+                                <value>
+                                    <extension content="xml"/>
+                                    <description content="Collada"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Collada (*.zae)"/>
+                                <name content="Collada (*.zae)"/>
+                                <value>
+                                    <extension content="zae"/>
+                                    <description content="Collada"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Direct3D XFile (*.x)"/>
+                                <name content="Direct3 D XFile (*.x)"/>
+                                <value>
+                                    <extension content="x"/>
+                                    <description content="Direct3D XFile"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Discreet 3DS (*.3ds)"/>
+                                <name content="Discreet 3 DS (*.3ds)"/>
+                                <value>
+                                    <extension content="3ds"/>
+                                    <description content="Discreet 3DS"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Discreet 3DS (*.prj)"/>
+                                <name content="Discreet 3 DS (*.prj)"/>
+                                <value>
+                                    <extension content="prj"/>
+                                    <description content="Discreet 3DS"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Doom 3 / MD5 Mesh (*.md5anim)"/>
+                                <name content="Doom 3 / MD5 Mesh (*.md5anim)"/>
+                                <value>
+                                    <extension content="md5anim"/>
+                                    <description content="Doom 3 / MD5 Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Doom 3 / MD5 Mesh (*.md5camera)"/>
+                                <name content="Doom 3 / MD5 Mesh (*.md5camera)"/>
+                                <value>
+                                    <extension content="md5camera"/>
+                                    <description content="Doom 3 / MD5 Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Doom 3 / MD5 Mesh (*.md5mesh)"/>
+                                <name content="Doom 3 / MD5 Mesh (*.md5mesh)"/>
+                                <value>
+                                    <extension content="md5mesh"/>
+                                    <description content="Doom 3 / MD5 Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Drawing Interchange Format (DXF) (*.dxf)"/>
+                                <name content="Drawing Interchange Format ( DXF) (*.dxf)"/>
+                                <value>
+                                    <extension content="dxf"/>
+                                    <description content="Drawing Interchange Format (DXF)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Extensible 3D(X3D, X3DB) (*.x3d)"/>
+                                <name content="Extensible 3 D( X3 D, X3 DB) (*.x3d)"/>
+                                <value>
+                                    <extension content="x3d"/>
+                                    <description content="Extensible 3D(X3D, X3DB)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Extensible 3D(X3D, X3DB) (*.x3db)"/>
+                                <name content="Extensible 3 D( X3 D, X3 DB) (*.x3db)"/>
+                                <value>
+                                    <extension content="x3db"/>
+                                    <description content="Extensible 3D(X3D, X3DB)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Industry Foundation Classes (IFC) (*.ifc)"/>
+                                <name content="Industry Foundation Classes ( IFC) (*.ifc)"/>
+                                <value>
+                                    <extension content="ifc"/>
+                                    <description content="Industry Foundation Classes (IFC)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Industry Foundation Classes (IFC) (*.ifczip)"/>
+                                <name content="Industry Foundation Classes ( IFC) (*.ifczip)"/>
+                                <value>
+                                    <extension content="ifczip"/>
+                                    <description content="Industry Foundation Classes (IFC)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Industry Foundation Classes (IFC) (*.step)"/>
+                                <name content="Industry Foundation Classes ( IFC) (*.step)"/>
+                                <value>
+                                    <extension content="step"/>
+                                    <description content="Industry Foundation Classes (IFC)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Industry Foundation Classes (IFC) (*.stp)"/>
+                                <name content="Industry Foundation Classes ( IFC) (*.stp)"/>
+                                <value>
+                                    <extension content="stp"/>
+                                    <description content="Industry Foundation Classes (IFC)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Inter-Quake Model (*.iqm)"/>
+                                <name content="Inter- Quake Model (*.iqm)"/>
+                                <value>
+                                    <extension content="iqm"/>
+                                    <description content="Inter-Quake Model"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Irrlicht Mesh Reader (*.irrmesh)"/>
+                                <name content="Irrlicht Mesh Reader (*.irrmesh)"/>
+                                <value>
+                                    <extension content="irrmesh"/>
+                                    <description content="Irrlicht Mesh Reader"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Irrlicht Mesh Reader (*.xml)"/>
+                                <name content="Irrlicht Mesh Reader (*.xml)"/>
+                                <value>
+                                    <extension content="xml"/>
+                                    <description content="Irrlicht Mesh Reader"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Irrlicht Scene Reader (*.irr)"/>
+                                <name content="Irrlicht Scene Reader (*.irr)"/>
+                                <value>
+                                    <extension content="irr"/>
+                                    <description content="Irrlicht Scene Reader"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Irrlicht Scene Reader (*.xml)"/>
+                                <name content="Irrlicht Scene Reader (*.xml)"/>
+                                <value>
+                                    <extension content="xml"/>
+                                    <description content="Irrlicht Scene Reader"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="LightWave Scene (*.lws)"/>
+                                <name content="Light Wave Scene (*.lws)"/>
+                                <value>
+                                    <extension content="lws"/>
+                                    <description content="LightWave Scene"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="LightWave Scene (*.mot)"/>
+                                <name content="Light Wave Scene (*.mot)"/>
+                                <value>
+                                    <extension content="mot"/>
+                                    <description content="LightWave Scene"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="LightWave/Modo Object (*.lwo)"/>
+                                <name content="Light Wave/ Modo Object (*.lwo)"/>
+                                <value>
+                                    <extension content="lwo"/>
+                                    <description content="LightWave/Modo Object"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="LightWave/Modo Object (*.lxo)"/>
+                                <name content="Light Wave/ Modo Object (*.lxo)"/>
+                                <value>
+                                    <extension content="lxo"/>
+                                    <description content="LightWave/Modo Object"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="MMD (*.pmx)"/>
+                                <name content="MMD (*.pmx)"/>
+                                <value>
+                                    <extension content="pmx"/>
+                                    <description content="MMD"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Milkshape 3D (*.ms3d)"/>
+                                <name content="Milkshape 3 D (*.ms3d)"/>
+                                <value>
+                                    <extension content="ms3d"/>
+                                    <description content="Milkshape 3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Nendo Mesh (*.ndo)"/>
+                                <name content="Nendo Mesh (*.ndo)"/>
+                                <value>
+                                    <extension content="ndo"/>
+                                    <description content="Nendo Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Neutral File Format (*.enff)"/>
+                                <name content="Neutral File Format (*.enff)"/>
+                                <value>
+                                    <extension content="enff"/>
+                                    <description content="Neutral File Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Neutral File Format (*.nff)"/>
+                                <name content="Neutral File Format (*.nff)"/>
+                                <value>
+                                    <extension content="nff"/>
+                                    <description content="Neutral File Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="OFF (*.off)"/>
+                                <name content="OFF (*.off)"/>
+                                <value>
+                                    <extension content="off"/>
+                                    <description content="OFF"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Object File Format (*.off)"/>
+                                <name content="Object File Format (*.off)"/>
+                                <value>
+                                    <extension content="off"/>
+                                    <description content="Object File Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Ogre3D Mesh (*.mesh)"/>
+                                <name content="Ogre3 D Mesh (*.mesh)"/>
+                                <value>
+                                    <extension content="mesh"/>
+                                    <description content="Ogre3D Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Ogre3D Mesh (*.mesh.xml)"/>
+                                <name content="Ogre3 D Mesh (*.mesh.xml)"/>
+                                <value>
+                                    <extension content="mesh.xml"/>
+                                    <description content="Ogre3D Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Open Game Engine Exchange (*.ogex)"/>
+                                <name content="Open Game Engine Exchange (*.ogex)"/>
+                                <value>
+                                    <extension content="ogex"/>
+                                    <description content="Open Game Engine Exchange"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="OpenMesh File Format (*.om)"/>
+                                <name content="Open Mesh File Format (*.om)"/>
+                                <value>
+                                    <extension content="om"/>
+                                    <description content="OpenMesh File Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="PLY polygon file format (*.ply)"/>
+                                <name content="PLY polygon file format (*.ply)"/>
+                                <value>
+                                    <extension content="ply"/>
+                                    <description content="PLY polygon file format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quake II Mesh (*.md2)"/>
+                                <name content="Quake II Mesh (*.md2)"/>
+                                <value>
+                                    <extension content="md2"/>
+                                    <description content="Quake II Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quake III BSP (*.bsp)"/>
+                                <name content="Quake III BSP (*.bsp)"/>
+                                <value>
+                                    <extension content="bsp"/>
+                                    <description content="Quake III BSP"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quake III BSP (*.pk3)"/>
+                                <name content="Quake III BSP (*.pk3)"/>
+                                <value>
+                                    <extension content="pk3"/>
+                                    <description content="Quake III BSP"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quake III Mesh (*.md3)"/>
+                                <name content="Quake III Mesh (*.md3)"/>
+                                <value>
+                                    <extension content="md3"/>
+                                    <description content="Quake III Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quake Mesh / 3D GameStudio Mesh (*.mdl)"/>
+                                <name content="Quake Mesh / 3 D Game Studio Mesh (*.mdl)"/>
+                                <value>
+                                    <extension content="mdl"/>
+                                    <description content="Quake Mesh / 3D GameStudio Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quick3D (*.q3o)"/>
+                                <name content="Quick3 D (*.q3o)"/>
+                                <value>
+                                    <extension content="q3o"/>
+                                    <description content="Quick3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Quick3D (*.q3s)"/>
+                                <name content="Quick3 D (*.q3s)"/>
+                                <value>
+                                    <extension content="q3s"/>
+                                    <description content="Quick3D"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Raw (*.raw)"/>
+                                <name content="Raw (*.raw)"/>
+                                <value>
+                                    <extension content="raw"/>
+                                    <description content="Raw"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Raw point reader (*.raw)"/>
+                                <name content="Raw point reader (*.raw)"/>
+                                <value>
+                                    <extension content="raw"/>
+                                    <description content="Raw point reader"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Return To Castle Wolfenstein Mesh (*.mdc)"/>
+                                <name content="Return To Castle Wolfenstein Mesh (*.mdc)"/>
+                                <value>
+                                    <extension content="mdc"/>
+                                    <description content="Return To Castle Wolfenstein Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Silo SIB (*.sib)"/>
+                                <name content="Silo SIB (*.sib)"/>
+                                <value>
+                                    <extension content="sib"/>
+                                    <description content="Silo SIB"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Stanford Polygon Library (PLY) (*.ply)"/>
+                                <name content="Stanford Polygon Library ( PLY) (*.ply)"/>
+                                <value>
+                                    <extension content="ply"/>
+                                    <description content="Stanford Polygon Library (PLY)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Stereolithography (STL) (*.stl)"/>
+                                <name content="Stereolithography ( STL) (*.stl)"/>
+                                <value>
+                                    <extension content="stl"/>
+                                    <description content="Stereolithography (STL)"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Stereolithography Interface Format (*.stl)"/>
+                                <name content="Stereolithography Interface Format (*.stl)"/>
+                                <value>
+                                    <extension content="stl"/>
+                                    <description content="Stereolithography Interface Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Stereolithography Interface Format (*.stla)"/>
+                                <name content="Stereolithography Interface Format (*.stla)"/>
+                                <value>
+                                    <extension content="stla"/>
+                                    <description content="Stereolithography Interface Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Stereolithography Interface Format (*.stlb)"/>
+                                <name content="Stereolithography Interface Format (*.stlb)"/>
+                                <value>
+                                    <extension content="stlb"/>
+                                    <description content="Stereolithography Interface Format"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Terragen Heightmap (*.ter)"/>
+                                <name content="Terragen Heightmap (*.ter)"/>
+                                <value>
+                                    <extension content="ter"/>
+                                    <description content="Terragen Heightmap"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TrueSpace Object (*.cob)"/>
+                                <name content="True Space Object (*.cob)"/>
+                                <value>
+                                    <extension content="cob"/>
+                                    <description content="TrueSpace Object"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TrueSpace Object (*.scn)"/>
+                                <name content="True Space Object (*.scn)"/>
+                                <value>
+                                    <extension content="scn"/>
+                                    <description content="TrueSpace Object"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Unreal Mesh (*.3d)"/>
+                                <name content="Unreal Mesh (*.3d)"/>
+                                <value>
+                                    <extension content="3d"/>
+                                    <description content="Unreal Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Unreal Mesh (*.uc)"/>
+                                <name content="Unreal Mesh (*.uc)"/>
+                                <value>
+                                    <extension content="uc"/>
+                                    <description content="Unreal Mesh"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="VRML1 Importer .iv (&apos;dirty&apos; hack). (*.iv)"/>
+                                <name content="VRML1 Importer .iv (&apos;dirty&apos; hack). (*.iv)"/>
+                                <value>
+                                    <extension content="iv"/>
+                                    <description content="VRML1 Importer .iv (&apos;dirty&apos; hack)."/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Valve SMD (*.smd)"/>
+                                <name content="Valve SMD (*.smd)"/>
+                                <value>
+                                    <extension content="smd"/>
+                                    <description content="Valve SMD"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Valve SMD (*.vta)"/>
+                                <name content="Valve SMD (*.vta)"/>
+                                <value>
+                                    <extension content="vta"/>
+                                    <description content="Valve SMD"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Wavefront Object (*.obj)"/>
+                                <name content="Wavefront Object (*.obj)"/>
+                                <value>
+                                    <extension content="obj"/>
+                                    <description content="Wavefront Object"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="XGL (*.xgl)"/>
+                                <name content="XGL (*.xgl)"/>
+                                <value>
+                                    <extension content="xgl"/>
+                                    <description content="XGL"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="XGL (*.zgl)"/>
+                                <name content="XGL (*.zgl)"/>
+                                <value>
+                                    <extension content="zgl"/>
+                                    <description content="XGL"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="glTF (*.glb)"/>
+                                <name content="Gl TF (*.glb)"/>
+                                <value>
+                                    <extension content="glb"/>
+                                    <description content="glTF"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="glTF (*.gltf)"/>
+                                <name content="Gl TF (*.gltf)"/>
+                                <value>
+                                    <extension content="gltf"/>
+                                    <description content="glTF"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="glTF2 (*.glb)"/>
+                                <name content="Gl TF2 (*.glb)"/>
+                                <value>
+                                    <extension content="glb"/>
+                                    <description content="glTF2"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="glTF2 (*.gltf)"/>
+                                <name content="Gl TF2 (*.gltf)"/>
+                                <value>
+                                    <extension content="gltf"/>
+                                    <description content="glTF2"/>
+                                </value>
+                            </option>
+                            <option>
+                                <id content="glTF2 (*.vrm)"/>
+                                <name content="Gl TF2 (*.vrm)"/>
+                                <value>
+                                    <extension content="vrm"/>
+                                    <description content="glTF2"/>
+                                </value>
+                            </option>
+                        </options>
+                        <selectedIdentifier content="Wavefront Object (*.obj)"/>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="350" y="125"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource" displayName="Volume Source">
+                <PortGroups/>
+                <Properties>
+                    <Property type="org.inviwo.FileProperty" identifier="filename">
+                        <absolutePath content="C:/dev/inviwo/inviwo/modules/opactopt/data/volumes/Tornado_importance.am"/>
+                        <workspaceRelativePath content="../volumes/Tornado_importance.am"/>
+                        <ivwdataRelativePath content="../modules/opactopt/data/volumes/Tornado_importance.am"/>
+                        <selectedExtension>
+                            <extension content="*"/>
+                            <description content="All Files"/>
+                        </selectedExtension>
+                    </Property>
+                    <Property type="org.inviwo.SequenceTimerProperty" identifier="Sequence">
+                        <visible content="0"/>
+                        <Properties>
+                            <Property type="org.inviwo.Size_tProperty" identifier="selectedSequenceIndex">
+                                <displayName content="Sequence Index"/>
+                                <semantics semantics="Default"/>
+                                <visible content="1"/>
+                                <readonly content="0"/>
+                                <minConstraint content="0"/>
+                                <maxConstraint content="0"/>
+                                <minvalue content="1"/>
+                                <maxvalue content="1"/>
+                                <increment content="1"/>
+                                <value content="1"/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="550" y="175"/>
+                        <visibility content="1"/>
+                        <selection content="0"/>
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection src="OpacityOptimisation.image" dst="Canvas.inport"/>
+            <Connection src="Background.outport" dst="OpacityOptimisation.imageInport"/>
+            <Connection src="Background.outport" dst="OpacityOptimisation2.imageInport"/>
+            <Connection src="OpacityOptimisation2.image" dst="Canvas2.inport"/>
+            <Connection src="MeshSource.data" dst="OpacityOptimisation2.geometry"/>
+            <Connection src="VolumeSource.data" dst="OpacityOptimisation2.importanceVolume"/>
+            <Connection src="MeshSource.data" dst="MeshMappingVolume.meshInport"/>
+            <Connection src="VolumeSource.data" dst="MeshMappingVolume.importanceVolume"/>
+            <Connection src="MeshMappingVolume.outport" dst="OpacityOptimisation.geometry"/>
+        </Connections>
+        <PropertyLinks>
+            <PropertyLink src="Canvas2.inputSize" dst="Canvas.inputSize"/>
+            <PropertyLink src="OpacityOptimisation.q" dst="OpacityOptimisation2.q"/>
+            <PropertyLink src="OpacityOptimisation.camera" dst="OpacityOptimisation2.camera"/>
+            <PropertyLink src="Canvas.inputSize" dst="Canvas2.inputSize"/>
+            <PropertyLink src="OpacityOptimisation2.camera" dst="OpacityOptimisation.camera"/>
+            <PropertyLink src="OpacityOptimisation.r" dst="OpacityOptimisation2.r"/>
+            <PropertyLink src="OpacityOptimisation2.q" dst="OpacityOptimisation.q"/>
+            <PropertyLink src="OpacityOptimisation2.r" dst="OpacityOptimisation.r"/>
+            <PropertyLink src="OpacityOptimisation.lambda" dst="OpacityOptimisation2.lambda"/>
+            <PropertyLink src="OpacityOptimisation2.lambda" dst="OpacityOptimisation.lambda"/>
+            <PropertyLink src="OpacityOptimisation.approximationProperties" dst="OpacityOptimisation2.approximationProperties"/>
+            <PropertyLink src="OpacityOptimisation2.approximationProperties" dst="OpacityOptimisation.approximationProperties"/>
+        </PropertyLinks>
+    </ProcessorNetwork>
+    <PortInspectors/>
+    <WorkspaceAnnotations>
+        <Properties/>
+        <Canvases>
+            <CanvasImage>
+                <name content="Canvas"/>
+                <size x="280" y="256"/>
+                <base64 content="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"/>
+            </CanvasImage>
+            <CanvasImage>
+                <name content="Canvas"/>
+                <size x="280" y="256"/>
+                <base64 content="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"/>
+            </CanvasImage>
+        </Canvases>
+        <Network>
+            <name content="Network"/>
+            <size x="256" y="256"/>
+            <base64 content="/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQEBAQIBAQECAgICAgQDAgICAgUEBAMEBgUGBgYFBgYGBwkIBgcJBwYGCAsICQoKCgoKBggLDAsKDAkKCgr/2wBDAQICAgICAgUDAwUKBwYHCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgr/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCY3l39hB+1Sf60/wAZ9BRbXl2UmzdSf6o/xn1FKblPsIP2SL/WnsfQe9FtcqUm/wBEi/1XofUe9bmHUSwvLs30IN1J/rV/jPrURvLzJ/0qT/v4amsblDfQj7JEP3q9j6/WojdJk/6HF+R/xoDoSXt5difi6k+4n8Z/uiiW8u/skR+1SdW/jPtS3tygn/49IvuJ2P8AdHvRLcp9kiP2SLq3Y+3vQgGxXl39llP2qTqv8Z96WyvLs3ABupPut/Gf7poiuU+zSn7JF1Xsff3pbK5U3AH2SIfK3Y/3T70AiH7bef8AP3L/AN/DUuoXl2L6YC6kA81v4z61H9qT/nzh/I/41LqFyovph9kiP71uSD6/WjqHQS5vLvy4f9Kk/wBV/fP940C8u/sRP2qTPmjnefQ0tzcoI4f9Ei/1Xof7x96Bcr9iJ+yRf60cYPofegBtteXZEubqT/VH+M+1JaXl2bqIG6k/1i/xn1p1tcpiX/RIv9Uex9vektblDdRj7JF/rB2Pr9aAQyS8vPMb/SpOp/5aGpL28uxKuLqT/Ux/xn+4KZJdJ5jf6HF1PY/41Je3KiVf9EiP7mPsf7o96OoCSXl39jiP2qT77/xn/ZohvLs20xN1JwFx859aWS5T7HEfskX337H/AGfeiG5X7PMfskXRex9frQA2zvLs3AzdSdD/ABn0NR/bbz/n7l/7+GpbO5Q3C/6JF0PY+h96j+1J/wA+cP5H/GmBJf3l2L2UC6k++f4zRc3l2ILci6k5iOfnP99qW/uVF7KPskR+c9Qf8aLm5UQW/wDokX+qPY/3296SARby7+wuftUn+tX+M+jUWl5dlpM3Un+qb+M+lKtyn2Fz9ki/1q9j6N70WlypMn+iRf6pux9PrQC3I7e8uzcJm6k++P4z60T3l2JnxdSfeP8AGfWlt7pDOn+hxffHY+v1onukEz/6HF949j6/WmHQde3l2HTF1J/qU/jPoKHvLv7BGftUmfOfnefRaW8uVDp/okR/cp2PoPeh7lfsEZ+yRf65+MH0X3pIBILy78if/SpPuD+M/wB4UWN5dm7QG6kPP980sFynkT/6JF9wdj/eHvRY3Km7QfZIhz2B/wAaARD9tvP+fuX/AL+Gpb68uxdOBdSdR/GfSo/tSf8APnD+R/xqW9uUF04+yRHkdQfT60w6AfsP2EcS/wCtPp6Ci2+w7JsCX/Ve3qKDbJ9hA+1xf609z6D2otrZAk3+lxf6o9z6j2oYdQsfsP26HAlz5q45HrUR+w5PEv5ipbC2QX0J+1xf61e59fpURtUyf9Mi/M/4UB0Jb37D5/Il+4ncf3RRL9h+yRcS9W9Pai9tkM//AB9xfcTuf7o9qJbZPskQ+1xdW7n29qS2ASL7D9ml4l6r6e9LZfYftAwJfut6f3TSRWyfZpR9ri6r3Pv7UtlbILgf6XF91u5/un2pgiL/AEH0m/MVLqH2L7dNkS581s4x61F9lT/n8h/M/wCFS6hbIb6Y/a4h+9bufX6UdQ6Bc/YfLhyJf9V6j+8aB9h+wniXHmjuPQ0XNsnlw/6XF/qvU/3j7UC2T7CR9ri/1o7n0PtQwEtvsOJcCX/VH09qS0+w/aosCX/WL3HrS21smJf9Li/1R7n29qS1tkF1GftcX+sHc+v0oBbjZPsPmNxL1PcVJe/YvNXIl/1Mfp/dFRyWqeY3+mRdT3P+FSXtshlX/S4v9TH3P9we1HUAk+w/Y4uJfvv3H+zRD9h+zTYEvRe49aJLZPscQ+1xfffuf9n2ohtk+zTf6XF0XufX6UmAln9h+0LgS9D6ehqP/QfSb8xUlnbILhf9Li6HufQ+1R/ZU/5/IfzP+FMCW/8AsP22XIlzvPcUXP2LyLfIl/1Rx0/vtRf2yG9lP2uIfOe5/wAKLm2TyLf/AEuL/VHuf77e1JbAC/YfsL8S/wCtXuPRqLT7DukwJf8AVN3HpQtsn2Fx9ri/1q9z6N7UWlsgMn+lxf6pu59PpTBbjLf7D56YEv3x3HrRP9h858iX7x7j1ot7VBOn+mRffHc+v0ontU85/wDTIvvHufX6UB0H3n2HemRL/qU7j0FD/YvsEfEuPOf09FovLZC6f6XF/qU7n0HtQ9sn2CMfa4v9c/OT6L7ULYAg+w+RPgS/cHcf3hRY/YftaYEvX1FEFsnkT/6XF9wdz/eHtRY2yC7Q/a4uvqf8KQIi/wBB9JvzFS332H7U+RL27j0qL7Kn/P5D+Z/wqW9tkN05+1xDp3Pp9KYdBDZXn2ID7JLnzTx5Z9BRbWV4EmzaS8xcfuz6ioyT9hHP/LU/yFFqTsm5/wCWX9RSDS5JY2V4L6Em0lAEq5Pln1qI2N7k/wChy/8Afs0tgT9uh5/5ar/MVEScnmmGlize2V4Z8i0l+4n/ACzP90US2V59kiH2SXq3/LM+1R3pP2jr/An/AKCKJSfskXP8Tf0pLYNCSKyvPs0o+yS9V/5Zn3osrK8FwCbSUfK3WM/3TUURP2WXnuv9aWyJ+0Dn+Bv/AEE0wVhPsN7/AM+cv/fs1NqFleG+mItJSDK2CIz61UyfU1NqBIv5sH/lq386XUNLElzZXhjhxaS8Rc/uz/eNAsrz7ER9klz5o48s+hqO5J8uHn/ll/7MaAT9hPP/AC1H8jQGhJbWV4BJm0l/1R/5Zn2pLWyvBdRk2kv+sH/LM+tR2xOJef8Alkf5iktCftUXP/LRf50wVrjpLG9MjEWcvU/8szUt7ZXhlXFpKf3Mf/LM/wB0VWkJ8xue5qS+J85ef+WMf/oApdQ0JJLK8+xxD7JLne//ACzP+zRDZXgtpgbSXkLj92fWo5CfsUXP8b/+y0Qk/Zpuf4V/nQGhJZ2V4LgE2kvQ/wDLM+hqL7De/wDPnL/37NFmT9oHPY/yNRZPqaYaFu/srw3spFpKRvPIjNFzZXhgtwLSXiI5/dn++1RagT9tl5/jNFyT5Fvz/wAsj/6G1JbBoSLZXn2Jx9klz5q8eWfRqLSyvA0mbSX/AFTf8sz6VGpP2F+f+Wq/yai0J3Sc/wDLJv5UArXHW9leidCbSX74/wCWZ9aSeyvTM5FpL94/8sz61Hbk/aE5/jH86JyfOfn+I/zphpYsXlleF0xaS/6lP+WZ9BQ9lefYIx9klz5z8eWfRaivSd6c/wDLFP8A0EUOT9gjOf8Als/8lpLYNCSCyvBBODaS8oMfuz/eFFjZXgu0JtJRz/zzNRwE+RPz/AP/AEIUWJJu48n+KgFYT7De/wDPnL/37NS3tleG6ci0lPI6Rn0qrk+pqa+J+1Pz3H8qYaWJDdzfYQcR/wCtP/LFfQe1FtdzFJuI/wDVH/livqPalMlp9hH+it/rT/y19h7UW0lpsmxat/qv+evuPakHUSwu5jfQjEf+tX/livr9KiN5Nk8R/wDflf8ACprGS0+3Q4tW/wBav/LX3+lRGWzyf9Fb/v7/APWoDoSXt5MJ+kf3E/5Yr/dHtRLdzfZIjiPq3/LFfb2pb2S08/m1b7if8tf9ke1Eslp9ki/0Vurf8tfp7UIBIryb7LKcR9V/5Yr7+1FldzG4AxH91v8Aliv90+1EUln9ml/0Vuq/8tfr7UtlJafaBi1b7rf8tf8AZPtQCIftk3pH/wB+V/wqbULuYX0wAj/1rf8ALJfX6VF5tn/z6P8A9/f/AK1S6hJafbps2rZ81v8Alr7/AEo6h0Eubyby4eI/9V/zxX+8fagXc32InEf+tH/LJfQ+1LcyWnlw5tW/1X/PX/aPtQJLT7Ef9FbHmj/lr7H2oAS2vJsS8R/6o/8ALFfb2pLS8mN1EMR/6xf+WK+v0pbaSzxLi1b/AFR/5a/T2pLWSz+1R4tW/wBYP+Wvv9KAQyS8m8xuI+p/5Yr/AIVLe3cwlXiP/Ux/8sl/uD2qOSWz8xs2rdT/AMtf/rVJeyWnmrm1b/Ux/wDLX/ZHtR1ASS8m+xxHEf33/wCWK/7PtRDdzfZpjiPov/LJfX6Usklp9ji/0Vvvv/y1/wB32ohktPs82LVui5/e+/0oASzvJjcDiPof+WK+h9qi+2Tekf8A35X/AAqWzks/tC4tW6H/AJa+x9qj82z/AOfR/wDv7/8AWoAlv7uYXsoxH98/8sV/woubuYQW5xH/AKo/8sl/vt7UX8lp9tlzat98/wDLX/61FzJaeRb5tW/1Rx+9/wBtvahAIt5N9hc4j/1q/wDLFfRvai0u5i0nEf8Aqm/5ZL6fSlWS0+wv/orf61f+Wvs3tRaSWmZMWrf6pv8Alr7fSgFuMt7yb7QnEf3x/wAsV9fpST3k3nPxH94/8sV9fpS28ln56YtW++P+Wvv9KJ5LPznzat94/wDLX3+lMOg+9u5g6cR/6lP+WK+g9qHu5vsEZxH/AK5/+WS+i+1F5Jab0zat/qU/5a+w9qHktPsEf+itjzn/AOWvsvtSQCQXk3kT8R/cH/LFf7w9qLG7mN2gIj6/88l/wpYJLTyJ8WrfcH/LX/aHtRYyWn2tMWrdf+ev/wBagEQ/bJvSP/vyv+FS313MLpxiPqP+WK+n0qPzbP8A59H/AO/v/wBapb2S0+1Pm1Y8j/lr7fSmHQDFa/YR/pf/AC1P/LM+gotorXZNi7/5Zf8APM+opDZz/YQML/rT/wAtB6D3otrOcJNlV5i/vj1HvSY+otjFa/bocXf/AC1X/lmfWojDa5P+mf8AkM1JY2c4voSQvEq/8tB6/WojZ3BJ+Vf+/g/xpi6E17Fa+fzdn7if8sz/AHRRLFa/ZIv9L7t/yzPtSXtnOZ/ur9xP4x/dHvRLZz/ZIhherf8ALQe3vSWwBFFa/Zpf9L7r/wAsz70tlFa/aBi7/hb/AJZn+6aSKzn+zSjC9V/5aD396LKznFwCVX7rfxj+6femCI/JtP8An8P/AH7NS6hFam+mzd4/et/yzPrUP2O4/ur/AN/F/wAamv7Sdr6YgL/rW/5aD1+tHUOgXMVr5cP+ln/Vf88z/eNAitfsJ/0v/lqP+WZ9DSXNnOY4flX/AFX98f3j70Czn+wkYX/Wj/loPQ+9DGFtFa4lxd/8sj/yzPtUavptmwu7rUljiiO+SSRcKqjkkk9AB3qS2s5wJMhf9Uf+Wg9vesH4jafLL8PdejeZIVbRroGUtnYPKb5sLknHXgE+lDEk7nk2t/tz/D611Sa30Twnq1/apIRFefu4hMM/eCs24A9RkA4PIB4qC4/b08JzOGHw71YYRV/4+YewA9fauh+Evij/AIJGeF/gfZ/Bb9rX9nr4qx/EbT5povEnj74e6xCztIt9cuiQW93di3UC3+yxMzwZP70bEdRK2jF4/wD+CFeg+PPAN7o3wQ+PWteHtFvrtfHNr4mu7ETa/aSW12YT/od9D5U8Vy9oFMTwo0MTb1d8s+PPIvlRxrft5+E2gSH/AIV3q2VZjn7TD3x7+1Ef7efhNIpIz8O9W+cDB+0w8YOfWuk8Y6j/AMEJNS8Szav4U8P/ALVFjY3V4ZDpKTeHljso2mBKQvI0zsqRlwiyFmJRQ0h3Fx4/+1b/AMMG/bNE/wCGHf8Ahbv2fy7j/hJP+Fr/ANl79+Y/I+zf2fxjHm79/fZjvRzyCyO7g/bz8JwyiQ/DvVjgHj7TD6fWmf8ADd3hT/onmrf+BEP+NfNdFHPIVkfWHg/9rWf4o+J/+Ed8B/BbxFql9KrSi1smikcIvLMcHgD1PqB3r07wd4z8OfEDw5BrWj3M8RiaS3vLS6tik1rOjnfDIp+6yk8j3BHBr4t+DPxs+IPwE8Yf8Jz8NtVjtb42r28nnQCRJI2wSrKevIU/UCvpj9lmw8Uz+C9V1/xZqSXeo61rr6pcyAkHNxbwSjJICksGD/JlRvxkMGUYUp4x4uSko+zsrO75ubW91a1rWtrfc5IvHfXZqUY+ysuVpvm5rvmurWta1rO+9z1NYrX7C/8ApZ/1q/8ALM+jVleKvFvhf4f+Gr7xd4l1VorOztyZCkJZmJwqqo7sWIAHqew5rUWzn+wuNq/61f4x6N715z+034S1TxT8JbvQ9OkiSeW5haISOcMUbftyoOMhSMnCjqxUZI7HomdK3Od1b9rvRtA0Sw8Vz+CrmW0v3/0ZIrxfNwMn5lKhR052s2CQD1rHk/bx8JvIzj4eatySf+PiH/Guw0zxv/wQ08VfC7wNpPxD+FX7QfhzxPo/hW2t/GN94Cn02SDWdW8qMXNz/wATK8nCR+YrlFijgGJDuXhQu14o07/g388TeGdZ+Keja5+0LoF5J4jgg074a2DWHnxWLLD51xFNPDcxNGpM21ZbvzWKhSoUiSlUqRlL3FZWXnr1CEJJe87nm8/7enhOZlI+HerDair/AMfMPYY9aG/b08Jm2WD/AIV3q2Vdmz9ph7ge/tXVaBqH/BBXR/GFrqup6F+1bq+lW9zDK+mXr+HYxcKpy8MphdHKPgKTG8TgO21gVBPy38UtQ8A6t8TvEeqfCjRLrTPC1zr15L4a02+ctNaae0zm3ikJeQl1iKKSXfkH5m6nPnkVZHvUf7efhNI5EPw71b51AH+kw8cg+vtRb/t5+E4ZllPw71Y7T0+0w/418z0Uc8gsj618GftQXHjjT9Q1/Q/gv4nudL0eMS6xqFlFHMtpH/eYBhngE4HOBmvWLPU9C8RWUGvaNqyz2l5Ak1tMkRw6MoKnnkcHoea+MPhJ8ffjB8NPDusfDT4c68ltaeKwtteQyRISWYeXlXb7hIbaT6emM19WfBjw9e6H8LND0S4mjlks7FYJJEJUMyEqcBwrAZB+8AfUCscPPGSr1FVUeS65LN3asr82lk73ta+hx0XjnXqqtGKhdclm22rK/Mmkk+a9rN6eZ1B/48R/12P8hRa/cm/64n+YqU3179iDfa5M+af4z6Ci2vr0pNm7k4i4+c+orrOrS5FYf8f0H/XZf5ioW6n61bsb69N7CDdyEGVc/OfWojf3oJ/0uX/vs0w0sF7/AMfH/bNP/QRRL/x6Q/7zf0qW8vr0T4F3J9xP4z/dFEt9ei1iP2uTktn5z7UlsGhDF/x6y/Vf60tj/wAfA/3G/wDQTUkd9em2lP2uTgrj5z70tnfXrXABu5D8rfxn+6aYK1ypU2o/8f8AN/11b+dH2++/5/Jf++zUt/fXq30yrdyACVsDefWl1DSxFdf6uD/rj/7M1A/48T/12H8jUtzfXojhxdycxc/Of7xoF9e/Yi32uTPmj+M+hoDQhtekv/XI/wAxWN43tdTvvBmr2OiiQ3k2l3CWgiYh/NMbBdpHIOcYretr69IkzdycRH+M+1Ja316bqMG7kwZB/GfWmCtc8K+A/wAavj/4V/ZWv9QPw6+GPinwR4XmNvNo/jrRGu51uBcPK0qoCu991/t+ZsKAdqqTIz52r/8ABTT4q+IdA0/wd4g+CfwxvtC0vUEurPw/c+HLhrBQlvJBHCbf7T5bRIshZVIO1lQ5+UY9l1bwH4N1aW9/tDw1ZTC9vIpbyKS2UpdOEn+aRTw7YzgkEkhR6VVu/gn8HFkXZ8K/DoBiQ8aNB3Uf7NebhZVp161OpJPllppa0XFNeurevkayaUU0eE6b+3I+m6ncX6/shfAuaGeONUsrn4eB4oGVpGZ0Jm35fzACGYqBGgUKAc7Wg/8ABUL9ojwlo9nonhDRPDWm29pBp9u0MVveSwyW9mMJCsE1y8NurjiQ26RO3B3BgCPXJPgn8HBaRuPhV4dyXYE/2NB7f7NEPwT+Dht5WPwq8O5AGD/Y0HHP+7XbyMjmPj34zfFfW/jb8Rb34leIdH0+wur2C1hNnpSSrbxJBbRW8YQSySP9yJclnJJyfauXr7qtPgn8HHnCt8KvDpGDwdGg9D/s1F/wpX4Pf9Es8O/+CaH/AOJp+zYXR8e/CX4Za78ZPiJpfwy8MXVvDqGrzNFayXUczR7wjPgiGOR+duMhSBnJwoLD6M/YqttYi+D81xqQn8ifWpn04yk7TCEjUlM/w+YsvTjcG967y9+CfwcjvJFT4VeHAA5wP7Fgx/6DXULI9hp9nZ2LGGGK32RRRfKqKGYBQBwAAAMU4xs7ibTQi/8AHi//AF2X+TV5n+1ba6vdfA/Vm0dZi0LQyXHkE5EIkXzCcfw7Sc9sZzxXqK3179ic/a5M+av8Z9Grzv8Aac8c+J/CPwY1XUNB1ee3uJzFbeekhDIkkiq+09iVJGRyM5GCAab2Yla5xw/bt+MPhL4WeBv+Eh+B3wi1yDw7pNtp/hjU9Y8PTXeoWSQRgRybmnxFIfLVtyAAsoOOBjn/AB7+3Zofiu7m1PSf2RPhZbXWpeH0sdXm1DwzFdf6UBJuu7XasTW7HzOA7SsNiZdtoqvof/BJ39vXxfpHhzxF4U/ZR1nWtO8WaQ2qaHqWktbXlvLaC1S6WWSWKRkt98bgRiYo0sgaKMPIjIOY/wCHdn7bX2UXv/DC/wAVPJaIyrN/wrLUtpQDJbP2fGMc56VNWVKUr042Vl1vr1fTccFUStJ3+Vjc1r9ufxTf+AfEXw68O/AX4X+G7LxNZLbajP4b8LPa3GwSeZxJ5xLAt/DJvVQMKqin/tK/t7fEv9qnwfaeD/iX8PPCMK6fMJNNv9Kgvop7VuN23fdvGwZRtIdGwD8u04IT4of8Ep/29vhBrb6D4u/Yx8X3EsdvHNNceG9D/tq1hEn3Ve40/wA6FJCMHy2cOA6EqA6k8Z8QP2J/2ovhN4Tn8e/FP9knx/4Z0K1MYuda8QeA76ytIS7BEDTTQqi7mYKMnkkAcmsy9TgaKr/2Tpf/AEDoP+/Qo/snS/8AoHQf9+hQI6r4dfDPXPibLrUGhXdvE2h+HLzWroXEcx329sm+RVMUbhW25IL7E4wWBIB+xPgxZ6xp/wAJ/D1p4gSZbxdJh+0LcE+YGKg/NnnPPevmn4BaV+yjb+APFuo/GG41Kz8UW9qH8IvpiuuJgpKlDGMB/M2/fIAHTvX1B8JPGfiHxh8MdB8Ta1qDyXd5pcMlzIDje+0AtgcDJGeOOayw2JVavUp8klyNK7VlK6TvF9Ur2fndHHRxar16tLklH2bSu1aMrpO8X9pK9m+jujpjcR/YQfscX+tPdvQe9FtcR7Jv9Di/1R7t6j3pSLH7CP3kuPNP8A9B70Wwstk2JJf9Vz8g9R712HT1EsLiM30I+xxD96vdvX61EbiPJ/0KL82/xqaxFj9uhxJLnzVx8g9frURFjk/vJf8Avgf40B0JL24j8/8A484vuJ3b+6PeiW4j+yRH7HF1bu3t70t6LHz+ZJfuJ/AP7o96JRY/ZIv3kuMt/APb3oQCRXEf2WX/AEOLqvdvf3osriM3A/0OL7rd2/un3oiFj9ml/eS9V/gHv70tkLL7QMSS/db+Af3T70AiH7RH/wA+UX5t/jU2oXEYvpgbOI/vW5+b1+tRYsf+ek3/AHwP8al1AWX26bMkufNbOEHr9aOodBLm4j8uH/Q4v9V6t/ePvQLiP7ET9ji/1o4+b0PvS3IsfLhzJL/quPkH94+9AFl9iP7yXHmj+Aeh96AEtriPEv8AocX+qPdvb3pLS4j+1Rf6HF/rF7t6/WlthY4lxJL/AKo/wD296S1Fj9qjxJL/AKwfwD1+tAIilnUTNIlsilbmIgqWGDtmwc5yCKsXjAAXItomHlp5ygEeWSBggA4CHIHHCt8vAKbq0ws/Nf55cefHn5R12ze9Wrh7WG5SVJZAwhTGY1IIKAEEE4IIJBB4IJByK85UpuvUqU/iUvk1yx0f+fR66q6el9EnsMkuI/scX+hxfffu3+z70Q3Ef2ab/Q4ui/3vX60+WOxexWaESqiu25AM7M7Rnk5K5wAeSCQCclSzYRZfZ5sSS9Fz8g9frXZSrQrRut1o090+z/rXdaENNMSzuI/tA/0OLoe7eh96i+0R/wDPlF+bf41LZix+0LiSXof4B6H3qPFj/wA9Jv8Avgf41sIlv7iMXso+xxffPdv8aLm4j8i3/wBDi/1R/vf3296L8WX22XMkud56IP8AGi5FiIIC0koAiPO0f3296SARbiP7C/8AocX+tXu3o3vXlX7R/jaCz+HV7fx6LFc2FrOkdwh+5cu52BDuDDYCwJwAxx8rIdrV3c13/wAJLE9lpNxLFpyzAXN6FG6Q4PyR84I65bp9R1zPiR4H8BeOvh9feAdT13+z4ZoAYJ1KZhlRg6Ngt83zDkZywJ5BOa3lGFGD5/ifTt6+fl06kQ5600obfn6HLfDCz+Puj/CTSNf+EP8AwVrj8MtcaDBbweFLj4qXOjyWSRkSR2TIl0RHFGZrzGQFVyMKBM7JufDjWP2v/G13a3vjX/gtlDo2n3duDqTD436nNewq8ZITyZ5oEkOcK480BRk/MQFPjMX7O3iL4h+H4fBmgNoVq+iXIjk1ZomV7wHcATtTdzjOGJxwBVR/2F/iSjlD4x0Pg46Tf/E158HKavbuehjMPHCVlTUr6J7NWuk7Wfa57PqWu/t1Q+KX8LQf8FmtMmtb6CWUak/7Q2pC3lCbE2S7XbZIyMMBsqQrAMdtZWpJ8dPjC+v/AAS/aM/4Ks3et6Faz6UGt1+J7azpN8szu5mI1HULWORbZokZ1jWWRWZdqE4z5fL+wp8SYSA3jHQzlQ3Am7jP92g/sKfEkQrP/wAJjoeGYrjE3YD/AGfer5ZHLdFP48fs6fB34Y+AYPHnwx/am0Pxytxq6WUenWdmlrdBf9KEkzQNcPMiKYIgGaMK/wBoUqxGC3j1e2p+wp8SXR3HjHQ/kAJ4m9QP7vvRD+wp8SZpViXxjoYLHqRN/wDE0csgujxexuY7O+hu5bSOdIpVdoJc7JADkq2CDg9Divuj4P65aa18MdE1i201Y47qxWVI5CMoGyQvyBV4zj5VUccAdK8l+FX7MXxW+G2o6u9t4v0LyNe8PXmi6gxju3KW9ygR3VEkiDuuAyhyybgCVOBj3Pw94W8P+CtBsvCWjyXP2XTrSO3gMoUsyqoGWIxknqcAcnoKuCaeonsaBtv9BA+0Rf60/wAfsKLa2+Sb/SIv9V/f9xSG2ufsIH2d/wDWn+A+gotra5CTZt3/ANUf4D6itGT1FsbbF9CftEX+tX+P3qI2vJ/0iL/vupLC2uRfQk27/wCtX+A+tRG1ucn/AEd/++DQHQmvbbM//HxF9xP4/wDZFEtt/okQ+0RdW/j+lJe21yZ+Ld/uJ/Af7ooltrn7JEPs79W/gPtSWwCxW3+jSj7RF1X+P60WVti4H+kRfdb+P/ZNNitrn7LKPs79V/gPvS2Vtci4BNu/3W/gP900wRH9l/6eIv8AvuptQts30x+0RD963V/eq/2W5/595P8Avg1NqFtcm/mIt3/1rfwH1o6h0Fubb93D/pEX+q/v/wC0aBbf6CR9oi/1o/j9jSXNtc+XD/o7/wCq/uH+8aBbXP2Ej7O/+tH8B9DQwFtrbiX/AEiL/VH+P6UlrbYuoybiLiQfx+9JbW1yBLm3f/VH+A+1YXxEtL8/D/XRbgxSHR7rZJIdiofKbBLHhQPU8CgFuZUnxb8MXXhfWPiBokdxqOgaNqMdvf6vZIGiEgDhtmSDIoMsQ3KCD5ilSwyRyPi/9pHwnpWq/ZPG17rGjB4ka1trWy3u8e0DczrnByCCOxU4JHJ2/gH4G/4J0Xn7KMPwr+N37fHxE+FnxB1GaRvFejf8ItcaroFrIt9Mqg29tbCSd2tre0bi4Cq0qsGba0Ss8b/Bv/gk3B4v8DS69/wUk8b+PtP8y/t/Ht5p3w9vdPnjhFrez2k1kLqBxH/pCWlu8L+bvM7S+ZEu7y/MowxarTlUa5XK6te9rJK/npr0PQpVMNToS0ftNLPRpb3vf5Wa1OVP7TX7O7Qr5us6/LJltzS2kx4Ix+vOfWnP+0n+y6ysypq3zr9xrO4IRs8gHPK+meRyDnG5vS9P/wCCfv8AwSU+KvjjWL74T/8ABXq28PeFrGC2lgtvG3gOWO+3NHM8sIknksxcMBbu2+KHaDNFFhnZPMgg/YX/AOCRXiPUvFPxH8Gf8FVbiTwb4VktrqXwvqvgp7HXNRtZHYNb2c100X2qcKh+eKzcIWXfEAQW2dGm6inbVfj6/wBX87N3j65jLW9pL73/AJnnEP7SH7MCyhpIdTxznFjcen1po/aQ/ZmH3Rqg/wC3K4/xrq/E37Mn/BGu8huT4I/4KX+KLGS+1eO204a18LtQnGlW0MNwJrq48q3T7YtzNHAYVj8l7eOcCRZmVscr8SP2Vv8Agmr4a8Aa94h+Hf8AwVbfxNrun6VNPonh1vgTrFj/AGtdKrFLYXEkxSAOwVfMcYXdkjitOWH8q+4X1vGf8/Jf+BP/ADLFv+0F+zpq+pfYtGttcmklYmOKHTrl2I6ngZPA5rsfDmkeEPidpttrnhqcHRWDATNcvuuWDEFdrHKAHgggHgjAPT5k/Zw/aA1/9m34if8ACw/Dug2OoytYy2sltfqdpR8HKsOVIKjn0yO9fQv7LcnijWfCWueJ/EmnwwXOteJp9S+z2oULEs8UMgGxSTGDu3KrYO1lbowJzw9SqsXOEqMeTlXLK93d3uuW2llazu99FdHD9fzeeNnTk2qSUWpc7vKTbvFx6JWTvfW9ujO6h+GvhCKzJTT4QVkUL/pL4AwferWmeDPDtq7tFp1mSImwXG7HHXnNXltrn7C4+zv/AK1f4D6NTYIbiJJZGt3wsDn7h9K6lTp3vZHU8Xi5KznK3qzkPhLEJtY1eZZYwHvI25br8z9K6+e1/fP/AKRF94/x+9cd8H7W4E93+5c5+zscKe+8/wBa7Ce2uTM+Ld/vH+A+tbVP40/8Uv8A0pkVdof4If8ApESW8tsun+kRf6lP4/YUPbf6BGPtEX+ufnf7LTb22uS6Yt3/ANSn8B9BQ9tc/YIx9nf/AFz/AMB9FqFsZCwW37if/SIvuD+P/aFFjbYu0P2iLr/fpILa58if/R3+4P4D/eFFjbXIu4ybd+v9w0gRH9l/6eIv++6lvrbN05+0Rdv4/aoPstz/AM+8n/fBqa+trk3TkW79R/AfSmHQaZJPsI+c/wCtPf2FFrJJsm+c/wCq9fcVIbyX7ED5cX+tP/LFfQe1FteSlJv3cXEX/PFfUe1IfUjsJJDfQ5c/61e/vURkkyfnP51ZsbyU3sI8uLmVekK+v0qI3kuT+7i/78L/AIUxdBb2ST7R98/cTv8A7Iolkk+yRfOfvN3+lSXl5KJ8eXF9xP8Aliv90e1Et5L9liPlxclv+WK+3tSWwEUUkn2WX5z1Xv8AWlspJPtA+c/cbv8A7Jp8d5L9mlPlxcFf+WK+/tS2d5KbgDy4vut0hX+6famCKvmSf89G/OptQkcX8wDn/Wt396T7bL/zzh/78L/hUt/eSrfTDy4uJW6wr6/Sl1DoR3Mknlw/Of8AVev+0aBJJ9hPzn/Wjv7GpLm8lEcP7uLmL/niv94+1AvJfsRPlxf60f8ALFfQ+1AyK2kkxL85/wBUe/uKw/iDJff8IFrn2FTJP/ZFz5KFA+5/KbA2nIbnsRg10FteSkSfu4v9Uf8Alivt7UlreSm6jHlxf6wf8sV9fpTEj58+D3xH8L3nwCu/EHxY/Ya0rx/o2lSk6v40HiNtM1GS7NzLKzTTxKZpF23cCbQP4QWZx5axUvEH7YH7POs6PF4Tsv2EvCNjpKRRwu1vqP8AxMWhSe2faLzyA+9o4ZY2lIMh84MGXDiX2K7+FHgt9D1bwlbWM9rpGsagk+paVZXkkNvNIVkJbYjDZkohIXAJReOKwLr9kT4ARSKqeCpgDGh/5DF31Kgn/lrXBh3iJ1KsalrRlZWvtZPW/XXoaycUlY841L4+/sL2B1X/AIRj9hl7lbzU3FlHqnju+UW9iqQ+WMqzN5jypJI21gUBCCSRWYDUk/ah/Ym8Ia9quneCf2I7bXPD88sM+jnX9Xa3u7SVViZwzH7U0ieZEDsMpVlZ1KhXZK7N/wBkX4AC1jkHgqbLOwJ/ti77Y/6a+9Z2p/sw/ACzU2Fl4EmuL6VR5MI1i7wgzy7nzeF/n+ZHZCjUqS5YmcqkYq7PNtH+O37G2n6lcy6j+wel/ZzXHmQQT/E7Uklt08tR5YkjVQw3hmyyFsNtycZroNB/ba+CPhnR7PS9P/Yf8F3whg0+3uBrsFjcgRQDE7ROthHP5045Mk81wFYA7SMqey0T9j74GxqsepeF5p5WyXb+1roAcdABIOP8+1P/AOGSPgH/ANCXN/4OLv8A+O0pU2nZO41O6vsfPPi97f8AaL+N5h+DfwzsvDq6ulvb6V4cXU7aONGhtEjbMzJbxF5GiaQ/Ku55CACxGfdP2LtX1vU/hPcvq13LKsGsvBaPJ18lIIAq56sFOVGc4ChRwoA6nQf2ZvhB4P8AEcOueDNJ1PSdVspmNlfad4jvoJlJyPkkSYMj4JXgjcDjg/f7DR9K0nwn4fsPD3hzSbWzsrW3KQW0VuoVBvbPbJJOSSeSSSckmsqNRSqOOzXR/g/R/wDAeqaHLYsrJJ9hf5z/AK1e/s1Vb+5kh0i/m8w/JYTN19ENXlvJfsTny4v9av8AyxX0b2rM8T38ieF9TLJEAbCReIVHUY9PeuylHnqKPdoynLlg2YfwxVoL+4QEjNtZHAPrGT/Wuonkk85/nP3j396wvA0slv4gvoQkfywWK8xLxiLHpXQzXkomceXF94/8sF9fpWfNzylLu3+bOrELllFf3Yf+kREvZJN6fOf9Snf/AGRQ8j/YIzvP+ufv7LUl5eSh0/dxf6lOsK+g9qHvJfsMbeXF/rn/AOWK+i+1C2MCOCSTyJ/nP3B3/wBoUWMkhu48ufvetSQXkpgnPlxcIP8Aliv94e1FleSm6QeXF17Qr/hQIq+ZJ/z0b86mvpJPtT/Oeo7+1J9tl/55w/8Afhf8KlvbyUXTjy4uveFfT6Uw6CF7P7CP9Hk/1p/5aj0H+zRbPZ7JsW8n+qP/AC1HqP8AZpTBb/YgPtq/6087G9B7UW0FuEmxeKf3X9xvUe1IfUSwez+3Q4t5P9av/LUev+7URezyf9Hk/wC/o/8AiamsYLcXsJF6p/erxsb1+lRGC3yf9NT/AL4b/CgXQkvXs/P5t5PuJ/y1H90f7NEr2f2SL/R5Orf8tR7f7NLewW5n5vV+4n8Df3R7USwW/wBkiH21erc7G9vahAJE9n9ll/0eTqv/AC1Hv/s0WT2f2gYt5Put/wAtR/dP+zRHBb/ZpR9tXqvOxvf2pbOC3FwCLxT8rfwN/dPtQCId9n/z7Sf9/R/8TU2oPZ/bps28mfNb/lqPX/dqLyLf/n+T/vhv8Klv4IDfTE3ij963GxvX6UdQ6CXL2flw/wCjyf6r/nqP7x/2aA9n9iP+jyY80f8ALUeh/wBmluYLfy4f9NX/AFX9xv7x9qBBb/YiPti/60c7G9D7UDEtns8S4t5P9Uf+Wo9v9mktHs/tUWLeT/WL/wAtR6/7tLbQW+JMXq/6o/wN7e1JawW/2qPF6v8ArB/A3r9KBIhme181yIHx9ojyPMH92b2qxevZ+aubeT/Ux/8ALUf3B/s1BNFD5rr9rXBniydrcfLN7VW8VagLKSGw06dJLy5jRYU2nCjYMu3HQf571hhISqYirFfzf+2RCclGN3/WozW9ciWKLRtFtjJfOWPzS5WFSB8zfL+n+IBm0HSdO0qyuGZJZriUKbm5eQbpGyPbgeg7e55pdM0Ky0rTUH25XmlkZp5yjZkbj26DsP6kk3IYLf7PMPti9F/gb1+ld1SpGMeSnt1ff/gdl+pnGMm+aW/5CWb2f2gYt5Oh/wCWo9D/ALNRb7P/AJ9pP+/o/wDials4LcXAxeqeD/A3ofao/It/+f5P++G/wrE0JNQayN5KGtnPznP70f8AxNSTNbXYgV45DK8eEJlHzncRgnHX0Pc8HnmmX8Fub2Um8UfOeNjf4Ul1b2z28CPdoQYiMFG5G5vasKtFVUmnaS2fb/NPqv1s1SdmwSSzNixFvJ/rV/5aj0b/AGaxPHc1uvhC+EULhnjRQTJnrIo9K3n23FmxkuVZ1cNJNtOZFCn5jxyw5yR94fMeVdm5/wAdxQ/8I+YkvFJkuYVwFP8Az0X2rbL6rqV4qStJSV1934PdP77O6Mq6tSl6MXw19kTxpqyCB8A2gUeYOPkPtWzO9n5z5t5PvH/lqPX/AHax/DsMH/CbawPta8Na4O08/IfatmeC385/9NX7x/gb1+lRT+H5v8ztxf8AFX+GH/pMR969nvTNvJ/qU/5aj0H+zQ72f2CP/R5Mec//AC1Hov8As0XkFuXTN4o/cp/A390e1DwQfYYx9sXHnPzsb0X2q0cwkD2fkT/6PJ9wf8tR/eH+zRYvZ/a0xbydf+eo/wDiaWCC38if/TV+4P4G/vD2osoLcXSEXinnpsb/AAoEiHfZ/wDPtJ/39H/xNS3z2f2p828nUf8ALUen+7UfkW//AD/J/wB8N/hUt7Bbm6cm8UdONjen0ph0ENnc/YQPK/5anuPQUW1nchJv3X/LL1HqKjP/AB4j/rsf5Ci1+5N/1xP8xSYdSSxs7kX0JMfSVe49aiNlc5P7r9RS2H/H9B/12X+YqFup+tMOhavbO5M/Ef8AAncf3RRLZ3P2SIeV3buPao73/j4/7Zp/6CKJf+PSH/eb+lJbASRWdz9mlHld17j3osrO5FwD5X8Ldx/dNRRf8esv1X+tLY/8fA/3G/8AQTTBbifYrn/nl/48Km1CzuTfTER/8tW7j1qpU2o/8f8AN/11b+dHUOhJc2dyY4f3f/LL1H940CzufsJHl/8ALUdx6Go7r/Vwf9cf/ZmoH/Hif+uw/kaGBJbWdyBL+6/5ZHuPaktLO5F1EfL/AOWi9x61Ha9Jf+uR/mKxvHE2p23gvWLjRTILyPS7hrQw53iURsV245znGKAW5BqnxC8IafFqN/PrCNaaZfxw6jewo0kNrKFmBjd1BCsCQCP4Syg4LDODofxa8Dahr17fX2rOt6yqsFt9klaRbVVXa+0KSFJ6n14ODkVp/syfsQ+IfjD+wreQ/DX9uz4UaDe3kNxq/jfwF44urWxk0WzhupLeSWS4SWa7hcPbWJxLawwkXse2ZzkNueCv+CYaazBqGtar/wAFaf2bf+EzntoLXwpoPh3xtDqi6nK0m7yZXHlyQyeYU2CGC4Z2yAAQoblws6tOniHNJSlJcttnGyT5uz06XNYU6U8RT9o3yK97b+VuhzUn7RnwN+yxxH4n6SGV23KbjkdPaki/aN+BiwSqfihpOWAwPtHXmqlt/wAEhdF159K+HXhX9vT4U3nxMu/F+p6HrHhS41AxWmm/2euqvdzvOGa8VI10zcZJrGGBhdRFJpARuvt/wSM+AF78UtU8M6J/wVz/AGfv+EY01PKj8Qar4otra6vLk2aTqIrZbiSJoPMkWFpvtAZSspEbFAja87J5dSO1/aN+BiThn+KGkgYPP2j2qP8A4aK+B3/RT9J/8CKj8I/8Eh/htqWneILXxp/wVc/Zk0vWbOygm8OQWHxFgu7HUXeSVJI57pjE1rtEaMNkU5IlGVTHPz/+0z+y2n7NR0IL+0f8K/iCdcindv8AhWXi06p/Zxj8r5brMUfll/N+XG4HY/IKkUc7Fyn0Td/tGfAya8do/ihpBDPwftNdnbSwaxpVlqelXMVzbT2++GeCVWSRSzEEEHBFfGf7MXxf8F/BH4nL418d/Di38TWQsZYBZThCYnbGJFDgqSMFeezGvfP2WNSvNZ8FaxrR8ONpNhfeJ7u50fTgrCKC1kCOEiz1QOZACOMg+9YU8RXli5UnTaikmpXVm3e6te6tZatWdzjjWrvGzpOk1BJNTurSbbvFK9042Tu1Z302PSde1bTvC3h+XV9d1CCzhS4jCy3LjaXOdq4/iJPG3nPTBrjfH3xH8J2E1voV7cXFvdi4guXsZ7WQTRWxJYSMNvK4GM/3gR1BA5r9oDwc3j/4tfDHwjrPjO38MaDqHieKz1TxVqUebHRzNPAguZyWVAETzX+d0G1H+ZRuYewftFf8E8PiR4g8S2HxnH/BTD9m2bRvEWlW9t4c1PxH4vtNHubuATbJyLe0F3bf6PdS3EbywXMyjyWO4HKDSlKdLNadRr93Z8zXxX0cbLZ9d3pc6qkZSoOMd+nY860r42/C3TvEN/rmo+MLa3sbtrb7JezBlinwhzsYjDY//VV2b9ov4GtKzD4n6Tgscf6RW149/wCCTHhFPB+h3/hr/gqF8D/EXhPRJdLh8e6rpmo+aPDst5ew2SsDbNMs8SvOdktzJaAojsRGiyMj5f8Agir8KdO1eDWvE3/BUv4JaN4N13w9NfeC9d1PXrRbvU7qLykkt5YUvGto40nNxC01vd3QDW5wpJKoU5TjGz7v8zrxbo1KidO9rRWvdRSf5GLd/tG/Ax3Qp8UNJOIlB/0juBQ37RvwMNkkY+KGk7hKxI+0dsL/AIVnt/wSI8Gy+E4rqx/4Kp/ssSa8NSaO606b4oRxWSWpVNkyXLJ5kkm4uGiMChVUEO5batz4nf8ABIb4R6BEt58LP+CtP7NWuwx+cLtdc8eQ6dMCJCIvKSB7vzQ8e1mJKbGJX5gu83zs5uUfD+0b8DFhmVvihpILIAB9o6/MK0/BPxc+GPjTX4dE8LeO9Mvbx8mO2iul3vgEnap5bABPHYE9q+EK9o0v46eFNZ+CXhT4LeE/gxBD4q0rxDDe/wDCTWqgzOElMhcYXfu28Nk7QqZ7cc2IxNelKCp03Pmkk7NLlVn7zu9UtrLXU5MVWr0JU1SpOfNJKVmlyqz953aulZKyu9T6p+xXP/PL/wAeFS31ncm6ciP07j0qrU19/wAfb/UfyruOnoSG8uvsIPnt/rT39hRbXl0UmzO3EXr7ilNxD9iB+wx/608bm9B70W1xCUm/0GMfuv7zeo96Q+oljeXRvoQZ25lXv71Eb27BP79vzqaxuITfQgWMY/erzub1+tRG4gyf9Aj/AO+m/wAaYuhJe3t0J+J2+4nf/ZFEt5dfZIj57dW7/SlvbiET/wDHjGfkT+Jv7o96JbiH7JEfsMfVv4m9vektgEivLr7NKfPbqvf60WV5dG4AM7fdbv8A7JoiuIfs0p+wx9V/ib396WyuITcACxjHyt/E390+9MEQ/bbv/nu351Nf3l0t9MBO2PNbv71F9og/58Iv++n/AMal1C4hF9MDYxn963JZvX60uodBLm9uhHDidv8AVev+0aBeXX2Enz2/1o7+xpbm4hEcP+gx/wCq/vN/ePvQLiH7ET9hj/1o43N6H3oGJbXl0RJmdv8AVHv9KwPiRf3KfDzXnZROBot0TDJnbJ+5b5Tgg4PTgg1v21xCRJ/oMf8Aqj/E3t70yJrO4lW3n0yF0kYK6NuIYHgggnkUCTdz5l8Ma7+x948+D15rXxi8L+NofGMVvNdXOveG9NHl3d808ojhaSS5e3EPlywMUFtAyC3cCWQuqts+Gbv/AIJWobnR7nTfi0/22wlQar4iFoPsEqoWV4RZSffYgqPNjlQErkAbmHQax+zh4Rt9Qm8CaFrOo6fo2syS3NzYwPG3lMNp2xs6EhcqnDbj8owRVO4/YV+GEMgVfFniE5jVuZ7fuoP/ADx96utQpwhBwbd1d36O7Wn3E06k5SkpLZ6elkZd94r/AOCYp1HS/FUHw78csFu7m3v/AA5bwGK2a1EchinbfqEkpm3ywrlLlUb7PIxhjDKr0tB1f/glzZtZ3Wq+FPjVcPaXbSzW1xcaZJFephdsUhjeFlTKnPllXw7fP90r0LfsK/DBbdJR4s8Q5ZmBHn2/bH/TH3oj/YV+GDxSSHxZ4hygGP39v64/541z8jNeZHD+LdX/AOCeaa/pWseA/CfxUeD+3bafW9M1i5sVtfsPnA3FvAI3M2fLyqM027gBmyd4zf2ovEn7HHiufTtS/ZV8EeJvDRiBj1LS9ag3xTA5PnLM19cOGBwvl7QMEndkYPpNv+wt8MJZRG3izxCAQek9v6f9caZ/ww18Mf8Aoa/EP/f+3/8AjNPkkHMj5q8O+GvEfjDWYfDvhLw/e6pqFxu+z2OnWjzzS7VLttRAWbCqzHA4AJ7V9WfsX+Mte1f4V6g1zMqMmpiykkhTaZ4ora1Ee/sSqpGueMiNc5OSX+EP2SvCPwz8a2njHwh421yHUdLuPMs554rK4VHwRkxzWzxseeNynBweoFeh+C/BfhT4beE7Dwr4V0SOK1hiZmZ3Znlcu26R2z8zH17cAAAABxi07ibVjy39rT4gWtn4w8H2XxCtZ9R8P6hqck3iOG3TNzc2q3FtJNFGd6YL7VJAZCTGnzr1rE8SW/8AwTES5trzXtF+M+lXt1ZpJd6VoGn2dtbWsgJjO2O/nnmUP5ZlwZ5wBKB5mVKL6/8AEz4X+DPix4cTTfE2mFHtbtZLO9tZCs1u2DnaWyMHABUgg4BxkAjzdf2WvDPxWVPFHjHxlrT3iwPCDbNAi7UdyODGxySSTz37VuqNOVCdRt8yaSXTW9/yMvaSVWMEtGn+Fv8AMxdS8V/8E17LxRo3iPSPh14quNNuNEki1fQ7hJpfs10lxCEfaL6Ft8kIuPnW5eNC0R8kncgTxBrH/BLO0vbDSNH8JfFq8g0uZ0uNUt7mzjbVh5mfMlEjn5MDCiNLZth+b5+RrRfsL/DGSVUPivxDhmAP7+3/APjNEn7DHwxSRkHivxDwxH+vt/8A4zXPySNuZGNZat/wSstNJutIm8NfGy6a7mRk1Of+zBdWSLzth2TrCd54YyxycAbdhyTnw+M/+CeOneKfBotfhN44vdC0+61FvF41WdTfalE8WLMBoLyOMlJclhGkHyFQWkKs0nV3H7CvwwhZQvizxCcxq3M9v3Gf+eNDfsK/DAWqzjxZ4hy0jKR59v2A/wCmPvS5GHMjx39pPV/2afEHjaPWv2YfDuv6Jo0sG2fRdctxm2kXGGSU3dw0u7kkNs24AG7PGB4Fh8beHZLXx1pnh66bSbjUl0ma/ksXa0lkkALWxkxt8zYdwUEOBhhjANfQMX7CvwweKRz4s8Q5RQR+/t/UD/nj7113w3/Z48HeCLW38PDUbzU9Ni1qPVksdRhtiDeRxPHHIZEhWUhVd8Rl/Ly24qSAQ+Riujvftt3/AM92/Opb28uhdOBO3Ud/ao/tEH/PhF/30/8AjUt7cQi6cGxjPI5LN6fWtSegFbH7EP38uPNP/LIeg/2qLZbLZNieX/Vc/uh6j/aoNo/2IDzov9af+Wo9BRbWjhJv30X+q/56j1FIfULFbH7dDieXPmrj90PX/eqIpY5P7+X/AL9D/wCKqWxtHF7CfOi4lXpKPWojZvk/vov+/ooF0Jb1bHz+Z5fuJ/yyH90f7VEq2P2SL9/L1b/lkPb/AGqL20cz586L7if8tR/dFEto/wBkiHnRdW/5aj2oQCRLY/Zpf38vVf8AlkPf/apbJbL7QMTy/dbrEP7p/wBqkjtH+zSjzouq/wDLUe9LZ2ji4B86L7rdJR/dNAIi2WP/AD3m/wC/Q/8Aiql1BbL7dNmeXPmtnEQ9f96ovsb/APPaH/v6Klv7RzfTHzov9a3WUetHUOgXK2Plw5nl/wBVx+6H94/7VAWx+xH9/LjzR/yyHof9qi5tHMcP76L/AFX/AD1H940C0f7ER50X+tH/AC1HoaBiWy2OJMTy/wCqP/LIe3+1SWq2P2qPE8v+sH/LIev+9S21o4En76L/AFR/5aj2pLW0cXUZ86L/AFg/5aj1oEjD1VbP/hO9O/fS4+zT5/dD/Z/2q3r1bLzVzPL/AKmP/lkP7o/2q8q8QfHj4cQeJf8AhILTVZbzTdKM1vfajZW7yQpIccKQPnHT5lyPmHJzS3X7YXwJlkVk8R3eBGg/5Bc3UKAf4a6K6cYU76e7/wC3MzptOU7d/wBEeqSLY/Y4v38uN7/8sh/s/wC1RCtj9mmxPL0XP7oev+9XlT/tg/Ak20cQ8R3eVZif+JXN3x/s+1EX7YPwJWCVD4ju8sBj/iVzev8Au1zXXc1sz1SzWx+0DE8vQ/8ALIeh/wBqo9lj/wA95v8Av0P/AIqvL7b9sH4ExzB38R3eAD/zC5vT/dqP/hr34F/9DHd/+Cub/wCJp3XcVmes362X22XM8ud56RD/AOKouVsvIt8zy/6o4/dD++3+1Xlz/tc/BDUdQZLPXr2RpHJVU0ick9+gTNeh6HreieMfDth4i8M6zbXllc25aG4jlGG+dsgg8gg8EEAggggEUk13DqXlWx+xP+/lx5q/8sh6N/tVi/DVbT/hGxumkzmfOIx/fb3pfGvjPwt8OvDTa34u1yC1ga6SOIBt7yuQ2ERVyWP0HABJwATXnehftJ/DDwLYLonjC7vbG7aOSRYX0+R8o7NtOVBHYj2INdMYyeFm+l4/lIybSrxXk/0PWrdbHz0xPL98f8sh6/71E62PnPmeX7x/5ZD1/wB6vLIf2wPgUkyO3iO7wGBP/Erm/wDiaSX9r/4FNKzL4ju8FiR/xK5v/ia57rua2dj1e8Wy3pmeX/Up/wAsh6D/AGqHWy+wR/v5cec//LIei/7VeV3P7YXwJlZSniO74jUH/iVzdQP92hv2wvgSbRIR4ju9wkYn/iVzdCF/2fakmu47M9UgWx8ifE8v3Bn90P7w/wBqixWx+1pieXr/AM8h/wDFV5VF+2D8CUilRvEd3llAX/iVzf3gf7tbPgL9of4TeNvEFno2j+JHSe7mMdp9ss5YUmkAzsV3UKW9Fzk54zRddxHb7LH/AJ7zf9+h/wDFVLerZfanzPL1HSIen+9UX2N/+e0P/f0VLe2jm6c+dF26yj0qg6DDDN9hA8lv9af4T6Ci2hmCTZhb/Vf3T6igzzfYR++b/Wn+I+gotZ5tk375v9Uf4j6ihh1CwhmF9CTC3+tX+E+tRGCbJ/ct/wB8mpbCeY30OZm/1q/xH1qJp58n98/X+8aA6Et7BN5/+pb7ifwn+6KJYZvskQ8lurfwn2ovZ5vP/wBc33E/iP8AdFEs832SL983Vv4j7UlsAkUM32WUeS3Vf4T70tlDMLgZhb7rfwn+6aSKeb7LL++bqv8AEfelsp5vtA/fN91v4j/dNMFuQ+RP/wA8X/75NTahDMb+YiJv9a38PvUPnz/89n/76NTahPML+YCZv9a38R9aOodAuYJvLh/ct/qv7p/vGgQzfYSPJb/Wj+E+houZ5vLh/fN/qv7x/vGgTzfYT++b/Wj+I+hoYCW0MwEuYW/1R/hPtWH8QoL8+AdcFp+7l/se58qR3EYVvKbBLMQFAPckAdTW5bTzYl/fN/qj/EfasP4hXF8PAOuG0/eS/wBj3PlRugkDN5TYBVgQwJ7EEHoaHsC3POPhF8G/2B9c+Beh+DPi5+3TrHwt8WXAvJPHtlqHhbUtXjtbmO6kjhs4tPtdORCHhS3lN0dRYqylDbjdujbF+yT/AMEuprR5x/wV3ljkW7SNYJv2ftZBaIyIDKCs7D5UZmKnBJQqM5DHzfwb4t/Yz8R+ENO/4Xno/jk6+YrmfXdV8MWsRur68aeRoibi6vmh8jymQMi2aSB0z5rDIMukN/wTok1u7bXofjXDppsofsCWcukSTi43S+d5jMqqYwvk7cAEkyZwAucpVJzSUm3bReS8ilGMb2S1PMfif4d8G+EfiLrfhn4d/ESHxboNjqc0OjeJoNMnsl1O1DHy5/s84EkBZcExtnacjcwAY4Ve5+NvF/7A2tfs+6f4c8F/DPxfovxDttLtzfa+8f2m1u7xIh5qFX1AKkckm794sIKjGI+1eGVAwooooA9A/Zr+P2p/s3fEf/hYmleF7HV3NjLata3xIAV8HcrAEqQVH1BI719CfssnxTrng/XfFOu6Itq+reJJ9TS1tkASGKeOB1IQZMakvlQ2CVdWGQyk/KHgjwV4j+Iviqz8F+ErSGfUr9ylpBPexW6yMFLbd8zKgJAIAJGTgDJIB+n/ANi3xD4h1L4T3h1LUJXEerNbQPwpeCOC3CKxGC4XAUbskBFUcIoGNLCYaGMliVH35JJvuldpfK7OOOBwlPGTxcYfvJJRb7qLbS7aXf3h+0Z4L8Oa18U/h0PjBqep6L4Hg8QrB4y1mwt99xpllJcWyTTpHtdiyJu5Eb4YoCrFlRtfxX+zx/wS8+I+tyeKtZ/4Kx3ehNNM0Nvo8/ws1vxFJaQITsZ7/wCyaaJt5zJhbSPyzJs/ebDK3NftaeLrXTfF3gqDx8b698L3WqPL4ls7Zv3t5Ak1u8kYbcjElcnaHQMyoSwKqy8bd6l/wTn1BRfX+jfFaC9mmfz4PD1vY2dhAgOE8qK7ub2ckgDcHuG+YkggYUdcqk0nBN2e66HUoxbUmlch+N3wJ/Y08FfBTSvH/wAEP28B458W3c1t/afgG7+F+o6RLYRSRu0h+1yPLbyyROERkVtrbmZHbaA3iNe3eNtY/wCCfenfD7WtO+FHhv4lX3iC8s4l0u98YxWgSynWeNmdGs7lFCtF5ykSRTfMYyu3awfN/ah8R/sb+Kf7Kv8A9lbwT4n8NvBEYtW07W4N8VwcsROszX07Bh8q7AiqeWyPunIo8jooooAK9m0j9ovxl42+Cfhz9mfRvAemqmjawl+NYhG2YJHIZS5JwqEAnc5PIGO9eM11Xgfw/wCO9LsrP4l6AiLp7a/Fo0sqXcLO00qlvKaAsXKPGH+YpsO0jORiuevhMPipU3VjdwkpR8pK6T/FnJisDhMbKnKvDmdOSnHykk0n9zZ9yeRP/wA8X/75NTX0MxunIhbt/CfSofPn/wCez/8AfRqa+nm+1P8Avm6j+I+legdHQebxvsQPkQ/60/8ALIegotrxik37iH/Vf88h6igtY/Yh+4lx5p/5aj0H+zRbNZbJsQS/6rn96PUf7NIfULG8Y3sI8iHmVekQ9aiN42T/AKPD/wB+hUti1j9uhxBLnzVx+9Hr/u1EXscn9xL/AN/R/wDE0C6Et5eMJ8eRD9xP+WQ/uiiW8b7JEfIh6t/yyHtRetY+fzBL9xP+Wo/uj/Zolax+yRfuJerf8tR7f7NCAIrxvs0p8iHqv/LIe9FneMbgDyIfut0iH900kTWP2aX9xL1X/lqPf/ZpbJrL7QMQS/dbrKP7p/2aARF9tb/n3h/79Cpr+8YX0w8iH/Wt1iHrUO+x/wCeE3/f0f8AxNS6g1l9umzBLnzWziUev+7R1DoFzeMI4f3EP+q/55D+8aBeN9iJ8iH/AFo/5ZD0NFy1j5cOYJf9Vx+9H94/7NAax+xH9xLjzR/y1Hof9mgYW14xEn7iH/VH/lkPaktbxjdRj7PD/rB/yyHrRbNY4kxBL/qj/wAtR7f7NJatY/ao8QS/6wf8tR6/7tAkeZ63+yn8DdY1WfUpPCDW7TSs7xWd7LFGCTk7UVsKPYAAdgKguv2PPgRFIqp4cu8GND/yFZ+pUE/xV6jI1j5jZgl6n/lqP/iakvWsvNXMEv8AqY/+Wo/uj/ZpWV9h3Z5U/wCx58CBbJKPDl3lmYH/AIms/bH+170RfsefAloZHPhy7yoGP+JrP6/71eqyNY/Y4v3EuN7/APLUf7P+zRC1j9mmxBL0XP70ev8Au0WXYLs8qtv2PfgTJMEfw5d4IP8AzFZ/T/eqP/hkD4F/9C7d/wDg0n/+Kr1izax+0DEEvQ/8tR6H/ZqPfY/88Jv+/o/+Jp8q7Cuzz3Rf2YvhX4H8TReIvB0esaXqFlKWtL/TvEF1BPCcEErIkgZTgkZBHBNdzoWi6H4O8O2HhzwzotrZ2VtAVhgji4X52JJJ5JJySSSSSSSSavX7WX22XMEud56Sj/4mi5ay8i3zBL/qjj96P77f7NCSHdmL458E+EviV4XfQPGWgW93bi4R4/lKPG4DfMrqQyntweQSDwa4S3/Y8+BMhcN4cu+I2I/4ms/UD/er1VWsfsT/ALiXHmr/AMtR6N/s0WjWO6TEEv8Aqm/5aj0/3aVkxJs8oh/Y++BLzIjeHLvBYA/8TWf/AOKol/Y/+BSSso8OXeAxA/4ms/8A8VXqlu1j56Ygl++P+Wo9f92idrHznzBL94/8tR6/7tPlXYLux5bc/sefAiJlCeHLvmNSf+JrP1I/3qG/Y8+BAtEmHhy73GRgf+JrP0AX/a969VvGst6Zgl/1Kf8ALUeg/wBmh2svsEf7iXHnP/y1Hov+zSsuw7s8qi/Y8+BDxSu3hy7yigj/AIms/qB/e966P4f/AAU8A+BZbey0O0vWtINRF/Bp13qs81ql2I2jW5EDOY/NCMyiQqWUE4IrsoGsfInxBL9wZ/ej+8P9mixax+1piCXr/wA9R/8AE0WXYSbIvtrf8+8P/foVLe3jC6ceRD1HWIelRb7H/nhN/wB/R/8AE1LetZfanzBL1HSUen+7VB0A28P2ID7dH/rTztb0HtRbW8ISb/Toz+6/ut6j2oNjd/YgPs7Z809vYUW1jdhJs27cxenuKQ+oWNvCL6Ei+jP71eNrev0qI28GT/p8f/fLf4VLY2N2L2Em3bAlXPHvURsbwk/6M/5UC6Et7bwmf/j+jHyJ/C390e1EtvD9kiH26Pq38Le3tRe2N2Z8i3b7idv9kUS2N39kiH2duC3b6UIBIreH7NKPt0fVf4W9/alsreEXAIvoz8rfwt/dPtSR2N39mlH2duSvb60tnY3a3AJt2+63b/ZNAIi+zwf8/wDF/wB8v/hUuoW8Jvpib6MfvW4Kt6/SovsF5/z7P+VS39ldtfTMLdsGVu3vR1DoFzbwmOH/AE6P/Vf3W/vH2oFvD9iI+3R/60c7W9D7UXNjdmOHFu3EXp/tGgWN39iK/Z2z5o7exoGJbW8IEn+nR/6o/wALe3tSWtvALqM/boz+8H8Lev0pbaxuwJM27cxHt9KS1sbwXUZNu3+sHb3oEhslvB5jf6dH1P8AC3+FSXtvCZVzfRj9zH/C390e1RyWN4ZGIt26ntUl7ZXZlXFu3+pj7f7Io6gElvD9jiH26P7787W/2faiG3h+zTf6dH0X+FvX6USWN39jiH2dvvv2/wB2iGxuxbzA27chcce9AxLO3hFwP9OjPB/hb0PtUf2eD/n/AIv++X/wqSzsbsXAJt26Ht7Go/sF5/z7P+VMWpLf28JvZSb6MfOeCrf4UXNvD5Fv/p0f+qP8Lf329qL+xu2vZSLdsbz2ouLK7MEAFu3ERzx/ttSQwW3h+xOPt0f+tXna3o3tRaW8IaT/AE6P/VN/C3p9KFsbv7C4+zt/rV7ezUWtjdhnzbt/qm7e1AluMt7eDz0/06P74/hb1+lE9vB5z/6dH94/wt6/Si3sbwToTbt98dveiexvDM5Fu33j296YdB95bwl0/wBOjH7lP4W9B7UPbw/YIx9uj/1z87W9F9qLyxuy6Yt2/wBSnb/ZFD2V39hjX7O2fOft7LSQwgt4fIn/ANOj+4P4W/vD2osbeEXaEX0Z5/ut/hRBY3YgnBt25Qdv9oUWVjdrdITbt19KBIi+zwf8/wDF/wB8v/hUt7bwm6cm+jHI4Kt6fSovsF5/z7P+VS3tjdtdORbt27e1MOh//9k="/>
+        </Network>
+    </WorkspaceAnnotations>
+    <AnimationController>
+        <Properties>
+            <Property type="org.inviwo.CompositeProperty" identifier="PlayOptions">
+                <Properties/>
+                <collapsed content="1"/>
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="RenderOptions">
+                <Properties>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="image">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="ffmpeg">
+                        <Properties>
+                            <Property type="org.inviwo.FileProperty" identifier="file">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                    <Property type="org.inviwo.BoolCompositeProperty" identifier="exporter">
+                        <Properties>
+                            <Property type="org.inviwo.DirectoryProperty" identifier="outputDirectory">
+                                <absolutePath content=""/>
+                                <workspaceRelativePath content=""/>
+                                <ivwdataRelativePath content=""/>
+                            </Property>
+                        </Properties>
+                    </Property>
+                </Properties>
+                <collapsed content="1"/>
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="controlOptions">
+                <Properties/>
+                <collapsed content="1"/>
+            </Property>
+        </Properties>
+    </AnimationController>
+    <MainAnimationIndex content="0"/>
+    <Animations>
+        <Animation>
+            <name content="Animation 1"/>
+        </Animation>
+    </Animations>
+</InviwoWorkspace>
