@@ -1743,7 +1743,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 
 void InviwoMainWindow::VisibleWidgets::hide(InviwoMainWindow* win) {
     dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(), [](const auto* w) {
-        return w->isVisible() && dynamic_cast<ProcessorDockWidgetQt*>(w) == nullptr;
+        return w->isVisible() && dynamic_cast<const ProcessorDockWidgetQt*>(w) == nullptr;
     });
     processors = util::copy_if(
         win->getInviwoApplication()->getProcessorNetwork()->getProcessors(), [](const auto* p) {
