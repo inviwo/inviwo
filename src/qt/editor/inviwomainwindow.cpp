@@ -489,7 +489,7 @@ void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::str
 }
 
 void InviwoMainWindow::addActions() {  // NOLINT
-    auto menu = menuBar();
+    auto* menu = menuBar();
 
     auto* fileMenuItem = menu->addMenu(tr("&File"));
     menu->addMenu(editMenu_);
@@ -666,7 +666,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                 [this, recentWorkspaceMenu, clearRecentWorkspaces]() {
                     auto actions = recentWorkspaceMenu->actions();
                     actions.pop_back();  // ignore the clear Item.
-                    for (auto elem : actions) {
+                    for (auto* elem : actions) {
                         elem->setVisible(false);
                     }
                     // save empty list
@@ -679,10 +679,10 @@ void InviwoMainWindow::addActions() {  // NOLINT
                     qApp->installEventFilter(menuEventFilter_);
                     menuEventFilter_->add(recentWorkspaceMenu);
 
-                    auto size = app_->getSettingsByType<EditorSettings>()->numRecentFiles;
+                    const auto size = app_->getSettingsByType<EditorSettings>()->numRecentFiles;
 
                     while (recentWorkspaceMenu->actions().size() < size + 1) {
-                        auto action = new QAction(this);
+                        auto* action = new QAction(this);
                         action->setVisible(false);
                         recentWorkspaceMenu->insertAction(recentWorkspaceMenu->actions().front(),
                                                           action);
@@ -704,7 +704,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                     auto actions = recentWorkspaceMenu->actions();
                     actions.pop_back();  // ignore the clear Item.
 
-                    for (auto elem : actions) {
+                    for (auto* elem : actions) {
                         elem->setVisible(false);
                     }
 
@@ -750,7 +750,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                 // only accept inviwo workspace files
                 if (file.extension() != ".inv") continue;
                 const auto qFile = utilqt::toQString(file);
-                auto action = menu->addAction(qFile);
+                auto* action = menu->addAction(qFile);
                 menuEventFilter_->add(action, qFile);
                 const auto path = moduleWorkspacePath / file;
                 connect(action, &QAction::triggered, this, [this, path]() {
@@ -801,7 +801,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                     // only accept inviwo workspace files
                     if (file.extension() != ".inv") continue;
                     auto qFile = utilqt::toQString(file);
-                    auto action = menu->addAction(qFile);
+                    auto* action = menu->addAction(qFile);
                     menuEventFilter_->add(action, qFile);
                     auto path = testDir / file;
                     connect(action, &QAction::triggered, this, [this, path]() {
@@ -834,7 +834,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
     if (app_->getModuleManager().isRuntimeModuleReloadingEnabled()) {
         fileMenuItem->addSeparator();
-        auto reloadAction = new QAction(tr("&Reload modules"), this);
+        auto* reloadAction = new QAction(tr("&Reload modules"), this);
         connect(reloadAction, &QAction::triggered, this,
                 [&]() { app_->getModuleManager().reloadModules(); });
         fileMenuItem->addAction(reloadAction);
@@ -843,7 +843,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
 #ifndef IVW_RELEASE
     {
         fileMenuItem->addSeparator();
-        auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");
+        auto* reloadStyle = fileMenuItem->addAction("Reload Style sheet");
         connect(reloadStyle, &QAction::triggered, [](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
@@ -855,7 +855,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
     {
         fileMenuItem->addSeparator();
-        auto exitAction = new QAction(QIcon(":/svgicons/exit.svg"), tr("&Exit"), this);
+        auto* exitAction = new QAction(QIcon(":/svgicons/exit.svg"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
         connect(exitAction, &QAction::triggered, this, &InviwoMainWindow::close);
         fileMenuItem->addAction(exitAction);
@@ -863,7 +863,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
     // Edit
     {
-        auto front = editMenu_->actions().front();
+        auto* front = editMenu_->actions().front();
         editMenu_->insertAction(front, undoManager_.getUndoAction());
         editMenu_->insertAction(front, undoManager_.getRedoAction());
         editMenu_->insertSeparator(front);
@@ -871,7 +871,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         // here will the cut/copy/paste/del/select already in the menu be.
 
         editMenu_->addSeparator();
-        auto searchNetwork =
+        auto* searchNetwork =
             editMenu_->addAction(QIcon(":/svgicons/find-network.svg"), tr("&Search Network"));
         searchNetwork->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
@@ -879,7 +879,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             networkEditorView_->getNetworkSearch().setFocus();
         });
 
-        auto findAction =
+        auto* findAction =
             editMenu_->addAction(QIcon(":/svgicons/find-processor.svg"), tr("&Find Processor"));
         findAction->setShortcut(QKeySequence::Find);
         connect(findAction, &QAction::triggered, this, [this]() {
@@ -887,7 +887,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             processorTreeWidget_->focusSearch();
         });
 
-        auto addProcessorAction =
+        auto* addProcessorAction =
             editMenu_->addAction(QIcon(":/svgicons/processor-add.svg"), tr("&Add Processor"));
         addProcessorAction->setShortcut(Qt::CTRL | Qt::Key_D);
         connect(addProcessorAction, &QAction::triggered, this,
@@ -933,7 +933,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         QIcon enableDisableIcon;
         enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::Off);
         enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::On);
-        auto disableEvalAction =
+        auto* disableEvalAction =
             new QAction(enableDisableIcon, tr("Disable &Network Evaluation"), this);
         disableEvalAction->setCheckable(true);
         disableEvalAction->setChecked(false);
@@ -953,7 +953,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             }
         });
 
-        auto compAction = networkMenuItem->addAction(
+        auto* compAction = networkMenuItem->addAction(
             QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Composite"));
         compAction->setEnabled(false);
         networkToolBar->addAction(compAction);
@@ -962,15 +962,15 @@ void InviwoMainWindow::addActions() {  // NOLINT
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
 
-        auto expandAction = networkMenuItem->addAction(
+        auto* expandAction = networkMenuItem->addAction(
             QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
         networkToolBar->addAction(expandAction);
         expandAction->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_G);
         expandAction->setEnabled(false);
         connect(expandAction, &QAction::triggered, this, [this]() {
-            for (auto item : networkEditor_->selectedItems()) {
-                if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
-                    if (auto comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
+            for (auto* item : networkEditor_->selectedItems()) {
+                if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                    if (auto* comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
                         util::expandCompositeProcessorIntoNetwork(*comp);
                     }
                 }
@@ -981,8 +981,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
             bool selectedProcessor = false;
             bool selectedComposite = false;
 
-            for (auto item : networkEditor_->selectedItems()) {
-                if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+            for (auto* item : networkEditor_->selectedItems()) {
+                if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                     selectedProcessor = true;
                     if (dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
                         selectedComposite = true;
@@ -997,28 +997,28 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
     {
         networkMenuItem->addSeparator();
-        auto invalidateNetwork = networkMenuItem->addAction("Invalidate All Output");
+        auto* invalidateNetwork = networkMenuItem->addAction("Invalidate All Output");
         connect(invalidateNetwork, &QAction::triggered, [this](bool /*state*/) {
-            NetworkLock lock(app_->getProcessorNetwork());
-            auto processors = app_->getProcessorNetwork()->getProcessors();
-            for (const auto& p : processors) {
-                p->invalidate(InvalidationLevel::InvalidOutput);
+            auto* net = app_->getProcessorNetwork();
+            const NetworkLock lock{net};
+            for (auto& p : net->processorRange()) {
+                p.invalidate(InvalidationLevel::InvalidOutput);
             }
         });
 
         auto invalidateResourcesNetwork = networkMenuItem->addAction("Invalidate All Resources");
         connect(invalidateResourcesNetwork, &QAction::triggered, [this](bool /*state*/) {
-            NetworkLock lock(app_->getProcessorNetwork());
-            auto processors = app_->getProcessorNetwork()->getProcessors();
-            for (const auto& p : processors) {
-                p->invalidate(InvalidationLevel::InvalidResources);
+            auto* net = app_->getProcessorNetwork();
+            const NetworkLock lock{net};
+            for (auto& p : net->processorRange()) {
+                p.invalidate(InvalidationLevel::InvalidResources);
             }
         });
     }
 #if IVW_PROFILING
     {
         networkMenuItem->addSeparator();
-        auto resetTimeMeasurementsAction =
+        auto* resetTimeMeasurementsAction =
             new QAction(QIcon(":/svgicons/timer.svg"), tr("Reset All Time Measurements"), this);
         resetTimeMeasurementsAction->setCheckable(false);
         resetTimeMeasurementsAction->setShortcut(Qt::SHIFT | Qt::CTRL | Qt::Key_R);
@@ -1060,8 +1060,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
     // Windows
     {
-        auto showAllAction = new QAction("&Show All", this);
-        auto hideAllAction = new QAction("&Hide All", this);
+        auto* showAllAction = new QAction("&Show All", this);
+        auto* hideAllAction = new QAction("&Hide All", this);
         windowMenuItem->addAction(showAllAction);
         windowMenuItem->addAction(hideAllAction);
         addAction(showAllAction);
@@ -1074,18 +1074,18 @@ void InviwoMainWindow::addActions() {  // NOLINT
         hideAllAction->setShortcutContext(Qt::ApplicationShortcut);
 
         QObject::connect(showAllAction, &QAction::triggered, this, [this]() {
-            for (const auto p : detail::getWidgetProcessors(app_)) {
+            for (const auto* p : detail::getWidgetProcessors(app_)) {
                 p->getProcessorWidget()->setVisible(true);
             }
-            for (const auto dockWidget : detail::getFloatingDockWidgets(this)) {
+            for (auto* dockWidget : detail::getFloatingDockWidgets(this)) {
                 dockWidget->show();
             }
         });
         QObject::connect(hideAllAction, &QAction::triggered, this, [this]() {
-            for (const auto p : detail::getWidgetProcessors(app_)) {
+            for (const auto* p : detail::getWidgetProcessors(app_)) {
                 p->getProcessorWidget()->setVisible(false);
             }
-            for (const auto dockWidget : detail::getFloatingDockWidgets(this)) {
+            for (auto* dockWidget : detail::getFloatingDockWidgets(this)) {
                 dockWidget->hide();
             }
         });
@@ -1100,41 +1100,41 @@ void InviwoMainWindow::addActions() {  // NOLINT
                 const auto widgetProcessors = detail::getWidgetProcessors(app_);
                 if (!widgetProcessors.empty()) windowMenuItem->addSeparator();
 
-                for (const auto p : widgetProcessors) {
-                    auto item =
+                for (auto* p : widgetProcessors) {
+                    auto* item =
                         windowMenuItem->addMenu(QString("%1 (%2)")
                                                     .arg(utilqt::toQString(p->getDisplayName()))
                                                     .arg(utilqt::toQString(p->getIdentifier())));
-                    auto visible = item->addAction("Visible");
+                    auto* visible = item->addAction("Visible");
                     visible->setCheckable(true);
                     visible->setChecked(p->getProcessorWidget()->isVisible());
                     QObject::connect(visible, &QAction::toggled, this, [p](bool toggle) {
                         p->getProcessorWidget()->setVisible(toggle);
                     });
 
-                    auto opTop = item->addAction("On Top");
+                    auto* opTop = item->addAction("On Top");
                     opTop->setCheckable(true);
                     opTop->setChecked(p->getProcessorWidget()->isOnTop());
                     QObject::connect(opTop, &QAction::toggled, this, [p](bool toggle) {
                         p->getProcessorWidget()->setOnTop(toggle);
                     });
 
-                    auto fullScreen = item->addAction("Full Screen");
+                    auto* fullScreen = item->addAction("Full Screen");
                     fullScreen->setCheckable(true);
                     fullScreen->setChecked(p->getProcessorWidget()->isFullScreen());
                     QObject::connect(fullScreen, &QAction::toggled, this, [p](bool toggle) {
                         p->getProcessorWidget()->setFullScreen(toggle);
                     });
 
-                    auto raise = item->addAction("Raise");
+                    auto* raise = item->addAction("Raise");
                     QObject::connect(raise, &QAction::triggered, this, [p]() {
-                        if (auto w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
+                        if (auto* w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
                             w->raise();
                         }
                     });
-                    auto lower = item->addAction("Lower");
+                    auto* lower = item->addAction("Lower");
                     QObject::connect(lower, &QAction::triggered, this, [p]() {
-                        if (auto w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
+                        if (auto* w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
                             w->lower();
                         }
                     });
@@ -1143,8 +1143,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
                 const auto dockWidgets = detail::getFloatingDockWidgets(this);
                 if (!dockWidgets.empty()) windowMenuItem->addSeparator();
 
-                for (const auto dockWidget : dockWidgets) {
-                    auto action =
+                for (auto* dockWidget : dockWidgets) {
+                    auto* action =
                         windowMenuItem->addAction(QString("%1").arg(dockWidget->windowTitle()));
                     action->setCheckable(true);
                     action->setChecked(dockWidget->isVisible());
@@ -1158,7 +1158,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     {
         helpMenuItem->addAction(helpWidget_->toggleViewAction());
 
-        auto aboutBoxAction =
+        auto* aboutBoxAction =
             new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&About"), this);
         connect(aboutBoxAction, &QAction::triggered, this, &InviwoMainWindow::showAboutBox);
         helpMenuItem->addAction(aboutBoxAction);
@@ -1439,7 +1439,7 @@ void InviwoMainWindow::showWelcomeScreen() {
     // the main window.
     visibleWidgetState_.hide(this);
 
-    auto welcomeWidget = getWelcomeWidget();
+    auto* welcomeWidget = getWelcomeWidget();
     centralWidget_->addWidget(welcomeWidget);
     centralWidget_->setCurrentWidget(welcomeWidget);
     welcomeWidget->enableRestoreButton(hasRestoreWorkspace());
@@ -1672,7 +1672,7 @@ ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }
 void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { dragMoveEvent(event); }
 
 void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
-    auto mimeData = event->mimeData();
+    auto* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = mimeData->urls();
         std::filesystem::path filename = utilqt::toPath(urlList.front().toLocalFile());
@@ -1742,27 +1742,27 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
 }
 
 void InviwoMainWindow::VisibleWidgets::hide(InviwoMainWindow* win) {
-    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(), [](const auto w) {
+    dockwidgets = util::copy_if(win->findChildren<QDockWidget*>(), [](const auto* w) {
         return w->isVisible() && dynamic_cast<ProcessorDockWidgetQt*>(w) == nullptr;
     });
     processors = util::copy_if(
-        win->getInviwoApplication()->getProcessorNetwork()->getProcessors(), [](const auto p) {
+        win->getInviwoApplication()->getProcessorNetwork()->getProcessors(), [](const auto* p) {
             return p->hasProcessorWidget() && p->getProcessorWidget()->isVisible();
         });
 
-    for (const auto p : processors) {
+    for (const auto* p : processors) {
         p->getProcessorWidget()->setVisible(false);
     }
-    for (const auto dockWidget : dockwidgets) {
+    for (auto* dockWidget : dockwidgets) {
         dockWidget->hide();
     }
 }
 
 void InviwoMainWindow::VisibleWidgets::show() {
-    for (const auto p : processors) {
+    for (const auto* p : processors) {
         p->getProcessorWidget()->setVisible(true);
     }
-    for (const auto dockWidget : dockwidgets) {
+    for (auto* dockWidget : dockwidgets) {
         dockWidget->show();
     }
     processors.clear();
