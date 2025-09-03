@@ -43,7 +43,9 @@ class IVW_MODULE_BASE_API AmiraVolumeReader : public DataReaderType<Volume> {
 public:
     AmiraVolumeReader();
     AmiraVolumeReader(const AmiraVolumeReader& rhs) = default;
+    AmiraVolumeReader(AmiraVolumeReader&& rhs) noexcept = default;
     AmiraVolumeReader& operator=(const AmiraVolumeReader& that) = default;
+    AmiraVolumeReader& operator=(AmiraVolumeReader&& that) noexcept = default;
     virtual AmiraVolumeReader* clone() const override;
     virtual ~AmiraVolumeReader() = default;
 

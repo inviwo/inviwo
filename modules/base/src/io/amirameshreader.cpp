@@ -43,31 +43,44 @@
 #include <vector>
 #include <fstream>
 #include <map>
+#include <numeric>
 #include <fmt/std.h>
 
 namespace inviwo {
 
+// TODO: implement support for HxTriangularGrid
+// see https://github.com/strawlab/py_amira_file_reader/blob/master/tests/data/hybrid-testgrid-2d.am
+
 namespace {
 
-void processLines(std::ifstream& fs, std::shared_ptr<Mesh> mesh) {
+void checkContentType(std::string_view str, const std::filesystem::path& path) {
+    if (!str.ends_with(R"("HxLineSet")")) {
+        throw DataReaderException(
+            SourceContext{},
+            "Unsupported AmiraMesh content type: {} ({})\nOnly \"HxLineSet\" is supported.", str,
+            path);
+    }
+}
+
+void processLines(std::ifstream& fs, Mesh& mesh) {
     std::string line;
     std::vector<uint32_t> indices;
     while (std::getline(fs, line) && !line.empty()) {
-        uint32_t index = 0;
+        int64_t index = -1;
         std::istringstream i(line);
         i >> index;
 
         if (index == -1) {
-            mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
-                             util::makeIndexBuffer(std::move(indices)));
+            mesh.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
+                            util::makeIndexBuffer(std::move(indices)));
             indices.clear();
         } else {
-            indices.push_back(index);
+            indices.push_back(static_cast<uint32_t>(index));
         }
     }
 }
 
-void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh) {
+void processVertices(std::ifstream& fs, Mesh& mesh) {
     std::string line;
     std::vector<vec3> vertices;
     while (std::getline(fs, line) && !line.empty()) {
@@ -78,22 +91,22 @@ void processVertices(std::ifstream& fs, std::shared_ptr<Mesh> mesh) {
         i >> x;
         i >> y;
         i >> z;
-        vertices.push_back({x, y, z});
+        vertices.emplace_back(x, y, z);
     }
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                    util::makeBuffer(std::move(vertices)));
+    mesh.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
+                   util::makeBuffer(std::move(vertices)));
 }
 
-void processVertexData(std::ifstream& fs, std::shared_ptr<Mesh> mesh) {
+void processVertexData(std::ifstream& fs, Mesh& mesh) {
     std::string line;
     std::vector<float> vertexData;
     while (std::getline(fs, line) && !line.empty()) {
-        float imp;
+        float imp = 0.0f;
         std::istringstream i(line);
         i >> imp;
         vertexData.push_back(imp);
     }
-    mesh->addBuffer(Mesh::BufferInfo(BufferType::Unknown), util::makeBuffer(std::move(vertexData)));
+    mesh.addBuffer(Mesh::BufferInfo(BufferType::Unknown), util::makeBuffer(std::move(vertexData)));
 }
 
 }  // namespace
@@ -119,6 +132,14 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
         throw DataReaderException(SourceContext{}, "Unsupported AmiraMesh format: {}", path);
     }
 
+    auto extractIndex = [](const std::string& str) {
+        int index = 0;
+        std::istringstream i(str.substr(str.find('@') + 1));
+        i >> index;
+        return index;
+    };
+
+    int nVertices = 0;
     std::map<int, AmiraDataType> bufferMap;
     while (std::getline(f, line)) {
         if (line.empty()) continue;
@@ -128,25 +149,17 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
             l >> nLines;
         } else if (line.starts_with("nVertices")) {
             std::istringstream v(line.substr(10));
-            int nVertices = 0;
             v >> nVertices;
         } else if (line.contains("Lines { int LineIdx }")) {
-            int index;
-            std::istringstream i(line.substr(line.find("@") + 1));
-            i >> index;
-            bufferMap.insert({index, AmiraDataType::Lines});
+            bufferMap.insert({extractIndex(line), AmiraDataType::Lines});
         } else if (line.contains("Vertices { float[3] Coordinates }")) {
-            int index;
-            std::istringstream i(line.substr(line.find("@") + 1));
-            i >> index;
-            bufferMap.insert({index, AmiraDataType::Vertices});
-        } else if (line.contains("Vertices { float Data")) {
-            int index;
-            std::istringstream i(line.substr(line.find("@") + 1));
-            i >> index;
-            bufferMap.insert({index, AmiraDataType::VertexData});
+            bufferMap.insert({extractIndex(line), AmiraDataType::Vertices});
+        } else if (line.contains("Vertices { float Data }")) {
+            bufferMap.insert({extractIndex(line), AmiraDataType::VertexData});
         } else if (line == "# Data section follows") {
             break;
+        } else if (trim(line).starts_with("ContentType")) {
+            checkContentType(line, path);
         }
     }
 
@@ -154,16 +167,21 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
     auto mesh = std::make_shared<Mesh>();
     while (std::getline(f, line)) {
         if (line.starts_with("@")) {
-            int index;
-            std::istringstream i(line.substr(line.find("@") + 1));
-            i >> index;
-            if (const AmiraDataType at = bufferMap[index]; at == AmiraDataType::Lines)
-                processLines(f, mesh);
-            else if (at == AmiraDataType::Vertices)
-                processVertices(f, mesh);
-            else if (at == AmiraDataType::VertexData)
-                processVertexData(f, mesh);
+            if (const AmiraDataType at = bufferMap[extractIndex(line)];
+                at == AmiraDataType::Lines) {
+                processLines(f, *mesh);
+            } else if (at == AmiraDataType::Vertices) {
+                processVertices(f, *mesh);
+            } else if (at == AmiraDataType::VertexData) {
+                processVertexData(f, *mesh);
+            }
         }
+    }
+
+    if (auto vertexCount = mesh->getBuffer(BufferType::PositionAttrib)->getSize();
+        vertexCount != nVertices) {
+        log::error("Vertex count does not match. Expected {} vertices and found {}: {}", nVertices,
+                   vertexCount, path);
     }
 
     return mesh;
