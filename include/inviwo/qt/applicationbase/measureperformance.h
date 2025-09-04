@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2022-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/editorgraphicsitem.h>
-#include <inviwo/core/processors/progressbar.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QEvent>
-#include <warn/pop>
+#include <inviwo/qt/applicationbase/qtapplicationbasemoduledefine.h>
 
-namespace inviwo {
+#include <chrono>
 
-class IVW_QTEDITOR_API ProcessorProgressGraphicsItem : public EditorGraphicsItem,
-                                                       public ProgressBarObserver {
-public:
-    ProcessorProgressGraphicsItem(QGraphicsRectItem* parent, ProgressBar* processor);
-    virtual ~ProcessorProgressGraphicsItem() {}
+#include <QPoint>
+#include <QWidget>
 
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = static_cast<int>(UserType) + static_cast<int>(ProcessorProgressGraphicsType) };
-    int type() const override { return Type; }
+namespace inviwo::utilqt {
 
-protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+IVW_QTAPPLICATIONBASE_API void simulateMouseDrag(QWidget& widget, size_t count,
+                                                 QPoint length = QPoint{5, 0});
 
-    // ProgressBarObserver methods
-    /**
-     * This method will be called when observed object changes.
-     * @param progress New progress between [0 1]
-     */
-    virtual void progressChanged(float progress) override;
-    /**
-     * This method will be called when observed object changes.
-     * @param visibility state that ProgressBar changed into
-     */
-    virtual void progressBarVisibilityChanged(bool visibility) override;
+IVW_QTAPPLICATIONBASE_API std::chrono::high_resolution_clock::duration measureSimulateMouseDrag(
+    QWidget& widget, size_t count, QPoint length = QPoint{5, 0});
 
-private:
-    QSize size_;
-    ProgressBar* progressBar_;
-};
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

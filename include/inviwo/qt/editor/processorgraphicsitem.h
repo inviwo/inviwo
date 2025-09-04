@@ -31,27 +31,69 @@
 
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/processors/activityindicator.h>
+#include <inviwo/core/processors/progressbar.h>
+#include <inviwo/core/metadata/processormetadata.h>
+
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgraphicsitem.h>
 #include <inviwo/qt/editor/processorerroritem.h>
+
 #include <modules/qtwidgets/labelgraphicsitem.h>
-#include <inviwo/core/metadata/processormetadata.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QEvent>
 #include <QPropertyAnimation>
 #include <QStaticText>
 #include <QFont>
+#include <QTimer>
+#include <QElapsedTimer>
 #include <warn/pop>
+
+#include <optional>
 
 class QGraphicsSimpleTextItem;
 class QGraphicsLineItem;
 
 namespace inviwo {
 
+template <size_t minIntervalMs, typename F>
+class RateLimitier {
+public:
+    explicit RateLimitier(F function = {})
+        : function{std::move(function)}, timer_{}, callScheduled_{false} {
+        timer_.start();
+    }
+
+    template <typename... Args>
+    void operator()(QObject* owner, Args&&... args) {
+        if (!callScheduled_) {
+            if (timer_.hasExpired(minIntervalMs)) {
+                invoke(std::forward<Args>(args)...);
+            } else {
+                callScheduled_ = true;
+                QTimer::singleShot(minIntervalMs - timer_.elapsed(), owner,
+                                   [this, ... a = std::forward<Args>(args)]() { invoke(a...); });
+            }
+        }
+    }
+
+    F function;
+
+private:
+    template <typename... Args>
+    void invoke(Args&&... args) {
+        timer_.restart();
+        callScheduled_ = false;
+        std::invoke(function, std::forward<Args>(args)...);
+    }
+
+    QElapsedTimer timer_;
+    bool callScheduled_;
+};
+
 class Processor;
-class ProcessorProgressGraphicsItem;
-class ProcessorStatusGraphicsItem;
 class ProcessorLinkGraphicsItem;
 class ProcessorInportGraphicsItem;
 class ProcessorOutportGraphicsItem;
@@ -62,7 +104,9 @@ class Outport;
 class IVW_QTEDITOR_API ProcessorGraphicsItem : public QObject,
                                                public EditorGraphicsItem,
                                                public ProcessorObserver,
-                                               public ProcessorMetaDataObserver {
+                                               public ProcessorMetaDataObserver,
+                                               public ActivityIndicatorObserver,
+                                               public ProgressBarObserver {
     Q_OBJECT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
@@ -78,7 +122,6 @@ public:
     ProcessorInportGraphicsItem* getInportGraphicsItem(Inport* port) const;
     ProcessorOutportGraphicsItem* getOutportGraphicsItem(Outport* port) const;
     ProcessorLinkGraphicsItem* getLinkGraphicsItem() const;
-    ProcessorStatusGraphicsItem* getStatusItem() const;
     void setErrorText(std::string_view);
 
     void snapToGrid();
@@ -96,9 +139,9 @@ public:
 
     void setHighlight(bool val);
 
-    static constexpr QSizeF size_{150.0, 50.0};
+    static constexpr QSizeF size{150.0, 50.0};
 
-    enum class PortType { In, Out };
+    enum class PortType : std::uint8_t { In, Out };
     static QPointF portOffset(PortType type, size_t index);
     QPointF portPosition(PortType type, size_t index);
 
@@ -106,11 +149,9 @@ public:
         ownedWidgets_.push_back(std::move(widget));
     }
 
-protected:
-    enum class FontType { Name, Identifier, Tag, Count };
-    static const QFont& getFont(FontType type);
-    static QString elide(std::string_view text, double width, FontType type);
+    enum class State : std::uint8_t { Error, Invalid, Running, Ready };
 
+protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
@@ -143,7 +184,20 @@ protected:
     virtual void onProcessorMetaDataVisibilityChange() override;
     virtual void onProcessorMetaDataSelectionChange() override;
 
+    // ActivityIndicatorObserver overrides
+    virtual void activityIndicatorChanged(bool active) override;
+
+    // ProgressBarObserver overrides
+    virtual void progressChanged(float) override;
+    virtual void progressBarVisibilityChanged(bool visible) override;
+
+    // QObject override
+    virtual bool event(QEvent* e) override;
+
 private:
+    void delayedUpdate();
+    void updateStatus(bool running = false);
+
     Processor* processor_;
     ProcessorMetaData* processorMeta_;
 
@@ -154,9 +208,6 @@ private:
     double tagSize_;
 
     QPropertyAnimation* animation_;
-
-    ProcessorProgressGraphicsItem* progressItem_;
-    ProcessorStatusGraphicsItem* statusItem_;
     ProcessorLinkGraphicsItem* linkItem_;
 
     std::map<Inport*, ProcessorInportGraphicsItem*> inportItems_;
@@ -173,6 +224,7 @@ private:
 
 #if IVW_PROFILING
     size_t processCount_;
+    size_t currentProcessCount_;
     double maxEvalTime_;
     double evalTime_;
     double totEvalTime_;
@@ -180,7 +232,15 @@ private:
     static bool showCount_;  // NOLINT
 #endif
 
+    State state_;
+    State currentState_;
+    bool runtimeError_;
     std::unique_ptr<ProcessorErrorItem> errorText_;
+
+    std::optional<float> progress_;
+    std::optional<float> currentProgress_;
+    bool dirty_;
+    RateLimitier<250, decltype([](QGraphicsItem* p) { p->update(); })> limitedUpdate_;
 };
 
 }  // namespace inviwo

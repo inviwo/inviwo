@@ -252,8 +252,12 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     // Note: QWidget::size() will return logical dimensions
     const auto dpr = window()->devicePixelRatio();
     RenderContext::getPtr()->activateDefaultRenderContext();
-    ResizeEvent resizeEvent{dpr * utilqt::toGLM(event->size()),
-                            dpr * utilqt::toGLM(event->oldSize())};
+
+    const auto newSize = static_cast<size2_t>(dpr * utilqt::toGLM(event->size()));
+    const auto oldSize = event->oldSize().isValid()
+                             ? static_cast<size2_t>(dpr * utilqt::toGLM(event->oldSize()))
+                             : size2_t{0, 0};
+    ResizeEvent resizeEvent{newSize, oldSize};
     propagateEvent(&resizeEvent, nullptr);
 }
 

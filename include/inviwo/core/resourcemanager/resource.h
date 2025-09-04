@@ -41,6 +41,7 @@ namespace inviwo {
 
 struct IVW_CORE_API ResourceMeta {
     std::string source;
+    auto operator<=>(const ResourceMeta&) const = default;
 };
 
 struct IVW_CORE_API Resource {

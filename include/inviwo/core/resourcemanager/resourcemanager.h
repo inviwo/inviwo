@@ -75,7 +75,7 @@ public:
         auto& group = get<Key>();
 
         auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
-        if (it != group.end()) {
+        if (it != group.end() && it->second.meta != meta) {
             notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
             it->second.meta = meta;
             notifyDidUpdateResource(gi, std::distance(group.begin(), it), it->second);
