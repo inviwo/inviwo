@@ -2240,7 +2240,7 @@ var hierarchy =
       [ "inviwo::FactoryObserver< TrackWidgetQtFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< WidgetFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::ActivityIndicatorObserver", "classinviwo_1_1ActivityIndicatorObserver.html", [
-        [ "inviwo::ProcessorStatusGraphicsItem", "classinviwo_1_1ProcessorStatusGraphicsItem.html", null ]
+        [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ]
       ] ],
       [ "inviwo::BufferObjectObserver", "classinviwo_1_1BufferObjectObserver.html", null ],
       [ "inviwo::CompositePropertyObserver", "classinviwo_1_1CompositePropertyObserver.html", [
@@ -2305,7 +2305,7 @@ var hierarchy =
         ] ]
       ] ],
       [ "inviwo::ProgressBarObserver", "classinviwo_1_1ProgressBarObserver.html", [
-        [ "inviwo::ProcessorProgressGraphicsItem", "classinviwo_1_1ProcessorProgressGraphicsItem.html", null ],
+        [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
         [ "inviwo::ProgressBarObserverCEF", "classinviwo_1_1ProgressBarObserverCEF.html", null ]
       ] ],
       [ "inviwo::PropertyObserver", "classinviwo_1_1PropertyObserver.html", [
@@ -2911,9 +2911,7 @@ var hierarchy =
         [ "inviwo::ProcessorPortGraphicsItem", "classinviwo_1_1ProcessorPortGraphicsItem.html", [
           [ "inviwo::ProcessorInportGraphicsItem", "classinviwo_1_1ProcessorInportGraphicsItem.html", null ],
           [ "inviwo::ProcessorOutportGraphicsItem", "classinviwo_1_1ProcessorOutportGraphicsItem.html", null ]
-        ] ],
-        [ "inviwo::ProcessorProgressGraphicsItem", "classinviwo_1_1ProcessorProgressGraphicsItem.html", null ],
-        [ "inviwo::ProcessorStatusGraphicsItem", "classinviwo_1_1ProcessorStatusGraphicsItem.html", null ]
+        ] ]
       ] ],
       [ "inviwo::GraphicsItemData< T >", "classinviwo_1_1GraphicsItemData.html", null ],
       [ "inviwo::ProcessorErrorItem", "classinviwo_1_1ProcessorErrorItem.html", null ],
@@ -3086,6 +3084,7 @@ var hierarchy =
       [ "inviwo::RasterizationRenderer", "classinviwo_1_1RasterizationRenderer.html", null ]
     ] ],
     [ "inviwo::RasterizeHandle", "classinviwo_1_1RasterizeHandle.html", null ],
+    [ "inviwo::RateLimitier< minIntervalMs, F >", "classinviwo_1_1RateLimitier.html", null ],
     [ "inviwo::RaycastingState", "structinviwo_1_1RaycastingState.html", null ],
     [ "inviwo::ReaderWriter< DataType >", "structinviwo_1_1ReaderWriter.html", null ],
     [ "inviwo::animation::Recorder", "classinviwo_1_1animation_1_1Recorder.html", null ],
