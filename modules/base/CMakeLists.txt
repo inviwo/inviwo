@@ -47,6 +47,7 @@ set(HEADER_FILES
     include/modules/base/datavisualizer/meshinformationvisualizer.h
     include/modules/base/datavisualizer/volumeinformationvisualizer.h
     include/modules/base/io/amirameshreader.h
+    include/modules/base/io/amirameshutils.h
     include/modules/base/io/amiravolumereader.h
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
@@ -202,6 +203,7 @@ set(SOURCE_FILES
     src/datavisualizer/meshinformationvisualizer.cpp
     src/datavisualizer/volumeinformationvisualizer.cpp
     src/io/amirameshreader.cpp
+    src/io/amirameshutils.cpp
     src/io/amiravolumereader.cpp
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
