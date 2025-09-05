@@ -431,6 +431,39 @@ private:
     }
 };
 
+namespace util {
+
+/**
+ * @brief Finds the first substring equal to @p s in @p str using case insensitive comparisons.
+ *
+ * @param str  input string
+ * @param s    string to search for
+ * @return position of the first character of the found substring, std::string_view::npos otherwise
+ */
+constexpr size_t iCaseFind(std::string_view str, std::string_view s) {
+    if (str.empty() && s.empty()) return 0;
+    if (s.size() > str.size()) return std::string_view::npos;
+    size_t p = 0;
+    while (p < str.size()) {
+        if (iCaseCmp(str.substr(p, s.size()), s)) return p;
+        ++p;
+    }
+    return std::string_view::npos;
+}
+
+/**
+ * @brief Checks if @p str contains the substring @p s in @p str using case insensitive comparisons.
+ *
+ * @param str  input string
+ * @param s    string to search for
+ * @return True if substring is found
+ */
+constexpr bool iCaseContains(std::string_view str, std::string_view s) {
+    return iCaseFind(str, s) != std::string_view::npos;
+}
+
+}  // namespace util
+
 [[deprecated("use util::parseTypeIdName() in demangle.h instead")]] IVW_CORE_API std::string
 parseTypeIdName(const char* name);
 
