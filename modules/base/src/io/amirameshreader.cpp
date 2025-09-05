@@ -33,82 +33,129 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/charconv.h>
+#include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/sourcecontext.h>
-#include <inviwo/core/util/filesystem.h>
+#include <modules/base/algorithm/dataminmax.h>
+#include <modules/base/io/amirameshutils.h>
 
-#include <cstdint>
+#include <expected>
 #include <string>
-#include <vector>
-#include <fstream>
-#include <map>
-#include <numeric>
+#include <string_view>
 #include <fmt/std.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
-// TODO: implement support for HxTriangularGrid
-// see https://github.com/strawlab/py_amira_file_reader/blob/master/tests/data/hybrid-testgrid-2d.am
-
 namespace {
 
-void checkContentType(std::string_view str, const std::filesystem::path& path) {
-    if (!str.ends_with(R"("HxLineSet")")) {
+std::expected<std::pair<std::string_view, amira::DataSpec>, std::string> getDataSpecForType(
+    const amira::AmiraMeshHeader& header, std::string_view type) {
+    if (auto it = header.dataSpecs.find(type); it == header.dataSpecs.end()) {
+        return std::unexpected(format("Missing data specifier for type '{}'", type));
+    } else {
+        return *it;
+    }
+}
+
+void parseLineIndices(Mesh& mesh, std::string_view data) {
+    const auto end = data.find('@');
+    std::vector<std::uint32_t> indices;
+
+    util::forEachLine(data.substr(0, end), [&mesh, &indices](std::string_view line) {
+        auto [str, _] = util::splitByFirst(line, '#');
+        str = util::trim(str);
+        if (!str.empty()) {
+            // expecting a single value
+            std::int64_t value = 0;
+            util::fromStr(str, value);
+            if (value == -1) {
+                mesh.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
+                                util::makeIndexBuffer(std::move(indices)));
+                indices.clear();
+            } else {
+                indices.push_back(static_cast<uint32_t>(value));
+            }
+        }
+    });
+    mesh.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
+                    util::makeIndexBuffer(std::move(indices)));
+}
+
+void parseTriangleIndices(Mesh& mesh, std::string_view data, const amira::DataSpec& dataSpec,
+                          std::string_view type) {
+    if (dataSpec.format.numericType != NumericType::SignedInteger &&
+        dataSpec.format.numericType != NumericType::UnsignedInteger) {
+        throw DataReaderException(SourceContext{},
+                                  "Expected integer format in data specification '{}' for '{}'",
+                                  dataSpec.name, type);
+    }
+    if (dataSpec.format.numComponents < 3) {
         throw DataReaderException(
             SourceContext{},
-            "Unsupported AmiraMesh content type: {} ({})\nOnly \"HxLineSet\" is supported.", str,
-            path);
+            "Unsupported number of indices per primitive. Data specification '{}' for '{}' "
+            "must have at least 3 components",
+            dataSpec.name, type);
     }
-}
 
-void processLines(std::ifstream& fs, Mesh& mesh) {
-    std::string line;
-    std::vector<uint32_t> indices;
-    while (std::getline(fs, line) && !line.empty()) {
-        int64_t index = -1;
-        std::istringstream i(line);
-        i >> index;
+    const auto end = data.find('@');
+    std::vector<std::uint32_t> indices;
 
-        if (index == -1) {
-            mesh.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
-                            util::makeIndexBuffer(std::move(indices)));
-            indices.clear();
-        } else {
-            indices.push_back(static_cast<uint32_t>(index));
+    util::forEachLine(data.substr(0, end), [&indices](std::string_view line) {
+        auto [str, _] = util::splitByFirst(line, '#');
+        str = util::trim(str);
+        if (!str.empty()) {
+            auto parts = util::splitIntoArray<3>(str, ' ');
+            std::array<std::uint32_t, 3> triIndices{amira::parseValue<std::uint32_t>(parts[0]),
+                                                    amira::parseValue<std::uint32_t>(parts[1]), 0};
+
+            // decompose arbitrary n-gon into triangles
+            bool odd = true;
+            util::forEachStringPart(parts[2], " ",
+                                    [&indices, &triIndices, &odd](std::string_view s) {
+                                        triIndices[2] = amira::parseValue<std::uint32_t>(s);
+                                        if (!odd) {
+                                            // correct windedness
+                                            std::swap(triIndices[0], triIndices[1]);
+                                        }
+                                        for (auto index : triIndices) {
+                                            // Assumption: indices for triangles are starting at 1
+                                            indices.emplace_back(index - 1);
+                                        }
+                                        std::ranges::rotate(triIndices, triIndices.begin() + 1);
+                                        odd = !odd;
+                                    });
         }
-    }
+    });
+    mesh.addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
+                    util::makeIndexBuffer(std::move(indices)));
 }
 
-void processVertices(std::ifstream& fs, Mesh& mesh) {
-    std::string line;
-    std::vector<vec3> vertices;
-    while (std::getline(fs, line) && !line.empty()) {
-        double x = 0.0;
-        double y = 0.0;
-        double z = 0.0;
-        std::istringstream i(line);
-        i >> x;
-        i >> y;
-        i >> z;
-        vertices.emplace_back(x, y, z);
-    }
-    mesh.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                   util::makeBuffer(std::move(vertices)));
-}
+std::shared_ptr<BufferBase> parseBufferData(std::string_view data,
+                                            const amira::DataSpec& dataSpec) {
+    const auto* format = DataFormatBase::get(
+        dataSpec.format.numericType, dataSpec.format.numComponents, dataSpec.format.precision);
 
-void processVertexData(std::ifstream& fs, Mesh& mesh) {
-    std::string line;
-    std::vector<float> vertexData;
-    while (std::getline(fs, line) && !line.empty()) {
-        float imp = 0.0f;
-        std::istringstream i(line);
-        i >> imp;
-        vertexData.push_back(imp);
-    }
-    mesh.addBuffer(Mesh::BufferInfo(BufferType::Unknown), util::makeBuffer(std::move(vertexData)));
-}
+    return dispatching::singleDispatch<std::shared_ptr<BufferBase>, dispatching::filter::All>(
+        format->getId(), [data]<typename T>() {
+            const auto end = data.find('@');
+            std::vector<T> vec;
 
+            util::forEachLine(data.substr(0, end), [&vec](std::string_view line) {
+                auto [str, _] = util::splitByFirst(line, '#');
+                str = util::trim(str);
+                if (!str.empty()) {
+                    vec.emplace_back(amira::parseValue<T>(str));
+                }
+            });
+            return util::makeBuffer(std::move(vec));
+        });
+}
 }  // namespace
 
 AmiraMeshReader::AmiraMeshReader() : DataReaderType<Mesh>() {
@@ -122,69 +169,127 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
 
     checkExists(filePath);
 
-    std::ifstream f = open(filePath, std::ios::in);
+    const std::string data = readFileContents(filePath);
 
-    // Parse header
-    std::string line;
-
-    std::getline(f, line);
-    if (line != "# AmiraMesh 3D ASCII 2.0" && line != "# Avizo 3D ASCII 2.0") {
-        throw DataReaderException(SourceContext{}, "Unsupported AmiraMesh format: {}", path);
+    amira::AmiraMeshHeader header;
+    try {
+        header = amira::parseAmiraMeshHeader(data);
+    } catch (DataReaderException& e) {
+        throw DataReaderException(e.getContext(), "{} ({})", e.what(), path);
     }
 
-    auto extractIndex = [](const std::string& str) {
-        int index = 0;
-        std::istringstream i(str.substr(str.find('@') + 1));
-        i >> index;
-        return index;
+    if (header.dimension.value_or(-1) != 3) {
+        throw DataReaderException(SourceContext{},
+                                  "File is not a 3D AmiraMesh file. Expected '# AmiraMesh 3D': {}",
+                                  path);
+    }
+    if (header.format != amira::DataSectionFormat::Ascii) {
+        throw DataReaderException(SourceContext{},
+                                  "Unsupported data encoding. Expected 'ASCII': {}", path);
+    }
+
+    // verify mesh parameters
+    enum class MeshType : std::uint8_t { Unspecified, Lines, Triangles };
+
+    MeshType meshType = MeshType::Unspecified;
+    if (auto it = header.parameters.find("ContentType"); it == header.parameters.end()) {
+        throw DataReaderException(SourceContext{}, "Missing ContentType, expected uniform: {}",
+                                  path);
+    } else if (iCaseCmp(it->second, "HxTriangularGrid")) {
+        meshType = MeshType::Triangles;
+    } else if (iCaseCmp(it->second, "HxLineSet")) {
+        meshType = MeshType::Lines;
+    } else {
+        throw DataReaderException(
+            SourceContext{},
+            "Unsupported ContentType '{}', expected 'HxTriangularGrid' or 'HxLineSet': {}",
+            it->second, path);
+    }
+
+    // locate data section
+    size_t dataSectionOffset = data.find("# Data section follows");
+    if (dataSectionOffset == std::string_view::npos) {
+        throw DataReaderException(SourceContext{}, "Data section not found: {}", path);
+    }
+
+    auto locateData = [&](std::string_view key, int identifier) {
+        const std::string id = fmt::format("@{}", identifier);
+        if (auto pos = data.find(id, dataSectionOffset); pos != std::string_view::npos) {
+            // data starts after the identifier followed by a newline character
+            return data.find('\n', pos) + 1;
+        } else {
+            throw DataReaderException(SourceContext{}, "Data for {} @{} not found: {}", key,
+                                      identifier, path);
+        }
     };
 
-    int nVertices = 0;
-    std::map<int, AmiraDataType> bufferMap;
-    while (std::getline(f, line)) {
-        if (line.empty()) continue;
-        if (line.starts_with("define Lines")) {
-            std::istringstream l(line.substr(13));
-            int nLines = 0;
-            l >> nLines;
-        } else if (line.starts_with("nVertices")) {
-            std::istringstream v(line.substr(10));
-            v >> nVertices;
-        } else if (line.contains("Lines { int LineIdx }")) {
-            bufferMap.insert({extractIndex(line), AmiraDataType::Lines});
-        } else if (line.contains("Vertices { float[3] Coordinates }")) {
-            bufferMap.insert({extractIndex(line), AmiraDataType::Vertices});
-        } else if (line.contains("Vertices { float Data }")) {
-            bufferMap.insert({extractIndex(line), AmiraDataType::VertexData});
-        } else if (line == "# Data section follows") {
-            break;
-        } else if (trim(line).starts_with("ContentType")) {
-            checkContentType(line, path);
+    if (meshType == MeshType::Lines) {
+        auto indexSpec = getDataSpecForType(header, "LineIdx");
+        auto coordinatesSpec = getDataSpecForType(header, "Coordinates");
+        auto vertexDataSpec = getDataSpecForType(header, "Data");  // optional
+
+        if (!indexSpec.has_value()) {
+            throw DataReaderException(SourceContext{}, "{}: {}", indexSpec.error(), path);
         }
-    }
-
-    // Parse data
-    auto mesh = std::make_shared<Mesh>();
-    while (std::getline(f, line)) {
-        if (line.starts_with("@")) {
-            if (const AmiraDataType at = bufferMap[extractIndex(line)];
-                at == AmiraDataType::Lines) {
-                processLines(f, *mesh);
-            } else if (at == AmiraDataType::Vertices) {
-                processVertices(f, *mesh);
-            } else if (at == AmiraDataType::VertexData) {
-                processVertexData(f, *mesh);
-            }
+        if (!coordinatesSpec.has_value()) {
+            throw DataReaderException(SourceContext{}, "{}: {}", coordinatesSpec.error(), path);
         }
-    }
 
-    if (auto vertexCount = mesh->getBuffer(BufferType::PositionAttrib)->getSize();
-        vertexCount != nVertices) {
-        log::error("Vertex count does not match. Expected {} vertices and found {}: {}", nVertices,
-                   vertexCount, path);
-    }
+        auto mesh = std::make_shared<Mesh>();
+        parseLineIndices(*mesh, std::string_view{data}.substr(
+                                    locateData(indexSpec->first, indexSpec->second.identifier)));
+        mesh->addBuffer(
+            Mesh::BufferInfo(BufferType::PositionAttrib),
+            parseBufferData(std::string_view{data}.substr(locateData(
+                                coordinatesSpec->first, coordinatesSpec->second.identifier)),
+                            coordinatesSpec->second));
 
-    return mesh;
+        if (vertexDataSpec) {
+            mesh->addBuffer(
+                Mesh::BufferInfo(BufferType::ScalarMetaAttrib),
+                parseBufferData(std::string_view{data}.substr(locateData(
+                                    vertexDataSpec->first, vertexDataSpec->second.identifier)),
+                                vertexDataSpec->second));
+        }
+        return mesh;
+    } else if (meshType == MeshType::Triangles) {
+        auto coordinatesSpec = getDataSpecForType(header, "Coordinates");
+        if (!coordinatesSpec.has_value()) {
+            throw DataReaderException(SourceContext{}, "{}: {}", coordinatesSpec.error(), path);
+        }
+
+        // indices require a dependent lookup of 'Coordinates'
+        const std::string_view coordName = coordinatesSpec->second.name;
+
+        auto indexSpec = getDataSpecForType(header, coordName);
+        auto vertexDataSpec = getDataSpecForType(header, "Data");  // optional
+
+        if (!indexSpec.has_value()) {
+            throw DataReaderException(SourceContext{}, "{}: {}", indexSpec.error(), path);
+        }
+        auto mesh =
+            std::make_shared<Mesh>(Mesh::MeshInfo{DrawType::Triangles, ConnectivityType::None});
+        parseTriangleIndices(*mesh,
+                             std::string_view{data}.substr(
+                                 locateData(indexSpec->first, indexSpec->second.identifier)),
+                             indexSpec->second, indexSpec->first);
+        mesh->addBuffer(
+            Mesh::BufferInfo(BufferType::PositionAttrib),
+            parseBufferData(std::string_view{data}.substr(locateData(
+                                coordinatesSpec->first, coordinatesSpec->second.identifier)),
+                            coordinatesSpec->second));
+
+        if (vertexDataSpec) {
+            mesh->addBuffer(
+                Mesh::BufferInfo(BufferType::ScalarMetaAttrib),
+                parseBufferData(std::string_view{data}.substr(locateData(
+                                    vertexDataSpec->first, vertexDataSpec->second.identifier)),
+                                vertexDataSpec->second));
+        }
+        return mesh;
+    } else {
+        throw DataReaderException(SourceContext{}, "Unsupported mesh type: {}", path);
+    }
 }
 
 }  // namespace inviwo

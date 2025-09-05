@@ -40,8 +40,9 @@ namespace inviwo {
 
 /**
  * \ingroup dataio
- * \brief AmiraMesh reader
- * Supports only reading line sets ("HxLineSet")
+ * \brief Basic AmiraMesh reader
+ * Supports line sets ("HxLineSet") and triangle meshes ("HxTriangularGrid"). Materials and colors
+ * are not supported since these are defined per primitive and not per vertex.
  */
 class IVW_MODULE_BASE_API AmiraMeshReader : public DataReaderType<Mesh> {
 public:
@@ -56,7 +57,7 @@ public:
     virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 
 private:
-    enum AmiraDataType : std::uint8_t { Lines, Vertices, VertexData };
+    enum class AmiraDataType : std::uint8_t { Lines, Vertices, VertexData };
 };
 
 }  // namespace inviwo
