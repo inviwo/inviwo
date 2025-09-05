@@ -140,4 +140,16 @@ TEST(StringView, trim) {
     EXPECT_EQ("a"sv, util::trim("  \r a  \r"sv));
 }
 
+TEST(StringView, iCaseContains) {
+    EXPECT_TRUE(util::iCaseContains("", ""));
+    EXPECT_FALSE(util::iCaseContains("fo", "OOB"));
+
+    EXPECT_TRUE(util::iCaseContains("foobar", "OOB"));
+    EXPECT_TRUE(util::iCaseContains("foobar", "oob"));
+    EXPECT_FALSE(util::iCaseContains("foobar", "FoOO"));
+    EXPECT_TRUE(util::iCaseContains("foobar", "FoOB"));
+    EXPECT_FALSE(util::iCaseContains("foo bar", "oob"));
+    EXPECT_FALSE(util::iCaseContains("foo bar", "OOB"));
+}
+
 }  // namespace inviwo
