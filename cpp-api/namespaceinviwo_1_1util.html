@@ -948,6 +948,10 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memdesc:ab6bf0cc28f51cabb7d36e15c61129f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from beginning removing white spaces  <br /></td></tr>
 <tr class="memitem:ababf20580e98b848eaffd93c087fedb2" id="r_ababf20580e98b848eaffd93c087fedb2"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ababf20580e98b848eaffd93c087fedb2">rtrim</a> (std::string_view str) noexcept</td></tr>
 <tr class="memdesc:ababf20580e98b848eaffd93c087fedb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from end by removing white spaces  <br /></td></tr>
+<tr class="memitem:a258ef7d8bb67f5d62fe207bc77ec3c70" id="r_a258ef7d8bb67f5d62fe207bc77ec3c70"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a258ef7d8bb67f5d62fe207bc77ec3c70">iCaseFind</a> (std::string_view str, std::string_view substring)</td></tr>
+<tr class="memdesc:a258ef7d8bb67f5d62fe207bc77ec3c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the first substring equal to <code class="param">s</code> in <code class="param">str</code> using case insensitive comparisons.  <br /></td></tr>
+<tr class="memitem:a480d23a0ea9a3bb2949572ef11c7c051" id="r_a480d23a0ea9a3bb2949572ef11c7c051"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a480d23a0ea9a3bb2949572ef11c7c051">iCaseContains</a> (std::string_view str, std::string_view s)</td></tr>
+<tr class="memdesc:a480d23a0ea9a3bb2949572ef11c7c051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if <code class="param">str</code> contains the substring <code class="param">s</code> in <code class="param">str</code> using case insensitive comparisons.  <br /></td></tr>
 <tr class="memitem:a72163c26b092ba2ad01a8ba8af763d59" id="r_a72163c26b092ba2ad01a8ba8af763d59"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72163c26b092ba2ad01a8ba8af763d59">iCaseEndsWith</a> (std::string_view str, std::string_view suffix)</td></tr>
 <tr class="memdesc:a72163c26b092ba2ad01a8ba8af763d59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if provided string ends with suffix using case insensitive equal comparison.  <br /></td></tr>
 <tr class="memitem:aa0b234248fa0f75afa5d053118ec319a" id="r_aa0b234248fa0f75afa5d053118ec319a"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0b234248fa0f75afa5d053118ec319a">elideLines</a> (std::string_view str, std::string_view abbrev=&quot;...&quot;, size_t maxLineLength=500)</td></tr>
@@ -5105,6 +5109,45 @@ template&lt;class T&gt; </div>
 
 </div>
 </div>
+<a id="a480d23a0ea9a3bb2949572ef11c7c051" name="a480d23a0ea9a3bb2949572ef11c7c051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a480d23a0ea9a3bb2949572ef11c7c051">&#9670;&#160;</a></span>iCaseContains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool inviwo::util::iCaseContains </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>s</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if <code class="param">str</code> contains the substring <code class="param">s</code> in <code class="param">str</code> using case insensitive comparisons. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>input string </td></tr>
+    <tr><td class="paramname">s</td><td>string to search for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if substring is found </dd></dl>
+
+</div>
+</div>
 <a id="a72163c26b092ba2ad01a8ba8af763d59" name="a72163c26b092ba2ad01a8ba8af763d59"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a72163c26b092ba2ad01a8ba8af763d59">&#9670;&#160;</a></span>iCaseEndsWith()</h2>
 
@@ -5133,6 +5176,45 @@ template&lt;class T&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if last part of str is equal to suffix, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a258ef7d8bb67f5d62fe207bc77ec3c70" name="a258ef7d8bb67f5d62fe207bc77ec3c70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a258ef7d8bb67f5d62fe207bc77ec3c70">&#9670;&#160;</a></span>iCaseFind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t inviwo::util::iCaseFind </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>substring</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Finds the first substring equal to <code class="param">s</code> in <code class="param">str</code> using case insensitive comparisons. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>input string </td></tr>
+    <tr><td class="paramname">s</td><td>string to search for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>position of the first character of the found substring, std::string_view::npos otherwise </dd></dl>
 
 </div>
 </div>

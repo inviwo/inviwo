@@ -1,5 +1,7 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1MeshRasterizer_1_1HatchingSettings.html":[2,0,0,651,3],
+"structinviwo_1_1MeshRasterizer_1_1HatchingSettings.html":[4,0,0,658,3],
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[2,0,0,655,0],
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[4,0,0,662,0],
 "structinviwo_1_1Mesh_1_1BufferInfo.html":[1,1,11,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[2,0,0,1096,5],
 "structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[4,0,0,1103,5],
 "structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[2,0,0,1096,4],
-"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[4,0,0,1103,4],
-"structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[2,0,0,1096,7],
-"structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[4,0,0,1103,7]
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[4,0,0,1103,4]
 };
