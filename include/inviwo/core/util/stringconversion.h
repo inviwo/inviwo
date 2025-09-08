@@ -40,6 +40,7 @@
 #include <sstream>
 #include <vector>
 #include <functional>
+#include <ranges>
 #include <cctype>
 #include <locale>
 
@@ -284,6 +285,35 @@ constexpr std::string_view ltrim(std::string_view str) noexcept {
 constexpr std::string_view rtrim(std::string_view str) noexcept {
     const auto idx2 = str.find_last_not_of(" \f\n\r\t\v");
     return str.substr(0, idx2 + 1);
+}
+
+/**
+ * @brief Finds the first substring equal to @p s in @p str using case insensitive comparisons.
+ *
+ * @param str  input string
+ * @param s    string to search for
+ * @return position of the first character of the found substring, std::string_view::npos otherwise
+ */
+constexpr size_t iCaseFind(std::string_view str, std::string_view substring) {
+    if (str.empty() && substring.empty()) return 0;
+    if (auto found = std::ranges::search(
+            str, substring, {}, [](unsigned char c) { return std::tolower(c); },
+            [](unsigned char c) { return std::tolower(c); });
+        !found.empty()) {
+        return static_cast<size_t>(std::distance(str.begin(), found.begin()));
+    }
+    return std::string_view::npos;
+}
+
+/**
+ * @brief Checks if @p str contains the substring @p s in @p str using case insensitive comparisons.
+ *
+ * @param str  input string
+ * @param s    string to search for
+ * @return True if substring is found
+ */
+constexpr bool iCaseContains(std::string_view str, std::string_view s) {
+    return iCaseFind(str, s) != std::string_view::npos;
 }
 
 /**

@@ -140,4 +140,29 @@ TEST(StringView, trim) {
     EXPECT_EQ("a"sv, util::trim("  \r a  \r"sv));
 }
 
+TEST(StringView, iCaseFind) {
+    EXPECT_EQ(util::iCaseFind("", ""), 0);
+    EXPECT_EQ(util::iCaseFind("fo", "OOB"), std::string_view::npos);
+
+    EXPECT_EQ(util::iCaseFind("foobar", "OOB"), 1);
+    EXPECT_EQ(util::iCaseFind("foobar", "oob"), 1);
+    EXPECT_EQ(util::iCaseFind("foobar", "FoOO"), std::string_view::npos);
+    EXPECT_EQ(util::iCaseFind("foobar", "FoOB"), 0);
+    EXPECT_EQ(util::iCaseFind("foobar", "bAr"), 3);
+    EXPECT_EQ(util::iCaseFind("foo bar", "oob"), std::string_view::npos);
+    EXPECT_EQ(util::iCaseFind("foo bar", "OOB"), std::string_view::npos);
+}
+
+TEST(StringView, iCaseContains) {
+    EXPECT_TRUE(util::iCaseContains("", ""));
+    EXPECT_FALSE(util::iCaseContains("fo", "OOB"));
+
+    EXPECT_TRUE(util::iCaseContains("foobar", "OOB"));
+    EXPECT_TRUE(util::iCaseContains("foobar", "oob"));
+    EXPECT_FALSE(util::iCaseContains("foobar", "FoOO"));
+    EXPECT_TRUE(util::iCaseContains("foobar", "FoOB"));
+    EXPECT_FALSE(util::iCaseContains("foo bar", "oob"));
+    EXPECT_FALSE(util::iCaseContains("foo bar", "OOB"));
+}
+
 }  // namespace inviwo
