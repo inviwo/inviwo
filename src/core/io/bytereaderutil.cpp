@@ -43,9 +43,7 @@
 
 namespace inviwo {
 
-namespace {
-
-void convertToLittleEndian(void* dest, size_t bytes, size_t elementSize) {
+void util::reverseByteOrder(void* dest, size_t bytes, size_t elementSize) {
     auto temp = std::make_unique<char[]>(elementSize);
 
     for (std::size_t i = 0; i < bytes; i += elementSize) {
@@ -58,8 +56,6 @@ void convertToLittleEndian(void* dest, size_t bytes, size_t elementSize) {
         }
     }
 }
-
-}  // namespace
 
 void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset, size_t bytes,
                                ByteOrder byteOrder, size_t elementSize, void* dest) {
@@ -76,7 +72,7 @@ void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
         throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
     }
     if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
-        convertToLittleEndian(dest, bytes, elementSize);
+        util::reverseByteOrder(dest, bytes, elementSize);
     }
 }
 
@@ -92,7 +88,7 @@ void util::readCompressedBytesIntoBuffer(const std::filesystem::path& path, size
         fin.read(static_cast<char*>(dest), static_cast<std::streamsize>(bytes));
 
         if (byteOrder == ByteOrder::BigEndian && elementSize > 1) {
-            convertToLittleEndian(dest, bytes, elementSize);
+            util::reverseByteOrder(dest, bytes, elementSize);
         }
     } else {
         throw DataReaderException(SourceContext{}, "Could not read from file: {:?g}", path);
