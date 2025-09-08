@@ -93,12 +93,6 @@ set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 # Debian settings
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
 
-# In summary, mac/win deloyqt will find and copy all used qt libraries and qt plugins
-# to the staging install directory. Then, it will change the RPATH of all 
-# libraries such that they point to the copied files. More details here:
-# https://doc.qt.io/qt-6/macos-deployment.html#macdeploy
-# This must be done after copying all binaries to the staging package folder,
-# but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
 if(WIN32)
     get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
@@ -108,7 +102,6 @@ if(WIN32)
 elseif(APPLE)
     get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
-    find_program(MACDEPLOYQT macdeployqt HINTS "${qt_bin_dir}")
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-osx.cmake")
 endif()

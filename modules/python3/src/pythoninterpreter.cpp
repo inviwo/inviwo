@@ -107,15 +107,35 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
         auto binDir = filesystem::getExecutablePath().parent_path();
         addModulePath(binDir);
-
-#if defined(__unix__) || defined(__APPLE__)
-        auto execpath = filesystem::getExecutablePath();
-        auto folder = execpath.parent_path();
-        addModulePath(folder);
-#endif
 #if defined(__APPLE__)
-        // On OSX the path returned by getExecutablePath includes folder-paths inside the app-binary
-        addModulePath(folder / "../../../");
+        // When deployed on maxos we assume the following structure
+        // inviwo.app/
+        // └── Contents/
+        //     ├── Info.plist
+        //     ├── PkgInfo
+        //     ├── _CodeSignature/
+        //     ├── MacOS/
+        //     │   ├── inviwo                  (main executable)
+        //     ├── Resources/                  This should be the returned by findBasePath
+        //     │   ├── data/                   (application data)
+        //     │   ├── licenses/               (license files)
+        //     │   ├── modules/                (Inviwo modules)
+        //     │   └── tools/                  (utility tools)
+        //     ├── PlugIns/                    (Qt plugins)
+        //     ├── cmake/                      (CMake configuration files)
+        //     ├── include/                    (Header files)
+        //     ├── lib/                        (Dynamic libraries, and python modules)
+        //     └── share/                      (Shared data)
+
+        // We will find the python modules in the lib folder
+        if (std::filesystem::is_directory(filesystem::findBasePath() / ".." / "lib")) {
+            addModulePath(filesystem::findBasePath() / ".." / "lib");
+        } else {
+            // When developing the python modules will next to the inviwo.app folder.
+            // On OSX the path returned by getExecutablePath includes folder-paths inside the
+            // app-binary
+            addModulePath(binDir / "../../../");
+        }
 #endif
 
         try {
