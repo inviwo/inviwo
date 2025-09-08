@@ -36,7 +36,7 @@ function(ivw_private_vcpkg_install_helper)
     set(options "")
     set(oneValueArgs FILES_VAR EXTENSION DIRNAME DESTINATION COMPONENT)
     set(multiValueArgs )
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs};FOUND_VAR" "${multiValueArgs}" ${ARGN})
 
     foreach(item IN LISTS oneValueArgs)
         if(NOT ARG_${item})
@@ -56,9 +56,11 @@ function(ivw_private_vcpkg_install_helper)
         set(configurations )
     endif()
 
+    set(matched_files "")
 
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}/[^/]+\\.${ARG_EXTENSION}")
+    list(APPEND matched_files ${files})
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
     install(
         FILES ${files}
@@ -69,6 +71,7 @@ function(ivw_private_vcpkg_install_helper)
 
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}/[^/]+/[^/]+\\.${ARG_EXTENSION}")
+    list(APPEND matched_files ${files})
     foreach(item IN LISTS files)
         cmake_path(GET item PARENT_PATH parentpath)
         cmake_path(GET parentpath FILENAME parentname)
@@ -82,6 +85,7 @@ function(ivw_private_vcpkg_install_helper)
 
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME}/[^/]+\\.${ARG_EXTENSION}")
+    list(APPEND matched_files ${files})
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
     install(
         FILES ${files}
@@ -92,6 +96,7 @@ function(ivw_private_vcpkg_install_helper)
 
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME}/[^/]+/[^/]+\\.${ARG_EXTENSION}")
+    list(APPEND matched_files ${files})
     foreach(item IN LISTS files)
         cmake_path(GET item PARENT_PATH parentpath)
         cmake_path(GET parentpath FILENAME parentname)
@@ -102,10 +107,19 @@ function(ivw_private_vcpkg_install_helper)
             CONFIGURATIONS Debug
         )
     endforeach()
+
+    if(ARG_FOUND_VAR)
+        set(${ARG_FOUND_VAR} ${matched_files} PARENT_SCOPE)
+    endif()
 endfunction()
 
 # Reset global variable used to show Python warning in ivw_vcpkg_install only once
 unset(ivwVcpkgInstallPythonWarningShownOnce CACHE)
+
+
+set(IVW_VCPKG_DUMMY_TARGETS_INCLUDE ".*" CACHE STRING "List of CMake REGEXs for targets to make dummy targets for")
+set(IVW_VCPKG_DUMMY_TARGETS_EXCLUDE "" CACHE STRING "List of CMake REGEXs for targets to not make dummy targets for")
+
 
 # A helper function to install vcpkg libraries. Will install dll/so, lib, pdb, etc. into the 
 # corresponding folders by globbing the vcpkg package folders. 
@@ -123,7 +137,7 @@ function(ivw_vcpkg_install name)
     endif()
 
     set(options EXT)
-    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE)
+    set(oneValueArgs OUT_COPYRIGHT OUT_VERSION MODULE EXTRA_CODE)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -296,6 +310,10 @@ function(ivw_vcpkg_install name)
         )
     endif()
 
+    if(ARG_EXTRA_CODE)
+        cmake_language(EVAL CODE ${ARG_EXTRA_CODE})
+    endif()
+
     if(INFO_VCPKG_DEPENDENCIES)
         list(TRANSFORM INFO_VCPKG_DEPENDENCIES REPLACE ":.*" "")
         list(REMOVE_DUPLICATES INFO_VCPKG_DEPENDENCIES)
@@ -315,13 +333,32 @@ function(ivw_vcpkg_install name)
 
     #  HACK: have the files showing in the IDE
     if(NOT TARGET ${name}_vcpkg)
-        add_custom_target(${name}_vcpkg SOURCES ${headers})
-        source_group(
-            TREE "${installdir}${VCPKG_TARGET_TRIPLET}/include/" 
-            PREFIX "Header Files" 
-            FILES ${headers}
-        )
-        set_target_properties(${name}_vcpkg PROPERTIES FOLDER vcpkg)
+        set(includeit FALSE)
+        foreach(pattern IN LISTS IVW_VCPKG_DUMMY_TARGETS_INCLUDE)
+            string(REGEX MATCH "${pattern}" match ${name})
+            if(match)
+                set(includeit TRUE)
+                break()
+            endif()
+        endforeach()
+        foreach(pattern IN LISTS IVW_VCPKG_DUMMY_TARGETS_EXCLUDE)
+            string(REGEX MATCH "${pattern}" match ${name})
+            if(match)
+                set(includeit FALSE)
+                break()
+            endif()
+        endforeach()
+
+        if(includeit)
+            message(STATUS "Creating dummy target for vcpkg package: ${name}")
+            add_custom_target(${name}_vcpkg SOURCES ${headers})
+            source_group(
+                TREE "${installdir}${VCPKG_TARGET_TRIPLET}/include/"
+                PREFIX "Header Files"
+                FILES ${headers}
+            )
+            set_target_properties(${name}_vcpkg PROPERTIES FOLDER vcpkg)
+        endif()
     endif()
 
     ivw_append_install_list(GLOBAL)

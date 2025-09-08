@@ -74,8 +74,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.Inviwo"
         XCODE_GENERATE_SCHEME YES
     )
-
-    set(CPACK_BINARY_DRAGNDROP ON)
 endif()
 
 
