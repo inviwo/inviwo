@@ -40,6 +40,7 @@
 #include <sstream>
 #include <vector>
 #include <functional>
+#include <ranges>
 #include <cctype>
 #include <locale>
 
@@ -287,6 +288,35 @@ constexpr std::string_view rtrim(std::string_view str) noexcept {
 }
 
 /**
+ * @brief Finds the first substring equal to @p s in @p str using case insensitive comparisons.
+ *
+ * @param str  input string
+ * @param s    string to search for
+ * @return position of the first character of the found substring, std::string_view::npos otherwise
+ */
+constexpr size_t iCaseFind(std::string_view str, std::string_view substring) {
+    if (str.empty() && substring.empty()) return 0;
+    if (auto found = std::ranges::search(
+            str, substring, {}, [](unsigned char c) { return std::tolower(c); },
+            [](unsigned char c) { return std::tolower(c); });
+        !found.empty()) {
+        return static_cast<size_t>(std::distance(str.begin(), found.begin()));
+    }
+    return std::string_view::npos;
+}
+
+/**
+ * @brief Checks if @p str contains the substring @p s in @p str using case insensitive comparisons.
+ *
+ * @param str  input string
+ * @param s    string to search for
+ * @return True if substring is found
+ */
+constexpr bool iCaseContains(std::string_view str, std::string_view s) {
+    return iCaseFind(str, s) != std::string_view::npos;
+}
+
+/**
  * \brief Checks if provided string ends with suffix using case insensitive equal comparison.
  * @param str string to check last part of. Allowed to be smaller than suffix.
  * @param suffix Ending to match.
@@ -430,39 +460,6 @@ private:
         }
     }
 };
-
-namespace util {
-
-/**
- * @brief Finds the first substring equal to @p s in @p str using case insensitive comparisons.
- *
- * @param str  input string
- * @param s    string to search for
- * @return position of the first character of the found substring, std::string_view::npos otherwise
- */
-constexpr size_t iCaseFind(std::string_view str, std::string_view s) {
-    if (str.empty() && s.empty()) return 0;
-    if (s.size() > str.size()) return std::string_view::npos;
-    size_t p = 0;
-    while (p < str.size()) {
-        if (iCaseCmp(str.substr(p, s.size()), s)) return p;
-        ++p;
-    }
-    return std::string_view::npos;
-}
-
-/**
- * @brief Checks if @p str contains the substring @p s in @p str using case insensitive comparisons.
- *
- * @param str  input string
- * @param s    string to search for
- * @return True if substring is found
- */
-constexpr bool iCaseContains(std::string_view str, std::string_view s) {
-    return iCaseFind(str, s) != std::string_view::npos;
-}
-
-}  // namespace util
 
 [[deprecated("use util::parseTypeIdName() in demangle.h instead")]] IVW_CORE_API std::string
 parseTypeIdName(const char* name);
