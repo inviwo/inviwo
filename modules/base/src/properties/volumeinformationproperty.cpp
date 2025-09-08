@@ -103,7 +103,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
                 255.0,
                 -DataFloat64::max(),
                 DataFloat64::max(),
-                0.0,
+                0.001,
                 0.0,
                 InvalidationLevel::InvalidOutput,
                 PropertySemantics::Text}
@@ -113,7 +113,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string_view identifier
                  255.0,
                  -DataFloat64::max(),
                  DataFloat64::max(),
-                 0.0,
+                 0.001,
                  0.0,
                  InvalidationLevel::InvalidOutput,
                  PropertySemantics::Text}
