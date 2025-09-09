@@ -112,6 +112,14 @@ protected:
 
     static std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url);
 
+    /**
+     * Reads the entire file @path into a string using binary mode.
+     * @param path  filename of the file to be read
+     * @return file contents
+     * @throws DataReaderException if the file cannot be opened or read.
+     */
+    static std::string readFileContents(const std::filesystem::path& path);
+
     std::vector<FileExtension> extensions_;
 };
 
