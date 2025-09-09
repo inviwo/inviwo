@@ -416,7 +416,7 @@ jobs:
         -DIVW_MODULE_WEBQT=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
-        -DVCPKG_MANIFEST_FEATURES="sgct"
+        -DVCPKG_MANIFEST_FEATURES="qt;sgct"
 
     - name: "Run clang-tidy"
       uses: cpp-linter/cpp-linter-action@v2.16.3
