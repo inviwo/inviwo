@@ -317,6 +317,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/callback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/charconv.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/chronoutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
@@ -703,6 +704,7 @@ set(SOURCE_FILES
     util/bufferutils.cpp
     util/canvas.cpp
     util/capabilities.cpp
+    util/charconv.cpp
     util/chronoutils.cpp
     util/clock.cpp
     util/colorbrewer-generated.cpp
