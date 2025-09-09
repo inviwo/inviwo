@@ -7,6 +7,7 @@
       "displayName": "Inviwo GHA",
       "cacheVariables": {
         "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
+        "VCPKG_MANIFEST_FEATURES" : "qt",
 
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
 
