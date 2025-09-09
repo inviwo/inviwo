@@ -12,7 +12,7 @@
         "IVW_CFG_USE_CCACHE_MSVC": "ON",
         "IVW_MODULE_SGCT": "ON",
         "IVW_APP_INVIWO_DOME": "ON",
-        "VCPKG_MANIFEST_FEATURES": "sgct"
+        "VCPKG_MANIFEST_FEATURES": "qt;sgct"
       }
     },
     {

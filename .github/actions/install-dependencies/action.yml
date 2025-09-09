@@ -43,7 +43,7 @@ runs:
       run: |
         xcrun simctl delete all
         sudo rm -rf ~/Library/Developer/CoreSimulator/Caches/*
-        brew install ninja nasm libomp
+        brew install ninja nasm libomp autoconf
 
     - name: "Apt Install"
       shell: bash
@@ -51,7 +51,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
-                         libglew-dev ninja-build nasm libicu-dev libomp-dev
+                         libglew-dev ninja-build nasm libicu-dev libomp-dev autoconf autoconf-archive
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
