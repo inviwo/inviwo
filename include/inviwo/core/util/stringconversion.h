@@ -39,6 +39,7 @@
 #include <string_view>
 #include <sstream>
 #include <vector>
+#include <array>
 #include <functional>
 #include <ranges>
 #include <cctype>
@@ -174,6 +175,42 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
 }
 
 /**
+ * \brief trims \p str from beginning and end by removing white spaces
+ *
+ * @param str   input string
+ * @return trimmed stringview without leading/trailing white space
+ */
+constexpr std::string_view trim(std::string_view str) noexcept {
+    const auto idx1 = str.find_first_not_of(" \f\n\r\t\v");
+    if (idx1 == std::string_view::npos) return "";
+    const auto idx2 = str.find_last_not_of(" \f\n\r\t\v");
+    return str.substr(idx1, idx2 + 1 - idx1);
+}
+
+/**
+ * \brief trims \p str from beginning removing white spaces
+ *
+ * @param str   input string
+ * @return trimmed stringview without leading white space
+ */
+constexpr std::string_view ltrim(std::string_view str) noexcept {
+    const auto idx1 = str.find_first_not_of(" \f\n\r\t\v");
+    if (idx1 == std::string_view::npos) return "";
+    return str.substr(idx1);
+}
+
+/**
+ * \brief trims \p str from end by removing white spaces
+ *
+ * @param str   input string
+ * @return trimmed stringview without trailing white space
+ */
+constexpr std::string_view rtrim(std::string_view str) noexcept {
+    const auto idx2 = str.find_last_not_of(" \f\n\r\t\v");
+    return str.substr(0, idx2 + 1);
+}
+
+/**
  * @brief Divide a string into two parts by the first instance of a delimiter
  * @param str string to divide
  * @param delimiter not include in either returned strings
@@ -252,39 +289,35 @@ IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimiter = ' ');
 
 /**
- * \brief trims \p str from beginning and end by removing white spaces
+ * Split the string @p str by @p delimiter into at most @t numItems parts and return the result in
+ * the form of an array. In case there are fewer substrings than @t numItems, the remaining fields
+ * of the array contain empty strings. If there are more than @p numItems parts, the last array
+ * entry will contain the remaining string.
  *
- * @param str   input string
- * @return trimmed stringview without leading/trailing white space
+ * @tparam numItems
+ * @param str The string to split
+ * @param delimiter The character use for splitting (default to space)
+ * @return an array containing the substrings
  */
-constexpr std::string_view trim(std::string_view str) noexcept {
-    const auto idx1 = str.find_first_not_of(" \f\n\r\t\v");
-    if (idx1 == std::string_view::npos) return "";
-    const auto idx2 = str.find_last_not_of(" \f\n\r\t\v");
-    return str.substr(idx1, idx2 + 1 - idx1);
-}
-
-/**
- * \brief trims \p str from beginning removing white spaces
- *
- * @param str   input string
- * @return trimmed stringview without leading white space
- */
-constexpr std::string_view ltrim(std::string_view str) noexcept {
-    const auto idx1 = str.find_first_not_of(" \f\n\r\t\v");
-    if (idx1 == std::string_view::npos) return "";
-    return str.substr(idx1);
-}
-
-/**
- * \brief trims \p str from end by removing white spaces
- *
- * @param str   input string
- * @return trimmed stringview without trailing white space
- */
-constexpr std::string_view rtrim(std::string_view str) noexcept {
-    const auto idx2 = str.find_last_not_of(" \f\n\r\t\v");
-    return str.substr(0, idx2 + 1);
+template <size_t numItems>
+std::array<std::string_view, numItems> splitIntoArray(std::string_view str, char delimiter = ' ') {
+    std::array<std::string_view, numItems> output;
+    size_t first = 0;
+    size_t index = 0;
+    while (first < str.size()) {
+        const auto second = str.find_first_of(delimiter, first);
+        if (first != second) {
+            if (index + 1 < numItems) {
+                output[index] = str.substr(first, second - first);
+            } else {
+                output[index] = util::rtrim(str.substr(first));
+            }
+            ++index;
+        }
+        if (second == std::string_view::npos || index >= numItems) break;
+        first = second + 1;
+    }
+    return output;
 }
 
 /**
