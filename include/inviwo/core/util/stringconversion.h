@@ -175,6 +175,25 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
 }
 
 /**
+ * @brief Call functor @p func for each line of the string @str. Considers both '\n' and '\r\n' as
+ * line separators.
+ * @param str  string split into lines
+ * @param func Function callback taking a std::string_view as argument
+ */
+template <typename Func>
+void forEachLine(std::string_view str, Func&& func) {
+    for (size_t first = 0; first < str.size();) {
+        const size_t second = str.find_first_of("\r\n", first);
+        std::invoke(func, str.substr(first, second - first));
+        if (second == std::string_view::npos) {
+            first = std::string_view::npos;
+        } else {
+            first = second + (str.substr(second).starts_with("\r\n") ? 2 : 1);
+        }
+    }
+}
+
+/**
  * \brief trims \p str from beginning and end by removing white spaces
  *
  * @param str   input string
