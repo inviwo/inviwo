@@ -1,8 +1,11 @@
+cmake_minimum_required(VERSION 3.28...4.1 FATAL_ERROR)
+
 set(IVW_PACKAGE_SELECT_APP "@IVW_PACKAGE_SELECT_APP@")
 set(APP_BUNDLE_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/${IVW_PACKAGE_SELECT_APP}.app")
 
 message(STATUS "Running deploy-os on: ${APP_BUNDLE_PATH}")
 
+# Sign all libraries
 file(GLOB_RECURSE lib_files LIST_DIRECTORIES false ${APP_BUNDLE_PATH}/*.dylib)
 foreach(lib_file IN LISTS lib_files)
     execute_process(
@@ -15,6 +18,7 @@ foreach(lib_file IN LISTS lib_files)
     endif()
 endforeach()
 
+# The python module have a .se extension.
 file(GLOB_RECURSE so_files LIST_DIRECTORIES false ${APP_BUNDLE_PATH}/*.so)
 foreach(so_files IN LISTS so_files)
     execute_process(
@@ -27,6 +31,21 @@ foreach(so_files IN LISTS so_files)
     endif()
 endforeach()
 
+# sign any embedded app/framework bundle (just cef)
+file(GLOB apps LIST_DIRECTORIES true ${APP_BUNDLE_PATH}/Contents/Frameworks/*.app)
+file(GLOB frameworks LIST_DIRECTORIES true ${APP_BUNDLE_PATH}/Contents/Frameworks/*.framework)
+foreach(item IN LISTS apps frameworks)
+    execute_process(
+        COMMAND codesign --force --deep --sign - "${item}"
+        RESULT_VARIABLE exit_code
+        COMMAND_ECHO STDOUT
+    )
+    if (NOT exit_code EQUAL 0)
+        message(FATAL_ERROR "Running codesign failed with error: ${exit_code}")
+    endif()
+endforeach()
+
+# Sign the bundle it self
 execute_process(
     COMMAND codesign --force --deep --sign - "${APP_BUNDLE_PATH}"
     RESULT_VARIABLE exit_code

@@ -154,11 +154,7 @@ if (OS_MAC)
             VERBATIM
         )
 
-
-        # Copy the helper app bundle into the Frameworks directory (used by installer)
-        install(DIRECTORY "${_helper_app}"
-            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"
-            COMPONENT Application)
+         # The cef helper apps gets installed as part of the inviwo.app bundle
     endforeach()
 
 elseif (WIN32)

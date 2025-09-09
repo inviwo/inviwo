@@ -229,11 +229,8 @@ if (OS_MAC)
         )
     endforeach()
 
-    # Copy the CEF framework into the Frameworks directory (used by installer)
-    # TODO: Investigate if the .proj workaround above is required for packaging as well.
-    install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
-            COMPONENT Application) 
+    # The cef apps gets installed as part of the inviwo.app bundle
+
 elseif (WIN32)
     if(USE_SANDBOX)
         # Logical target used to link the cef_sandbox library.
