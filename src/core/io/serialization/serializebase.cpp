@@ -31,14 +31,10 @@
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/io/serialization/serializeconstants.h>
+#include <inviwo/core/util/charconv.h>
 
-#include <charconv>
 #include <fmt/format.h>
 #include <fmt/std.h>
-
-#if !(defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L)
-#include <fast_float/fast_float.h>
-#endif
 
 namespace inviwo {
 
@@ -119,54 +115,21 @@ NodeSwitch::~NodeSwitch() {
 
 NodeSwitch::operator bool() const { return serializer_->rootElement_ != nullptr; }
 
-namespace {
-
-template <class T>
-void fromStrInternal(std::string_view value, T& dest) {
-    const auto end = value.data() + value.size();
-
-#if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
-    auto [p, ec] = std::from_chars(value.data(), end, dest);
-#else
-    auto [p, ec] = fast_float::from_chars(value.data(), end, dest);
-#endif
-    if (ec != std::errc() || p != end) {
-        if constexpr (std::is_same_v<double, T> || std::is_same_v<float, T>) {
-            if (value == "inf") {
-                dest = std::numeric_limits<T>::infinity();
-            } else if (value == "-inf") {
-                dest = -std::numeric_limits<T>::infinity();
-            } else if (value == "nan") {
-                dest = std::numeric_limits<T>::quiet_NaN();
-            } else if (value == "-nan" || value == "-nan(ind)") {
-                dest = -std::numeric_limits<T>::quiet_NaN();
-            } else {
-                throw SerializationException(SourceContext{},
-                                             "Error parsing floating point number ({})", value);
-            }
-        } else {
-            throw SerializationException(SourceContext{}, "Error parsing number ({})", value);
-        }
-    }
-}
-
-}  // namespace
-
 // NOLINTBEGIN(google-runtime-int)
-void detail::fromStr(std::string_view value, double& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, float& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, char& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, signed char& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, unsigned char& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, short& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, unsigned short& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, int& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, unsigned int& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, long& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, unsigned long& dest) { fromStrInternal(value, dest); }
-void detail::fromStr(std::string_view value, long long& dest) { fromStrInternal(value, dest); }
+void detail::fromStr(std::string_view value, double& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, float& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, char& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, signed char& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, unsigned char& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, short& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, unsigned short& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, int& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, unsigned int& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, long& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, unsigned long& dest) { util::fromStr(value, dest); }
+void detail::fromStr(std::string_view value, long long& dest) { util::fromStr(value, dest); }
 void detail::fromStr(std::string_view value, unsigned long long& dest) {
-    fromStrInternal(value, dest);
+    util::fromStr(value, dest);
 }
 void detail::fromStr(std::string_view value, bool& dest) {
     static constexpr std::string_view trueVal = "1";

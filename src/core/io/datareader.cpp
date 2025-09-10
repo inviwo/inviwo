@@ -28,8 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/datareader.h>
-#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <fmt/format.h>
 
 #include <inviwo/core/io/curlutils.h>
@@ -70,6 +71,29 @@ std::ifstream DataReader::openAndCacheIfUrl(const std::filesystem::path& path,
     } else {
         throw FileException(SourceContext{}, "Could not open file: {}", path);
     }
+}
+
+std::string DataReader::readFileContents(const std::filesystem::path& path) {
+    FILE* file = filesystem::fopen(path, "rb");
+    if (!file) {
+        throw DataReaderException(SourceContext{}, "Could not open file: {}", path);
+    }
+    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+
+    // Get the file size, so we can pre-allocate the string. HUGE speed impact.
+    std::fseek(file, 0, SEEK_END);
+    const auto length = std::ftell(file);  // NOLINT(google-runtime-int)
+    std::fseek(file, 0, SEEK_SET);
+
+    if (length <= 0) {
+        throw DataReaderException(SourceContext{}, "Empty file: {}", path);
+    }
+
+    std::string data(length, '0');
+    if (std::fread(data.data(), length, 1, file) != 1) {
+        throw DataReaderException(SourceContext{}, "Could not read file: {}", path);
+    }
+    return data;
 }
 
 }  // namespace inviwo

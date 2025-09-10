@@ -87,8 +87,10 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& f
     return readData(filePath, nullptr);
 }
 
-std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& filePath,
+std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& path,
                                                   MetaDataOwner* metadata) {
+    const auto filePath = downloadAndCacheIfUrl(path);
+
     checkExists(filePath);
 
     rawFile_ = filePath;

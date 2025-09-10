@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/util/charconv.h>
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/inviwofileformattypes.h>
-
-#include <string_view>
-#include <filesystem>
-
-namespace inviwo::util {
-
-IVW_CORE_API void reverseByteOrder(void* dest, size_t bytes, size_t elementSize);
-
-IVW_CORE_API
-void readBytesIntoBuffer(const std::filesystem::path& path, size_t offset, size_t bytes,
-                         ByteOrder byteOrder, size_t elementSize, void* dest);
-
-IVW_CORE_API void readCompressedBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
-                                                size_t bytes, ByteOrder byteOrder,
-                                                size_t elementSize, void* dest);
-}  // namespace inviwo::util
+namespace inviwo::util {}  // namespace inviwo::util
