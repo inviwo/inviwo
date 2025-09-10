@@ -73,7 +73,7 @@ std::ifstream DataReader::openAndCacheIfUrl(const std::filesystem::path& path,
     }
 }
 
-std::string readFileContents(const std::filesystem::path& path) {
+std::string DataReader::readFileContents(const std::filesystem::path& path) {
     FILE* file = filesystem::fopen(path, "rb");
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {}", path);
