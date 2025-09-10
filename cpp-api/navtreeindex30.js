@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"namespaceinviwo_1_1utilqt.html#a7740e56d786b88aca6119cdbdd71047a":[2,0,0,23,4],
+"namespaceinviwo_1_1utilqt.html#a8d6723b64f4534fdf1cd43ea07ce5df6":[2,0,0,23,8],
 "namespaceinviwo_1_1utilqt.html#aa09451ba243f1be606192c27596a8b0f":[2,0,0,23,10],
 "namespaceinviwo_1_1utilqt.html#aa9365361b68923637d43f1fc60f4df26":[2,0,0,23,14],
 "namespaceinviwo_1_1utilqt.html#aa9fdc5daccf5dbffb15b28e87095d475":[2,0,0,23,21],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html":[2,0,0,651,0],
 "structinviwo_1_1MeshRasterizer_1_1AlphaSettings.html":[4,0,0,658,0],
 "structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[2,0,0,651,1],
-"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[4,0,0,658,1],
-"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html":[2,0,0,651,2],
-"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html":[4,0,0,658,2]
+"structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html":[4,0,0,658,1]
 };

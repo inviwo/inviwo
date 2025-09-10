@@ -1,5 +1,7 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[2,0,0,1096,4],
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[4,0,0,1103,4],
 "structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[2,0,0,1096,7],
 "structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[4,0,0,1103,7],
 "structinviwo_1_1StringComparePMR.html":[2,0,0,1101],
@@ -247,7 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1representation__traits.html":[4,0,0,993],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[2,0,0,987],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[4,0,0,994],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[2,0,0,988],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[4,0,0,995],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html":[2,0,0,989]
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[2,0,0,988]
 };

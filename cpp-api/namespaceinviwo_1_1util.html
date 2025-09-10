@@ -423,10 +423,12 @@ IVW_CORE_API std::back_insert_iterator&lt; fmt::memory_buffer &gt;&#160;</td><td
 <tr class="memitem:a18afcb89dd78c0d803b13b0715a01d8b" id="r_a18afcb89dd78c0d803b13b0715a01d8b"><td class="memTemplParams" colspan="2"><a id="a18afcb89dd78c0d803b13b0715a01d8b" name="a18afcb89dd78c0d803b13b0715a01d8b"></a>
 template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a18afcb89dd78c0d803b13b0715a01d8b template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>printEvent</b> (std::ostream &amp;os, const std::string &amp;event, Args... args)</td></tr>
-<tr class="memitem:a6c89ec6b8d6dc676621530bdd578aa4c" id="r_a6c89ec6b8d6dc676621530bdd578aa4c"><td class="memItemLeft" align="right" valign="top"><a id="a6c89ec6b8d6dc676621530bdd578aa4c" name="a6c89ec6b8d6dc676621530bdd578aa4c"></a>
-void IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesIntoBuffer</b> (const std::filesystem::path &amp;path, size_t offset, size_t bytes, ByteOrder byteOrder, size_t elementSize, void *dest)</td></tr>
-<tr class="memitem:a4996ac8048726af49f305468ed61fcbe" id="r_a4996ac8048726af49f305468ed61fcbe"><td class="memItemLeft" align="right" valign="top"><a id="a4996ac8048726af49f305468ed61fcbe" name="a4996ac8048726af49f305468ed61fcbe"></a>
-void IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>readCompressedBytesIntoBuffer</b> (const std::filesystem::path &amp;path, size_t offset, size_t bytes, ByteOrder byteOrder, size_t elementSize, void *dest)</td></tr>
+<tr class="memitem:a514091a4434835772105ef1b5160e4f8" id="r_a514091a4434835772105ef1b5160e4f8"><td class="memItemLeft" align="right" valign="top"><a id="a514091a4434835772105ef1b5160e4f8" name="a514091a4434835772105ef1b5160e4f8"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>reverseByteOrder</b> (void *dest, size_t bytes, size_t elementSize)</td></tr>
+<tr class="memitem:a2c00f2b9c94aa968f96d3ac8da9b7baf" id="r_a2c00f2b9c94aa968f96d3ac8da9b7baf"><td class="memItemLeft" align="right" valign="top"><a id="a2c00f2b9c94aa968f96d3ac8da9b7baf" name="a2c00f2b9c94aa968f96d3ac8da9b7baf"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesIntoBuffer</b> (const std::filesystem::path &amp;path, size_t offset, size_t bytes, ByteOrder byteOrder, size_t elementSize, void *dest)</td></tr>
+<tr class="memitem:aaea41b18b441db8527e59a56ad70bdbe" id="r_aaea41b18b441db8527e59a56ad70bdbe"><td class="memItemLeft" align="right" valign="top"><a id="aaea41b18b441db8527e59a56ad70bdbe" name="aaea41b18b441db8527e59a56ad70bdbe"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>readCompressedBytesIntoBuffer</b> (const std::filesystem::path &amp;path, size_t offset, size_t bytes, ByteOrder byteOrder, size_t elementSize, void *dest)</td></tr>
 <tr class="memitem:ab874e412b1a96d66859a3cb627d6d5ca" id="r_ab874e412b1a96d66859a3cb627d6d5ca"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab874e412b1a96d66859a3cb627d6d5ca">writeBytes</a> (const std::filesystem::path &amp;path, const void *source, size_t bytes, Compression compression)</td></tr>
 <tr class="memitem:a8a4d4e6fe612ca06641d9354787759eb" id="r_a8a4d4e6fe612ca06641d9354787759eb"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a8a4d4e6fe612ca06641d9354787759eb template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a4d4e6fe612ca06641d9354787759eb">saveData</a> (const T &amp;data, const std::filesystem::path &amp;filePath, const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;extension, Overwrite overwrite)</td></tr>
@@ -539,6 +541,12 @@ IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>debugBre
 <tr class="memitem:ac1a7add893c040adf20aa7bfb32b6aa7" id="r_ac1a7add893c040adf20aa7bfb32b6aa7"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1a7add893c040adf20aa7bfb32b6aa7">reverse</a> (<a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &amp;b)</td></tr>
 <tr class="memitem:ac161982c151dab1c0f48df711facdd0d" id="r_ac161982c151dab1c0f48df711facdd0d"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structinviwo_1_1util_1_1BuildInfo.html">BuildInfo</a> &gt; IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac161982c151dab1c0f48df711facdd0d">getBuildInfo</a> ()</td></tr>
 <tr class="memdesc:ac161982c151dab1c0f48df711facdd0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accesses build information via an INI file or compile-time definitions.  <br /></td></tr>
+<tr class="memitem:a5c0372b1f728b246d764711bea9f188c" id="r_a5c0372b1f728b246d764711bea9f188c"><td class="memTemplParams" colspan="2"><a id="a5c0372b1f728b246d764711bea9f188c" name="a5c0372b1f728b246d764711bea9f188c"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a5c0372b1f728b246d764711bea9f188c template"><td class="memItemLeft" align="right" valign="top">std::expected&lt; T, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fromStr</b> (std::string_view value)</td></tr>
+<tr class="memitem:a73fbae9deba613bc99ca48f19f5465d8" id="r_a73fbae9deba613bc99ca48f19f5465d8"><td class="memTemplParams" colspan="2"><a id="a73fbae9deba613bc99ca48f19f5465d8" name="a73fbae9deba613bc99ca48f19f5465d8"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a73fbae9deba613bc99ca48f19f5465d8 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>fromStr</b> (std::string_view value, T &amp;dest)</td></tr>
 <tr class="memitem:af1136c71f85d4df4b2b2449aee7121b0" id="r_af1136c71f85d4df4b2b2449aee7121b0"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1136c71f85d4df4b2b2449aee7121b0">msToString</a> (double ms, bool includeZeros=true, bool spacing=false)</td></tr>
 <tr class="memdesc:af1136c71f85d4df4b2b2449aee7121b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert the given duration from milliseconds to a string. The returned string will have the format "%dd %dh %dmin %dsec %.3fms", where days, hours, minutes, seconds, ... are suppressed up to the first non-zero unit if not needed. Milliseconds and seconds are combined if larger than 1 second.  <br /></td></tr>
 <tr class="memitem:a818947e6c0c72cbdeb18b6631686091b" id="r_a818947e6c0c72cbdeb18b6631686091b"><td class="memTemplParams" colspan="2">template&lt;class Rep, class Period = std::ratio&lt;1&gt;&gt; </td></tr>
@@ -930,6 +938,17 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a040967fe9b1828c138864fcff6d60c0d" id="r_a040967fe9b1828c138864fcff6d60c0d"><td class="memTemplParams" colspan="2">template&lt;typename Func&gt; </td></tr>
 <tr class="memitem:a040967fe9b1828c138864fcff6d60c0d template"><td class="memItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a040967fe9b1828c138864fcff6d60c0d">forEachStringPart</a> (std::string_view str, std::string_view sep, Func &amp;&amp;func)</td></tr>
 <tr class="memdesc:a040967fe9b1828c138864fcff6d60c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call a functor on each part of the string after splitting by sep.  <br /></td></tr>
+<tr class="memitem:a3bee7a0a110a52b4d03190dc059139f3" id="r_a3bee7a0a110a52b4d03190dc059139f3"><td class="memTemplParams" colspan="2">template&lt;typename Func&gt; </td></tr>
+<tr class="memitem:a3bee7a0a110a52b4d03190dc059139f3 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bee7a0a110a52b4d03190dc059139f3">forEachLine</a> (std::string_view str, Func &amp;&amp;func)</td></tr>
+<tr class="memdesc:a3bee7a0a110a52b4d03190dc059139f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call functor <code class="param">func</code> for each line of the string @str. Considers both '<br  />
+' and '\r<br  />
+' as line separators.  <br /></td></tr>
+<tr class="memitem:aeb3562b94700f15c08e99b826745258a" id="r_aeb3562b94700f15c08e99b826745258a"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb3562b94700f15c08e99b826745258a">trim</a> (std::string_view str) noexcept</td></tr>
+<tr class="memdesc:aeb3562b94700f15c08e99b826745258a"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from beginning and end by removing white spaces  <br /></td></tr>
+<tr class="memitem:ab6bf0cc28f51cabb7d36e15c61129f7c" id="r_ab6bf0cc28f51cabb7d36e15c61129f7c"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6bf0cc28f51cabb7d36e15c61129f7c">ltrim</a> (std::string_view str) noexcept</td></tr>
+<tr class="memdesc:ab6bf0cc28f51cabb7d36e15c61129f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from beginning removing white spaces  <br /></td></tr>
+<tr class="memitem:ababf20580e98b848eaffd93c087fedb2" id="r_ababf20580e98b848eaffd93c087fedb2"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ababf20580e98b848eaffd93c087fedb2">rtrim</a> (std::string_view str) noexcept</td></tr>
+<tr class="memdesc:ababf20580e98b848eaffd93c087fedb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from end by removing white spaces  <br /></td></tr>
 <tr class="memitem:a68531c2a1a0d7b50fbcd32b4ab6d03a2" id="r_a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="memItemLeft" align="right" valign="top">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68531c2a1a0d7b50fbcd32b4ab6d03a2">splitByFirst</a> (std::string_view str, char delimiter=' ')</td></tr>
 <tr class="memdesc:a68531c2a1a0d7b50fbcd32b4ab6d03a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divide a string into two parts by the first instance of a delimiter.  <br /></td></tr>
 <tr class="memitem:a72e4709f37d1f58ead6f6bb699964102" id="r_a72e4709f37d1f58ead6f6bb699964102"><td class="memItemLeft" align="right" valign="top">constexpr std::pair&lt; std::string_view, std::string_view &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72e4709f37d1f58ead6f6bb699964102">splitByFirst</a> (std::string_view str, std::string_view delimiter)</td></tr>
@@ -942,12 +961,8 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memdesc:ab608fdeb665bcddf5e9821006487364b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split string into substrings based on separating delimiter character. Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.  <br /></td></tr>
 <tr class="memitem:a018c12bda5703660547faff1bd31b8b9" id="r_a018c12bda5703660547faff1bd31b8b9"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::vector&lt; std::string_view &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a018c12bda5703660547faff1bd31b8b9">splitStringView</a> (std::string_view str, char delimiter=' ')</td></tr>
 <tr class="memdesc:a018c12bda5703660547faff1bd31b8b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split string into substrings based on separating delimiter character. Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.  <br /></td></tr>
-<tr class="memitem:aeb3562b94700f15c08e99b826745258a" id="r_aeb3562b94700f15c08e99b826745258a"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb3562b94700f15c08e99b826745258a">trim</a> (std::string_view str) noexcept</td></tr>
-<tr class="memdesc:aeb3562b94700f15c08e99b826745258a"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from beginning and end by removing white spaces  <br /></td></tr>
-<tr class="memitem:ab6bf0cc28f51cabb7d36e15c61129f7c" id="r_ab6bf0cc28f51cabb7d36e15c61129f7c"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6bf0cc28f51cabb7d36e15c61129f7c">ltrim</a> (std::string_view str) noexcept</td></tr>
-<tr class="memdesc:ab6bf0cc28f51cabb7d36e15c61129f7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from beginning removing white spaces  <br /></td></tr>
-<tr class="memitem:ababf20580e98b848eaffd93c087fedb2" id="r_ababf20580e98b848eaffd93c087fedb2"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ababf20580e98b848eaffd93c087fedb2">rtrim</a> (std::string_view str) noexcept</td></tr>
-<tr class="memdesc:ababf20580e98b848eaffd93c087fedb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from end by removing white spaces  <br /></td></tr>
+<tr class="memitem:a2c50a6c28ee754b40778a405535ff2af" id="r_a2c50a6c28ee754b40778a405535ff2af"><td class="memTemplParams" colspan="2">template&lt;size_t numItems&gt; </td></tr>
+<tr class="memitem:a2c50a6c28ee754b40778a405535ff2af template"><td class="memItemLeft" align="right" valign="top">std::array&lt; std::string_view, numItems &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c50a6c28ee754b40778a405535ff2af">splitIntoArray</a> (std::string_view str, char delimiter=' ')</td></tr>
 <tr class="memitem:a258ef7d8bb67f5d62fe207bc77ec3c70" id="r_a258ef7d8bb67f5d62fe207bc77ec3c70"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a258ef7d8bb67f5d62fe207bc77ec3c70">iCaseFind</a> (std::string_view str, std::string_view substring)</td></tr>
 <tr class="memdesc:a258ef7d8bb67f5d62fe207bc77ec3c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the first substring equal to <code class="param">s</code> in <code class="param">str</code> using case insensitive comparisons.  <br /></td></tr>
 <tr class="memitem:a480d23a0ea9a3bb2949572ef11c7c051" id="r_a480d23a0ea9a3bb2949572ef11c7c051"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a480d23a0ea9a3bb2949572ef11c7c051">iCaseContains</a> (std::string_view str, std::string_view s)</td></tr>
@@ -2849,6 +2864,40 @@ template&lt;typename Iterable, typename <a class="el" href="namespaceinviwo.html
     <tr><td class="paramname">iterable</td><td>the data structure to iterate over </td></tr>
     <tr><td class="paramname">callback</td><td>to call for each element, can be either <span class="tt">[](auto &amp;a){}</span> or <span class="tt">[](auto &amp;a,
 size_t id){}</span> where <span class="tt">a</span> is an data item from the iterable data structure and <span class="tt">id</span> is the index in the data structure </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3bee7a0a110a52b4d03190dc059139f3" name="a3bee7a0a110a52b4d03190dc059139f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bee7a0a110a52b4d03190dc059139f3">&#9670;&#160;</a></span>forEachLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Func&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::util::forEachLine </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Func &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>func</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call functor <code class="param">func</code> for each line of the string @str. Considers both '<br  />
+' and '\r<br  />
+' as line separators. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>string split into lines </td></tr>
+    <tr><td class="paramname">func</td><td>Function callback taking a std::string_view as argument </td></tr>
   </table>
   </dd>
 </dl>
@@ -6958,6 +7007,44 @@ template&lt;typename T&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>a pair of strings, if the delimiter is not found the first string will empty, and the second one will be equal to the input str </dd></dl>
+
+</div>
+</div>
+<a id="a2c50a6c28ee754b40778a405535ff2af" name="a2c50a6c28ee754b40778a405535ff2af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c50a6c28ee754b40778a405535ff2af">&#9670;&#160;</a></span>splitIntoArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t numItems&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; std::string_view, numItems &gt; inviwo::util::splitIntoArray </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char</td>          <td class="paramname"><span class="paramname"><em>delimiter</em></span><span class="paramdefsep"> = </span><span class="paramdefval">'&#160;'</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Split the string <code class="param">str</code> by <code class="param">delimiter</code> into at most @t numItems parts and return the result in the form of an array. In case there are fewer substrings than @t numItems, the remaining fields of the array contain empty strings. If there are more than <code class="param">numItems</code> parts, the last array entry will contain the remaining string.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">numItems</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>The string to split </td></tr>
+    <tr><td class="paramname">delimiter</td><td>The character use for splitting (default to space) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>an array containing the substrings </dd></dl>
 
 </div>
 </div>

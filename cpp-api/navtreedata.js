@@ -85,11 +85,11 @@ var NAVTREEINDEX =
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a8dcc95dcc2ee0f67398e2ad3db877e0f",
 "namespaceinviwo.html#a4abd3aef0a9b7bad30e2767a1c5fde3a",
 "namespaceinviwo_1_1util.html#a193aac2254d9cc5b5b1029995323d957",
-"namespaceinviwo_1_1utilqt.html#aa09451ba243f1be606192c27596a8b0f",
-"structinviwo_1_1MeshRasterizer_1_1HatchingSettings.html",
-"structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4",
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html",
-"structstd_1_1hash_3_01typename_01inviwo_1_1BrushingTarget_01_4.html"
+"namespaceinviwo_1_1utilqt.html#a7740e56d786b88aca6119cdbdd71047a",
+"structinviwo_1_1MeshRasterizer_1_1FaceSettings.html",
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec",
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html",
+"structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';
