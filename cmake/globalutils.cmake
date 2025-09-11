@@ -995,33 +995,35 @@ endfunction()
 # Does nothing on platforms other than Windows. 
 # Use ivw_default_install_targets (installutils.cmake) for deployment.
 function(ivw_deploy_qt target)
-    if(WIN32)
-        get_target_property(target_type ${target} TYPE)
-        # For dll-builds (ie BUILD_SHARED_LIBS == true) we need to run it for both .dll and .exe
-        # For lib-builds (ie BUILD_SHARED_LIBS == false) we need to run it for only .exe (there are no .dll)
-        if (BUILD_SHARED_LIBS OR (target_type STREQUAL "EXECUTABLE")) 
-            find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
+    if(NOT "qt" IN_LIST VCPKG_MANIFEST_FEATURES)
+        if(WIN32)
+           get_target_property(target_type ${target} TYPE)
+           # For dll-builds (ie BUILD_SHARED_LIBS == true) we need to run it for both .dll and .exe
+           # For lib-builds (ie BUILD_SHARED_LIBS == false) we need to run it for only .exe (there are no .dll)
+            if (BUILD_SHARED_LIBS OR (target_type STREQUAL "EXECUTABLE"))
+                find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
 
-            get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
+                get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
 
-            # in case of environment variable QTDIR not set
-            if(NOT EXISTS ${WINDEPLOYQT_EXECUTABLE})
-                get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
-                get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
-                find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${qt_bin_dir} )
+                # in case of environment variable QTDIR not set
+                if(NOT EXISTS ${WINDEPLOYQT_EXECUTABLE})
+                    get_target_property(qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
+                    get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
+                    find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${qt_bin_dir} )
+                endif()
+                # Copy to build folder
+                add_custom_command(
+                    TARGET ${target} POST_BUILD
+                    COMMAND ${WINDEPLOYQT_EXECUTABLE}
+                        --no-compiler-runtime
+                        --no-translations
+                        --no-system-d3d-compiler
+                        --no-opengl-sw
+                            --pdb
+                        --verbose 1
+                        $<TARGET_FILE:${target}>
+                )
             endif()
-            # Copy to build folder
-            add_custom_command(
-                TARGET ${target} POST_BUILD 
-                COMMAND ${WINDEPLOYQT_EXECUTABLE} 
-                    --no-compiler-runtime 
-                    --no-translations
-                    --no-system-d3d-compiler
-                    --no-opengl-sw
-                    --pdb
-                    --verbose 1 
-                    $<TARGET_FILE:${target}>
-            )    
         endif()
     endif()
 endfunction()

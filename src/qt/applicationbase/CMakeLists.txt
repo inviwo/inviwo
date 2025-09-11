@@ -59,3 +59,34 @@ ivw_define_standard_properties(inviwo-qtapplicationbase)
 
 # Make package (for other projects to find)
 ivw_install_helper(TARGET inviwo-qtapplicationbase NAMESPACE inviwo DESTINATION inviwo)
+
+if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
+     if(WIN32)
+        add_custom_command(
+            TARGET inviwo-qtapplicationbase
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/$<$<CONFIG:Debug>:debug/>Qt6/plugins"
+            "$<TARGET_FILE_DIR:inviwo-qtapplicationbase>"
+            VERBATIM
+        )
+    endif()
+    ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
+        ivw_private_vcpkg_install_helper(
+            FILES_VAR INFO_VCPKG_OWNED_FILES
+            DIRNAME "Qt6/plugins"
+            EXTENSION "(dylib|a|so|dll)"
+            DESTINATION ${IVW_INSTALL_PREFIX}/PlugIns
+            COMPONENT Application
+        )
+    ]=])
+    ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
+        ivw_private_vcpkg_install_helper(
+            FILES_VAR INFO_VCPKG_OWNED_FILES
+            DIRNAME "Qt6/plugins"
+            EXTENSION "(dylib|a|so|dll)"
+            DESTINATION ${IVW_INSTALL_PREFIX}/PlugIns
+            COMPONENT Application
+        )
+    ]=])
+endif()
