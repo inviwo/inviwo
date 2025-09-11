@@ -159,28 +159,6 @@ ivw_vcpkg_install(fast-float MODULE Core EXT)
 find_package(curlcpp CONFIG REQUIRED)
 ivw_vcpkg_install(curlcpp MODULE Core EXT)
 
-# QT
-if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
-    ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            DIRNAME "Qt6/plugins"
-            EXTENSION "(dylib|a)"
-            DESTINATION ${IVW_INSTALL_PREFIX}/PlugIns
-            COMPONENT Application
-        )
-    ]=])
-    ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            DIRNAME "Qt6/plugins"
-            EXTENSION "(dylib|a)"
-            DESTINATION ${IVW_INSTALL_PREFIX}/PlugIns
-            COMPONENT Application
-        )
-    ]=])
-endif()
-
 if(IVW_ENABLE_PYTHON)
     find_package(pybind11 CONFIG REQUIRED)
     ivw_vcpkg_install(pybind11 MODULE Core EXT)
