@@ -76,7 +76,7 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
             FILES_VAR INFO_VCPKG_OWNED_FILES
             DIRNAME "Qt6/plugins"
             EXTENSION "(dylib|a|so|dll)"
-            DESTINATION ${IVW_INSTALL_PREFIX}/PlugIns
+            DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
             COMPONENT Application
         )
     ]=])
@@ -85,7 +85,7 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
             FILES_VAR INFO_VCPKG_OWNED_FILES
             DIRNAME "Qt6/plugins"
             EXTENSION "(dylib|a|so|dll)"
-            DESTINATION ${IVW_INSTALL_PREFIX}/PlugIns
+            DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
             COMPONENT Application
         )
     ]=])
