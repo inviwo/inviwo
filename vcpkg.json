@@ -80,7 +80,19 @@
             "gui",
             "widgets",
             "opengl",
-            "zstd"
+            "zstd",
+            {
+              "name": "xcb",
+              "platform": "linux"
+            },
+            {
+              "name": "xcb-xlib",
+              "platform": "linux"
+            },
+            {
+             "name": "xrender",
+             "platform": "linux"
+            }
           ]
         },
         "qtsvg"

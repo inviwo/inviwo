@@ -55,7 +55,16 @@
 
 #include <QMessageBox>
 #include <QApplication>
+#ifdef QT_STATICPLUGIN
+#include <QtPlugin>
+Q_IMPORT_PLUGIN(QLinuxFbIntegrationPlugin)
+Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
+Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 
+Q_IMPORT_PLUGIN(QGifPlugin)
+Q_IMPORT_PLUGIN(QJpegPlugin)
+Q_IMPORT_PLUGIN(QSvgPlugin)
+#endif
 int main(int argc, char** argv) {
     inviwo::util::configureCodePage();
 
@@ -176,3 +185,4 @@ int main(int argc, char** argv) {
         }
     }
 }
+
