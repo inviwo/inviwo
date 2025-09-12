@@ -117,7 +117,7 @@ endfunction()
 unset(ivwVcpkgInstallPythonWarningShownOnce CACHE)
 
 
-set(IVW_VCPKG_DUMMY_TARGETS_INCLUDE ".*" CACHE STRING "List of CMake REGEXs for targets to make dummy targets for")
+set(IVW_VCPKG_DUMMY_TARGETS_INCLUDE "" CACHE STRING "List of CMake REGEXs for targets to make dummy targets for")
 set(IVW_VCPKG_DUMMY_TARGETS_EXCLUDE "" CACHE STRING "List of CMake REGEXs for targets to not make dummy targets for")
 
 
