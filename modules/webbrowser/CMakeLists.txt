@@ -180,14 +180,14 @@ set(CEF_BINARY_DIR
 # Determine the target output directory.
 # Inviwo: use CMAKE_RUNTIME_OUTPUT_DIRECTORY directory as output dir
 if (OS_MAC)
-	# Output path for the main app bundle.
+    # Output path for the main app bundle.
     if(IVW_GENERATOR_IS_MULTI_CONFIG) 
-	   set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
+        set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
     else()
         set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${IVW_APP_INSTALL_NAME}.app")
     endif()
 
-	# Copy the CEF framework into the Frameworks directory
+    # Copy the CEF framework into the Frameworks directory
     add_custom_command(
         TARGET inviwo-module-webbrowser
         POST_BUILD
