@@ -180,14 +180,14 @@ set(CEF_BINARY_DIR
 # Determine the target output directory.
 # Inviwo: use CMAKE_RUNTIME_OUTPUT_DIRECTORY directory as output dir
 if (OS_MAC)
-	# Output path for the main app bundle.
+    # Output path for the main app bundle.
     if(IVW_GENERATOR_IS_MULTI_CONFIG) 
-	   set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
+        set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
     else()
         set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${IVW_APP_INSTALL_NAME}.app")
     endif()
 
-	# Copy the CEF framework into the Frameworks directory
+    # Copy the CEF framework into the Frameworks directory
     add_custom_command(
         TARGET inviwo-module-webbrowser
         POST_BUILD
@@ -229,11 +229,8 @@ if (OS_MAC)
         )
     endforeach()
 
-    # Copy the CEF framework into the Frameworks directory (used by installer)
-    # TODO: Investigate if the .proj workaround above is required for packaging as well.
-    install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
-            COMPONENT Application) 
+    # The cef apps gets installed as part of the inviwo.app bundle
+
 elseif (WIN32)
     if(USE_SANDBOX)
         # Logical target used to link the cef_sandbox library.

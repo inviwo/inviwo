@@ -234,7 +234,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , progress_{std::nullopt}
     , currentProgress_{std::nullopt}
     , dirty_{false}
-    , limitedUpdate_{} {
+    , limitedUpdate_{[](QGraphicsItem* p) { p->update(); }} {
 
     setZValue(depth::processor);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
