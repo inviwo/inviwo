@@ -509,7 +509,7 @@ jobs:
         # Mount installer image
         hdiutil attach $DMG
         # Install by copying Inviwo.app to applications folder
-        cp -r /Volumes/${DMG%%.dmg}/inviwo.app /Applications/
+        cp -R /Volumes/${DMG%%.dmg}/inviwo.app /Applications/
         hdiutil detach /Volumes/${DMG%%.dmg}/
 
     - name: "Run Inviwo"
