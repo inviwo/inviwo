@@ -43,6 +43,7 @@ set(HEADER_FILES
     include/modules/opengl/sharedopenglresources.h
     include/modules/opengl/texture/buffertexture.h
     include/modules/opengl/texture/texture.h
+    include/modules/opengl/texture/texture1d.h
     include/modules/opengl/texture/texture2d.h
     include/modules/opengl/texture/texture2darray.h
     include/modules/opengl/texture/texture3d.h
@@ -94,6 +95,7 @@ set(SOURCE_FILES
     src/sharedopenglresources.cpp
     src/texture/buffertexture.cpp
     src/texture/texture.cpp
+    src/texture/texture1d.cpp
     src/texture/texture2d.cpp
     src/texture/texture2darray.cpp
     src/texture/texture3d.cpp
