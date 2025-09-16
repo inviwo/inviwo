@@ -275,7 +275,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
             RenderContext::getPtr()->activateDefaultRenderContext();
             try {
                 auto d = app->getWorkspaceManager()->createWorkspaceDeserializer(ss, "");
-                std::unique_ptr<Processor> propertyOwner;
+                std::shared_ptr<Processor> propertyOwner;
                 d.deserialize("Processor", propertyOwner);
                 if (propertyOwner) {
                     NetworkLock lock(propertyOwner_->getProcessor()->getNetwork());
