@@ -176,7 +176,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                             std::filesystem::create_directories(testdir);
 
                             const auto workspaceName = testdir / (lname + ".inv");
-                            log::error("Saving regression workspace to: {}", workspaceName);
+                            log::warn("Saving regression workspace to: {}", workspaceName);
 
                             app->getWorkspaceManager()->save(workspaceName);
                             util::exportAllFiles(
