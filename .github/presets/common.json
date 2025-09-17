@@ -7,9 +7,10 @@
       "displayName": "Inviwo GHA",
       "cacheVariables": {
         "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
-        "VCPKG_MANIFEST_FEATURES" : "qt",
+        "VCPKG_MANIFEST_FEATURES" : "qt;python",
 
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+        "IVW_PACKAGE_EMBED_PYTHON": "OFF",
 
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},

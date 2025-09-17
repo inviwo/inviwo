@@ -36,7 +36,7 @@ function(ivw_private_vcpkg_install_helper)
     set(options "")
     set(oneValueArgs FILES_VAR EXTENSION DIRNAME DESTINATION COMPONENT)
     set(multiValueArgs )
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs};FOUND_VAR" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     foreach(item IN LISTS oneValueArgs)
         if(NOT ARG_${item})
@@ -56,61 +56,45 @@ function(ivw_private_vcpkg_install_helper)
         set(configurations )
     endif()
 
-    set(matched_files "")
-
+    string(REPLACE "." "\\." dir ${ARG_DIRNAME})
     set(files ${${ARG_FILES_VAR}})
-    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}/[^/]+\\.${ARG_EXTENSION}")
-    list(APPEND matched_files ${files})
+    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}$")
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
-    install(
-        FILES ${files}
-        DESTINATION ${ARG_DESTINATION}
-        COMPONENT ${ARG_COMPONENT}
-        CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-    )
-
-    set(files ${${ARG_FILES_VAR}})
-    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}/[^/]+/[^/]+\\.${ARG_EXTENSION}")
-    list(APPEND matched_files ${files})
     foreach(item IN LISTS files)
-        cmake_path(GET item PARENT_PATH parentpath)
-        cmake_path(GET parentpath FILENAME parentname)
+        file(RELATIVE_PATH relpath ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME} ${item})
+        cmake_path(GET relpath PARENT_PATH relpathdir)
+        if(NOT relpathdir)
+            set(dest ${ARG_DESTINATION})
+        else()
+            set(dest ${ARG_DESTINATION}/${relpathdir})
+        endif()
         install(
-            FILES ${VCPKG_INSTALLED_DIR}/${item}
-            DESTINATION ${ARG_DESTINATION}/${parentname}
+            FILES ${item}
+            DESTINATION ${dest}
             COMPONENT ${ARG_COMPONENT}
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel
         )
     endforeach()
 
     set(files ${${ARG_FILES_VAR}})
-    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME}/[^/]+\\.${ARG_EXTENSION}")
-    list(APPEND matched_files ${files})
+    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}$")
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
-    install(
-        FILES ${files}
-        DESTINATION ${ARG_DESTINATION}
-        COMPONENT ${ARG_COMPONENT}
-        CONFIGURATIONS Debug
-    )
-
-    set(files ${${ARG_FILES_VAR}})
-    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME}/[^/]+/[^/]+\\.${ARG_EXTENSION}")
-    list(APPEND matched_files ${files})
     foreach(item IN LISTS files)
-        cmake_path(GET item PARENT_PATH parentpath)
-        cmake_path(GET parentpath FILENAME parentname)
+        file(RELATIVE_PATH relpath ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME} ${item})
+        cmake_path(GET relpath PARENT_PATH relpathdir)
+        if(NOT relpathdir)
+            set(dest ${ARG_DESTINATION})
+        else()
+            set(dest ${ARG_DESTINATION}/${relpathdir})
+        endif()
         install(
-            FILES ${VCPKG_INSTALLED_DIR}/${item}
-            DESTINATION ${ARG_DESTINATION}/${parentname}
+            FILES ${item}
+            DESTINATION ${dest}
             COMPONENT ${ARG_COMPONENT}
             CONFIGURATIONS Debug
         )
     endforeach()
 
-    if(ARG_FOUND_VAR)
-        set(${ARG_FOUND_VAR} ${matched_files} PARENT_SCOPE)
-    endif()
 endfunction()
 
 # Reset global variable used to show Python warning in ivw_vcpkg_install only once

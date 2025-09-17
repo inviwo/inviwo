@@ -98,6 +98,12 @@
         "qtsvg"
       ]
     },
+    "python": {
+      "description": "Build python from vcpkg",
+      "dependencies": [
+        "python3"
+      ]
+    },
     "ttk": { 
       "description": "Support topology-tool-kit modules", 
       "dependencies": ["topology-tool-kit"]

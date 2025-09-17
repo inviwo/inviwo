@@ -126,12 +126,14 @@ if(IVW_ENABLE_PYTHON)
             "Python 3 installation.\n")
     endif()
 
-    if(DEFINED VCPKG_INSTALLED_DIR)
-        cmake_path(IS_PREFIX VCPKG_INSTALLED_DIR ${Python3_EXECUTABLE} NORMALIZE isVcpkgPython)
-        if(isVcpkgPython)
-            # we found python in the vcpkg, lets install all the needed python packages
-            execute_process(COMMAND "${Python3_EXECUTABLE}" "-m" "ensurepip" "--upgrade")
-            execute_process(COMMAND "${Python3_EXECUTABLE}" "-m" "pip" "install" "numpy" "certifi")
+    if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
+        if(DEFINED VCPKG_INSTALLED_DIR)
+            cmake_path(IS_PREFIX VCPKG_INSTALLED_DIR ${Python3_EXECUTABLE} NORMALIZE isVcpkgPython)
+            if(isVcpkgPython)
+                # we found python in the vcpkg, lets install all the needed python packages
+                execute_process(COMMAND "${Python3_EXECUTABLE}" "-m" "ensurepip" "--upgrade")
+                execute_process(COMMAND "${Python3_EXECUTABLE}" "-m" "pip" "install" "numpy")
+            endif()
         endif()
     endif()
 

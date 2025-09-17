@@ -43,7 +43,6 @@ public:
     PythonInterpreter();
     virtual ~PythonInterpreter();
 
-    void addModulePath(const std::filesystem::path& path);
     void importModule(std::string_view moduleName);
 
     bool runString(std::string_view code);

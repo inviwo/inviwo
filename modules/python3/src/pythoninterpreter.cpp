@@ -48,6 +48,7 @@
 #include <inviwo/core/util/stringconversion.h>  // for toString
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <modules/python3/pyutils.h>  // for addModulePath
 
 #include <array>        // for array
@@ -106,7 +107,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         }
 
         auto binDir = filesystem::getExecutablePath().parent_path();
-        addModulePath(binDir);
+        pyutil::addModulePath(binDir);
 #if defined(__APPLE__)
         // When deployed on maxos we assume the following structure
         // inviwo.app/
@@ -129,13 +130,23 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
         // We will find the python modules in the lib folder
         if (std::filesystem::is_directory(filesystem::findBasePath() / ".." / "lib")) {
-            addModulePath(filesystem::findBasePath() / ".." / "lib");
+            pyutil::addModulePath(filesystem::findBasePath() / ".." / "lib");
         } else {
             // When developing the python modules will next to the inviwo.app folder.
             // On OSX the path returned by getExecutablePath includes folder-paths inside the
             // app-binary
-            addModulePath(binDir / "../../../");
+            pyutil::addModulePath(binDir / "../../../");
         }
+
+        if (std::filesystem::is_directory(inviwo::build::python::sitelib)) {
+            pyutil::addModulePath(inviwo::build::python::sitelib);
+        }
+
+        if (std::filesystem::is_directory(filesystem::findBasePath() / ".." / "site-packages")) {
+            pyutil::addModulePath(filesystem::findBasePath() / ".." / "site-packages");
+        }
+
+
 #endif
 
         try {
@@ -207,10 +218,6 @@ PythonInterpreter::~PythonInterpreter() {
         PyEval_RestoreThread(tstate_);
         py::finalize_interpreter();
     }
-}
-
-void PythonInterpreter::addModulePath(const std::filesystem::path& path) {
-    pyutil::addModulePath(path);
 }
 
 void PythonInterpreter::importModule(std::string_view moduleName) {
