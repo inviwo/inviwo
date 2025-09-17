@@ -176,7 +176,7 @@ if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
             COMPONENT Application
         )
         install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/${pythondir}/site-packages"
-            DESTINATION ${IVW_INSTALL_PREFIX}
+            DESTINATION "${IVW_INSTALL_PREFIX}"
             COMPONENT Application
         )
     ]=])
