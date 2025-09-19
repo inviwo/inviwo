@@ -1671,6 +1671,7 @@ var annotated_dup =
       [ "TextSelectionDelegate", "classinviwo_1_1TextSelectionDelegate.html", null ],
       [ "TextTextureObject", "structinviwo_1_1TextTextureObject.html", null ],
       [ "Texture", "classinviwo_1_1Texture.html", null ],
+      [ "Texture1D", "classinviwo_1_1Texture1D.html", null ],
       [ "Texture2D", "classinviwo_1_1Texture2D.html", null ],
       [ "Texture2DArray", "classinviwo_1_1Texture2DArray.html", null ],
       [ "Texture3D", "classinviwo_1_1Texture3D.html", null ],

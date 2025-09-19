@@ -2094,6 +2094,7 @@ var hierarchy =
       ] ],
       [ "inviwo::Observable< TextureObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::Texture", "classinviwo_1_1Texture.html", [
+          [ "inviwo::Texture1D", "classinviwo_1_1Texture1D.html", null ],
           [ "inviwo::Texture2D", "classinviwo_1_1Texture2D.html", null ],
           [ "inviwo::Texture2DArray", "classinviwo_1_1Texture2DArray.html", null ],
           [ "inviwo::Texture3D", "classinviwo_1_1Texture3D.html", null ]

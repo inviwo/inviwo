@@ -1,5 +1,7 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1plot_1_1detail_1_1MemPtr.html":[4,0,0,20,0,6],
+"structinviwo_1_1plot_1_1detail_1_1Resetter.html":[4,0,0,20,0,7],
 "structinviwo_1_1pool_1_1detail_1_1JobTraits.html":[2,0,0,15,0,0],
 "structinviwo_1_1pool_1_1detail_1_1JobTraits.html":[4,0,0,21,0,0],
 "structinviwo_1_1pool_1_1detail_1_1State.html":[2,0,0,15,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX33 =
 "structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html":[2,0,1,0],
 "structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html":[4,0,1,0],
 "structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html":[2,0,1,1],
-"structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html":[4,0,1,1],
-"structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html":[2,0,1,2],
-"structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html":[4,0,1,2]
+"structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html":[4,0,1,1]
 };
