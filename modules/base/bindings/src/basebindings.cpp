@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <modules/base/pythonbindings/io/curlutils.h>
 #include <modules/base/pythonbindings/io/volumewriting.h>
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
 #include <modules/base/algorithm/tfconstruction.h>
@@ -67,6 +68,7 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
     py::implicitly_convertible<py::list, std::vector<std::string>>();
 #endif
 
+    inviwo::exposeCurlUtils(ioMod);
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
 

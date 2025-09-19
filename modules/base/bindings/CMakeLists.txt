@@ -2,6 +2,7 @@
 find_package(pybind11 CONFIG REQUIRED)
 
 set(HEADER_FILES
+    include/modules/base/pythonbindings/io/curlutils.h
     include/modules/base/pythonbindings/io/volumewriting.h
     include/modules/base/pythonbindings/algorithm/volumeoperations.h
 )
@@ -9,6 +10,7 @@ ivw_group("Header Files" BASE ${CMAKE_CURRENT_SOURCE_DIR}/include/modules/base/p
 
 set(SOURCE_FILES
     src/basebindings.cpp
+    src/io/curlutils.cpp
     src/io/volumewriting.cpp
     src/algorithm/volumeoperations.cpp
 )
