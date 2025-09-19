@@ -370,6 +370,7 @@ void exposeProperties(py::module& m) {
         .def_property(
             "value", [](FileProperty& p) { return p.get(); },
             [](FileProperty& p, const std::filesystem::path& path) { p.set(path); })
+        .def("valueAsString", [](FileProperty& p) { return p.get().generic_string(); })
         .def("requestFile", &FileProperty::requestFile)
         .def("addNameFilter",
              static_cast<void (FileProperty::*)(std::string_view)>(&FileProperty::addNameFilter))
