@@ -74,14 +74,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.inviwo.Inviwo"
         XCODE_GENERATE_SCHEME YES
     )
-
-    set(CPACK_BINARY_DRAGNDROP ON)
-endif()
-
-
-# add a console version of inviwo.exe called inviwo-cli.exe
-if(WIN32)
-    set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS 
+elseif(WIN32)
+    # add a console version of inviwo.exe called inviwo-cli.exe
+    set_property(TARGET inviwo APPEND_STRING PROPERTY LINK_FLAGS
         " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
     project(inviwo-cli)
@@ -117,6 +112,22 @@ if(WIN32)
         " /SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
 
     ivw_default_install_targets(inviwo-cli)
+else()
+    if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
+        if(NOT BUILD_SHARED_LIBS)
+            qt_import_plugins(
+                inviwo
+                INCLUDE
+                    Qt::QXcbIntegrationPlugin
+                    Qt::QMinimalIntegrationPlugin
+                    Qt::QOffscreenIntegrationPlugin
+                    Qt::QLinuxFbIntegrationPlugin
+                    Qt::QGifPlugin
+                    Qt::QJpegPlugin
+                    Qt::QSvgPlugin
+            )
+        endif()
+    endif()
 endif()
 
 ivw_deploy_qt(inviwo)

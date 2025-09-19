@@ -191,17 +191,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # can be used on other computers.
     # See:
     # https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling#always-full-rpath
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    # Don't use the install RPATH when building
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
     # Use full RPATH for the build tree 
     set(CMAKE_SKIP_BUILD_RPATH FALSE)
-
-    # Don't use the install RPATH when building 
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
     # loader_path is where the executable/library is located.
     # Frameworks are stored in Contents/Frameworks while the executable is in
     # Contents/MacOS
-    list(APPEND CMAKE_INSTALL_RPATH "@loader_path/" "@loader_path/../Frameworks")
+    list(APPEND CMAKE_INSTALL_RPATH "@loader_path/" "@executable_path/../lib" "@loader_path/../Frameworks")
 
     # Add the automatically determined parts of the RPATH,
     # which point to directories outside the build tree, to the install RPATH

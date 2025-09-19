@@ -57,7 +57,7 @@ if (NOT OS_MAC)
     )
 
     # Put in ext folder in developer IDE
-    ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
+    ivw_folder(${CEF_HELPER_TARGET} ext)
 endif()
 
 if (OS_MAC)
@@ -66,11 +66,6 @@ if (OS_MAC)
 	set(CEF_HELPER_OUTPUT_NAME "${IVW_APP_INSTALL_NAME} Helper")
 	set(CEF_TARGET inviwo-module-webbrowser)
     
-    if(USE_SANDBOX)
-        # Logical target used to link the cef_sandbox library.
-        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-    endif()
-
     # Create the multiple Helper app bundle targets.
     foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
         # Convert to a list and extract the suffix values.
@@ -113,9 +108,7 @@ if (OS_MAC)
         set(CEF_APP "$<TARGET_BUNDLE_DIR:${_helper_target}>/../${IVW_APP_INSTALL_NAME}.app")
 
         set(_helper_app "$<TARGET_BUNDLE_DIR:${_helper_target}>") # full/path/to/helper.app
-        if(USE_SANDBOX)
-            target_link_libraries(${_helper_target} cef_sandbox_lib)
-        endif()
+
         target_include_directories(${_helper_target} PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}
             "${CEF_INCLUDE_PATH}"
@@ -129,7 +122,7 @@ if (OS_MAC)
             $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
         )
         # Put in ext folder in developer IDE
-        ivw_folder(${_helper_target} ext/CEF)
+        ivw_folder(${_helper_target} ext)
         # Add the Helper as a dependency of the main executable target.
         add_dependencies(${CEF_TARGET} "${_helper_target}")
 
@@ -154,11 +147,7 @@ if (OS_MAC)
             VERBATIM
         )
 
-
-        # Copy the helper app bundle into the Frameworks directory (used by installer)
-        install(DIRECTORY "${_helper_app}"
-            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"
-            COMPONENT Application)
+         # The cef helper apps gets installed as part of the inviwo.app bundle
     endforeach()
 
 elseif (WIN32)

@@ -40,7 +40,7 @@ set(CPACK_PACKAGE_VERSION_MAJOR       "${IVW_MAJOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_MINOR       "${IVW_MINOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_PATCH       "${IVW_PATCH_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE    "${IVW_ROOT_DIR}/README.md")
-set(CPACK_PACKAGE_FILE_NAME           "${CPACK_PACKAGE_NAME}-v${IVW_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME           "inviwo-v${IVW_VERSION}")
 set(CPACK_RESOURCE_FILE_LICENSE       "${IVW_ROOT_DIR}/LICENSE")
 set(CPACK_PACKAGE_EXECUTABLES         "inviwo" "inviwo")
 set(CPACK_CREATE_DESKTOP_LINKS        "inviwo")
@@ -93,13 +93,7 @@ set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 # Debian settings
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
 
-# In summary, mac/win deloyqt will find and copy all used qt libraries and qt plugins
-# to the staging install directory. Then, it will change the RPATH of all 
-# libraries such that they point to the copied files. More details here:
-# https://doc.qt.io/qt-6/macos-deployment.html#macdeploy
-# This must be done after copying all binaries to the staging package folder,
-# but before those files are packaged into an installer (CPACK_PRE_BUILD_SCRIPTS).
-if(WIN32)
+if(WIN32 AND NOT "qt" IN_LIST VCPKG_MANIFEST_FEATURES)
     get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
     find_program(WINDEPLOYQT windeployqt HINTS "${qt_bin_dir}")
@@ -108,7 +102,6 @@ if(WIN32)
 elseif(APPLE)
     get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
-    find_program(MACDEPLOYQT macdeployqt HINTS "${qt_bin_dir}")
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-osx.cmake.in" "${PROJECT_BINARY_DIR}/deploy-osx.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-osx.cmake")
 endif()
@@ -140,3 +133,4 @@ if(NOT CPACK_GENERATOR)
 endif()
 
 include(CPack)
+

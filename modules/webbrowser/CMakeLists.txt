@@ -6,7 +6,7 @@
 # Specify the CEF distribution version.
 # https://cef-builds.spotifycdn.com/index.html
 # Test before upgrading version since they are sometimes unstable:
-set(CEF_VERSION "128.4.5+gc1d356f+chromium-128.0.6613.18")
+set(CEF_VERSION "139.0.40+g465474a+chromium-139.0.7258.139")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -19,7 +19,7 @@ DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${IVW_BINARY_DIR}/ext/cef")
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
 
-# sandbox lib is built with MT_StaticRelease but Inviwo is built with 
+# sandbox lib is built with MT_StaticRelease but Inviwo is built with
 # MD_DynamicRelease and hence are not compatible
 if(WIN32)
     option(USE_SANDBOX "Enable or disable use of the sandbox." OFF)
@@ -52,14 +52,14 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET ${ORG_CMAKE_OSX_DEPLOYMENT_TARGET})
 set(BUILD_SHARED_LIBS_TMP ${BUILD_SHARED_LIBS})
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
-# Group in folder 
+# Group in folder
 
 ivw_install_helper(TARGET libcef_dll_wrapper
     NAMESPACE cef
     DESTINATION cef
 )
 
-ivw_folder(libcef_dll_wrapper ext/CEF)
+ivw_folder(libcef_dll_wrapper ext)
 # Inviwo: Remove warnings (-w), and build error due to 'OSAtomicCompareAndSwap32' is deprecated
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     target_compile_options(libcef_dll_wrapper PRIVATE -Wno-deprecated-declarations -w)
@@ -148,7 +148,7 @@ target_include_directories(inviwo-module-webbrowser
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MAC}>>:libcef_lib>
-    libcef_dll_wrapper 
+    libcef_dll_wrapper
     nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
 )
@@ -172,29 +172,26 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
     FILES ${CEF_ROOT}/LICENSE.txt
 )
 
-# Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
-set(CEF_BINARY_DIR 
+# Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release
+set(CEF_BINARY_DIR
     "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo,MinSizeRel,Release>:Release>$<$<CONFIG:Debug>:Debug>"
 )
 
 # Determine the target output directory.
 # Inviwo: use CMAKE_RUNTIME_OUTPUT_DIRECTORY directory as output dir
 if (OS_MAC)
-	# Output path for the main app bundle.
-    if(IVW_GENERATOR_IS_MULTI_CONFIG) 
-	   set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
+    # Output path for the main app bundle.
+    if(IVW_GENERATOR_IS_MULTI_CONFIG)
+        set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IVW_APP_INSTALL_NAME}.app")
     else()
         set(CEF_APP "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${IVW_APP_INSTALL_NAME}.app")
     endif()
 
-	# Copy the CEF framework into the Frameworks directory
+    # Copy the CEF framework into the Frameworks directory
+    COPY_MAC_FRAMEWORK(inviwo-module-webbrowser ${CEF_BINARY_DIR} ${CEF_APP})
     add_custom_command(
         TARGET inviwo-module-webbrowser
         POST_BUILD
-        # Copy the CEF framework into the Frameworks directory.
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
 
         COMMAND
         /usr/bin/codesign --force --sign - --entitlements "${CMAKE_CURRENT_SOURCE_DIR}/webhelper/resources/mac/cef-entitlements.plist"
@@ -229,18 +226,9 @@ if (OS_MAC)
         )
     endforeach()
 
-    # Copy the CEF framework into the Frameworks directory (used by installer)
-    # TODO: Investigate if the .proj workaround above is required for packaging as well.
-    install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
-            COMPONENT Application) 
-elseif (WIN32)
-    if(USE_SANDBOX)
-        # Logical target used to link the cef_sandbox library.
-        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-        target_link_libraries(inviwo-module-webbrowser PRIVATE cef_sandbox_lib ${CEF_SANDBOX_STANDARD_LIBS})
-    endif()
+    # The cef apps gets installed as part of the inviwo.app bundle
 
+elseif (WIN32)
     # Copy CEF binary and resource files to the target output directory.
     if(IVW_GENERATOR_IS_MULTI_CONFIG) 
         set(CEF_TARGET_OUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>)

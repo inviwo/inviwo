@@ -159,11 +159,6 @@ ivw_vcpkg_install(fast-float MODULE Core EXT)
 find_package(curlcpp CONFIG REQUIRED)
 ivw_vcpkg_install(curlcpp MODULE Core EXT)
 
-if(IVW_ENABLE_PYTHON)
-    find_package(pybind11 CONFIG REQUIRED)
-    ivw_vcpkg_install(pybind11 MODULE Core EXT)
-endif()
-
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/bzip2-config.cmake [=[
 if(TARGET BZip2::BZip2)
     return()

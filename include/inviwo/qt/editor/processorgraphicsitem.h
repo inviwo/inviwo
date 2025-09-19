@@ -59,9 +59,9 @@ class QGraphicsLineItem;
 namespace inviwo {
 
 template <size_t minIntervalMs, typename F>
-class RateLimitier {
+class RateLimiter {
 public:
-    explicit RateLimitier(F function = {})
+    explicit RateLimiter(F function = {})
         : function{std::move(function)}, timer_{}, callScheduled_{false} {
         timer_.start();
     }
@@ -240,7 +240,7 @@ private:
     std::optional<float> progress_;
     std::optional<float> currentProgress_;
     bool dirty_;
-    RateLimitier<250, decltype([](QGraphicsItem* p) { p->update(); })> limitedUpdate_;
+    RateLimiter<250, void (*)(QGraphicsItem* p)> limitedUpdate_;
 };
 
 }  // namespace inviwo
