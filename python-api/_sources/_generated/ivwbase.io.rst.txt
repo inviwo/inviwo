@@ -8,6 +8,7 @@ ivwbase.io
 
    .. autosummary::
    
+      downloadAndCacheIfUrl
       saveDatVolume
       saveIvfVolume
       saveIvfVolumeSequence
