@@ -1,0 +1,162 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2013-2024 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#pragma once
+#include <modules/opactopt/opactoptmoduledefine.h>
+
+#include <modules/opactopt/utils/approximation.h>
+#include <modules/opengl/texture/texture2darray.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/buffer/bufferobject.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/openglcapabilities.h>
+
+#include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/properties/linesettingsproperty.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/glmvec.h>
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <string>
+
+namespace inviwo {
+
+class IVW_MODULE_OPACTOPT_API OpacityOptimisation : public Processor {
+public:
+    OpacityOptimisation();
+
+    OpacityOptimisation(const OpacityOptimisation&) = delete;
+    OpacityOptimisation& operator=(const OpacityOptimisation&) = delete;
+
+    virtual ~OpacityOptimisation();
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+    virtual void initializeResources() override;
+    virtual void process() override;
+
+protected:
+    void setUniforms(Shader& shader);
+    void buildShaders();
+    void renderGeometry(const int pass);
+    void resizeBuffers(const size2_t screenSize);
+    void generateAndUploadGaussianKernel();
+    void generateAndUploadLegendreCoefficients();
+
+    bool rebuildShaders = false;
+
+    size2_t screenSize_;
+
+    MeshFlatMultiInport inport_;
+    ImageInport imageInport_;
+    ImageOutport outport_;
+    Image intermediateImage_;
+
+    CameraProperty camera_;
+
+    // Mesh properties
+    CompositeProperty meshProperties_;
+    BoolProperty overrideColorBuffer_;
+    FloatVec4Property overrideColor_;
+
+    // Line properties
+    LineSettingsProperty lineSettings_;
+
+    // Point properties
+    CompositeProperty pointProperties_;
+    FloatProperty pointSize_;
+    FloatProperty borderWidth_;
+    FloatVec4Property borderColor_;
+    FloatProperty antialising_;
+
+    // General properties
+    SimpleLightingProperty lightingProperty_;
+    CameraTrackball trackball_;
+
+    CompositeProperty layers_;
+    BoolProperty colorLayer_;
+    BoolProperty texCoordLayer_;
+    BoolProperty normalsLayer_;
+    BoolProperty viewNormalsLayer_;
+
+    // Shaders for each rendering pass and primitive type
+    Shader meshShaders_[3];
+    Shader lineShaders_[3];
+    Shader lineAdjacencyShaders_[3];
+    Shader pointShaders_[3];
+
+    // Screen space shaders
+    Shader smoothH_, smoothV_, clear_, normalise_;
+
+    // Optional importance volume
+    VolumeInport importanceVolume_;
+
+    // Opacity optimisation settings
+    FloatProperty q_, r_, lambda_;
+    CompositeProperty approximationProperties_;
+    OptionProperty<std::string> approximationMethod_;
+    const Approximations::ApproximationProperties* ap_;
+    IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
+    BoolProperty normalisedBlending_;
+    FloatProperty coeffTexFixedPointFactor_;
+
+    TextureUnitContainer textureUnits_;
+    GLFormat imageFormat_ = GLFormats::getGLFormat(
+        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float") ? GL_FLOAT : GL_INT,
+        1);
+    Texture2DArray importanceSumTexture_[2];
+    Texture2DArray opticalDepthTexture_;
+    TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_,
+        *importanceVolumeUnit_;
+
+    BufferObject gaussianKernel_;
+    BoolCompositeProperty smoothing_;
+    IntProperty gaussianRadius_;
+    FloatProperty gaussianSigma_;
+
+    BufferObject legendreCoefficients_;
+    bool legendreCoefficientsGenerated_ = false;
+
+    Approximations::MomentSettings ms;
+};
+
+}  // namespace inviwo
