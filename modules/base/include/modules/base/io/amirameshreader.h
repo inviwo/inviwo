@@ -1,0 +1,63 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2025 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+#pragma once
+
+#include <modules/base/basemoduledefine.h>
+
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/io/datareader.h>
+
+#include <memory>
+#include <filesystem>
+
+namespace inviwo {
+
+/**
+ * \ingroup dataio
+ * \brief Basic AmiraMesh reader
+ * Supports line sets ("HxLineSet") and triangle meshes ("HxTriangularGrid"). Materials and colors
+ * are not supported since these are defined per primitive and not per vertex.
+ */
+class IVW_MODULE_BASE_API AmiraMeshReader : public DataReaderType<Mesh> {
+public:
+    AmiraMeshReader();
+    AmiraMeshReader(const AmiraMeshReader& rhs) = default;
+    AmiraMeshReader(AmiraMeshReader&& rhs) noexcept = default;
+    AmiraMeshReader& operator=(const AmiraMeshReader& that) = default;
+    AmiraMeshReader& operator=(AmiraMeshReader&& that) noexcept = default;
+    virtual AmiraMeshReader* clone() const override;
+    virtual ~AmiraMeshReader() = default;
+
+    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
+
+private:
+    enum class AmiraDataType : std::uint8_t { Lines, Vertices, VertexData };
+};
+
+}  // namespace inviwo
