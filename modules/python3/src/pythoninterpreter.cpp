@@ -58,6 +58,8 @@
 
 #include <fmt/format.h>
 
+using namespace std::string_view_literals;
+
 namespace inviwo {
 
 PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
@@ -73,14 +75,58 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     _putenv_s("CONDA_PY_ALLOW_REG_PATHS", "1");
 #endif
 
+    static bool useSystemEnv = false;
+
     if (!Py_IsInitialized()) {
         log::info("Python version: {}", Py_GetVersion());
 
         try {
+            {
+                PyPreConfig preconfig;
+                if (useSystemEnv) {
+                    PyPreConfig_InitPythonConfig(&preconfig);
+                } else {
+                    PyPreConfig_InitIsolatedConfig(&preconfig);
+                }
+
+                preconfig.parse_argv = 0;
+                preconfig.utf8_mode = true;
+                Py_PreInitialize(&preconfig);
+            }
+
             PyConfig config;
-            PyConfig_InitPythonConfig(&config);
+
+            if (useSystemEnv) {
+                PyConfig_InitPythonConfig(&config);
+            } else {
+                PyConfig_InitIsolatedConfig(&config);
+            }
+
             config.parse_argv = 0;
             config.install_signal_handlers = 0;
+
+            config.user_site_directory = 0;
+            config.site_import = 0;
+
+            auto basedir = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+
+#ifdef WIN32
+            std::array paths = {"tools/python3/DLLs", "tools/python3/Lib", "tools/python3",
+                                "tools/python3/Lib/site-packages"};
+#else
+            std::array paths = {"lib/python3.12"sv, "lib/python3.12/lib-dynload"sv,
+                                "lib/python3.12/site-packages"sv};
+#endif
+
+            for (auto path : paths) {
+                const auto fullpath = util::toWstring(fmt::format("{}/{}", basedir, path));
+                PyWideStringList_Append(&config.module_search_paths, fullpath.c_str());
+            }
+            config.module_search_paths_set = 1;
+
+            PyConfig_SetBytesString(&config, &config.prefix, basedir.c_str());
+            PyConfig_SetBytesString(&config, &config.exec_prefix, basedir.c_str());
+
             if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
 
                 // Relevant documentation:
@@ -145,7 +191,6 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         if (std::filesystem::is_directory(filesystem::findBasePath() / ".." / "site-packages")) {
             pyutil::addModulePath(filesystem::findBasePath() / ".." / "site-packages");
         }
-
 
 #endif
 
