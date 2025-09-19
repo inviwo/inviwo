@@ -34,6 +34,7 @@ runs:
       with:
         repository: microsoft/vcpkg
         ref: ${{ env.VCPKG_SHA }}
+        fetch-depth: 0
         path: vcpkg
 
     - name: "VCPKG Update"
