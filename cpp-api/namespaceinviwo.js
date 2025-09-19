@@ -138,6 +138,8 @@ var namespaceinviwo =
     [ "ActivityIndicatorObserver", "classinviwo_1_1ActivityIndicatorObserver.html", null ],
     [ "ActivityIndicatorOwner", "classinviwo_1_1ActivityIndicatorOwner.html", null ],
     [ "AdvancedMaterialProperty", "classinviwo_1_1AdvancedMaterialProperty.html", "classinviwo_1_1AdvancedMaterialProperty" ],
+    [ "AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
+    [ "AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
     [ "AnglePropertyWidgetQt", "classinviwo_1_1AnglePropertyWidgetQt.html", "classinviwo_1_1AnglePropertyWidgetQt" ],
     [ "AngleRadiusWidget", "classinviwo_1_1AngleRadiusWidget.html", null ],
     [ "AnimationModule", "classinviwo_1_1AnimationModule.html", "classinviwo_1_1AnimationModule" ],

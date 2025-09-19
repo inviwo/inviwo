@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['name_0',['name',['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment']]],
+  ['name_0',['name',['../structinviwo_1_1amira_1_1DataSpec.html#a6b1917c6e0bccda31b7b8e1b6070f9c2',1,'inviwo::amira::DataSpec::name'],['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment::name']]],
   ['nanorzero_1',['NanOrZero',['../classinviwo_1_1CSVReader.html#a64f39e3ad1f7c7af5e91e99a6a28a4f7ad6844b8b4bd544627fa650e3951efa9e',1,'inviwo::CSVReader']]],
   ['native_2',['Native',['../classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6a925641e0b76c28cc940e8f3ca178d826',1,'inviwo::BufferObject']]],
   ['ndc_3',['ndc',['../classinviwo_1_1GestureEvent.html#af8a8ec2481d3e497440da66822a6ab6a',1,'inviwo::GestureEvent::ndc()'],['../classinviwo_1_1MouseInteractionEvent.html#a0eea64cff82e417ce0a7da3bc929f478',1,'inviwo::MouseInteractionEvent::ndc()'],['../classinviwo_1_1TouchPoint.html#ab17bb87a2f41e0d2bdfd4c8e6f5f6b55',1,'inviwo::TouchPoint::ndc()']]],

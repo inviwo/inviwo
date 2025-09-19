@@ -1,5 +1,18 @@
 var NAVTREEINDEX34 =
 {
+"structstd_1_1hash_3_01inviwo_1_1PropertyLink_01_4.html":[2,0,1,3],
+"structstd_1_1hash_3_01inviwo_1_1PropertyLink_01_4.html":[4,0,1,3],
+"structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html":[2,0,1,7],
+"structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html":[4,0,1,7],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html":[2,0,1,4],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html":[4,0,1,4],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html":[2,0,1,5],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html":[4,0,1,5],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html":[2,0,1,6],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html":[4,0,1,6],
+"structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html":[2,0,1,8],
+"structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html":[4,0,1,8],
+"structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html":[2,0,1,9],
 "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html":[4,0,1,9],
 "structstd_1_1hash_3_01typename_01inviwo_1_1BrushingTarget_01_4.html":[2,0,1,10],
 "structstd_1_1hash_3_01typename_01inviwo_1_1BrushingTarget_01_4.html":[4,0,1,10],

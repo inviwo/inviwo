@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['offset_0',['offset',['../classinviwo_1_1StipplingSettings.html#aead0a4b5e60834a0fb0b33694a0828bf',1,'inviwo::StipplingSettings']]],
-  ['offset_5f_1',['offset_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5',1,'inviwo::plot::PlotTextProperty']]],
-  ['onmodulesdidregister_5f_2',['onModulesDidRegister_',['../classinviwo_1_1AnnotationsWidget.html#a24a50301b8640691ad164a5b5206da87',1,'inviwo::AnnotationsWidget::onModulesDidRegister_'],['../classinviwo_1_1SettingsWidget.html#a750760255f3cd91ae1e05ee098f2d20d',1,'inviwo::SettingsWidget::onModulesDidRegister_']]],
-  ['opposingfaceidsbuffer_3',['opposingFaceIdsBuffer',['../structinviwo_1_1TetraMeshBuffers.html#a5302f9520398c6f31bc18eaf62cd1ced',1,'inviwo::TetraMeshBuffers']]]
+  ['name_0',['name',['../structinviwo_1_1amira_1_1DataSpec.html#a6b1917c6e0bccda31b7b8e1b6070f9c2',1,'inviwo::amira::DataSpec::name'],['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment::name']]],
+  ['nearplanedist_5f_1',['nearPlaneDist_',['../classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683',1,'inviwo::Camera']]],
+  ['nodeidsbuffer_2',['nodeIdsBuffer',['../structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf',1,'inviwo::TetraMeshBuffers']]],
+  ['nodesbuffer_3',['nodesBuffer',['../structinviwo_1_1TetraMeshBuffers.html#ad523c12ec0b0ad4b057e2913b23ee1e5',1,'inviwo::TetraMeshBuffers']]],
+  ['noiseshader_5f_4',['noiseShader_',['../classinviwo_1_1CanvasGL.html#a43b258bd6442a6d35fa83b4475bcd1e2',1,'inviwo::CanvasGL']]]
 ];

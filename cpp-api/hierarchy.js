@@ -14,6 +14,7 @@ var hierarchy =
     [ "inviwo::command::AddProcessor", "structinviwo_1_1command_1_1AddProcessor.html", null ],
     [ "inviwo::util::detail::almostEqual< T >", "structinviwo_1_1util_1_1detail_1_1almostEqual.html", null ],
     [ "inviwo::util::alwaysTrue", "structinviwo_1_1util_1_1alwaysTrue.html", null ],
+    [ "inviwo::amira::AmiraMeshHeader", "structinviwo_1_1amira_1_1AmiraMeshHeader.html", null ],
     [ "inviwo::animation::detail::AnimateSequence< Prop, Seq >", "structinviwo_1_1animation_1_1detail_1_1AnimateSequence.html", null ],
     [ "inviwo::animation::detail::AnimateSequence< ButtonProperty, ButtonKeyframeSequence >", "structinviwo_1_1animation_1_1detail_1_1AnimateSequence_3_01ButtonProperty_00_01ButtonKeyframeSequence_01_4.html", null ],
     [ "inviwo::animation::detail::AnimateSequence< CameraProperty, CameraKeyframeSequence >", "structinviwo_1_1animation_1_1detail_1_1AnimateSequence_3_01CameraProperty_00_01CameraKeyframeSequence_01_4.html", null ],
@@ -322,14 +323,11 @@ var hierarchy =
     [ "inviwo::utilgl::DataMinMaxGL", "classinviwo_1_1utilgl_1_1DataMinMaxGL.html", null ],
     [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
       [ "inviwo::DataReaderType< Mesh >", "classinviwo_1_1DataReaderType.html", [
+        [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
         [ "inviwo::AssimpReader", "classinviwo_1_1AssimpReader.html", null ]
       ] ],
-      [ "inviwo::DataReaderType< Layer >", "classinviwo_1_1DataReaderType.html", [
-        [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
-        [ "inviwo::PNGLayerReader", "classinviwo_1_1PNGLayerReader.html", null ],
-        [ "inviwo::TIFFLayerReader", "classinviwo_1_1TIFFLayerReader.html", null ]
-      ] ],
       [ "inviwo::DataReaderType< Volume >", "classinviwo_1_1DataReaderType.html", [
+        [ "inviwo::AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
         [ "inviwo::CImgVolumeReader", "classinviwo_1_1CImgVolumeReader.html", null ],
         [ "inviwo::DatVolumeReader", "classinviwo_1_1DatVolumeReader.html", null ],
         [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
@@ -337,6 +335,11 @@ var hierarchy =
         [ "inviwo::PVMVolumeReader", "classinviwo_1_1PVMVolumeReader.html", null ],
         [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
         [ "inviwo::TIFFStackVolumeReader", "classinviwo_1_1TIFFStackVolumeReader.html", null ]
+      ] ],
+      [ "inviwo::DataReaderType< Layer >", "classinviwo_1_1DataReaderType.html", [
+        [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
+        [ "inviwo::PNGLayerReader", "classinviwo_1_1PNGLayerReader.html", null ],
+        [ "inviwo::TIFFLayerReader", "classinviwo_1_1TIFFLayerReader.html", null ]
       ] ],
       [ "inviwo::DataReaderType< DataFrame >", "classinviwo_1_1DataReaderType.html", [
         [ "inviwo::CSVReader", "classinviwo_1_1CSVReader.html", null ],
@@ -398,6 +401,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::DataSequence< Data >", "classinviwo_1_1DataSequence.html", null ],
+    [ "inviwo::amira::DataSpec", "structinviwo_1_1amira_1_1DataSpec.html", null ],
+    [ "inviwo::amira::DataSpecFormat", "structinviwo_1_1amira_1_1DataSpecFormat.html", null ],
     [ "inviwo::DataTraits< T, typename >", "structinviwo_1_1DataTraits.html", null ],
     [ "inviwo::DataTraits< DataFrame >", "structinviwo_1_1DataTraits_3_01DataFrame_01_4.html", null ],
     [ "inviwo::DataTraits< DataSequence< Data > >", "structinviwo_1_1DataTraits_3_01DataSequence_3_01Data_01_4_01_4.html", null ],
@@ -1659,6 +1664,7 @@ var hierarchy =
     ] ],
     [ "inviwo::deserializer::MapFunctions< IdTransform, MakeNew, Filter, OnNew, OnRemove >", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
     [ "inviwo::MarchingTetrahedron", "classinviwo_1_1MarchingTetrahedron.html", null ],
+    [ "inviwo::amira::Material", "structinviwo_1_1amira_1_1Material.html", null ],
     [ "inviwo::util::MemoryFileHandle", "classinviwo_1_1util_1_1MemoryFileHandle.html", null ],
     [ "inviwo::plot::detail::MemPtr< C, T, memptr >", "structinviwo_1_1plot_1_1detail_1_1MemPtr.html", null ],
     [ "inviwo::MenuItem", "classinviwo_1_1MenuItem.html", null ],

@@ -5,6 +5,12 @@ var annotated_dup =
         [ "EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper" ],
         [ "LineRenderer", "classinviwo_1_1algorithm_1_1LineRenderer.html", "classinviwo_1_1algorithm_1_1LineRenderer" ]
       ] ],
+      [ "amira", null, [
+        [ "AmiraMeshHeader", "structinviwo_1_1amira_1_1AmiraMeshHeader.html", "structinviwo_1_1amira_1_1AmiraMeshHeader" ],
+        [ "DataSpec", "structinviwo_1_1amira_1_1DataSpec.html", "structinviwo_1_1amira_1_1DataSpec" ],
+        [ "DataSpecFormat", "structinviwo_1_1amira_1_1DataSpecFormat.html", null ],
+        [ "Material", "structinviwo_1_1amira_1_1Material.html", null ]
+      ] ],
       [ "animation", "namespaceinviwo_1_1animation.html", [
         [ "detail", null, [
           [ "AnimateSequence", "structinviwo_1_1animation_1_1detail_1_1AnimateSequence.html", null ],
@@ -541,6 +547,8 @@ var annotated_dup =
       [ "ActivityIndicatorObserver", "classinviwo_1_1ActivityIndicatorObserver.html", null ],
       [ "ActivityIndicatorOwner", "classinviwo_1_1ActivityIndicatorOwner.html", null ],
       [ "AdvancedMaterialProperty", "classinviwo_1_1AdvancedMaterialProperty.html", "classinviwo_1_1AdvancedMaterialProperty" ],
+      [ "AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
+      [ "AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
       [ "AnglePropertyWidgetQt", "classinviwo_1_1AnglePropertyWidgetQt.html", "classinviwo_1_1AnglePropertyWidgetQt" ],
       [ "AngleRadiusWidget", "classinviwo_1_1AngleRadiusWidget.html", null ],
       [ "AnimationModule", "classinviwo_1_1AnimationModule.html", "classinviwo_1_1AnimationModule" ],

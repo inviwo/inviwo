@@ -6,7 +6,7 @@ var searchData=
   ['icasefind_3',['iCaseFind',['../namespaceinviwo_1_1util.html#a258ef7d8bb67f5d62fe207bc77ec3c70',1,'inviwo::util']]],
   ['icaseless_4',['iCaseLess',['../namespaceinviwo.html#ab7764b55d4a337cd0597102e3539f63e',1,'inviwo']]],
   ['id_5',['id',['../classinviwo_1_1TouchPoint.html#a64d31ed348016e6d61aee6b142705f48',1,'inviwo::TouchPoint']]],
-  ['identifier_6',['identifier',['../structinviwo_1_1util_1_1identifier.html',1,'inviwo::util']]],
+  ['identifier_6',['identifier',['../structinviwo_1_1util_1_1identifier.html',1,'inviwo::util::identifier'],['../structinviwo_1_1amira_1_1DataSpec.html#abec473fa6b7e810e0382cb78c95a6fd2',1,'inviwo::amira::DataSpec::identifier']]],
   ['identifierfunctions_7',['IdentifierFunctions',['../structinviwo_1_1deserializer_1_1IdentifierFunctions.html',1,'inviwo::deserializer']]],
   ['identifierreplacement_8',['IdentifierReplacement',['../structinviwo_1_1xml_1_1IdentifierReplacement.html',1,'inviwo::xml']]],
   ['identity_9',['identity',['../structinviwo_1_1util_1_1identity.html',1,'inviwo::util']]],

@@ -25,6 +25,8 @@ var group__dataio =
       [ "getOption", "classinviwo_1_1AssimpReader.html#a0a5f789b43718c7a29808ad756b46e19", null ],
       [ "setOption", "classinviwo_1_1AssimpReader.html#aed86b7a704398c48d49eeb32c1f9744f", null ]
     ] ],
+    [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
+    [ "inviwo::AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
     [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
     [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", [
       [ "writeData", "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a", null ]
