@@ -93,7 +93,7 @@ set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 # Debian settings
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
 
-if(WIN32)
+if(WIN32 AND NOT "qt" IN_LIST VCPKG_MANIFEST_FEATURES)
     get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)
     find_program(WINDEPLOYQT windeployqt HINTS "${qt_bin_dir}")
