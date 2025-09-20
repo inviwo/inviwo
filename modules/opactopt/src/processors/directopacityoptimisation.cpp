@@ -536,7 +536,7 @@ void OpacityOptimisation::process() {
 
     // normalise
     utilgl::activateAndClearTarget(outport_);
-    glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ZERO);
+    glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ZERO);
 
     normalise_.activate();
     utilgl::bindAndSetUniforms(normalise_, textureUnits_, intermediateImage_, "image",
