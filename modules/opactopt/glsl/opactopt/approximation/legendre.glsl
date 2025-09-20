@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-layout(std430, binding = 9) buffer legendreCoefficientBuffer { float pcoeffs[]; };
+uniform sampler1D legendreCoeffs;
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
@@ -42,7 +42,7 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
         float P = 0.0;
         float powxk = 1.0;
         for (int k = 0; k <= i; k++) {
-            P += pcoeffs[coeffIdx] * powxk;
+            P += texelFetch(legendreCoeffs, coeffIdx, 0).x * powxk;
             powxk *= depth;
             coeffIdx++;
         }
@@ -74,7 +74,7 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
         float Q = 0.0;
         float powxk = depth;
         for (int k = 0; k <= i; k++) {
-            Q += pcoeffs[coeffIdx] * powxk / (k + 1);
+            Q += texelFetch(legendreCoeffs, coeffIdx, 0).x * powxk / (k + 1);
             powxk *= depth;
             coeffIdx++;
         }
