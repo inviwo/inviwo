@@ -29,7 +29,7 @@
 
 uniform ivec2 screenSize;
 uniform int radius;
-layout(std430, binding = 8) buffer gaussianKernelBuffer { float kernel[]; };
+uniform sampler1D gaussianKernel;
 
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];
@@ -86,8 +86,8 @@ void main() {
             float coeff =
                 imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
 
-            val += kernel[abs(j)] * coeff;
-            kernel_sum += kernel[abs(j)];
+            val += texelFetch(gaussianKernel, abs(j), 0).x * coeff;
+            kernel_sum += texelFetch(gaussianKernel, abs(j), 0).x;
         }
         val /= kernel_sum;
 
