@@ -117,6 +117,6 @@ void main(void) {
     }
 #endif
 
-    FragData0 = color;
+    FragData0 = vec4(color.xyz, 1.0);
     if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
 }
