@@ -31,6 +31,7 @@
 #include <modules/opactopt/opactoptmoduledefine.h>
 
 #include <modules/opactopt/utils/approximation.h>
+#include <modules/opengl/texture/texture1d.h>
 #include <modules/opengl/texture/texture2darray.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/buffer/bufferobject.h>
@@ -146,14 +147,14 @@ protected:
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
     TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_,
-        *importanceVolumeUnit_;
+        *importanceVolumeUnit_, *gaussianKernelUnit_, *legendreCoeffsUnit_;
 
-    BufferObject gaussianKernel_;
+    Texture1D gaussianKernel_;
     BoolCompositeProperty smoothing_;
     IntProperty gaussianRadius_;
     FloatProperty gaussianSigma_;
 
-    BufferObject legendreCoefficients_;
+    Texture1D legendreCoeffs_;
     bool legendreCoefficientsGenerated_ = false;
 
     Approximations::MomentSettings ms;
