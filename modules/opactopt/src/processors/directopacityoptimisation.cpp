@@ -213,19 +213,18 @@ OpacityOptimisation::OpacityOptimisation()
                              imageFormat_, GL_NEAREST}}
     , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_),
                            imageFormat_, GL_NEAREST}
-    , gaussianKernel_{128 * sizeof(float),                  // allocate max possible size
-                      GLFormats::getGLFormat(GL_FLOAT, 1),  // dummy format
-                      GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER}
+    , gaussianKernel_{128,  // allocate max possible size
+                      GLFormats::getGLFormat(GL_FLOAT, 1), GL_NEAREST}
     , smoothing_{"smoothing", "Smoothing",
                  "Smooth the importance sum coefficients, this reduces clutter around important "
                  "structures"_help,
                  false}
     , gaussianRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
     , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1.0f, 0.001f, 50.0f}
-    , legendreCoefficients_{
-          Approximations::approximations.at("legendre").maxCoefficients * sizeof(int),
-          GLFormats::getGLFormat(GL_INT, 1),  // dummy format
-          GL_STATIC_DRAW, GL_SHADER_STORAGE_BUFFER} {
+    , legendreCoeffs_{
+          (static_cast<size_t>(Approximations::approximations.at("legendre").maxCoefficients)) *
+          (static_cast<size_t>(Approximations::approximations.at("legendre").maxCoefficients + 1)) / 2,
+          GLFormats::getGLFormat(GL_FLOAT, 1), GL_NEAREST} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
@@ -317,7 +316,6 @@ void OpacityOptimisation::initializeResources() {
     buildShaders();
     generateAndUploadGaussianKernel();
     generateAndUploadLegendreCoefficients();
-    legendreCoefficients_.bindBase(9);
 }
 
 void OpacityOptimisation::buildShaders() {
@@ -472,6 +470,16 @@ void OpacityOptimisation::process() {
         glBindImageTexture(importanceSumUnitSmooth_->getUnitNumber(),
                            importanceSumTexture_[1].getID(), 0, true, 0, GL_READ_WRITE,
                            imageFormat_.internalFormat);
+
+        gaussianKernelUnit_ = &textureUnits_.emplace_back();
+        gaussianKernelUnit_->activate();
+        gaussianKernel_.bind();
+    }
+
+    if (approximationMethod_ == "legendre") {
+        legendreCoeffsUnit_ = &textureUnits_.emplace_back();
+        legendreCoeffsUnit_->activate();
+        legendreCoeffs_.bind();
     }
 
     opticalDepthUnit_ = &textureUnits_.emplace_back();
@@ -502,12 +510,10 @@ void OpacityOptimisation::process() {
 
     // Optional smoothing of importance coefficients
     if (smoothing_) {
-        // smoothing importance
-        gaussianKernel_.bindBase(8);
-
         // horizontal pass
         smoothH_.activate();
         smoothH_.setUniform("radius", gaussianRadius_);
+        smoothH_.setUniform("gaussianKernel", gaussianKernelUnit_->getUnitNumber());
         setUniforms(smoothH_);
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -515,6 +521,7 @@ void OpacityOptimisation::process() {
         // vertical pass
         smoothV_.activate();
         smoothV_.setUniform("radius", gaussianRadius_);
+        smoothV_.setUniform("gaussianKernel", gaussianKernelUnit_->getUnitNumber());
         setUniforms(smoothV_);
         utilgl::singleDrawImagePlaneRect();
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -555,9 +562,14 @@ void OpacityOptimisation::setUniforms(Shader& shader) {
     shader.setUniform("lambda", lambda_);
 
     shader.setUniform("importanceSumCoeffs[0]", importanceSumUnitMain_->getUnitNumber());
-    if (smoothing_)
+    if (smoothing_) {
         shader.setUniform("importanceSumCoeffs[1]", importanceSumUnitSmooth_->getUnitNumber());
+    }
     shader.setUniform("opticalDepthCoeffs", opticalDepthUnit_->getUnitNumber());
+
+    if (approximationMethod_ == "legendre") {
+        shader.setUniform("legendreCoeffs", legendreCoeffsUnit_->getUnitNumber());
+    }
 
     if (importanceVolume_.hasData()) {
         shader.setUniform(importanceVolume_.getIdentifier(),
@@ -709,14 +721,12 @@ void OpacityOptimisation::resizeBuffers(const size2_t screenSize) {
 
 void OpacityOptimisation::generateAndUploadGaussianKernel() {
     std::vector<float> k = util::generateGaussianKernel(gaussianRadius_, gaussianSigma_);
-    gaussianKernel_.upload(&k[0], k.size() * sizeof(float));
-    gaussianKernel_.unbind();
+    gaussianKernel_.initialize(&k[0]);
 }
 
 void OpacityOptimisation::generateAndUploadLegendreCoefficients() {
     std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
-    legendreCoefficients_.upload(&coeffs[0], coeffs.size() * sizeof(int));
-    legendreCoefficients_.unbind();
+    legendreCoeffs_.initialize(&coeffs[0]);
 }
 
 }  // namespace inviwo
