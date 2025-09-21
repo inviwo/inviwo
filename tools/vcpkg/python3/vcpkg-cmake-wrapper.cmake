@@ -53,9 +53,9 @@ if(_PythonFinder_WantLibs)
     find_library(
         _@PythonFinder_PREFIX@_LIBRARY_DEBUG
         NAMES
-        "python@PYTHON_VERSION_MAJOR@@PYTHON_VERSION_MINOR@_d"
-        "python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@d"
-        PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib"
+        "python@PYTHON_VERSION_MAJOR@@PYTHON_VERSION_MINOR@"
+        "python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@"
+        PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib"
         NO_DEFAULT_PATH
     )
 
