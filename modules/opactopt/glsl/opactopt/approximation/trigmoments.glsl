@@ -29,12 +29,16 @@
 
 #include "opactopt/approximation/trigmomentmaths.glsl"
 
+#define TEX_WRAPPING_ZONE_PARAMETERS texelFetch(momentSettings, 0, 0)
+#define TEX_OVERESTIMATION texelFetch(momentSettings, 1, 0).y
+
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
 #else
 void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val)
 #endif
 {
+    vec4 wrapping_zone_parameters = TEX_WRAPPING_ZONE_PARAMETERS;
     float phase = fma(wrapping_zone_parameters.y, depth, wrapping_zone_parameters.y);
     float costheta = cos(phase);
     float sintheta = sin(phase);
@@ -79,6 +83,8 @@ float approximate(layout(r32i) iimage2DArray coeffTex, int N, float depth)
 float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 #endif
 {
+    vec4 wrapping_zone_parameters = TEX_WRAPPING_ZONE_PARAMETERS;
+
     float b_0;
     int k = 0;
     float bias;
@@ -104,8 +110,8 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
         }
 
         bias = 4e-7;
-        return approximate2TrigonometricMoments(b_0, trig_b, depth, bias, overestimation,
-                                                wrapping_zone_parameters);
+        return approximate2TrigonometricMoments(b_0, trig_b, depth, bias, TEX_OVERESTIMATION,
+                                                TEX_WRAPPING_ZONE_PARAMETERS);
     } else if (N == 7) {
         vec2 trig_b[3];
 
@@ -127,8 +133,8 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
         }
 
         bias = 8e-7;
-        return approximate3TrigonometricMoments(b_0, trig_b, depth, bias, overestimation,
-                                                wrapping_zone_parameters);
+        return approximate3TrigonometricMoments(b_0, trig_b, depth, bias, TEX_OVERESTIMATION,
+                                                TEX_WRAPPING_ZONE_PARAMETERS);
     } else if (N == 9) {
         vec2 trig_b[4];
 
@@ -150,8 +156,8 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
         }
 
         bias = 1.5e-6;
-        return approximate4TrigonometricMoments(b_0, trig_b, depth, bias, overestimation,
-                                                wrapping_zone_parameters);
+        return approximate4TrigonometricMoments(b_0, trig_b, depth, bias, TEX_OVERESTIMATION,
+                                                TEX_WRAPPING_ZONE_PARAMETERS);
     } else {
         return 0;
     }

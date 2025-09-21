@@ -29,6 +29,8 @@
 
 #include "opactopt/approximation/powermomentmaths.glsl"
 
+#define TEX_OVERESTIMATION texelFetch(momentSettings, 1, 0).y
+
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
 void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
 #else
@@ -81,7 +83,7 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         float bias = 5e-7;
         const vec4 bias_vector = vec4(0, 0.375, 0, 0.375);
-        return approximate4PowerMoments(b_0, b_even, b_odd, depth, bias, overestimation,
+        return approximate4PowerMoments(b_0, b_even, b_odd, depth, bias, TEX_OVERESTIMATION,
                                         bias_vector);
     } else if (N == 7) {
         float b_0;
@@ -106,7 +108,7 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         float bias = 5e-6;
         const float bias_vector[6] = {0, 0.48, 0, 0.451, 0, 0.45};
-        return approximate6PowerMoments(b_0, b_even, b_odd, depth, bias, overestimation,
+        return approximate6PowerMoments(b_0, b_even, b_odd, depth, bias, TEX_OVERESTIMATION,
                                         bias_vector);
     } else if (N == 9) {
         float b_0;
@@ -132,7 +134,7 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
         float bias = 5e-5;
         const float bias_vector[8] = {0, 0.75, 0, 0.67666666666666664,
                                       0, 0.63, 0, 0.60030303030303034};
-        return approximate8PowerMoments(b_0, b_even, b_odd, depth, bias, overestimation,
+        return approximate8PowerMoments(b_0, b_even, b_odd, depth, bias, TEX_OVERESTIMATION,
                                         bias_vector);
     } else {
         return 0;

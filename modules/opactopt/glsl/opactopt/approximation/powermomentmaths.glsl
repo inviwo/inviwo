@@ -36,11 +36,11 @@
 
 #define PI 3.1415926535897932384626433832795f
 
-layout(std430, binding = 13) buffer MomentSettings {
-    vec4 wrapping_zone_parameters;
-    float wrapping_zone_angle;
-    float overestimation;
-};
+//     Layout
+//     |   x   |   y   |   z   |   w   |
+// [0] |   wrapping_zone_parameters    |
+// [1] |  wza  | ovest |  pad  |  pad  |
+uniform sampler1D momentSettings;
 
 float approximate4PowerMoments(float b_0, vec2 b_even, vec2 b_odd, float depth, float bias,
                                float overestimation, vec4 bias_vector);
