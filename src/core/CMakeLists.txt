@@ -811,6 +811,7 @@ else()
     ivw_group("Source Files" util/buildinfoini.cpp)
 endif()
 
+file(TO_CMAKE_PATH "${Python3_STDLIB}" Python3_STDLIB)
 file(TO_CMAKE_PATH "${Python3_SITELIB}" Python3_SITELIB)
 configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
                ${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/common/inviwocommondefines.h

@@ -167,18 +167,33 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
 ivw_vcpkg_install(pybind11 MODULE Python3)
 if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
     ivw_vcpkg_install(python3 MODULE Python3 EXTRA_CODE [=[
-        set(pythondir python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            DIRNAME "lib/${pythondir}"
-            EXTENSION "(py|dylib|so|dll)"
-            DESTINATION ${IVW_INSTALL_PREFIX}lib/${pythondir}
-            COMPONENT Application
-        )
-        install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/${pythondir}/site-packages"
-            DESTINATION "${IVW_INSTALL_PREFIX}"
-            COMPONENT Application
-        )
+        if(WIN32)
+            set(pythondir python${Python3_VERSION_MAJOR})
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "tools/${pythondir}"
+                EXTENSION "(py|dll)"
+                DESTINATION ${IVW_INSTALL_PREFIX}tools/${pythondir}
+                COMPONENT Application
+            )
+            install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/${pythondir}/Lib/site-packages"
+                DESTINATION "${IVW_INSTALL_PREFIX}tools/${pythondir}/Lib"
+                COMPONENT Application
+            )
+        else()
+            set(pythondir python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "lib/${pythondir}"
+                EXTENSION "(py|dylib|so|dll)"
+                DESTINATION ${IVW_INSTALL_PREFIX}lib/${pythondir}
+                COMPONENT Application
+            )
+            install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/${pythondir}/site-packages"
+                DESTINATION "${IVW_INSTALL_PREFIX}lib/${pythondir}"
+                COMPONENT Application
+            )
+        endif()
     ]=])
 endif()
 

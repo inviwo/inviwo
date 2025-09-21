@@ -18,6 +18,8 @@ namespace vcpkg {
 }  // namespace vcpkg
 
 namespace python {
+    inline constexpr Version version{@Python3_VERSION_MAJOR@, @Python3_VERSION_MINOR@, @Python3_VERSION_PATCH@};
+    inline constexpr std::string_view stdlib{"@Python3_STDLIB@"};
     inline constexpr std::string_view sitelib{"@Python3_SITELIB@"};
 }  // namespace python
 
@@ -26,5 +28,4 @@ namespace python {
 #else
     inline constexpr std::string_view configuration{"Unknown"};
 #endif
-
 }  // namespace inviwo::build

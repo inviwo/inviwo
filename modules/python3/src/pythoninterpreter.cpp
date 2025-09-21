@@ -55,7 +55,7 @@
 #include <exception>    // for exception
 #include <string>       // for operator+, string, basic_string
 #include <string_view>  // for string_view
-
+#include <ranges>
 #include <fmt/format.h>
 
 using namespace std::string_view_literals;
@@ -75,72 +75,93 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     _putenv_s("CONDA_PY_ALLOW_REG_PATHS", "1");
 #endif
 
-    static bool useSystemEnv = false;
-
     if (!Py_IsInitialized()) {
         log::info("Python version: {}", Py_GetVersion());
 
-        try {
-            {
-                PyPreConfig preconfig;
-                if (useSystemEnv) {
-                    PyPreConfig_InitPythonConfig(&preconfig);
-                } else {
-                    PyPreConfig_InitIsolatedConfig(&preconfig);
-                }
+#ifdef WIN32
+        static constexpr std::array paths = {""sv, "/DLLs"sv, "/Lib"sv, "/Lib/site-packages"sv};
+        const auto prefix = fmt::format("tools/python{}", build::python::version.major);
+#else
+        static constexpr std::array paths = {""sv, "/lib-dynload"sv, "/site-packages"sv};
+        const auto prefix = fmt::format("lib/python{}.{}", build::python::version.major,
+                                        build::python::version.minor);
+#endif
 
-                preconfig.parse_argv = 0;
-                preconfig.utf8_mode = true;
-                Py_PreInitialize(&preconfig);
-            }
+        const auto basedir = [&]() -> std::optional<std::string> {
+            // Try finding a python installation in the install tree
+            if (std::ranges::all_of(paths, [&](std::string_view path) {
+                    return std::filesystem::is_directory(filesystem::findBasePath() /
+                                                         fmt::format("{}{}", prefix, path));
+                })) {
+                return filesystem::findBasePath().generic_string();
 
-            PyConfig config;
+                // Try finding a python installation from vcpkg in the build tree
+            } else if (std::ranges::all_of(paths, [&](std::string_view path) {
+                           return std::filesystem::is_directory(
+                               fmt::format("{}/{}/{}{}", build::vcpkg::installDir,
+                                           build::vcpkg::triplet, prefix, path));
+                       })) {
+                return fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
 
-            if (useSystemEnv) {
-                PyConfig_InitPythonConfig(&config);
             } else {
-                PyConfig_InitIsolatedConfig(&config);
+                return std::nullopt;
+            }
+        }();
+
+        {
+            PyPreConfig preconfig;
+            if (basedir) {
+                PyPreConfig_InitIsolatedConfig(&preconfig);
+            } else {
+                PyPreConfig_InitPythonConfig(&preconfig);
             }
 
+            preconfig.parse_argv = 0;
+            preconfig.utf8_mode = true;
+            Py_PreInitialize(&preconfig);
+        }
+
+        PyConfig config;
+
+        if (basedir) {
+            PyConfig_InitIsolatedConfig(&config);
             config.parse_argv = 0;
             config.install_signal_handlers = 0;
-
             config.user_site_directory = 0;
             config.site_import = 0;
-
-            auto basedir = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
-
-#ifdef WIN32
-            std::array paths = {"tools/python3/DLLs", "tools/python3/Lib", "tools/python3",
-                                "tools/python3/Lib/site-packages"};
-#else
-            std::array paths = {"lib/python3.12"sv, "lib/python3.12/lib-dynload"sv,
-                                "lib/python3.12/site-packages"sv};
-#endif
-
-            for (auto path : paths) {
-                const auto fullpath = util::toWstring(fmt::format("{}/{}", basedir, path));
-                PyWideStringList_Append(&config.module_search_paths, fullpath.c_str());
-            }
             config.module_search_paths_set = 1;
 
-            PyConfig_SetBytesString(&config, &config.prefix, basedir.c_str());
-            PyConfig_SetBytesString(&config, &config.exec_prefix, basedir.c_str());
-
-            if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
-
-                // Relevant documentation:
-                // https://stackoverflow.com/questions/77881387/
-                // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
-                // https://docs.python.org/3/library/site.html
-#ifdef WIN32
-                auto venvExecutable = fmt::format("{}/Scripts/python.exe", venvPath);
-#else
-                auto venvExecutable = fmt::format("{}/bin/python", venvPath);
-#endif
-                PyConfig_SetBytesString(&config, &config.executable, venvExecutable.c_str());
+            for (auto path : paths) {
+                const auto fullpath =
+                    util::toWstring(fmt::format("{}/{}{}", *basedir, prefix, path));
+                PyWideStringList_Append(&config.module_search_paths, fullpath.c_str());
             }
-            py::initialize_interpreter(&config);
+
+            PyConfig_SetBytesString(&config, &config.prefix, basedir->c_str());
+            PyConfig_SetBytesString(&config, &config.exec_prefix, basedir->c_str());
+
+        } else {
+            PyConfig_InitPythonConfig(&config);
+            config.parse_argv = 0;
+            config.install_signal_handlers = 0;
+        }
+
+        if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
+
+            // Relevant documentation:
+            // https://stackoverflow.com/questions/77881387/
+            // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
+            // https://docs.python.org/3/library/site.html
+#ifdef WIN32
+            auto venvExecutable = fmt::format("{}/Scripts/python.exe", venvPath);
+#else
+            auto venvExecutable = fmt::format("{}/bin/python", venvPath);
+#endif
+            PyConfig_SetBytesString(&config, &config.executable, venvExecutable.c_str());
+        }
+
+        try {
+            py::initialize_interpreter(&config, 0, nullptr, false);
         } catch (const std::exception& e) {
             throw ModuleInitException(e.what());
         }
@@ -154,6 +175,7 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
         auto binDir = filesystem::getExecutablePath().parent_path();
         pyutil::addModulePath(binDir);
+
 #if defined(__APPLE__)
         // When deployed on maxos we assume the following structure
         // inviwo.app/
