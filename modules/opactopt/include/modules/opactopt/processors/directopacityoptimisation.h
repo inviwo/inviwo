@@ -82,6 +82,7 @@ protected:
     void resizeBuffers(const size2_t screenSize);
     void generateAndUploadGaussianKernel();
     void generateAndUploadLegendreCoefficients();
+    void generateAndUploadMomentSettings();
 
     bool rebuildShaders = false;
 
@@ -147,7 +148,7 @@ protected:
     Texture2DArray importanceSumTexture_[2];
     Texture2DArray opticalDepthTexture_;
     TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_,
-        *importanceVolumeUnit_, *gaussianKernelUnit_, *legendreCoeffsUnit_;
+        *importanceVolumeUnit_, *gaussianKernelUnit_, *legendreCoeffsUnit_, *momentSettingsUnit_;
 
     Texture1D gaussianKernel_;
     BoolCompositeProperty smoothing_;
@@ -156,10 +157,7 @@ protected:
     FloatProperty gaussianSigma_;
     bool gaussianKernelInitialized_ = false;
 
-    Texture1D legendreCoeffs_;
-    bool legendreCoefficientsGenerated_ = false;
-
-    Approximations::MomentSettings ms;
+    Texture1D legendreCoeffs_, momentSettings_;
 };
 
 }  // namespace inviwo
