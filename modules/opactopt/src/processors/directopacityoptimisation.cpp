@@ -213,13 +213,13 @@ OpacityOptimisation::OpacityOptimisation()
                              imageFormat_, GL_NEAREST}}
     , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_),
                            imageFormat_, GL_NEAREST}
-    , gaussianKernel_{128,  // allocate max possible size
+    , gaussianKernel_{static_cast<size_t>(gaussianKernelMaxRadius_ + 1),  // allocate max possible size
                       GLFormats::getGLFormat(GL_FLOAT, 1), GL_NEAREST}
     , smoothing_{"smoothing", "Smoothing",
                  "Smooth the importance sum coefficients, this reduces clutter around important "
                  "structures"_help,
                  false}
-    , gaussianRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, 50}
+    , gaussianRadius_{"gaussianKernelRadius", "Gaussian kernel radius", 3, 1, gaussianKernelMaxRadius_}
     , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1.0f, 0.001f, 50.0f}
     , legendreCoeffs_{
           (static_cast<size_t>(Approximations::approximations.at("legendre").maxCoefficients)) *
@@ -721,7 +721,13 @@ void OpacityOptimisation::resizeBuffers(const size2_t screenSize) {
 
 void OpacityOptimisation::generateAndUploadGaussianKernel() {
     std::vector<float> k = util::generateGaussianKernel(gaussianRadius_, gaussianSigma_);
-    gaussianKernel_.initialize(&k[0]);
+    k.resize(gaussianKernelMaxRadius_ + 1);
+    if (!gaussianKernelInitialized_) {
+        gaussianKernel_.initialize(k.data());
+        gaussianKernelInitialized_ = true;
+    } else {
+        gaussianKernel_.upload(k.data());
+    }
 }
 
 void OpacityOptimisation::generateAndUploadLegendreCoefficients() {
