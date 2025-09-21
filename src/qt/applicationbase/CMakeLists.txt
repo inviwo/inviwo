@@ -71,22 +71,45 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
             VERBATIM
         )
     endif()
-    ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            DIRNAME "Qt6/plugins"
-            EXTENSION "(dylib|a|so|dll)"
-            DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
-            COMPONENT Application
-        )
-    ]=])
-    ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
-        ivw_private_vcpkg_install_helper(
-            FILES_VAR INFO_VCPKG_OWNED_FILES
-            DIRNAME "Qt6/plugins"
-            EXTENSION "(dylib|a|so|dll)"
-            DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
-            COMPONENT Application
-        )
-    ]=])
+
+    if(APPLE)
+        ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "Qt6/plugins"
+                EXTENSION "(dylib|a|so|dll)"
+                DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
+                COMPONENT Application
+            )
+        ]=])
+        ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "Qt6/plugins"
+                EXTENSION "(dylib|a|so|dll)"
+                DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
+                COMPONENT Application
+            )
+        ]=])
+    else()
+        ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "Qt6/plugins"
+                EXTENSION "(dylib|a|so|dll)"
+                DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+                COMPONENT Application
+            )
+        ]=])
+        ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "Qt6/plugins"
+                EXTENSION "(dylib|a|so|dll)"
+                DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+                COMPONENT Application
+            )
+        ]=])
+    endif()
+
 endif()
