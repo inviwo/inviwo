@@ -224,7 +224,8 @@ OpacityOptimisation::OpacityOptimisation()
     , legendreCoeffs_{
           (static_cast<size_t>(Approximations::approximations.at("legendre").maxCoefficients)) *
           (static_cast<size_t>(Approximations::approximations.at("legendre").maxCoefficients + 1)) / 2,
-          GLFormats::getGLFormat(GL_FLOAT, 1), GL_NEAREST} {
+          GLFormats::getGLFormat(GL_FLOAT, 1), GL_NEAREST}
+    , momentSettings_{2, GLFormats::getGLFormat(GL_FLOAT, 4), GL_NEAREST} {
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
@@ -316,6 +317,7 @@ void OpacityOptimisation::initializeResources() {
     buildShaders();
     generateAndUploadGaussianKernel();
     generateAndUploadLegendreCoefficients();
+    generateAndUploadMomentSettings();
 }
 
 void OpacityOptimisation::buildShaders() {
@@ -482,6 +484,12 @@ void OpacityOptimisation::process() {
         legendreCoeffs_.bind();
     }
 
+    if (approximationMethod_ == "powermoments" || approximationMethod_ == "trigmoments") {
+        momentSettingsUnit_ = &textureUnits_.emplace_back();
+        momentSettingsUnit_->activate();
+        momentSettings_.bind();
+    }
+
     opticalDepthUnit_ = &textureUnits_.emplace_back();
     opticalDepthUnit_->activate();
     opticalDepthTexture_.bind();
@@ -569,6 +577,10 @@ void OpacityOptimisation::setUniforms(Shader& shader) {
 
     if (approximationMethod_ == "legendre") {
         shader.setUniform("legendreCoeffs", legendreCoeffsUnit_->getUnitNumber());
+    }
+
+    if (approximationMethod_ == "powermoments" || approximationMethod_ == "trigmoments") {
+        shader.setUniform("momentSettings", momentSettingsUnit_->getUnitNumber());
     }
 
     if (importanceVolume_.hasData()) {
@@ -732,7 +744,12 @@ void OpacityOptimisation::generateAndUploadGaussianKernel() {
 
 void OpacityOptimisation::generateAndUploadLegendreCoefficients() {
     std::vector<float> coeffs = Approximations::generateLegendreCoefficients();
-    legendreCoeffs_.initialize(&coeffs[0]);
+    legendreCoeffs_.initialize(coeffs.data());
+}
+
+void OpacityOptimisation::generateAndUploadMomentSettings() {
+    Approximations::MomentSettingsGL ms = Approximations::generateMomentSettings();
+    momentSettings_.initialize(&ms);
 }
 
 }  // namespace inviwo

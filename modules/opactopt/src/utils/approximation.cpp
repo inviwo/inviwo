@@ -55,29 +55,14 @@ std::vector<float> generateLegendreCoefficients() {
 
     for (size_t n = 0; n <= maxDegree; n++) {
         for (size_t k = 0; k <= n; k++) {
-            double res = choose(static_cast<double>(n), static_cast<double>(k)) * choose(static_cast<double>(n + k), static_cast<double>(k));
+            double res = choose(static_cast<double>(n), static_cast<double>(k)) *
+                         choose(static_cast<double>(n + k), static_cast<double>(k));
             res *= (int)(n + k) % 2 == 0 ? 1.0f : -1.0f;
             coeffs.push_back(static_cast<float>(res));
         }
     }
 
     return coeffs;
-}
-
-MomentSettings::MomentSettings()
-    : momentSettingsBuffer_{2 * sizeof(float) + sizeof(glm::vec4),
-                            GLFormats::getGLFormat(GL_FLOAT, 1), GL_STATIC_READ,
-                            GL_SHADER_STORAGE_BUFFER} {
-    glm::vec4 wzp;
-    computeWrappingZoneParameters(wzp, wrapping_zone_angle);
-
-    momentSettingsBuffer_.bind();
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(glm::vec4), &wzp[0]);
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4), sizeof(float),
-                    &wrapping_zone_angle);
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) + sizeof(float), sizeof(float),
-                    &overestimation);
-    momentSettingsBuffer_.bindBase(13);
 }
 
 // Taken from LineVis: https://github.com/chrismile/LineVis
@@ -89,7 +74,7 @@ MomentSettings::MomentSettings()
  * circle and must match the function in TrigonometricMomentMath.glsl.
  * @param pOutMaxParameter Set to the maximal possible output value.
  */
-float MomentSettings::circleToParameter(float angle, float* pOutMaxParameter /* = nullptr */) {
+float circleToParameter(float angle, float* pOutMaxParameter /* = nullptr */) {
     float x = std::cos(angle);
     float y = std::sin(angle);
     float result = std::abs(y) - std::abs(x);
@@ -106,7 +91,7 @@ float MomentSettings::circleToParameter(float angle, float* pOutMaxParameter /* 
  * Given an angle in radians providing the size of the wrapping zone, this function computes all
  * constants required by the shader.
  */
-void MomentSettings::computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
+void computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
                                                    float new_wrapping_zone_angle) {
     p_out_wrapping_zone_parameters[0] = new_wrapping_zone_angle;
     p_out_wrapping_zone_parameters[1] = static_cast<float>(M_PI) - 0.5f * new_wrapping_zone_angle;
@@ -115,12 +100,21 @@ void MomentSettings::computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zon
         p_out_wrapping_zone_parameters[3] = 0.0f;
     } else {
         float zone_end_parameter;
-        float zone_begin_parameter =
-            circleToParameter(2.0f * static_cast<float>(M_PI) - new_wrapping_zone_angle, &zone_end_parameter);
+        float zone_begin_parameter = circleToParameter(
+            2.0f * static_cast<float>(M_PI) - new_wrapping_zone_angle, &zone_end_parameter);
         p_out_wrapping_zone_parameters[2] = 1.0f / (zone_end_parameter - zone_begin_parameter);
         p_out_wrapping_zone_parameters[3] =
             1.0f - zone_end_parameter * p_out_wrapping_zone_parameters[2];
     }
+}
+
+MomentSettingsGL generateMomentSettings(const float wrapping_zone_angle,
+                                          const float overestimation) {
+    MomentSettingsGL momentSettings;
+    computeWrappingZoneParameters(momentSettings.wrapping_zone_parameters, wrapping_zone_angle);
+    momentSettings.wrapping_zone_angle = wrapping_zone_angle;
+    momentSettings.overestimation = overestimation;
+    return momentSettings;
 }
 
 }  // namespace Approximations

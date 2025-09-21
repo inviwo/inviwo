@@ -33,7 +33,7 @@
 #include <string>
 #include <map>
 
-#include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/texture/texture1d.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <cmath>
@@ -69,18 +69,15 @@ double choose(double n, double k);
 std::vector<OptionPropertyStringOption> generateApproximationStringOptions();
 std::vector<float> generateLegendreCoefficients();
 
-class MomentSettings {
-public:
-    const float wrapping_zone_angle = 0.1f * static_cast<float>(M_PI);
-    const float overestimation = 0.25;
-    MomentSettings();
-
-private:
-    BufferObject momentSettingsBuffer_;
-    float circleToParameter(float angle, float* pOutMaxParameter);
-    void computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
-                                       float new_wrapping_zone_angle);
+struct MomentSettingsGL {
+    glm::vec4 wrapping_zone_parameters;
+    float wrapping_zone_angle, overestimation;
+    float pad[2];
 };
+
+MomentSettingsGL generateMomentSettings(
+    const float wrapping_zone_angle = 0.1f * static_cast<float>(M_PI),
+    const float overestimation = 0.25);
 
 }  // namespace Approximations
 
