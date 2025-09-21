@@ -151,8 +151,10 @@ protected:
 
     Texture1D gaussianKernel_;
     BoolCompositeProperty smoothing_;
+    static const int gaussianKernelMaxRadius_ = 50;
     IntProperty gaussianRadius_;
     FloatProperty gaussianSigma_;
+    bool gaussianKernelInitialized_ = false;
 
     Texture1D legendreCoeffs_;
     bool legendreCoefficientsGenerated_ = false;
