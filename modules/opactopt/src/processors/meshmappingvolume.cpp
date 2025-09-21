@@ -164,6 +164,7 @@ void MeshMappingVolume::process() {
                              ->getRepresentation<BufferRAM>();
         const auto volume = volumeInport_.getData();
         const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+        const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
 
         // fill color vector
         std::vector<vec4> colorsOut(srcBuffer->getSize());
@@ -172,13 +173,12 @@ void MeshMappingVolume::process() {
                                    range = useCustomDataRange_.get() ? customDataRange_.get()
                                                                      : dataRange_.get(),
                                    dst = &colorsOut, tf = &tf_.get(), volume, volumeRAM,
-                                   &accessOutsideBounds](auto pBuffer) {
+                                   worldToIndex, &accessOutsideBounds](auto pBuffer) {
             auto& vec = pBuffer->getDataContainer();
             std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
                 glm::vec4 worldpos = {util::glmcomp(v, 0), util::glmcomp(v, 1), util::glmcomp(v, 2),
                                       1.0};
-                const auto texpos =
-                    vec3(volume->getCoordinateTransformer().getWorldToDataMatrix() * worldpos);
+                const auto texpos = vec3(worldToIndex * worldpos);
 
                 if (glm::any(glm::lessThan(glm::floor(texpos), glm::zero<glm::vec3>())) ||
                     glm::any(glm::greaterThanEqual(glm::ceil(texpos),
@@ -194,7 +194,7 @@ void MeshMappingVolume::process() {
                         size3_t samplepos =
                             size3_t(texpos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
 
-                        c[i] = volumeRAM->getAsDouble(glm::clamp(
+                        c[i] = volumeRAM->getAsNormalizedDouble(glm::clamp(
                             samplepos, glm::zero<size3_t>(), volume->getDimensions() - size3_t(1)));
                     }
                     res = triInterp(c, glm::modf(texpos, dummy));
