@@ -16,6 +16,8 @@ else()
     set(PYTHON_HAS_EXTENSIONS OFF)
 endif()
 
+vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
+
 string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" PYTHON_VERSION "${VERSION}")
 set(PYTHON_VERSION_MAJOR "${CMAKE_MATCH_1}")
 set(PYTHON_VERSION_MINOR "${CMAKE_MATCH_2}")
