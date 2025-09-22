@@ -62,6 +62,241 @@ using namespace std::string_view_literals;
 
 namespace inviwo {
 
+// when building we assume a layout like:
+// <src-dir>
+// ├── ...
+// ├── modules/                       (inviwo modules)
+// │   ├── ...
+// │   ├── python3/                   (python module)
+// │   │   ├── processors/            (python processor)
+// │   │   └── scripts/               (python scripts)
+// │   ├── ...
+// │   └── ...
+// └── ...
+//
+//
+// <build-dirt>
+// ├── bin/                                     (binaries)
+// │   └── <Config>
+// │       ├── inviwo.exe                      (Windows, inviwo executable)
+// │       ├── inviwo.app                      (Macos, inviwo executable)
+// │       │   └── Contents/
+// │       │       └── MacOS/
+// │       │           └── inviwo                         (main executable)
+// │       ├── inviwopy.cpython-3XX-arch.xxx   (inviwo python modules)
+// │       └── ...
+// ├── ...
+// ├── vcpkg_installed/  (Non-windows)
+// │   └── <triplet>/
+// │       ├── bin/
+// │       ├── include/
+// │       ├── lib/
+// │       │   ├── libpython3.12.dylib
+// │       │   └── python3.XX/             (python basedir)
+// │       │       ├── lib-dynload/        (python lib-dynload)
+// │       │       └── site-packages/      (python site-packages)
+// │       ├── share/
+// │       └── tools/
+// │           └── python3/
+// │               └── python3             (python executable)
+// │
+// ├── vcpkg_installed/  (Windows)
+// │   └── <triplet>/
+// │       ├── bin/
+// │       │   ├── python3.dll
+// │       │   └── python3XX.dll
+// │       ├── include/
+// │       ├── lib/
+// │       │   └── python3.lib
+// │       ├── share/
+// │       └── tools/
+// │           └── python3/                (python basedir)
+// │               ├── python3             (python executable)
+// │               ├── DLLs                (python dlls)
+// │               ├── Lib
+// │               │   └── site-packages/  (python site-packages)
+// │               └── Scripts
+// └── ...
+//
+//
+// When deployed on windows we assume the following structure
+// inviwo                               This should be returned by filesystem::findBasePath
+// ├── bin
+// │   ├── ...
+// │   ├── inviwo.exe                  (main executable)
+// │   ├── inviwopy.cp3XX-win_amd64    (inviwo python modules)
+// │   ├── python3.dll
+// │   ├── python3XX.dll
+// │   └── ...
+// ├── cmake
+// ├── data
+// ├── include
+// ├── lib
+// ├── licenses
+// ├── modules
+// │   ├── ...
+// │   ├── python3/                   (python module)
+// │   │   ├── processors/            (python processor)
+// │   │   └── scripts                (python scripts)
+// │   └── ...
+// ├── share
+// └── tools
+//     └── python3/                  (python basedir)
+//         ├── DLLs                  (python dlls)
+//         └── Lib
+//             └── site-packages/    (python site-packages)
+//
+//
+// When deployed on maxos we assume the following structure
+// inviwo.app/
+// └── Contents/
+//     ├── Info.plist
+//     ├── PkgInfo
+//     ├── _CodeSignature/
+//     ├── MacOS/
+//     │   └── inviwo                         (main executable)
+//     ├── Resources/                         This should be returned by filesystem::findBasePath
+//     │   ├── data/                          (application data)
+//     │   ├── licenses/                      (license files)
+//     │   ├── modules/                       (Inviwo modules)
+//     │   │   ├── ...
+//     │   │   ├── python3/                   (python module)
+//     │   │   │   ├── processors/            (python processor)
+//     │   │   │   └── scripts                (python scripts)
+//     │   │   └── ...
+//     │   └── tools/                         (utility tools)
+//     ├── PlugIns/                           (Qt plugins)
+//     ├── cmake/                             (CMake configuration files)
+//     ├── include/                           (Header files)
+//     ├── lib/                               (Dynamic libraries, and python modules)
+//     │   ├── inviwopy.cpython-3XX-darwin.so (inviwo python modules)
+//     │   └── python3.XX/                    (python basedir)
+//     │       ├── lib-dynload/               (python lib-dynload)
+//     │       └── site-packages/             (python site-packages)
+//     └── share/                             (Shared data)
+
+namespace {
+struct PythonPaths {
+    std::vector<std::string> paths;
+    std::string prefix;
+};
+
+std::pair<PythonPaths, PythonPaths> getPythonPaths() {
+
+#ifdef WIN32
+    const auto install = []() {
+        static constexpr std::array templates = {
+            "{root}/tools/python{major}"sv, "{root}/tools/python{major}/DLLs"sv,
+            "{root}/tools/python{major}/Lib"sv, "{root}/tools/python{major}/Lib/site-packages"sv,
+            "{root}/bin"sv};
+        const auto root = filesystem::findBasePath().generic_string();
+
+        auto paths = templates | std::views::transform([&](std::string_view path) {
+                         return fmt::format(fmt::runtime(path), fmt::arg("root", root),
+                                            fmt::arg("major", build::python::version.major), );
+                     }) |
+                     std::ranges::to<std::vector>();
+        return PythonPaths{.paths = paths, .prefix = paths[0]};
+    }();
+
+    const auto build = []() {
+        static constexpr std::array templates = {
+            "{vcpkg}/tools/python{major}"sv, "{vcpkg}/tools/python{major}/DLLs"sv,
+            "{vcpkg}/tools/python{major}/Lib"sv, "{vcpkg}/tools/python{major}/Lib/site-packages"sv,
+            "{bin}"sv};
+        const auto bin = filesystem::getExecutablePath().parent_path().generic_string();
+        const auto vcpkg = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+
+        auto paths = templates | std::views::transform([&](std::string_view path) {
+                         return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
+                                            fmt::arg("vcpkg", vcpkg),
+                                            fmt::arg("major", build::python::version.major));
+                     }) |
+                     std::ranges::to<std::vector>();
+
+#elif defined(__APPLE__)
+
+    const auto install = []() {
+        static constexpr std::array templates = {
+            "{root}/lib/python{major}.{minor}"sv, "{root}/lib/python{major}.{minor}/lib-dynload"sv,
+            "{root}/lib/python{major}.{minor}/site-packages"sv, "{root}/lib"sv};
+        const auto root = filesystem::findBasePath().parent_path().generic_string();
+
+        auto paths = templates | std::views::transform([&](std::string_view path) {
+                         return fmt::format(fmt::runtime(path), fmt::arg("root", root),
+                                            fmt::arg("major", build::python::version.major),
+                                            fmt::arg("minor", build::python::version.minor));
+                     }) |
+                     std::ranges::to<std::vector>();
+        return PythonPaths{.paths = paths, .prefix = paths[0]};
+    }();
+
+    const auto build = []() {
+        static constexpr std::array templates = {
+            "{vcpkg}/lib/python{major}.{minor}"sv,
+            "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
+            "{vcpkg}/lib/python{major}.{minor}/site-packages"sv, "{bin}"sv};
+        const auto bin = filesystem::getExecutablePath()
+                             .parent_path()
+                             .parent_path()
+                             .parent_path()
+                             .parent_path()
+                             .generic_string();
+        const auto vcpkg = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+
+        auto paths = templates | std::views::transform([&](std::string_view path) {
+                         return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
+                                            fmt::arg("vcpkg", vcpkg),
+                                            fmt::arg("major", build::python::version.major),
+                                            fmt::arg("minor", build::python::version.minor));
+                     }) |
+                     std::ranges::to<std::vector>();
+        return PythonPaths{.paths = paths, .prefix = paths[0]};
+    }();
+#else
+    static constexpr std::array paths = {""sv, "/lib-dynload"sv, "/site-packages"sv};
+    const auto prefix =
+        fmt::format("lib/python{}.{}", build::python::version.major, build::python::version.minor);
+    const auto ivwBasePath = filesystem::findBasePath();
+
+    const auto install = []() {
+        static constexpr std::array templates = {
+            "{root}/lib/python{major}.{minor}"sv, "{root}/lib/python{major}.{minor}/lib-dynload"sv,
+            "{root}/lib/python{major}.{minor}/site-packages"sv, "{root}/lib"sv};
+        const auto root = filesystem::findBasePath().generic_string();
+
+        auto paths = templates | std::views::transform([&](std::string_view path) {
+                         return fmt::format(fmt::runtime(path), fmt::arg("root", root),
+                                            fmt::arg("major", build::python::version.major),
+                                            fmt::arg("minor", build::python::version.minor));
+                     }) |
+                     std::ranges::to<std::vector>();
+        return PythonPaths{.paths = paths, .prefix = paths[0]};
+    }();
+
+    const auto build = []() {
+        static constexpr std::array templates = {
+            "{vcpkg}/lib/python{major}.{minor}"sv,
+            "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
+            "{vcpkg}/lib/python{major}.{minor}/site-packages"sv, "{bin}"sv};
+        const auto bin = filesystem::getExecutablePath().parent_path().generic_string();
+        const auto vcpkg = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+
+        auto paths = templates | std::views::transform([&](std::string_view path) {
+                         return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
+                                            fmt::arg("vcpkg", vcpkg),
+                                            fmt::arg("major", build::python::version.major),
+                                            fmt::arg("minor", build::python::version.minor));
+                     }) |
+                     std::ranges::to<std::vector>();
+        return PythonPaths{.paths = paths, .prefix = paths[0]};
+    }();
+#endif
+        return {install, build};
+    }
+
+}  // namespace
+
 PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     namespace py = pybind11;
 
@@ -78,39 +313,29 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     if (!Py_IsInitialized()) {
         log::info("Python version: {}", Py_GetVersion());
 
-#ifdef WIN32
-        static constexpr std::array paths = {""sv, "/DLLs"sv, "/Lib"sv, "/Lib/site-packages"sv};
-        const auto prefix = fmt::format("tools/python{}", build::python::version.major);
-#else
-        static constexpr std::array paths = {""sv, "/lib-dynload"sv, "/site-packages"sv};
-        const auto prefix = fmt::format("lib/python{}.{}", build::python::version.major,
-                                        build::python::version.minor);
-#endif
+        const auto [installPaths, buildPaths] = getPythonPaths();
 
-        const auto basedir = [&]() -> std::optional<std::string> {
+        const auto pythonPaths = [&]() -> std::optional<PythonPaths> {
             // Try finding a python installation in the install tree
-            if (std::ranges::all_of(paths, [&](std::string_view path) {
-                    return std::filesystem::is_directory(filesystem::findBasePath() /
-                                                         fmt::format("{}{}", prefix, path));
+            if (std::ranges::all_of(installPaths.paths, [&](std::string_view path) {
+                    return std::filesystem::is_directory(path);
                 })) {
-                return filesystem::findBasePath().generic_string();
-
-                // Try finding a python installation from vcpkg in the build tree
-            } else if (std::ranges::all_of(paths, [&](std::string_view path) {
-                           return std::filesystem::is_directory(
-                               fmt::format("{}/{}/{}{}", build::vcpkg::installDir,
-                                           build::vcpkg::triplet, prefix, path));
-                       })) {
-                return fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
-
-            } else {
-                return std::nullopt;
+                return installPaths;
             }
+
+            // Try finding a python installation in the build tree
+            if (std::ranges::all_of(buildPaths.paths, [&](std::string_view path) {
+                    return std::filesystem::is_directory(path);
+                })) {
+                return buildPaths;
+            }
+
+            return std::nullopt;
         }();
 
         {
             PyPreConfig preconfig;
-            if (basedir) {
+            if (pythonPaths) {
                 PyPreConfig_InitIsolatedConfig(&preconfig);
             } else {
                 PyPreConfig_InitPythonConfig(&preconfig);
@@ -123,7 +348,8 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
         PyConfig config;
 
-        if (basedir) {
+        if (pythonPaths) {
+            log::info("Internal python found");
             PyConfig_InitIsolatedConfig(&config);
             config.parse_argv = 0;
             config.install_signal_handlers = 0;
@@ -131,16 +357,16 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
             config.site_import = 0;
             config.module_search_paths_set = 1;
 
-            for (auto path : paths) {
-                const auto fullpath =
-                    util::toWstring(fmt::format("{}/{}{}", *basedir, prefix, path));
+            for (auto path : pythonPaths->paths) {
+                const auto fullpath = util::toWstring(path);
                 PyWideStringList_Append(&config.module_search_paths, fullpath.c_str());
             }
 
-            PyConfig_SetBytesString(&config, &config.prefix, basedir->c_str());
-            PyConfig_SetBytesString(&config, &config.exec_prefix, basedir->c_str());
+            PyConfig_SetBytesString(&config, &config.prefix, pythonPaths->prefix.c_str());
+            PyConfig_SetBytesString(&config, &config.exec_prefix, pythonPaths->prefix.c_str());
 
         } else {
+            log::info("No internal python found, using system python");
             PyConfig_InitPythonConfig(&config);
             config.parse_argv = 0;
             config.install_signal_handlers = 0;
@@ -173,48 +399,9 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
             throw ModuleInitException("Python is not Initialized");
         }
 
-        auto binDir = filesystem::getExecutablePath().parent_path();
-        pyutil::addModulePath(binDir);
-
-#if defined(__APPLE__)
-        // When deployed on maxos we assume the following structure
-        // inviwo.app/
-        // └── Contents/
-        //     ├── Info.plist
-        //     ├── PkgInfo
-        //     ├── _CodeSignature/
-        //     ├── MacOS/
-        //     │   ├── inviwo                  (main executable)
-        //     ├── Resources/                  This should be the returned by findBasePath
-        //     │   ├── data/                   (application data)
-        //     │   ├── licenses/               (license files)
-        //     │   ├── modules/                (Inviwo modules)
-        //     │   └── tools/                  (utility tools)
-        //     ├── PlugIns/                    (Qt plugins)
-        //     ├── cmake/                      (CMake configuration files)
-        //     ├── include/                    (Header files)
-        //     ├── lib/                        (Dynamic libraries, and python modules)
-        //     └── share/                      (Shared data)
-
-        // We will find the python modules in the lib folder
-        if (std::filesystem::is_directory(filesystem::findBasePath() / ".." / "lib")) {
-            pyutil::addModulePath(filesystem::findBasePath() / ".." / "lib");
-        } else {
-            // When developing the python modules will next to the inviwo.app folder.
-            // On OSX the path returned by getExecutablePath includes folder-paths inside the
-            // app-binary
-            pyutil::addModulePath(binDir / "../../../");
-        }
-
-        if (std::filesystem::is_directory(inviwo::build::python::sitelib)) {
+        if (!pythonPaths && std::filesystem::is_directory(inviwo::build::python::sitelib)) {
             pyutil::addModulePath(inviwo::build::python::sitelib);
         }
-
-        if (std::filesystem::is_directory(filesystem::findBasePath() / ".." / "site-packages")) {
-            pyutil::addModulePath(filesystem::findBasePath() / ".." / "site-packages");
-        }
-
-#endif
 
         try {
             py::exec(R"(

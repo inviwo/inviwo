@@ -78,14 +78,3 @@ runs:
         echo "CC=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang"    >> $GITHUB_ENV
         echo "CXX=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang++" >> $GITHUB_ENV
 
-    - name: "Setup Python"
-      uses: actions/setup-python@v5.6.0
-      with:
-        python-version: '=3.12'
-        architecture: 'x64'
-        cache: 'pip'
-        cache-dependency-path: 'inviwo/requirements.txt'
-
-    - name: "Install Python Modules"
-      shell: bash
-      run: pip3 install -r inviwo/requirements.txt
