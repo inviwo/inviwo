@@ -28,4 +28,15 @@ namespace python {
 #else
     inline constexpr std::string_view configuration{"Unknown"};
 #endif
+
+enum class Platform : std::uint8_t { Windows, MacOS, Linux };
+
+#ifdef WIN32
+inline constexpr Platform platform = Platform::Windows;
+#elif defined(__APPLE__)
+inline constexpr Platform platform = Platform::MacOS;
+#else
+inline constexpr Platform platform = Platform::Linux;
+#endif
+
 }  // namespace inviwo::build

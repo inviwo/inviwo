@@ -82,8 +82,10 @@ namespace inviwo {
 // │       ├── inviwo.app                      (Macos, inviwo executable)
 // │       │   └── Contents/
 // │       │       └── MacOS/
-// │       │           └── inviwo                         (main executable)
+// │       │           └── inviwo              (inviwo executable)
 // │       ├── inviwopy.cpython-3XX-arch.xxx   (inviwo python modules)
+// │       ├── ...
+// │       ├── inviwo-unittest-python3
 // │       └── ...
 // ├── ...
 // ├── vcpkg_installed/  (Non-windows)
@@ -183,117 +185,128 @@ struct PythonPaths {
 
 std::pair<PythonPaths, PythonPaths> getPythonPaths() {
 
-#ifdef WIN32
-    const auto install = []() {
-        static constexpr std::array templates = {
-            "{root}/tools/python{major}"sv, "{root}/tools/python{major}/DLLs"sv,
-            "{root}/tools/python{major}/Lib"sv, "{root}/tools/python{major}/Lib/site-packages"sv,
-            "{root}/bin"sv};
-        const auto root = filesystem::findBasePath().generic_string();
+    if constexpr (build::platform == build::Platform::Windows) {
+        const auto install = []() {
+            static constexpr std::array templates = {
+                "{root}/tools/python{major}"sv, "{root}/tools/python{major}/DLLs"sv,
+                "{root}/tools/python{major}/Lib"sv,
+                "{root}/tools/python{major}/Lib/site-packages"sv, "{root}/bin"sv};
+            const auto root = filesystem::findBasePath().generic_string();
 
-        auto paths = templates | std::views::transform([&](std::string_view path) {
-                         return fmt::format(fmt::runtime(path), fmt::arg("root", root),
-                                            fmt::arg("major", build::python::version.major), );
-                     }) |
-                     std::ranges::to<std::vector>();
-        return PythonPaths{.paths = paths, .prefix = paths[0]};
-    }();
+            const auto paths =
+                templates | std::views::transform([&](std::string_view path) {
+                    return fmt::format(fmt::runtime(path), fmt::arg("root", root),
+                                       fmt::arg("major", build::python::version.major));
+                }) |
+                std::ranges::to<std::vector>();
+            return PythonPaths{.paths = paths, .prefix = paths[0]};
+        }();
 
-    const auto build = []() {
-        static constexpr std::array templates = {
-            "{vcpkg}/tools/python{major}"sv, "{vcpkg}/tools/python{major}/DLLs"sv,
-            "{vcpkg}/tools/python{major}/Lib"sv, "{vcpkg}/tools/python{major}/Lib/site-packages"sv,
-            "{bin}"sv};
-        const auto bin = filesystem::getExecutablePath().parent_path().generic_string();
-        const auto vcpkg = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+        const auto build = []() {
+            static constexpr std::array templates = {
+                "{vcpkg}/tools/python{major}"sv, "{vcpkg}/tools/python{major}/DLLs"sv,
+                "{vcpkg}/tools/python{major}/Lib"sv,
+                "{vcpkg}/tools/python{major}/Lib/site-packages"sv, "{bin}"sv};
+            const auto bin = filesystem::getExecutablePath().parent_path().generic_string();
+            const auto vcpkg =
+                fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
 
-        auto paths = templates | std::views::transform([&](std::string_view path) {
-                         return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
-                                            fmt::arg("vcpkg", vcpkg),
-                                            fmt::arg("major", build::python::version.major));
-                     }) |
-                     std::ranges::to<std::vector>();
+            const auto paths =
+                templates | std::views::transform([&](std::string_view path) {
+                    return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
+                                       fmt::arg("vcpkg", vcpkg),
+                                       fmt::arg("major", build::python::version.major));
+                }) |
+                std::ranges::to<std::vector>();
+            return PythonPaths{.paths = paths, .prefix = paths[0]};
+        }();
+        return {install, build};
 
-#elif defined(__APPLE__)
+    } else if constexpr (build::platform == build::Platform::MacOS) {
+        const auto install = []() {
+            static constexpr std::array templates = {
+                "{root}/lib/python{major}.{minor}"sv,
+                "{root}/lib/python{major}.{minor}/lib-dynload"sv,
+                "{root}/lib/python{major}.{minor}/site-packages"sv, "{root}/lib"sv};
+            const auto root = filesystem::findBasePath().parent_path().generic_string();
 
-    const auto install = []() {
-        static constexpr std::array templates = {
-            "{root}/lib/python{major}.{minor}"sv, "{root}/lib/python{major}.{minor}/lib-dynload"sv,
-            "{root}/lib/python{major}.{minor}/site-packages"sv, "{root}/lib"sv};
-        const auto root = filesystem::findBasePath().parent_path().generic_string();
+            auto paths = templates | std::views::transform([&](std::string_view path) {
+                             return fmt::format(fmt::runtime(path), fmt::arg("root", root),
+                                                fmt::arg("major", build::python::version.major),
+                                                fmt::arg("minor", build::python::version.minor));
+                         }) |
+                         std::ranges::to<std::vector>();
+            return PythonPaths{.paths = paths, .prefix = paths[0]};
+        }();
 
-        auto paths = templates | std::views::transform([&](std::string_view path) {
-                         return fmt::format(fmt::runtime(path), fmt::arg("root", root),
-                                            fmt::arg("major", build::python::version.major),
-                                            fmt::arg("minor", build::python::version.minor));
-                     }) |
-                     std::ranges::to<std::vector>();
-        return PythonPaths{.paths = paths, .prefix = paths[0]};
-    }();
+        const auto build = []() {
+            static constexpr std::array templates = {
+                "{vcpkg}/lib/python{major}.{minor}"sv,
+                "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
+                "{vcpkg}/lib/python{major}.{minor}/site-packages"sv, "{bin}"sv};
 
-    const auto build = []() {
-        static constexpr std::array templates = {
-            "{vcpkg}/lib/python{major}.{minor}"sv,
-            "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
-            "{vcpkg}/lib/python{major}.{minor}/site-packages"sv, "{bin}"sv};
-        const auto bin = filesystem::getExecutablePath()
-                             .parent_path()
-                             .parent_path()
-                             .parent_path()
-                             .parent_path()
-                             .generic_string();
-        const auto vcpkg = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+            auto exePath = filesystem::getExecutablePath();
+            if (exePath.generic_string().contains("Contents/MacOS")) {
+                // Running from .app bundle
+                exePath = exePath.parent_path().parent_path().parent_path();
+            }
 
-        auto paths = templates | std::views::transform([&](std::string_view path) {
-                         return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
-                                            fmt::arg("vcpkg", vcpkg),
-                                            fmt::arg("major", build::python::version.major),
-                                            fmt::arg("minor", build::python::version.minor));
-                     }) |
-                     std::ranges::to<std::vector>();
-        return PythonPaths{.paths = paths, .prefix = paths[0]};
-    }();
-#else
-    static constexpr std::array paths = {""sv, "/lib-dynload"sv, "/site-packages"sv};
-    const auto prefix =
-        fmt::format("lib/python{}.{}", build::python::version.major, build::python::version.minor);
-    const auto ivwBasePath = filesystem::findBasePath();
+            const auto bin = exePath.parent_path().generic_string();
+            const auto vcpkg =
+                fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
 
-    const auto install = []() {
-        static constexpr std::array templates = {
-            "{root}/lib/python{major}.{minor}"sv, "{root}/lib/python{major}.{minor}/lib-dynload"sv,
-            "{root}/lib/python{major}.{minor}/site-packages"sv, "{root}/lib"sv};
-        const auto root = filesystem::findBasePath().generic_string();
+            const auto paths =
+                templates | std::views::transform([&](std::string_view path) {
+                    return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
+                                       fmt::arg("vcpkg", vcpkg),
+                                       fmt::arg("major", build::python::version.major),
+                                       fmt::arg("minor", build::python::version.minor));
+                }) |
+                std::ranges::to<std::vector>();
+            return PythonPaths{.paths = paths, .prefix = paths[0]};
+        }();
+        return {install, build};
 
-        auto paths = templates | std::views::transform([&](std::string_view path) {
-                         return fmt::format(fmt::runtime(path), fmt::arg("root", root),
-                                            fmt::arg("major", build::python::version.major),
-                                            fmt::arg("minor", build::python::version.minor));
-                     }) |
-                     std::ranges::to<std::vector>();
-        return PythonPaths{.paths = paths, .prefix = paths[0]};
-    }();
+    } else {  // Linux
+        const auto install = []() {
+            static constexpr std::array templates = {
+                "{root}/lib/python{major}.{minor}"sv,
+                "{root}/lib/python{major}.{minor}/lib-dynload"sv,
+                "{root}/lib/python{major}.{minor}/site-packages"sv, "{root}/lib"sv};
+            const auto root = filesystem::findBasePath().generic_string();
 
-    const auto build = []() {
-        static constexpr std::array templates = {
-            "{vcpkg}/lib/python{major}.{minor}"sv,
-            "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
-            "{vcpkg}/lib/python{major}.{minor}/site-packages"sv, "{bin}"sv};
-        const auto bin = filesystem::getExecutablePath().parent_path().generic_string();
-        const auto vcpkg = fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+            const auto paths =
+                templates | std::views::transform([&](std::string_view path) {
+                    return fmt::format(fmt::runtime(path), fmt::arg("root", root),
+                                       fmt::arg("major", build::python::version.major),
+                                       fmt::arg("minor", build::python::version.minor));
+                }) |
+                std::ranges::to<std::vector>();
+            return PythonPaths{.paths = paths, .prefix = paths[0]};
+        }();
 
-        auto paths = templates | std::views::transform([&](std::string_view path) {
-                         return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
-                                            fmt::arg("vcpkg", vcpkg),
-                                            fmt::arg("major", build::python::version.major),
-                                            fmt::arg("minor", build::python::version.minor));
-                     }) |
-                     std::ranges::to<std::vector>();
-        return PythonPaths{.paths = paths, .prefix = paths[0]};
-    }();
-#endif
+        const auto build = []() {
+            static constexpr std::array templates = {
+                "{vcpkg}/lib/python{major}.{minor}"sv,
+                "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
+                "{vcpkg}/lib/python{major}.{minor}/site-packages"sv, "{bin}"sv};
+            const auto bin = filesystem::getExecutablePath().parent_path().generic_string();
+            const auto vcpkg =
+                fmt::format("{}/{}", build::vcpkg::installDir, build::vcpkg::triplet);
+
+            const auto paths =
+                templates | std::views::transform([&](std::string_view path) {
+                    return fmt::format(fmt::runtime(path), fmt::arg("bin", bin),
+                                       fmt::arg("vcpkg", vcpkg),
+                                       fmt::arg("major", build::python::version.major),
+                                       fmt::arg("minor", build::python::version.minor));
+                }) |
+                std::ranges::to<std::vector>();
+            return PythonPaths{.paths = paths, .prefix = paths[0]};
+        }();
         return {install, build};
     }
+}
 
 }  // namespace
 
@@ -378,11 +391,13 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
             // https://stackoverflow.com/questions/77881387/
             // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
             // https://docs.python.org/3/library/site.html
-#ifdef WIN32
-            auto venvExecutable = fmt::format("{}/Scripts/python.exe", venvPath);
-#else
-            auto venvExecutable = fmt::format("{}/bin/python", venvPath);
-#endif
+            const auto venvExecutable = [&]() {
+                if constexpr (build::platform == build::Platform::Windows) {
+                    return fmt::format("{}/Scripts/python.exe", venvPath);
+                } else {
+                    return fmt::format("{}/bin/python", venvPath);
+                }
+            }();
             PyConfig_SetBytesString(&config, &config.executable, venvExecutable.c_str());
         }
 
