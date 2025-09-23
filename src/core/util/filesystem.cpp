@@ -536,6 +536,8 @@ const fs::path& findBasePath() {
             CFRelease(filePathRef);
             CFRelease(appUrlRef);
 
+            // This will remove any trailing "/" from the path
+            macPath = (macPath / "").parent_path();
             if (fs::is_directory(macPath)) {
                 // remove "data"
                 return macPath.parent_path();

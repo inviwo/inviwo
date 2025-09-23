@@ -35,8 +35,6 @@
 
 #include <memory>  // for unique_ptr
 
-struct InitQtResources;
-
 namespace inviwo {
 class InviwoApplication;
 class TFHelpWindow;
@@ -52,7 +50,6 @@ public:
     void showTFHelpWindow() const;
 
 private:
-    std::unique_ptr<InitQtResources> resources_;
     std::unique_ptr<TFMenuHelper> tfMenuHelper_;
 };
 

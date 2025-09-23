@@ -100,6 +100,11 @@ jobs:
             configuration: Release
             targets: 'ALL_BUILD package DOXY-Inviwo DOXY-Python'
 
+          - system: 'macos'
+            linkage: 'dynamic'
+            configuration: Release
+            targets: 'ALL_BUILD package'
+            
         exclude:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
@@ -246,9 +251,9 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
-        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DVCPKG_MANIFEST_FEATURES="python;qt"
+        -DVCPKG_APPLOCAL_DEPS=OFF
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_EIGENUTILS=ON
         -DIVW_MODULE_HDF5=ON
@@ -411,7 +416,7 @@ jobs:
         -DIVW_MODULE_WEBQT=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
-        -DVCPKG_MANIFEST_FEATURES="sgct"
+        -DVCPKG_MANIFEST_FEATURES="python;qt;sgct"
 
     - name: "Run clang-tidy"
       uses: cpp-linter/cpp-linter-action@v2.16.3
@@ -453,12 +458,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest] # macos-latest,
+        os: [windows-latest, macos-latest]
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-          #- os: 'macos-latest'
-          #  installer: 'inviwo-installer-macos'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
         
     runs-on: ${{ matrix.os }}
     steps:
@@ -500,18 +505,18 @@ jobs:
       shell: bash
       run: |
         # Find the name of the installer 
-        DMG=$(ls Inviwo-*.dmg)
+        DMG=$(ls inviwo-*.dmg)
         # Mount installer image
         hdiutil attach $DMG
         # Install by copying Inviwo.app to applications folder
-        cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
+        cp -R /Volumes/${DMG%%.dmg}/inviwo.app /Applications/
         hdiutil detach /Volumes/${DMG%%.dmg}/
 
     - name: "Run Inviwo"
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        cd /Applications/Inviwo.app/Contents/MacOS/
+        cd /Applications/inviwo.app/Contents/MacOS/
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session"

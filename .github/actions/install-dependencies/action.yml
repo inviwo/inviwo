@@ -41,7 +41,9 @@ runs:
       shell: bash
       if: runner.os == 'macOS'
       run: |
-        brew install ninja nasm libomp
+        xcrun simctl delete all
+        sudo rm -rf ~/Library/Developer/CoreSimulator/Caches/*
+        brew install ninja nasm libomp autoconf autoconf-archive automake libtool
 
     - name: "Apt Install"
       shell: bash
@@ -49,7 +51,10 @@ runs:
       run: |
         sudo apt-get update
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
-                         libglew-dev ninja-build nasm libicu-dev libomp-dev
+                         libglew-dev ninja-build nasm libicu-dev libomp-dev \
+                         autoconf autoconf-archive automake libtool libltdl-dev \
+                         '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev \
+                         libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
@@ -73,33 +78,3 @@ runs:
         echo "CC=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang"    >> $GITHUB_ENV
         echo "CXX=/usr/lib/llvm-${{ inputs.clang-version }}/bin/clang++" >> $GITHUB_ENV
 
-    - name: "Setup Python"
-      uses: actions/setup-python@v5.6.0
-      with:
-        python-version: '=3.12'
-        architecture: 'x64'
-        cache: 'pip'
-        cache-dependency-path: 'inviwo/requirements.txt'
-
-    - name: "Install Python Modules"
-      shell: bash
-      run: pip3 install -r inviwo/requirements.txt
-
-    - name: "Install Qt"
-      uses: jurplel/install-qt-action@v4.3.0
-      if: runner.os == 'Linux'
-      with:
-        version: '6.9.0'
-        dir: ${{ github.workspace }}
-        setup-python: false
-        arch: linux_gcc_64
-        archives: 'qtbase qtsvg icu'
-
-    - name: "Install Qt"
-      uses: jurplel/install-qt-action@v4.3.0
-      if: runner.os != 'Linux'
-      with:
-        version: '6.9.0'
-        dir: ${{ github.workspace }}
-        setup-python: false
-        archives: 'qtbase qtsvg'

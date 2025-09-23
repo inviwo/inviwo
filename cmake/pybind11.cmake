@@ -43,6 +43,13 @@ define_property(
     FULL_DOCS "List of inviwo python app targets"
 )
 
+define_property(
+    GLOBAL PROPERTY IVW_PYTHON_ADDITIONAL_MODULES
+    BRIEF_DOCS "List of python modules to install and embedd"
+    FULL_DOCS "List of python modules to install and embedd"
+)
+
+
 function(ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)
         find_package(pybind11 CONFIG REQUIRED)

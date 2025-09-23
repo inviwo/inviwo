@@ -80,10 +80,28 @@
             "gui",
             "widgets",
             "opengl",
-            "zstd"
+            "zstd",
+            {
+              "name": "xcb",
+              "platform": "linux"
+            },
+            {
+              "name": "xcb-xlib",
+              "platform": "linux"
+            },
+            {
+             "name": "xrender",
+             "platform": "linux"
+            }
           ]
         },
         "qtsvg"
+      ]
+    },
+    "python": {
+      "description": "Build python from vcpkg",
+      "dependencies": [
+        "python3"
       ]
     },
     "ttk": { 
