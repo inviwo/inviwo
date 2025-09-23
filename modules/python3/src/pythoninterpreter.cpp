@@ -308,127 +308,109 @@ std::pair<PythonPaths, PythonPaths> getPythonPaths() {
     }
 }
 
-}  // namespace
+void initializePythonInterpreter() {
+    log::info("Python runtime version: {}, build version {}", Py_GetVersion(),
+              build::python::version);
 
-PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
-    namespace py = pybind11;
+    const auto [installPaths, buildPaths] = getPythonPaths();
 
-    if (isInit_) {
-        throw ModuleInitException("Python already initialized");
+    const auto pythonPaths = [&]() -> std::optional<PythonPaths> {
+        // Try finding a python installation in the install tree
+        if (std::ranges::all_of(installPaths.paths, [&](std::string_view path) {
+                return std::filesystem::is_directory(path);
+            })) {
+            return installPaths;
+        }
+
+        // Try finding a python installation in the build tree
+        if (std::ranges::all_of(buildPaths.paths, [&](std::string_view path) {
+                return std::filesystem::is_directory(path);
+            })) {
+            return buildPaths;
+        }
+
+        return std::nullopt;
+    }();
+
+    {
+        PyPreConfig preconfig;
+        if (pythonPaths) {
+            PyPreConfig_InitIsolatedConfig(&preconfig);
+        } else {
+            PyPreConfig_InitPythonConfig(&preconfig);
+        }
+
+        preconfig.parse_argv = 0;
+        preconfig.utf8_mode = true;
+        Py_PreInitialize(&preconfig);
     }
 
-#ifdef WIN32
-    // Set environment variable before initializing python to ensure that we do not crash if using
-    // conda. See https://github.com/inviwo/inviwo/issues/1178
-    _putenv_s("CONDA_PY_ALLOW_REG_PATHS", "1");
-#endif
+    PyConfig config;
+
+    if (pythonPaths) {
+        log::info("Internal python found");
+        PyConfig_InitIsolatedConfig(&config);
+        config.parse_argv = 0;
+        config.install_signal_handlers = 0;
+        config.user_site_directory = 0;
+        config.site_import = 0;
+        config.module_search_paths_set = 1;
+
+        for (const auto& path : pythonPaths->paths) {
+            const auto fullpath = util::toWstring(path);
+            PyWideStringList_Append(&config.module_search_paths, fullpath.c_str());
+        }
+
+        PyConfig_SetBytesString(&config, &config.prefix, pythonPaths->prefix.c_str());
+        PyConfig_SetBytesString(&config, &config.exec_prefix, pythonPaths->prefix.c_str());
+
+    } else {
+        log::info("No internal python found, using system python");
+        PyConfig_InitPythonConfig(&config);
+        config.parse_argv = 0;
+        config.install_signal_handlers = 0;
+    }
+
+    if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
+        // Relevant documentation:
+        // https://stackoverflow.com/questions/77881387/
+        // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
+        // https://docs.python.org/3/library/site.html
+        const auto venvExecutable = [&]() {
+            if constexpr (build::platform == build::Platform::Windows) {
+                return fmt::format("{}/Scripts/python.exe", venvPath);
+            } else {
+                return fmt::format("{}/bin/python", venvPath);
+            }
+        }();
+        PyConfig_SetBytesString(&config, &config.executable, venvExecutable.c_str());
+    }
+
+    try {
+        pybind11::initialize_interpreter(&config, 0, nullptr, false);
+    } catch (const std::exception& e) {
+        throw ModuleInitException(e.what());
+    }
 
     if (!Py_IsInitialized()) {
-        log::info("Python runtime version: {}, build version {}", Py_GetVersion(),
-                  build::python::version);
+        throw ModuleInitException("Python is not Initialized");
+    }
 
-        const auto [installPaths, buildPaths] = getPythonPaths();
-
-        const auto pythonPaths = [&]() -> std::optional<PythonPaths> {
-            // Try finding a python installation in the install tree
-            if (std::ranges::all_of(installPaths.paths, [&](std::string_view path) {
-                    return std::filesystem::is_directory(path);
-                })) {
-                return installPaths;
+    // On MacOS we need to add the bin folder to the module search path to find our python
+    // modules. Windows seems to add this automatically
+    if constexpr (build::platform == build::Platform::MacOS) {
+        if (!pythonPaths) {
+            auto exePath = filesystem::getExecutablePath();
+            if (exePath.generic_string().contains("Contents/MacOS")) {
+                // Running from .app bundle
+                exePath = exePath.parent_path().parent_path().parent_path();
             }
-
-            // Try finding a python installation in the build tree
-            if (std::ranges::all_of(buildPaths.paths, [&](std::string_view path) {
-                    return std::filesystem::is_directory(path);
-                })) {
-                return buildPaths;
-            }
-
-            return std::nullopt;
-        }();
-
-        {
-            PyPreConfig preconfig;
-            if (pythonPaths) {
-                PyPreConfig_InitIsolatedConfig(&preconfig);
-            } else {
-                PyPreConfig_InitPythonConfig(&preconfig);
-            }
-
-            preconfig.parse_argv = 0;
-            preconfig.utf8_mode = true;
-            Py_PreInitialize(&preconfig);
+            pyutil::addModulePath(exePath.parent_path());
         }
+    }
+}
 
-        PyConfig config;
-
-        if (pythonPaths) {
-            log::info("Internal python found");
-            PyConfig_InitIsolatedConfig(&config);
-            config.parse_argv = 0;
-            config.install_signal_handlers = 0;
-            config.user_site_directory = 0;
-            config.site_import = 0;
-            config.module_search_paths_set = 1;
-
-            for (auto path : pythonPaths->paths) {
-                const auto fullpath = util::toWstring(path);
-                PyWideStringList_Append(&config.module_search_paths, fullpath.c_str());
-            }
-
-            PyConfig_SetBytesString(&config, &config.prefix, pythonPaths->prefix.c_str());
-            PyConfig_SetBytesString(&config, &config.exec_prefix, pythonPaths->prefix.c_str());
-
-        } else {
-            log::info("No internal python found, using system python");
-            PyConfig_InitPythonConfig(&config);
-            config.parse_argv = 0;
-            config.install_signal_handlers = 0;
-        }
-
-        if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
-            // Relevant documentation:
-            // https://stackoverflow.com/questions/77881387/
-            // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
-            // https://docs.python.org/3/library/site.html
-            const auto venvExecutable = [&]() {
-                if constexpr (build::platform == build::Platform::Windows) {
-                    return fmt::format("{}/Scripts/python.exe", venvPath);
-                } else {
-                    return fmt::format("{}/bin/python", venvPath);
-                }
-            }();
-            PyConfig_SetBytesString(&config, &config.executable, venvExecutable.c_str());
-        }
-
-        try {
-            py::initialize_interpreter(&config, 0, nullptr, false);
-        } catch (const std::exception& e) {
-            throw ModuleInitException(e.what());
-        }
-
-        isInit_ = true;
-        embedded_ = true;
-
-        if (!Py_IsInitialized()) {
-            throw ModuleInitException("Python is not Initialized");
-        }
-
-        // On MacOS we need to add the bin folder to the module search path to find our python
-        // modules. Windows seems to add this automatically
-        if constexpr (build::platform == build::Platform::MacOS) {
-            if (!pythonPaths) {
-                auto exePath = filesystem::getExecutablePath();
-                if (exePath.generic_string().contains("Contents/MacOS")) {
-                    // Running from .app bundle
-                    exePath = exePath.parent_path().parent_path().parent_path();
-                }
-                pyutil::addModulePath(exePath.parent_path());
-            }
-        }
-
-        try {
-            py::exec(R"(
+inline constexpr std::string_view loadInviwoPyScript = R"(
 import sys
 import sysconfig
 
@@ -478,12 +460,33 @@ class OutputRedirector:
 
 sys.stdout = OutputRedirector(0)
 sys.stderr = OutputRedirector(1)
-)",
-                     py::globals());
+)";
 
+}  // namespace
+
+PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false), tstate_{nullptr} {
+    namespace py = pybind11;
+
+    if (isInit_) {
+        throw ModuleInitException("Python already initialized");
+    }
+
+#ifdef WIN32
+    // Set environment variable before initializing python to ensure that we do not crash if using
+    // conda. See https://github.com/inviwo/inviwo/issues/1178
+    _putenv_s("CONDA_PY_ALLOW_REG_PATHS", "1");
+#endif
+
+    if (!Py_IsInitialized()) {
+        initializePythonInterpreter();
+
+        isInit_ = true;
+        embedded_ = true;
+
+        try {
+            pybind11::exec(loadInviwoPyScript, pybind11::globals());
             tstate_ = PyEval_SaveThread();
-
-        } catch (const py::error_already_set& e) {
+        } catch (const pybind11::error_already_set& e) {
             throw ModuleInitException(
                 SourceContext{}, "Error while initializing the Python Interpreter\n{}", e.what());
         }
