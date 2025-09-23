@@ -54,6 +54,8 @@
 
 namespace inviwo {
 
+const int OpacityOptimisation::gaussianKernelMaxRadius_ = 50;
+
 const ProcessorInfo OpacityOptimisation::processorInfo_{
     "org.inviwo.OpacityOptimisation",  // Class identifier
     "Opacity Optimisation",            // Display name
