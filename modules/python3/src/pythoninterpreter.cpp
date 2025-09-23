@@ -414,6 +414,19 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
             throw ModuleInitException("Python is not Initialized");
         }
 
+        // On MacOS we need to add the bin folder to the module search path to find our python
+        // modules. Windows seems to add this automatically
+        if constexpr (build::platform == build::Platform::MacOS) {
+            if (!pythonPaths) {
+                auto exePath = filesystem::getExecutablePath();
+                if (exePath.generic_string().contains("Contents/MacOS")) {
+                    // Running from .app bundle
+                    exePath = exePath.parent_path().parent_path().parent_path();
+                }
+                pyutil::addModulePath(exePath.parent_path());
+            }
+        }
+
         try {
             py::exec(R"(
 import sys
