@@ -66,7 +66,6 @@ set(PYTHON_PROCESSORS_FILES
     processors/MandelbrotNumpy.py
     processors/MeshCreationTest.py
     processors/PythonExample.py
-    processors/PythonImageExample.py
     processors/PythonMeshExample.py
     processors/PythonPickingExample.py
     processors/PythonVolumeExample.py
