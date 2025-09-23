@@ -149,7 +149,7 @@ namespace inviwo {
 //             └── site-packages/    (python site-packages)
 //
 //
-// When deployed on maxos we assume the following structure
+// When deployed on MacOS we assume the following structure
 // inviwo.app/
 // └── Contents/
 //     ├── Info.plist
@@ -324,7 +324,8 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 #endif
 
     if (!Py_IsInitialized()) {
-        log::info("Python version: {}", Py_GetVersion());
+        log::info("Python runtime version: {}, build version {}", Py_GetVersion(),
+                  build::python::version);
 
         const auto [installPaths, buildPaths] = getPythonPaths();
 
@@ -386,7 +387,6 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         }
 
         if (char* venvPath = std::getenv("VIRTUAL_ENV")) {
-
             // Relevant documentation:
             // https://stackoverflow.com/questions/77881387/
             // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
@@ -412,10 +412,6 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
 
         if (!Py_IsInitialized()) {
             throw ModuleInitException("Python is not Initialized");
-        }
-
-        if (!pythonPaths && std::filesystem::is_directory(inviwo::build::python::sitelib)) {
-            pyutil::addModulePath(inviwo::build::python::sitelib);
         }
 
         try {
