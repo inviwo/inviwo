@@ -104,62 +104,6 @@ if(TARGET inviwo-unittests-python3)
     target_link_libraries(inviwo-unittests-python3 PUBLIC inviwo::python-helper)
 endif()
 
-# Add Python to package
-option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\
-    Otherwise a existing python installation is needed to run inviwo" ON)
-if(IVW_PACKAGE_EMBED_PYTHON)
-    if(WIN32)
-        if(IVW_CFG_CMAKE_DEBUG)
-            set(show SHOW_PROGRESS)
-        else()
-            set(show "")
-        endif()
-
-        set(py_version "${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}.${Python3_VERSION_PATCH}")
-        set(py_url "https://www.python.org/ftp/python/${py_version}/python-${py_version}-embed-amd64.zip")
-        set(py_dir "${CMAKE_BINARY_DIR}/py_embedd")
-        set(py_file "${py_dir}/py_embedd.${py_version}.zip")
-        if(NOT EXISTS "${py_file}")
-            ivw_debug_message(STATUS "Download ${py_url}")
-            file(DOWNLOAD ${py_url} ${py_file} STATUS py_status ${show} LOG get_py_log)
-            list(GET py_status 0 py_success)
-            if(NOT py_success EQUAL 0)
-                message(FATAL_ERROR "Could not download python embedd: '${py_url}':\n${get_py_log}")
-            endif()
-        endif()
-
-        file(MAKE_DIRECTORY "${py_dir}/python")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
-                        WORKING_DIRECTORY "${py_dir}/python")
-        file(APPEND ${py_dir}/python/python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}._pth 
-            "import site")
-
-        set(pip_file "${py_dir}/python/get-pip.py")
-        if(NOT EXISTS "${pip_file}")
-            set(pip_url "https://bootstrap.pypa.io/get-pip.py")
-            ivw_debug_message(STATUS "Download ${pip_url}")
-            file(DOWNLOAD "${pip_url}" "${pip_file}" 
-                 STATUS pip_status ${show} LOG get_pip_log)
-            if(NOT pip_status EQUAL 0)
-                file(REMOVE "${pip_file}")
-                message(FATAL_ERROR "Could not download '${pip_url}':\n ${get_pip_log}")
-            endif()
-        endif()
-
-        if(NOT EXISTS ${py_dir}/python/Scripts)
-            execute_process(COMMAND ${py_dir}/python/python.exe -I get-pip.py --no-warn-script-location 
-                WORKING_DIRECTORY "${py_dir}/python")
-            execute_process(COMMAND ${py_dir}/python/python.exe -I -m pip install numpy --isolated --no-warn-script-location 
-                WORKING_DIRECTORY "${py_dir}/python")
-        endif()
-
-        install(DIRECTORY "${py_dir}/python/" 
-            DESTINATION ${IVW_RUNTIME_INSTALL_DIR} 
-            COMPONENT Application
-        )
-    endif()
-endif()
-
 # Add scripts directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
