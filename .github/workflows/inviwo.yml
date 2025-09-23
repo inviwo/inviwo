@@ -253,6 +253,7 @@ jobs:
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DVCPKG_MANIFEST_FEATURES="python;qt"
+        -DVCPKG_APPLOCAL_DEPS=OFF
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_EIGENUTILS=ON
         -DIVW_MODULE_HDF5=ON
