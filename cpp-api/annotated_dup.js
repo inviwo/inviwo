@@ -1491,7 +1491,7 @@ var annotated_dup =
       [ "RasterizeEvent", "classinviwo_1_1RasterizeEvent.html", "classinviwo_1_1RasterizeEvent" ],
       [ "RasterizeHandle", "classinviwo_1_1RasterizeHandle.html", null ],
       [ "Rasterizer", "classinviwo_1_1Rasterizer.html", "classinviwo_1_1Rasterizer" ],
-      [ "RateLimitier", "classinviwo_1_1RateLimitier.html", null ],
+      [ "RateLimiter", "classinviwo_1_1RateLimiter.html", null ],
       [ "RawDataReaderDialogQt", "classinviwo_1_1RawDataReaderDialogQt.html", null ],
       [ "RawVolumeRAMLoader", "classinviwo_1_1RawVolumeRAMLoader.html", null ],
       [ "RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],

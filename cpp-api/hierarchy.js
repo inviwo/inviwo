@@ -3091,7 +3091,7 @@ var hierarchy =
       [ "inviwo::RasterizationRenderer", "classinviwo_1_1RasterizationRenderer.html", null ]
     ] ],
     [ "inviwo::RasterizeHandle", "classinviwo_1_1RasterizeHandle.html", null ],
-    [ "inviwo::RateLimitier< minIntervalMs, F >", "classinviwo_1_1RateLimitier.html", null ],
+    [ "inviwo::RateLimiter< minIntervalMs, F >", "classinviwo_1_1RateLimiter.html", null ],
     [ "inviwo::RaycastingState", "structinviwo_1_1RaycastingState.html", null ],
     [ "inviwo::ReaderWriter< DataType >", "structinviwo_1_1ReaderWriter.html", null ],
     [ "inviwo::animation::Recorder", "classinviwo_1_1animation_1_1Recorder.html", null ],
