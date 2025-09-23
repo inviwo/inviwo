@@ -251,9 +251,8 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
-        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DVCPKG_MANIFEST_FEATURES="python;qt"
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_EIGENUTILS=ON
         -DIVW_MODULE_HDF5=ON
