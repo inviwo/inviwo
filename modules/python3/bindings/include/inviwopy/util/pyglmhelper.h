@@ -36,6 +36,7 @@
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
+#include <modules/python3/pybindutils.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -48,9 +49,11 @@
 #include <warn/pop>
 
 #include <map>
-#include <string>
+#include <string_view>
 #include <algorithm>
 #include <vector>
+
+#include <fmt/base.h>
 
 #include <warn/push>
 #include <warn/ignore/self-assign-overloaded>
@@ -75,13 +78,13 @@ void addInit(pybind11::classh<V>& pyv) {
 }  // namespace
 
 template <typename T, int Cols, int Rows>
-void matxx(pybind11::module& m, const std::string& prefix, const std::string& name,
-           const std::string& postfix) {
+void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
+           std::string_view postfix) {
 
     using Mat = typename util::glmtype<T, Cols, Rows>::type;
 
-    static_assert(std::is_standard_layout<Mat>::value, "has to be standard_layout");
-    static_assert(std::is_trivially_copyable<Mat>::value, "has to be trivially_copyable");
+    static_assert(std::is_standard_layout_v<Mat>, "has to be standard_layout");
+    static_assert(std::is_trivially_copyable_v<Mat>, "has to be trivially_copyable");
     static_assert(pybind11::detail::is_pod_struct<Mat>::value, "has to be pod");
 
     using ColumnVector = typename Mat::col_type;
@@ -92,13 +95,11 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
     using Mat4 = typename util::glmtype<T, 4, Cols>::type;
 
     const auto classname = [&]() {
-        std::stringstream ss;
-        ss << prefix << name << Cols;
-        if (Cols != Rows) {
-            ss << "x" << Rows;
+        if constexpr (Cols != Rows) {
+            return fmt::format("{}{}{}x{}{}", prefix, name, Cols, Rows, postfix);
+        } else {
+            return fmt::format("{}{}{}{}", prefix, name, Cols, postfix);
         }
-        ss << postfix;
-        return ss.str();
     }();
 
     pybind11::classh<Mat> pym(m, classname.c_str(), pybind11::buffer_protocol{});
@@ -181,11 +182,11 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
         .def(pybind11::self * Mat3())
         .def(pybind11::self * Mat4())
 
-        .def_property_readonly(
-            "array",
-            [](Mat& self) {
-                return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols}, glm::value_ptr(self));
-            })
+        .def_property_readonly("array",
+                               [](Mat& self) {
+                                   return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols},
+                                                               glm::value_ptr(self));
+                               })
 
         .def("__repr__",
              [](Mat& m) {
@@ -225,16 +226,16 @@ void matxx(pybind11::module& m, const std::string& prefix, const std::string& na
 }
 
 template <typename T, int Cols>
-void matx(pybind11::module& m, const std::string& prefix, const std::string& name,
-          const std::string& postfix) {
+void matx(pybind11::module& m, std::string_view prefix, std::string_view name,
+          std::string_view postfix) {
     matxx<T, Cols, 2>(m, prefix, name, postfix);
     matxx<T, Cols, 3>(m, prefix, name, postfix);
     matxx<T, Cols, 4>(m, prefix, name, postfix);
 }
 
 template <typename T>
-void mat(pybind11::module& m, const std::string& prefix, const std::string& name = "mat",
-         const std::string& postfix = "") {
+void mat(pybind11::module& m, std::string_view prefix, std::string_view name = "mat",
+         std::string_view postfix = "") {
     matx<T, 2>(m, prefix, name, postfix);
     matx<T, 3>(m, prefix, name, postfix);
     matx<T, 4>(m, prefix, name, postfix);
@@ -271,15 +272,12 @@ struct ExposePortsFunctor {
                 }
             }();
             const auto vectorName = fmt::format("{}Vector", name);
-            pybind11::bind_vector<std::vector<T>, pybind11::smart_holder>(m, vectorName);
             exposeStandardDataPorts<std::vector<T>>(m, vectorName);
 
         } else if constexpr (rank == 1 && util::extent_v<T> <= 4) {
             constexpr auto N = util::extent_v<T>;
             const auto prefix = glm::detail::prefix<V>::value();
             const auto vectorName = fmt::format("{}vec{}Vector", prefix, N);
-            pybind11::bind_vector<std::vector<T>, pybind11::smart_holder>(
-                m, vectorName, pybind11::buffer_protocol{});
             exposeStandardDataPorts<std::vector<T>>(m, vectorName);
 
         } else if constexpr (rank == 2 && util::extent_v<T, 0> <= 4 &&
