@@ -248,7 +248,7 @@ jobs:
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer --fresh
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
@@ -556,7 +556,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer, regression]
 
-    runs-on: windows-latest
+    runs-on: linux-latest
     steps:
       - name: "Clone Inviwo"
         uses: actions/checkout@v5
@@ -601,12 +601,12 @@ jobs:
     needs: [build, test-installer, regression, create-changelog]
     strategy:
       matrix:
-        os: [windows-latest] # macos-latest,
+        os: [windows-latest, macos-latest]
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-          #- os: 'macos-latest'
-          #  installer: 'inviwo-installer-macos'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
     runs-on: ${{ matrix.os }}
     
     steps:
@@ -619,7 +619,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: Inviwo-*
+        file: inviwo-*
         file_glob: true
         tag: latest
         overwrite: true

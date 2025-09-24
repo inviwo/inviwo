@@ -464,12 +464,7 @@ sys.stderr = OutputRedirector(1)
 
 }  // namespace
 
-PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false), tstate_{nullptr} {
-    namespace py = pybind11;
-
-    if (isInit_) {
-        throw ModuleInitException("Python already initialized");
-    }
+PythonInterpreter::PythonInterpreter() : embedded_{false}, tstate_{nullptr} {
 
 #ifdef WIN32
     // Set environment variable before initializing python to ensure that we do not crash if using
@@ -480,7 +475,6 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false), tstat
     if (!Py_IsInitialized()) {
         initializePythonInterpreter();
 
-        isInit_ = true;
         embedded_ = true;
 
         try {
@@ -494,26 +488,10 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false), tstat
 }
 
 PythonInterpreter::~PythonInterpreter() {
-    namespace py = pybind11;
     if (embedded_) {
         PyEval_RestoreThread(tstate_);
-        py::finalize_interpreter();
+        pybind11::finalize_interpreter();
     }
-}
-
-void PythonInterpreter::importModule(std::string_view moduleName) {
-    namespace py = pybind11;
-    SafeCStr str(moduleName);
-
-    auto dict = py::globals();
-    dict[str] = py::module::import(str);
-}
-
-bool PythonInterpreter::runString(std::string_view code) {
-    SafeCStr str(code);
-
-    auto ret = PyRun_SimpleString(str);
-    return ret == 0;
 }
 
 }  // namespace inviwo

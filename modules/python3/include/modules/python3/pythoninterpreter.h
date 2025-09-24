@@ -43,13 +43,8 @@ public:
     PythonInterpreter();
     virtual ~PythonInterpreter();
 
-    void importModule(std::string_view moduleName);
-
-    bool runString(std::string_view code);
-
 private:
     bool embedded_;
-    bool isInit_;
     PyThreadState* tstate_;
 };
 
