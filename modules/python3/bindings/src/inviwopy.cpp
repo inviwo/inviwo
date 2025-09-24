@@ -108,10 +108,9 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     auto dataModule = m.def_submodule("data", "Inviwo Data Structures");
     auto formatsModule = dataModule.def_submodule("formats", "Inviwo Data Formats");
 
-
     // Since we have a "global" std::string type here bind_vector will create module local bindings
     // for StringVector. But since we have included it in opaquetypes we need to create a
-    // definition of this in each python module that uses it, unless we are linking statically. 
+    // definition of this in each python module that uses it, unless we are linking statically.
     // See https://pybind11.readthedocs.io/en/stable/advanced/classes.html#module-local
     // and https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
     // for more details.
@@ -166,8 +165,8 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
         "getApp", []() { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
-        if (auto* module = util::getModuleByType<Python3Module>()) {
-            if (auto* interpreter = module->getPythonInterpreter()) {
+        if (auto* pythonModule = util::getModuleByType<Python3Module>()) {
+            if (auto* interpreter = pythonModule->getPythonInterpreter()) {
                 interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)
                                                                  ? PythonOutputType::sysstdout
                                                                  : PythonOutputType::sysstderr);
