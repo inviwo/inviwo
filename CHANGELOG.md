@@ -1,5 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-09-23 Updated Inviwo Python bindings
+The explicit `Vector` types for both scalar and glm vectors were moved from `inviwopy` to the `inviwopy.glm` module. 
+
+### Migration guide for Python processors and scripts
+- `inviwopy.<type>Vector` needs to be replaced with `inviwopy.glm.<type>Vector`, for example `inviwopy.glm.dvec3Vector`
+
 ## 2025-05-20 New ContextMenuEvent
 A customized context menu can now be shown in a canvas with `InteractionEvent::showContextMenu()`. Each menu action comes with an id that should be unique like `"<getIdentifier()>.myAction"`. Otherwise it cannnot be guaranteed that the correct InteractionHandler/Processor handles the corresponding `ContextMenuEvent`. If a menu action is triggered, a `ContextMenuEvent` with the corresponding id will be propagated through the processor network.
 See `RandomMeshGenerator::invokeEvent()` and `PythonPickingExample.py` for its usage in C++ and Python respectively. The convexhull example workspace illustrates the usage of the `PythonPickingExample` processor.
@@ -8,7 +14,6 @@ See `RandomMeshGenerator::invokeEvent()` and `PythonPickingExample.py` for its u
 The CameraWidget gained new functionality to animate the camera either in a continuous fashion or by swinging back and forth.
 ![Camera Cube](resources/changelog/camera-cube.jpg)
 It also got a new "Cube" interaction widget to easily set various view directions. 
-
 
 ## 2025-05-05 Easing
 The easing header in the `Animation` module has been refactored and moved into `inviwo/core/algorithm/easing.h`

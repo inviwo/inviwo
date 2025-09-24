@@ -32,6 +32,7 @@
 
 #include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/detected.h>
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
@@ -47,10 +48,10 @@
 #include <warn/pop>
 
 #include <map>
-#include <string>
+#include <string_view>
 #include <algorithm>
 
-#include <fmt/format.h>
+#include <fmt/base.h>
 
 #include <warn/push>
 #include <warn/ignore/self-assign-overloaded>
@@ -73,22 +74,16 @@ template <typename T, typename V, unsigned C, typename Indices = std::make_index
 void addInit(py::classh<V>& pyv) {
     addInitImpl<V, T>(pyv, Indices{});
 }
-}  // namespace
 
 template <typename T, int Dim>
-void vecx(py::module& m, const std::string& prefix, const std::string& name,
-          const std::string& postfix) {
+void vecx(py::module& m, std::string_view prefix, std::string_view name, std::string_view postfix) {
     using Vec = glm::vec<Dim, T>;
 
-    static_assert(std::is_standard_layout<Vec>::value, "has to be standard_layout");
-    static_assert(std::is_trivially_copyable<Vec>::value, "has to be trivially_copyable");
+    static_assert(std::is_standard_layout_v<Vec>, "has to be standard_layout");
+    static_assert(std::is_trivially_copyable_v<Vec>, "has to be trivially_copyable");
     static_assert(py::detail::is_pod_struct<Vec>::value, "has to be pod");
 
-    const auto classname = [&]() {
-        std::stringstream ss;
-        ss << prefix << name << Dim << postfix;
-        return ss.str();
-    }();
+    const auto classname = fmt::format("{}{}{}{}", prefix, name, Dim, postfix);
 
     py::classh<Vec> pyv(m, classname.c_str(), py::buffer_protocol{});
     addInit<T, Vec, Dim>(pyv);
@@ -283,17 +278,22 @@ void vecx(py::module& m, const std::string& prefix, const std::string& name,
             break;
     }
 
+    py::bind_vector<std::vector<Vec>, py::smart_holder>(m, classname + "Vector",
+                                                        "Vectors of glm vectors");
+
     py::implicitly_convertible<py::list, Vec>();
     py::implicitly_convertible<py::array_t<T>, Vec>();
 }
 
 template <typename T>
-void vec(py::module& m, const std::string& prefix, const std::string& name = "vec",
-         const std::string& postfix = "") {
+void vec(py::module& m, std::string_view prefix, std::string_view name = "vec",
+         std::string_view postfix = "") {
     vecx<T, 2>(m, prefix, name, postfix);
     vecx<T, 3>(m, prefix, name, postfix);
     vecx<T, 4>(m, prefix, name, postfix);
 }
+
+}  // namespace
 
 void exposeGLMTypes(py::module& m) {
     vec<bool>(m, "b");
@@ -302,7 +302,20 @@ void exposeGLMTypes(py::module& m) {
     vec<int>(m, "i");
     vec<unsigned int>(m, "u");
     vec<size_t>(m, "", "size", "_t");
+
+    pybind11::bind_vector<std::vector<float>, pybind11::smart_holder>(m, "floatVector");
+    pybind11::implicitly_convertible<pybind11::buffer, std::vector<float>>();
+
+    pybind11::bind_vector<std::vector<double>, pybind11::smart_holder>(m, "doubleVector");
+    pybind11::implicitly_convertible<pybind11::buffer, std::vector<double>>();
+
+    pybind11::bind_vector<std::vector<int>, pybind11::smart_holder>(m, "intVector");
+    pybind11::implicitly_convertible<pybind11::buffer, std::vector<int>>();
+
+    pybind11::bind_vector<std::vector<unsigned int>, pybind11::smart_holder>(m, "uintVector");
+    pybind11::implicitly_convertible<pybind11::buffer, std::vector<unsigned int>>();
 }
+
 }  // namespace inviwo
 
 #include <warn/pop>
