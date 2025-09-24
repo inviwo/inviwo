@@ -74,7 +74,6 @@ template <typename T, typename V, unsigned C, typename Indices = std::make_index
 void addInit(py::classh<V>& pyv) {
     addInitImpl<V, T>(pyv, Indices{});
 }
-}  // namespace
 
 template <typename T, int Dim>
 void vecx(py::module& m, std::string_view prefix, std::string_view name, std::string_view postfix) {
@@ -293,6 +292,8 @@ void vec(py::module& m, std::string_view prefix, std::string_view name = "vec",
     vecx<T, 3>(m, prefix, name, postfix);
     vecx<T, 4>(m, prefix, name, postfix);
 }
+
+}  // namespace
 
 void exposeGLMTypes(py::module& m) {
     vec<bool>(m, "b");
