@@ -162,47 +162,38 @@
       dmat4VectorInport
       dmat4VectorMultiInport
       dmat4VectorOutport
-      doubleVector
       doubleVectorFlatMultiInport
       doubleVectorInport
       doubleVectorMultiInport
       doubleVectorOutport
-      dvec2Vector
       dvec2VectorFlatMultiInport
       dvec2VectorInport
       dvec2VectorMultiInport
       dvec2VectorOutport
-      dvec3Vector
       dvec3VectorFlatMultiInport
       dvec3VectorInport
       dvec3VectorMultiInport
       dvec3VectorOutport
-      dvec4Vector
       dvec4VectorFlatMultiInport
       dvec4VectorInport
       dvec4VectorMultiInport
       dvec4VectorOutport
-      floatVector
       floatVectorFlatMultiInport
       floatVectorInport
       floatVectorMultiInport
       floatVectorOutport
-      intVector
       intVectorFlatMultiInport
       intVectorInport
       intVectorMultiInport
       intVectorOutport
-      ivec2Vector
       ivec2VectorFlatMultiInport
       ivec2VectorInport
       ivec2VectorMultiInport
       ivec2VectorOutport
-      ivec3Vector
       ivec3VectorFlatMultiInport
       ivec3VectorInport
       ivec3VectorMultiInport
       ivec3VectorOutport
-      ivec4Vector
       ivec4VectorFlatMultiInport
       ivec4VectorInport
       ivec4VectorMultiInport
@@ -219,37 +210,30 @@
       mat4VectorInport
       mat4VectorMultiInport
       mat4VectorOutport
-      uintVector
       uintVectorFlatMultiInport
       uintVectorInport
       uintVectorMultiInport
       uintVectorOutport
-      uvec2Vector
       uvec2VectorFlatMultiInport
       uvec2VectorInport
       uvec2VectorMultiInport
       uvec2VectorOutport
-      uvec3Vector
       uvec3VectorFlatMultiInport
       uvec3VectorInport
       uvec3VectorMultiInport
       uvec3VectorOutport
-      uvec4Vector
       uvec4VectorFlatMultiInport
       uvec4VectorInport
       uvec4VectorMultiInport
       uvec4VectorOutport
-      vec2Vector
       vec2VectorFlatMultiInport
       vec2VectorInport
       vec2VectorMultiInport
       vec2VectorOutport
-      vec3Vector
       vec3VectorFlatMultiInport
       vec3VectorInport
       vec3VectorMultiInport
       vec3VectorOutport
-      vec4Vector
       vec4VectorFlatMultiInport
       vec4VectorInport
       vec4VectorMultiInport
