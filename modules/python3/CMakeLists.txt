@@ -116,7 +116,7 @@ if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
             ivw_private_vcpkg_install_helper(
                 FILES_VAR INFO_VCPKG_OWNED_FILES
                 DIRNAME "tools/${pythondir}"
-                EXTENSION "(py|dll)"
+                EXTENSION "(py|pyd|dll)"
                 DESTINATION ${IVW_INSTALL_PREFIX}tools/${pythondir}
                 COMPONENT Application
             )
