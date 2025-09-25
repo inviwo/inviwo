@@ -556,7 +556,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer, regression]
 
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "Clone Inviwo"
         uses: actions/checkout@v5
@@ -599,24 +599,16 @@ jobs:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer, regression, create-changelog]
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-        include:
-          - os: 'windows-latest'
-            installer: 'inviwo-installer-win'
-          - os: 'macos-latest'
-            installer: 'inviwo-installer-macos'
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     
     steps:
     - name: "Download installer"
       uses: actions/download-artifact@v5
       with:
-        name: ${{ matrix.installer }}
+        pattern: inviwo-installer-*
 
     - name: "Upload binaries to release"
-      uses: svenstaro/upload-release-action@v2
+      uses: svenstaro/upload-release-action@v2.11.2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: inviwo-*
