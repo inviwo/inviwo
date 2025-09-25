@@ -140,10 +140,3 @@ if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
         endif()
     ]=])
 endif()
-
-
-
-
-
-
-
