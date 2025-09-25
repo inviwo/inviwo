@@ -28,6 +28,14 @@
  *********************************************************************************/
 
 #include <inviwopy/pyglmtypes.h>
+
+#include <pybind11/operators.h>
+#include <pybind11/numpy.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+
 #include <inviwopy/pyglmmattypes.h>
 
 #include <inviwo/core/util/ostreamjoiner.h>
@@ -37,21 +45,13 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/operators.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl_bind.h>
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
-#include <warn/pop>
-
 #include <map>
 #include <string_view>
 #include <algorithm>
 
 #include <fmt/base.h>
+
+#include <inviwo/core/util/glm.h>
 
 #include <warn/push>
 #include <warn/ignore/self-assign-overloaded>
@@ -257,22 +257,34 @@ void vecx(py::module& m, std::string_view prefix, std::string_view name, std::st
 
     switch (Dim) {
         case 4:
-            pyv.def_property("w", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
-            pyv.def_property("a", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
-            pyv.def_property("q", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property(
+                "w", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property(
+                "a", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
+            pyv.def_property(
+                "q", [](Vec& b) { return b[3]; }, [](Vec& b, T t) { b[3] = t; });
             [[fallthrough]];
         case 3:
-            pyv.def_property("z", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
-            pyv.def_property("b", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
-            pyv.def_property("p", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property(
+                "z", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property(
+                "b", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
+            pyv.def_property(
+                "p", [](Vec& b) { return b[2]; }, [](Vec& b, T t) { b[2] = t; });
             [[fallthrough]];
         case 2:
-            pyv.def_property("y", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
-            pyv.def_property("g", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
-            pyv.def_property("t", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
-            pyv.def_property("x", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
-            pyv.def_property("r", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
-            pyv.def_property("s", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property(
+                "y", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property(
+                "g", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property(
+                "t", [](Vec& b) { return b[1]; }, [](Vec& b, T t) { b[1] = t; });
+            pyv.def_property(
+                "x", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property(
+                "r", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
+            pyv.def_property(
+                "s", [](Vec& b) { return b[0]; }, [](Vec& b, T t) { b[0] = t; });
             [[fallthrough]];
         default:
             break;

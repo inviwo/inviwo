@@ -39,6 +39,7 @@
 #include <inviwo/core/util/filelogger.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {

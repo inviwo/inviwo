@@ -32,6 +32,10 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/eval.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/dataframepython/dataframepythonmodule.h>
 #include <modules/python3/python3module.h>
@@ -47,9 +51,7 @@
 
 #include <inviwo/core/util/defaultvalues.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/eval.h>
+
 
 #include <fmt/format.h>
 

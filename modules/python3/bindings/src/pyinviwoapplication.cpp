@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <inviwo/core/util/filesystem.h>

@@ -29,14 +29,14 @@
 
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
 
+#include <pybind11/pybind11.h>
+
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/base/algorithm/volume/volumecurl.h>
 #include <modules/base/algorithm/volume/volumedivergence.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
 

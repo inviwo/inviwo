@@ -39,6 +39,7 @@
 
 #include <inviwo/core/util/glmfmt.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <fmt/core.h>

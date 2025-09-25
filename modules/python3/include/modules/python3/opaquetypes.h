@@ -31,11 +31,10 @@
 
 #include <modules/python3/python3moduledefine.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
-#include <warn/pop>
+
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <vector>
 #include <string>
@@ -135,3 +134,5 @@ PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 3, unsigned int>>)
 PYBIND11_MAKE_OPAQUE(std::vector<glm::mat<4, 4, unsigned int>>)
 
 PYBIND11_MAKE_OPAQUE(std::vector<std::string>)
+
+PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask)

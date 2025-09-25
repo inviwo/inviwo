@@ -29,14 +29,14 @@
 
 #include <modules/base/pythonbindings/io/curlutils.h>
 
-#include <inviwo/core/io/curlutils.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
-#include <warn/pop>
+
+#include <inviwo/core/io/curlutils.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
 

@@ -33,6 +33,9 @@
 
 #include <pybind11/pybind11.h>
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumePy2GLConverter::createFrom(

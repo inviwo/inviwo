@@ -29,15 +29,12 @@
 
 #include <inviwopy/pyprocessors.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/trampoline_self_life_support.h>  // for trampoline_self_life_support
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
-#include <warn/pop>
 
 #include <inviwopy/vectoridentifierwrapper.h>
 
@@ -59,6 +56,7 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
+
 #include <modules/python3/processortrampoline.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>

@@ -36,6 +36,9 @@
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <optional>
 
 namespace inviwo {

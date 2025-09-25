@@ -41,6 +41,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/properties/cameraproperty.h>
+
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 

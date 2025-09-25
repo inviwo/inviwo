@@ -29,13 +29,10 @@
 
 #include <inviwopy/pyport.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/functional.h>
-#include <warn/pop>
 
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
@@ -46,10 +43,8 @@
 
 #include <modules/python3/pythonoutport.h>
 #include <modules/python3/pythoninport.h>
-
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-
 #include <modules/python3/pyportutils.h>
 
 #include <utility>

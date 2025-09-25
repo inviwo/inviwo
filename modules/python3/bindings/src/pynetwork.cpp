@@ -47,6 +47,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
 namespace py = pybind11;

@@ -32,12 +32,16 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/volumepy.h>
 #include <modules/python3/layerpy.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -46,9 +50,6 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/glmcomp.h>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include <glm/gtc/epsilon.hpp>
 

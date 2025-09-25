@@ -52,6 +52,9 @@
 #include <inviwo/core/util/stringconversion.h>              // for trim
 #include <inviwo/core/util/utilities.h>                     // for stripIdentifier
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <array>        // for array
 #include <exception>    // for exception
 #include <fstream>      // for operator<<, basic_ostream

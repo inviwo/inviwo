@@ -28,16 +28,16 @@
  *********************************************************************************/
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
-#include <warn/pop>
 
 #include <inviwo/core/util/safecstr.h>
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/isstreaminsertable.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <flags/flags.h>
 #include <fmt/format.h>

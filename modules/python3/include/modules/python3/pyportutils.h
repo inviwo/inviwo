@@ -41,6 +41,7 @@
 #include <inviwo/core/util/stringconversion.h>      // for StrBuffer
 
 #include <modules/python3/polymorphictypehooks.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <fmt/core.h>  // for format
 

@@ -39,6 +39,9 @@
 #include <inviwo/core/util/glmutils.h>          // for Vector
 #include <inviwo/core/util/stringconversion.h>  // for toString
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <cstddef>  // for size_t
 #include <memory>   // for allocator, unique_ptr
 #include <string>   // for string, operator+, char_traits
