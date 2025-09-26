@@ -314,18 +314,6 @@ void exposeGLMTypes(py::module& m) {
     vec<int>(m, "i");
     vec<unsigned int>(m, "u");
     vec<size_t>(m, "", "size", "_t");
-
-    pybind11::bind_vector<std::vector<float>, pybind11::smart_holder>(m, "floatVector");
-    pybind11::implicitly_convertible<pybind11::buffer, std::vector<float>>();
-
-    pybind11::bind_vector<std::vector<double>, pybind11::smart_holder>(m, "doubleVector");
-    pybind11::implicitly_convertible<pybind11::buffer, std::vector<double>>();
-
-    pybind11::bind_vector<std::vector<int>, pybind11::smart_holder>(m, "intVector");
-    pybind11::implicitly_convertible<pybind11::buffer, std::vector<int>>();
-
-    pybind11::bind_vector<std::vector<unsigned int>, pybind11::smart_holder>(m, "uintVector");
-    pybind11::implicitly_convertible<pybind11::buffer, std::vector<unsigned int>>();
 }
 
 }  // namespace inviwo
