@@ -31,6 +31,7 @@
 
 #include <pybind11/pybind11.h>  // for module
 #include <pybind11/stl.h>
+
 #include <inviwo/core/common/inviwoapplication.h>                    // for InviwoApplication
 #include <inviwo/core/common/inviwomodule.h>                         // for InviwoModule
 #include <inviwo/core/datastructures/datarepresentation.h>           // for DataRepresentation<>...
@@ -51,6 +52,7 @@
 #include <modules/python3/pythonlogger.h>       // for PythonLogger
 #include <modules/python3/volumepy.h>           // for VolumePy, VolumePy2R...
 #include <modules/python3/layerpy.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <tclap/ArgException.h>  // for ArgParseException
 #include <tclap/ValueArg.h>      // for ValueArg

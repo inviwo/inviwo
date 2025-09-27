@@ -36,6 +36,9 @@
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel
 #include <inviwo/core/util/exception.h>
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 namespace inviwo {
 
 class Event;

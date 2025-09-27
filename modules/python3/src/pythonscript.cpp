@@ -42,6 +42,8 @@
 #include <modules/python3/python3module.h>                    // for Python3Module
 #include <modules/python3/pythonexecutionoutputobservable.h>  // for PythonOutputType, PythonOut...
 #include <modules/python3/pythoninterpreter.h>                // for PythonInterpreter
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <fstream>   // for operator<<, basic_ostream
 #include <iterator>  // for istreambuf_iterator

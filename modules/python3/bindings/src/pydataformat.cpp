@@ -36,6 +36,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/safecstr.h>
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 #include <fmt/core.h>
 

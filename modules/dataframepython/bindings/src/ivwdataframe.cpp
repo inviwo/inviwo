@@ -29,19 +29,17 @@
 
 #include <ivwdataframe/ivwdataframe.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
-#include <warn/pop>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/pybindmodule.h>
 #include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <ivwdataframe/pydataframe.h>
 

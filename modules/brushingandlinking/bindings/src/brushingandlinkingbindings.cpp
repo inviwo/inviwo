@@ -27,13 +27,10 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 #include <pybind11/embed.h>
-#include <warn/pop>
 
 #include <modules/python3/pybindflags.h>
 #include <modules/python3/pybindmodule.h>

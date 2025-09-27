@@ -38,6 +38,7 @@
 
 #include <inviwo/core/algorithm/markdown.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <functional>

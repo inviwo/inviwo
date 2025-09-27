@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 #include <inviwopy/pyflags.h>
 #include <fmt/format.h>

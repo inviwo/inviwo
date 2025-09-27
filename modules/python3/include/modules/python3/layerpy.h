@@ -39,6 +39,9 @@
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <memory>
 #include <typeindex>
 

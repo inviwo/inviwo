@@ -27,13 +27,10 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
-#include <warn/pop>
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
@@ -116,6 +113,26 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     // for more details.
     py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
     py::implicitly_convertible<py::list, std::vector<std::string>>();
+
+    // For these cases I have used module_local(false) to make them available globally
+    // Not sure if that is a good idea though?
+    py::bind_vector<std::vector<float>, py::smart_holder>(glmModule, "floatVector",
+                                                          py::module_local(false));
+    py::bind_vector<std::vector<double>, py::smart_holder>(glmModule, "doubleVector",
+                                                           py::module_local(false));
+    py::bind_vector<std::vector<int>, py::smart_holder>(glmModule, "intVector",
+                                                        py::module_local(false));
+    py::bind_vector<std::vector<unsigned int>, py::smart_holder>(glmModule, "uintVector",
+                                                                 py::module_local(false));
+    // making them global means that we can find them in for example inviwo-unittests-python
+    // when we do a py::cast(std::vector<int>) for example. That will fail if the type is not found
+    // and we have the declared PYBIND11_MAKE_OPAQUE(std::vector<int>).
+    // hence at the moment py::cast(std::vector<std::string>) will not work there.
+
+    py::implicitly_convertible<py::buffer, std::vector<float>>();
+    py::implicitly_convertible<py::buffer, std::vector<double>>();
+    py::implicitly_convertible<py::buffer, std::vector<int>>();
+    py::implicitly_convertible<py::buffer, std::vector<unsigned int>>();
 
     // Note the order is important here, we need to load all base classes before any derived clases
     exposeGLMTypes(glmModule);

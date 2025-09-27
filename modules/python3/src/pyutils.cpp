@@ -38,6 +38,9 @@
 #include <inviwo/core/util/sourcecontext.h>     // for SourceContext
 #include <inviwo/core/util/stringconversion.h>  // for replaceInString
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <array>        // for array
 #include <string_view>  // for string_view
 #include <filesystem>

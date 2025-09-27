@@ -29,24 +29,23 @@
 
 #pragma once
 
-#include <inviwo/core/util/glm.h>
-#include <inviwopy/pyglmtypes.h>
-#include <inviwo/core/util/ostreamjoiner.h>
-#include <inviwo/core/util/assertion.h>
-#include <modules/python3/pyportutils.h>
-#include <modules/python3/opaquetypes.h>
-#include <modules/python3/polymorphictypehooks.h>
-#include <modules/python3/pybindutils.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/operators.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
-#include <warn/pop>
+
+#include <inviwopy/pyglmtypes.h>
+
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+#include <inviwo/core/util/assertion.h>
+
+#include <modules/python3/pyportutils.h>
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+#include <modules/python3/pybindutils.h>
 
 #include <map>
 #include <string_view>
@@ -182,11 +181,11 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
         .def(pybind11::self * Mat3())
         .def(pybind11::self * Mat4())
 
-        .def_property_readonly("array",
-                               [](Mat& self) {
-                                   return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols},
-                                                               glm::value_ptr(self));
-                               })
+        .def_property_readonly(
+            "array",
+            [](Mat& self) {
+                return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols}, glm::value_ptr(self));
+            })
 
         .def("__repr__",
              [](Mat& m) {

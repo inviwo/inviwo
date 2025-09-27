@@ -29,6 +29,9 @@
 
 #include <inviwopy/properties/pyminmaxproperties.h>
 
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -38,8 +41,6 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <pybind11/stl.h>
-#include <pybind11/functional.h>
 #include <fmt/format.h>
 #include <glm/gtx/io.hpp>
 

@@ -29,11 +29,8 @@
 
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
-#include <warn/pop>
 
 // based on pybind11/embed.h PYBIND11_EMBEDDED_MODULE
 // But defines a function

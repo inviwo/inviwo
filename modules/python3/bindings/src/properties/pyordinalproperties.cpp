@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include <inviwopy/properties/pyordinalproperties.h>
+
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -35,8 +39,6 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <pybind11/stl.h>
-#include <pybind11/functional.h>
 #include <fmt/format.h>
 
 namespace py = pybind11;

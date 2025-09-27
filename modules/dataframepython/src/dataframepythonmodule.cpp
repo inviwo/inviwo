@@ -28,10 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/dataframepython/dataframepythonmodule.h>
-#include <warn/push>
-#include <warn/ignore/shadow>
+
 #include <pybind11/pybind11.h>
-#include <warn/pop>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
 

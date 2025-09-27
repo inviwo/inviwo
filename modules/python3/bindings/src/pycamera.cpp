@@ -28,16 +28,18 @@
  *********************************************************************************/
 
 #include <inviwopy/pycamera.h>
+
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
+
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
 #include <inviwo/core/datastructures/camera/skewedperspectivecamera.h>
 
+#include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
-
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl/filesystem.h>
 
 namespace inviwo {
 

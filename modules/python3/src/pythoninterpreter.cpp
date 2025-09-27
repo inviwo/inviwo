@@ -50,6 +50,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwocommondefines.h>
 #include <modules/python3/pyutils.h>  // for addModulePath
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <array>        // for array
 #include <exception>    // for exception

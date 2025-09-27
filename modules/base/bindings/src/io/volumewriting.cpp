@@ -29,15 +29,15 @@
 
 #include <modules/base/pythonbindings/io/volumewriting.h>
 
-#include <modules/base/io/datvolumewriter.h>
-#include <modules/base/io/ivfvolumewriter.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
-#include <warn/pop>
+
+#include <modules/base/io/datvolumewriter.h>
+#include <modules/base/io/ivfvolumewriter.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace inviwo {
 

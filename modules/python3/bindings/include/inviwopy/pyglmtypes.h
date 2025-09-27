@@ -31,10 +31,6 @@
 
 #include <pybind11/pybind11.h>
 
-#include <inviwo/core/util/glm.h>
-
-#include <vector>
-
 namespace inviwo {
 
 void exposeGLMTypes(pybind11::module& m);

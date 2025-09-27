@@ -29,13 +29,12 @@
 
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <warn/pop>
 
 #include <inviwo/core/util/ostreamjoiner.h>
+
+#include <modules/python3/opaquetypes.h>
 
 #include <memory>
 #include <sstream>

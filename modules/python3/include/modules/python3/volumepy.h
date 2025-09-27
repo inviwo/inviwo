@@ -39,6 +39,9 @@
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>  // for VolumeRepresentation
 #include <inviwo/core/util/glmvec.h>                                 // for size3_t
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 #include <memory>     // for shared_ptr
 #include <typeindex>  // for type_index
 #include <optional>

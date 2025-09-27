@@ -27,6 +27,11 @@
  *
  *********************************************************************************/
 
+#include <pybind11/pybind11.h>
+#include <pybind11/embed.h>
+#include <pybind11/stl.h>
+#include <pybind11/typing.h>
+
 #include <modules/base/pythonbindings/io/curlutils.h>
 #include <modules/base/pythonbindings/io/volumewriting.h>
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
@@ -34,14 +39,7 @@
 
 #include <modules/python3/pybindmodule.h>
 #include <modules/python3/opaquetypes.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h>
-#include <pybind11/stl.h>
-#include <pybind11/typing.h>
-#include <warn/pop>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace py = pybind11;
 
@@ -74,8 +72,8 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
 
     utilMod.def(
         "tfSawTooth",
-        [](const py::typing::Iterable<inviwo::TFPrimitiveData>& iterable, glm::dvec2 range, double delta,
-           double shift, glm::vec4 low) {
+        [](const py::typing::Iterable<inviwo::TFPrimitiveData>& iterable, glm::dvec2 range,
+           double delta, double shift, glm::vec4 low) {
             std::vector<inviwo::TFPrimitiveData> points;
             for (auto i : iterable) {
                 points.push_back(i.cast<inviwo::TFPrimitiveData>());

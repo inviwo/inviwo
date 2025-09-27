@@ -29,12 +29,9 @@
 
 #include <ivwdataframe/pydataframe.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
-#include <warn/pop>
 
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>

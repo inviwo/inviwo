@@ -32,17 +32,18 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/eval.h>
+
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/dataframepython/dataframepythonmodule.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/opaquetypes.h>
 
 #include <inviwo/dataframe/datastructures/column.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/eval.h>
 
 #include <fmt/format.h>
 #include <memory>

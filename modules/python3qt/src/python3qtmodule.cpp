@@ -47,10 +47,14 @@
 #include <inviwo/core/util/settings/settings.h>        // for Settings
 #include <inviwo/core/util/sourcecontext.h>            // for SourceContext
 #include <inviwo/core/network/processornetwork.h>
+
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 #include <modules/python3qt/properties/pythonfilepropertywidgetqt.h>  // for PythonFilePropertyW...
 #include <modules/python3qt/properties/pythonpropertywidgetqt.h>      // for PythonPropertyWidgetQt
 #include <modules/python3qt/pythonmenu.h>                             // for PythonMenu
 #include <modules/python3qt/pythonsyntaxhighlight.h>                  // for PythonSyntaxHighlight
+
 #include <modules/qtwidgets/inviwoqtutils.h>                          // for toGLM, getApplicati...
 #include <modules/qtwidgets/propertylistwidget.h>                     // for PropertyListWidget
 
