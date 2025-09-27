@@ -293,7 +293,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#ivwdataframe.StringVector.pop"><code class="docutils literal notranslate"><span class="pre">StringVector.pop()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ivwdataframe.StringVector.remove"><code class="docutils literal notranslate"><span class="pre">StringVector.remove()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ivwdataframe.StringVector.__hash__"><code class="docutils literal notranslate"><span class="pre">StringVector.__hash__</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ivwdataframe.StringVector.__pybind11_module_local_v10_msvc_md_mscver19__"><code class="docutils literal notranslate"><span class="pre">StringVector.__pybind11_module_local_v10_msvc_md_mscver19__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ivwdataframe.StringVector.__pybind11_module_local_v11_msvc_md_mscver19__"><code class="docutils literal notranslate"><span class="pre">StringVector.__pybind11_module_local_v11_msvc_md_mscver19__</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#ivwdataframe.UIntColumn"><code class="docutils literal notranslate"><span class="pre">UIntColumn</span></code></a><ul>
@@ -671,7 +671,7 @@
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
 <li><p>addDoubleColumn(self: ivwdataframe.DataFrame, header: str, size: typing.SupportsInt = 0, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.DoubleColumn</p></li>
-<li><p>addDoubleColumn(self: ivwdataframe.DataFrame, header: str, data: std::vector&lt;double,std::allocator&lt;double&gt; &gt;, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.DoubleColumn</p></li>
+<li><p>addDoubleColumn(self: ivwdataframe.DataFrame, header: str, data: inviwopy.glm.doubleVector, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.DoubleColumn</p></li>
 </ol>
 </dd></dl>
 
@@ -681,7 +681,7 @@
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
 <li><p>addFloatColumn(self: ivwdataframe.DataFrame, header: str, size: typing.SupportsInt = 0, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.FloatColumn</p></li>
-<li><p>addFloatColumn(self: ivwdataframe.DataFrame, header: str, data: std::vector&lt;float,std::allocator&lt;float&gt; &gt;, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.FloatColumn</p></li>
+<li><p>addFloatColumn(self: ivwdataframe.DataFrame, header: str, data: inviwopy.glm.floatVector, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.FloatColumn</p></li>
 </ol>
 </dd></dl>
 
@@ -701,7 +701,7 @@
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
 <li><p>addIntColumn(self: ivwdataframe.DataFrame, header: str, size: typing.SupportsInt = 0, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.IntColumn</p></li>
-<li><p>addIntColumn(self: ivwdataframe.DataFrame, header: str, data: std::vector&lt;int,std::allocator&lt;int&gt; &gt;, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.IntColumn</p></li>
+<li><p>addIntColumn(self: ivwdataframe.DataFrame, header: str, data: inviwopy.glm.intVector, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.IntColumn</p></li>
 </ol>
 </dd></dl>
 
@@ -721,7 +721,7 @@
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
 <li><p>addUIntColumn(self: ivwdataframe.DataFrame, header: str, size: typing.SupportsInt = 0, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.UIntColumn</p></li>
-<li><p>addUIntColumn(self: ivwdataframe.DataFrame, header: str, data: std::vector&lt;unsigned int,std::allocator&lt;unsigned int&gt; &gt;, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.UIntColumn</p></li>
+<li><p>addUIntColumn(self: ivwdataframe.DataFrame, header: str, data: inviwopy.glm.uintVector, unit: inviwopy.data.Unit = , range: inviwopy.glm.dvec2 | None = None) -&gt; ivwdataframe.UIntColumn</p></li>
 </ol>
 </dd></dl>
 
@@ -831,7 +831,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ivwdataframe.DataFrameFlatMultiInport.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameFlatMultiInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x000001DEF4E7C830&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameFlatMultiInport.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameFlatMultiInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x0000018414E71970&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameFlatMultiInport.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -925,7 +925,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ivwdataframe.DataFrameInport.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x000001DEF4F34C30&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameInport.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x0000018414E10C30&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameInport.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1019,7 +1019,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ivwdataframe.DataFrameMultiInport.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameMultiInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x000001DEF4E78D30&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameMultiInport.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameMultiInport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x0000018414E10830&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameMultiInport.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1065,7 +1065,7 @@
 <dd><p>Bases: <a class="reference internal" href="inviwopy.html#inviwopy.Outport" title="inviwopy.Outport"><code class="xref py py-class docutils literal notranslate"><span class="pre">Outport</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ivwdataframe.DataFrameOutport.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameOutport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x000001DEF4E971F0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameOutport.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">ivwdataframe.DataFrameOutport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help:</span> <span class="pre">inviwopy.doc.Document</span> <span class="pre">=</span> <span class="pre">&lt;inviwopy.doc.Document</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x0000018414EF8FF0&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ivwdataframe.DataFrameOutport.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1584,8 +1584,8 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="ivwdataframe.StringVector.__pybind11_module_local_v10_msvc_md_mscver19__">
-<span class="sig-name descname"><span class="pre">__pybind11_module_local_v10_msvc_md_mscver19__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;capsule</span> <span class="pre">object</span> <span class="pre">NULL&gt;</span></em><a class="headerlink" href="#ivwdataframe.StringVector.__pybind11_module_local_v10_msvc_md_mscver19__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="ivwdataframe.StringVector.__pybind11_module_local_v11_msvc_md_mscver19__">
+<span class="sig-name descname"><span class="pre">__pybind11_module_local_v11_msvc_md_mscver19__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;capsule</span> <span class="pre">object</span> <span class="pre">NULL&gt;</span></em><a class="headerlink" href="#ivwdataframe.StringVector.__pybind11_module_local_v11_msvc_md_mscver19__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
