@@ -54,9 +54,10 @@
 namespace inviwo {
 
 ConsoleLogger::ConsoleLogger() : useColor(true) {
-    std::string_view term = std::getenv("TERM");
-    if (term == "dumb") {
-        useColor = false;
+    if (const auto* term = std::getenv("TERM")) {
+        if (std::string_view{term} == "dumb") {
+            useColor = false;
+        }
     }
 }
 ConsoleLogger::~ConsoleLogger() = default;
