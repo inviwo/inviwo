@@ -53,7 +53,13 @@
 
 namespace inviwo {
 
-ConsoleLogger::ConsoleLogger() = default;
+ConsoleLogger::ConsoleLogger() : useColor(true) {
+    if (const auto* term = std::getenv("TERM")) {
+        if (std::string_view{term} == "dumb") {
+            useColor = false;
+        }
+    }
+}
 ConsoleLogger::~ConsoleLogger() = default;
 
 void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel logLevel,
@@ -89,24 +95,23 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 
 #else
 
-    constexpr std::string_view none{""};
-    constexpr std::string_view red{"\x1B[31m"};
-    constexpr std::string_view yellow{"\x1B[33m"};
-    constexpr std::string_view reset{"\x1B[0m"};
+    static constexpr std::string_view red{"\x1B[31m"};
+    static constexpr std::string_view yellow{"\x1B[33m"};
+    static constexpr std::string_view reset{"\x1B[0m"};
 
-    switch (logLevel) {
-        case LogLevel::Info:
-            os << none;
-            break;
-        case LogLevel::Warn:
-            os << yellow;
-            break;
-        case LogLevel::Error:
-            os << red;
-            break;
-        default:
-            os << none;
-            break;
+    if (useColor) {
+        switch (logLevel) {
+            case LogLevel::Info:
+                break;
+            case LogLevel::Warn:
+                os << yellow;
+                break;
+            case LogLevel::Error:
+                os << red;
+                break;
+            default:
+                break;
+        }
     }
 
     struct winsize w;
@@ -114,8 +119,19 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
     const auto width = w.ws_col;
 #endif
 
-    constexpr size_t reserved = 45;  // Length of time + logLevel + logSource.
-    const auto maxWidth = width - reserved - 1;
+    constexpr size_t sizeTime = 12;
+    constexpr size_t sizeLevel = 5;
+    constexpr size_t reserved = sizeTime + 1 + sizeLevel + 1;
+
+    const auto time = std::chrono::system_clock::now();
+
+    const size_t maxWidth = [&]() {
+        if (width > 4 * reserved) {
+            return width - reserved - 1;
+        } else {
+            return std::numeric_limits<size_t>::max();
+        }
+    }();
 
     std::vector<std::string_view> sublines;
     util::forEachStringPart(logMsg, "\n", [&](std::string_view line) {
@@ -132,15 +148,28 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 
     static constexpr auto delim =
         util::make_array<reserved + 1>([](auto i) -> char { return i == 0 ? '\n' : ' '; });
+
     static constexpr std::string_view delimiter{delim.data(), delim.size()};
-    const auto time = std::chrono::system_clock::now();
-    fmt::print(os, "{:%H:%M:06.3%S} {:5} {:25} {}\n", time, logLevel, logSource,
-               fmt::join(sublines, delimiter));
+    fmt::print(os, "{:%T} {:5} {} {}\n", std::chrono::floor<std::chrono::milliseconds>(time),
+               logLevel, logSource, fmt::join(sublines, delimiter));
 
 #ifdef WIN32
     SetConsoleTextAttribute(hConsole, oldState.wAttributes);
 #else
-    os << reset;
+    if (useColor) {
+        switch (logLevel) {
+            case LogLevel::Info:
+                break;
+            case LogLevel::Warn:
+                os << reset;
+                break;
+            case LogLevel::Error:
+                os << reset;
+                break;
+            default:
+                break;
+        }
+    }
 #endif
 }
 

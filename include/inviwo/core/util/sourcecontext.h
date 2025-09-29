@@ -90,9 +90,17 @@ public:
 
 private:
     static constexpr std::string_view extractName(std::string_view name) noexcept {
-        const std::size_t end = name.find('(');
-        name = name.substr(0, end);
-        name = name.substr(name.rfind(' ') + 1);
+        static constexpr std::string_view ans = "::(anonymous namespace)::";
+
+        if (const auto ansPos = name.find(ans); ansPos != std::string_view::npos) {
+            const auto end = name.find('(', ansPos + ans.size());
+            const auto start = name.rfind(' ', ansPos);
+            name = name.substr(start + 1, end - start - 1);
+        } else {
+            const std::size_t end = name.find('(');
+            name = name.substr(0, end);
+            name = name.substr(name.rfind(' ') + 1);
+        }
         return name;
     }
 
