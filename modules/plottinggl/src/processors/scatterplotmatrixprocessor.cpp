@@ -106,7 +106,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , dataFrame_("dataFrame", "Data input for plotting"_help)
     , brushing_("brushing_", "Inport for brushing & linking interactions"_help,
                 {{{BrushingTarget::Row},
-                  BrushingModification::Filtered,
+                  BrushingModification::Filtered | BrushingModification::Selected,
                   InvalidationLevel::InvalidOutput}})
     , outport_("outport", "Rendered image of the scatter plot matrix"_help)
     , numParams_(0)
@@ -236,7 +236,7 @@ void ScatterPlotMatrixProcessor::process() {
     }
 
     std::unique_ptr<IndexBuffer> indicies = nullptr;
-    if (brushing_.isConnected() && (brushing_.isFilteringModified() || initialSetup)) {
+    if (brushing_.isConnected() || initialSetup) {
         auto transformIdsToRows = [&](const BitSet& b) {
             BitSet rows;
             for (auto id : b) {
@@ -247,7 +247,12 @@ void ScatterPlotMatrixProcessor::process() {
             }
             return rows;
         };
-        filteredIndices_ = transformIdsToRows(brushing_.getFilteredIndices());
+        if (brushing_.isFilteringModified()) {
+            filteredIndices_ = transformIdsToRows(brushing_.getFilteredIndices());
+        }
+        if (brushing_.isSelectionModified()) {
+            selectedIndices_ = transformIdsToRows(brushing_.getSelectedIndices());
+        }
         initialSetup = false;
     }
 
@@ -263,6 +268,7 @@ void ScatterPlotMatrixProcessor::process() {
         for (size_t j = i + 1; j < numParams_; j++) {
             pos.y = extent.y * j;
             plots_[idx]->setFilteredIndices(filteredIndices_);
+            plots_[idx]->setSelectedIndices(selectedIndices_);
             plots_[idx]->plot(pos, extent);
 
             const ivec2 origin(extent.x * j, extent.y * i);

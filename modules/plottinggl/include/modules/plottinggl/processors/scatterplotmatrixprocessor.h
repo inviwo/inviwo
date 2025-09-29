@@ -121,6 +121,7 @@ private:
                                                            //! to index of column in the dataframe.
 
     BitSet filteredIndices_;
+    BitSet selectedIndices_;
     std::unordered_map<uint32_t, uint32_t> indexToRowMap_;
 };
 
