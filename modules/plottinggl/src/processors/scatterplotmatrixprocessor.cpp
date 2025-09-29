@@ -58,6 +58,7 @@
 #include <inviwo/core/util/sourcecontext.h>                            // for SourceContext
 #include <inviwo/core/util/utilities.h>                                // for stripIdentifier
 #include <inviwo/core/util/zip.h>                                      // for enumerate, zipIter...
+#include <inviwo/core/util/rendercontext.h>                            // for RenderContext
 #include <inviwo/dataframe/datastructures/dataframe.h>                 // for DataFrame, DataFra...
 #include <inviwo/dataframe/properties/columnoptionproperty.h>          // for ColumnOptionProperty
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingTargetsInv...
@@ -186,6 +187,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     correlationTF_.onChange(updateStatsLabels);
 
     scatterPlotproperties_.onChange([&]() {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         for (auto& p : plots_) {
             p->properties_.set(&scatterPlotproperties_);
         }
@@ -198,6 +200,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     });
 
     parameters_.onChange([&]() {
+        RenderContext::getPtr()->activateDefaultRenderContext();
         plots_.clear();
         labelsTextures_.clear();
         statsTextures_.clear();
