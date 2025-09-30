@@ -229,7 +229,6 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
 #endif
     , state_{processor_->isReady() ? State::Ready : State::Invalid}
     , currentState_{state_}
-    , runtimeError_{false}
     , errorText_{nullptr}
     , progress_{std::nullopt}
     , currentProgress_{std::nullopt}
@@ -306,11 +305,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
 
-    if (processor_->status() == ProcessorStatus::Error) {
-        setErrorText(processor_->status().reason());
-    }
-
-    updateStatus();
+    updateStatus(Running::No);
 }
 
 QPointF ProcessorGraphicsItem::portOffset(PortType type, size_t index) {
@@ -508,9 +503,6 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         }
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
-            if (processor_->status() == ProcessorStatus::Error) {
-                setErrorText(processor_->status().reason());
-            }
             break;
         default:
             break;
@@ -556,16 +548,7 @@ void ProcessorGraphicsItem::updateWidgets() {
 
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
-void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) {
-    runtimeError_ = false;
-    updateStatus();
-
-    if (processor_->status() == ProcessorStatus::Error) {
-        setErrorText(processor_->status().reason());
-    } else if (errorText_) {
-        errorText_->clear();
-    }
-}
+void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { updateStatus(Running::No); }
 
 void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
     if (auto inport = dynamic_cast<Inport*>(port)) {
@@ -593,11 +576,7 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     }
 #endif
 
-    runtimeError_ = false;
-    updateStatus();
-    if (errorText_) {
-        errorText_->clear();
-    }
+    updateStatus(Running::No);
 }
 
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
@@ -623,20 +602,6 @@ void ProcessorGraphicsItem::resetTimeMeasurements() {
 
 void ProcessorGraphicsItem::setShowCount(bool show) { showCount_ = show; }
 #endif
-
-void ProcessorGraphicsItem::setErrorText(std::string_view error) {
-    // Avoid adding the error text when we use generateProcessorPreview
-    if (!scene() || utilqt::fromQString(scene()->objectName()) != NetworkEditor::name) return;
-    if (!errorText_) {
-        errorText_ = std::make_unique<ProcessorErrorItem>(this);
-    }
-
-    errorText_->setText(error);
-    errorText_->setActive(isSelected());
-
-    runtimeError_ = true;
-    updateStatus();
-}
 
 void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     using P = Document::PathComponent;
@@ -675,7 +640,9 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 
 void ProcessorGraphicsItem::setHighlight(bool val) { highlight_ = val; }
 
-void ProcessorGraphicsItem::activityIndicatorChanged(bool active) { updateStatus(active); }
+void ProcessorGraphicsItem::activityIndicatorChanged(bool active) {
+    updateStatus(active ? Running::Yes : Running::No);
+}
 
 void ProcessorGraphicsItem::progressChanged(float p) {
     if (currentProgress_ != p) {
@@ -696,10 +663,19 @@ void ProcessorGraphicsItem::progressBarVisibilityChanged(bool visible) {
     if (currentProgress_ != progress_) delayedUpdate();
 }
 
-void ProcessorGraphicsItem::updateStatus(bool running) {
-    if (runtimeError_) {
-        state_ = State::Error;
-    } else if (running) {
+void ProcessorGraphicsItem::setErrorText(std::string_view error) {
+    // Avoid adding the error text when we use generateProcessorPreview
+    if (!scene() || utilqt::fromQString(scene()->objectName()) != NetworkEditor::name) return;
+    if (!errorText_) {
+        errorText_ = std::make_unique<ProcessorErrorItem>(this);
+    }
+
+    errorText_->setText(error);
+    errorText_->setActive(isSelected());
+}
+
+void ProcessorGraphicsItem::updateStatus(Running running) {
+    if (running == Running::Yes) {
         state_ = State::Running;
     } else {
         switch (processor_->status().status()) {
@@ -715,7 +691,15 @@ void ProcessorGraphicsItem::updateStatus(bool running) {
         }
     }
 
-    if (currentState_ != state_) delayedUpdate();
+    if (state_ == State::Error) {
+        setErrorText(processor_->status().reason());
+        update();
+    } else if (errorText_) {
+        errorText_->clear();
+        update();
+    } else if (currentState_ != state_) {
+        delayedUpdate();
+    }
 }
 
 void ProcessorGraphicsItem::delayedUpdate() {
