@@ -196,7 +196,9 @@ protected:
 
 private:
     void delayedUpdate();
-    void updateStatus(bool running = false);
+
+    enum class Running : std::uint8_t { Yes, No };
+    void updateStatus(Running running);
 
     Processor* processor_;
     ProcessorMetaData* processorMeta_;
@@ -234,7 +236,6 @@ private:
 
     State state_;
     State currentState_;
-    bool runtimeError_;
     std::unique_ptr<ProcessorErrorItem> errorText_;
 
     std::optional<float> progress_;

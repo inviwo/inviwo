@@ -30,7 +30,11 @@
 
 #include <modules/json/jsonmoduledefine.h>
 
+#include <warn/push>
+#include <warn/ignore/unreachable-code>
 #include <nlohmann/json.hpp>
+#include <warn/pop>
+
 #include <utility>
 
 namespace inviwo {
