@@ -141,7 +141,7 @@ struct VolumeIndicatorParameters {
 };
 
 struct StipplingParameters {
-    float length;
+    float len;
     float spacing;
     float offset;
     float worldScale;

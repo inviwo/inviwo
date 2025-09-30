@@ -106,7 +106,7 @@ void main() {
 
     // line stippling
 #if defined(ENABLE_STIPPLING)
-    float stippleLength = stippling.length + stippling.spacing;
+    float stippleLength = stippling.len + stippling.spacing;
 #if STIPPLE_MODE == 2
     // in world space
     float v = (distanceWorld_ * stippling.worldScale);
