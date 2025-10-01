@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,16 @@
  *
  *********************************************************************************/
 
+#include "opactopt/common.glsl"
+
+#ifdef TRIG_MOMENTS
+
 #include "opactopt/approximation/trigmomentmaths.glsl"
 
 #define TEX_WRAPPING_ZONE_PARAMETERS texelFetch(momentSettings, 0, 0)
 #define TEX_OVERESTIMATION texelFetch(momentSettings, 1, 0).y
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
-#else
-void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val)
-#endif
-{
+void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float val) {
     vec4 wrapping_zone_parameters = TEX_WRAPPING_ZONE_PARAMETERS;
     float phase = fma(wrapping_zone_parameters.y, depth, wrapping_zone_parameters.y);
     float costheta = cos(phase);
@@ -66,23 +65,11 @@ void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float v
         }
 
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
-        imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
-#elif defined(COEFF_TEX_ATOMIC_FLOAT)
-        imageAtomicAdd(coeffTex, coord, projVal);
-#else
-        float currVal = imageLoad(coeffTex, coord).x;
-        imageStore(coeffTex, coord, vec4(currVal + projVal));
-#endif
+        optAdd(coeffTex, coord, projVal);
     }
 }
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-float approximate(layout(r32i) iimage2DArray coeffTex, int N, float depth)
-#else
-float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
-#endif
-{
+float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
     vec4 wrapping_zone_parameters = TEX_WRAPPING_ZONE_PARAMETERS;
 
     float b_0;
@@ -94,17 +81,15 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         for (int i = 0; i < N; i++) {
             ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-            float coeff = imageLoad(coeffTex, coord).x;
-#endif
-            if (i == 0)
+            float coeff = optLoad(coeffTex, coord);
+
+            if (i == 0) {
                 b_0 = coeff;
-            else if (i % 2 == 1)
+            } else if (i % 2 == 1) {
                 trig_b[k - 1].y = coeff / b_0;
-            else
+            } else {
                 trig_b[k - 1].x = coeff / b_0;
+            }
 
             if (i % 2 == 0) k++;
         }
@@ -117,17 +102,15 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         for (int i = 0; i < N; i++) {
             ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-            float coeff = imageLoad(coeffTex, coord).x;
-#endif
-            if (i == 0)
+            float coeff = optLoad(coeffTex, coord);
+
+            if (i == 0) {
                 b_0 = coeff;
-            else if (i % 2 == 1)
+            } else if (i % 2 == 1) {
                 trig_b[k - 1].y = coeff / b_0;
-            else
+            } else {
                 trig_b[k - 1].x = coeff / b_0;
+            }
 
             if (i % 2 == 0) k++;
         }
@@ -140,17 +123,15 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
 
         for (int i = 0; i < N; i++) {
             ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-            float coeff = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-            float coeff = imageLoad(coeffTex, coord).x;
-#endif
-            if (i == 0)
+            float coeff = optLoad(coeffTex, coord);
+
+            if (i == 0) {
                 b_0 = coeff;
-            else if (i % 2 == 1)
+            } else if (i % 2 == 1) {
                 trig_b[k - 1].y = coeff / b_0;
-            else
+            } else {
                 trig_b[k - 1].x = coeff / b_0;
+            }
 
             if (i % 2 == 0) k++;
         }
@@ -163,15 +144,8 @@ float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
     }
 }
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-float total(layout(r32i) iimage2DArray coeffTex, int N)
-#else
-float total(layout(size1x32) image2DArray coeffTex, int N)
-#endif
-{
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-    return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, 0)).x;
-#endif
+float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+    return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
+
+#endif

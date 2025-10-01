@@ -56,10 +56,10 @@
                             <fov content="38"/>
                         </Camera>
                     </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="q">
+                    <Property type="org.inviwo.FloatProperty" identifier="occlusionReduction">
                         <value content="100"/>
                     </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="r">
+                    <Property type="org.inviwo.FloatProperty" identifier="clutterReduction">
                         <value content="200"/>
                     </Property>
                     <Property type="org.inviwo.FloatProperty" identifier="lambda">
@@ -169,10 +169,10 @@
                             <fov content="38"/>
                         </Camera>
                     </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="q">
+                    <Property type="org.inviwo.FloatProperty" identifier="occlusionReduction">
                         <value content="100"/>
                     </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="r">
+                    <Property type="org.inviwo.FloatProperty" identifier="clutterReduction">
                         <value content="200"/>
                     </Property>
                     <Property type="org.inviwo.FloatProperty" identifier="lambda">
@@ -1090,13 +1090,13 @@
         </Connections>
         <PropertyLinks>
             <PropertyLink src="Canvas2.inputSize" dst="Canvas.inputSize"/>
-            <PropertyLink src="OpacityOptimization.q" dst="OpacityOptimization2.q"/>
+            <PropertyLink src="OpacityOptimization.occlusionReduction" dst="OpacityOptimization2.occlusionReduction"/>
             <PropertyLink src="OpacityOptimization.camera" dst="OpacityOptimization2.camera"/>
             <PropertyLink src="OpacityOptimization2.camera" dst="OpacityOptimization.camera"/>
             <PropertyLink src="Canvas.inputSize" dst="Canvas2.inputSize"/>
-            <PropertyLink src="OpacityOptimization.r" dst="OpacityOptimization2.r"/>
-            <PropertyLink src="OpacityOptimization2.r" dst="OpacityOptimization.r"/>
-            <PropertyLink src="OpacityOptimization2.q" dst="OpacityOptimization.q"/>
+            <PropertyLink src="OpacityOptimization.clutterReduction" dst="OpacityOptimization2.clutterReduction"/>
+            <PropertyLink src="OpacityOptimization2.clutterReduction" dst="OpacityOptimization.clutterReduction"/>
+            <PropertyLink src="OpacityOptimization2.occlusionReduction" dst="OpacityOptimization.occlusionReduction"/>
             <PropertyLink src="OpacityOptimization.lambda" dst="OpacityOptimization2.lambda"/>
             <PropertyLink src="OpacityOptimization2.lambda" dst="OpacityOptimization.lambda"/>
             <PropertyLink src="OpacityOptimization.approximationProperties" dst="OpacityOptimization2.approximationProperties"/>

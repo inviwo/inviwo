@@ -27,39 +27,40 @@
  *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#define PI 3.1415926535897932384626433832795
+#define TWOPI 6.283185307179586476925286766559
 
-in vec3 in_Position;
-
-uniform GeometryParameters geometry;
-
-// initialize camera matrices with the identity matrix to enable default rendering
-// without any transformation, i.e. all lines in clip space
-uniform CameraParameters camera =
-    CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
-
-uniform bool pickingEnabled = false;
-uniform vec4 defaultColor = vec4(1, 1, 1, 1);
-
-out LineVert {
-    vec4 worldPosition;
-    vec4 color;
-    flat uint pickID;
-    flat uint index;
-} vertex;
-
-void main() {
-#if defined(HAS_COLOR)
-    vertex.color = in_Color;
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+    #define IMAGE_LAYOUT r32i
+    #define IMAGE_UNIT iimage2DArray
 #else
-    vertex.color = defaultColor;
+    #define IMAGE_LAYOUT size1x32
+    #define IMAGE_UNIT image2DArray
 #endif
 
-    vertex.worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
-    gl_Position = camera.worldToClip * vertex.worldPosition;
-#if defined(HAS_PICKING)
-    vertex.pickID = in_Picking;
+void optAdd(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord, float projVal) {
+#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
+    imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
+#elif defined(COEFF_TEX_ATOMIC_FLOAT)
+    imageAtomicAdd(coeffTex, coord, projVal);
 #else
-    vertex.pickID = 0;
+    float currVal = imageLoad(coeffTex, coord).x;
+    imageStore(coeffTex, coord, vec4(currVal + projVal));
+#endif
+}
+
+float optLoad(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+    return float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+#else
+    return imageLoad(coeffTex, coord).x;
+#endif
+}
+
+void optClear(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+    imageStore(coeffTex, coord, ivec4(0));
+#else
+    imageStore(coeffTex, coord, vec4(0));
 #endif
 }

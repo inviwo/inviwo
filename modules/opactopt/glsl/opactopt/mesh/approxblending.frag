@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,16 @@
  *
  *********************************************************************************/
 
-// Owned by the MeshRenderProcessorGL Processor
-
 #include "utils/shading.glsl"
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
+
+#include "opactopt/common.glsl"
+#include "opactopt/approximation/fourier.glsl"
+#include "opactopt/approximation/legendre.glsl"
+#include "opactopt/approximation/piecewise.glsl"
+#include "opactopt/approximation/powermoments.glsl"
+#include "opactopt/approximation/trigmoments.glsl"
 
 #if !defined(TEXCOORD_LAYER) && !defined(NORMALS_LAYER) && !defined(VIEW_NORMALS_LAYER) && \
     !defined(COLOR_LAYER)
@@ -42,13 +47,8 @@ uniform LightParameters lighting;
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];     // double buffering for gaussian filtering
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
-#else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2];  // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
-#endif
+uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
+uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
 
 #ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;
@@ -66,22 +66,6 @@ flat in vec4 pickColor_;
 uniform float q;
 uniform float r;
 uniform float lambda;
-
-#ifdef FOURIER
-#include "opactopt/approximation/fourier.glsl"
-#endif
-#ifdef LEGENDRE
-#include "opactopt/approximation/legendre.glsl"
-#endif
-#ifdef PIECEWISE
-#include "opactopt/approximation/piecewise.glsl"
-#endif
-#ifdef POWER_MOMENTS
-#include "opactopt/approximation/powermoments.glsl"
-#endif
-#ifdef TRIG_MOMENTS
-#include "opactopt/approximation/trigmoments.glsl"
-#endif
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
@@ -109,8 +93,8 @@ void main() {
     worldPos /= worldPos.w;
     vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
                   importanceVolumeParameters.reciprocalDimensions;
-    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz)
-                   .x;  // sample importance from volume
+    // sample importance from volume
+    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x;
 #else
     float gi = color_.a;
 #endif
