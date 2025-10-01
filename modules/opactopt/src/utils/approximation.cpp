@@ -28,37 +28,33 @@
  *********************************************************************************/
 #include <modules/opactopt/utils/approximation.h>
 
+#include <numbers>
+
 namespace inviwo {
-namespace Approximations {
+namespace approximations {
 
-double choose(double n, double k) {
-    if (k == 0.0) return 1.0;
-    return (n * choose(n - 1, k - 1)) / k;
-}
-
-std::vector<OptionPropertyStringOption> generateApproximationStringOptions() {
-    size_t n = approximations.size();
-    std::vector<OptionPropertyStringOption> options;
+std::vector<OptionPropertyOption<Type>> generateApproximationStringOptions() {
+    constexpr auto n = approximations.size();
+    std::vector<OptionPropertyOption<Type>> options;
     options.reserve(n);
 
-    for (const auto& [key, val] : approximations) {
-        OptionPropertyStringOption option(key, val.name, key);
-        options.push_back(option);
+    for (const auto& val : approximations) {
+        options.emplace_back(val.identifier, val.name, val.type);
     }
     return options;
 }
 
 std::vector<float> generateLegendreCoefficients() {
-    size_t maxDegree = Approximations::approximations.at("legendre").maxCoefficients - 1;
+    constexpr size_t maxDegree =
+        approximations::approximations[std::to_underlying(Type::Legendre)].maxCoefficients - 1;
     std::vector<float> coeffs;
     coeffs.reserve((maxDegree + 1) * (maxDegree + 2) / 2);
 
     for (size_t n = 0; n <= maxDegree; n++) {
         for (size_t k = 0; k <= n; k++) {
-            double res = choose(static_cast<double>(n), static_cast<double>(k)) *
-                         choose(static_cast<double>(n + k), static_cast<double>(k));
-            res *= (int)(n + k) % 2 == 0 ? 1.0f : -1.0f;
-            coeffs.push_back(static_cast<float>(res));
+            auto res = static_cast<float>(choose(n, k) * choose(n + k, k));
+            res *= (n + k) % 2 == 0 ? 1.0f : -1.0f;
+            coeffs.push_back(res);
         }
     }
 
@@ -74,48 +70,41 @@ std::vector<float> generateLegendreCoefficients() {
  * circle and must match the function in TrigonometricMomentMath.glsl.
  * @param pOutMaxParameter Set to the maximal possible output value.
  */
-float circleToParameter(float angle, float* pOutMaxParameter /* = nullptr */) {
-    float x = std::cos(angle);
-    float y = std::sin(angle);
+std::pair<float, float> circleToParameter(float angle) {
+    const float x = std::cos(angle);
+    const float y = std::sin(angle);
     float result = std::abs(y) - std::abs(x);
     result = (x < 0.0f) ? (2.0f - result) : result;
     result = (y < 0.0f) ? (6.0f - result) : result;
-    result += (angle >= 2.0f * M_PI) ? 8.0f : 0.0f;
-    if (pOutMaxParameter) {
-        (*pOutMaxParameter) = 7.0f;
-    }
-    return result;
+    result += (angle >= 2.0f * std::numbers::pi_v<float>) ? 8.0f : 0.0f;
+    return {result, 7.0f};
 }
 
 /**
  * Given an angle in radians providing the size of the wrapping zone, this function computes all
  * constants required by the shader.
  */
-void computeWrappingZoneParameters(glm::vec4& p_out_wrapping_zone_parameters,
-                                                   float new_wrapping_zone_angle) {
-    p_out_wrapping_zone_parameters[0] = new_wrapping_zone_angle;
-    p_out_wrapping_zone_parameters[1] = static_cast<float>(M_PI) - 0.5f * new_wrapping_zone_angle;
-    if (new_wrapping_zone_angle <= 0.0f) {
-        p_out_wrapping_zone_parameters[2] = 0.0f;
-        p_out_wrapping_zone_parameters[3] = 0.0f;
+glm::vec4 computeWrappingZoneParameters(float wrappingZoneAngle) {
+    glm::vec4 wrappingZoneParameters;
+    wrappingZoneParameters[0] = wrappingZoneAngle;
+    wrappingZoneParameters[1] = std::numbers::pi_v<float> - 0.5f * wrappingZoneAngle;
+    if (wrappingZoneAngle <= 0.0f) {
+        wrappingZoneParameters[2] = 0.0f;
+        wrappingZoneParameters[3] = 0.0f;
     } else {
-        float zone_end_parameter;
-        float zone_begin_parameter = circleToParameter(
-            2.0f * static_cast<float>(M_PI) - new_wrapping_zone_angle, &zone_end_parameter);
-        p_out_wrapping_zone_parameters[2] = 1.0f / (zone_end_parameter - zone_begin_parameter);
-        p_out_wrapping_zone_parameters[3] =
-            1.0f - zone_end_parameter * p_out_wrapping_zone_parameters[2];
+        const auto [zoneBeginParameter, zoneEndParameter] =
+            circleToParameter(2.0f * std::numbers::pi_v<float> - wrappingZoneAngle);
+        wrappingZoneParameters[2] = 1.0f / (zoneEndParameter - zoneBeginParameter);
+        wrappingZoneParameters[3] = 1.0f - zoneEndParameter * wrappingZoneParameters[2];
     }
+    return wrappingZoneParameters;
 }
 
-MomentSettingsGL generateMomentSettings(const float wrapping_zone_angle,
-                                          const float overestimation) {
-    MomentSettingsGL momentSettings;
-    computeWrappingZoneParameters(momentSettings.wrapping_zone_parameters, wrapping_zone_angle);
-    momentSettings.wrapping_zone_angle = wrapping_zone_angle;
-    momentSettings.overestimation = overestimation;
-    return momentSettings;
+MomentSettingsGL generateMomentSettings(const float wrappingZoneAngle, const float overestimation) {
+    return {.wrappingZoneParameters = computeWrappingZoneParameters(wrappingZoneAngle),
+            .wrappingZoneAngle = wrappingZoneAngle,
+            .overestimation = overestimation};
 }
 
-}  // namespace Approximations
+}  // namespace approximations
 }  // namespace inviwo

@@ -30,55 +30,82 @@
 
 #include <modules/opactopt/opactoptmoduledefine.h>
 
-#include <string>
-#include <map>
-
 #include <modules/opengl/texture/texture1d.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/glmvec.h>
-#include <cmath>
+#include <string_view>
 #include <vector>
+#include <numbers>
 
 namespace inviwo {
 
-namespace Approximations {
+namespace approximations {
+
+// In how may ways can I select k items from n items without repetition and without order
+constexpr size_t choose(size_t n, size_t k) {
+    if (k == 0 || k == n) return 1;
+    if (k < 0 || k > n) return 0;
+
+    // Use symmetry
+    if (k > n - k) {
+        k = n - k;
+    }
+
+    size_t result = 1;
+    for (size_t i = 0; i < k; ++i) {
+        result = result * (n - i) / (i + 1);
+    }
+
+    return result;
+}
+
+enum class Type : std::uint8_t { Fourier, Legendre, Piecewise, PowerMoments, TrigonometricMoments };
 
 /**
- * \brief Describes the approximation properties
+ * @brief Describes the approximation properties
  */
 struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
-    std::string name;
-    std::string shaderDefineName;
-    std::string shaderFile;
+    std::string_view identifier;
+    std::string_view name;
+    std::string_view shaderDefineName;
+    std::string_view shaderFile;
     int minCoefficients;
     int maxCoefficients;
     int increment;
+    Type type;
 };
 
-const std::map<std::string, const ApproximationProperties> approximations{
-    {"fourier", {"Fourier", "FOURIER", "opactopt/approximation/fourier.glsl", 1, 31, 1}},
-    {"legendre", {"Legendre", "LEGENDRE", "opactopt/approximation/legendre.glsl", 1, 31, 1}},
-    {"piecewise", {"Piecewise", "PIECEWISE", "opactopt/approximation/piecewise.glsl", 1, 30, 1}},
-    {"powermoments",
-     {"Power moments", "POWER_MOMENTS", "opactopt/approximation/powermoments.glsl", 5, 9, 2}},
-    {"trigmoments",
-     {"Trigonometric moments", "TRIG_MOMENTS", "opactopt/approximation/trigmoments.glsl", 5, 9,
-      2}}};
+constexpr std::array<const ApproximationProperties, 5> approximations{
+    {{"fourier", "Fourier", "FOURIER", "opactopt/approximation/fourier.glsl", 1, 31, 1,
+      Type::Fourier},
+     {"legendre", "Legendre", "LEGENDRE", "opactopt/approximation/legendre.glsl", 1, 31, 1,
+      Type::Legendre},
+     {"piecewise", "Piecewise", "PIECEWISE", "opactopt/approximation/piecewise.glsl", 1, 30, 1,
+      Type::Piecewise},
+     {"powermoments", "Power moments", "POWER_MOMENTS", "opactopt/approximation/powermoments.glsl",
+      5, 9, 2, Type::PowerMoments},
+     {"trigmoments", "Trigonometric moments", "TRIG_MOMENTS",
+      "opactopt/approximation/trigmoments.glsl", 5, 9, 2, Type::TrigonometricMoments}}};
 
-double choose(double n, double k);
-std::vector<OptionPropertyStringOption> generateApproximationStringOptions();
-std::vector<float> generateLegendreCoefficients();
+constexpr const ApproximationProperties& get(Type type) {
+    return approximations.at(std::to_underlying(type));
+}
 
-struct MomentSettingsGL {
-    glm::vec4 wrapping_zone_parameters;
-    float wrapping_zone_angle, overestimation;
-    float pad[2];
+IVW_MODULE_OPACTOPT_API std::vector<OptionPropertyOption<Type>>
+generateApproximationStringOptions();
+
+IVW_MODULE_OPACTOPT_API std::vector<float> generateLegendreCoefficients();
+
+struct IVW_MODULE_OPACTOPT_API MomentSettingsGL {
+    glm::vec4 wrappingZoneParameters;
+    float wrappingZoneAngle;
+    float overestimation;
+    std::array<float, 2> pad;
 };
 
-MomentSettingsGL generateMomentSettings(
-    const float wrapping_zone_angle = 0.1f * static_cast<float>(M_PI),
-    const float overestimation = 0.25);
+IVW_MODULE_OPACTOPT_API MomentSettingsGL generateMomentSettings(
+    float wrappingZoneAngle = 0.1f * std::numbers::pi_v<float>, float overestimation = 0.25f);
 
-}  // namespace Approximations
+}  // namespace approximations
 
 }  // namespace inviwo

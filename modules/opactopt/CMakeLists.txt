@@ -3,7 +3,7 @@ ivw_module(OpactOpt)
 set(HEADER_FILES
     include/modules/opactopt/opactoptmodule.h
     include/modules/opactopt/opactoptmoduledefine.h
-    include/modules/opactopt/processors/directopacityoptimisation.h
+    include/modules/opactopt/processors/directopacityoptimization.h
     include/modules/opactopt/processors/meshmappingvolume.h
     include/modules/opactopt/io/rawpointreader.h
     include/modules/opactopt/utils/approximation.h
@@ -13,7 +13,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/opactoptmodule.cpp
-    src/processors/directopacityoptimisation.cpp
+    src/processors/directopacityoptimization.cpp
     src/processors/meshmappingvolume.cpp
     src/io/rawpointreader.cpp
     src/utils/approximation.cpp
@@ -53,5 +53,5 @@ ivw_add_unittest(${TEST_FILES})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${SCRIPT_FILES})
 
-# Add shader directory to install package
-ivw_add_to_module_pack(glsl)
+# Package or build shaders into resources
+ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
