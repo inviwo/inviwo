@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/opactopt/opactoptmodule.h>
-#include <modules/opactopt/processors/directopacityoptimisation.h>
+#include <modules/opactopt/processors/directopacityoptimization.h>
 #include <modules/opactopt/processors/meshmappingvolume.h>
 #include <modules/opactopt/io/rawpointreader.h>
 
@@ -42,7 +42,7 @@ OpactOptModule::OpactOptModule(InviwoApplication* app) : InviwoModule(app, "Opac
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Processors
-    registerProcessor<OpacityOptimisation>();
+    registerProcessor<OpacityOptimization>();
     registerProcessor<MeshMappingVolume>();
 
     // Data readers
