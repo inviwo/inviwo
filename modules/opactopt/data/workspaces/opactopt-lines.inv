@@ -79,10 +79,10 @@
                             <fov content="38"/>
                         </Camera>
                     </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="q">
+                    <Property type="org.inviwo.FloatProperty" identifier="occlusionReduction">
                         <value content="100"/>
                     </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="r">
+                    <Property type="org.inviwo.FloatProperty" identifier="clutterReduction">
                         <value content="200"/>
                     </Property>
                     <Property type="org.inviwo.FloatProperty" identifier="lambda">

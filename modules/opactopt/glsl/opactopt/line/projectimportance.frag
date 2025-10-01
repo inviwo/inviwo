@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,12 @@
 #include "utils/depth.glsl"
 #include "utils/sampler3d.glsl"
 
-#if !defined M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "opactopt/common.glsl"
+#include "opactopt/approximation/fourier.glsl"
+#include "opactopt/approximation/legendre.glsl"
+#include "opactopt/approximation/piecewise.glsl"
+#include "opactopt/approximation/powermoments.glsl"
+#include "opactopt/approximation/trigmoments.glsl"
 
 #ifdef DEBUG
 uniform ivec2 debugCoords;
@@ -58,13 +61,8 @@ uniform CameraParameters camera =
     CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
 uniform vec2 reciprocalDimensions;
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-uniform layout(r32i) iimage2DArray importanceSumCoeffs[2];     // double buffering for gaussian filtering
-uniform layout(r32i) iimage2DArray opticalDepthCoeffs;
-#else
-uniform layout(size1x32) image2DArray importanceSumCoeffs[2];  // double buffering for gaussian filtering
-uniform layout(size1x32) image2DArray opticalDepthCoeffs;
-#endif
+uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
+uniform layout(IMAGE_LAYOUT) IMAGE_UNIT  opticalDepthCoeffs;
 
 #ifdef USE_IMPORTANCE_VOLUME
 uniform sampler3D importanceVolume;
@@ -87,22 +85,6 @@ in LineGeom {
 uniform float q;
 uniform float r;
 uniform float lambda;
-
-#ifdef FOURIER
-#include "opactopt/approximation/fourier.glsl"
-#endif
-#ifdef LEGENDRE
-#include "opactopt/approximation/legendre.glsl"
-#endif
-#ifdef PIECEWISE
-#include "opactopt/approximation/piecewise.glsl"
-#endif
-#ifdef POWER_MOMENTS
-#include "opactopt/approximation/powermoments.glsl"
-#endif
-#ifdef TRIG_MOMENTS
-#include "opactopt/approximation/trigmoments.glsl"
-#endif
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
@@ -127,7 +109,7 @@ void main() {
     float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
-    float z_v = view_depth - cos(distance / maxDist * M_PI) * maxDist / screenDim.x * 0.5;
+    float z_v = view_depth - cos(distance / maxDist * PI) * maxDist / screenDim.x * 0.5;
 #else
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
