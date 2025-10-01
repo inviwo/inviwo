@@ -60,14 +60,14 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPACTOPT_API OpacityOptimisation : public Processor {
+class IVW_MODULE_OPACTOPT_API OpacityOptimization : public Processor {
 public:
-    OpacityOptimisation();
+    OpacityOptimization();
 
-    OpacityOptimisation(const OpacityOptimisation&) = delete;
-    OpacityOptimisation& operator=(const OpacityOptimisation&) = delete;
+    OpacityOptimization(const OpacityOptimization&) = delete;
+    OpacityOptimization& operator=(const OpacityOptimization&) = delete;
 
-    virtual ~OpacityOptimisation();
+    virtual ~OpacityOptimization();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -76,20 +76,35 @@ public:
     virtual void process() override;
 
 protected:
-    void setUniforms(Shader& shader);
+    using Type = approximations::Type;
+    using enum approximations::Type;
+
+    struct Units {
+        TextureUnit importanceSumMain;
+        TextureUnit opticalDepth;
+
+        std::optional<TextureUnit> gaussianKernel;
+        std::optional<TextureUnit> importanceSumSmooth;
+
+        std::optional<TextureUnit> importanceVolume;
+        std::optional<TextureUnit> legendreCoeffs;
+        std::optional<TextureUnit> momentSettings;
+    };
+
+    void setUniforms(Shader& shader, Units& units);
     void buildShaders();
-    void renderGeometry(const int pass);
-    void resizeBuffers(const size2_t screenSize);
+    void renderGeometry(int pass, Units& units);
+    static void resizeTexture(Texture2DArray& texture, size2_t size, size_t depth);
+    void resizeImportanceSumTextures(size2_t screenSize, size_t importanceSumCoefficients);
+    void resizeOpticalDepthTexture(size2_t screenSize, size_t opticalDepthCoefficients);
     void generateAndUploadGaussianKernel();
     void generateAndUploadLegendreCoefficients();
     void generateAndUploadMomentSettings();
 
-    bool rebuildShaders = false;
-
     size2_t screenSize_;
 
     MeshFlatMultiInport inport_;
-    ImageInport imageInport_;
+    ImageInport backgroundPort_;
     ImageOutport outport_;
     Image intermediateImage_;
 
@@ -121,43 +136,43 @@ protected:
     BoolProperty viewNormalsLayer_;
 
     // Shaders for each rendering pass and primitive type
-    Shader meshShaders_[3];
-    Shader lineShaders_[3];
-    Shader lineAdjacencyShaders_[3];
-    Shader pointShaders_[3];
+    std::array<Shader, 3> meshShaders_;
+    std::array<Shader, 3> lineShaders_;
+    std::array<Shader, 3> lineAdjacencyShaders_;
+    std::array<Shader, 3> pointShaders_;
 
     // Screen space shaders
-    Shader smoothH_, smoothV_, clear_, normalise_;
+    std::array<Shader, 2> smooth_;
+    Shader clear_;
+    Shader normalize_;
 
     // Optional importance volume
     VolumeInport importanceVolume_;
 
     // Opacity optimisation settings
-    FloatProperty q_, r_, lambda_;
+    FloatProperty occlusionReduction_;
+    FloatProperty clutterReduction_;
+    FloatProperty lambda_;
     CompositeProperty approximationProperties_;
-    OptionProperty<std::string> approximationMethod_;
-    const Approximations::ApproximationProperties* ap_;
-    IntProperty importanceSumCoefficients_, opticalDepthCoefficients_;
-    BoolProperty normalisedBlending_;
+    OptionProperty<Type> approximationMethod_;
+    IntProperty importanceSumCoefficients_;
+    IntProperty opticalDepthCoefficients_;
+    BoolProperty normalizedBlending_;
     FloatProperty coeffTexFixedPointFactor_;
 
-    TextureUnitContainer textureUnits_;
-    GLFormat imageFormat_ = GLFormats::getGLFormat(
-        OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float") ? GL_FLOAT : GL_INT,
-        1);
-    Texture2DArray importanceSumTexture_[2];
+    GLFormat imageFormat_;
+
+    std::array<Texture2DArray, 2> importanceSumTexture_;
     Texture2DArray opticalDepthTexture_;
-    TextureUnit *importanceSumUnitMain_, *importanceSumUnitSmooth_, *opticalDepthUnit_,
-        *importanceVolumeUnit_, *gaussianKernelUnit_, *legendreCoeffsUnit_, *momentSettingsUnit_;
 
     Texture1D gaussianKernel_;
     BoolCompositeProperty smoothing_;
-    static const int gaussianKernelMaxRadius_;
+    static constexpr int gaussianKernelMaxRadius_ = 50;
     IntProperty gaussianRadius_;
     FloatProperty gaussianSigma_;
-    bool gaussianKernelInitialized_ = false;
 
-    Texture1D legendreCoeffs_, momentSettings_;
+    Texture1D legendreCoeffs_;
+    Texture1D momentSettings_;
 };
 
 }  // namespace inviwo
