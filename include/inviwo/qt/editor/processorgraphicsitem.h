@@ -122,7 +122,6 @@ public:
     ProcessorInportGraphicsItem* getInportGraphicsItem(Inport* port) const;
     ProcessorOutportGraphicsItem* getOutportGraphicsItem(Outport* port) const;
     ProcessorLinkGraphicsItem* getLinkGraphicsItem() const;
-    void setErrorText(std::string_view);
 
     void snapToGrid();
 
@@ -149,9 +148,13 @@ public:
         ownedWidgets_.push_back(std::move(widget));
     }
 
+    void processorException(std::string_view message);
+
     enum class State : std::uint8_t { Error, Invalid, Running, Ready };
 
 protected:
+    void setErrorText(std::string_view);
+
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
@@ -198,7 +201,7 @@ private:
     void delayedUpdate();
 
     enum class Running : std::uint8_t { Yes, No };
-    void updateStatus(Running running);
+    void updateStatus(Running running, std::optional<std::string> exception = std::nullopt);
 
     Processor* processor_;
     ProcessorMetaData* processorMeta_;
