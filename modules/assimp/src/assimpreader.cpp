@@ -138,7 +138,9 @@ void AssimpReader::setFixInvalidDataFlag(bool enable) { fixInvalidData_ = enable
 
 bool AssimpReader::getFixInvalidDataFlag() const { return fixInvalidData_; }
 
-std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& filePath) {
+std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
+    const auto filePath = downloadAndCacheIfUrl(url);
+
     Assimp::Importer importer;
 
     std::clock_t start_readmetadata = std::clock();
