@@ -127,7 +127,7 @@ NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
             const auto& id = processor->getIdentifier();
             const auto error = [&](std::string_view error) {
                 if (auto pgi = getProcessorGraphicsItem(processor)) {
-                    pgi->setErrorText(error);
+                    pgi->processorException(error);
                 }
             };
 
