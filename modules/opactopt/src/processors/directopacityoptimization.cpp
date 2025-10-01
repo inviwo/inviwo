@@ -748,7 +748,8 @@ void OpacityOptimization::generateAndUploadMomentSettings() {
     static_assert(sizeof(approximations::MomentSettingsGL) == 2 * 4 * sizeof(float));
     approximations::MomentSettingsGL ms = approximations::generateMomentSettings();
 
-    IVW_ASSERT(momentSettings_.getSizeInBytes() > sizeof(approximations::MomentSettingsGL),
+    IVW_ASSERT(momentSettings_.getNumberOfValues() * momentSettings_.getSizeInBytes() ==
+                   sizeof(approximations::MomentSettingsGL),
                "Size missmatch");
 
     momentSettings_.initialize(&ms);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,60 +27,30 @@
  *
  *********************************************************************************/
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-void project(layout(r32i) iimage2DArray coeffTex, int N, float depth, float val)
-#else
-void project(layout(size1x32) image2DArray coeffTex, int N, float depth, float val)
-#endif
-{
+#include "opactopt/common.glsl"
+
+#ifdef PIECEWISE
+void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float val) {
     if (depth < 0.0 || depth > 1.0) return;
     int bin = min(int(depth * N), N - 1);
     // pre integrate
     for (int i = bin; i <= N - 1; i++) {
         ivec3 coord = ivec3(gl_FragCoord.xy, i);
-#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
-        imageAtomicAdd(coeffTex, coord, int(val * COEFF_TEX_FIXED_POINT_FACTOR));
-#elif defined(COEFF_TEX_ATOMIC_FLOAT)
-        imageAtomicAdd(coeffTex, coord, val);
-#else
-        float currVal = imageLoad(coeffTex, coord).x;
-        imageStore(coeffTex, coord, vec4(currVal + val));
-#endif
+        optAdd(coeffTex, coord, val);
     }
 }
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-float approximate(layout(r32i) iimage2DArray coeffTex, int N, float depth)
-#else
-float approximate(layout(size1x32) image2DArray coeffTex, int N, float depth)
-#endif
-{
+float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
     int bin = min(int(depth * N), N - 1);
     ivec3 coord = ivec3(gl_FragCoord.xy, bin);
     ivec3 prevbincoord = ivec3(gl_FragCoord.xy, bin - 1);
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    float binsum = float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
+    float binsum = optLoad(coeffTex, coord);
     float prevbinsum = 0.0;
-    if (bin > 0)
-        prevbinsum = float(imageLoad(coeffTex, prevbincoord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-    float binsum = imageLoad(coeffTex, coord).x;
-    float prevbinsum = 0.0;
-    if (bin > 0) prevbinsum = imageLoad(coeffTex, prevbincoord).x;
-#endif
+    if (bin > 0) prevbinsum = optLoad(coeffTex, prevbincoord).x;
     return prevbinsum + fract(depth * N) * (binsum - prevbinsum);
 }
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-float total(layout(r32i) iimage2DArray coeffTex, int N)
-#else
-float total(layout(size1x32) image2DArray coeffTex, int N)
-#endif
-{
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    return float(imageLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1)).x) /
-           COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-    return imageLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1)).x;
-#endif
+float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+    return optLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1));
 }
+#endif
