@@ -65,6 +65,9 @@
 
 #include "opactopt/common.glsl"
 
+#ifndef IVW_OPACTOPT_POWER_MOMENTS_MATHS
+#define IVW_OPACTOPT_POWER_MOMENTS_MATHS
+
 //     Layout
 //     |   x   |   y   |   z   |   w   |
 // [0] |   wrapping_zone_parameters    |
@@ -470,3 +473,5 @@ float approximate8PowerMoments(float b_0, vec4 b_even, vec4 b_odd, float depth, 
     // Turn the normalized absorbance into transmittance
     return b_0 * absorbance;
 }
+
+#endif  // IVW_OPACTOPT_POWER_MOMENTS_MATHS

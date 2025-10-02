@@ -29,6 +29,9 @@
 
 #include "opactopt/common.glsl"
 
+#ifndef IVW_OPACTOPT_POWER_MOMENTS
+#define IVW_OPACTOPT_POWER_MOMENTS
+
 #ifdef POWER_MOMENTS
 
 #include "opactopt/approximation/powermomentmaths.glsl"
@@ -123,4 +126,6 @@ float total(layout(IMAGE_LAYOUT) IMAGE_UNIT  coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
 
-#endif
+#endif  // POWER_MOMENTS
+
+#endif  // IVW_OPACTOPT_POWER_MOMENTS

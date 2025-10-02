@@ -65,6 +65,9 @@
 
 #include "opactopt/common.glsl"
 
+#ifndef IVW_OPACTOPT_TRIG_MOMENTS_MATHS
+#define IVW_OPACTOPT_TRIG_MOMENTS_MATHS
+
 //     Layout
 //     |   x   |   y   |   z   |   w   |
 // [0] |   wrapping_zone_parameters    |
@@ -597,3 +600,5 @@ float approximate4TrigonometricMoments(float b_0, vec2 trig_b[4], float depth, f
     // Turn the normalized absorbance into transmittance
     return b_0 * weight_sum;
 }
+
+#endif  // IVW_OPACTOPT_TRIG_MOMENTS_MATHS

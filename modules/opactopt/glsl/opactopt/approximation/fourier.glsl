@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include "opactopt/common.glsl"
+
+#ifndef IVW_OPACTOPT_FOURIER
+#define IVW_OPACTOPT_FOURIER
+
 #ifdef FOURIER
 
 void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float val) {
@@ -101,4 +105,6 @@ float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
 
-#endif
+#endif  // FOURIER
+
+#endif  // IVW_OPACTOPT_FOURIER

@@ -36,22 +36,9 @@
 #include "opactopt/approximation/piecewise.glsl"
 #include "opactopt/approximation/powermoments.glsl"
 #include "opactopt/approximation/trigmoments.glsl"
+#include "opactopt/debug.glsl"
 
-#ifdef DEBUG
-uniform ivec2 debugCoords;
-
-struct FragmentInfo {
-    float depth;
-    float importance;
-};
-
-layout(std430, binding = 11) buffer debugFragments {
-    int nFragments;
-    FragmentInfo debugFrags[];
-};
-#endif
-
-uniform vec2 screenDim = vec2(512, 512);
+uniform ivec2 screenSize = ivec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
 uniform float lineWidth = 2.0;     // line width [pixel]
 
@@ -109,7 +96,7 @@ void main() {
     float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
-    float z_v = view_depth - cos(distance / maxDist * PI) * maxDist / screenDim.x * 0.5;
+    float z_v = view_depth - cos(distance / maxDist * PI) * maxDist / screenSize.x * 0.5;
 #else
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
@@ -168,15 +155,9 @@ void main() {
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-#ifdef DEBUG
-    if (ivec2(gl_FragCoord.xy) == debugCoords) {
-        FragmentInfo fi;
-        fi.depth = depth;
-        fi.importance = gi;
-        debugFrags[atomicAdd(nFragments, 1)] = fi;
-    }
-#endif
+    IVW_OPACTOPT_DEBUGGING(depth, gi)
 
-    PickingData =
-        vec4(vec3(0), 1);  // write into intermediate image to indicate pixel is being written to
+    // write into intermediate image to indicate pixel is being written to
+    PickingData = vec4(vec3(0), 1);
 }
+

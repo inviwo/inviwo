@@ -29,7 +29,11 @@
 
 #include "opactopt/common.glsl"
 
+#ifndef IVW_OPACTOPT_PIECEWISE
+#define IVW_OPACTOPT_PIECEWISE
+
 #ifdef PIECEWISE
+
 void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float val) {
     if (depth < 0.0 || depth > 1.0) return;
     int bin = min(int(depth * N), N - 1);
@@ -53,4 +57,7 @@ float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) 
 float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1));
 }
-#endif
+
+#endif  // PIECEWISE
+
+#endif  // IVW_OPACTOPT_PIECEWISE

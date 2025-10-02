@@ -28,9 +28,13 @@
  *********************************************************************************/
 #include "opactopt/common.glsl"
 
+#ifndef IVW_OPACTOPT_LEGENDRE
+#define IVW_OPACTOPT_LEGENDRE
+
 uniform sampler1D legendreCoeffs;
 
 #ifdef LEGENDRE
+
 void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float val) {
     int coeffIdx = 0;
 
@@ -73,4 +77,7 @@ float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) 
 float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
-#endif
+
+#endif  // LEGENDRE
+
+#endif  // IVW_OPACTOPT_LEGENDRE

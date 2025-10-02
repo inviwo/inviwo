@@ -37,20 +37,7 @@
 #include "opactopt/approximation/piecewise.glsl"
 #include "opactopt/approximation/powermoments.glsl"
 #include "opactopt/approximation/trigmoments.glsl"
-
-#ifdef DEBUG
-uniform ivec2 debugCoords;
-
-struct FragmentInfo {
-    float depth;
-    float importance;
-};
-
-layout(std430, binding = 11) buffer debugFragments {
-    int nFragments;
-    FragmentInfo debugFrags[];
-};
-#endif
+#include "opactopt/debug.glsl"
 
 uniform float pointSize;          // [pixel]
 uniform float borderWidth;        // [pixel]
@@ -113,15 +100,8 @@ void main() {
     float gisq = gi * gi;
     project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-#ifdef DEBUG
-    if (ivec2(gl_FragCoord.xy) == debugCoords) {
-        FragmentInfo fi;
-        fi.depth = depth;
-        fi.importance = gi;
-        debugFrags[atomicAdd(nFragments, 1)] = fi;
-    }
-#endif
+    IVW_OPACTOPT_DEBUGGING(depth, gi)
 
-    PickingData =
-        vec4(vec3(0), 1);  // write into intermediate image to indicate pixel is being written to
+    // write into intermediate image to indicate pixel is being written to
+    PickingData = vec4(vec3(0), 1);
 }
