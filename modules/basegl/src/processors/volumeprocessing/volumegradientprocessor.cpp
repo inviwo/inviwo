@@ -67,63 +67,46 @@ const ProcessorInfo& VolumeGradientProcessor::getProcessorInfo() const { return 
 
 VolumeGradientProcessor::VolumeGradientProcessor()
     : VolumeGLProcessor("volume_gradient.frag")
-    , channel_("channel", "Channel", "Selects the channel used for the gradient computation"_help)
+    , channel_("channel", "Channel", "Selects the channel used for the gradient computation"_help,
+               util::enumeratedOptions("Channel", 4))
     , dataInChannel4_(
           "dataInChannel4_", "Store Input Data in Alpha",
           "Toggles whether the input data is saved in the alpha channel of the output"_help, false,
           InvalidationLevel::InvalidResources) {
-    this->dataFormat_ = DataVec3Float32::get();
 
-    channel_.addOption("Channel 1", "Channel 1", 0);
-    channel_.setCurrentStateAsDefault();
-
-    inport_.onChange([this]() {
-        if (inport_.hasData()) {
-            int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
-
-            if (channels == static_cast<int>(channel_.size())) return;
-
-            channel_.clearOptions();
-            for (int i = 0; i < channels; i++) {
-                std::stringstream ss;
-                ss << "Channel " << i;
-                channel_.addOption(ss.str(), ss.str(), i);
-            }
-            channel_.setCurrentStateAsDefault();
-        }
-    });
-
-    addProperty(channel_);
-    addProperty(dataInChannel4_);
+    addProperties(channel_, dataInChannel4_, calculateDataRange_);
 }
 
 VolumeGradientProcessor::~VolumeGradientProcessor() = default;
 
-void VolumeGradientProcessor::preProcess(TextureUnitContainer&) {
-    shader_.setUniform("channel", channel_.getSelectedValue());
-    shader_.setUniform("dataRange", vec2(inport_.getData()->dataMap.dataRange));
+void VolumeGradientProcessor::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->setShaderDefine("ADD_DATA_CHANNEL", dataInChannel4_.get());
 }
 
-void VolumeGradientProcessor::postProcess() {
-    if (!dataInChannel4_) {
-        volume_->dataMap.valueAxis.name = "gradient";
-        volume_->dataMap.valueAxis.unit =
-            inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit;
-        volume_->dataMap = inport_.getData()->dataMap;
-        volume_->setWrapping(inport_.getData()->getWrapping());
-    }
-}
+void VolumeGradientProcessor::preProcess(TextureUnitContainer& cont, Shader& shader,
+                                         VolumeConfig& config) {
 
-void VolumeGradientProcessor::initializeResources() {
     if (dataInChannel4_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("ADD_DATA_CHANNEL");
-        this->dataFormat_ = DataVec4Float32::get();
+        config.format = DataVec4Float32::get();
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("ADD_DATA_CHANNEL");
-        this->dataFormat_ = DataVec3Float32::get();
+        config.format = DataVec3Float32::get();
     }
-    shader_.build();
-    internalInvalid_ = true;
+
+    const int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
+    if (channel_.getSelectedValue() >= channels) {
+        throw Exception(SourceContext{}, "Selected channel out of bounds {} of {}",
+                        channel_.getSelectedValue(), channels);
+    }
+
+    if (!dataInChannel4_) {
+        config.valueAxis = Axis{
+            .name = "Gradient",
+            .unit = inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit};
+    }
+
+    shader.setUniform("channel", channel_.getSelectedValue());
+    shader.setUniform("dataRange", vec2(inport_.getData()->dataMap.dataRange));
 }
+
 
 }  // namespace inviwo

@@ -49,11 +49,13 @@ const ProcessorInfo Vector3DCurl::processorInfo_{
 };
 const ProcessorInfo& Vector3DCurl::getProcessorInfo() const { return processorInfo_; }
 
-Vector3DCurl::Vector3DCurl() : VolumeGLProcessor("vector3dcurl.frag") {
-    this->dataFormat_ = DataVec4Float32::get();
+Vector3DCurl::Vector3DCurl()
+    : VolumeGLProcessor("vector3dcurl.frag", VolumeConfig{.format = DataFloat32::get()}) {
+
+    addProperty(calculateDataRange_);
+    calculateDataRange_.set(true);
+    calculateDataRange_.setCurrentStateAsDefault();
 }
 
-Vector3DCurl::~Vector3DCurl() {}
-
-void Vector3DCurl::postProcess() {}
+Vector3DCurl::~Vector3DCurl() = default;
 }  // namespace inviwo

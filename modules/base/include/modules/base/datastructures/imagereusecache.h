@@ -37,7 +37,6 @@
 #include <inviwo/core/util/glmvec.h>                 // for size2_t
 
 #include <memory>       // for shared_ptr, make_shared
-#include <type_traits>  // for remove_extent_t
 #include <utility>      // for pair
 #include <vector>       // for vector
 

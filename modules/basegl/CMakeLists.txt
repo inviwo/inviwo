@@ -331,6 +331,7 @@ set(SHADER_FILES
     glsl/volume_difference.frag
     glsl/volume_gpu.geom
     glsl/volume_gpu.vert
+    glsl/volume_gpu.frag
     glsl/volume_gradient.frag
     glsl/volume_laplacian.frag
     glsl/volume_lowpass.frag
