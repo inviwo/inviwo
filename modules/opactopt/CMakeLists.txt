@@ -22,6 +22,9 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
+    glsl/opactopt/common.glsl
+    glsl/opactopt/debug.glsl
+    glsl/opactopt/importance.glsl
     glsl/opactopt/clear.frag
     glsl/opactopt/normalise.frag
     glsl/opactopt/smooth.frag

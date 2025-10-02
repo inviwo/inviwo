@@ -129,12 +129,6 @@ protected:
     SimpleLightingProperty lightingProperty_;
     CameraTrackball trackball_;
 
-    CompositeProperty layers_;
-    BoolProperty colorLayer_;
-    BoolProperty texCoordLayer_;
-    BoolProperty normalsLayer_;
-    BoolProperty viewNormalsLayer_;
-
     // Shaders for each rendering pass and primitive type
     std::array<Shader, 3> meshShaders_;
     std::array<Shader, 3> lineShaders_;
