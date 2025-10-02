@@ -26,53 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#include "utils/shading.glsl"
 #include "utils/structs.glsl"
 #include "utils/depth.glsl"
-#include "utils/sampler3d.glsl"
 
-#include "opactopt/common.glsl"
-#include "opactopt/approximation/fourier.glsl"
-#include "opactopt/approximation/legendre.glsl"
-#include "opactopt/approximation/piecewise.glsl"
-#include "opactopt/approximation/powermoments.glsl"
-#include "opactopt/approximation/trigmoments.glsl"
-#include "opactopt/debug.glsl"
-#include "opactopt/importance.glsl"
+#ifndef IVW_OPACTOPT_IMPORTANCE
+#define IVW_OPACTOPT_IMPORTANCE
 
-uniform CameraParameters camera;
-uniform vec2 reciprocalDimensions;
-
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
-
-in vec4 color_;
-
-void main() {
-    // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (color_.a == 0) {
-        discard;
-    }
-
-    // Get linear depth
-    float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
-    float depth =
-        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
-
-    // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
-    float gi = importance(gl_FragCoord.xy * reciprocalDimensions, depth, camera);
-#else
-    float gi = color_.a;
+uniform sampler3D importanceVolume;
+uniform VolumeParameters importanceVolumeParameters;
 #endif
 
-    // Project importance
-    float gisq = gi * gi;
-    project(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth, gisq);
 
-    IVW_OPACTOPT_DEBUGGING(depth, gi)
+float importance(vec2 texCoord, float depth, CameraParameters camera) {
+    float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
+    float clipDepth = convertDepthViewToClip(camera, viewDepth);
+    vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
+    vec4 worldPos = camera.clipToWorld * clip;
+    worldPos /= worldPos.w;
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
+                  importanceVolumeParameters.reciprocalDimensions;
+    // sample importance from volume
+    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x;
 
-    // write into intermediate image to indicate pixel is being written to
-    PickingData = vec4(vec3(0), 1);
+    return gi;
 }
+
+
+#endif  // IVW_OPACTOPT_IMPORTANCE

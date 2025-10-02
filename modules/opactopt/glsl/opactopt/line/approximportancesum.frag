@@ -37,6 +37,7 @@
 #include "opactopt/approximation/piecewise.glsl"
 #include "opactopt/approximation/powermoments.glsl"
 #include "opactopt/approximation/trigmoments.glsl"
+#include "opactopt/importance.glsl"
 
 #if defined(ENABLE_ROUND_DEPTH_PROFILE)
 // enable conservative depth writes (supported since GLSL 4.20)
@@ -58,11 +59,6 @@ uniform vec2 reciprocalDimensions;
 
 uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
 uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
-
-#ifdef USE_IMPORTANCE_VOLUME
-uniform sampler3D importanceVolume;
-uniform VolumeParameters importanceVolumeParameters;
-#endif
 
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
@@ -115,16 +111,7 @@ void main() {
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
-    vec2 texCoord = gl_FragCoord.xy * reciprocalDimensions;
-    float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
-    float clipDepth = convertDepthViewToClip(camera, viewDepth);
-    vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
-    vec4 worldPos = camera.clipToWorld * clip;
-    worldPos /= worldPos.w;
-    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
-                  importanceVolumeParameters.reciprocalDimensions;
-    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz)
-                   .x;  // sample importance from volume
+    float gi = importance(gl_FragCoord.xy * reciprocalDimensions, depth, camera);
 #else
     float gi = fragment.color.a;
 #endif
