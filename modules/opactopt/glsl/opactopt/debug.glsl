@@ -27,45 +27,34 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPACTOPT_COMMON
-#define IVW_OPACTOPT_COMMON
+#ifndef IVW_OPACTOPT_DEBUG
+#define IVW_OPACTOPT_DEBUG
 
-#define PI 3.1415926535897932384626433832795
-#define TWOPI 6.283185307179586476925286766559
+#ifdef DEBUG
+uniform ivec2 debugCoords;
 
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    #define IMAGE_LAYOUT r32i
-    #define IMAGE_UNIT iimage2DArray
+struct FragmentInfo {
+    float depth;
+    float importance;
+};
+
+layout(std430, binding = 11) buffer debugFragments {
+    int nFragments;
+    FragmentInfo debugFrags[];
+};
+
+#define IVW_OPACTOPT_DEBUGGING(depth, gi)   \
+    if (ivec2(gl_FragCoord.xy) == debugCoords) {        \
+        FragmentInfo fi;                                \
+        fi.depth = depth;                               \
+        fi.importance = gi;                             \
+        debugFrags[atomicAdd(nFragments, 1)] = fi;      \
+    }
+
 #else
-    #define IMAGE_LAYOUT size1x32
-    #define IMAGE_UNIT image2DArray
+
+#define IVW_OPACTOPT_DEBUGGING(depth, gi)
 #endif
 
-void optAdd(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord, float projVal) {
-#if defined(COEFF_TEX_FIXED_POINT_FACTOR)
-    imageAtomicAdd(coeffTex, coord, int(projVal * COEFF_TEX_FIXED_POINT_FACTOR));
-#elif defined(COEFF_TEX_ATOMIC_FLOAT)
-    imageAtomicAdd(coeffTex, coord, projVal);
-#else
-    float currVal = imageLoad(coeffTex, coord).x;
-    imageStore(coeffTex, coord, vec4(currVal + projVal));
 #endif
-}
 
-float optLoad(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    return float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-    return imageLoad(coeffTex, coord).x;
-#endif
-}
-
-void optClear(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-    imageStore(coeffTex, coord, ivec4(0));
-#else
-    imageStore(coeffTex, coord, vec4(0));
-#endif
-}
-
-#endif

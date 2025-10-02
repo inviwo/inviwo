@@ -29,6 +29,9 @@
 
 #include "opactopt/common.glsl"
 
+#ifndef IVW_OPACTOPT_TRIG_MOMENTS
+#define IVW_OPACTOPT_TRIG_MOMENTS
+
 #ifdef TRIG_MOMENTS
 
 #include "opactopt/approximation/trigmomentmaths.glsl"
@@ -148,4 +151,6 @@ float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
 
-#endif
+#endif  // TRIG_MOMENTS
+
+#endif  // IVW_OPACTOPT_TRIG_MOMENTS
