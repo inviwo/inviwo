@@ -51,14 +51,12 @@ in vec4 color_;
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (color_.a == 0) {
-        discard;
-    }
+    if (color_.a == 0.0) discard;
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
-    float depth =
-        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
+    // linear normalised depth
+    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME

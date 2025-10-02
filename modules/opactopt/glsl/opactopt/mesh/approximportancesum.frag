@@ -47,21 +47,14 @@ uniform layout(IMAGE_LAYOUT) IMAGE_UNIT  opticalDepthCoeffs;
 
 in vec4 color_;
 
-// Opacity optimisation settings
-uniform float q;
-uniform float r;
-uniform float lambda;
-
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (color_.a == 0) {
-        discard;
-    }
+    if (color_.a == 0.0) discard;
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
-    float depth =
-        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
+     // linear normalised depth
+    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
@@ -71,13 +64,8 @@ void main() {
 #endif
 
     // Project importance
-    float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
-    Gd += 0.5 * gisq;  // correct for importance sum approximation at discontinuity
-    float alpha =
-        clamp(1 / (1 + pow(1 - gi, 2 * lambda) * (r * max(0, Gd - gisq) + q * max(0, gtot - Gd))),
-              0.0, 0.9999);  // set pixel alpha using opacity optimisation
+    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+
     project(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth, -log(1 - alpha));
 
     discard;

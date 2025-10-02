@@ -50,10 +50,7 @@ uniform ivec2 screenSize = ivec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
 uniform float lineWidth = 2.0;     // line width [pixel]
 
-// initialize camera matrices with the identity matrix to enable default rendering
-// without any transformation, i.e. all lines in clip space
-uniform CameraParameters camera =
-    CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
+uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
 uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
@@ -71,17 +68,10 @@ in LineGeom {
     float distanceWorld;  // distance in world coords to segment start
 } fragment;
 
-// Opacity optimisation settings
-uniform float q;
-uniform float r;
-uniform float lambda;
-
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (fragment.color.a < 0.01) {
-        discard;
-    }
+    if (fragment.color.a < 0.0) discard;
 
     float linewidthHalf = lineWidth * 0.5;
 
@@ -106,8 +96,8 @@ void main() {
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
 #endif  // ENABLE_ROUND_DEPTH_PROFILE
 
-    float depth =
-        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
+    // linear normalised depth
+    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
@@ -147,13 +137,7 @@ void main() {
     gi *= alphamul;
 
     // Project importance
-    float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
-    Gd += 0.5 * gisq;  // correct for importance sum approximation at discontinuity
-    float alpha =
-        clamp(1 / (1 + pow(1 - gi, 2 * lambda) * (r * max(0, Gd - gisq) + q * max(0, gtot - Gd))),
-              0.0, 0.9999);  // set pixel alpha using opacity optimisation
+    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
 
     vec4 c = fragment.color;
 

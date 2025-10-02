@@ -37,6 +37,10 @@ uniform sampler3D importanceVolume;
 uniform VolumeParameters importanceVolumeParameters;
 #endif
 
+// Opacity optimisation settings
+uniform float q;
+uniform float r;
+uniform float lambda;
 
 float importance(vec2 texCoord, float depth, CameraParameters camera) {
     float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
@@ -52,5 +56,22 @@ float importance(vec2 texCoord, float depth, CameraParameters camera) {
     return gi;
 }
 
+float projectImportance(float gi, float depth,
+                        layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+    float gisq = gi * gi;
+    float gtot = total(coeffTex, N);
+    float Gd = approximate(coeffTex, N, depth);
+
+// This ifdef was only for point?
+//#if !defined(POWER_MOMENTS) && !defined(TRIG_MOMENTS)
+    Gd += 0.5 * gisq;  // correct for importance sum approximation at discontinuity
+//#endif
+
+    // set pixel alpha using opacity optimisation
+    float Gdgi2 = max(0, Gd - gisq);
+    float gtotGd = max(0, gtot - Gd);
+    float alpha = 1.0 / (1.0 + pow(1.0 - gi, 2 * lambda) * (r * Gdgi2 + q * gtotGd));
+    return clamp(alpha, 0.0, 0.9999);
+}
 
 #endif  // IVW_OPACTOPT_IMPORTANCE

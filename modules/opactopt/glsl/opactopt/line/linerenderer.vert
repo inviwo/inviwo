@@ -32,11 +32,7 @@
 in vec3 in_Position;
 
 uniform GeometryParameters geometry;
-
-// initialize camera matrices with the identity matrix to enable default rendering
-// without any transformation, i.e. all lines in clip space
-uniform CameraParameters camera =
-    CameraParameters(mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), mat4(1), vec3(0), 0, 1);
+uniform CameraParameters camera;
 
 uniform bool pickingEnabled = false;
 uniform vec4 defaultColor = vec4(1, 1, 1, 1);
