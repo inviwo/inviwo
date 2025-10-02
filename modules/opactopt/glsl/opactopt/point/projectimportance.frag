@@ -59,22 +59,18 @@ in Point {
 
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (fragment.color.a == 0) {
-        discard;
-    }
+    if (fragment.color.a == 0.0) discard;
 
     // calculate normal from texture coordinates
     vec3 normal;
     normal.xy = gl_PointCoord * vec2(2.0, -2.0) + vec2(-1.0, 1.0);
     float rad = sqrt(dot(normal.xy, normal.xy));
-    if (rad > 1.0) {
-        discard;  // kill pixels outside circle
-    }
+    if (rad > 1.0) discard;  // kill pixels outside circle
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
-    float depth =
-        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
+    // linear normalised depth
+    float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME

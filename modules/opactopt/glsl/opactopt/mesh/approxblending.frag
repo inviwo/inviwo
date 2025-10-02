@@ -53,28 +53,21 @@ in vec3 texCoord_;
 in vec4 color_;
 flat in vec4 pickColor_;
 
-// Opacity optimisation settings
-uniform float q;
-uniform float r;
-uniform float lambda;
-
 void main() {
     // Prevent invisible fragments from blocking other objects (e.g., depth/picking)
-    if (color_.a == 0) {
-        discard;
-    }
+    if (color_.a == 0) discard;
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
-    float depth =
-        (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);  // linear normalised depth
+    // linear normalised depth
+    float depth =(z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);
 
     vec4 c = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
     c.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
                            normalize(normal_), normalize(toCameraDir_));
 
-// Calculate g_i^2
+    // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
     float gi = importance(gl_FragCoord.xy * reciprocalDimensions, depth, camera);
 #else
@@ -82,18 +75,12 @@ void main() {
 #endif
 
     // find alpha
-    float gisq = gi * gi;
-    float gtot = total(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
-    float Gd = approximate(importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS, depth);
-    Gd += 0.5 * gisq;  // correct for importance sum approximation at discontinuity
-    float alpha =
-        clamp(1 / (1 + pow(1 - gi, 2 * lambda) * (r * max(0, Gd - gisq) + q * max(0, gtot - Gd))),
-              0.0, 0.9999);  // set pixel alpha using opacity optimisation
+    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
 
     // find optical depth
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
-    float weight = alpha / sqrt(1 - alpha) *
-                   exp(-taud);  // correct for optical depth approximation at discontinuity
+    // correct for optical depth approximation at discontinuity
+    float weight = alpha / sqrt(1 - alpha) * exp(-taud);
 
     c.rgb = weight * c.rgb;
     c.a = weight;  // save sum of weights in alpha channel for later division
