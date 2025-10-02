@@ -5,7 +5,6 @@ set(HEADER_FILES
     include/modules/opactopt/opactoptmoduledefine.h
     include/modules/opactopt/processors/directopacityoptimization.h
     include/modules/opactopt/processors/meshmappingvolume.h
-    include/modules/opactopt/io/rawpointreader.h
     include/modules/opactopt/utils/approximation.h
     include/modules/opactopt/utils/gaussian.h
 )
@@ -15,7 +14,6 @@ set(SOURCE_FILES
     src/opactoptmodule.cpp
     src/processors/directopacityoptimization.cpp
     src/processors/meshmappingvolume.cpp
-    src/io/rawpointreader.cpp
     src/utils/approximation.cpp
     src/utils/gaussian.cpp
 )
