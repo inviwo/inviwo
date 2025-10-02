@@ -46,7 +46,7 @@ layout(depth_less) out float gl_FragDepth;
 #endif
 #endif
 
-uniform vec2 screenDim = vec2(512, 512);
+uniform ivec2 screenSize = ivec2(512, 512);
 uniform float antialiasing = 0.5;  // width of antialised edged [pixel]
 uniform float lineWidth = 2.0;     // line width [pixel]
 
@@ -104,7 +104,7 @@ void main() {
     float view_depth = convertDepthScreenToView(camera, gl_FragCoord.z);
     float maxDist = (linewidthHalf + antialiasing);
     // assume circular profile of line
-    float z_v = view_depth - cos(distance / maxDist * PI) * maxDist / screenDim.x * 0.5;
+    float z_v = view_depth - cos(distance / maxDist * PI) * maxDist / screenSize.x * 0.5;
 #else
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth

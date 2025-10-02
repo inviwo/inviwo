@@ -612,8 +612,6 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
     // Lines
     lineShaders_[pass].activate();
 
-    lineShaders_[pass].setUniform("screenDim", vec2(screenSize_));
-
     utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
     utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth, lineSettings_.antialiasing,
                         lineSettings_.miterLimit, lineSettings_.roundCaps,
@@ -650,7 +648,6 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
     // Line adjacency
     lineAdjacencyShaders_[pass].activate();
 
-    lineAdjacencyShaders_[pass].setUniform("screenDim", vec2(screenSize_));
     utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], camera_, "camera");
     utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth,
                         lineSettings_.antialiasing, lineSettings_.miterLimit,
