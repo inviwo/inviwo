@@ -40,6 +40,7 @@ set(HEADER_FILES
     include/modules/base/datastructures/disjointsets.h
     include/modules/base/datastructures/imagereusecache.h
     include/modules/base/datastructures/kdtree.h
+    include/modules/base/datastructures/volumereusecache.h
     include/modules/base/datavisualizer/imageinformationvisualizer.h
     include/modules/base/datavisualizer/imagetolayervisualizer.h
     include/modules/base/datavisualizer/layerinformationvisualizer.h
@@ -196,6 +197,7 @@ set(SOURCE_FILES
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
+    src/datastructures/volumereusecache.cpp
     src/datavisualizer/imageinformationvisualizer.cpp
     src/datavisualizer/imagetolayervisualizer.cpp
     src/datavisualizer/layerinformationvisualizer.cpp

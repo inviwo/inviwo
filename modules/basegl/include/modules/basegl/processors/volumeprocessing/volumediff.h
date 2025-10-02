@@ -31,8 +31,9 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BAS...
 
-#include <inviwo/core/ports/volumeport.h>                                  // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                          // for ProcessorInfo
+#include <inviwo/core/ports/volumeport.h>          // for VolumeInport
+#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 
 namespace inviwo {
@@ -47,8 +48,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
     VolumeInport vol2_;
-    virtual void preProcess(TextureUnitContainer& cont) override;
 };
 
 }  // namespace inviwo
