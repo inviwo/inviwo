@@ -91,18 +91,6 @@ OpacityOptimization::OpacityOptimization()
     , antialising_("antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , trackball_(&camera_)
-    , layers_("layers", "Output Layers")
-    , colorLayer_("colorLayer", "Color", "Toggle output of color layer"_help, true,
-                  InvalidationLevel::InvalidResources)
-    , texCoordLayer_("texCoordLayer", "Texture Coordinates",
-                     "Toggle output of texture coordinates"_help, false,
-                     InvalidationLevel::InvalidResources)
-    , normalsLayer_("normalsLayer", "Normals (World Space)",
-                    "Toggle output of normals (world space)"_help, false,
-                    InvalidationLevel::InvalidResources)
-    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)",
-                        "Toggle output of view space normals"_help, false,
-                        InvalidationLevel::InvalidResources)
     , meshShaders_{{{"meshrendering.vert", "opactopt/mesh/projectimportance.frag",
                      Shader::Build::No},
                     {"meshrendering.vert", "opactopt/mesh/approximportancesum.frag",
@@ -171,8 +159,8 @@ OpacityOptimization::OpacityOptimization()
                            InvalidationLevel::InvalidResources}
     , importanceSumCoefficients_{"importanceSumCoefficients",
                                  "Importance sum coefficients",
-                                 "Number of importance sum coefficents, more importance sum "
-                                 "coefficients optimises opacity more accurately"_help,
+                                 "Number of importance sum coefficients, more importance sum "
+                                 "coefficients optimizes opacity more accurately"_help,
                                  5,
                                  std::make_pair(
                                      approximations::get(approximationMethod_).minCoefficients,
@@ -197,7 +185,7 @@ OpacityOptimization::OpacityOptimization()
                                 InvalidationLevel::InvalidResources}
     , normalizedBlending_{"normalizedBlending", "Normalized blending",
                           "Normalize the approximate blending, "
-                          "this reduces over and undersaturation"_help,
+                          "this reduces over- and under-saturation"_help,
                           true, InvalidationLevel::InvalidResources}
     , coeffTexFixedPointFactor_{"coeffTexFixedPointFactor",
                                 "Coefficient texture fixed point factor",
@@ -260,7 +248,7 @@ OpacityOptimization::OpacityOptimization()
 
     addProperties(camera_, occlusionReduction_, clutterReduction_, lambda_,
                   approximationProperties_, meshProperties_, lineSettings_, pointProperties_,
-                  lightingProperty_, trackball_, layers_);
+                  lightingProperty_, trackball_);
 
     approximationProperties_.addProperties(approximationMethod_, importanceSumCoefficients_,
                                            opticalDepthCoefficients_);
@@ -285,8 +273,6 @@ OpacityOptimization::OpacityOptimization()
 
     overrideColor_.setSemantics(PropertySemantics::Color)
         .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty p) { return p.get(); });
-
-    layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);
 
     for (auto& shader : meshShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -369,7 +355,6 @@ void OpacityOptimization::buildShaders() {
         vert->setShaderDefine("OVERRIDE_COLOR_BUFFER", overrideColorBuffer_);
 
         addExtensionsAndDefines(frag);
-        frag->setShaderDefine("COLOR_LAYER", colorLayer_);
         // set opacity optimisation defines
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
 
