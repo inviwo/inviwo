@@ -503,6 +503,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         }
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
+            updateStatus(Running::No);
             break;
         default:
             break;
@@ -663,6 +664,10 @@ void ProcessorGraphicsItem::progressBarVisibilityChanged(bool visible) {
     if (currentProgress_ != progress_) delayedUpdate();
 }
 
+void ProcessorGraphicsItem::processorException(std::string_view message) {
+    updateStatus(Running::No, std::string{message});
+}
+
 void ProcessorGraphicsItem::setErrorText(std::string_view error) {
     // Avoid adding the error text when we use generateProcessorPreview
     if (!scene() || utilqt::fromQString(scene()->objectName()) != NetworkEditor::name) return;
@@ -674,8 +679,10 @@ void ProcessorGraphicsItem::setErrorText(std::string_view error) {
     errorText_->setActive(isSelected());
 }
 
-void ProcessorGraphicsItem::updateStatus(Running running) {
-    if (running == Running::Yes) {
+void ProcessorGraphicsItem::updateStatus(Running running, std::optional<std::string> exception) {
+    if (exception) {
+        state_ = State::Error;
+    } else if (running == Running::Yes) {
         state_ = State::Running;
     } else {
         switch (processor_->status().status()) {
@@ -690,8 +697,10 @@ void ProcessorGraphicsItem::updateStatus(Running running) {
                 break;
         }
     }
-
-    if (state_ == State::Error) {
+    if (exception) {
+        setErrorText(*exception);
+        update();
+    } else if (state_ == State::Error) {
         setErrorText(processor_->status().reason());
         update();
     } else if (errorText_) {
