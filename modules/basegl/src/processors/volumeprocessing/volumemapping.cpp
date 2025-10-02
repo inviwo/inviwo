@@ -75,4 +75,10 @@ void VolumeMapping::preProcess(TextureUnitContainer& cont) {
     utilgl::setUniforms(shader_, channel_);
 }
 
+void VolumeMapping::postProcess() {
+    volume_->discardHistograms();
+    volume_->dataMap.dataRange = dvec2(0.0, 1.0);
+    volume_->dataMap.valueRange = dvec2(0.0, 1.0);
+}
+
 }  // namespace inviwo

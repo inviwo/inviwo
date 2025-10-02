@@ -50,6 +50,8 @@ public:
 protected:
     virtual void preProcess(TextureUnitContainer& cont) override;
 
+    virtual void postProcess() override;
+
     TransferFunctionProperty tfProperty_;
     OptionPropertyInt channel_;
 };
