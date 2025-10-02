@@ -58,76 +58,115 @@
 #include <glm/vec3.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
-class ShaderResource;
 
-VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
-                                     bool buildShader)
-    : Processor()
-    , inport_("inputVolume", "Input volume"_help)
-    , outport_("outputVolume", "Output volume"_help)
-    , dataFormat_(nullptr)
-    , internalInvalid_(true)
+VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShaderResource,
+                                     VolumeConfig config)
+    : Processor{}
+    , inport_{"inputVolume", "Input volume"_help}
+    , outport_{"outputVolume", "Output volume"_help}
+    , calculateDataRange_{"calculateDataRange_", "Calcualte Data Range",
+                          "Calculate and assign a new data range for the volume."_help, false}
+    , config_{config}
+    , volumes_{}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
-               {ShaderType::Fragment, fragmentShader}},
-              buildShader ? Shader::Build::Yes : Shader::Build::No)
+               {ShaderType::Fragment, fragmentShaderResource
+                                          ? fragmentShaderResource
+                                          : utilgl::findShaderResource("volume_gpu.frag")}},
+              Shader::Build::No)
     , fbo_() {
-    addPorts(inport_, outport_);
 
-    inport_.onChange([this]() {
-        markInvalid();
-        afterInportChanged();
-    });
+    addPorts(inport_, outport_);
+    inport_.onChange([this]() { afterInportChanged(); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-VolumeGLProcessor::VolumeGLProcessor(const std::string& fragmentShader, bool buildShader)
-    : VolumeGLProcessor(utilgl::findShaderResource(fragmentShader), buildShader) {}
+VolumeGLProcessor::VolumeGLProcessor(std::string_view fragmentShader, VolumeConfig config)
+    : VolumeGLProcessor(utilgl::findShaderResource(fragmentShader), config) {}
 
 VolumeGLProcessor::~VolumeGLProcessor() = default;
 
+void VolumeGLProcessor::initializeResources() {
+    initializeShader(shader_);
+    shader_.build();
+}
+
 void VolumeGLProcessor::process() {
-    bool reattach = false;
-
-    if (internalInvalid_) {
-        reattach = true;
-        internalInvalid_ = false;
-        volume_ = std::make_shared<Volume>(
-            inport_.getData()->config().updateFrom({.format = dataFormat_}));
-        outport_.setData(volume_);
-    }
-
     shader_.activate();
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "volume");
 
-    preProcess(cont);
+    const auto srcVolume = inport_.getData();
+    auto config = srcVolume->config().updateFrom(config_);
 
-    const size3_t dim{inport_.getData()->getDimensions()};
+    preProcess(cont, shader_, config);
+
+    utilgl::bindAndSetUniforms(shader_, cont, *srcVolume, "volume");
+
+    volumes_.setConfig(config);
+    auto dstVolume = volumes_.get();
+
+    const size3_t dim{srcVolume->getDimensions()};
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
-    if (reattach) {
-        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
-    }
+    VolumeGL* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
+    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 
     shader_.deactivate();
     fbo_.deactivate();
 
-    postProcess();
+    if (calculateDataRange_) {
+        if (!dataMinMaxGL_) {
+            dataMinMaxGL_.emplace();
+        }
+        const auto [min, max] = dataMinMaxGL_->minMax(*dstVolume);
+        const auto dataRange = [&]() -> glm::dvec2 {
+            switch (dstVolume->getDataFormat()->getComponents()) {
+                case 1:
+                    return {min.x, max.x};
+                case 2:
+                    return {glm::compMin(dvec2{min}), glm::compMax(dvec2{max})};
+                case 3:
+                    return {glm::compMin(dvec3{min}), glm::compMax(dvec3{max})};
+                case 4:
+                    [[fallthrough]];
+                default:
+                    return {glm::compMin(min), glm::compMax(max)};
+            }
+        }();
+        dstVolume->dataMap.dataRange = dataRange;
+        dstVolume->dataMap.valueRange = dataRange;
+    }
+
+    postProcess(*dstVolume);
+    dstVolume->discardHistograms();  // remove any old histograms;
+
+    outport_.setData(dstVolume);
 }
 
-void VolumeGLProcessor::markInvalid() { internalInvalid_ = true; }
+void VolumeGLProcessor::setFragmentShaderResource(
+    std::shared_ptr<const ShaderResource> fragShaderResource) {
+    if (auto* frag = shader_.getFragmentShaderObject()) {
+        return frag->setResource(fragShaderResource);
+    }
+}
+std::shared_ptr<const ShaderResource> VolumeGLProcessor::getFragmentShaderResource() {
+    if (const auto* frag = shader_.getFragmentShaderObject()) {
+        return frag->getResource();
+    }
+    return {};
+}
 
-void VolumeGLProcessor::preProcess(TextureUnitContainer&) {}
+void VolumeGLProcessor::initializeShader(Shader&) {}
 
-void VolumeGLProcessor::postProcess() {}
+void VolumeGLProcessor::preProcess(TextureUnitContainer&, Shader&, VolumeConfig&) {}
+
+void VolumeGLProcessor::postProcess(Volume&) {}
 
 void VolumeGLProcessor::afterInportChanged() {}
 

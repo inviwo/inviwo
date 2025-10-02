@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -48,13 +49,9 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
-
 private:
-    VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader);
-
-    std::shared_ptr<StringShaderResource> fragmentShader_;
     StringProperty fragmentSrc_;
+    std::shared_ptr<StringShaderResource> fragmentResource_;
 };
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <modules/basegl/algorithm/dataminmaxgl.h>
+#include <modules/base/basemoduledefine.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeconfig.h>
+
+#include <memory>       // for shared_ptr, make_shared
+#include <utility>      // for pair
+#include <vector>       // for vector
+
 
 namespace inviwo {
 
-/**
- * \brief Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
- *
- * This processor internally computes the gradients of the given 3D scalar field and only
- * writes the magnitudes of the gradients to the outport. It yields the same results as
- * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
- * intermediate gradient volume is never generated and, thus, this processor is more memory
- * efficient.
- */
-class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor {
+class IVW_MODULE_BASE_API VolumeReuseCache {
 public:
-    VolumeGradientMagnitude();
-    virtual ~VolumeGradientMagnitude();
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    VolumeReuseCache(VolumeConfig config = {});
+    VolumeReuseCache(const VolumeReuseCache&) = delete;
+    VolumeReuseCache(VolumeReuseCache&&) = delete;
+    VolumeReuseCache& operator=(const VolumeReuseCache&) = delete;
+    VolumeReuseCache& operator=(VolumeReuseCache&&) = delete;
+    ~VolumeReuseCache() = default;
 
-protected:
-    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
-                            VolumeConfig& config) override;
+    const VolumeConfig& getConfig() const;
+    void setConfig(VolumeConfig config);
+    std::shared_ptr<Volume> get();
 
 private:
-    OptionPropertyInt channel_;
-    FloatProperty scaling_;
-
-    utilgl::DataMinMaxGL dataMinMaxGL_;
+    VolumeConfig config_;
+    std::vector<std::shared_ptr<Volume>> cache_;
 };
 
 }  // namespace inviwo

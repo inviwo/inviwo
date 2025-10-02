@@ -52,8 +52,9 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void postProcess() override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
+    virtual void postProcess(Volume& volume) override;
 
 protected:
     VolumeInport vectorField_;

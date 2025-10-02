@@ -62,62 +62,37 @@ const ProcessorInfo VolumeMerger::processorInfo_{
 const ProcessorInfo& VolumeMerger::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMerger::VolumeMerger()
-    : VolumeGLProcessor("volumemerger.frag"), vol2_("volume2"), vol3_("volume3"), vol4_("volume4") {
+    : VolumeGLProcessor("volumemerger.frag"), vols_{{{"volume2"}, {"volume3"}, {"volume4"}}} {
 
-    addPort(vol2_);
-    addPort(vol3_);
-    addPort(vol4_);
-
-    vol2_.setOptional(true);
-    vol3_.setOptional(true);
-    vol4_.setOptional(true);
-
-    auto changeFormat = [this]() {
-        int numVolumes = 1;
-        if (vol2_.isReady()) {
-            numVolumes++;
-            shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL2");
-        } else {
-            shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL2");
-        }
-
-        if (vol3_.isReady()) {
-            numVolumes++;
-            shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL3");
-        } else {
-            shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL3");
-        }
-
-        if (vol4_.isReady()) {
-            numVolumes++;
-            shader_.getFragmentShaderObject()->addShaderDefine("HAS_VOL4");
-        } else {
-            shader_.getFragmentShaderObject()->removeShaderDefine("HAS_VOL4");
-        }
-
-        shader_.build();
-
-        auto inDF = inport_.getData()->getDataFormat();
-        dataFormat_ = DataFormatBase::get(inDF->getNumericType(), numVolumes, inDF->getPrecision());
-
-        internalInvalid_ = true;
-    };
-
-    inport_.onChange(changeFormat);
-    vol2_.onChange(changeFormat);
-    vol3_.onChange(changeFormat);
-    vol4_.onChange(changeFormat);
+    for (auto& vol : vols_) {
+        addPort(vol);
+        vol.setOptional(true);
+    }
+    addProperty(calculateDataRange_);
 }
 
-void VolumeMerger::preProcess(TextureUnitContainer& cont) {
-    if (vol2_.isReady()) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "vol2");
+void VolumeMerger::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+    bool needsRebuild = false;
+    size_t numVolumes = 1;
+    for (auto&& [i, act, vol] : std::views::zip(std::views::iota(2), active_, vols_)) {
+        if (act != vol.isReady()) {
+            act = vol.isReady();
+            shader.getFragmentShaderObject()->setShaderDefine(fmt::format("HAS_VOL{}", i), act);
+            needsRebuild = true;
+        }
+        if (act) ++numVolumes;
     }
-    if (vol3_.isReady()) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol3_.getData(), "vol3");
+    if (needsRebuild) {
+        shader.build();
     }
-    if (vol4_.isReady()) {
-        utilgl::bindAndSetUniforms(shader_, cont, *vol4_.getData(), "vol4");
+
+    config.format = DataFormatBase::get(config.format->getNumericType(), numVolumes,
+                                        config.format->getPrecision());
+
+    for (auto&& [i, vol] : std::views::zip(std::views::iota(2), vols_)) {
+        if (vol.isReady()) {
+            utilgl::bindAndSetUniforms(shader, cont, *vol.getData(), fmt::format("vol{}", i));
+        }
     }
 }
 

@@ -33,8 +33,11 @@
 
 #include <inviwo/core/ports/volumeport.h>             // for VolumeInport, VolumeOutport
 #include <inviwo/core/processors/processor.h>         // for Processor
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
 #include <modules/opengl/shader/shader.h>             // for Shader
+#include <modules/base/datastructures/volumereusecache.h>
+#include <modules/basegl/algorithm/dataminmaxgl.h>
 
 #include <memory>  // for shared_ptr
 #include <string>  // for string
@@ -45,9 +48,9 @@ class ShaderResource;
 class TextureUnitContainer;
 class Volume;
 
-/*! \class VolumeGLProcessor
+/*! @class VolumeGLProcessor
  *
- * \brief Base class for volume processing on the GPU using OpenGL.
+ * @brief Base class for volume processing on the GPU using OpenGL.
  *
  * The VolumeGLProcessor provides the basic structure for volume processing on the GPU.
  * Derived shaders have to provide a custom fragment shader which is used during rendering.
@@ -55,44 +58,54 @@ class Volume;
  * post-processing of the output data stored in the outport. Furthermore, it is possible to
  * be notified of inport changes by overwriting VolumeGLProcessor::afterInportChanged().
  *
- * \see ImageGLProcessor
+ * @see ImageGLProcessor
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
-    VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
-                      bool buildShader = true);
-    VolumeGLProcessor(const std::string& fragmentShader, bool buildShader = true);
+    explicit VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShaderResource = {},
+                               VolumeConfig config = {});
+    explicit VolumeGLProcessor(std::string_view fragmentShaderName, VolumeConfig config = {});
+
     virtual ~VolumeGLProcessor();
 
-    virtual void process() override;
+    virtual void initializeResources() final;
+
+    virtual void process() final;
 
 protected:
-    void markInvalid();
+    virtual void initializeShader(Shader& shader);
 
-    /*! \brief this function gets called right before the actual processing but
+    /*! @brief this function gets called right before the actual processing but
      * after the shader has been activated.
      * Overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer& cont);
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config);
 
-    /*! \brief this function gets called at the end of the process function
+    /*! @brief this function gets called at the end of the process function
      * Overwrite this function in the derived class to perform post-processing
      */
-    virtual void postProcess();
+    virtual void postProcess(Volume& volume);
 
-    /*! \brief this function gets called whenever the inport changes
+    /*! @brief this function gets called whenever the inport changes
      * Overwrite this function in the derived class to be notified of inport onChange events
      */
     virtual void afterInportChanged();
 
+    void setFragmentShaderResource(std::shared_ptr<const ShaderResource> fragmentShader);
+    std::shared_ptr<const ShaderResource> getFragmentShaderResource();
+
     VolumeInport inport_;
     VolumeOutport outport_;
-    std::shared_ptr<Volume> volume_;
+    BoolProperty calculateDataRange_;
+private:
+    VolumeConfig config_;
+    VolumeReuseCache volumes_;
 
-    const DataFormatBase* dataFormat_;
-    bool internalInvalid_;
     Shader shader_;
     FrameBufferObject fbo_;
+
+
+    std::optional<utilgl::DataMinMaxGL> dataMinMaxGL_;
 };
 
 }  // namespace inviwo

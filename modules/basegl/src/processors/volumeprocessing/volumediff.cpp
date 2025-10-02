@@ -59,13 +59,15 @@ VolumeDiff::VolumeDiff()
     : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2", "Input volume 2"_help) {
     addPort(vol2_);
 
+    addProperty(calculateDataRange_);
+
     inport_.setHelp("Input volume 2"_help);
     outport_.setHelp(
         "Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0) / 2.0</tt>"_help);
 }
 
-void VolumeDiff::preProcess(TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");
+void VolumeDiff::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+    utilgl::bindAndSetUniforms(shader, cont, *vol2_.getData(), "volume2");
 }
 
 }  // namespace inviwo

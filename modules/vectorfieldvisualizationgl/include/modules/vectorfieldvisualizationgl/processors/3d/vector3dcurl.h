@@ -42,9 +42,6 @@ public:
     virtual ~Vector3DCurl();
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void postProcess() override;
 };
 
 }  // namespace inviwo
