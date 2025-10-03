@@ -216,7 +216,7 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     const auto numBuffers = mesh.getNumberOfBuffers();
 
     numBuffers_.set(numBuffers);
-    numIndexBuffers_.set(mesh.getNumberOfIndicies());
+    numIndexBuffers_.set(mesh.getNumberOfIndices());
 
     // transformations
     modelTransform_.set(mesh.getModelMatrix());
@@ -247,7 +247,7 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
 
     // update buffer information
     detail::allocateBufferProps<MeshBufferInformationProperty>(&buffers_, "meshbuffer", numBuffers);
-    const auto numIndexBuffers = std::min(mesh.getNumberOfIndicies(), maxShownIndexBuffers_);
+    const auto numIndexBuffers = std::min(mesh.getNumberOfIndices(), maxShownIndexBuffers_);
     detail::allocateBufferProps<IndexBufferInformationProperty>(&indexBuffers_, "indexbuffer",
                                                                 numIndexBuffers);
 

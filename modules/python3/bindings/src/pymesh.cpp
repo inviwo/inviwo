@@ -147,11 +147,11 @@ void exposeMesh(pybind11::module& m) {
             }
             ossBuffers << ">";
 
-            if (self.getNumberOfIndicies() > 0) {
+            if (self.getNumberOfIndices() > 0) {
                 const size_t maxLines = 10;
-                const size_t numIndexBuffers = self.getNumberOfIndicies();
+                const size_t numIndexBuffers = self.getNumberOfIndices();
 
-                ossBuffers << "\n  <Indexbuffers (" << self.getNumberOfIndicies() << ")";
+                ossBuffers << "\n  <Indexbuffers (" << self.getNumberOfIndices() << ")";
                 size_t line = 0;
                 for (const auto& elem : self.getIndexBuffers()) {
                     ossBuffers << "\n    " << elem.first.dt << ", " << elem.first.ct << " ("

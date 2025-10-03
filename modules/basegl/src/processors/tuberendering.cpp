@@ -163,8 +163,8 @@ void TubeRendering::process() {
     };
 
     const auto hasAnyLine = [](const Mesh& mesh, auto test) {
-        if (mesh.getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+        if (mesh.getNumberOfIndices() > 0) {
+            for (size_t i = 0; i < mesh.getNumberOfIndices(); ++i) {
                 if (test(mesh.getIndexMeshInfo(i))) return true;
             }
         } else {
@@ -189,8 +189,8 @@ void TubeRendering::process() {
         MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(),
                                         mesh.getDefaultMeshInfo());
         utilgl::setShaderUniforms(shader, mesh, "geometry");
-        if (mesh.getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+        if (mesh.getNumberOfIndices() > 0) {
+            for (size_t i = 0; i < mesh.getNumberOfIndices(); ++i) {
                 const auto mi = mesh.getIndexMeshInfo(i);
                 if (test(mi)) {
                     drawer.draw(i);
