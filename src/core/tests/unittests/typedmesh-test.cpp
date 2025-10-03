@@ -49,7 +49,7 @@ bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTrait
         return false;
     }
     if ((a.getNumberOfBuffers() != b.getNumberOfBuffers()) ||
-        (a.getNumberOfIndicies() != b.getNumberOfIndicies())) {
+        (a.getNumberOfIndices() != b.getNumberOfIndices())) {
         return false;
     }
     auto compareBuffers = [](const auto& buffersA, const auto& buffersB) {

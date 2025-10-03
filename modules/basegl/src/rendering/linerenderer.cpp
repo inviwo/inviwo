@@ -147,8 +147,8 @@ void LineRenderer::render(const Mesh& mesh, const Camera& camera, size2_t screen
     }
 
     MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
-    if (mesh.getNumberOfIndicies() > 0) {
-        for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+    if (mesh.getNumberOfIndices() > 0) {
+        for (size_t i = 0; i < mesh.getNumberOfIndices(); ++i) {
             if (mesh.getIndexMeshInfo(i).dt != DrawType::Lines) continue;
             auto& shader = lineShaders_.getShader(mesh, mesh.getIndexMeshInfo(i));
             shader.activate();
