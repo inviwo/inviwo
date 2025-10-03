@@ -135,9 +135,7 @@ void main() {
     }
 
     gi *= alphamul;
-
-    // Project importance
-    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float alpha = approximateAlpha(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
 
     vec4 c = fragment.color;
 
