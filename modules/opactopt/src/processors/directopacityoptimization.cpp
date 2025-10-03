@@ -601,7 +601,7 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
     // Line adjacency
     lineAdjacencyShaders_[pass].activate();
     lineSettings(lineAdjacencyShaders_[pass]);
-    draw(lineShaders_[pass], [](const Mesh::MeshInfo& mi) {
+    draw(lineAdjacencyShaders_[pass], [](const Mesh::MeshInfo& mi) {
         return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::Adjacency;
     });
 
@@ -612,7 +612,7 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
     utilgl::setUniforms(pointShaders_[pass], camera_, lightingProperty_, pointSize_, borderWidth_,
                         borderColor_, antialising_);
 
-    draw(lineShaders_[pass], [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Points; });
+    draw(pointShaders_[pass], [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Points; });
 
     LGL_ERROR_CLASS;
 }
