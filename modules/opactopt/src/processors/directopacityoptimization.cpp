@@ -560,8 +560,8 @@ void OpacityOptimization::renderGeometry(const Pass pass, Units& units) {
             shader.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
             MeshDrawerGL::DrawObject drawer(*mesh);
 
-            if (mesh->getNumberOfIndicies() > 0) {
-                for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+            if (mesh->getNumberOfIndices() > 0) {
+                for (size_t i = 0; i < mesh->getNumberOfIndices(); ++i) {
                     if (!shouldDraw(mesh->getIndexMeshInfo(i))) continue;
 
                     drawer.draw(i);
