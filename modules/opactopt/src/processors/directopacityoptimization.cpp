@@ -224,6 +224,9 @@ OpacityOptimization::OpacityOptimization()
     , momentSettings_{2, GLFormats::getGLFormat(GL_FLOAT, 4), GL_NEAREST} {
 
     if (!OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store")) {
+        log::error(
+            "The OpenGL extension for image load store operations "
+            "(GL_EXT_shader_image_load_store) is required.");
         isReady_.setUpdate([]() -> ProcessorStatus {
             return {ProcessorStatus::Error,
                     "The OpenGL extension for image load store operations "
