@@ -30,8 +30,7 @@
 
 #include <numbers>
 
-namespace inviwo {
-namespace approximations {
+namespace inviwo::approximations {
 
 std::vector<OptionPropertyOption<Type>> generateApproximationStringOptions() {
     constexpr auto n = approximations.size();
@@ -46,7 +45,7 @@ std::vector<OptionPropertyOption<Type>> generateApproximationStringOptions() {
 
 std::vector<float> generateLegendreCoefficients() {
     constexpr size_t maxDegree =
-        approximations::approximations[std::to_underlying(Type::Legendre)].maxCoefficients - 1;
+        approximations::approximations[std::to_underlying(Type::Legendre)].max - 1;
     std::vector<float> coeffs;
     coeffs.reserve((maxDegree + 1) * (maxDegree + 2) / 2);
 
@@ -61,6 +60,7 @@ std::vector<float> generateLegendreCoefficients() {
     return coeffs;
 }
 
+namespace {
 // Taken from LineVis: https://github.com/chrismile/LineVis
 // --------------------------------------------------------
 
@@ -99,6 +99,7 @@ glm::vec4 computeWrappingZoneParameters(float wrappingZoneAngle) {
     }
     return wrappingZoneParameters;
 }
+}  // namespace
 
 MomentSettingsGL generateMomentSettings(const float wrappingZoneAngle, const float overestimation) {
     return {.wrappingZoneParameters = computeWrappingZoneParameters(wrappingZoneAngle),
@@ -106,5 +107,4 @@ MomentSettingsGL generateMomentSettings(const float wrappingZoneAngle, const flo
             .overestimation = overestimation};
 }
 
-}  // namespace approximations
-}  // namespace inviwo
+}  // namespace inviwo::approximations

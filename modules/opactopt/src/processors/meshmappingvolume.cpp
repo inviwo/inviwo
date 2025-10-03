@@ -47,13 +47,15 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/valuewrapper.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/glmvec.h>
+
 #include <array>
 #include <limits>
 #include <memory>
 #include <type_traits>
 #include <vector>
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/glmvec.h>
+#include <array>
 
 namespace inviwo {
 
@@ -74,8 +76,8 @@ MeshMappingVolume::MeshMappingVolume()
     , volumeInport_("importanceVolume")
     , enabled_("enabled", "Enabled", true)
     , tf_("transferfunction", "Transfer Function",
-          TransferFunction(
-              {{0.0f, vec4(0.0f, 0.1f, 1.0f, 1.0f)}, {1.0f, vec4(1.0f, 0.03f, 0.03f, 1.0f)}}))
+          TransferFunction({{.pos = 0.0f, .color = vec4{0.0f, 0.1f, 1.0f, 1.0f}},
+                            {.pos = 1.0f, .color = vec4{1.0f, 0.03f, 0.03f, 1.0f}}}))
     , component_("component", "Component", {{"component1", "Component 1", 0}})
 
     , useCustomDataRange_("useCustomRange", "Use Custom Range", false)
@@ -99,13 +101,13 @@ MeshMappingVolume::MeshMappingVolume()
 
     addProperties(enabled_, tf_, component_, useCustomDataRange_, customDataRange_, dataRange_);
 
-    auto getVolume = [this]() -> const Volume* {
+    const auto getVolume = [this]() -> const Volume* {
         if (volumeInport_.hasData()) return volumeInport_.getData().get();
         return nullptr;
     };
 
-    auto updateDataRange = [this, getVolume]() {
-        if (const auto volume = getVolume()) {
+    const auto updateDataRange = [this, getVolume]() {
+        if (const Volume* const volume = getVolume()) {
             // obtain range of selected component of chosen buffer
             auto range = util::volumeMinMax(volume);
             const int comp = component_.get();
@@ -117,12 +119,12 @@ MeshMappingVolume::MeshMappingVolume()
     };
     component_.onChange(updateDataRange);
 
-    auto updateComponents = [this, getVolume]() {
+    const auto updateComponents = [this, getVolume]() {
         const std::array<OptionPropertyIntOption, 4> options = {{{"component1", "Component 1", 0},
                                                                  {"component2", "Component 2", 1},
                                                                  {"component3", "Component 3", 2},
                                                                  {"component4", "Component 4", 3}}};
-        const auto volume = getVolume();
+        const auto* const volume = getVolume();
         const size_t components = volume ? volume->getDataFormat()->getComponents() : 1;
         std::vector<OptionPropertyIntOption> componentOptions{options.begin(),
                                                               options.begin() + components};
@@ -138,98 +140,111 @@ MeshMappingVolume::MeshMappingVolume()
     meshInport_.onChange([this]() { component_.setReadOnly(!meshInport_.hasData()); });
 }
 
-double triInterp(double (&c)[8], vec3 voxelpos) {
+namespace {
+
+// TODO replace with VolumeSampler
+
+double triInterp(const std::array<double, 8>& c, vec3 voxelpos) {
     // interpolate along x direction
-    double cx[4];
+    std::array<double, 4> cx;
     cx[0] = (1 - voxelpos.x) * c[0] + voxelpos.x * c[4];
     cx[1] = (1 - voxelpos.x) * c[1] + voxelpos.x * c[5];
     cx[2] = (1 - voxelpos.x) * c[2] + voxelpos.x * c[6];
     cx[3] = (1 - voxelpos.x) * c[3] + voxelpos.x * c[7];
 
     // interpolate along y direction
-    double cy[2];
+    std::array<double, 2> cy;
     cy[0] = (1 - voxelpos.y) * cx[0] + voxelpos.y * cx[2];
     cy[1] = (1 - voxelpos.y) * cx[1] + voxelpos.y * cx[3];
 
     // interpolate along z direction
     return (1 - voxelpos.z) * cy[0] + voxelpos.z * cy[1];
 }
+}  // namespace
 
 void MeshMappingVolume::process() {
-    if (enabled_.get() && meshInport_.hasData() &&
-        (meshInport_.getData()->getNumberOfBuffers() > 0) && volumeInport_.hasData()) {
+    if (!enabled_.get() || !meshInport_.hasData() ||
+        (meshInport_.getData()->getNumberOfBuffers() == 0) || !volumeInport_.hasData()) {
+        outport_.setData(meshInport_.getData());
+        return;
+    }
 
-        auto inputMesh = meshInport_.getData();
-        auto srcBuffer = inputMesh->getBuffer((size_t)BufferType::PositionAttrib)
-                             ->getRepresentation<BufferRAM>();
-        const auto volume = volumeInport_.getData();
-        const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
-        const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
+    const auto inputMesh = meshInport_.getData();
+    const auto* srcBuffer =
+        inputMesh->findBuffer(BufferType::PositionAttrib).first->getRepresentation<BufferRAM>();
 
-        // fill color vector
-        std::vector<vec4> colorsOut(srcBuffer->getSize());
-        bool accessOutsideBounds = false;
-        srcBuffer->dispatch<void>([comp = component_.getSelectedIndex(),
-                                   range = useCustomDataRange_.get() ? customDataRange_.get()
-                                                                     : dataRange_.get(),
-                                   dst = &colorsOut, tf = &tf_.get(), volume, volumeRAM,
-                                   worldToIndex, &accessOutsideBounds](auto pBuffer) {
-            auto& vec = pBuffer->getDataContainer();
-            std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
-                glm::vec4 worldpos = {util::glmcomp(v, 0), util::glmcomp(v, 1), util::glmcomp(v, 2),
-                                      1.0};
-                const auto texpos = vec3(worldToIndex * worldpos);
+    if (!srcBuffer) {
+        throw Exception(SourceContext{}, "No position buffer found in mesh");
+    }
 
-                if (glm::any(glm::lessThan(glm::floor(texpos), glm::zero<glm::vec3>())) ||
-                    glm::any(glm::greaterThanEqual(glm::ceil(texpos),
-                                                   glm::vec3(volume->getDimensions()))))
+    const auto volume = volumeInport_.getData();
+    const auto* volumeRAM = volume->getRepresentation<VolumeRAM>();
+    const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
+    const auto dataToWorld = inputMesh->getCoordinateTransformer().getDataToWorldMatrix();
+
+    // fill color vector
+    std::vector<vec4> colorsOut(srcBuffer->getSize());
+    bool accessOutsideBounds = false;
+    srcBuffer->dispatch<void, dispatching::filter::Vec3s>(
+        [comp = component_.getSelectedIndex(),
+         range = useCustomDataRange_.get() ? customDataRange_.get() : dataRange_.get(),
+         dst = &colorsOut, tf = &tf_.get(), volume, volumeRAM, worldToIndex, dataToWorld,
+         &accessOutsideBounds](auto pBuffer) {
+            auto& vecs = pBuffer->getDataContainer();
+
+            std::transform(vecs.begin(), vecs.end(), dst->begin(), [&](auto& vec) {
+                const auto texPos = vec3(worldToIndex * dataToWorld * vec4{vec, 1.0f});
+
+                if (glm::any(glm::lessThan(glm::floor(texPos), glm::zero<glm::vec3>())) ||
+                    glm::any(glm::greaterThanEqual(glm::ceil(texPos),
+                                                   glm::vec3(volume->getDimensions())))) {
                     accessOutsideBounds = true;
+                }
 
-                double res;
-                vec3 dummy;
+                double res{0.0};
                 if (volume->getInterpolation() == InterpolationType::Linear) {
                     // trilinear interpolation
-                    double c[8];
+                    std::array<double, 8> c;
                     for (int i = 0; i < 8; i++) {
-                        size3_t samplepos =
-                            size3_t(texpos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
+                        const size3_t samplepos =
+                            size3_t(texPos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
 
                         c[i] = volumeRAM->getAsNormalizedDouble(glm::clamp(
                             samplepos, glm::zero<size3_t>(), volume->getDimensions() - size3_t(1)));
                     }
-                    res = triInterp(c, glm::modf(texpos, dummy));
+                    vec3 integerPart{};
+                    res = triInterp(c, glm::modf(texPos, integerPart));
                 } else {
-                    size3_t samplepos = size3_t(glm::round(texpos));
+                    const size3_t samplepos = size3_t(glm::round(texPos));
                     res = volumeRAM->getAsDouble(glm::clamp(samplepos, glm::zero<size3_t>(),
                                                             volume->getDimensions() - size3_t(1)));
                 }
 
-                double normalized = (static_cast<double>(res) - range.x) / (range.y - range.x);
+                const double normalized =
+                    (static_cast<double>(res) - range.x) / (range.y - range.x);
                 return tf->sample(normalized);
             });
         });
-        if (accessOutsideBounds)
-            LogWarn(
-                "The volume is being sampled out of bounds one or more times. The mesh and volume "
-                "may not be aligned.");
-
-        // create a new mesh containing all buffers of the input mesh
-        // The first color buffer, if existing, is replaced with the mapped colors.
-        // Otherwise, a new color buffer will be added.
-        auto colBuffer = std::make_shared<Buffer<vec4>>(
-            std::make_shared<BufferRAMPrecision<vec4>>(std::move(colorsOut)));
-
-        auto mesh = inputMesh->clone();
-        if (auto [buff, loc] = mesh->findBuffer(BufferType::ColorAttrib); buff) {
-            mesh->replaceBuffer(buff, Mesh::BufferInfo{BufferType::ColorAttrib, loc}, colBuffer);
-        } else {
-            mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
-        }
-
-        outport_.setData(mesh);
-    } else {
-        outport_.setData(meshInport_.getData());
+    if (accessOutsideBounds) {
+        LogWarn(
+            "The volume is being sampled out of bounds one or more times. The mesh and volume "
+            "may not be aligned.");
     }
+
+    // create a new mesh containing all buffers of the input mesh
+    // The first color buffer, if existing, is replaced with the mapped colors.
+    // Otherwise, a new color buffer will be added.
+    auto colBuffer = std::make_shared<Buffer<vec4>>(
+        std::make_shared<BufferRAMPrecision<vec4>>(std::move(colorsOut)));
+
+    auto mesh = std::shared_ptr<Mesh>{inputMesh->clone()};
+    if (auto [buff, loc] = mesh->findBuffer(BufferType::ColorAttrib); buff) {
+        mesh->replaceBuffer(buff, Mesh::BufferInfo{BufferType::ColorAttrib, loc}, colBuffer);
+    } else {
+        mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
+    }
+
+    outport_.setData(mesh);
 }
 
 }  // namespace inviwo

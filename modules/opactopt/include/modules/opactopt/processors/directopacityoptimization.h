@@ -66,6 +66,8 @@ public:
 
     OpacityOptimization(const OpacityOptimization&) = delete;
     OpacityOptimization& operator=(const OpacityOptimization&) = delete;
+    OpacityOptimization(OpacityOptimization&&) = delete;
+    OpacityOptimization& operator=(OpacityOptimization&&) = delete;
 
     virtual ~OpacityOptimization();
 
