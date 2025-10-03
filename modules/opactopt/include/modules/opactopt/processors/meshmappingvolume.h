@@ -45,6 +45,10 @@ namespace inviwo {
 class IVW_MODULE_OPACTOPT_API MeshMappingVolume : public Processor {
 public:
     MeshMappingVolume();
+    MeshMappingVolume(const MeshMappingVolume&) = delete;
+    MeshMappingVolume(MeshMappingVolume&&) = delete;
+    MeshMappingVolume& operator=(const MeshMappingVolume&) = delete;
+    MeshMappingVolume& operator=(MeshMappingVolume&&) = delete;
     virtual ~MeshMappingVolume() = default;
 
     virtual void process() override;

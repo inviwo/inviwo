@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
+#include <modules/opactopt/opactoptmoduledefine.h>
+
 #include <vector>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
-std::vector<float> generateGaussianKernel(int radius, float sigma);
+IVW_MODULE_OPACTOPT_API std::vector<float> generateGaussianKernel(int radius, float sigma);
 
-}
-}  // namespace inviwo
+}  // namespace inviwo::util

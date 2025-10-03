@@ -35,7 +35,11 @@ namespace inviwo {
 
 class IVW_MODULE_OPACTOPT_API OpactOptModule : public InviwoModule {
 public:
-    OpactOptModule(InviwoApplication* app);
+    explicit OpactOptModule(InviwoApplication* app);
+    OpactOptModule(const OpactOptModule&) = delete;
+    OpactOptModule(OpactOptModule&&) = delete;
+    OpactOptModule& operator=(const OpactOptModule&) = delete;
+    OpactOptModule& operator=(OpactOptModule&&) = delete;
     virtual ~OpactOptModule() = default;
 };
 

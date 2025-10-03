@@ -31,8 +31,7 @@
 #include <cmath>
 #include <vector>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 std::vector<float> generateGaussianKernel(const int radius, const float sigma) {
     std::vector<float> res(radius + 1, 0.0f);
@@ -45,6 +44,4 @@ std::vector<float> generateGaussianKernel(const int radius, const float sigma) {
     // Don't normalize since shader will take care of it
     return res;
 }
-
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util
