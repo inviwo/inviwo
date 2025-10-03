@@ -37,25 +37,19 @@
 #include <vector>
 #include <numbers>
 
-namespace inviwo {
-
-namespace approximations {
+namespace inviwo::approximations {
 
 // In how may ways can I select k items from n items without repetition and without order
 constexpr size_t choose(size_t n, size_t k) {
     if (k == 0 || k == n) return 1;
     if (k < 0 || k > n) return 0;
 
-    // Use symmetry
-    if (k > n - k) {
-        k = n - k;
-    }
+    k = std::min(k, n - k);  // Use symmetry
 
     size_t result = 1;
     for (size_t i = 0; i < k; ++i) {
         result = result * (n - i) / (i + 1);
     }
-
     return result;
 }
 
@@ -64,32 +58,60 @@ enum class Type : std::uint8_t { Fourier, Legendre, Piecewise, PowerMoments, Tri
 /**
  * @brief Describes the approximation properties
  */
-struct IVW_MODULE_OPACTOPT_API ApproximationProperties {
+struct IVW_MODULE_OPACTOPT_API Properties {
     std::string_view identifier;
     std::string_view name;
-    std::string_view shaderDefineName;
-    std::string_view shaderFile;
-    int minCoefficients;
-    int maxCoefficients;
-    int increment;
+    std::string_view define;
+    std::string_view file;
+    int min;
+    int max;
+    int inc;
     Type type;
 };
 
-constexpr std::array<const ApproximationProperties, 5> approximations{
-    {{"fourier", "Fourier", "FOURIER", "opactopt/approximation/fourier.glsl", 1, 31, 1,
-      Type::Fourier},
-     {"legendre", "Legendre", "LEGENDRE", "opactopt/approximation/legendre.glsl", 1, 31, 1,
-      Type::Legendre},
-     {"piecewise", "Piecewise", "PIECEWISE", "opactopt/approximation/piecewise.glsl", 1, 30, 1,
-      Type::Piecewise},
-     {"powermoments", "Power moments", "POWER_MOMENTS", "opactopt/approximation/powermoments.glsl",
-      5, 9, 2, Type::PowerMoments},
-     {"trigmoments", "Trigonometric moments", "TRIG_MOMENTS",
-      "opactopt/approximation/trigmoments.glsl", 5, 9, 2, Type::TrigonometricMoments}}};
+constexpr std::array<const Properties, 5> approximations{
+    {{.identifier = "fourier",
+      .name = "Fourier",
+      .define = "FOURIER",
+      .file = "opactopt/approximation/fourier.glsl",
+      .min = 1,
+      .max = 31,
+      .inc = 1,
+      .type = Type::Fourier},
+     {.identifier = "legendre",
+      .name = "Legendre",
+      .define = "LEGENDRE",
+      .file = "opactopt/approximation/legendre.glsl",
+      .min = 1,
+      .max = 31,
+      .inc = 1,
+      .type = Type::Legendre},
+     {.identifier = "piecewise",
+      .name = "Piecewise",
+      .define = "PIECEWISE",
+      .file = "opactopt/approximation/piecewise.glsl",
+      .min = 1,
+      .max = 30,
+      .inc = 1,
+      .type = Type::Piecewise},
+     {.identifier = "powermoments",
+      .name = "Power moments",
+      .define = "POWER_MOMENTS",
+      .file = "opactopt/approximation/powermoments.glsl",
+      .min = 5,
+      .max = 9,
+      .inc = 2,
+      .type = Type::PowerMoments},
+     {.identifier = "trigmoments",
+      .name = "Trigonometric moments",
+      .define = "TRIG_MOMENTS",
+      .file = "opactopt/approximation/trigmoments.glsl",
+      .min = 5,
+      .max = 9,
+      .inc = 2,
+      .type = Type::TrigonometricMoments}}};
 
-constexpr const ApproximationProperties& get(Type type) {
-    return approximations.at(std::to_underlying(type));
-}
+constexpr const Properties& get(Type type) { return approximations.at(std::to_underlying(type)); }
 
 IVW_MODULE_OPACTOPT_API std::vector<OptionPropertyOption<Type>>
 generateApproximationStringOptions();
@@ -97,15 +119,13 @@ generateApproximationStringOptions();
 IVW_MODULE_OPACTOPT_API std::vector<float> generateLegendreCoefficients();
 
 struct IVW_MODULE_OPACTOPT_API MomentSettingsGL {
-    glm::vec4 wrappingZoneParameters;
-    float wrappingZoneAngle;
-    float overestimation;
-    std::array<float, 2> pad;
+    glm::vec4 wrappingZoneParameters{};
+    float wrappingZoneAngle{};
+    float overestimation{};
+    std::array<float, 2> pad{};
 };
 
 IVW_MODULE_OPACTOPT_API MomentSettingsGL generateMomentSettings(
     float wrappingZoneAngle = 0.1f * std::numbers::pi_v<float>, float overestimation = 0.25f);
 
-}  // namespace approximations
-
-}  // namespace inviwo
+}  // namespace inviwo::approximations

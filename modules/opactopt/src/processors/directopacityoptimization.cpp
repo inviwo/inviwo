@@ -162,26 +162,22 @@ OpacityOptimization::OpacityOptimization()
                                  "Number of importance sum coefficients, more importance sum "
                                  "coefficients optimizes opacity more accurately"_help,
                                  5,
-                                 std::make_pair(
-                                     approximations::get(approximationMethod_).minCoefficients,
-                                     ConstraintBehavior::Editable),
-                                 std::make_pair(
-                                     approximations::get(approximationMethod_).maxCoefficients,
-                                     ConstraintBehavior::Editable),
-                                 approximations::get(approximationMethod_).increment,
+                                 std::make_pair(approximations::get(approximationMethod_).min,
+                                                ConstraintBehavior::Immutable),
+                                 std::make_pair(approximations::get(approximationMethod_).max,
+                                                ConstraintBehavior::Immutable),
+                                 approximations::get(approximationMethod_).inc,
                                  InvalidationLevel::InvalidResources}
     , opticalDepthCoefficients_{"opticalDepthCoefficients",
                                 "Optical depth coefficients",
                                 "Number of optical depth coefficients, more optical depth "
                                 "coefficients gives more accurate blending"_help,
                                 5,
-                                std::make_pair(
-                                    approximations::get(approximationMethod_).minCoefficients,
-                                    ConstraintBehavior::Editable),
-                                std::make_pair(
-                                    approximations::get(approximationMethod_).maxCoefficients,
-                                    ConstraintBehavior::Editable),
-                                approximations::get(approximationMethod_).increment,
+                                std::make_pair(approximations::get(approximationMethod_).min,
+                                               ConstraintBehavior::Immutable),
+                                std::make_pair(approximations::get(approximationMethod_).max,
+                                               ConstraintBehavior::Immutable),
+                                approximations::get(approximationMethod_).inc,
                                 InvalidationLevel::InvalidResources}
     , normalizedBlending_{"normalizedBlending", "Normalized blending",
                           "Normalize the approximate blending, "
@@ -221,7 +217,7 @@ OpacityOptimization::OpacityOptimization()
     , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1.0f, 0.001f, 50.0f}
     , legendreCoeffs_{[]() {
                           const auto max = static_cast<size_t>(
-                              approximations::get(approximations::Type::Legendre).maxCoefficients);
+                              approximations::get(approximations::Type::Legendre).max);
                           return max * (max + 1) / 2;
                       }(),
                       GLFormats::getGLFormat(GL_FLOAT, 1), GL_NEAREST}
@@ -259,12 +255,12 @@ OpacityOptimization::OpacityOptimization()
 
     approximationMethod_.onChange([this]() {
         const auto& ap = approximations::get(approximationMethod_);
-        importanceSumCoefficients_.setMinValue(ap.minCoefficients);
-        importanceSumCoefficients_.setMaxValue(ap.maxCoefficients);
-        importanceSumCoefficients_.setIncrement(ap.increment);
-        opticalDepthCoefficients_.setMinValue(ap.minCoefficients);
-        opticalDepthCoefficients_.setMaxValue(ap.maxCoefficients);
-        opticalDepthCoefficients_.setIncrement(ap.increment);
+        importanceSumCoefficients_.setMinValue(ap.min);
+        importanceSumCoefficients_.setMaxValue(ap.max);
+        importanceSumCoefficients_.setIncrement(ap.inc);
+        opticalDepthCoefficients_.setMinValue(ap.min);
+        opticalDepthCoefficients_.setMaxValue(ap.max);
+        opticalDepthCoefficients_.setIncrement(ap.inc);
     });
 
     smoothing_.addProperties(gaussianRadius_, gaussianSigma_);
@@ -272,7 +268,7 @@ OpacityOptimization::OpacityOptimization()
     pointProperties_.addProperties(pointSize_, borderWidth_, borderColor_, antialising_);
 
     overrideColor_.setSemantics(PropertySemantics::Color)
-        .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty p) { return p.get(); });
+        .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty& p) { return p.get(); });
 
     for (auto& shader : meshShaders_) {
         shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -312,7 +308,7 @@ void OpacityOptimization::initializeResources() {
 void OpacityOptimization::buildShaders() {
     // Configure all the shaders with correct extensions and defines
 
-    auto clearAndAddExtensionsAndDefines = [&](ShaderObject* frag) {
+    const auto clearAndAddExtensionsAndDefines = [&](ShaderObject* frag) {
         frag->clearShaderExtensions();
         frag->clearShaderDefines();
 
@@ -325,7 +321,7 @@ void OpacityOptimization::buildShaders() {
                                   std::to_string(coeffTexFixedPointFactor_));
         }
 
-        frag->setShaderDefine(approximations::get(approximationMethod_).shaderDefineName, true, "");
+        frag->setShaderDefine(approximations::get(approximationMethod_).define, true, "");
 
         frag->setShaderDefine("N_IMPORTANCE_SUM_COEFFICIENTS", true,
                               std::to_string(importanceSumCoefficients_));
@@ -347,10 +343,10 @@ void OpacityOptimization::buildShaders() {
     }
 
     for (auto& shader : lineShaders_) {
-        auto vert = shader.getVertexShaderObject();
-        auto frag = shader.getFragmentShaderObject();
+        auto* vert = shader.getVertexShaderObject();
+        auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
-        
+
         utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
 
         vert->setShaderDefine("HAS_COLOR", true);
@@ -362,9 +358,9 @@ void OpacityOptimization::buildShaders() {
     }
 
     for (auto& shader : lineAdjacencyShaders_) {
-        auto vert = shader.getVertexShaderObject();
-        auto geom = shader.getGeometryShaderObject();
-        auto frag = shader.getFragmentShaderObject();
+        auto* vert = shader.getVertexShaderObject();
+        auto* geom = shader.getGeometryShaderObject();
+        auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
 
         utilgl::addShaderDefines(shader, lineSettings_.getStippling().getMode());
@@ -380,7 +376,7 @@ void OpacityOptimization::buildShaders() {
     }
 
     for (auto& shader : pointShaders_) {
-        auto frag = shader.getFragmentShaderObject();
+        auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
 
         frag->setShaderDefine("USE_IMPORTANCE_VOLUME", importanceVolume_.hasData());
@@ -390,14 +386,14 @@ void OpacityOptimization::buildShaders() {
 
     {
         Shader& shader = clear_;
-        auto frag = shader.getFragmentShaderObject();
+        auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
         shader.build();
     }
 
     {
         Shader& shader = normalize_;
-        auto frag = shader.getFragmentShaderObject();
+        auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
         frag->setShaderDefine("NORMALISE", normalizedBlending_);
         frag->setShaderDefine("BACKGROUND_AVAILABLE", backgroundPort_.hasData());
@@ -405,10 +401,10 @@ void OpacityOptimization::buildShaders() {
         shader.build();
     }
 
-    for (auto&& [shader, horizontal] : std::views::zip(smooth_, std::array{true, false})) {
-        auto frag = shader.getFragmentShaderObject();
+    for (auto&& [shader, horizontal] : std::views::zip(smooth_, std::array{"1", "0"})) {
+        auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
-        frag->setShaderDefine("HORIZONTAL", true, std::to_string(int(horizontal)));
+        frag->setShaderDefine("HORIZONTAL", true, horizontal);
         shader.build();
     }
 }
@@ -472,9 +468,9 @@ void OpacityOptimization::process() {
 
     utilgl::activateAndClearTarget(intermediateImage_);
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
-    utilgl::DepthMaskState depthMask(GL_FALSE);
-    utilgl::CullFaceState culling(GL_NONE);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+    const utilgl::DepthMaskState depthMask(GL_FALSE);
+    const utilgl::CullFaceState culling(GL_NONE);
 
     // clear coefficient buffers
     clear_.activate();
@@ -486,7 +482,7 @@ void OpacityOptimization::process() {
     renderGeometry(0, units);
 
     // Optional smoothing of importance coefficients
-    if (smoothing_) {
+    if (units.gaussianKernel) {
         // horizontal pass and then vertical pass
         for (auto& shader : smooth_) {
             shader.activate();
@@ -502,7 +498,7 @@ void OpacityOptimization::process() {
     renderGeometry(1, units);
 
     // Pass 3: Approximate blending, render to target
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
     renderGeometry(2, units);
 
     // normalise
@@ -544,8 +540,7 @@ void OpacityOptimization::setUniforms(Shader& shader, Units& units) {
     if (units.momentSettings) {
         shader.setUniform("momentSettings", *units.momentSettings);
     }
-
-    if (importanceVolume_.hasData()) {
+    if (units.importanceVolume) {
         shader.setUniform(importanceVolume_.getIdentifier(), *units.importanceVolume);
         utilgl::setShaderUniforms(shader, importanceVolume_,
                                   StrBuffer{"{}Parameters", importanceVolume_.getIdentifier()});
@@ -553,127 +548,68 @@ void OpacityOptimization::setUniforms(Shader& shader, Units& units) {
 }
 
 void OpacityOptimization::renderGeometry(const int pass, Units& units) {
-    // Mesh
-    meshShaders_[pass].activate();
-    utilgl::setUniforms(meshShaders_[pass], camera_, lightingProperty_, overrideColor_);
-    setUniforms(meshShaders_[pass], units);
-    for (auto mesh : inport_) {
-        utilgl::setShaderUniforms(meshShaders_[pass], *mesh, "geometry");
-        meshShaders_[pass].setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
-        MeshDrawerGL::DrawObject drawer(*mesh);
 
-        if (mesh->getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                if (mesh->getIndexMeshInfo(i).dt != DrawType::Triangles) continue;
-                drawer.draw(i);
+    const auto draw = [&](Shader& shader, auto&& shouldDraw) {
+        setUniforms(shader, units);
+
+        for (const auto& mesh : inport_) {
+            utilgl::setShaderUniforms(shader, *mesh, "geometry");
+            shader.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+            MeshDrawerGL::DrawObject drawer(*mesh);
+
+            if (mesh->getNumberOfIndicies() > 0) {
+                for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+                    if (!shouldDraw(mesh->getIndexMeshInfo(i))) continue;
+
+                    drawer.draw(i);
+                    if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+                }
+            } else if (shouldDraw(mesh->getDefaultMeshInfo())) {
+                drawer.draw();
                 if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
             }
-        } else if (mesh->getDefaultMeshInfo().dt == DrawType::Triangles) {
-            drawer.draw();
-            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
         }
-    }
+    };
+
+    const auto lineSettings = [&](Shader& shader) {
+        utilgl::setUniforms(shader, camera_, lineSettings_.lineWidth, lineSettings_.antialiasing,
+                            lineSettings_.miterLimit, lineSettings_.roundCaps,
+                            lineSettings_.defaultColor);
+
+        // Stippling settings
+        shader.setUniform("stippling.length", lineSettings_.getStippling().getLength());
+        shader.setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
+        shader.setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
+        shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
+    };
+
+    // Triangles
+    meshShaders_[pass].activate();
+    utilgl::setUniforms(meshShaders_[pass], camera_, lightingProperty_, overrideColor_);
+    draw(meshShaders_[pass], [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Triangles; });
 
     // Lines
     lineShaders_[pass].activate();
-
-    utilgl::setShaderUniforms(lineShaders_[pass], camera_, "camera");
-    utilgl::setUniforms(lineShaders_[pass], lineSettings_.lineWidth, lineSettings_.antialiasing,
-                        lineSettings_.miterLimit, lineSettings_.roundCaps,
-                        lineSettings_.defaultColor);
-
-    // Stippling settings
-    lineShaders_[pass].setUniform("stippling.length", lineSettings_.getStippling().getLength());
-    lineShaders_[pass].setUniform("stippling.spacing", lineSettings_.getStippling().getSpacing());
-    lineShaders_[pass].setUniform("stippling.offset", lineSettings_.getStippling().getOffset());
-    lineShaders_[pass].setUniform("stippling.worldScale",
-                                  lineSettings_.getStippling().getWorldScale());
-
-    setUniforms(lineShaders_[pass], units);
-    for (const auto& mesh : inport_) {
-        utilgl::setShaderUniforms(lineShaders_[pass], *mesh, "geometry");
-        MeshDrawerGL::DrawObject drawer(*mesh);
-
-        if (mesh->getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines ||
-                    mesh->getIndexMeshInfo(0).ct != ConnectivityType::None)
-                    continue;
-
-                drawer.draw(i);
-                if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-            }
-        } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines &&
-                   mesh->getDefaultMeshInfo().ct == ConnectivityType::None) {
-            drawer.draw();
-            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        }
-    }
+    lineSettings(lineShaders_[pass]);
+    draw(lineShaders_[pass], [](const Mesh::MeshInfo& mi) {
+        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::None;
+    });
 
     // Line adjacency
     lineAdjacencyShaders_[pass].activate();
-
-    utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], camera_, "camera");
-    utilgl::setUniforms(lineAdjacencyShaders_[pass], lineSettings_.lineWidth,
-                        lineSettings_.antialiasing, lineSettings_.miterLimit,
-                        lineSettings_.roundCaps, lineSettings_.defaultColor);
-
-    // Stippling settings
-    lineAdjacencyShaders_[pass].setUniform("stippling.length",
-                                           lineSettings_.getStippling().getLength());
-    lineAdjacencyShaders_[pass].setUniform("stippling.spacing",
-                                           lineSettings_.getStippling().getSpacing());
-    lineAdjacencyShaders_[pass].setUniform("stippling.offset",
-                                           lineSettings_.getStippling().getOffset());
-    lineAdjacencyShaders_[pass].setUniform("stippling.worldScale",
-                                           lineSettings_.getStippling().getWorldScale());
-
-    setUniforms(lineAdjacencyShaders_[pass], units);
-    for (const auto& mesh : inport_) {
-        utilgl::setShaderUniforms(lineAdjacencyShaders_[pass], *mesh, "geometry");
-        MeshDrawerGL::DrawObject drawer(*mesh);
-
-        if (mesh->getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines ||
-                    mesh->getIndexMeshInfo(0).ct < ConnectivityType::Adjacency)
-                    continue;
-
-                drawer.draw(i);
-                if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-            }
-        } else if (mesh->getDefaultMeshInfo().dt == DrawType::Lines &&
-                   mesh->getDefaultMeshInfo().ct >= ConnectivityType::Adjacency) {
-            drawer.draw();
-            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        }
-    }
+    lineSettings(lineAdjacencyShaders_[pass]);
+    draw(lineShaders_[pass], [](const Mesh::MeshInfo& mi) {
+        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::Adjacency;
+    });
 
     // Points
-    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
-    utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
+    const utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
+    const utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
     pointShaders_[pass].activate();
-
     utilgl::setUniforms(pointShaders_[pass], camera_, lightingProperty_, pointSize_, borderWidth_,
                         borderColor_, antialising_);
-    setUniforms(pointShaders_[pass], units);
-    for (auto mesh : inport_) {
-        utilgl::setShaderUniforms(pointShaders_[pass], *mesh, "geometry");
-        MeshDrawerGL::DrawObject drawer(*mesh);
 
-        if (mesh->getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                if (mesh->getIndexMeshInfo(i).dt != DrawType::Points) continue;
-
-                drawer.draw(i);
-                if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-            }
-        } else if (mesh->getDefaultMeshInfo().dt == DrawType::Points ||
-                   mesh->getDefaultMeshInfo().dt == DrawType::NotSpecified) {
-            drawer.draw();
-            if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-        }
-    }
+    draw(lineShaders_[pass], [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Points; });
 
     LGL_ERROR_CLASS;
 }
