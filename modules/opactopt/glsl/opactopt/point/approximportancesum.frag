@@ -79,8 +79,7 @@ void main() {
     float gi = fragment.color.a;
 #endif
 
-    // Project importance
-    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float alpha = approximateAlpha(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
 
     float glyphRadius = pointSize * 0.5;
     rad *= pointSize * 0.5 + borderWidth;

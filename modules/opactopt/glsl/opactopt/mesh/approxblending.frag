@@ -74,8 +74,7 @@ void main() {
     float gi = color_.a;
 #endif
 
-    // find alpha
-    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float alpha = approximateAlpha(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
 
     // find optical depth
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
