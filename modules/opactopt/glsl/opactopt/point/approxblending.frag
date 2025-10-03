@@ -72,8 +72,7 @@ void main() {
     float gi = fragment.color.a;
 #endif
 
-    // find alpha
-    float alpha = projectImportance(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
+    float alpha = approximateAlpha(gi, depth, importanceSumCoeffs[0], N_IMPORTANCE_SUM_COEFFICIENTS);
 
     // calculate normal from texture coordinates
     vec3 normal;
