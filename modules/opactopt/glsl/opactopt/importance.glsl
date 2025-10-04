@@ -42,30 +42,28 @@ uniform float q;
 uniform float r;
 uniform float lambda;
 
+#ifdef USE_IMPORTANCE_VOLUME
 float importance(vec2 texCoord, float depth, CameraParameters camera) {
     float viewDepth = depth * (camera.farPlane - camera.nearPlane) + camera.nearPlane;
     float clipDepth = convertDepthViewToClip(camera, viewDepth);
     vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
     vec4 worldPos = camera.clipToWorld * clip;
     worldPos /= worldPos.w;
-    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz *
-                  importanceVolumeParameters.reciprocalDimensions;
+    vec3 texPos = (importanceVolumeParameters.textureToIndex * importanceVolumeParameters.worldToTexture * worldPos).xyz;
     // sample importance from volume
     float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x;
 
     return gi;
 }
+#endif
 
-float projectImportance(float gi, float depth,
+float approximateAlpha(float gi, float depth,
                         layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     float gisq = gi * gi;
     float gtot = total(coeffTex, N);
     float Gd = approximate(coeffTex, N, depth);
 
-// This ifdef was only for point?
-//#if !defined(POWER_MOMENTS) && !defined(TRIG_MOMENTS)
     Gd += 0.5 * gisq;  // correct for importance sum approximation at discontinuity
-//#endif
 
     // set pixel alpha using opacity optimisation
     float Gdgi2 = max(0, Gd - gisq);
