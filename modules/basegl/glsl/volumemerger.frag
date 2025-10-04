@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/sampler3d.glsl"
@@ -40,20 +40,22 @@ uniform VolumeParameters vol4Parameters;
 
 in vec4 texCoord_;
 
- 
-
 void main() {
-    vec4 outv = vec4(0.0,0.0,0.0,0.0);
-    outv[0] = getVoxel(volume,volumeParameters, texCoord_.xyz).r;
+    vec4 outv = vec4(0.0, 0.0, 0.0, 0.0);
+    outv[0] = getVoxel(volume, volumeParameters, texCoord_.xyz).r;
     int i = 1;
+
 #ifdef HAS_VOL2
-    outv[i++] = getVoxel(vol2,vol2Parameters, texCoord_.xyz).r;
+    outv[i++] = getVoxel(vol2, vol2Parameters, texCoord_.xyz).r;
 #endif
+
 #ifdef HAS_VOL3
-    outv[i++] = getVoxel(vol3,vol3Parameters, texCoord_.xyz).r;
+    outv[i++] = getVoxel(vol3, vol3Parameters, texCoord_.xyz).r;
 #endif
+
 #ifdef HAS_VOL4
-    outv[i++] = getVoxel(vol4,vol4Parameters, texCoord_.xyz).r;
+    outv[i++] = getVoxel(vol4, vol4Parameters, texCoord_.xyz).r;
 #endif
+
     FragData0 = outv;
 }

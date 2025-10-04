@@ -64,7 +64,11 @@ const ProcessorInfo VolumeBinary::processorInfo_{
 const ProcessorInfo& VolumeBinary::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBinary::VolumeBinary()
-    : VolumeGLProcessor("volume_binary.frag", false)
+    : VolumeGLProcessor("volume_binary.frag",
+                        VolumeConfig{.format = DataUInt8::get(),
+                                     .dataRange = vec2(0, 255),
+                                     .valueRange = vec2(0, 255),
+                                     .valueAxis = Axis{.name = "mask", .unit = Unit{}}})
     , threshold_("threshold", "Threshold",
                  "Threshold used for the binarization of the input volume"_help, 0.5)
     , op_("operator", "Operator",
@@ -76,25 +80,17 @@ VolumeBinary::VolumeBinary()
            {"notequal", "!=", Operator::NotEqual}},
           0, InvalidationLevel::InvalidResources) {
 
-    outport_.setHelp("Binary output volume"_help);
+    outport_.setHelp("Binary mask volume"_help);
 
     addProperties(threshold_, op_);
-
-    this->dataFormat_ = DataUInt8::get();
 }
 
-void VolumeBinary::preProcess(TextureUnitContainer&) { utilgl::setUniforms(shader_, threshold_); }
-
-void VolumeBinary::postProcess() {
-    volume_->dataMap.dataRange = vec2(0, 255);
-    volume_->dataMap.valueRange = vec2(0, 255);
-    volume_->dataMap.valueAxis.name = "mask";
-    volume_->dataMap.valueAxis.unit = Unit{};
+void VolumeBinary::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+    utilgl::setUniforms(shader, threshold_);
 }
 
-void VolumeBinary::initializeResources() {
-    shader_.getFragmentShaderObject()->addShaderDefine("OP", op_.getSelectedDisplayName());
-    shader_.build();
+void VolumeBinary::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->addShaderDefine("OP", op_.getSelectedDisplayName());
 }
 
 }  // namespace inviwo

@@ -69,7 +69,7 @@ const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
 const ProcessorInfo& VolumeGradientMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
-    : VolumeGLProcessor{"volumegradientmagnitude.frag"}
+    : VolumeGLProcessor{"volumegradientmagnitude.frag", VolumeConfig{.format = DataFloat32::get()}}
     , channel_{"channel", "Channel",
                OptionPropertyState<int>{
                    .options = util::enumeratedOptions("Channel", 4),
@@ -78,48 +78,28 @@ VolumeGradientMagnitude::VolumeGradientMagnitude()
     , scaling_{"gradientScaling", "Scaling",
                util::ordinalScale(1.0f).set("Scaling factor for the gradient magnitude"_help)} {
 
-    dataFormat_ = DataFloat32::get();
+    addProperties(channel_, scaling_, calculateDataRange_);
 
-    addProperties(channel_, scaling_);
+    calculateDataRange_.set(true);
+    calculateDataRange_.setCurrentStateAsDefault();
 }
 
-VolumeGradientMagnitude::~VolumeGradientMagnitude() {}
+VolumeGradientMagnitude::~VolumeGradientMagnitude() = default;
 
-void VolumeGradientMagnitude::preProcess(TextureUnitContainer&) {
+void VolumeGradientMagnitude::preProcess(TextureUnitContainer& cont, Shader& shader,
+                                         VolumeConfig& config) {
     auto volume = inport_.getData();
     if (channel_.getSelectedIndex() >= volume->getDataFormat()->getComponents()) {
         throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
                         channel_.getSelectedValue(), volume->getDataFormat()->getComponents());
     }
 
-    shader_.setUniform("channel", channel_.getSelectedValue());
-    shader_.setUniform("scaling", scaling_);
-}
+    config.valueAxis =
+        Axis{.name = "Gradient magnitude",
+             .unit = inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit};
 
-void VolumeGradientMagnitude::postProcess() {
-    volume_->dataMap.valueAxis.name = "Gradient magnitude";
-    volume_->dataMap.valueAxis.unit =
-        inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit;
-
-    const auto [min, max] = dataMinMaxGL_.minMax(*volume_);
-    volume_->dataMap.dataRange = dvec2{min.x, max.x};
-    volume_->dataMap.valueRange = dvec2{min.x, max.x};
-}
-
-void VolumeGradientMagnitude::afterInportChanged() {
-    if (inport_.hasData()) {
-        int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
-
-        if (channels == static_cast<int>(channel_.size())) return;
-
-        channel_.clearOptions();
-        for (int i = 0; i < channels; i++) {
-            std::stringstream ss;
-            ss << "Channel " << i;
-            channel_.addOption(ss.str(), ss.str(), i);
-        }
-        channel_.setCurrentStateAsDefault();
-    }
+    shader.setUniform("channel", channel_.getSelectedValue());
+    shader.setUniform("scaling", scaling_);
 }
 
 }  // namespace inviwo
