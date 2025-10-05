@@ -33,16 +33,15 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
 
-#include <memory>       // for shared_ptr, make_shared
-#include <utility>      // for pair
-#include <vector>       // for vector
-
+#include <memory>   // for shared_ptr, make_shared
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeReuseCache {
 public:
-    VolumeReuseCache(VolumeConfig config = {});
+    explicit VolumeReuseCache(VolumeConfig config = {});
     VolumeReuseCache(const VolumeReuseCache&) = delete;
     VolumeReuseCache(VolumeReuseCache&&) = delete;
     VolumeReuseCache& operator=(const VolumeReuseCache&) = delete;
@@ -50,7 +49,7 @@ public:
     ~VolumeReuseCache() = default;
 
     const VolumeConfig& getConfig() const;
-    void setConfig(VolumeConfig config);
+    void setConfig(const VolumeConfig& config);
     std::shared_ptr<Volume> get();
 
 private:

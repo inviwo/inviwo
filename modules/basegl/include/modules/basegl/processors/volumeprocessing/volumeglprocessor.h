@@ -31,8 +31,8 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <inviwo/core/ports/volumeport.h>             // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>         // for Processor
+#include <inviwo/core/ports/volumeport.h>      // for VolumeInport, VolumeOutport
+#include <inviwo/core/processors/processor.h>  // for Processor
 #include <inviwo/core/properties/boolproperty.h>
 #include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
 #include <modules/opengl/shader/shader.h>             // for Shader
@@ -91,19 +91,19 @@ protected:
      */
     virtual void afterInportChanged();
 
-    void setFragmentShaderResource(std::shared_ptr<const ShaderResource> fragmentShader);
+    void setFragmentShaderResource(std::shared_ptr<const ShaderResource> fragShaderResource);
     std::shared_ptr<const ShaderResource> getFragmentShaderResource();
 
     VolumeInport inport_;
     VolumeOutport outport_;
     BoolProperty calculateDataRange_;
+
 private:
     VolumeConfig config_;
     VolumeReuseCache volumes_;
 
     Shader shader_;
     FrameBufferObject fbo_;
-
 
     std::optional<utilgl::DataMinMaxGL> dataMinMaxGL_;
 };

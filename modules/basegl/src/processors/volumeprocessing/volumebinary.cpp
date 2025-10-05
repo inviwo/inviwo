@@ -66,9 +66,9 @@ const ProcessorInfo& VolumeBinary::getProcessorInfo() const { return processorIn
 VolumeBinary::VolumeBinary()
     : VolumeGLProcessor("volume_binary.frag",
                         VolumeConfig{.format = DataUInt8::get(),
+                                     .valueAxis = Axis{.name = "mask", .unit = Unit{}},
                                      .dataRange = vec2(0, 255),
-                                     .valueRange = vec2(0, 255),
-                                     .valueAxis = Axis{.name = "mask", .unit = Unit{}}})
+                                     .valueRange = vec2(0, 255)})
     , threshold_("threshold", "Threshold",
                  "Threshold used for the binarization of the input volume"_help, 0.5)
     , op_("operator", "Operator",
@@ -85,7 +85,8 @@ VolumeBinary::VolumeBinary()
     addProperties(threshold_, op_);
 }
 
-void VolumeBinary::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+void VolumeBinary::preProcess([[maybe_unused]] TextureUnitContainer& cont, Shader& shader,
+                              [[maybe_unused]] VolumeConfig& config) {
     utilgl::setUniforms(shader, threshold_);
 }
 

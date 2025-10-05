@@ -70,7 +70,8 @@ VolumeMapping::VolumeMapping()
 
 VolumeMapping::~VolumeMapping() = default;
 
-void VolumeMapping::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+void VolumeMapping::preProcess(TextureUnitContainer& cont, Shader& shader,
+                               [[maybe_unused]] VolumeConfig& config) {
     utilgl::bindAndSetUniforms(shader, cont, tfProperty_);
     utilgl::setUniforms(shader, channel_);
 }

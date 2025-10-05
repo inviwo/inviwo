@@ -83,8 +83,8 @@ void VolumeGradientProcessor::initializeShader(Shader& shader) {
     shader.getFragmentShaderObject()->setShaderDefine("ADD_DATA_CHANNEL", dataInChannel4_.get());
 }
 
-void VolumeGradientProcessor::preProcess(TextureUnitContainer& cont, Shader& shader,
-                                         VolumeConfig& config) {
+void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& cont,
+                                         Shader& shader, VolumeConfig& config) {
 
     if (dataInChannel4_.get()) {
         config.format = DataVec4Float32::get();
@@ -107,6 +107,5 @@ void VolumeGradientProcessor::preProcess(TextureUnitContainer& cont, Shader& sha
     shader.setUniform("channel", channel_.getSelectedValue());
     shader.setUniform("dataRange", vec2(inport_.getData()->dataMap.dataRange));
 }
-
 
 }  // namespace inviwo

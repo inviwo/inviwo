@@ -50,7 +50,8 @@ public:
 
 protected:
     virtual void initializeShader(Shader&) override;
-    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
 
 private:
     IntProperty kernelSize_;

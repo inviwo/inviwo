@@ -29,20 +29,21 @@
 
 #include <modules/base/datastructures/volumereusecache.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
-VolumeReuseCache::VolumeReuseCache(VolumeConfig config) : config_(config) {}
+VolumeReuseCache::VolumeReuseCache(VolumeConfig config) : config_(std::move(config)) {}
 
 const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
-void VolumeReuseCache::setConfig(VolumeConfig config) {
+void VolumeReuseCache::setConfig(const VolumeConfig& config) {
     if (config != config_) {
         cache_.clear();
         config_ = config;
     }
 }
 std::shared_ptr<Volume> VolumeReuseCache::get() {
-    auto it = std::find_if(cache_.begin(), cache_.end(),
-                           [](const auto& elem) { return elem.use_count() == 1; });
+    auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
         return *it;
     } else {

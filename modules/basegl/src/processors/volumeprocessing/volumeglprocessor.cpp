@@ -66,12 +66,12 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
     , outport_{"outputVolume", "Output volume"_help}
     , calculateDataRange_{"calculateDataRange_", "Calcualte Data Range",
                           "Calculate and assign a new data range for the volume."_help, false}
-    , config_{config}
+    , config_{std::move(config)}
     , volumes_{}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
                {ShaderType::Fragment, fragmentShaderResource
-                                          ? fragmentShaderResource
+                                          ? std::move(fragmentShaderResource)
                                           : utilgl::findShaderResource("volume_gpu.frag")}},
               Shader::Build::No)
     , fbo_() {
@@ -82,7 +82,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
 }
 
 VolumeGLProcessor::VolumeGLProcessor(std::string_view fragmentShader, VolumeConfig config)
-    : VolumeGLProcessor(utilgl::findShaderResource(fragmentShader), config) {}
+    : VolumeGLProcessor{utilgl::findShaderResource(fragmentShader), std::move(config)} {}
 
 VolumeGLProcessor::~VolumeGLProcessor() = default;
 
@@ -112,7 +112,7 @@ void VolumeGLProcessor::process() {
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
-    VolumeGL* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
+    auto* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
@@ -152,7 +152,7 @@ void VolumeGLProcessor::process() {
 void VolumeGLProcessor::setFragmentShaderResource(
     std::shared_ptr<const ShaderResource> fragShaderResource) {
     if (auto* frag = shader_.getFragmentShaderObject()) {
-        return frag->setResource(fragShaderResource);
+        return frag->setResource(std::move(fragShaderResource));
     }
 }
 std::shared_ptr<const ShaderResource> VolumeGLProcessor::getFragmentShaderResource() {

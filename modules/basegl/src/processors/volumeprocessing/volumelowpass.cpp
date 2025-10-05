@@ -104,7 +104,8 @@ VolumeLowPass::VolumeLowPass()
 
 VolumeLowPass::~VolumeLowPass() = default;
 
-void VolumeLowPass::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+void VolumeLowPass::preProcess([[maybe_unused]] TextureUnitContainer& cont, Shader& shader,
+                               [[maybe_unused]] VolumeConfig& config) {
     utilgl::setUniforms(shader, kernelSize_);
 
     float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();

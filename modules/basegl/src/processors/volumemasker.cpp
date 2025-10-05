@@ -72,7 +72,8 @@ VolumeMasker::VolumeMasker()
     addProperties(useWorldSpace_, textureWrap_, calculateDataRange_);
 }
 
-void VolumeMasker::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+void VolumeMasker::preProcess(TextureUnitContainer& cont, Shader& shader,
+                              [[maybe_unused]] VolumeConfig& config) {
     utilgl::bindAndSetUniforms(shader, cont, *mask_.getData(), "mask");
 
     if (useWorldSpace_) {

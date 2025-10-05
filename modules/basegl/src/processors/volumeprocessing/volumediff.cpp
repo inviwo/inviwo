@@ -66,7 +66,8 @@ VolumeDiff::VolumeDiff()
         "Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0) / 2.0</tt>"_help);
 }
 
-void VolumeDiff::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+void VolumeDiff::preProcess(TextureUnitContainer& cont, Shader& shader,
+                            [[maybe_unused]] VolumeConfig& config) {
     utilgl::bindAndSetUniforms(shader, cont, *vol2_.getData(), "volume2");
 }
 
