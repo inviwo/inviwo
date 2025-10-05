@@ -482,7 +482,7 @@ void OpacityOptimization::process() {
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     // Pass 1: Project importance
-    renderGeometry(0, units);
+    renderGeometry(Pass::ProjectImportance, units);
 
     // Optional smoothing of importance coefficients
     if (units.gaussianKernel) {
@@ -498,11 +498,11 @@ void OpacityOptimization::process() {
     }
 
     // Pass 2: Approximate importance and project opacities
-    renderGeometry(1, units);
+    renderGeometry(Pass::ApproximateImportance, units);
 
     // Pass 3: Approximate blending, render to target
     const utilgl::BlendModeState blending(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
-    renderGeometry(2, units);
+    renderGeometry(Pass::ApproximateBlending, units);
 
     // normalise
     utilgl::activateAndClearTarget(outport_);
@@ -550,7 +550,7 @@ void OpacityOptimization::setUniforms(Shader& shader, Units& units) {
     }
 }
 
-void OpacityOptimization::renderGeometry(const int pass, Units& units) {
+void OpacityOptimization::renderGeometry(const Pass pass, Units& units) {
 
     const auto draw = [&](Shader& shader, auto&& shouldDraw) {
         setUniforms(shader, units);
@@ -565,11 +565,13 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
                     if (!shouldDraw(mesh->getIndexMeshInfo(i))) continue;
 
                     drawer.draw(i);
-                    if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+                    if (pass < Pass::ApproximateBlending)
+                        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
                 }
             } else if (shouldDraw(mesh->getDefaultMeshInfo())) {
                 drawer.draw();
-                if (pass < 2) glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+                if (pass < Pass::ApproximateBlending)
+                    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
             }
         }
     };
@@ -602,7 +604,8 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
     lineAdjacencyShaders_[pass].activate();
     lineSettings(lineAdjacencyShaders_[pass]);
     draw(lineAdjacencyShaders_[pass], [](const Mesh::MeshInfo& mi) {
-        return mi.dt == DrawType::Lines && (mi.ct == ConnectivityType::Adjacency || mi.ct == ConnectivityType::StripAdjacency);
+        return mi.dt == DrawType::Lines &&
+               (mi.ct == ConnectivityType::Adjacency || mi.ct == ConnectivityType::StripAdjacency);
     });
 
     // Points

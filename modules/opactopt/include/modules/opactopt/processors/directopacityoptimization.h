@@ -93,9 +93,11 @@ protected:
         std::optional<TextureUnit> momentSettings;
     };
 
+    enum Pass { ProjectImportance = 0, ApproximateImportance = 1, ApproximateBlending = 2 };
+
     void setUniforms(Shader& shader, Units& units);
     void buildShaders();
-    void renderGeometry(int pass, Units& units);
+    void renderGeometry(const Pass pass, Units& units);
     static void resizeTexture(Texture2DArray& texture, size2_t size, size_t depth);
     void resizeImportanceSumTextures(size2_t screenSize, size_t importanceSumCoefficients);
     void resizeOpticalDepthTexture(size2_t screenSize, size_t opticalDepthCoefficients);
