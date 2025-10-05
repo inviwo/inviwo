@@ -602,7 +602,7 @@ void OpacityOptimization::renderGeometry(const int pass, Units& units) {
     lineAdjacencyShaders_[pass].activate();
     lineSettings(lineAdjacencyShaders_[pass]);
     draw(lineAdjacencyShaders_[pass], [](const Mesh::MeshInfo& mi) {
-        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::Adjacency;
+        return mi.dt == DrawType::Lines && (mi.ct == ConnectivityType::Adjacency || mi.ct == ConnectivityType::StripAdjacency);
     });
 
     // Points
