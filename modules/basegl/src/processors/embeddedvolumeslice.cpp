@@ -145,7 +145,7 @@ void EmbeddedVolumeSlice::planeSettingsChanged() {
         embeddedMesh_.getEditableVertices()->getEditableRAMRepresentation()->getDataContainer();
     intersections.clear();
 
-    if (embeddedMesh_.getNumberOfIndicies() == 0) {
+    if (embeddedMesh_.getNumberOfIndices() == 0) {
         embeddedMesh_.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     }
 

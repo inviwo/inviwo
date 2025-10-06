@@ -349,6 +349,8 @@ size_t Mesh::getNumberOfBuffers() const { return buffers_.size(); }
 
 size_t Mesh::getNumberOfIndicies() const { return indices_.size(); }
 
+size_t Mesh::getNumberOfIndices() const { return indices_.size(); }
+
 void Mesh::append(const Mesh& mesh) {
     if (buffers_.size() != mesh.buffers_.size()) {
         throw Exception("Mismatched meshed, number of buffer does not match");

@@ -262,7 +262,13 @@ public:
     MeshInfo getIndexMeshInfo(size_t idx) const;
 
     size_t getNumberOfBuffers() const;
+
+    // clang-format off
+    [[deprecated("Mesh::getNumberOfIndicies is deprecated, use getNumberOfIndices (deprecated since 2025-10-04)")]]
     size_t getNumberOfIndicies() const;
+    // clang-format on
+
+    size_t getNumberOfIndices() const;
 
     /**
      * \brief Append another mesh to this mesh

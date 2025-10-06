@@ -276,8 +276,8 @@ TEST(Marchingcubes, minimal) {
 
     EXPECT_EQ(data1, data2);
 
-    ASSERT_EQ(mesh1->getNumberOfIndicies(), 1);
-    ASSERT_EQ(mesh2->getNumberOfIndicies(), 1);
+    ASSERT_EQ(mesh1->getNumberOfIndices(), 1);
+    ASSERT_EQ(mesh2->getNumberOfIndices(), 1);
 
     auto indBuffer1 = mesh1->getIndices(0);
     auto indBuffer2 = mesh2->getIndices(0);
@@ -322,8 +322,8 @@ TEST(Marchingcubes, sphere) {
     EXPECT_EQ(data1, data2);  the order are not the same...
     */
 
-    ASSERT_EQ(mesh1->getNumberOfIndicies(), 1);
-    ASSERT_EQ(mesh2->getNumberOfIndicies(), 1);
+    ASSERT_EQ(mesh1->getNumberOfIndices(), 1);
+    ASSERT_EQ(mesh2->getNumberOfIndices(), 1);
 
     /*
     auto indBuffer1 = mesh1->getIndices(0);

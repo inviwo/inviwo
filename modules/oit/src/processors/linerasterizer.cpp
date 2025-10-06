@@ -208,8 +208,8 @@ void LineRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
         auto transform = CompositeTransform{mesh->getModelMatrix(),
                                             mesh->getWorldMatrix() * worldMatrixTransform};
 
-        if (mesh->getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+        if (mesh->getNumberOfIndices() > 0) {
+            for (size_t i = 0; i < mesh->getNumberOfIndices(); ++i) {
                 if (mesh->getIndexMeshInfo(i).dt != DrawType::Lines) continue;
 
                 auto& shader = lineShaders_.getShader(*mesh, mesh->getIndexMeshInfo(i));
