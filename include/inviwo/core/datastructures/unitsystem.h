@@ -71,9 +71,8 @@ constexpr std::array<Unit, 4> defaultAxesUnits = {Unit{}, Unit{}, Unit{}, Unit{}
 template <size_t N>
 std::array<Axis, N> defaultAxes() {
     static_assert(N <= defaultAxesNames.size());
-    return util::make_array<N>([](auto i) {
-        return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]};
-    });
+    return util::make_array<N>(
+        [](auto i) { return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]}; });
 }
 
 }  // namespace util
@@ -160,10 +159,12 @@ constexpr std::array<UnitDesc, 4> atomic = {{
     {elementary_charge,                   "elementary charge",  "e",      UnitFlag::None}
 }};
 
-constexpr std::array<UnitDesc, 3> astronomical = {{
+constexpr std::array<UnitDesc, 4> astronomical = {{
     {units::precise::distance::parsec,  "parsec",            "pc", UnitFlag::None},
     {units::precise::distance::au,      "astronomical unit", "au", UnitFlag::None},
     {units::precise::distance::ly,      "light-year",        "ly", UnitFlag::None},
+    {units::precise_unit{1e-26, units::precise::W / units::precise::m / units::precise::m / units::precise::Hz},
+        "Jansky", "Jy", UnitFlag::UsesPrefix},
 }};
 
 
