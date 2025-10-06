@@ -102,24 +102,27 @@ bool CanvasGL::ready() {
     if (ready_) {
         return true;
     } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-        ready_ = true;
+        try {
+            // Setup the GL state for the canvas, only need to do this once, since this
+            // context will only be used to render the canvas on screen.
+            // All other computation is done in the hidden contexts, which should never
+            // call this function.
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClearDepth(1.0f);
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_ALWAYS);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        // Setup the GL state for the canvas, only need to do this once, since this
-        // context will only be used to render the canvas on screen.
-        // All other computation is done in the hidden contexts, which should never
-        // call this function.
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClearDepth(1.0f);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_ALWAYS);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-        square_ = utilgl::planeRect();
-        squareGL_ = square_->getRepresentation<MeshGL>();
-        textureShader_ = SharedOpenGLResources::getPtr()->getTextureShader();
-        noiseShader_ = SharedOpenGLResources::getPtr()->getNoiseShader();
-        return true;
+            square_ = utilgl::planeRect();
+            squareGL_ = square_->getRepresentation<MeshGL>();
+            textureShader_ = SharedOpenGLResources::getPtr()->getTextureShader();
+            noiseShader_ = SharedOpenGLResources::getPtr()->getNoiseShader();
+            ready_ = true;
+        } catch (const Exception& e) {
+            log::exception(e);
+        }
+        return ready_;
     } else {
         return false;
     }

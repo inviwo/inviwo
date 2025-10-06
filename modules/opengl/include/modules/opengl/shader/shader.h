@@ -98,8 +98,9 @@ class IVW_MODULE_OPENGL_API Shader {
     };
 
 public:
-    enum class OnError { Warn, Throw };
-    enum class UniformWarning { Ignore, Warn, Throw };
+    enum class OnError : std::uint8_t { Warn, Throw };
+    enum class UniformWarning : std::uint8_t { Ignore, Warn, Throw };
+
     using Build = detail::Build;
 
     Shader(const std::vector<std::pair<ShaderType, std::string>>& items,
@@ -161,8 +162,8 @@ public:
     ShaderObject* getTessellationControlShaderObject();
     ShaderObject* getTessellationEvaluationShaderObject();
 
-    void setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource);
-    void setShaderObject(ShaderObject object);
+    void addShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource);
+    void addShaderObject(ShaderObject object);
 
     void activate();
     void deactivate();
@@ -244,6 +245,7 @@ private:
     std::string shaderNames() const;
     GLint findUniformLocation(std::string_view name) const;
 
+    Build buildShader_;
     Program program_;
 
     // clear shader objects before the program is deleted

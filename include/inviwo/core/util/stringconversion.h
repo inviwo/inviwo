@@ -175,8 +175,8 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
 }
 
 /**
- * @brief Call functor @p func for each line of the string @str. Considers both '\n' and '\r\n' as
- * line separators.
+ * @brief Call functor @p func for each line of the string @p str. Considers both '\\n' and
+ * '\\r\\n' as line separators.
  * @param str  string split into lines
  * @param func Function callback taking a std::string_view as argument
  */
@@ -308,8 +308,8 @@ IVW_CORE_API std::vector<std::string_view> splitStringView(std::string_view str,
                                                            char delimiter = ' ');
 
 /**
- * Split the string @p str by @p delimiter into at most @t numItems parts and return the result in
- * the form of an array. In case there are fewer substrings than @t numItems, the remaining fields
+ * Split the string @p str by @p delimiter into at most @p numItems parts and return the result in
+ * the form of an array. In case there are fewer substrings than @p numItems, the remaining fields
  * of the array contain empty strings. If there are more than @p numItems parts, the last array
  * entry will contain the remaining string.
  *

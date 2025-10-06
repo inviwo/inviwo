@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/sampler3d.glsl"
@@ -42,16 +42,16 @@ void main() {
 
     vec3 Fx = (getVoxel(volume, volumeParameters, texCoord_.xyz + ox).xyz -
                getVoxel(volume, volumeParameters, texCoord_.xyz - ox).xyz) /
-              (2.0f*volumeParameters.worldSpaceGradientSpacing.x);
+              (2.0f * volumeParameters.worldSpaceGradientSpacing.x);
     vec3 Fy = (getVoxel(volume, volumeParameters, texCoord_.xyz + oy).xyz -
                getVoxel(volume, volumeParameters, texCoord_.xyz - oy).xyz) /
-              (2.0f*volumeParameters.worldSpaceGradientSpacing.y);
+              (2.0f * volumeParameters.worldSpaceGradientSpacing.y);
     vec3 Fz = (getVoxel(volume, volumeParameters, texCoord_.xyz + oz).xyz -
                getVoxel(volume, volumeParameters, texCoord_.xyz - oz).xyz) /
-              (2.0f*volumeParameters.worldSpaceGradientSpacing.z);
+              (2.0f * volumeParameters.worldSpaceGradientSpacing.z);
 
     vec3 c;
-    
+
     c.x = (Fy.z - Fz.y);
     c.y = (Fz.x - Fx.z);
     c.z = (Fx.y - Fy.x);

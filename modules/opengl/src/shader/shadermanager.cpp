@@ -55,8 +55,7 @@ namespace inviwo {
 
 ShaderManager* ShaderManager::instance_ = nullptr;
 
-ShaderManager::ShaderManager()
-    : uniformWarnings_(nullptr), shaderObjectErrors_{nullptr} {}
+ShaderManager::ShaderManager() : uniformWarnings_(nullptr), shaderObjectErrors_{nullptr} {}
 
 void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
@@ -162,7 +161,11 @@ void ShaderManager::rebuildAllShaders() {
     if (shaders_.empty()) return;
 
     for (auto& shader : shaders_) {
-        shader->build();
+        try {
+            shader->build();
+        } catch (Exception& e) {
+            log::exception(e);
+        }
     }
     log::info("Rebuild of all shaders completed");
 }

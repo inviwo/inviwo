@@ -47,6 +47,7 @@
 #include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
 #include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
 #include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <modules/opengl/openglutils.h>
 
 #include <functional>     // for __base
 #include <string_view>    // for string_view
@@ -77,7 +78,6 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
     , fbo_() {
 
     addPorts(inport_, outport_);
-    inport_.onChange([this]() { afterInportChanged(); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
@@ -105,6 +105,9 @@ void VolumeGLProcessor::process() {
 
     volumes_.setConfig(config);
     auto dstVolume = volumes_.get();
+
+    utilgl::DepthMaskState depthMask{GL_FALSE};
+    utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
 
     const size3_t dim{srcVolume->getDimensions()};
     fbo_.activate();
@@ -152,7 +155,7 @@ void VolumeGLProcessor::process() {
 void VolumeGLProcessor::setFragmentShaderResource(
     std::shared_ptr<const ShaderResource> fragShaderResource) {
     if (auto* frag = shader_.getFragmentShaderObject()) {
-        return frag->setResource(std::move(fragShaderResource));
+        frag->setResource(std::move(fragShaderResource));
     }
 }
 std::shared_ptr<const ShaderResource> VolumeGLProcessor::getFragmentShaderResource() {
@@ -167,7 +170,5 @@ void VolumeGLProcessor::initializeShader(Shader&) {}
 void VolumeGLProcessor::preProcess(TextureUnitContainer&, Shader&, VolumeConfig&) {}
 
 void VolumeGLProcessor::postProcess(Volume&) {}
-
-void VolumeGLProcessor::afterInportChanged() {}
 
 }  // namespace inviwo

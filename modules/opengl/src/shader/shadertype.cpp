@@ -35,46 +35,8 @@ namespace inviwo {
 
 ShaderType::operator GLenum() const { return type_; }
 
-std::string ShaderType::extension() const { return extension(*this); }
 
-std::string ShaderType::extension(const ShaderType& type) {
-    // Following https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
-    switch (type.type_) {
-        case GL_VERTEX_SHADER:
-            return ".vert";
-        case GL_GEOMETRY_SHADER:
-            return ".geom";
-        case GL_FRAGMENT_SHADER:
-            return ".frag";
-        case GL_TESS_CONTROL_SHADER:
-            return ".tesc";
-        case GL_TESS_EVALUATION_SHADER:
-            return ".tese";
-        case GL_COMPUTE_SHADER:
-            return ".comp";
-        default:
-            return "";
-    }
-}
 
-std::string ShaderType::name() const {
-    switch (type_) {
-        case GL_VERTEX_SHADER:
-            return "vertex";
-        case GL_GEOMETRY_SHADER:
-            return "geometry";
-        case GL_FRAGMENT_SHADER:
-            return "fragment";
-        case GL_TESS_CONTROL_SHADER:
-            return "tesc_control";
-        case GL_TESS_EVALUATION_SHADER:
-            return "tese_evaluation";
-        case GL_COMPUTE_SHADER:
-            return "compute";
-        default:
-            return "invalid";
-    }
-}
 
 const ShaderType ShaderType::Vertex{GL_VERTEX_SHADER};
 const ShaderType ShaderType::Geometry{GL_GEOMETRY_SHADER};

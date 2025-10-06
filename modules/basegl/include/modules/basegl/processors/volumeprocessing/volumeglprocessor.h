@@ -54,11 +54,10 @@ class Volume;
  *
  * The VolumeGLProcessor provides the basic structure for volume processing on the GPU.
  * Derived shaders have to provide a custom fragment shader which is used during rendering.
- * Optionally, derived classes can overwrite VolumeGLProcessor::postProcess() to perform
- * post-processing of the output data stored in the outport. Furthermore, it is possible to
- * be notified of inport changes by overwriting VolumeGLProcessor::afterInportChanged().
- *
- * @see ImageGLProcessor
+ * Optionally, derived classes can override:
+ * * initializeShader
+ * * preProcess
+ * * postProcess
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
@@ -73,11 +72,18 @@ public:
     virtual void process() final;
 
 protected:
+    /**
+     * Override this to add any shader defines etc. The shader will be built automatically.
+     */
     virtual void initializeShader(Shader& shader);
 
     /*! @brief this function gets called right before the actual processing but
      * after the shader has been activated.
      * Overwrite this function in the derived class to perform things like custom shader setup
+     * and binding texture etc.
+     * The VolumeConfig, is based on the config from the volume inport, updated with the Config from
+     * the constructor. This config can be customized further and is used to create the output
+     * volume.
      */
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config);
 
@@ -85,11 +91,6 @@ protected:
      * Overwrite this function in the derived class to perform post-processing
      */
     virtual void postProcess(Volume& volume);
-
-    /*! @brief this function gets called whenever the inport changes
-     * Overwrite this function in the derived class to be notified of inport onChange events
-     */
-    virtual void afterInportChanged();
 
     void setFragmentShaderResource(std::shared_ptr<const ShaderResource> fragShaderResource);
     std::shared_ptr<const ShaderResource> getFragmentShaderResource();

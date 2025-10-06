@@ -900,7 +900,7 @@
                             </Property>
                             <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" />
                         </Properties>
-                        <key content="Color by velocity" />
+                        <key content="velocity" />
                     </Property>
                     <Property type="org.inviwo.IntegralLineVectorToMesh.ColorByProperty" identifier="VolumeToSpatialSampler2">
                         <displayName content="Color by VolumeToSpatialSampler2" />
@@ -913,7 +913,7 @@
                             <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" />
                         </Properties>
                         <collapsed content="1" />
-                        <key content="Color by VolumeToSpatialSampler2" />
+                        <key content="VolumeToSpatialSampler2" />
                     </Property>
                     <Property type="org.inviwo.IntegralLineVectorToMesh.ColorByProperty" identifier="vorticity">
                         <displayName content="Color by vorticity" />
@@ -925,7 +925,7 @@
                             <Property type="org.inviwo.DoubleProperty" identifier="maxValue" />
                             <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" />
                         </Properties>
-                        <key content="Color by vorticity" />
+                        <key content="vorticity" />
                     </Property>
                 </Properties>
                 <MetaDataMap>
