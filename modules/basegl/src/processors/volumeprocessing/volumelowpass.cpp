@@ -83,12 +83,9 @@ VolumeLowPass::VolumeLowPass()
     , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights",
                           "Toggles between a Gaussian kernel and a box filter."_help)
     , sigma_("sigma", "Sigma",
-             util::ordinalScale(1.0f, 2.0f).set("Sigma used by the Gaussian kernel."_help))
-    , updateDataRange_("updateDataRange", "Update Data Range",
-                       "Calculate and assign a new data range for the smoothed volume."_help,
-                       false) {
+             util::ordinalScale(1.0f, 2.0f).set("Sigma used by the Gaussian kernel."_help)) {
 
-    addProperties(kernelSize_, useGaussianWeights_, updateDataRange_);
+    addProperties(kernelSize_, useGaussianWeights_, calculateDataRange_, dataRange_);
     useGaussianWeights_.addProperty(sigma_);
     useGaussianWeights_.getBoolProperty()->setInvalidationLevel(
         InvalidationLevel::InvalidResources);
@@ -105,43 +102,25 @@ VolumeLowPass::VolumeLowPass()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-VolumeLowPass::~VolumeLowPass() {}
+VolumeLowPass::~VolumeLowPass() = default;
 
-void VolumeLowPass::preProcess(TextureUnitContainer&) {
-    utilgl::setUniforms(shader_, kernelSize_);
+void VolumeLowPass::preProcess([[maybe_unused]] TextureUnitContainer& cont, Shader& shader,
+                               [[maybe_unused]] VolumeConfig& config) {
+    utilgl::setUniforms(shader, kernelSize_);
 
     float sigmaSq2 = 2.0f * sigma_.get() * sigma_.get();
     float a = 1.0f / (sigmaSq2 * std::numbers::pi_v<float>);
 
-    shader_.setUniform("sigmaSq2", sigmaSq2);
-    shader_.setUniform("a", a);
+    shader.setUniform("sigmaSq2", sigmaSq2);
+    shader.setUniform("a", a);
 }
 
-void VolumeLowPass::postProcess() {
-    if (updateDataRange_.get()) {
-        auto minmax = util::volumeMinMax(volume_.get(), IgnoreSpecialValues::Yes);
-        auto min = minmax.first.x;
-        auto max = minmax.second.x;
-        for (size_t i = 1; i < volume_->getDataFormat()->getComponents(); i++) {
-            min = std::min(min, minmax.first[i]);
-            max = std::max(max, minmax.second[i]);
-        }
-        volume_->dataMap.valueRange = volume_->dataMap.dataRange = dvec2(min, max);
-
-    } else {
-        volume_->dataMap = inport_.getData()->dataMap;
-    }
-}
-
-void VolumeLowPass::initializeResources() {
+void VolumeLowPass::initializeShader(Shader& shader) {
     if (useGaussianWeights_.isChecked()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("GAUSSIAN");
+        shader.getFragmentShaderObject()->addShaderDefine("GAUSSIAN");
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("GAUSSIAN");
+        shader.getFragmentShaderObject()->removeShaderDefine("GAUSSIAN");
     }
-
-    VolumeGLProcessor::initializeResources();
-    shader_.build();
 }
 
 }  // namespace inviwo

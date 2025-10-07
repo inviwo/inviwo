@@ -171,7 +171,7 @@ LayerShader::LayerShader()
 
 {
 
-    shader_.setShaderObject(ShaderType::Fragment, fragmentShader_);
+    shader_.addShaderObject(ShaderType::Fragment, fragmentShader_);
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidResources); });
     fragmentShaderSource_.onChange(
         [this]() { fragmentShader_->setSource(fragmentShaderSource_.get()); });

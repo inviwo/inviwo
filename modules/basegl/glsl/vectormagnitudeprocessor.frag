@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/sampler3d.glsl"
@@ -36,24 +36,23 @@ uniform int numInputChannels_ = 3;
 
 in vec4 texCoord_;
 
-
 void main() {
-    vec4 v = getVoxel(volume , volumeParameters , texCoord_.xyz);
+    vec4 v = getVoxel(volume, volumeParameters, texCoord_.xyz);
 
     float magnitude = 0.0;
     switch (numInputChannels_) {
-    case 1:
-        magnitude = v.x;
-        break;
-    case 2:
-        magnitude = length(v.xy);
-        break;
-    case 3:
-        magnitude = length(v.xyz);
-        break;
-    case 4:
-        magnitude = length(v);
-        break;
+        case 1:
+            magnitude = v.x;
+            break;
+        case 2:
+            magnitude = length(v.xy);
+            break;
+        case 3:
+            magnitude = length(v.xyz);
+            break;
+        case 4:
+            magnitude = length(v);
+            break;
     }
 
     FragData0 = vec4(magnitude);

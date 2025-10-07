@@ -50,10 +50,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    VolumeInport vol2_;
-    VolumeInport vol3_;
-    VolumeInport vol4_;
-    virtual void preProcess(TextureUnitContainer& cont) override;
+    std::array<VolumeInport, 3> vols_;
+    std::array<bool, 3> active_;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
 };
 
 }  // namespace inviwo

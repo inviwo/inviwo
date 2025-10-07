@@ -54,9 +54,11 @@
 #include <cstddef>    // for size_t
 #include <istream>    // for operator<<, basic_ostream, ostring...
 #include <span>       // for span
+#include <tuple>
 
-#include <fmt/core.h>            // for format, basic_string_view
-#include <fmt/format.h>          // for join
+#include <fmt/core.h>    // for format, basic_string_view
+#include <fmt/format.h>  // for join
+#include <fmt/ranges.h>
 #include <glm/gtc/type_ptr.hpp>  // for value_ptr
 
 namespace inviwo {
@@ -88,10 +90,18 @@ Shader::Program::~Program() {
 }
 
 Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Build buildShader)
-    : warningLevel_{UniformWarning::Ignore} {
+    : buildShader_{buildShader}
+    , program_{}
+    , shaderObjects_{}
+    , attached_{}
+    , callbacks_{}
+    , ready_{}
+    , warningLevel_{UniformWarning::Ignore}
+    , uniformLookup_{}
+    , onReloadCallback_{} {
 
     for (auto& item : items) {
-        setShaderObject(item.first, utilgl::findShaderResource(item.second));
+        addShaderObject(item.first, utilgl::findShaderResource(item.second));
     }
 
     if (buildShader) build();
@@ -101,20 +111,36 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Bui
 Shader::Shader(
     const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>& items,
     Build buildShader)
-    : warningLevel_{UniformWarning::Ignore} {
+    : buildShader_{buildShader}
+    , program_{}
+    , shaderObjects_{}
+    , attached_{}
+    , callbacks_{}
+    , ready_{}
+    , warningLevel_{UniformWarning::Ignore}
+    , uniformLookup_{}
+    , onReloadCallback_{} {
 
     for (auto& item : items) {
-        setShaderObject(item.first, item.second);
+        addShaderObject(item.first, item.second);
     }
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
 }
 
 Shader::Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects, Build buildShader)
-    : warningLevel_{UniformWarning::Ignore} {
+    : buildShader_{buildShader}
+    , program_{}
+    , shaderObjects_{}
+    , attached_{}
+    , callbacks_{}
+    , ready_{}
+    , warningLevel_{UniformWarning::Ignore}
+    , uniformLookup_{}
+    , onReloadCallback_{} {
 
     for (auto& obj : shaderObjects) {
-        setShaderObject(std::move(*obj));
+        addShaderObject(std::move(*obj));
     }
 
     if (buildShader) build();
@@ -140,7 +166,8 @@ Shader::Shader(std::string_view fragmentFilename, Build buildShader)
              buildShader) {}
 
 Shader::Shader(Shader&& rhs)
-    : program_{[&]() {
+    : buildShader_{rhs.buildShader_}
+    , program_{[&]() {
         ShaderManager::getPtr()->unregisterShader(&rhs);
         return std::move(rhs.program_);
     }()}
@@ -170,6 +197,7 @@ Shader& Shader::operator=(Shader&& that) {
 
         ShaderManager::getPtr()->unregisterShader(&that);
 
+        buildShader_ = that.buildShader_;
         program_ = std::move(that.program_);
         ready_ = that.ready_;
         warningLevel_ = that.warningLevel_;
@@ -212,6 +240,7 @@ void Shader::detach() {
 }
 
 void Shader::build() {
+    buildShader_ = Build::Yes;
     try {
         ready_ = false;
         for (auto& elem : shaderObjects_) elem.build();
@@ -237,8 +266,13 @@ void Shader::linkShader(bool notifyRebuild) {
     bindAttributes();
 
     if (!util::all_of(shaderObjects_, [](const auto& elem) { return elem.isReady(); })) {
-        log::error("Id: {} objects not ready when linking.", program_.id);
-        return;
+        throw OpenGLException{
+            SourceContext{}, "Id: {:}, all objects are not ready for linking, {:n:}", program_.id,
+            shaderObjects_ | std::views::transform([](ShaderObject& o) {
+                return fmt::format(
+                    "{}: {}", o.getShaderType(),
+                    (o.isReady() ? std::string_view{"Ready"} : std::string_view{"Not Ready"}));
+            })};
     }
 
     glLinkProgram(program_.id);
@@ -248,8 +282,7 @@ void Shader::linkShader(bool notifyRebuild) {
                               processLog(utilgl::getProgramInfoLog(program_.id)));
     }
 
-    auto log = utilgl::getProgramInfoLog(program_.id);
-    if (!log.empty()) {
+    if (auto log = utilgl::getProgramInfoLog(program_.id); !log.empty()) {
         log::info("Id: {} ({}) {}", program_.id, shaderNames(), processLog(log));
     }
 
@@ -280,6 +313,8 @@ void Shader::bindAttributes() {
 }
 
 void Shader::rebuildShader(ShaderObject* obj) {
+    if (buildShader_ == Build::No) return;
+
     try {
         ready_ = false;
         obj->build();
@@ -479,11 +514,11 @@ auto Shader::getShaderObjects() const -> util::iter_range<const_iterator> {
     return util::as_range(begin(), end());
 }
 
-void Shader::setShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
-    setShaderObject(ShaderObject{type, resource});
+void Shader::addShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
+    addShaderObject(ShaderObject{type, std::move(resource)});
 }
 
-void Shader::setShaderObject(ShaderObject object) {
+void Shader::addShaderObject(ShaderObject object) {
     shaderObjects_.emplace_back(std::move(object));
     attached_.emplace_back(false);
     callbacks_.emplace_back(

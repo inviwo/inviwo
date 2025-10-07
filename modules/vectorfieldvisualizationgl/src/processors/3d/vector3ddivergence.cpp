@@ -49,12 +49,14 @@ const ProcessorInfo Vector3DDivergence::processorInfo_{
 };
 const ProcessorInfo& Vector3DDivergence::getProcessorInfo() const { return processorInfo_; }
 
-Vector3DDivergence::Vector3DDivergence() : VolumeGLProcessor("vector3ddivergence.frag") {
-    this->dataFormat_ = DataFloat32::get();
+Vector3DDivergence::Vector3DDivergence()
+    : VolumeGLProcessor("vector3ddivergence.frag", VolumeConfig{.format = DataFloat32::get()}) {
+
+    addProperty(calculateDataRange_);
+    calculateDataRange_.set(true);
+    calculateDataRange_.setCurrentStateAsDefault();
 }
 
-Vector3DDivergence::~Vector3DDivergence() {}
-
-void Vector3DDivergence::postProcess() {}
+Vector3DDivergence::~Vector3DDivergence() = default;
 
 }  // namespace inviwo

@@ -54,7 +54,7 @@ const ProcessorInfo VolumeMapping::processorInfo_{
 const ProcessorInfo& VolumeMapping::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMapping::VolumeMapping()
-    : VolumeGLProcessor{"volume_mapping.frag"}
+    : VolumeGLProcessor{"volume_mapping.frag", VolumeConfig{.format = DataFloat32::get()}}
     , tfProperty_{"transferFunction", "Transfer function",
                   "Defines the transfer function for mapping voxel values to opacity"_help,
                   TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_}
@@ -70,9 +70,15 @@ VolumeMapping::VolumeMapping()
 
 VolumeMapping::~VolumeMapping() = default;
 
-void VolumeMapping::preProcess(TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader_, cont, tfProperty_);
-    utilgl::setUniforms(shader_, channel_);
+void VolumeMapping::preProcess(TextureUnitContainer& cont, Shader& shader,
+                               [[maybe_unused]] VolumeConfig& config) {
+    utilgl::bindAndSetUniforms(shader, cont, tfProperty_);
+    utilgl::setUniforms(shader, channel_);
+}
+
+void VolumeMapping::postProcess(Volume& volume) {
+    volume.dataMap.dataRange = dvec2(0.0, 1.0);
+    volume.dataMap.valueRange = dvec2(0.0, 1.0);
 }
 
 }  // namespace inviwo

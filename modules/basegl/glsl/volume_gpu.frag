@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,44 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#pragma once
+#include "utils/structs.glsl"
+#include "utils/sampler3d.glsl"
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <modules/basegl/algorithm/dataminmaxgl.h>
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
-namespace inviwo {
+in vec4 texCoord_;
 
-/**
- * \brief Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
- *
- * This processor internally computes the gradients of the given 3D scalar field and only
- * writes the magnitudes of the gradients to the outport. It yields the same results as
- * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
- * intermediate gradient volume is never generated and, thus, this processor is more memory
- * efficient.
- */
-class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor {
-public:
-    VolumeGradientMagnitude();
-    virtual ~VolumeGradientMagnitude();
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
-                            VolumeConfig& config) override;
-
-private:
-    OptionPropertyInt channel_;
-    FloatProperty scaling_;
-
-    utilgl::DataMinMaxGL dataMinMaxGL_;
-};
-
-}  // namespace inviwo
+void main() {
+    FragData0 = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
+}

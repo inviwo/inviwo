@@ -44,10 +44,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
 
     VolumeInport mask_;
-
     BoolProperty useWorldSpace_;
     BoolProperty textureWrap_;
 };

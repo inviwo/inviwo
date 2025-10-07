@@ -117,7 +117,7 @@ IVW_MODULE_BASE_API std::unordered_map<int, Material> getMaterials(const AmiraMe
 
 /**
  * Split the string @p str by @p delimiter, extract numbers from the resulting parts, and return
- * the combined parsed numbers as type @t T.
+ * the combined parsed numbers as type @p T.
  *
  * @tparam T   The target type, either scalar value or glm type
  * @param str  The string to be parsed

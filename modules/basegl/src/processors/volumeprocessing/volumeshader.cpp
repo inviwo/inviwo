@@ -72,24 +72,19 @@ const ProcessorInfo VolumeShader::processorInfo_{
     Tags::GL,                   // Tags
 };
 
-void VolumeShader::initializeResources() {
-    VolumeGLProcessor::initializeResources();
-    shader_.build();
-}
-
 const ProcessorInfo& VolumeShader::getProcessorInfo() const { return processorInfo_; }
 
 VolumeShader::VolumeShader()
-    : VolumeShader(std::make_shared<StringShaderResource>("volume_shader.frag", defaultFrag)) {}
+    : VolumeGLProcessor()
+    , fragmentSrc_("shader", "Shader", defaultFrag, InvalidationLevel::InvalidResources,
+                   PropertySemantics::ShaderEditor)
+    , fragmentResource_{std::make_shared<StringShaderResource>("volume_shader.frag", defaultFrag)} {
 
-VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
-    : VolumeGLProcessor(fragmentShader, false)
-    , fragmentShader_(fragmentShader)
-    , fragmentSrc_("shader", "Shader", std::string(defaultFrag),
-                   InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor) {
-    addProperty(fragmentSrc_);
+    addProperties(fragmentSrc_, calculateDataRange_, dataRange_);
 
-    fragmentSrc_.onChange([&]() { fragmentShader_->setSource(fragmentSrc_.get()); });
+    setFragmentShaderResource(fragmentResource_);
+
+    fragmentSrc_.onChange([&]() { fragmentResource_->setSource(fragmentSrc_.get()); });
 }
 
 VolumeShader::~VolumeShader() = default;

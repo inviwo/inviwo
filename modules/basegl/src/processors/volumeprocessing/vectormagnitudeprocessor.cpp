@@ -68,37 +68,34 @@ const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
 const ProcessorInfo& VectorMagnitudeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
-    : VolumeGLProcessor("vectormagnitudeprocessor.frag") {
-    this->dataFormat_ = DataFloat32::get();
+    : VolumeGLProcessor("vectormagnitudeprocessor.frag",
+                        VolumeConfig{.format = DataFloat32::get()}) {
+
+    addProperties(calculateDataRange_, dataRange_);
+    calculateDataRange_.set(true);
+    calculateDataRange_.setCurrentStateAsDefault();
 
     outport_.setHelp("Gradient magnitude of the input volume"_help);
 }
 
 VectorMagnitudeProcessor::~VectorMagnitudeProcessor() = default;
 
-void VectorMagnitudeProcessor::preProcess(TextureUnitContainer&) {
+void VectorMagnitudeProcessor::preProcess([[maybe_unused]] TextureUnitContainer& cont,
+                                          Shader& shader, [[maybe_unused]] VolumeConfig& config) {
     int numChannels = 3;
     if (inport_.hasData()) {
         numChannels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
     }
 
-    shader_.setUniform("numInputChannels_", numChannels);
+    shader.setUniform("numInputChannels_", numChannels);
 }
 
-void VectorMagnitudeProcessor::postProcess() {
-
-    auto minMax =
-        util::volumeMinMax(volume_->getRepresentation<VolumeRAM>(), IgnoreSpecialValues::Yes);
-    double minV, maxV;
-    minV = minMax.first.x;
-    maxV = minMax.second.x;
-    for (int i = 0; i < 3; i++) {
-        minV = std::min(minV, minMax.first[i]);
-        maxV = std::max(maxV, minMax.second[i]);
+void VectorMagnitudeProcessor::postProcess(Volume& volume) {
+    if (calculateDataRange_) {
+        const auto range = volume.dataMap.dataRange;
+        volume.dataMap.dataRange = dvec2(0.0, range.y);
+        volume.dataMap.valueRange = dvec2(0.0, range.y);
     }
-
-    volume_->dataMap.dataRange = dvec2(0, std::abs(maxV));
-    volume_->dataMap.valueRange = dvec2(minV, maxV);
 }
 
 }  // namespace inviwo

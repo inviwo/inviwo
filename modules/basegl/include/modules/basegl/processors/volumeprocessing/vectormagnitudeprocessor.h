@@ -48,8 +48,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void postProcess() override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
+    virtual void postProcess(Volume& volume) override;
 };
 
 }  // namespace inviwo

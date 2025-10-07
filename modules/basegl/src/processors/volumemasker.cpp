@@ -69,20 +69,21 @@ VolumeMasker::VolumeMasker()
                    false} {
 
     addPorts(mask_);
-    addProperties(useWorldSpace_, textureWrap_);
+    addProperties(useWorldSpace_, textureWrap_, calculateDataRange_);
 }
 
-void VolumeMasker::preProcess(TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader_, cont, *mask_.getData(), "mask");
+void VolumeMasker::preProcess(TextureUnitContainer& cont, Shader& shader,
+                              [[maybe_unused]] VolumeConfig& config) {
+    utilgl::bindAndSetUniforms(shader, cont, *mask_.getData(), "mask");
 
     if (useWorldSpace_) {
-        shader_.setUniform(
-            "texTrafo", mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
-                            inport_.getData()->getCoordinateTransformer().getDataToWorldMatrix());
+        shader.setUniform("texTrafo",
+                          mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
+                              inport_.getData()->getCoordinateTransformer().getDataToWorldMatrix());
     } else {
-        shader_.setUniform("texTrafo", mat4(1.0f));
+        shader.setUniform("texTrafo", mat4(1.0f));
     }
-    shader_.setUniform("textureWrap", textureWrap_);
+    shader.setUniform("textureWrap", textureWrap_);
 }
 
 }  // namespace inviwo

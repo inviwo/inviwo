@@ -46,8 +46,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-    virtual void postProcess() override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
 
     LayerInport tfLookup_;
     std::array<OptionPropertyInt, 2> channel_;

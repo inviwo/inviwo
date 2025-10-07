@@ -51,12 +51,12 @@ public:
     explicit constexpr ShaderType(GLenum type) : type_(type) {}
 
     operator GLenum() const;
-    operator bool() const;
+    explicit operator bool() const;
 
-    std::string extension() const;
-    std::string name() const;
+    constexpr std::string_view extension() const;
+    constexpr std::string_view name() const;
 
-    static std::string extension(const ShaderType& type);
+    static constexpr std::string_view extension(const ShaderType& type);
     static ShaderType typeFromExtension(std::string_view ext);
     static ShaderType typeFromString(std::string_view str);
     static ShaderType typeFromFile(const std::filesystem::path& ext);
@@ -75,6 +75,49 @@ public:
 private:
     GLenum type_ = 0;
 };
+
+constexpr std::string_view format_as(ShaderType type) { return type.name(); }
+
+constexpr std::string_view ShaderType::extension() const { return extension(*this); }
+
+constexpr std::string_view ShaderType::extension(const ShaderType& type) {
+    // Following https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
+    switch (type.type_) {
+        case GL_VERTEX_SHADER:
+            return ".vert";
+        case GL_GEOMETRY_SHADER:
+            return ".geom";
+        case GL_FRAGMENT_SHADER:
+            return ".frag";
+        case GL_TESS_CONTROL_SHADER:
+            return ".tesc";
+        case GL_TESS_EVALUATION_SHADER:
+            return ".tese";
+        case GL_COMPUTE_SHADER:
+            return ".comp";
+        default:
+            return "";
+    }
+}
+
+constexpr std::string_view ShaderType::name() const {
+    switch (type_) {
+        case GL_VERTEX_SHADER:
+            return "vertex";
+        case GL_GEOMETRY_SHADER:
+            return "geometry";
+        case GL_FRAGMENT_SHADER:
+            return "fragment";
+        case GL_TESS_CONTROL_SHADER:
+            return "tesc_control";
+        case GL_TESS_EVALUATION_SHADER:
+            return "tese_evaluation";
+        case GL_COMPUTE_SHADER:
+            return "compute";
+        default:
+            return "invalid";
+    }
+}
 
 }  // namespace inviwo
 

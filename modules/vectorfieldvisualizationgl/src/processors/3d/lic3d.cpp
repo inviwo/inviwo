@@ -67,7 +67,11 @@ const ProcessorInfo LIC3D::processorInfo_{
 const ProcessorInfo& LIC3D::getProcessorInfo() const { return processorInfo_; }
 
 LIC3D::LIC3D()
-    : VolumeGLProcessor("lic3d.frag")
+    : VolumeGLProcessor(
+          "lic3d.frag",
+          VolumeConfig{.format = DataVec4UInt8::get(),
+                       .swizzleMask = swizzlemasks::rgba,
+                       .dataRange = DataMapper::defaultDataRangeFor(DataVec4UInt8::get())})
     , vectorField_("vectorField")
     , samples_("samples", "Number of steps", 200, 3, 1000)
     , stepLength_("stepLength", "Step Length", 0.003f, 0.0001f, 0.01f, 0.0001f)
@@ -90,31 +94,30 @@ LIC3D::LIC3D()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    dataFormat_ = DataVec4UInt8::get();
+    inport_.setHelp("Input noise volume"_help);
 }
 
-void LIC3D::preProcess(TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader_, cont, *vectorField_.getData().get(), "vectorField");
-    utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, intensityMapping_,
+void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+    utilgl::bindAndSetUniforms(shader, cont, *vectorField_.getData(), "vectorField");
+    utilgl::setUniforms(shader, samples_, stepLength_, normalizeVectors_, intensityMapping_,
                         noiseRepeat_, alphaScale_, velocityScale_);
 
-    utilgl::bindAndSetUniforms(shader_, cont, tf_);
+    utilgl::bindAndSetUniforms(shader, cont, tf_);
 
-    shader_.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
+    shader.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
+
+    auto source = vectorField_.getData();
+    config.xAxis = source->axes[0];
+    config.yAxis = source->axes[1];
+    config.zAxis = source->axes[2];
+    config.model = source->getModelMatrix();
+    config.world = source->getWorldMatrix();
 }
 
-void LIC3D::postProcess() {
-    volume_->setSwizzleMask(swizzlemasks::rgba);
-
+void LIC3D::postProcess(Volume& volume) {
     // since this processor uses VolumeGLProcessor::inport_ for the noise texture, we need to
     // copy all metadata including transformations from the vector field here
-    auto source = vectorField_.getData();
-
-    volume_->dataMap.dataRange = DataMapper::defaultDataRangeFor(volume_->getDataFormat());
-    volume_->setModelMatrix(source->getModelMatrix());
-    volume_->setWorldMatrix(source->getWorldMatrix());
-    volume_->copyMetaDataFrom(*source);
-    volume_->axes = source->axes;
+    volume.copyMetaDataFrom(*vectorField_.getData());
 }
 
 }  // namespace inviwo

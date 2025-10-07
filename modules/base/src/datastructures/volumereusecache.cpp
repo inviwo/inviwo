@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,31 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/base/datastructures/volumereusecache.h>
 
-#include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
-#include <modules/basegl/algorithm/dataminmaxgl.h>
+#include <algorithm>
 
 namespace inviwo {
 
-/**
- * \brief Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
- *
- * This processor internally computes the gradients of the given 3D scalar field and only
- * writes the magnitudes of the gradients to the outport. It yields the same results as
- * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
- * intermediate gradient volume is never generated and, thus, this processor is more memory
- * efficient.
- */
-class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor {
-public:
-    VolumeGradientMagnitude();
-    virtual ~VolumeGradientMagnitude();
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+VolumeReuseCache::VolumeReuseCache(VolumeConfig config) : config_(std::move(config)) {}
 
-protected:
-    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
-                            VolumeConfig& config) override;
-
-private:
-    OptionPropertyInt channel_;
-    FloatProperty scaling_;
-
-    utilgl::DataMinMaxGL dataMinMaxGL_;
-};
+const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
+void VolumeReuseCache::setConfig(const VolumeConfig& config) {
+    if (config != config_) {
+        cache_.clear();
+        config_ = config;
+    }
+}
+std::shared_ptr<Volume> VolumeReuseCache::get() {
+    auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
+    if (it != cache_.end()) {
+        (*it)->getMetaDataMap()->removeAll();
+        return *it;
+    } else {
+        auto vol = std::make_shared<Volume>(config_);
+        cache_.push_back(vol);
+        return vol;
+    }
+}
 
 }  // namespace inviwo

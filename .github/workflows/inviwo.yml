@@ -314,7 +314,7 @@ jobs:
         git commit -am "Regression report for macos ${{ github.ref }}"
         git push
 
-        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html \n" >> $GITHUB_STEP_SUMMARY
+        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html" >> $GITHUB_STEP_SUMMARY
 
     - name: Summary
       if: "${{ github.ref != 'refs/heads/master' }}"
@@ -330,7 +330,7 @@ jobs:
         if [[ ${UNIT_TESTS} == "failure" ]]
         then
           gh pr edit "$NUMBER" --add-label "J: Unit Test Failure"
-          echo "### :bug: Unit Test Failure:bangbang:  \n" >> $GITHUB_STEP_SUMMARY
+          echo "### :bug: Unit Test Failure:bangbang:" >> $GITHUB_STEP_SUMMARY
         fi
         if [[ ${UNIT_TESTS} == "success" ]]
         then
@@ -340,7 +340,7 @@ jobs:
         if [[ ${INTEGRATION} == "failure" ]]
         then
           gh pr edit "$NUMBER" --add-label "J: Integration Test Failure"
-          echo "### :bug: Integration Test Failure:bangbang:  \n" >> $GITHUB_STEP_SUMMARY
+          echo "### :bug: Integration Test Failure:bangbang:" >> $GITHUB_STEP_SUMMARY
         fi
         if [[ ${INTEGRATION} == "success" ]]
         then
@@ -350,7 +350,7 @@ jobs:
         if [[ ${REGRESSION} == "failure" ]]
         then
           gh pr edit "$NUMBER" --add-label "J: Regression Test Failure"
-          echo "### :beetle: Regression Test Failure:bangbang:  \n" >> $GITHUB_STEP_SUMMARY
+          echo "### :beetle: Regression Test Failure:bangbang:" >> $GITHUB_STEP_SUMMARY
         fi
         if [[ ${REGRESSION} == "success" ]]
         then
@@ -364,6 +364,8 @@ jobs:
         INTEGRATION: ${{ steps.integration.outcome }}
         REGRESSION: ${{ steps.regression.outcome }}
       run: |
+        echo "Unit Tests: ${UNIT_TESTS}, Integration Tests: ${INTEGRATION}, Regression Tests: ${REGRESSION}"
+        echo "Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html"
         if [[ ${UNIT_TESTS} == "success" ]] && [[ ${INTEGRATION} == "success" ]] && [[ ${REGRESSION} == "success" ]]
         then
           exit 0
