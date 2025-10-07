@@ -78,7 +78,7 @@ VolumeGradientMagnitude::VolumeGradientMagnitude()
     , scaling_{"gradientScaling", "Scaling",
                util::ordinalScale(1.0f).set("Scaling factor for the gradient magnitude"_help)} {
 
-    addProperties(channel_, scaling_, calculateDataRange_);
+    addProperties(channel_, scaling_, calculateDataRange_, dataRange_);
 
     calculateDataRange_.set(true);
     calculateDataRange_.setCurrentStateAsDefault();

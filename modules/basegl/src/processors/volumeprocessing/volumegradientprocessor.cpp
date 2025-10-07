@@ -74,7 +74,7 @@ VolumeGradientProcessor::VolumeGradientProcessor()
           "Toggles whether the input data is saved in the alpha channel of the output"_help, false,
           InvalidationLevel::InvalidResources) {
 
-    addProperties(channel_, dataInChannel4_, calculateDataRange_);
+    addProperties(channel_, dataInChannel4_, calculateDataRange_, dataRange_);
 }
 
 VolumeGradientProcessor::~VolumeGradientProcessor() = default;

@@ -37,5 +37,4 @@ in vec4 texCoord_;
 
 void main() {
     FragData0 = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
-    gl_FragDepth = 1.0;
 }

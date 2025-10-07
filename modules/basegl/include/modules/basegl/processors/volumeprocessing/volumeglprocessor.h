@@ -34,10 +34,12 @@
 #include <inviwo/core/ports/volumeport.h>      // for VolumeInport, VolumeOutport
 #include <inviwo/core/processors/processor.h>  // for Processor
 #include <inviwo/core/properties/boolproperty.h>
+#include <modules/base/datastructures/volumereusecache.h>
+#include <modules/base/properties/datarangeproperty.h>
+#include <modules/basegl/algorithm/dataminmaxgl.h>
 #include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
 #include <modules/opengl/shader/shader.h>             // for Shader
-#include <modules/base/datastructures/volumereusecache.h>
-#include <modules/basegl/algorithm/dataminmaxgl.h>
+
 
 #include <memory>  // for shared_ptr
 #include <string>  // for string
@@ -71,6 +73,11 @@ public:
 
     virtual void process() final;
 
+    struct FBO {
+        FrameBufferObject fbo;
+        size_t textureId;
+        std::chrono::high_resolution_clock::time_point lastUsed;
+    };
 protected:
     /**
      * Override this to add any shader defines etc. The shader will be built automatically.
@@ -98,13 +105,14 @@ protected:
     VolumeInport inport_;
     VolumeOutport outport_;
     BoolProperty calculateDataRange_;
+    DataRangeProperty dataRange_;
 
 private:
     VolumeConfig config_;
     VolumeReuseCache volumes_;
 
     Shader shader_;
-    FrameBufferObject fbo_;
+    std::array<FBO, 3> fbos_;
 
     std::optional<utilgl::DataMinMaxGL> dataMinMaxGL_;
 };

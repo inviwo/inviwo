@@ -71,7 +71,7 @@ VectorMagnitudeProcessor::VectorMagnitudeProcessor()
     : VolumeGLProcessor("vectormagnitudeprocessor.frag",
                         VolumeConfig{.format = DataFloat32::get()}) {
 
-    addProperty(calculateDataRange_);
+    addProperties(calculateDataRange_, dataRange_);
     calculateDataRange_.set(true);
     calculateDataRange_.setCurrentStateAsDefault();
 

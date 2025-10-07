@@ -515,7 +515,7 @@ auto Shader::getShaderObjects() const -> util::iter_range<const_iterator> {
 }
 
 void Shader::addShaderObject(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
-    addShaderObject(ShaderObject{type, resource});
+    addShaderObject(ShaderObject{type, std::move(resource)});
 }
 
 void Shader::addShaderObject(ShaderObject object) {

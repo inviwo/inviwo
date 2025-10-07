@@ -85,7 +85,7 @@ VolumeLowPass::VolumeLowPass()
     , sigma_("sigma", "Sigma",
              util::ordinalScale(1.0f, 2.0f).set("Sigma used by the Gaussian kernel."_help)) {
 
-    addProperties(kernelSize_, useGaussianWeights_, calculateDataRange_);
+    addProperties(kernelSize_, useGaussianWeights_, calculateDataRange_, dataRange_);
     useGaussianWeights_.addProperty(sigma_);
     useGaussianWeights_.getBoolProperty()->setInvalidationLevel(
         InvalidationLevel::InvalidResources);

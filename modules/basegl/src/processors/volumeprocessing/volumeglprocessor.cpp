@@ -45,6 +45,7 @@
 #include <modules/opengl/shader/shaderutils.h>                          // for findShaderResource
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
 #include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
+#include <modules/opengl/texture/texture3d.h>
 #include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
 #include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
 #include <modules/opengl/openglutils.h>
@@ -55,18 +56,41 @@
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for pair
+#include <span>
 
 #include <glm/vec3.hpp>  // for vec<>::(anonymous)
 
 namespace inviwo {
+
+namespace {
+
+FrameBufferObject& getActiveFbo(Texture3D& texture, std::span<VolumeGLProcessor::FBO> fbos) {
+    auto it = std::find_if(fbos.begin(), fbos.end(),
+                           [&](const auto& fbo) { return fbo.textureId == texture.getID(); });
+    if (it == fbos.end()) {
+        it = std::min_element(fbos.begin(), fbos.end(),
+                              [](const auto& a, const auto& b) { return a.lastUsed < b.lastUsed; });
+        it->fbo.activate();
+        it->fbo.attachColorTexture(&texture, 0);
+        it->textureId = texture.getID();
+    } else {
+        it->fbo.activate();
+    }
+    it->lastUsed = std::chrono::high_resolution_clock::now();
+
+    return it->fbo;
+}
+
+}  // namespace
 
 VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShaderResource,
                                      VolumeConfig config)
     : Processor{}
     , inport_{"inputVolume", "Input volume"_help}
     , outport_{"outputVolume", "Output volume"_help}
-    , calculateDataRange_{"calculateDataRange_", "Calcualte Data Range",
+    , calculateDataRange_{"calculateDataRange_", "Calculate Data Range",
                           "Calculate and assign a new data range for the volume."_help, false}
+    , dataRange_{"dataRange", "Data Range", true}
     , config_{std::move(config)}
     , volumes_{}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
@@ -75,7 +99,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
                                           ? std::move(fragmentShaderResource)
                                           : utilgl::findShaderResource("volume_gpu.frag")}},
               Shader::Build::No)
-    , fbo_() {
+    , fbos_{} {
 
     addPorts(inport_, outport_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -106,22 +130,19 @@ void VolumeGLProcessor::process() {
     volumes_.setConfig(config);
     auto dstVolume = volumes_.get();
 
-    utilgl::DepthMaskState depthMask{GL_FALSE};
-    utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
-
     const size3_t dim{srcVolume->getDimensions()};
-    fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
     auto* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+
+    auto& fbo = getActiveFbo(*outVolumeGL->getTexture(), fbos_);
+    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 
     shader_.deactivate();
-    fbo_.deactivate();
+    fbo.deactivate();
 
     if (calculateDataRange_) {
         if (!dataMinMaxGL_) {
@@ -146,9 +167,12 @@ void VolumeGLProcessor::process() {
         dstVolume->dataMap.valueRange = dataRange;
     }
 
+    dataRange_.updateFromVolume(dstVolume);
+    dstVolume->dataMap.dataRange = dataRange_.getDataRange();
+    dstVolume->dataMap.valueRange = dataRange_.getValueRange();
+
     postProcess(*dstVolume);
     dstVolume->discardHistograms();  // remove any old histograms;
-
     outport_.setData(dstVolume);
 }
 

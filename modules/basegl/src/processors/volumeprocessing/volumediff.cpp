@@ -59,7 +59,7 @@ VolumeDiff::VolumeDiff()
     : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2", "Input volume 2"_help) {
     addPort(vol2_);
 
-    addProperty(calculateDataRange_);
+    addProperties(calculateDataRange_, dataRange_);
 
     inport_.setHelp("Input volume 2"_help);
     outport_.setHelp(

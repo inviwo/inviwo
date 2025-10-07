@@ -45,6 +45,7 @@ void VolumeReuseCache::setConfig(const VolumeConfig& config) {
 std::shared_ptr<Volume> VolumeReuseCache::get() {
     auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
+        (*it)->getMetaDataMap()->removeAll();
         return *it;
     } else {
         auto vol = std::make_shared<Volume>(config_);

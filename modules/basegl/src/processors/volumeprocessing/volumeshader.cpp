@@ -80,7 +80,7 @@ VolumeShader::VolumeShader()
                    PropertySemantics::ShaderEditor)
     , fragmentResource_{std::make_shared<StringShaderResource>("volume_shader.frag", defaultFrag)} {
 
-    addProperties(fragmentSrc_, calculateDataRange_);
+    addProperties(fragmentSrc_, calculateDataRange_, dataRange_);
 
     setFragmentShaderResource(fragmentResource_);
 

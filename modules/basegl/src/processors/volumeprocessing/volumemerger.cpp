@@ -68,7 +68,7 @@ VolumeMerger::VolumeMerger()
         addPort(vol);
         vol.setOptional(true);
     }
-    addProperty(calculateDataRange_);
+    addProperties(calculateDataRange_, dataRange_);
 }
 
 void VolumeMerger::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
