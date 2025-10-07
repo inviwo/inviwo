@@ -227,6 +227,9 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
         auto indexSpec = getDataSpecForType(header, "LineIdx");
         auto coordinatesSpec = getDataSpecForType(header, "Coordinates");
         auto vertexDataSpec = getDataSpecForType(header, "Data");  // optional
+        if (!vertexDataSpec.has_value()) {
+            vertexDataSpec = getDataSpecForType(header, "Data0");
+        }
 
         if (!indexSpec.has_value()) {
             throw DataReaderException(SourceContext{}, "{}: {}", indexSpec.error(), path);
