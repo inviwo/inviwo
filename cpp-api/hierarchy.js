@@ -1214,6 +1214,7 @@ var hierarchy =
       ] ],
       [ "inviwo::util::is_dereferenceable< class, class >", "structinviwo_1_1util_1_1is__dereferenceable.html", null ]
     ] ],
+    [ "inviwo::VolumeGLProcessor::FBO", "structinviwo_1_1VolumeGLProcessor_1_1FBO.html", null ],
     [ "inviwo::FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", null ],
     [ "inviwo::FileBase", "classinviwo_1_1FileBase.html", [
       [ "inviwo::FileProperty", "classinviwo_1_1FileProperty.html", [
@@ -3696,6 +3697,7 @@ var hierarchy =
     [ "inviwo::VolumeNormalization", "classinviwo_1_1VolumeNormalization.html", null ],
     [ "inviwo::VolumeRAMSubSet", "classinviwo_1_1VolumeRAMSubSet.html", null ],
     [ "inviwo::VolumeReprConfig", "structinviwo_1_1VolumeReprConfig.html", null ],
+    [ "inviwo::VolumeReuseCache", "classinviwo_1_1VolumeReuseCache.html", null ],
     [ "inviwo::log::warn< Args >", "structinviwo_1_1log_1_1warn.html", null ],
     [ "inviwo::glui::WidgetFactoryObject", "classinviwo_1_1glui_1_1WidgetFactoryObject.html", [
       [ "inviwo::glui::WidgetFactoryObjectTemplate< T, P >", "classinviwo_1_1glui_1_1WidgetFactoryObjectTemplate.html", null ]

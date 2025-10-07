@@ -125,11 +125,12 @@ $(function(){initNavTree('classinviwo_1_1VolumeGradientMagnitude.html','','class
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0da103eb18b1d727cd20fafa8a657fae" id="r_a0da103eb18b1d727cd20fafa8a657fae"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0da103eb18b1d727cd20fafa8a657fae">getProcessorInfo</a> () const override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1VolumeGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1VolumeGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html">inviwo::VolumeGLProcessor</a></td></tr>
-<tr class="memitem:ace6a14e58977ff290ca482f6e207c8c8 inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_ace6a14e58977ff290ca482f6e207c8c8"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragmentShader, bool buildShader=true)</td></tr>
-<tr class="memitem:af2574b64d0ae0d0f56c8ba30fb5ba296 inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_af2574b64d0ae0d0f56c8ba30fb5ba296"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (const std::string &amp;fragmentShader, bool buildShader=true)</td></tr>
-<tr class="memitem:a4815204ebf0889ee704c4afef0f107ec inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_a4815204ebf0889ee704c4afef0f107ec"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a4815204ebf0889ee704c4afef0f107ec">process</a> () override</td></tr>
+<tr class="memitem:ac3852fd39aa1fbffbc7869e835283fbb inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_ac3852fd39aa1fbffbc7869e835283fbb"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragmentShaderResource={}, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={})</td></tr>
+<tr class="memitem:a88e3d02f4099accb5f588f286e1cf496 inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_a88e3d02f4099accb5f588f286e1cf496"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::string_view fragmentShaderName, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={})</td></tr>
+<tr class="memitem:afe36914b86a9dbb525ffd249dc225fcb inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_afe36914b86a9dbb525ffd249dc225fcb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#afe36914b86a9dbb525ffd249dc225fcb">initializeResources</a> () final</td></tr>
+<tr class="memitem:a119dcda49973aad33ca20630e74db120 inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_a119dcda49973aad33ca20630e74db120"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a119dcda49973aad33ca20630e74db120">process</a> () final</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a1d4bc7897d472833b1a7680153f683d6 inherit pub_methods_classinviwo_1_1Processor" id="r_a1d4bc7897d472833b1a7680153f683d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> (std::string_view identifier=&quot;&quot;, std::string_view displayName=&quot;&quot;)</td></tr>
 <tr class="memitem:a76e14f7ade5283a0414df54ec06de74e inherit pub_methods_classinviwo_1_1Processor" id="r_a76e14f7ade5283a0414df54ec06de74e"><td class="memItemLeft" align="right" valign="top">
@@ -157,7 +158,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasProcessorWidget</b
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setNetwork</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network)</td></tr>
 <tr class="memitem:a31d20498bc1abc4098b748be368a1295 inherit pub_methods_classinviwo_1_1Processor" id="r_a31d20498bc1abc4098b748be368a1295"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getNetwork</b> () const</td></tr>
-<tr class="memitem:a9ca0ca1407ee6e9f0c5e3a9b1a453dd1 inherit pub_methods_classinviwo_1_1Processor" id="r_a9ca0ca1407ee6e9f0c5e3a9b1a453dd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">initializeResources</a> ()</td></tr>
 <tr class="memitem:a698177a3b7376f51b8053c85b68f82c7 inherit pub_methods_classinviwo_1_1Processor" id="r_a698177a3b7376f51b8053c85b68f82c7"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1Port.html">Port</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPort</b> (std::string_view identifier) const</td></tr>
 <tr class="memitem:a3f094c3bce2c71c96648c063c39cc6c5 inherit pub_methods_classinviwo_1_1Processor" id="r_a3f094c3bce2c71c96648c063c39cc6c5"><td class="memItemLeft" align="right" valign="top">
@@ -386,13 +386,16 @@ static const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorIn
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a3a0b2a08dd57f13319ad39de2e82d7bc" id="r_a3a0b2a08dd57f13319ad39de2e82d7bc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a0b2a08dd57f13319ad39de2e82d7bc">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont) override</td></tr>
-<tr class="memdesc:a3a0b2a08dd57f13319ad39de2e82d7bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup  <br /></td></tr>
-<tr class="memitem:a7cfaebfa991a6e106a684d3500a97ad6" id="r_a7cfaebfa991a6e106a684d3500a97ad6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7cfaebfa991a6e106a684d3500a97ad6">postProcess</a> () override</td></tr>
-<tr class="memdesc:a7cfaebfa991a6e106a684d3500a97ad6"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing  <br /></td></tr>
+<tr class="memitem:a41ecd0ecc7fb0daa5fbe314a2920afa3" id="r_a41ecd0ecc7fb0daa5fbe314a2920afa3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41ecd0ecc7fb0daa5fbe314a2920afa3">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config) override</td></tr>
+<tr class="memdesc:a41ecd0ecc7fb0daa5fbe314a2920afa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume.  <br /></td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1VolumeGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1VolumeGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html">inviwo::VolumeGLProcessor</a></td></tr>
-<tr class="memitem:a332997ae2e6dd3565efb9ccddf99f7c3 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_a332997ae2e6dd3565efb9ccddf99f7c3"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>markInvalid</b> ()</td></tr>
+<tr class="memitem:a737eff265000feb14ab5b9bf81963ca0 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_a737eff265000feb14ab5b9bf81963ca0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a737eff265000feb14ab5b9bf81963ca0">initializeShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader)</td></tr>
+<tr class="memitem:aae45cf293d4c573681826420af2b45b7 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_aae45cf293d4c573681826420af2b45b7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#aae45cf293d4c573681826420af2b45b7">postProcess</a> (<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume)</td></tr>
+<tr class="memdesc:aae45cf293d4c573681826420af2b45b7 inherit pro_methods_classinviwo_1_1VolumeGLProcessor"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing  <br /></td></tr>
+<tr class="memitem:a97273e620e6f4ea2cda65f7fcf22e31f inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_a97273e620e6f4ea2cda65f7fcf22e31f"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setFragmentShaderResource</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragShaderResource)</td></tr>
+<tr class="memitem:acbb72976f4669fe4773d527686d5e983 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_acbb72976f4669fe4773d527686d5e983"><td class="memItemLeft" align="right" valign="top">
+std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getFragmentShaderResource</b> ()</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a8b02d56fdf37b42ec6cfd600990bebc8 inherit pro_methods_classinviwo_1_1Processor" id="r_a8b02d56fdf37b42ec6cfd600990bebc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a8b02d56fdf37b42ec6cfd600990bebc8">addPortToGroup</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port, std::string_view portGroup)</td></tr>
 <tr class="memitem:a46d0dc5bd8ce5d056f56b716f7dc6ab8 inherit pro_methods_classinviwo_1_1Processor" id="r_a46d0dc5bd8ce5d056f56b716f7dc6ab8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a46d0dc5bd8ce5d056f56b716f7dc6ab8">removePortFromGroups</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port)</td></tr>
@@ -470,16 +473,10 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 <a class="el" href="classinviwo_1_1DataInport.html">VolumeInport</a>&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></td></tr>
 <tr class="memitem:a2660ac3aca6d5e2e7b3b7191e326e3a6 inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_a2660ac3aca6d5e2e7b3b7191e326e3a6"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1DataOutport.html">VolumeOutport</a>&#160;</td><td class="memItemRight" valign="bottom"><b>outport_</b></td></tr>
-<tr class="memitem:a2f3a124c2870353a570298d7b71c2f7c inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_a2f3a124c2870353a570298d7b71c2f7c"><td class="memItemLeft" align="right" valign="top">
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>volume_</b></td></tr>
-<tr class="memitem:ac751bf9df694857c682b6dcc4e61d82c inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_ac751bf9df694857c682b6dcc4e61d82c"><td class="memItemLeft" align="right" valign="top">
-const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>dataFormat_</b></td></tr>
-<tr class="memitem:a8e26532c61634b1f146c51afbe12e142 inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_a8e26532c61634b1f146c51afbe12e142"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>internalInvalid_</b></td></tr>
-<tr class="memitem:a7aa18106efd8d178db8f96eed5c02f79 inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_a7aa18106efd8d178db8f96eed5c02f79"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Shader.html">Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shader_</b></td></tr>
-<tr class="memitem:a044e63ef498326bb807ff7c51f87a93d inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_a044e63ef498326bb807ff7c51f87a93d"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1FrameBufferObject.html">FrameBufferObject</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fbo_</b></td></tr>
+<tr class="memitem:a327c264d53c57322f2b4af43950a936b inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_a327c264d53c57322f2b4af43950a936b"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>calculateDataRange_</b></td></tr>
+<tr class="memitem:acd1170e0586a078de842a3810304f742 inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_acd1170e0586a078de842a3810304f742"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1DataRangeProperty.html">DataRangeProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dataRange_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a71f06afff463001f38a0f55188de6edb inherit pro_attribs_classinviwo_1_1Processor" id="r_a71f06afff463001f38a0f55188de6edb"><td class="memItemLeft" align="right" valign="top">
 std::unique_ptr&lt; <a class="el" href="classinviwo_1_1ProcessorWidget.html">ProcessorWidget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>processorWidget_</b></td></tr>
@@ -538,37 +535,8 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 
 </div>
 </div>
-<a id="a7cfaebfa991a6e106a684d3500a97ad6" name="a7cfaebfa991a6e106a684d3500a97ad6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7cfaebfa991a6e106a684d3500a97ad6">&#9670;&#160;</a></span>postProcess()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::VolumeGradientMagnitude::postProcess </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing </p>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#abfab80071ec4f01565edf2e8f93a0709">inviwo::VolumeGLProcessor</a>.</p>
-
-</div>
-</div>
-<a id="a3a0b2a08dd57f13319ad39de2e82d7bc" name="a3a0b2a08dd57f13319ad39de2e82d7bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a0b2a08dd57f13319ad39de2e82d7bc">&#9670;&#160;</a></span>preProcess()</h2>
+<a id="a41ecd0ecc7fb0daa5fbe314a2920afa3" name="a41ecd0ecc7fb0daa5fbe314a2920afa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41ecd0ecc7fb0daa5fbe314a2920afa3">&#9670;&#160;</a></span>preProcess()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -579,8 +547,17 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
         <tr>
           <td class="memname">virtual void inviwo::VolumeGradientMagnitude::preProcess </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cont</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cont</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -590,9 +567,9 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 </div><div class="memdoc">
 
-<p>this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup </p>
+<p>this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume. </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a9050af730db1484aa1d44228e97a8c78">inviwo::VolumeGLProcessor</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a4e3abb96acf308e7de3027359e8193b5">inviwo::VolumeGLProcessor</a>.</p>
 
 </div>
 </div>

@@ -940,9 +940,7 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memdesc:a040967fe9b1828c138864fcff6d60c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call a functor on each part of the string after splitting by sep.  <br /></td></tr>
 <tr class="memitem:a3bee7a0a110a52b4d03190dc059139f3" id="r_a3bee7a0a110a52b4d03190dc059139f3"><td class="memTemplParams" colspan="2">template&lt;typename Func&gt; </td></tr>
 <tr class="memitem:a3bee7a0a110a52b4d03190dc059139f3 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bee7a0a110a52b4d03190dc059139f3">forEachLine</a> (std::string_view str, Func &amp;&amp;func)</td></tr>
-<tr class="memdesc:a3bee7a0a110a52b4d03190dc059139f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call functor <code class="param">func</code> for each line of the string @str. Considers both '<br  />
-' and '\r<br  />
-' as line separators.  <br /></td></tr>
+<tr class="memdesc:a3bee7a0a110a52b4d03190dc059139f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call functor <code class="param">func</code> for each line of the string <code class="param">str</code>. Considers both '\n' and '\r\n' as line separators.  <br /></td></tr>
 <tr class="memitem:aeb3562b94700f15c08e99b826745258a" id="r_aeb3562b94700f15c08e99b826745258a"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb3562b94700f15c08e99b826745258a">trim</a> (std::string_view str) noexcept</td></tr>
 <tr class="memdesc:aeb3562b94700f15c08e99b826745258a"><td class="mdescLeft">&#160;</td><td class="mdescRight">trims <code class="param">str</code> from beginning and end by removing white spaces  <br /></td></tr>
 <tr class="memitem:ab6bf0cc28f51cabb7d36e15c61129f7c" id="r_ab6bf0cc28f51cabb7d36e15c61129f7c"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6bf0cc28f51cabb7d36e15c61129f7c">ltrim</a> (std::string_view str) noexcept</td></tr>
@@ -2891,9 +2889,7 @@ template&lt;typename Func&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Call functor <code class="param">func</code> for each line of the string @str. Considers both '<br  />
-' and '\r<br  />
-' as line separators. </p>
+<p>Call functor <code class="param">func</code> for each line of the string <code class="param">str</code>. Considers both '\n' and '\r\n' as line separators. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">str</td><td>string split into lines </td></tr>
@@ -7030,7 +7026,7 @@ template&lt;size_t numItems&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Split the string <code class="param">str</code> by <code class="param">delimiter</code> into at most @t numItems parts and return the result in the form of an array. In case there are fewer substrings than @t numItems, the remaining fields of the array contain empty strings. If there are more than <code class="param">numItems</code> parts, the last array entry will contain the remaining string.</p>
+<p>Split the string <code class="param">str</code> by <code class="param">delimiter</code> into at most <code class="param">numItems</code> parts and return the result in the form of an array. In case there are fewer substrings than <code class="param">numItems</code>, the remaining fields of the array contain empty strings. If there are more than <code class="param">numItems</code> parts, the last array entry will contain the remaining string.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">numItems</td><td></td></tr>

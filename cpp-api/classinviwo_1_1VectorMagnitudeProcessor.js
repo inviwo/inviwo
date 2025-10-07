@@ -1,5 +1,5 @@
 var classinviwo_1_1VectorMagnitudeProcessor =
 [
-    [ "postProcess", "classinviwo_1_1VectorMagnitudeProcessor.html#a47a1a90d14544a904066e85e79ef3dfc", null ],
-    [ "preProcess", "classinviwo_1_1VectorMagnitudeProcessor.html#a9ca6d8e65de88dedc2786075cd52e4b5", null ]
+    [ "postProcess", "classinviwo_1_1VectorMagnitudeProcessor.html#a7f435258b7a62c7c8bd95a2469750e8b", null ],
+    [ "preProcess", "classinviwo_1_1VectorMagnitudeProcessor.html#aecc8bd163a2d134bd9ba4cf54449d4d5", null ]
 ];

@@ -1,6 +1,5 @@
 var classinviwo_1_1VolumeLowPass =
 [
-    [ "initializeResources", "classinviwo_1_1VolumeLowPass.html#aff58226b18c9756e3b478632177c9edb", null ],
-    [ "postProcess", "classinviwo_1_1VolumeLowPass.html#a41ff07b1739b2c2811e61347d98e8311", null ],
-    [ "preProcess", "classinviwo_1_1VolumeLowPass.html#acb31e9236dd9aa0d87c26c598878ea7c", null ]
+    [ "initializeShader", "classinviwo_1_1VolumeLowPass.html#a77eaf8e6a64ce3d33286c37b5343192f", null ],
+    [ "preProcess", "classinviwo_1_1VolumeLowPass.html#a79d3109ad1f422028349e8859ae7a639", null ]
 ];
