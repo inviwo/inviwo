@@ -41,6 +41,7 @@ Checks: >
     -readability-uppercase-literal-suffix,
     -readability-named-parameter,
     -readability-implicit-bool-conversion,
+    -readability-math-missing-parentheses,
 
   -clang-diagnostic-unknown-pragmas,
 
