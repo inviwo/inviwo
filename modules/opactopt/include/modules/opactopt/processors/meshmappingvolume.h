@@ -58,17 +58,13 @@ public:
 
 private:
     MeshInport meshInport_;
-    MeshOutport outport_;
     VolumeInport volumeInport_;
+    MeshOutport outport_;
 
     BoolProperty enabled_;
     TransferFunctionProperty tf_;
 
-    OptionPropertyInt component_;
-
-    BoolProperty useCustomDataRange_;
-    DoubleMinMaxProperty customDataRange_;
-    DoubleMinMaxProperty dataRange_;
+    OptionPropertyInt channel_;
 };
 
 }  // namespace inviwo

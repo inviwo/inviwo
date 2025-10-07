@@ -565,13 +565,15 @@ void OpacityOptimization::renderGeometry(const Pass pass, Units& units) {
                     if (!shouldDraw(mesh->getIndexMeshInfo(i))) continue;
 
                     drawer.draw(i);
-                    if (pass < Pass::ApproximateBlending)
+                    if (pass < Pass::ApproximateBlending) {
                         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+                    }
                 }
             } else if (shouldDraw(mesh->getDefaultMeshInfo())) {
                 drawer.draw();
-                if (pass < Pass::ApproximateBlending)
+                if (pass < Pass::ApproximateBlending) {
                     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+                }
             }
         }
     };
@@ -588,35 +590,41 @@ void OpacityOptimization::renderGeometry(const Pass pass, Units& units) {
         shader.setUniform("stippling.worldScale", lineSettings_.getStippling().getWorldScale());
     };
 
-    // Triangles
-    meshShaders_[pass].activate();
-    utilgl::setUniforms(meshShaders_[pass], camera_, lightingProperty_, overrideColor_);
-    draw(meshShaders_[pass], [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Triangles; });
+    {  // Triangles
+        auto& shader = meshShaders_[std::to_underlying(pass)];
+        shader.activate();
+        utilgl::setUniforms(shader, camera_, lightingProperty_, overrideColor_);
+        draw(shader, [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Triangles; });
+    }
 
-    // Lines
-    lineShaders_[pass].activate();
-    lineSettings(lineShaders_[pass]);
-    draw(lineShaders_[pass], [](const Mesh::MeshInfo& mi) {
-        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::None;
-    });
+    {  // Lines
+        auto& shader = lineShaders_[std::to_underlying(pass)];
+        shader.activate();
+        lineSettings(shader);
+        draw(shader, [](const Mesh::MeshInfo& mi) {
+            return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::None;
+        });
+    }
+    {  // Line adjacency
+        auto& shader = lineAdjacencyShaders_[std::to_underlying(pass)];
+        shader.activate();
+        lineSettings(shader);
+        draw(shader, [](const Mesh::MeshInfo& mi) {
+            return mi.dt == DrawType::Lines && (mi.ct == ConnectivityType::Adjacency ||
+                                                mi.ct == ConnectivityType::StripAdjacency);
+        });
+    }
 
-    // Line adjacency
-    lineAdjacencyShaders_[pass].activate();
-    lineSettings(lineAdjacencyShaders_[pass]);
-    draw(lineAdjacencyShaders_[pass], [](const Mesh::MeshInfo& mi) {
-        return mi.dt == DrawType::Lines &&
-               (mi.ct == ConnectivityType::Adjacency || mi.ct == ConnectivityType::StripAdjacency);
-    });
+    {  // Points
+        auto& shader = pointShaders_[std::to_underlying(pass)];
+        const utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
+        const utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
+        shader.activate();
+        utilgl::setUniforms(shader, camera_, lightingProperty_, pointSize_, borderWidth_,
+                            borderColor_, antialising_);
 
-    // Points
-    const utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
-    const utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
-    pointShaders_[pass].activate();
-    utilgl::setUniforms(pointShaders_[pass], camera_, lightingProperty_, pointSize_, borderWidth_,
-                        borderColor_, antialising_);
-
-    draw(pointShaders_[pass], [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Points; });
-
+        draw(shader, [](const Mesh::MeshInfo& mi) { return mi.dt == DrawType::Points; });
+    }
     LGL_ERROR_CLASS;
 }
 
