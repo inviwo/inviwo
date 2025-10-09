@@ -152,6 +152,7 @@
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>     // for VolumeSequen...
 #include <modules/base/processors/volumeshifter.h>                        // for VolumeShifter
 #include <modules/base/processors/volumesliceextractor.h>                 // for VolumeSliceE...
+#include <modules/base/processors/volumeslicetolayer.h>
 #include <modules/base/processors/volumesource.h>                         // for VolumeSource
 #include <modules/base/processors/volumedownsample.h>                     // for VolumeDownsample
 #include <modules/base/processors/volumesubset.h>                         // for VolumeSubset
@@ -292,6 +293,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSequenceToSpatial4DSampler>();
     registerProcessor<VolumeShifter>();
     registerProcessor<VolumeSliceExtractor>();
+    registerProcessor<VolumeSliceToLayer>();
     registerProcessor<VolumeSource>();
     registerProcessor<VolumeSubset>();
     registerProcessor<VolumeToSpatialSampler>();

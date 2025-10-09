@@ -143,6 +143,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumesequencetospatial4dsampler.h
     include/modules/base/processors/volumeshifter.h
     include/modules/base/processors/volumesliceextractor.h
+    include/modules/base/processors/volumeslicetolayer.h
     include/modules/base/processors/volumesource.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
@@ -297,6 +298,7 @@ set(SOURCE_FILES
     src/processors/volumesequencetospatial4dsampler.cpp
     src/processors/volumeshifter.cpp
     src/processors/volumesliceextractor.cpp
+    src/processors/volumeslicetolayer.cpp
     src/processors/volumesource.cpp
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
