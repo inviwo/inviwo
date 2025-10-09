@@ -10,10 +10,10 @@ set(HEADER_FILES
     include/modules/base/algorithm/convexhullmesh.h
     include/modules/base/algorithm/cubeproxygeometry.h
     include/modules/base/algorithm/dataminmax.h
-    include/modules/base/algorithm/image/layercontour.h
     include/modules/base/algorithm/image/layergeneration.h
     include/modules/base/algorithm/image/layerramdistancetransform.h
     include/modules/base/algorithm/image/layerramsubset.h
+    include/modules/base/algorithm/image/marchingsquares.h
     include/modules/base/algorithm/mesh/axisalignedboundingbox.h
     include/modules/base/algorithm/mesh/meshcameraalgorithms.h
     include/modules/base/algorithm/mesh/meshclipping.h
@@ -172,10 +172,10 @@ set(SOURCE_FILES
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
-    src/algorithm/image/layercontour.cpp
     src/algorithm/image/layergeneration.cpp
     src/algorithm/image/layerramdistancetransform.cpp
     src/algorithm/image/layerramsubset.cpp
+    src/algorithm/image/marchingsquares.cpp
     src/algorithm/mesh/axisalignedboundingbox.cpp
     src/algorithm/mesh/meshcameraalgorithms.cpp
     src/algorithm/mesh/meshclipping.cpp
@@ -326,6 +326,7 @@ set(TEST_FILES
     tests/unittests/convexhull-test.cpp
     tests/unittests/kdtree-test.cpp
     tests/unittests/marchingcubes-test.cpp
+    tests/unittests/marchingsquares-test.cpp
     tests/unittests/meshcutting-test.cpp
     tests/unittests/volumevoronoi-test.cpp
 )

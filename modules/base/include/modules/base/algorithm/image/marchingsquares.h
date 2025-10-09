@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,17 +31,30 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/util/glmvec.h>  // for vec4
-
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr
+#include <memory>  // for shared_ptr
 
 namespace inviwo {
-class LayerRepresentation;
+
+class LayerRAM;
+class IsoValueCollection;
 class Mesh;
 
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> computeLayerContour(const LayerRepresentation* in,
-                                                              size_t channel, double isoValue,
-                                                              vec4 color = vec4(1.0));
+namespace util {
+
+/**
+ * Extracts a isocontours from a Layer using the Marching Squares algorithm
+ *
+ * Note: Shares interface with computeLayerContour
+ *
+ * @param layer      the source layer
+ * @param isovalues  iso-values of the extracted contours
+ * @param channel    selected channel of \p layer
+ * @return Mesh containing the isocontours or an empty Mesh if there are none
+ */
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingSquares(const LayerRAM* layer,
+                                                          const IsoValueCollection& isovalues,
+                                                          size_t channel);
+
+}  // namespace util
 
 }  // namespace inviwo
