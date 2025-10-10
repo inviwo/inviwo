@@ -36,10 +36,13 @@ namespace inviwo {
 VolumeReuseCache::VolumeReuseCache(VolumeConfig config) : config_(std::move(config)) {}
 
 const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
-void VolumeReuseCache::setConfig(const VolumeConfig& config) {
+auto VolumeReuseCache::setConfig(const VolumeConfig& config) -> Status {
     if (config != config_) {
         cache_.clear();
         config_ = config;
+        return Status::ClearedCache;
+    } else {
+        return Status::NoChange;
     }
 }
 std::shared_ptr<Volume> VolumeReuseCache::get() {

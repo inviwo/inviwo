@@ -224,9 +224,10 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
     polygon << QPointF(0.0, 0.0);
 
     if (mode == HistogramMode::Log) {
-        const double maxCount = histogram.maxCount;
+        const double maxCount = std::max(histogram.maxCount, size_t{1});
+        const auto scale = std::log10(maxCount);
         for (size_t i = 0; i < histogram.counts.size(); i++) {
-            const double height = std::log10(1.0 + histogram.counts[i]) / std::log10(maxCount);
+            const double height = std::log10(1.0 + histogram.counts[i]) / scale;
             polygon << QPointF(i * stepSize, height) << QPointF((i + 1) * stepSize, height);
         }
     } else {
@@ -244,9 +245,9 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
                     return histogram.histStats.percentiles[100];
             }
         }();
+        const auto scaleSafe = std::max(scale, 1.0);
         for (size_t i = 0; i < histogram.counts.size(); i++) {
-            double height = histogram.counts[i] / scale;
-            height = std::min(height, 1.0);
+            const double height = std::min(histogram.counts[i] / scaleSafe, 1.0);
             polygon << QPointF(i * stepSize, height) << QPointF((i + 1) * stepSize, height);
         }
     }
@@ -362,12 +363,13 @@ void TFEditorView::HistogramState::paintHistogram(QPainter* painter, const QPoly
 }
 
 void TFEditorView::HistogramState::paintLabel(QPainter* painter, size_t channel, size_t count,
-                                              size_t nChannels, const QRect& rect) {
+                                              size_t nChannels, const QRect& rect,
+                                              std::string_view overflow) {
     const utilqt::Save saved{painter};
     painter->resetTransform();
     setPenAndFont(painter, ColorType::Text, channel, nChannels);
     painter->drawText(textRect(rect, count), Qt::AlignRight | Qt::AlignTop,
-                      utilqt::toQString(fmt::format("Channel: {}", channel + 1)));
+                      utilqt::toQString(fmt::format("Channel: {}{}", channel + 1, overflow)));
 }
 
 void TFEditorView::HistogramState::paintState(QPainter* painter, const QRect& rect) const {
@@ -403,7 +405,28 @@ void TFEditorView::HistogramState::paintHistograms(QPainter* painter, const QRec
     size_t count = 0;
     for (auto&& [channel, histogram] : util::enumerate(polygons)) {
         if (!selection[channel]) continue;
-        paintLabel(painter, channel, count, total, rect);
+        const auto overflow = histograms[channel].overflow > 0;
+        const auto underflow = histograms[channel].underflow > 0;
+        if (overflow || underflow) {
+            const auto outside = histograms[channel].overflow + histograms[channel].underflow;
+            if (outside > histograms[channel].totalCounts / 10000) {
+                paintLabel(painter, channel, count, total, rect,
+                           fmt::format(", underflow: {:5.2f}%, overflow: {:5.2f}%",
+                                       100.0 * static_cast<double>(histograms[channel].underflow) /
+                                           histograms[channel].totalCounts,
+                                       100.0 * static_cast<double>(histograms[channel].overflow) /
+                                           histograms[channel].totalCounts));
+            } else {
+                paintLabel(
+                    painter, channel, count, total, rect,
+                    fmt::format(", underflow: {}, overflow: {}", histograms[channel].underflow,
+                                histograms[channel].overflow));
+            }
+
+        } else {
+            paintLabel(painter, channel, count, total, rect, "");
+        }
+
         ++count;
     }
 }

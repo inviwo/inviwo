@@ -43,8 +43,8 @@ class IVW_CORE_API TFData {
 public:
     using OnChangeHandle = std::array<std::shared_ptr<std::function<void()>>, 3>;
 
-    struct Base {
-        virtual ~Base() = default;
+    struct IVW_CORE_API Base {
+        virtual ~Base();
         Base() = default;
         Base(const Base&) = delete;
         Base(Base&&) = delete;
@@ -122,7 +122,7 @@ public:
         }
         return *this;
     }
-    ~TFData() = default;
+    ~TFData();
 
     const DataMapper* getDataMap() const {
         if (base_) {
