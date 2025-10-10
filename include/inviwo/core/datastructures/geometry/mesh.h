@@ -56,19 +56,21 @@ class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public MetaDataOwner {
 public:
     struct IVW_CORE_API MeshInfo {
-        constexpr MeshInfo() : dt(DrawType::Points), ct(ConnectivityType::None) {}
-        constexpr MeshInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
-        DrawType dt;
-        ConnectivityType ct;
+        DrawType dt = DrawType::Points;
+        ConnectivityType ct = ConnectivityType::None;
+
+        auto operator<=>(const MeshInfo&) const = default;
     };
     struct IVW_CORE_API BufferInfo {
+        constexpr BufferInfo() = default;
         constexpr BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
-        constexpr BufferInfo() : BufferInfo(BufferType::PositionAttrib) {}
         constexpr BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
 
-        BufferType type;
-        int location;  //<! attribute location of buffer in GLSL shader
+        BufferType type = BufferType::PositionAttrib;
+        //! attribute location of buffer in GLSL shader
+        int location = static_cast<int>(BufferType::PositionAttrib);
 
+        auto operator<=>(const BufferInfo&) const = default;
         IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info);
     };
 
@@ -77,7 +79,7 @@ public:
 
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
-    Mesh(Mesh::MeshInfo meshInfo);
+    explicit Mesh(Mesh::MeshInfo meshInfo);
     Mesh(const BufferVector& buffers, const IndexVector& indices);
     Mesh(const Mesh& rhs);
 
@@ -297,16 +299,6 @@ protected:
     IndexVector indices_;
     MeshInfo meshInfo_;
 };
-
-inline bool operator==(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) {
-    return (a.type == b.type) && (a.location == b.location);
-}
-inline bool operator!=(const Mesh::BufferInfo& a, const Mesh::BufferInfo& b) { return !(a == b); }
-
-inline bool operator==(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) {
-    return (a.ct == b.ct) && (a.dt == b.dt);
-}
-inline bool operator!=(const Mesh::MeshInfo& a, const Mesh::MeshInfo& b) { return !(a == b); }
 
 namespace meshutil {
 
