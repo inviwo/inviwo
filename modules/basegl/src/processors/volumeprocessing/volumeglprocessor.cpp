@@ -46,8 +46,8 @@
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnitContainer
 #include <modules/opengl/texture/textureutils.h>                        // for multiDrawImagePla...
 #include <modules/opengl/texture/texture3d.h>
-#include <modules/opengl/volume/volumegl.h>                             // for VolumeGL
-#include <modules/opengl/volume/volumeutils.h>                          // for bindAndSetUniforms
+#include <modules/opengl/volume/volumegl.h>     // for VolumeGL
+#include <modules/opengl/volume/volumeutils.h>  // for bindAndSetUniforms
 #include <modules/opengl/openglutils.h>
 
 #include <functional>     // for __base
@@ -64,7 +64,7 @@ namespace inviwo {
 
 namespace {
 
-FrameBufferObject& getActiveFbo(Texture3D& texture, std::span<VolumeGLProcessor::FBO> fbos) {
+FrameBufferObject& getActiveFBO(Texture3D& texture, std::span<VolumeGLProcessor::FBO> fbos) {
     auto it = std::find_if(fbos.begin(), fbos.end(),
                            [&](const auto& fbo) { return fbo.textureId == texture.getID(); });
     if (it == fbos.end()) {
@@ -79,6 +79,14 @@ FrameBufferObject& getActiveFbo(Texture3D& texture, std::span<VolumeGLProcessor:
     it->lastUsed = std::chrono::high_resolution_clock::now();
 
     return it->fbo;
+}
+
+void detachFBOs(std::span<VolumeGLProcessor::FBO> fbos) {
+    for (auto& fbo : fbos) {
+        fbo.fbo.activate();
+        fbo.fbo.detachAllTextures();
+        fbo.textureId = 0;
+    }
 }
 
 }  // namespace
@@ -127,7 +135,9 @@ void VolumeGLProcessor::process() {
 
     utilgl::bindAndSetUniforms(shader_, cont, *srcVolume, "volume");
 
-    volumes_.setConfig(config);
+    if (volumes_.setConfig(config) == VolumeReuseCache::Status::ClearedCache) {
+        detachFBOs(fbos_);
+    }
     auto dstVolume = volumes_.get();
 
     const size3_t dim{srcVolume->getDimensions()};
@@ -136,7 +146,8 @@ void VolumeGLProcessor::process() {
     // this will invalidate any other representations
     auto* outVolumeGL = dstVolume->getEditableRepresentation<VolumeGL>();
 
-    auto& fbo = getActiveFbo(*outVolumeGL->getTexture(), fbos_);
+    auto& fbo = getActiveFBO(*outVolumeGL->getTexture(), fbos_);
+
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
@@ -149,7 +160,7 @@ void VolumeGLProcessor::process() {
             dataMinMaxGL_.emplace();
         }
         const auto [min, max] = dataMinMaxGL_->minMax(*dstVolume);
-        const auto dataRange = [&]() -> glm::dvec2 {
+        auto dataRange = [&]() -> glm::dvec2 {
             switch (dstVolume->getDataFormat()->getComponents()) {
                 case 1:
                     return {min.x, max.x};
@@ -163,6 +174,10 @@ void VolumeGLProcessor::process() {
                     return {glm::compMin(min), glm::compMax(max)};
             }
         }();
+
+        if (dataRange.x == dataRange.y) {
+            dataRange = DataMapper::defaultDataRangeFor(dstVolume->getDataFormat());
+        }
         dstVolume->dataMap.dataRange = dataRange;
         dstVolume->dataMap.valueRange = dataRange;
     }

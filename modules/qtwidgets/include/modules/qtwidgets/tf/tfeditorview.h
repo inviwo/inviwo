@@ -78,7 +78,7 @@ private:
         static void paintHistogram(QPainter* painter, const QPolygonF& histogram, size_t channel,
                                    size_t nChannels, const QRectF& sceneRect);
         static void paintLabel(QPainter* painter, size_t channel, size_t count, size_t nChannels,
-                               const QRect& rect);
+                               const QRect& rect, std::string_view overflow);
         void paintState(QPainter* painter, const QRect& rect) const;
         void paintHistograms(QPainter* painter, const QRectF& sceneRect, const QRect& rect) const;
         static QPolygonF createHistogramPolygon(const Histogram1D& histogram, HistogramMode mode,
