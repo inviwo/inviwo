@@ -471,9 +471,11 @@ void OpacityOptimization::process() {
 
     utilgl::activateAndClearTarget(intermediateImage_);
 
-    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
-    const utilgl::DepthMaskState depthMask(GL_FALSE);
     const utilgl::CullFaceState culling(GL_NONE);
+    // use first pass to write to depth buffer...
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
+    utilgl::DepthFuncState depthFuncState(GL_LEQUAL);
+    utilgl::DepthMaskState depthMaskState(GL_TRUE); 
 
     // clear coefficient buffers
     clear_.activate();
@@ -483,6 +485,7 @@ void OpacityOptimization::process() {
 
     // Pass 1: Project importance
     renderGeometry(Pass::ProjectImportance, units);
+    depthTest = utilgl::GlBoolState(GL_DEPTH_TEST, GL_FALSE); // ... then turn off depth test
 
     // Optional smoothing of importance coefficients
     if (units.gaussianKernel) {
@@ -511,7 +514,7 @@ void OpacityOptimization::process() {
     normalize_.activate();
     TextureUnitContainer textureUnits;
     utilgl::bindAndSetUniforms(normalize_, textureUnits, intermediateImage_, "image",
-                               ImageType::ColorOnly);
+                               ImageType::ColorDepth);
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(normalize_, textureUnits, *backgroundPort_.getData(), "bg",
                                    ImageType::ColorDepth);

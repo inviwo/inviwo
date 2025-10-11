@@ -50,6 +50,7 @@ layout(std430, binding = 10) buffer debugCoeffs {
 
 uniform ImageParameters imageParameters;
 uniform sampler2D imageColor;
+uniform sampler2D imageDepth;
 
 #ifdef BACKGROUND_AVAILABLE
 uniform ImageParameters bgParameters;
@@ -105,4 +106,5 @@ void main(void) {
 
     FragData0 = vec4(color.xyz, 1.0);
     if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
+    gl_FragDepth = texelFetch(imageDepth, ivec2(gl_FragCoord.xy), 0).x;
 }
