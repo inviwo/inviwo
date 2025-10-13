@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/cubeproxygeometry.h
     include/modules/base/algorithm/dataminmax.h
     include/modules/base/algorithm/image/layercontour.h
+    include/modules/base/algorithm/image/layergeneration.h
     include/modules/base/algorithm/image/layerramdistancetransform.h
     include/modules/base/algorithm/image/layerramsubset.h
     include/modules/base/algorithm/mesh/axisalignedboundingbox.h
@@ -84,6 +85,7 @@ set(HEADER_FILES
     include/modules/base/processors/layerboundingbox.h
     include/modules/base/processors/layercombiner.h
     include/modules/base/processors/layercontour.h
+    include/modules/base/processors/layercreator.h
     include/modules/base/processors/layerdistancetransform.h
     include/modules/base/processors/layerexport.h
     include/modules/base/processors/layerinformation.h
@@ -171,6 +173,7 @@ set(SOURCE_FILES
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
     src/algorithm/image/layercontour.cpp
+    src/algorithm/image/layergeneration.cpp
     src/algorithm/image/layerramdistancetransform.cpp
     src/algorithm/image/layerramsubset.cpp
     src/algorithm/mesh/axisalignedboundingbox.cpp
@@ -241,6 +244,7 @@ set(SOURCE_FILES
     src/processors/layerboundingbox.cpp
     src/processors/layercombiner.cpp
     src/processors/layercontour.cpp
+    src/processors/layercreator.cpp
     src/processors/layerdistancetransform.cpp
     src/processors/layerexport.cpp
     src/processors/layerinformation.cpp

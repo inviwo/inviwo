@@ -94,6 +94,7 @@
 #include <modules/base/processors/layerboundingbox.h>
 #include <modules/base/processors/layercombiner.h>
 #include <modules/base/processors/layercontour.h>
+#include <modules/base/processors/layercreator.h>
 #include <modules/base/processors/layerdistancetransform.h>
 #include <modules/base/processors/imagedistancetransform.h>
 #include <modules/base/processors/layerexport.h>
@@ -231,6 +232,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerBoundingBox>();
     registerProcessor<LayerCombiner>();
     registerProcessor<LayerContour>();
+    registerProcessor<LayerCreator>();
     registerProcessor<LayerDistanceTransform>();
     registerProcessor<LayerExport>();
     registerProcessor<LayerInformation>();
