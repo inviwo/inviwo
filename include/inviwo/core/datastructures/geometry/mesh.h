@@ -63,7 +63,9 @@ public:
     };
     struct IVW_CORE_API BufferInfo {
         constexpr BufferInfo() = default;
+        // NOLINTBEGIN(google-explicit-constructor
         constexpr BufferInfo(BufferType atype) : type(atype), location(static_cast<int>(atype)) {}
+        // NOLINTEND
         constexpr BufferInfo(BufferType atype, int alocation) : type(atype), location(alocation) {}
 
         BufferType type = BufferType::PositionAttrib;
