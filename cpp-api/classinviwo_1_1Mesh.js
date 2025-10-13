@@ -1,6 +1,6 @@
 var classinviwo_1_1Mesh =
 [
-    [ "BufferInfo", "structinviwo_1_1Mesh_1_1BufferInfo.html", null ],
+    [ "BufferInfo", "structinviwo_1_1Mesh_1_1BufferInfo.html", "structinviwo_1_1Mesh_1_1BufferInfo" ],
     [ "MeshInfo", "structinviwo_1_1Mesh_1_1MeshInfo.html", null ],
     [ "addBuffer", "classinviwo_1_1Mesh.html#a309a0cd2c0490ae0828ef1b21dd7ee07", null ],
     [ "addBuffer", "classinviwo_1_1Mesh.html#abcde901cd30d548842ff09837aa09d6e", null ],

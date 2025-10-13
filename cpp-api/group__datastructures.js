@@ -40,7 +40,9 @@ var group__datastructures =
     [ "inviwo::DataRepresentation< Owner >", "classinviwo_1_1DataRepresentation.html", null ],
     [ "inviwo::DiskRepresentation< Repr, Self >", "classinviwo_1_1DiskRepresentation.html", null ],
     [ "inviwo::Mesh", "classinviwo_1_1Mesh.html", [
-      [ "BufferInfo", "structinviwo_1_1Mesh_1_1BufferInfo.html", null ],
+      [ "BufferInfo", "structinviwo_1_1Mesh_1_1BufferInfo.html", [
+        [ "location", "structinviwo_1_1Mesh_1_1BufferInfo.html#a65732f89f41b151b2d1e55bc02da1124", null ]
+      ] ],
       [ "MeshInfo", "structinviwo_1_1Mesh_1_1MeshInfo.html", null ],
       [ "addBuffer", "classinviwo_1_1Mesh.html#a309a0cd2c0490ae0828ef1b21dd7ee07", null ],
       [ "addBuffer", "classinviwo_1_1Mesh.html#abcde901cd30d548842ff09837aa09d6e", null ],

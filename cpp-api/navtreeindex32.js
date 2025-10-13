@@ -1,5 +1,6 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[4,0,0,1106,3],
 "structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[2,0,0,1098,5],
 "structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[4,0,0,1106,5],
 "structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[2,0,0,1098,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1plot_1_1detail_1_1AxisLabels.html":[4,0,0,20,0,1],
 "structinviwo_1_1plot_1_1detail_1_1AxisMeshes.html":[4,0,0,20,0,2],
 "structinviwo_1_1plot_1_1detail_1_1Guard.html":[4,0,0,20,0,3],
-"structinviwo_1_1plot_1_1detail_1_1GuardHelper.html":[4,0,0,20,0,4],
-"structinviwo_1_1plot_1_1detail_1_1GuardHelper_3_01Cls_00_01MP_01_4.html":[4,0,0,20,0,5]
+"structinviwo_1_1plot_1_1detail_1_1GuardHelper.html":[4,0,0,20,0,4]
 };

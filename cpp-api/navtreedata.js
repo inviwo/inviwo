@@ -87,9 +87,9 @@ var NAVTREEINDEX =
 "namespaceinviwo_1_1util.html#a17cede42366cbed152e45d50fb16d062",
 "namespaceinviwo_1_1utilqt.html#a7467b0293750542c0be5375676d2aa47",
 "structinviwo_1_1MeshRasterizer_1_1EdgeSettings.html",
-"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44",
-"structinviwo_1_1plot_1_1detail_1_1MemPtr.html",
-"structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html"
+"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48",
+"structinviwo_1_1plot_1_1detail_1_1GuardHelper_3_01Cls_00_01MP_01_4.html",
+"structstd_1_1hash_3_01inviwo_1_1PortConnection_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

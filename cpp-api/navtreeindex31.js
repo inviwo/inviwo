@@ -9,6 +9,7 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[2,0,0,657,0],
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[4,0,0,665,0],
 "structinviwo_1_1Mesh_1_1BufferInfo.html":[1,1,11,0],
+"structinviwo_1_1Mesh_1_1BufferInfo.html#a65732f89f41b151b2d1e55bc02da1124":[1,1,11,0,0],
 "structinviwo_1_1Mesh_1_1MeshInfo.html":[1,1,11,1],
 "structinviwo_1_1NetworkAutomation_1_1AutoIn.html":[2,0,0,690,0],
 "structinviwo_1_1NetworkAutomation_1_1AutoIn.html":[4,0,0,698,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1StrBuffer.html#a599e74ee3c46ff688c9b7854d33b731a":[4,0,0,1106,0],
 "structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4":[2,0,0,1098,8],
 "structinviwo_1_1StrBuffer.html#a81d692a5a145b028d01a332e58b2d7c4":[4,0,0,1106,8],
-"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[2,0,0,1098,3],
-"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[4,0,0,1106,3]
+"structinviwo_1_1StrBuffer.html#a91288c710d38000355c11c1889249d48":[2,0,0,1098,3]
 };
