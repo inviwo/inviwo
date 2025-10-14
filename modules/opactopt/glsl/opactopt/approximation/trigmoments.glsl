@@ -72,7 +72,7 @@ void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float
     }
 }
 
-float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
+float approximate(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
     vec4 wrapping_zone_parameters = TEX_WRAPPING_ZONE_PARAMETERS;
 
     float b_0;
@@ -147,7 +147,7 @@ float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) 
     }
 }
 
-float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+float total(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
 

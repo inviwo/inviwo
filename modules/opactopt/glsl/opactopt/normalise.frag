@@ -31,6 +31,7 @@
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 
 #include "utils/structs.glsl"
+#include "utils/blend.glsl"
 
 #include "opactopt/common.glsl"
 #include "opactopt/approximation/fourier.glsl"
@@ -39,14 +40,6 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 #include "opactopt/approximation/powermoments.glsl"
 #include "opactopt/approximation/trigmoments.glsl"
 
-#ifdef DEBUG
-uniform ivec2 debugCoords;
-
-layout(std430, binding = 10) buffer debugCoeffs {
-    float debugImportanceCoeffs[N_IMPORTANCE_SUM_COEFFICIENTS];
-    float debugOpticalCoeffs[N_OPTICAL_DEPTH_COEFFICIENTS];
-};
-#endif
 
 uniform ImageParameters imageParameters;
 uniform sampler2D imageColor;
@@ -55,56 +48,49 @@ uniform sampler2D imageDepth;
 #ifdef BACKGROUND_AVAILABLE
 uniform ImageParameters bgParameters;
 uniform sampler2D bgColor;
+uniform sampler2D bgDepth;
+uniform sampler2D bgPicking;
 #endif
 
 uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
 uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
 
 void main(void) {
-    // normalise colour
-    vec4 color = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
+    // normalize color
+    vec4 imageColorValue = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
+    float imageDepthValue = texelFetch(imageDepth, ivec2(gl_FragCoord.xy), 0).x;
 
 #ifdef NORMALISE
-    if (color.a != 0.0) color.rgb /= color.a;  // divide by normalisation weight
+    // divide by normalization weight
+    if (imageColorValue.a != 0.0) imageColorValue.rgb /= imageColorValue.a;  
 #endif
 
     // set alpha using optical depth
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
+    imageColorValue.a = imageColorValue.a == 0.0 ? 0.0 : 1.0 - exp(-tauall);
 
-    color.a = color.a == 0.0 ? 0.0 : 1.0 - exp(-tauall);
+    vec4 picking = vec4(0.0, 0.0, 0.0, 1.0);
 
 #ifdef BACKGROUND_AVAILABLE
-#ifdef NORMALISE
-    color.rgb =
-        color.a * color.rgb + (1 - color.a) * texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0).rgb;
-#else
-    color.rgb = color.rgb + (1 - color.a) * texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0).rgb;
-#endif
-#else
-#ifdef NORMALISE
-    color.rgb = color.a * color.rgb;
-#endif
-#endif
+    vec4 bgColorValue = texelFetch(bgColor, ivec2(gl_FragCoord.xy), 0);
+    float bgDepthValue = texelFetch(bgDepth, ivec2(gl_FragCoord.xy), 0).x;
 
-#ifdef DEBUG
-    if (ivec2(gl_FragCoord.xy) == debugCoords) {
-#ifdef COEFF_TEX_FIXED_POINT_FACTOR
-        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
-            debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(debugCoords, i)).x /
-                                       COEFF_TEX_FIXED_POINT_FACTOR;
-        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
-            debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(debugCoords, i)).x /
-                                    COEFF_TEX_FIXED_POINT_FACTOR;
-#else
-        for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++)
-            debugImportanceCoeffs[i] = imageLoad(importanceSumCoeffs[0], ivec3(debugCoords, i)).x;
-        for (int i = 0; i < N_OPTICAL_DEPTH_COEFFICIENTS; i++)
-            debugOpticalCoeffs[i] = imageLoad(opticalDepthCoeffs, ivec3(debugCoords, i)).x;
-#endif
+    vec4 color = imageDepthValue < bgDepthValue ?
+                    premultipliedAlphaBlend(imageColorValue, bgColorValue) :
+                    premultipliedAlphaBlend(bgColorValue, imageColorValue);
+
+    if (bgDepthValue < imageDepthValue) {
+        picking = texelFetch(bgPicking, ivec2(gl_FragCoord.xy), 0);
     }
+
+    float depth = min(imageDepthValue, bgDepthValue);
+
+#else
+    float depth = imageDepthValue;
+    vec4 color = imageColorValue;
 #endif
 
-    FragData0 = vec4(color.xyz, 1.0);
-    if (color.a != 0) PickingData = vec4(0.0, 0.0, 0.0, 1.0);
-    gl_FragDepth = texelFetch(imageDepth, ivec2(gl_FragCoord.xy), 0).x;
+    FragData0 = color;
+    PickingData = picking;
+    gl_FragDepth = depth;
 }

@@ -55,12 +55,18 @@
 
 namespace inviwo {
 
+namespace {
+static constexpr std::string_view errorMsg =
+    "The OpenGL extension for image load store operations "
+    "(GL_EXT_shader_image_load_store) is required.";
+}
+
 const ProcessorInfo OpacityOptimization::processorInfo_{
     "org.inviwo.OpacityOptimization",  // Class identifier
     "Opacity Optimization",            // Display name
     "Mesh Rendering",                  // Category
     CodeState::Experimental,           // Code state
-    Tags::GL,                          // Tags
+    Tags::GL | Tag{"GL4.2"},           // Tags
     R"(Performs approximate opacity optimization using a direct
     rendering approach. The processor takes a mesh as input,
     and optionally an importance volume and background
@@ -71,7 +77,6 @@ const ProcessorInfo& OpacityOptimization::getProcessorInfo() const { return proc
 
 OpacityOptimization::OpacityOptimization()
     : Processor()
-    , screenSize_{0, 0}
     , inport_("geometry", "Input meshes"_help)
     , backgroundPort_("imageInport", "Background image (optional)"_help)
     , outport_("image", "Output image containing the opacity optimised mesh"_help)
@@ -196,11 +201,11 @@ OpacityOptimization::OpacityOptimization()
     , imageFormat_{GLFormats::getGLFormat(
           OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float") ? GL_FLOAT : GL_INT,
           1)}
-    , importanceSumTexture_{{{size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_),
+    , importanceSumTexture_{{{size3_t(outport_.getDimensions(), importanceSumCoefficients_),
                               imageFormat_, GL_NEAREST},
-                             {size3_t(screenSize_.x, screenSize_.y, importanceSumCoefficients_),
+                             {size3_t(outport_.getDimensions(), importanceSumCoefficients_),
                               imageFormat_, GL_NEAREST}}}
-    , opticalDepthTexture_{size3_t(screenSize_.x, screenSize_.y, opticalDepthCoefficients_),
+    , opticalDepthTexture_{size3_t(outport_.getDimensions(), opticalDepthCoefficients_),
                            imageFormat_, GL_NEAREST}
     , gaussianKernel_{static_cast<size_t>(gaussianKernelMaxRadius_ +
                                           1),  // allocate max possible size
@@ -224,14 +229,7 @@ OpacityOptimization::OpacityOptimization()
     , momentSettings_{2, GLFormats::getGLFormat(GL_FLOAT, 4), GL_NEAREST} {
 
     if (!OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store")) {
-        log::error(
-            "The OpenGL extension for image load store operations "
-            "(GL_EXT_shader_image_load_store) is required.");
-        isReady_.setUpdate([]() -> ProcessorStatus {
-            return {ProcessorStatus::Error,
-                    "The OpenGL extension for image load store operations "
-                    "(GL_EXT_shader_image_load_store) is required."};
-        });
+        isReady_.setUpdate([]() -> ProcessorStatus { return {ProcessorStatus::Error, errorMsg}; });
     }
 
     addPort(inport_);
@@ -293,6 +291,14 @@ OpacityOptimization::OpacityOptimization()
 }
 
 OpacityOptimization::~OpacityOptimization() = default;
+
+void OpacityOptimization::setNetwork(ProcessorNetwork* network) {
+    // Report the error in setNetwork, to avoid printing it when just constructing the processor
+    if (!OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store")) {
+        log::report(LogLevel::Error, errorMsg);
+    }
+    Processor::setNetwork(network);
+}
 
 void OpacityOptimization::initializeResources() {
 
@@ -416,8 +422,6 @@ void OpacityOptimization::process() {
     resizeImportanceSumTextures(outport_.getDimensions(), importanceSumCoefficients_);
     resizeOpticalDepthTexture(outport_.getDimensions(), opticalDepthCoefficients_);
 
-    screenSize_ = outport_.getDimensions();
-
     if (intermediateImage_.getDimensions() != outport_.getDimensions()) {
         intermediateImage_.setDimensions(outport_.getDimensions());
     }
@@ -472,20 +476,25 @@ void OpacityOptimization::process() {
     utilgl::activateAndClearTarget(intermediateImage_);
 
     const utilgl::CullFaceState culling(GL_NONE);
-    // use first pass to write to depth buffer...
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
-    utilgl::DepthFuncState depthFuncState(GL_LEQUAL);
-    utilgl::DepthMaskState depthMaskState(GL_TRUE); 
+    const utilgl::DepthFuncState depthFuncState(GL_LEQUAL);
+    const utilgl::DepthMaskState depthMaskState(GL_TRUE);
 
-    // clear coefficient buffers
-    clear_.activate();
-    setUniforms(clear_, units);
-    utilgl::singleDrawImagePlaneRect();
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    {
+        // use first pass to write to depth buffer...
+        const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_TRUE);
 
-    // Pass 1: Project importance
-    renderGeometry(Pass::ProjectImportance, units);
-    depthTest = utilgl::GlBoolState(GL_DEPTH_TEST, GL_FALSE); // ... then turn off depth test
+        // clear coefficient buffers
+        clear_.activate();
+        setUniforms(clear_, units);
+        utilgl::singleDrawImagePlaneRect();
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+        // Pass 1: Project importance
+        renderGeometry(Pass::ProjectImportance, units);
+    }
+
+    // ... then turn off depth test
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, GL_FALSE);
 
     // Optional smoothing of importance coefficients
     if (units.gaussianKernel) {
@@ -507,7 +516,7 @@ void OpacityOptimization::process() {
     const utilgl::BlendModeState blending(GL_ONE, GL_ONE, GL_ONE, GL_ONE);
     renderGeometry(Pass::ApproximateBlending, units);
 
-    // normalise
+    // normalize
     utilgl::activateAndClearTarget(outport_);
     glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ZERO);
 
@@ -517,7 +526,7 @@ void OpacityOptimization::process() {
                                ImageType::ColorDepth);
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(normalize_, textureUnits, *backgroundPort_.getData(), "bg",
-                                   ImageType::ColorDepth);
+                                   ImageType::ColorDepthPicking);
     }
     setUniforms(normalize_, units);
     utilgl::singleDrawImagePlaneRect();
@@ -527,8 +536,8 @@ void OpacityOptimization::process() {
 }
 
 void OpacityOptimization::setUniforms(Shader& shader, Units& units) {
-    shader.setUniform("screenSize", ivec2(screenSize_));
-    shader.setUniform("reciprocalDimensions", vec2(1) / vec2(screenSize_));
+    shader.setUniform("screenSize", ivec2(outport_.getDimensions()));
+    shader.setUniform("reciprocalDimensions", vec2(1.0f) / vec2(outport_.getDimensions()));
 
     shader.setUniform("q", occlusionReduction_);
     shader.setUniform("r", clutterReduction_);

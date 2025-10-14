@@ -80,20 +80,14 @@ MeshMappingVolume::MeshMappingVolume()
                             {.pos = 1.0f, .color = vec4{1.0f, 0.03f, 0.03f, 1.0f}}}))
     , channel_("channel", "Channel", util::enumeratedOptions("Channel", 4)) {
 
-    addPort(meshInport_);
-    addPort(volumeInport_);
-    addPort(outport_);
-
-    channel_.setSerializationMode(PropertySerializationMode::All)
-        .setCurrentStateAsDefault()
-        .setReadOnly(true);
+    addPorts(meshInport_, volumeInport_, outport_);
 
     addProperties(enabled_, tf_, channel_);
 }
 
 namespace {
 
-// TODO replace with VolumeSampler
+// TODO(Peter): Replace with VolumeSampler after refactor
 
 double triInterp(const std::array<double, 8>& c, vec3 voxelpos) {
     // interpolate along x direction
@@ -168,8 +162,8 @@ void MeshMappingVolume::process() {
                     c[i] = volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
                 }
                 vec3 integerPart{};
-                double res = triInterp(c, glm::modf(texPos, integerPart));
-                const double normalized = dm.mapFromDataToNormalized(res);
+                const auto res = triInterp(c, glm::modf(texPos, integerPart));
+                const auto normalized = dm.mapFromDataToNormalized(res);
                 return tf.sample(normalized);
             });
         } else {
@@ -181,9 +175,9 @@ void MeshMappingVolume::process() {
                     accessOutsideBounds = true;
                 }
 
-                const size3_t samplePos = size3_t(glm::round(texPos));
-                double res = volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
-                const double normalized = dm.mapFromDataToNormalized(res);
+                const auto samplePos = size3_t(glm::round(texPos));
+                const auto res = volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
+                const auto normalized = dm.mapFromDataToNormalized(res);
                 return tf.sample(normalized);
             });
         }

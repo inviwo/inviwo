@@ -44,8 +44,7 @@
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
+restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
 
 in vec4 color_;
 
@@ -55,7 +54,7 @@ void main() {
 
     // Get linear depth
     float z_v = convertDepthScreenToView(camera, gl_FragCoord.z);  // view space depth
-    // linear normalised depth
+    // linear normalized depth
     float depth = (z_v - camera.nearPlane) / (camera.farPlane - camera.nearPlane);
 
     // Calculate g_i^2

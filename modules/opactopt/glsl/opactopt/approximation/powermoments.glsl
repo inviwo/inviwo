@@ -49,7 +49,7 @@ void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float
     }
 }
 
-float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT  coeffTex, int N, float depth) {
+float approximate(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT  coeffTex, int N, float depth) {
     if (N == 5) {
         float b_0;
         vec2 b_even;
@@ -122,7 +122,7 @@ float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT  coeffTex, int N, float depth)
     }
 }
 
-float total(layout(IMAGE_LAYOUT) IMAGE_UNIT  coeffTex, int N) {
+float total(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT  coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
 

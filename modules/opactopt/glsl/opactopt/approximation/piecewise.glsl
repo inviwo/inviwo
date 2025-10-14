@@ -44,7 +44,7 @@ void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float
     }
 }
 
-float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
+float approximate(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
     int bin = min(int(depth * N), N - 1);
     ivec3 coord = ivec3(gl_FragCoord.xy, bin);
     ivec3 prevbincoord = ivec3(gl_FragCoord.xy, bin - 1);
@@ -54,7 +54,7 @@ float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) 
     return prevbinsum + fract(depth * N) * (binsum - prevbinsum);
 }
 
-float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+float total(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, N - 1));
 }
 

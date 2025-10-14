@@ -49,16 +49,15 @@ float importance(vec2 texCoord, float depth, CameraParameters camera) {
     vec4 clip = vec4(2.0 * texCoord - 1.0, clipDepth, 1.0);
     vec4 worldPos = camera.clipToWorld * clip;
     worldPos /= worldPos.w;
-    vec3 texPos = (importanceVolumeParameters.textureToIndex * importanceVolumeParameters.worldToTexture * worldPos).xyz;
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPos).xyz;
     // sample importance from volume
     float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x;
-
     return gi;
 }
 #endif
 
 float approximateAlpha(float gi, float depth,
-                        layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+                        readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     float gisq = gi * gi;
     float gtot = total(coeffTex, N);
     float Gd = approximate(coeffTex, N, depth);

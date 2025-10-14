@@ -76,6 +76,7 @@ public:
 
     virtual void initializeResources() override;
     virtual void process() override;
+    virtual void setNetwork(ProcessorNetwork* network) override;
 
 protected:
     using Type = approximations::Type;
@@ -108,8 +109,6 @@ protected:
     void generateAndUploadGaussianKernel();
     void generateAndUploadLegendreCoefficients();
     void generateAndUploadMomentSettings();
-
-    size2_t screenSize_;
 
     MeshFlatMultiInport inport_;
     ImageInport backgroundPort_;

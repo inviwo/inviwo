@@ -65,7 +65,7 @@ void project(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth, float
     }
 }
 
-float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
+float approximate(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) {
     float sum = 0.0;
     int k = 0;
 
@@ -101,7 +101,7 @@ float approximate(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N, float depth) 
     return sum;
 }
 
-float total(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
+float total(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, int N) {
     return optLoad(coeffTex, ivec3(gl_FragCoord.xy, 0));
 }
 

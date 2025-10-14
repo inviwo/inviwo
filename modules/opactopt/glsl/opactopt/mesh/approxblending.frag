@@ -43,8 +43,8 @@ uniform LightParameters lighting;
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
+readonly restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
+readonly restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
 
 in vec4 worldPosition_;
 in vec3 normal_;
@@ -64,12 +64,16 @@ void main() {
 
     vec4 c = color_;
     vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
+
+    vec3 normal = orientedShadingNormal(normalize(normal_), worldPosition_.xyz);
+
     c.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
-                           normalize(normal_), normalize(toCameraDir_));
+                           normal, normalize(toCameraDir_));
 
     // Calculate g_i^2
 #ifdef USE_IMPORTANCE_VOLUME
-    float gi = importance(gl_FragCoord.xy * reciprocalDimensions, depth, camera);
+    vec3 texPos = (importanceVolumeParameters.worldToTexture * worldPosition_).xyz;
+    float gi = getNormalizedVoxel(importanceVolume, importanceVolumeParameters, texPos.xyz).x;
 #else
     float gi = color_.a;
 #endif

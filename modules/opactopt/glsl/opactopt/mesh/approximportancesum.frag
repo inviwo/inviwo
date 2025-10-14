@@ -42,8 +42,8 @@
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT  importanceSumCoeffs[2];  // double buffering for gaussian filtering
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT  opticalDepthCoeffs;
+readonly restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT  importanceSumCoeffs[2];  // double buffering for gaussian filtering
+restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT  opticalDepthCoeffs;
 
 in vec4 color_;
 

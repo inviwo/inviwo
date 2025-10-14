@@ -52,7 +52,7 @@ void optAdd(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord, float projVal
 #endif
 }
 
-float optLoad(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
+float optLoad(readonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
     return float(imageLoad(coeffTex, coord).x) / COEFF_TEX_FIXED_POINT_FACTOR;
 #else
@@ -60,7 +60,7 @@ float optLoad(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
 #endif
 }
 
-void optClear(layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
+void optClear(writeonly layout(IMAGE_LAYOUT) IMAGE_UNIT coeffTex, ivec3 coord) {
 #ifdef COEFF_TEX_FIXED_POINT_FACTOR
     imageStore(coeffTex, coord, ivec4(0));
 #else

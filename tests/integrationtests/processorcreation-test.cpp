@@ -41,37 +41,16 @@
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglcapabilities.h>
 
 namespace inviwo {
-
-namespace {
-
-struct LogErrorCheck {
-    LogErrorCheck(const std::string& procName)
-        : logCounter_{std::make_shared<LogErrorCounter>()}
-        , stringLog_{std::make_shared<StringLogger>()}
-        , procName_{procName} {
-        LogCentral::getPtr()->registerLogger(logCounter_);
-        LogCentral::getPtr()->registerLogger(stringLog_);
-    }
-    ~LogErrorCheck() {
-        EXPECT_EQ(0, logCounter_->getErrorCount())
-            << "Processor " << procName_ << " produced errors: " << stringLog_->getLog();
-    }
-
-    std::shared_ptr<LogErrorCounter> logCounter_;
-    std::shared_ptr<StringLogger> stringLog_;
-
-    const std::string procName_;
-};
-
-}  // namespace
 
 class ProcessorCreationTests : public ::testing::TestWithParam<std::string> {
 protected:
     ProcessorCreationTests()
         : network_{InviwoApplication::getPtr()->getProcessorNetwork()}
-        , factory_{InviwoApplication::getPtr()->getProcessorFactory()} {};
+        , factory_{InviwoApplication::getPtr()->getProcessorFactory()}
+        , supportedGlVersion_{OpenGLCapabilities::getOpenGLVersion()} {};
 
     virtual ~ProcessorCreationTests() = default;
 
@@ -80,13 +59,36 @@ protected:
 
     ProcessorNetwork* network_;
     ProcessorFactory* factory_;
+    int supportedGlVersion_;
+
+    bool isSupported(const Tags& tags) const {
+        for (const auto& tag : tags.tags_) {
+            const auto str = tags.getString();
+            // Look for "GLX.Y"
+            if (str.size() >= 5 && str.starts_with("GL")) {
+                if (str[2] >= '0' && str[2] <= '9' && str[3] == '.' && str[4] >= '0' &&
+                    str[4] <= '9') {
+
+                    const auto requiredGlVersion =
+                        static_cast<int>(str[2] - '0') * 100 + static_cast<int>(str[4] - '0') * 10;
+
+                    if (requiredGlVersion > supportedGlVersion_) return false;
+                }
+            }
+        }
+        return true;
+    }
 };
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     RenderContext::getPtr()->activateDefaultRenderContext();
     LGL_ERROR;
 
-    LogErrorCheck checklog(GetParam());
+    auto logCounter = std::make_shared<LogErrorCounter>();
+    auto stringLog = std::make_shared<StringLogger>();
+    LogCentral::getPtr()->registerLogger(logCounter);
+    LogCentral::getPtr()->registerLogger(stringLog);
+
     auto s = std::shared_ptr<Processor>(factory_->createShared(GetParam()));
 
     LGL_ERROR;
@@ -110,6 +112,14 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     s.reset();  // make sure the processor is deleted.
 
     LGL_ERROR;
+
+    if (isSupported(factory_->getFactoryObject(GetParam())->getTags())) {
+        EXPECT_EQ(0, logCounter->getErrorCount())
+            << "Processor " << GetParam() << " produced errors: " << stringLog->getLog();
+    } else {
+        EXPECT_NE(0, logCounter->getErrorCount())
+            << "Processor " << GetParam() << " not supported expected an error message";
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -117,8 +127,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()),
     [](const testing::TestParamInfo<std::string>& info) {
         auto name = fmt::format("{:04}_{}", info.index, info.param);
-        std::replace_if(
-            name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+        std::replace_if(name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
         return name;
     });
 

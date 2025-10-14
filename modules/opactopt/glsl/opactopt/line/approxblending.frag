@@ -53,8 +53,8 @@ uniform float lineWidth = 2.0;     // line width [pixel]
 uniform CameraParameters camera;
 uniform vec2 reciprocalDimensions;
 
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
-uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
+readonly restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
+readonly restrict uniform layout(IMAGE_LAYOUT) IMAGE_UNIT opticalDepthCoeffs;
 
 // line stippling
 uniform StipplingParameters stippling = StipplingParameters(30.0, 10.0, 0.0, 4.0);
@@ -146,8 +146,9 @@ void main() {
 
     // find optical depth
     float taud = approximate(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS, depth);
-    float weight = alpha / sqrt(1 - alpha) *
-                   exp(-taud);  // correct for optical depth approximation at discontinuity
+
+    // correct for optical depth approximation at discontinuity
+    float weight = alpha / sqrt(1 - alpha) * exp(-taud);  
     c.rgb = weight * c.rgb;
     c.a = weight;  // save sum of weights in alpha channel for later division
 
