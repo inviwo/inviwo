@@ -158,7 +158,6 @@ protected:
     OptionProperty<Type> approximationMethod_;
     IntProperty importanceSumCoefficients_;
     IntProperty opticalDepthCoefficients_;
-    BoolProperty normalizedBlending_;
     FloatProperty coeffTexFixedPointFactor_;
 
     GLFormat imageFormat_;
