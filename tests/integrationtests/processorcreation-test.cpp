@@ -43,7 +43,25 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
 
+#include <algorithm>
+
 namespace inviwo {
+
+namespace {
+
+std::optional<int> getGLVersionInTag(const Tag& tag) {
+    const auto str = tag.getString();
+    // Look for "GLX.Y"
+    if (str.size() < 5) return std::nullopt;
+    if (!str.starts_with("GL")) return std::nullopt;
+    if (str[2] < '0' || str[2] > '9') return std::nullopt;
+    if (str[3] != '.') return std::nullopt;
+    if (str[4] < '0' || str[4] > '9') return std::nullopt;
+
+    return static_cast<int>(str[2] - '0') * 100 + static_cast<int>(str[4] - '0') * 10;
+}
+
+}  // namespace
 
 class ProcessorCreationTests : public ::testing::TestWithParam<std::string> {
 protected:
@@ -62,21 +80,11 @@ protected:
     int supportedGlVersion_;
 
     bool isSupported(const Tags& tags) const {
-        for (const auto& tag : tags.tags_) {
-            const auto str = tags.getString();
-            // Look for "GLX.Y"
-            if (str.size() >= 5 && str.starts_with("GL")) {
-                if (str[2] >= '0' && str[2] <= '9' && str[3] == '.' && str[4] >= '0' &&
-                    str[4] <= '9') {
-
-                    const auto requiredGlVersion =
-                        static_cast<int>(str[2] - '0') * 100 + static_cast<int>(str[4] - '0') * 10;
-
-                    if (requiredGlVersion > supportedGlVersion_) return false;
-                }
-            }
-        }
-        return true;
+        return std::ranges::all_of(tags.tags_, [&](const Tag& tag) {
+            return getGLVersionInTag(tag)
+                .transform([this](int v) { return v <= supportedGlVersion_; })
+                .value_or(true);
+        });
     }
 };
 
@@ -127,7 +135,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()),
     [](const testing::TestParamInfo<std::string>& info) {
         auto name = fmt::format("{:04}_{}", info.index, info.param);
-        std::replace_if(name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+        std::replace_if(
+            name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
         return name;
     });
 

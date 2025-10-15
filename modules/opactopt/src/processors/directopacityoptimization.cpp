@@ -56,10 +56,10 @@
 namespace inviwo {
 
 namespace {
-static constexpr std::string_view errorMsg =
+constexpr std::string_view errorMsg =
     "The OpenGL extension for image load store operations "
     "(GL_EXT_shader_image_load_store) is required.";
-}
+}  // namespace
 
 const ProcessorInfo OpacityOptimization::processorInfo_{
     "org.inviwo.OpacityOptimization",  // Class identifier
