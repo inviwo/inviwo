@@ -1,0 +1,91 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2022 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include "opactopt/common.glsl"
+
+uniform ivec2 screenSize;
+uniform int radius;
+uniform sampler1D gaussianKernel;
+
+uniform layout(IMAGE_LAYOUT) IMAGE_UNIT importanceSumCoeffs[2];     // double buffering for gaussian filtering
+
+#ifdef USE_PICK_IMAGE
+uniform sampler2D imagePicking;
+#endif
+
+// Whole number pixel offsets (not necessary just to test the layout keyword !)
+in vec4 gl_FragCoord;
+
+// Input interpolated fragment position
+smooth in vec4 fragPos;
+
+// Resolve A-Buffer and blend sorted fragments
+void main() {
+    ivec2 coords = ivec2(gl_FragCoord.xy);
+
+#if HORIZONTAL == 1
+    ivec2 dir = ivec2(1, 0);
+#else
+    ivec2 dir = ivec2(0, 1);
+#endif
+
+
+    if (imageLoad(importanceSumCoeffs[0], ivec3(coords, 0)).x == 0) return;
+
+    for (int i = 0; i < N_IMPORTANCE_SUM_COEFFICIENTS; i++) {
+        ivec3 layer_coord = ivec3(coords, i);
+
+        float val = 0.0;
+        float kernel_sum = 0.0;
+        for (int j = -radius; j <= radius; j++) {
+#if HORIZONTAL == 1
+            if (coords.x + j < 0 || coords.x + j >= screenSize.x) continue;
+#else
+            if (coords.y + j < 0 || coords.y + j >= screenSize.y) continue;
+#endif
+
+            if (imageLoad(importanceSumCoeffs[0], ivec3(coords + j * dir, 0)).x == 0) continue;
+
+            float coeff =
+                imageLoad(importanceSumCoeffs[1 - HORIZONTAL], layer_coord + ivec3(j * dir, 0)).x;
+
+            val += texelFetch(gaussianKernel, abs(j), 0).x * coeff;
+            kernel_sum += texelFetch(gaussianKernel, abs(j), 0).x;
+        }
+        val /= kernel_sum;
+
+#ifdef COEFF_TEX_FIXED_POINT_FACTOR
+        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, ivec4(val));
+#else
+        imageStore(importanceSumCoeffs[HORIZONTAL], layer_coord, vec4(val));
+#endif
+    }
+
+    discard;
+}
