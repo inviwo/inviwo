@@ -1,5 +1,17 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationManager.html":[2,0,0,0,7],
+"classinviwo_1_1animation_1_1AnimationManager.html":[4,0,0,2,8],
+"classinviwo_1_1animation_1_1AnimationManager.html#a4b40677291492cc9e3408bac5476978d":[2,0,0,0,7,0],
+"classinviwo_1_1animation_1_1AnimationManager.html#a4b40677291492cc9e3408bac5476978d":[4,0,0,2,8,0],
+"classinviwo_1_1animation_1_1AnimationManager.html#a5b13ec3f1a0ac9d3a4354cef33a928f8":[2,0,0,0,7,1],
+"classinviwo_1_1animation_1_1AnimationManager.html#a5b13ec3f1a0ac9d3a4354cef33a928f8":[4,0,0,2,8,1],
+"classinviwo_1_1animation_1_1AnimationObservable.html":[2,0,0,0,8],
+"classinviwo_1_1animation_1_1AnimationObservable.html":[4,0,0,2,9],
+"classinviwo_1_1animation_1_1AnimationObserver.html":[2,0,0,0,9],
+"classinviwo_1_1animation_1_1AnimationObserver.html":[4,0,0,2,10],
+"classinviwo_1_1animation_1_1AnimationQtSupplier.html":[2,0,0,0,10],
+"classinviwo_1_1animation_1_1AnimationQtSupplier.html":[4,0,0,2,11],
 "classinviwo_1_1animation_1_1AnimationQtSupplier.html#a134e10dfca0ff4d0fe6572267a043934":[2,0,0,0,10,0],
 "classinviwo_1_1animation_1_1AnimationQtSupplier.html#a134e10dfca0ff4d0fe6572267a043934":[4,0,0,2,11,0],
 "classinviwo_1_1animation_1_1AnimationQtSupplier.html#a8ea34a59290c592fb9f254b9d88d1be8":[2,0,0,0,10,1],
@@ -237,17 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[2,0,0,0,85],
 "classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[4,0,0,2,86],
 "classinviwo_1_1animation_1_1ValueKeyframe.html":[2,0,0,0,86],
-"classinviwo_1_1animation_1_1ValueKeyframe.html":[4,0,0,2,87],
-"classinviwo_1_1animation_1_1ValueKeyframeSequence.html":[2,0,0,0,87],
-"classinviwo_1_1animation_1_1ValueKeyframeSequence.html":[4,0,0,2,88],
-"classinviwo_1_1animation_1_1ValueKeyframeSequenceObserver.html":[2,0,0,0,88],
-"classinviwo_1_1animation_1_1ValueKeyframeSequenceObserver.html":[4,0,0,2,89],
-"classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html":[2,0,0,0,89],
-"classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html":[4,0,0,2,90],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html":[2,0,0,0,90],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html":[4,0,0,2,91],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#a0aba91da17b61d95985e32247ec8ce29":[2,0,0,0,90,5],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#a0aba91da17b61d95985e32247ec8ce29":[4,0,0,2,91,5],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#a64aa1dc29b4d1718404dc189bd36e486":[2,0,0,0,90,2],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#a64aa1dc29b4d1718404dc189bd36e486":[4,0,0,2,91,2]
+"classinviwo_1_1animation_1_1ValueKeyframe.html":[4,0,0,2,87]
 };

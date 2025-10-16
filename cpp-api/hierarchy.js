@@ -748,6 +748,7 @@ var hierarchy =
         [ "inviwo::MeshCreator", "classinviwo_1_1MeshCreator.html", null ],
         [ "inviwo::MeshInformation", "classinviwo_1_1MeshInformation.html", null ],
         [ "inviwo::MeshMapping", "classinviwo_1_1MeshMapping.html", null ],
+        [ "inviwo::MeshMappingVolume", "classinviwo_1_1MeshMappingVolume.html", null ],
         [ "inviwo::MeshPicking", "classinviwo_1_1MeshPicking.html", null ],
         [ "inviwo::MeshPlaneClipping", "classinviwo_1_1MeshPlaneClipping.html", null ],
         [ "inviwo::MeshRenderProcessorGL", "classinviwo_1_1MeshRenderProcessorGL.html", null ],
@@ -757,6 +758,7 @@ var hierarchy =
         [ "inviwo::NeighborListFiltering", "classinviwo_1_1NeighborListFiltering.html", null ],
         [ "inviwo::NoiseGenerator2D", "classinviwo_1_1NoiseGenerator2D.html", null ],
         [ "inviwo::NoiseGenerator3D", "classinviwo_1_1NoiseGenerator3D.html", null ],
+        [ "inviwo::OpacityOptimization", "classinviwo_1_1OpacityOptimization.html", null ],
         [ "inviwo::OrdinalPropertyAnimator", "classinviwo_1_1OrdinalPropertyAnimator.html", null ],
         [ "inviwo::OrientationIndicator", "classinviwo_1_1OrientationIndicator.html", null ],
         [ "inviwo::OrthographicAxis2D", "classinviwo_1_1OrthographicAxis2D.html", null ],
@@ -1546,6 +1548,7 @@ var hierarchy =
       [ "inviwo::JSONModule", "classinviwo_1_1JSONModule.html", null ],
       [ "inviwo::NiftiModule", "classinviwo_1_1NiftiModule.html", null ],
       [ "inviwo::OITModule", "classinviwo_1_1OITModule.html", null ],
+      [ "inviwo::OpactOptModule", "classinviwo_1_1OpactOptModule.html", null ],
       [ "inviwo::OpenGLModule", "classinviwo_1_1OpenGLModule.html", null ],
       [ "inviwo::OpenGLQtModule", "classinviwo_1_1OpenGLQtModule.html", null ],
       [ "inviwo::PVMModule", "classinviwo_1_1PVMModule.html", null ],
@@ -1882,6 +1885,7 @@ var hierarchy =
     [ "inviwo::ModuleManager", "classinviwo_1_1ModuleManager.html", null ],
     [ "inviwo::pyutil::ModulePath", "structinviwo_1_1pyutil_1_1ModulePath.html", null ],
     [ "inviwo::InviwoSetupInfo::ModuleSetupInfo", "structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html", null ],
+    [ "inviwo::approximations::MomentSettingsGL", "structinviwo_1_1approximations_1_1MomentSettingsGL.html", null ],
     [ "inviwo::MoveOnlyValue< T >", "classinviwo_1_1MoveOnlyValue.html", null ],
     [ "inviwo::NetworkAutomation", "classinviwo_1_1NetworkAutomation.html", null ],
     [ "inviwo::NetworkEdge", "structinviwo_1_1NetworkEdge.html", null ],
@@ -2733,6 +2737,7 @@ var hierarchy =
       [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", null ]
     ] ],
     [ "inviwo::LightVolumeGL::PropagationParameters", "structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html", null ],
+    [ "inviwo::approximations::Properties", "structinviwo_1_1approximations_1_1Properties.html", null ],
     [ "inviwo::PropertyConverter", "classinviwo_1_1PropertyConverter.html", [
       [ "inviwo::TemplatePropertyConverter< ColumnOptionProperty, OptionProperty >", "classinviwo_1_1TemplatePropertyConverter.html", [
         [ "inviwo::ColumnOptionToOptionConverter< OptionProperty >", "classinviwo_1_1ColumnOptionToOptionConverter.html", null ]
@@ -3676,6 +3681,7 @@ var hierarchy =
       [ "inviwo::QPtr< T >", "classinviwo_1_1QPtr.html", null ]
     ] ],
     [ "inviwo::UnitDesc", "structinviwo_1_1UnitDesc.html", null ],
+    [ "inviwo::OpacityOptimization::Units", "structinviwo_1_1OpacityOptimization_1_1Units.html", null ],
     [ "inviwo::command::Update", "structinviwo_1_1command_1_1Update.html", null ],
     [ "inviwo::util::value_type< T >", "structinviwo_1_1util_1_1value__type.html", null ],
     [ "inviwo::ValueWrapper< T >", "structinviwo_1_1ValueWrapper.html", null ],

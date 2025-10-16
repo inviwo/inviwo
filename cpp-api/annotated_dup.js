@@ -114,6 +114,10 @@ var annotated_dup =
         [ "ValueKeyframeSequenceObserverble", "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html", null ],
         [ "WorkspaceAnimations", "classinviwo_1_1animation_1_1WorkspaceAnimations.html", "classinviwo_1_1animation_1_1WorkspaceAnimations" ]
       ] ],
+      [ "approximations", null, [
+        [ "MomentSettingsGL", "structinviwo_1_1approximations_1_1MomentSettingsGL.html", null ],
+        [ "Properties", "structinviwo_1_1approximations_1_1Properties.html", null ]
+      ] ],
       [ "buffertraits", "namespaceinviwo_1_1buffertraits.html", [
         [ "ColorsBuffer", "classinviwo_1_1buffertraits_1_1ColorsBuffer.html", null ],
         [ "CurvatureBuffer", "classinviwo_1_1buffertraits_1_1CurvatureBuffer.html", null ],
@@ -1167,6 +1171,7 @@ var annotated_dup =
       [ "MeshInformationProperty", "classinviwo_1_1MeshInformationProperty.html", "classinviwo_1_1MeshInformationProperty" ],
       [ "MeshInformationVisualizer", "classinviwo_1_1MeshInformationVisualizer.html", "classinviwo_1_1MeshInformationVisualizer" ],
       [ "MeshMapping", "classinviwo_1_1MeshMapping.html", "classinviwo_1_1MeshMapping" ],
+      [ "MeshMappingVolume", "classinviwo_1_1MeshMappingVolume.html", "classinviwo_1_1MeshMappingVolume" ],
       [ "MeshPicking", "classinviwo_1_1MeshPicking.html", "classinviwo_1_1MeshPicking" ],
       [ "MeshPlaneClipping", "classinviwo_1_1MeshPlaneClipping.html", "classinviwo_1_1MeshPlaneClipping" ],
       [ "MeshRAM", "classinviwo_1_1MeshRAM.html", null ],
@@ -1238,6 +1243,8 @@ var annotated_dup =
       [ "ObservableInterface", "classinviwo_1_1ObservableInterface.html", null ],
       [ "Observer", "classinviwo_1_1Observer.html", "classinviwo_1_1Observer" ],
       [ "OITModule", "classinviwo_1_1OITModule.html", null ],
+      [ "OpacityOptimization", "classinviwo_1_1OpacityOptimization.html", "classinviwo_1_1OpacityOptimization" ],
+      [ "OpactOptModule", "classinviwo_1_1OpactOptModule.html", null ],
       [ "OpenGLCapabilities", "classinviwo_1_1OpenGLCapabilities.html", "classinviwo_1_1OpenGLCapabilities" ],
       [ "OpenGLException", "classinviwo_1_1OpenGLException.html", null ],
       [ "OpenGLInitException", "classinviwo_1_1OpenGLInitException.html", null ],

@@ -151,7 +151,7 @@ var searchData=
   ['progressbarobservercef_148',['ProgressBarObserverCEF',['../classinviwo_1_1ProgressBarObserverCEF.html',1,'inviwo']]],
   ['progressbarowner_149',['ProgressBarOwner',['../classinviwo_1_1ProgressBarOwner.html',1,'inviwo']]],
   ['propagationparameters_150',['PropagationParameters',['../structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html',1,'inviwo::LightVolumeGL']]],
-  ['properties_151',['Properties',['../classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html',1,'inviwo::plot::PersistenceDiagramPlotGL::Properties'],['../classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html',1,'inviwo::plot::ScatterPlotGL::Properties']]],
+  ['properties_151',['Properties',['../structinviwo_1_1approximations_1_1Properties.html',1,'inviwo::approximations::Properties'],['../classinviwo_1_1plot_1_1PersistenceDiagramPlotGL_1_1Properties.html',1,'inviwo::plot::PersistenceDiagramPlotGL::Properties'],['../classinviwo_1_1plot_1_1ScatterPlotGL_1_1Properties.html',1,'inviwo::plot::ScatterPlotGL::Properties']]],
   ['property_152',['Property',['../classinviwo_1_1Property.html',1,'inviwo']]],
   ['propertyconverter_153',['PropertyConverter',['../classinviwo_1_1PropertyConverter.html',1,'inviwo']]],
   ['propertyconvertermanager_154',['PropertyConverterManager',['../classinviwo_1_1PropertyConverterManager.html',1,'inviwo']]],
