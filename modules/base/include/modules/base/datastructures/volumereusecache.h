@@ -84,7 +84,8 @@ public:
      * existing volumes will be discarded and new Volumes will be created as needed.
      *
      * @param config The new VolumeConfig to use.
-     * @returns true if the config change (the cache was cleared) false otherwise
+     * @returns Status::ClearedCache if the config changed (the cache was cleared),
+     * Status::NoChange otherwise
      */
     Status setConfig(const VolumeConfig& config);
 

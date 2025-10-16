@@ -50,7 +50,7 @@
 #include <modules/opengl/volume/volumeutils.h>  // for bindAndSetUniforms
 #include <modules/opengl/openglutils.h>
 
-#include <functional>     // for __base
+#include <algorithm>
 #include <string_view>    // for string_view
 #include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
@@ -58,18 +58,16 @@
 #include <utility>        // for pair
 #include <span>
 
-#include <glm/vec3.hpp>  // for vec<>::(anonymous)
-
 namespace inviwo {
 
 namespace {
 
 FrameBufferObject& getActiveFBO(Texture3D& texture, std::span<VolumeGLProcessor::FBO> fbos) {
-    auto it = std::find_if(fbos.begin(), fbos.end(),
-                           [&](const auto& fbo) { return fbo.textureId == texture.getID(); });
+    auto it = std::ranges::find_if(
+        fbos, [&](const auto& fbo) { return fbo.textureId == texture.getID(); });
     if (it == fbos.end()) {
-        it = std::min_element(fbos.begin(), fbos.end(),
-                              [](const auto& a, const auto& b) { return a.lastUsed < b.lastUsed; });
+        it = std::ranges::min_element(
+            fbos, [](const auto& a, const auto& b) { return a.lastUsed < b.lastUsed; });
         it->fbo.activate();
         it->fbo.attachColorTexture(&texture, 0);
         it->textureId = texture.getID();
