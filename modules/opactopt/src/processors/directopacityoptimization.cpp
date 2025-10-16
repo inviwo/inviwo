@@ -184,10 +184,6 @@ OpacityOptimization::OpacityOptimization()
                                                ConstraintBehavior::Immutable),
                                 approximations::get(approximationMethod_).inc,
                                 InvalidationLevel::InvalidResources}
-    , normalizedBlending_{"normalizedBlending", "Normalized blending",
-                          "Normalize the approximate blending, "
-                          "this reduces over- and under-saturation"_help,
-                          true, InvalidationLevel::InvalidResources}
     , coeffTexFixedPointFactor_{"coeffTexFixedPointFactor",
                                 "Coefficient texture fixed point factor",
                                 "Fixed point multiplier "
@@ -252,7 +248,7 @@ OpacityOptimization::OpacityOptimization()
     if (!OpenGLCapabilities::isExtensionSupported("GL_NV_shader_atomic_float")) {
         approximationProperties_.addProperty(coeffTexFixedPointFactor_);
     }
-    approximationProperties_.addProperties(normalizedBlending_, smoothing_);
+    approximationProperties_.addProperties(smoothing_);
 
     approximationMethod_.onChange([this]() {
         const auto& ap = approximations::get(approximationMethod_);
@@ -404,7 +400,6 @@ void OpacityOptimization::buildShaders() {
         Shader& shader = normalize_;
         auto* frag = shader.getFragmentShaderObject();
         clearAndAddExtensionsAndDefines(frag);
-        frag->setShaderDefine("NORMALISE", normalizedBlending_);
         frag->setShaderDefine("BACKGROUND_AVAILABLE", backgroundPort_.hasData());
 
         shader.build();

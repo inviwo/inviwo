@@ -60,10 +60,8 @@ void main(void) {
     vec4 imageColorValue = texelFetch(imageColor, ivec2(gl_FragCoord.xy), 0);
     float imageDepthValue = texelFetch(imageDepth, ivec2(gl_FragCoord.xy), 0).x;
 
-#ifdef NORMALISE
     // divide by normalization weight
     if (imageColorValue.a != 0.0) imageColorValue.rgb /= imageColorValue.a;  
-#endif
 
     // set alpha using optical depth
     float tauall = total(opticalDepthCoeffs, N_OPTICAL_DEPTH_COEFFICIENTS);
@@ -76,15 +74,14 @@ void main(void) {
     float bgDepthValue = texelFetch(bgDepth, ivec2(gl_FragCoord.xy), 0).x;
 
     vec4 color = imageDepthValue < bgDepthValue ?
-                    premultipliedAlphaBlend(imageColorValue, bgColorValue) :
-                    premultipliedAlphaBlend(bgColorValue, imageColorValue);
+                    alphaBlend(imageColorValue, bgColorValue) :
+                    alphaBlend(bgColorValue, imageColorValue);
 
     if (bgDepthValue < imageDepthValue) {
         picking = texelFetch(bgPicking, ivec2(gl_FragCoord.xy), 0);
     }
 
     float depth = min(imageDepthValue, bgDepthValue);
-
 #else
     float depth = imageDepthValue;
     vec4 color = imageColorValue;
