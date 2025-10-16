@@ -56,45 +56,45 @@ namespace util {
 IVW_CORE_API std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a,
                                                   const std::optional<mat4>& b);
 /**
- * Calculate a bounding box of the layers in world space. The bounding box is
- * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
- * between 0 and 1. The bounding box will have zero depth in most cases since the layer basis is
- * two-dimensional.
+ * Calculate a bounding box of the \p layer in world space. The bounding box is represented using a
+ * mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z are between 0 and 1.
+ * The bounding box will have a depth equal to a 1000th of the length of the cross product of the
+ * layer's first two basis vectors.
  */
 IVW_CORE_API mat4 boundingBox(const Layer& layer);
 
 /**
  * Calculate a bounding box of all layers in world space. The bounding box is
- * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
- * between 0 and 1.
+ * represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
+ * are between 0 and 1.
  */
 IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers);
 
 /**
  * Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is
- * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
- * between 0 and 1.
+ * represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
+ * are between 0 and 1.
  */
 IVW_CORE_API mat4 boundingBox(const Mesh& mesh);
 
 /**
  * Calculate a bounding box of the position buffers of all the meshes in world space. The bounding
- * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y,
+ * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y,
  * and z are between 0 and 1.
  */
 IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>>& meshes);
 
 /**
  * Calculate a bounding box of the volume in world space. The bounding box is
- * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
- * between 0 and 1.
+ * represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
+ * are between 0 and 1.
  */
 IVW_CORE_API mat4 boundingBox(const Volume& volume);
 
 /**
  * Calculate a bounding box of all the volumes in world space. The bounding box is
- * represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are
- * between 0 and 1.
+ * represented using a mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z
+ * are between 0 and 1.
  */
 IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<Volume>>& volumes);
 
