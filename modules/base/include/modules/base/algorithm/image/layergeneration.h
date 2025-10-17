@@ -66,12 +66,12 @@ namespace util {
  */
 template <typename Functor>
 std::unique_ptr<Layer> generateLayer(const size2_t& dimensions, const mat3& basis,
-                                     Functor&& function) {
+                                     const Functor& function) {
     using T = decltype(function(dimensions));
 
     auto ram = std::make_shared<LayerRAMPrecision<T>>(dimensions);
     auto data = ram->getView();
-    IndexMapper2D im(dimensions);
+    const IndexMapper2D im(dimensions);
 
     for (size_t y = 0; y < dimensions.y; ++y) {
         for (size_t x = 0; x < dimensions.x; ++x) {

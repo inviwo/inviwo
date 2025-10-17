@@ -45,7 +45,7 @@ class IVW_MODULE_BASE_API LayerCreator : public Processor {
 public:
     LayerCreator();
 
-    enum class Type { SingleVoxel, Radial, Ripple, Uniform };
+    enum class Type : std::uint8_t { SingleVoxel, Radial, Ripple, Uniform };
 
     virtual void process() override;
 

@@ -73,13 +73,12 @@ namespace {
 size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
     switch (axis) {
         default:
-            return size2_t(volumeDims.z, volumeDims.y);
         case CartesianCoordinateAxis::X:
-            return size2_t(volumeDims.z, volumeDims.y);
+            return {volumeDims.z, volumeDims.y};
         case CartesianCoordinateAxis::Y:
-            return size2_t(volumeDims.x, volumeDims.z);
+            return {volumeDims.x, volumeDims.z};
         case CartesianCoordinateAxis::Z:
-            return size2_t(volumeDims.x, volumeDims.y);
+            return {volumeDims.x, volumeDims.y};
     }
 }
 
@@ -87,7 +86,6 @@ Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis ax
     const auto wrapping = v->getOwner()->getWrapping();
     switch (axis) {
         default:
-            return {{wrapping[2], wrapping[1]}};
         case CartesianCoordinateAxis::X:
             return {{wrapping[2], wrapping[1]}};
         case CartesianCoordinateAxis::Y:
@@ -101,7 +99,6 @@ std::array<Axis, 2> getAxes(const VolumeRepresentation* v, CartesianCoordinateAx
     const auto axes = v->getOwner()->axes;
     switch (axis) {
         default:
-            return {axes[2], axes[1]};
         case CartesianCoordinateAxis::X:
             return {axes[2], axes[1]};
         case CartesianCoordinateAxis::Y:
@@ -115,7 +112,6 @@ mat3 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const mat3 basis = v->getOwner()->getBasis();
     switch (axis) {
         default:
-            return mat3{basis[2], basis[1], glm::normalize(basis[0])};
         case CartesianCoordinateAxis::X:
             return mat3{basis[2], basis[1], glm::normalize(basis[0])};
         case CartesianCoordinateAxis::Y:
@@ -133,7 +129,6 @@ vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis, size
 
     switch (axis) {
         default:
-            return offset + basis[0] * t[0];
         case CartesianCoordinateAxis::X:
             return offset + basis[0] * t[0];
         case CartesianCoordinateAxis::Y:
@@ -167,8 +162,8 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
     switch (axis) {
         case CartesianCoordinateAxis::X: {
-            util::IndexMapper3D vm(voldim);
-            util::IndexMapper2D im(layerdim);
+            const util::IndexMapper3D vm(voldim);
+            const util::IndexMapper2D im(layerdim);
             auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
             for (size_t z = 0; z < voldim.z; z++) {
                 for (size_t y = 0; y < voldim.y; y++) {
@@ -207,25 +202,27 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 void VolumeSliceToLayer::process() {
     auto vol = inport_.getData();
 
-    const auto dims(vol->getDimensions());
-    double pos{sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
+    const auto dims = vol->getDimensions();
+    const auto slicePos = size3_t{dvec3{dims} * static_cast<double>(sliceNumber_.get()) /
+                                  static_cast<double>(sliceNumber_.getMaxValue())};
+
     switch (sliceAlongAxis_.get()) {
         case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.x);
-                sliceNumber_.set(static_cast<size_t>(pos * dims.x));
+                sliceNumber_.set(slicePos.x);
             }
             break;
         case CartesianCoordinateAxis::Y:
             if (dims.y != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.y);
-                sliceNumber_.set(static_cast<size_t>(pos * dims.y));
+                sliceNumber_.set(slicePos.y);
             }
             break;
         case CartesianCoordinateAxis::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.z);
-                sliceNumber_.set(static_cast<size_t>(pos * dims.z));
+                sliceNumber_.set(slicePos.z);
             }
             break;
     }
@@ -234,7 +231,6 @@ void VolumeSliceToLayer::process() {
         vol->getRepresentation<VolumeRAM>()
             ->dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
                 [&]<typename T>(const VolumeRAMPrecision<T>* vrprecision) {
-                    using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
                     return extractSlice(vrprecision, sliceAlongAxis_, sliceNumber_.get() - 1);
                 });
     outport_.setData(layer);

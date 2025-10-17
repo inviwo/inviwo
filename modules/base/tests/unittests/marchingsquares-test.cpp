@@ -57,10 +57,10 @@ namespace {
 
 template <typename T>
 std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
-    if (auto buffer = mesh.getBuffer(ind)) {
+    if (auto* buffer = mesh.getBuffer(ind)) {
         if (buffer->getDataFormat() == DataFormat<T>::get()) {
-            auto tbuffer = static_cast<Buffer<vec2>*>(buffer);
-            if (auto ram = tbuffer->getEditableRAMRepresentation()) {
+            auto* tbuffer = static_cast<Buffer<vec2>*>(buffer);
+            if (auto* ram = tbuffer->getEditableRAMRepresentation()) {
                 return ram->getDataContainer();
             }
         }
@@ -85,32 +85,32 @@ constexpr auto order = [](auto& a, auto& b) {
 }  // namespace
 
 TEST(Marchingsquares, empty) {
-    IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(
         util::generateLayer(size2_t{2}, mat3(1.0f), [](const size2_t&) { return 0.0f; }));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     EXPECT_FALSE(mesh->hasBuffer(BufferType::PositionAttrib));
-    EXPECT_EQ(mesh->getNumberOfIndicies(), 0);
+    EXPECT_EQ(mesh->getNumberOfIndices(), 0);
 }
 
 TEST(Marchingsquares, full) {
-    IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(
         util::generateLayer(size2_t{2}, mat3(1.0f), [](const size2_t&) { return 1.0f; }));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     EXPECT_FALSE(mesh->hasBuffer(BufferType::PositionAttrib));
-    EXPECT_EQ(mesh->getNumberOfIndicies(), 0);
+    EXPECT_EQ(mesh->getNumberOfIndices(), 0);
 }
 
 TEST(Marchingsquares, case1) {
-    IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 2}));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     ASSERT_TRUE(mesh->hasBuffer(BufferType::PositionAttrib));
-    ASSERT_EQ(mesh->getNumberOfIndicies(), 1);
+    ASSERT_EQ(mesh->getNumberOfIndices(), 1);
 
     const auto& pos = getBufferData<vec2>(*mesh, 0);
     const auto& ind = getBufferIndexData(*mesh, 0);
@@ -133,12 +133,12 @@ TEST(Marchingsquares, case1) {
 }
 
 TEST(Marchingsquares, openloop) {
-    IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 3}));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     ASSERT_TRUE(mesh->hasBuffer(BufferType::PositionAttrib));
-    ASSERT_EQ(mesh->getNumberOfIndicies(), 1);
+    ASSERT_EQ(mesh->getNumberOfIndices(), 1);
 
     const auto& pos = getBufferData<vec2>(*mesh, 0);
     const auto& ind = getBufferIndexData(*mesh, 0);
@@ -161,12 +161,12 @@ TEST(Marchingsquares, openloop) {
 }
 
 TEST(Marchingsquares, circle) {
-    IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{3, 3}));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
     ASSERT_TRUE(mesh->hasBuffer(BufferType::PositionAttrib));
-    ASSERT_EQ(mesh->getNumberOfIndicies(), 1);
+    ASSERT_EQ(mesh->getNumberOfIndices(), 1);
 
     const auto& pos = getBufferData<vec2>(*mesh, 0);
     const auto& ind = getBufferIndexData(*mesh, 0);

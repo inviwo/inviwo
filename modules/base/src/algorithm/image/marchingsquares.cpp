@@ -145,8 +145,9 @@ struct LineCache {
                     indices.insert(indices.begin(), indices.front());
                     indices.emplace_back(indices.back());
                 }
-                mesh.addIndices(Mesh::MeshInfo{DrawType::Lines, ConnectivityType::StripAdjacency},
-                                util::makeIndexBuffer(std::move(indices)));
+                mesh.addIndices(
+                    Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::StripAdjacency},
+                    util::makeIndexBuffer(std::move(indices)));
             }
         }
     }
@@ -179,14 +180,14 @@ struct LineCache {
 
 struct RowCache {
     template <typename S>
-    RowCache(size_t cols, S samplerFunc) : previous(cols, {}), current(cols, {}) {
+    RowCache(size_t cols, const S& samplerFunc) : previous(cols, Cell{}), current(cols, Cell{}) {
         for (size_t x = 0; x < current.size(); ++x) {
             current[x].scalar = samplerFunc(x, 0);
         }
     }
 
     template <typename S>
-    void sampleRow(size_t row, S samplerFunc) {
+    void sampleRow(size_t row, const S& samplerFunc) {
         current.swap(previous);
         for (size_t x = 0; x < current.size(); ++x) {
             current[x].scalar = samplerFunc(x, row + 1);
@@ -269,18 +270,20 @@ LineUpdate mergeLines(CurrentCell& intersects, size_t edge1, size_t edge2,
     if (intersects[edge1]->type == PointType::Start &&
         intersects[edge2]->type == PointType::Start) {
         // prepend reversed line of edge2
-        line1.insert_range(line1.begin(), line2 | std::views::reverse);
+        auto view = line2 | std::views::reverse;
+        line1.insert(line1.begin(), std::ranges::begin(view), std::ranges::end(view));
     } else if (intersects[edge1]->type == PointType::End &&
                intersects[edge2]->type == PointType::End) {
         // append reversed line of edge 2
-        line1.append_range(line2 | std::views::reverse);
+        auto view = line2 | std::views::reverse;
+        line1.insert(line1.end(), std::ranges::begin(view), std::ranges::end(view));
     } else {
         // different start and end, append start to end
         if (intersects[edge1]->type == PointType::Start) {
             std::swap(edge1, edge2);
-            line2.append_range(line1);
+            line2.insert(line2.end(), std::begin(line1), std::end(line1));
         } else {
-            line1.append_range(line2);
+            line1.insert(line1.end(), std::begin(line2), std::end(line2));
         }
     }
 
@@ -292,18 +295,6 @@ LineUpdate mergeLines(CurrentCell& intersects, size_t edge1, size_t edge2,
     intersects[edge2]->type = PointType::Mid;
 
     return LineUpdate{.oldIndex = outdatedLine, .newIndex = newLineIndex, .reverse = reverse};
-}
-
-size_t getNewLineIndex(LineIndices& lines, std::stack<size_t>& unusedLineIndices) {
-    size_t lineIndex = 0;
-    if (unusedLineIndices.empty()) {
-        lineIndex = lines.size();
-        lines.emplace_back();
-    } else {
-        lineIndex = unusedLineIndices.top();
-        unusedLineIndices.pop();
-    }
-    return lineIndex;
 }
 
 /**
