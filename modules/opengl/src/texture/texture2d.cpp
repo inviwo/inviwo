@@ -121,11 +121,9 @@ void Texture2D::initialize(const void* data) {
     LGL_ERROR;
     forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
 
-    auto old = resource::remove(resource::GL{id_});
     resource::add(resource::GL{id_}, Resource{.dims = glm::size4_t{dimensions_, 0, 0},
                                               .format = getDataFormat()->getId(),
-                                              .desc = "Texture2D",
-                                              .meta = resource::getMeta(old)});
+                                              .desc = "Texture2D"});
 }
 
 size_t Texture2D::getNumberOfValues() const { return dimensions_.x * dimensions_.y; }

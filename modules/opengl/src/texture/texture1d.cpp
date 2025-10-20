@@ -117,11 +117,9 @@ void Texture1D::initialize(const void* data) {
     LGL_ERROR;
     forEachObserver([](TextureObserver* o) { o->notifyAfterTextureInitialization(); });
 
-    auto old = resource::remove(resource::GL{id_});
     resource::add(resource::GL{id_}, Resource{.dims = glm::size4_t{width_, 0, 0, 0},
                                               .format = getDataFormat()->getId(),
-                                              .desc = "Texture1D",
-                                              .meta = resource::getMeta(old)});
+                                              .desc = "Texture1D"});
 }
 
 size_t Texture1D::getNumberOfValues() const { return width_; }

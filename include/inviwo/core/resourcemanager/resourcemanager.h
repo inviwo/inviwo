@@ -56,17 +56,24 @@ public:
     void add(const Key& key, Resource resource) {
         constexpr auto gi = groupIndex<Key>();
         auto& group = get<Key>();
-
         auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
         if (it == group.end()) {
             notifyWillAddResource(gi, group.size(), resource);
             group.emplace_back(key, std::move(resource));
             notifyDidAddResource(gi, group.size() - 1, group.back().second);
         } else {
+            if (!resource.meta && it->second.meta) resource.meta = std::move(it->second.meta);
             notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
             it->second = std::move(resource);
             notifyDidUpdateResource(gi, std::distance(group.begin(), it), it->second);
         }
+    }
+
+    template <typename Key>
+    void move(const Key& oldKey, const Key& newKey, Resource resource) {
+        auto old = remove(oldKey);
+        if (!resource.meta && old) resource.meta = std::move(old->meta);
+        add(newKey, std::move(resource));
     }
 
     template <typename Key>
