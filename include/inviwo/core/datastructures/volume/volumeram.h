@@ -373,11 +373,10 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
         interpolation_ = that.interpolation_;
         wrapping_ = that.wrapping_;
 
-        auto old = resource::remove(resource::toRAM(data));
-        resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0},
-                                                       .format = DataFormat<T>::id(),
-                                                       .desc = "VolumeRAM",
-                                                       .meta = resource::getMeta(old)});
+        resource::move(resource::toRAM(data), resource::toRAM(data_),
+                       Resource{.dims = glm::size4_t{dimensions_, 0},
+                                .format = DataFormat<T>::id(),
+                                .desc = "VolumeRAM"});
     }
     return *this;
 }
@@ -445,11 +444,10 @@ void VolumeRAMPrecision<T>::setData(void* d, size3_t dimensions) {
     data_.swap(data);
     std::swap(dimensions_, dimensions);
 
-    auto old = resource::remove(resource::toRAM(data));
-    resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0},
-                                                   .format = DataFormat<T>::id(),
-                                                   .desc = "VolumeRAM",
-                                                   .meta = resource::getMeta(old)});
+    resource::move(resource::toRAM(data), resource::toRAM(data_),
+                   Resource{.dims = glm::size4_t{dimensions_, 0},
+                            .format = DataFormat<T>::id(),
+                            .desc = "VolumeRAM"});
 
     if (!ownsDataPtr_) data.release();
     ownsDataPtr_ = true;
@@ -478,11 +476,10 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
         data_.swap(data);
         dimensions_ = dimensions;
 
-        auto old = resource::remove(resource::toRAM(data));
-        resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0},
-                                                       .format = DataFormat<T>::id(),
-                                                       .desc = "VolumeRAM",
-                                                       .meta = resource::getMeta(old)});
+        resource::move(resource::toRAM(data), resource::toRAM(data_),
+                       Resource{.dims = glm::size4_t{dimensions_, 0},
+                                .format = DataFormat<T>::id(),
+                                .desc = "VolumeRAM"});
 
         if (!ownsDataPtr_) data.release();
         ownsDataPtr_ = true;

@@ -35,6 +35,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/threadutil.h>
 
 namespace inviwo::resource {
 
@@ -47,57 +48,65 @@ ResourceManager* getResourceManager() {
     return util::getResourceManager(app);
 }
 
+const std::thread::id mainThread = std::this_thread::get_id();
+
+inline void onMain(auto&& func, auto&&... args) {
+    if (mainThread == std::this_thread::get_id()) {
+        if (auto* rm = getResourceManager()) {
+            std::invoke(func, *rm, std::forward<decltype(args)>(args)...);
+        }
+    } else {
+        dispatchFrontAndForget([func = std::forward<decltype(func)>(func),
+                                ... args = std::forward<decltype(args)>(args)]() {
+            if (auto* rm = getResourceManager()) {
+                std::invoke(func, *rm, std::move(args)...);
+            }
+        });
+    }
+}
+
 }  // namespace
 
 void add(const RAM& key, Resource resource) {
-    if (auto* rm = getResourceManager()) {
-        rm->add(key, std::move(resource));
-    }
+    onMain(&ResourceManager::add<RAM>, key, std::move(resource));
 }
-std::optional<Resource> remove(const RAM& key) {
-    if (auto* rm = getResourceManager()) {
-        return rm->remove(key);
-    }
-    return std::nullopt;
+
+void move(const RAM& oldKey, const RAM& newKey, Resource resource) {
+    onMain(&ResourceManager::move<RAM>, oldKey, newKey, std::move(resource));
 }
+
+void remove(const RAM& key) { onMain(&ResourceManager::remove<RAM>, key); }
+
 void meta(const RAM& key, const ResourceMeta& meta) {
-    if (auto* rm = getResourceManager()) {
-        rm->meta(key, meta);
-    }
+    onMain(&ResourceManager::meta<RAM>, key, meta);
 }
 
 void add(const GL& key, Resource resource) {
-    if (auto* rm = getResourceManager()) {
-        rm->add(key, std::move(resource));
-    }
+    onMain(&ResourceManager::add<GL>, key, std::move(resource));
 }
-std::optional<Resource> remove(const GL& key) {
-    if (auto* rm = getResourceManager()) {
-        return rm->remove(key);
-    }
-    return std::nullopt;
+
+void move(const GL& oldKey, const GL& newKey, Resource resource) {
+    onMain(&ResourceManager::move<GL>, oldKey, newKey, std::move(resource));
 }
+
+void remove(const GL& key) { onMain(&ResourceManager::remove<GL>, key); }
+
 void meta(const GL& key, const ResourceMeta& meta) {
-    if (auto* rm = getResourceManager()) {
-        rm->meta(key, meta);
-    }
+    onMain(&ResourceManager::meta<GL>, key, meta);
 }
 
 void add(const PY& key, Resource resource) {
-    if (auto* rm = getResourceManager()) {
-        rm->add(key, std::move(resource));
-    }
+    onMain(&ResourceManager::add<PY>, key, std::move(resource));
 }
-std::optional<Resource> remove(const PY& key) {
-    if (auto* rm = getResourceManager()) {
-        return rm->remove(key);
-    }
-    return std::nullopt;
+
+void move(const PY& oldKey, const PY& newKey, Resource resource) {
+    onMain(&ResourceManager::move<PY>, oldKey, newKey, std::move(resource));
 }
+
+void remove(const PY& key) { onMain(&ResourceManager::remove<PY>, key); }
+
 void meta(const PY& key, const ResourceMeta& meta) {
-    if (auto* rm = getResourceManager()) {
-        rm->meta(key, meta);
-    }
+    onMain(&ResourceManager::meta<PY>, key, meta);
 }
 
 RAM toRAM(const void* ptr) {

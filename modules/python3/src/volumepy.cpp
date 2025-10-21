@@ -156,16 +156,16 @@ void VolumePy::setDimensions(size3_t dimensions) {
     if (dimensions != dims_) {
         const pybind11::gil_scoped_acquire guard{};
 
-        const auto old = resource::remove(resource::toPY(data_));
+        const auto old = resource::toPY(data_);
         data_ = pybind11::array(
             data_.dtype(), pybind11::array::ShapeContainer{dimensions.z, dimensions.y, dimensions.x,
                                                            getDataFormat()->getComponents()});
         dims_ = dimensions;
 
-        resource::add(resource::toPY(data_), Resource{.dims = glm::size4_t{dims_, 0},
-                                                      .format = format(data_)->getId(),
-                                                      .desc = "VolumePY",
-                                                      .meta = resource::getMeta(old)});
+        resource::move(old, resource::toPY(data_),
+                       Resource{.dims = glm::size4_t{dims_, 0},
+                                .format = format(data_)->getId(),
+                                .desc = "VolumePY"});
     }
 }
 
