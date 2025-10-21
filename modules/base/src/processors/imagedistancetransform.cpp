@@ -110,17 +110,16 @@ ImageDistanceTransform::ImageDistanceTransform()
 ImageDistanceTransform::~ImageDistanceTransform() = default;
 
 void ImageDistanceTransform::process() {
-    const auto calc = [image = imagePort_.getData(),
-                       upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
-                                                           : upsampleFactorVec2_.get(),
-                       threshold = threshold_.get(), normalize = normalize_.get(),
-                       flip = flip_.get(), square = resultSquaredDist_.get(),
-                       scale = resultDistScale_.get(),
-                       &cache = imageCache_](pool::Progress progress) -> std::shared_ptr<Image> {
-        auto imgDim = glm::max(image->getDimensions(), size2_t(1u));
+    const auto image = imagePort_.getData();
+    const auto upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                                   : upsampleFactorVec2_.get();
+    const auto imgDim = glm::max(image->getDimensions(), size2_t(1u));
 
-        auto [dstImage, dstRepr] = cache.getTypedUnused<float>(upsample * imgDim);
-
+    auto [dstImage, dstRepr] = imageCache_.getTypedUnused<float>(upsample * imgDim);
+    const auto calc =
+        [image, upsample, dstImage, dstRepr, threshold = threshold_.get(),
+         normalize = normalize_.get(), flip = flip_.get(), square = resultSquaredDist_.get(),
+         scale = resultDistScale_.get()](pool::Progress progress) -> std::shared_ptr<Image> {
         // pass meta data on
         dstImage->getColorLayer()->setModelMatrix(image->getColorLayer()->getModelMatrix());
         dstImage->getColorLayer()->setWorldMatrix(image->getColorLayer()->getWorldMatrix());
@@ -133,12 +132,12 @@ void ImageDistanceTransform::process() {
         dstImage->getColorLayer()->dataMap.dataRange = dvec2{0.0, max};
         dstImage->getColorLayer()->dataMap.valueRange = dvec2{0.0, max};
 
-        cache.add(dstImage);
         return dstImage;
     };
 
     outport_.clear();
     dispatchOne(calc, [this](std::shared_ptr<Image> result) {
+        imageCache_.add(result);
         outport_.setData(result);
         newResults();
     });
