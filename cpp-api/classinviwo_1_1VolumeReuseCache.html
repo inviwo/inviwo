@@ -99,6 +99,12 @@ $(function(){initNavTree('classinviwo_1_1VolumeReuseCache.html','','classinviwo_
 
 <p><code>#include &lt;volumereusecache.h&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:aa3009ae598793e546ad0741b65f28410" id="r_aa3009ae598793e546ad0741b65f28410"><td class="memItemLeft" align="right" valign="top"><a id="aa3009ae598793e546ad0741b65f28410" name="aa3009ae598793e546ad0741b65f28410"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Status</b> : std::uint8_t { <b>NoChange</b>
+, <b>ClearedCache</b>
+ }</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4e9e6fa2b1c0ac24c787b592cc38907e" id="r_a4e9e6fa2b1c0ac24c787b592cc38907e"><td class="memItemLeft" align="right" valign="top"><a id="a4e9e6fa2b1c0ac24c787b592cc38907e" name="a4e9e6fa2b1c0ac24c787b592cc38907e"></a>
@@ -114,8 +120,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a57f8963be7a083732071fcffb16d4170" id="r_a57f8963be7a083732071fcffb16d4170"><td class="memItemLeft" align="right" valign="top"><a id="a57f8963be7a083732071fcffb16d4170" name="a57f8963be7a083732071fcffb16d4170"></a>
 const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getConfig</b> () const</td></tr>
 <tr class="memdesc:a57f8963be7a083732071fcffb16d4170"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> used by the cache. <br /></td></tr>
-<tr class="memitem:a4fafb09b916836fe2c9cbe7c8fcca0e6" id="r_a4fafb09b916836fe2c9cbe7c8fcca0e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fafb09b916836fe2c9cbe7c8fcca0e6">setConfig</a> (const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config)</td></tr>
-<tr class="memdesc:a4fafb09b916836fe2c9cbe7c8fcca0e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a new <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> for the cache.  <br /></td></tr>
+<tr class="memitem:ab52d35a6d1c74b28b4799955da21983a" id="r_ab52d35a6d1c74b28b4799955da21983a"><td class="memItemLeft" align="right" valign="top">Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab52d35a6d1c74b28b4799955da21983a">setConfig</a> (const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config)</td></tr>
+<tr class="memdesc:ab52d35a6d1c74b28b4799955da21983a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a new <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> for the cache.  <br /></td></tr>
 <tr class="memitem:a1d2d6deebdc0c8b52f647aeebd857144" id="r_a1d2d6deebdc0c8b52f647aeebd857144"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d2d6deebdc0c8b52f647aeebd857144">get</a> ()</td></tr>
 <tr class="memdesc:a1d2d6deebdc0c8b52f647aeebd857144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a <a class="el" href="classinviwo_1_1Volume.html">Volume</a> from the cache or creates a new one if none are available.  <br /></td></tr>
 </table>
@@ -150,14 +156,14 @@ const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &a
 
 </div>
 </div>
-<a id="a4fafb09b916836fe2c9cbe7c8fcca0e6" name="a4fafb09b916836fe2c9cbe7c8fcca0e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4fafb09b916836fe2c9cbe7c8fcca0e6">&#9670;&#160;</a></span>setConfig()</h2>
+<a id="ab52d35a6d1c74b28b4799955da21983a" name="ab52d35a6d1c74b28b4799955da21983a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab52d35a6d1c74b28b4799955da21983a">&#9670;&#160;</a></span>setConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void inviwo::VolumeReuseCache::setConfig </td>
+          <td class="memname">Status inviwo::VolumeReuseCache::setConfig </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span></td><td>)</td>
           <td></td>
@@ -173,6 +179,7 @@ const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &a
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>Status::ClearedCache if the config changed (the cache was cleared), Status::NoChange otherwise </dd></dl>
 
 </div>
 </div>
