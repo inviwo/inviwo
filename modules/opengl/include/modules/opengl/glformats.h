@@ -145,7 +145,7 @@ private:
     static constexpr auto Vec3Format = []() {
         if constexpr (build::platform == build::Platform::MacOS) {
             // Apple does not natively support GL_RGB32F on metal, and at sizes above
-            // ~100^3 we run issues downloading the data. Using GL_RGBA32F internally works.
+            // ~100^3 we run into issues when downloading the data. Using GL_RGBA32F internally works.
             return GL_RGBA32F;
         } else {
             return GL_RGB32F;
