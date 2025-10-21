@@ -42,6 +42,8 @@ IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Vol
 
 IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
 
+IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume2(const Volume& volume);
+
 }  // namespace util
 
 }  // namespace inviwo
