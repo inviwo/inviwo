@@ -336,19 +336,19 @@ void Texture::bindFromPBO() const {
         downloadToPBO();
     }
 
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, pboBack_);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboBack_);
 }
 
-void Texture::bindToPBO() const { glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pboBack_); }
+void Texture::bindToPBO() const { glBindBuffer(GL_PIXEL_PACK_BUFFER, pboBack_); }
 
 void Texture::unbindFromPBO() const {
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
     // Invalidate PBO, as error might occur in download() otherwise.
     pboBackHasData_ = false;
 }
 
 void Texture::unbindToPBO() const {
-    glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     LGL_ERROR_CLASS;
 }
 
@@ -365,13 +365,13 @@ void Texture::download(void* data) const {
     if (pboBackHasData_) {
         // Copy from PBO
         bindToPBO();
-        void* mem = glMapBuffer(GL_PIXEL_PACK_BUFFER_ARB, GL_READ_ONLY);
+        void* mem = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
         if (mem) {
             memcpy(data, mem, getNumberOfValues() * getSizeInBytes());
             downloadComplete = true;
         }
         // Release PBO data
-        glUnmapBuffer(GL_PIXEL_PACK_BUFFER_ARB);
+        glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
         unbindToPBO();
         pboBackHasData_ = false;
     }
@@ -419,10 +419,11 @@ void Texture::loadFromPBO(const Texture* src) {
 
 void Texture::setupAsyncReadBackPBO() const {
     bind();
-    glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pboBack_);
-    glBufferDataARB(GL_PIXEL_PACK_BUFFER_ARB, getNumberOfValues() * getSizeInBytes(), nullptr,
-                    GL_STREAM_READ_ARB);
-    glBindBufferARB(GL_PIXEL_PACK_BUFFER_ARB, 0);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, pboBack_);
+    glBufferData(GL_PIXEL_PACK_BUFFER,
+                 static_cast<GLsizeiptr>(getNumberOfValues() * getSizeInBytes()), nullptr,
+                 GL_STREAM_READ);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     unbind();
     pboBackHasData_ = false;
     LGL_ERROR;
