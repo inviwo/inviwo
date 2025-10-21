@@ -42,6 +42,13 @@ public:
     virtual ~Vector3DCurl();
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+    virtual void initializeShader(Shader& shader) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
+    virtual void postProcess(Volume& volume) override;
+
+    BoolProperty writeLengthInForthComponent_;
 };
 
 }  // namespace inviwo
