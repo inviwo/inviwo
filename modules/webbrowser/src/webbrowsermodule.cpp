@@ -40,6 +40,7 @@
 #include <inviwo/core/util/staticstring.h>             // for operator+
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/timer.h>               // for Timer, Timer::...
+#include <inviwo/core/util/threadutil.h>
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
 #include <modules/webbrowser/processors/basicwebbrowser.h>
 #include <modules/webbrowser/processors/webbrowserprocessor.h>  // for WebBrowserProc...
@@ -221,6 +222,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     if (!CefInitialize(args, settings, browserApp, sandbox_info)) {
         throw ModuleInitException("Failed to initialize Chromium Embedded Framework");
     }
+    // reset our main thread name since CEF seems to change it
+    inviwo::util::setThreadDescription("Inviwo Main");
 
     // Add a directory to the search path of the ShaderManager
     webbrowser::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
