@@ -45,6 +45,7 @@
 #include <QCursor>
 #include <QFont>
 #include <QSurfaceFormat>
+#include <QThread>
 
 #include <string>
 #include <string_view>
@@ -139,6 +140,20 @@ void FileSystemObserverQt::fileChanged(QString fileName) {
     }
 }
 
+void showFatalMessage(const QString& msg) {
+    if (QApplication::instance()->thread() == QThread::currentThread()) {
+        QMessageBox::critical(nullptr, "Fatal Error", msg);
+    } else {
+        // If the assertion happened in a different thread, we can not show a dialog
+        // directly, so we pass it on to the main thread. But we have to wait for it
+        // to show, since we will probably exit after we leave this function.
+        QMetaObject::invokeMethod(
+            QApplication::instance(),
+            [msg]() { QMessageBox::critical(nullptr, "Assertion Failed", msg); },
+            Qt::BlockingQueuedConnection);
+    }
+}
+
 }  // namespace
 
 void utilqt::logQtMessages([[maybe_unused]] QtMsgType type,
@@ -148,38 +163,39 @@ void utilqt::logQtMessages([[maybe_unused]] QtMsgType type,
     // There is some weird bug on mac that sets complains about
     // QWidgetWindow(...) Attempt to set a screen on a child window
     // Does not seem to be a real problem lets, ignore it.
-    // http://stackoverflow.com/questions/33545006/qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
+    // http://stackoverflow.com/questions/33545006/
+    // qt5-attempt-to-set-a-screen-on-a-child-window-many-runtime-warning-messages
     if (msg.contains("Attempt to set a screen on a child window")) return;
 #endif
 
-    const std::string_view missing = "-";
+    constexpr std::string_view missing = "-";
 
     const auto localMsg = std::string(msg.toUtf8().constData());
     const auto file = context.file ? std::string_view{context.file} : missing;
     const auto function = context.function ? std::string_view{context.function} : missing;
-
+    const auto line = static_cast<std::uint32_t>(context.line);
     switch (type) {
         case QtInfoMsg:
-            LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer, file,
-                                      function, context.line, localMsg);
+            log::report(LogLevel::Info, SourceContext{"Qt Info"_sl, file, function, line},
+                        localMsg);
             break;
         case QtDebugMsg:
-            LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer, file,
-                                      function, context.line, localMsg);
+            log::report(LogLevel::Info, SourceContext{"Qt Debug"_sl, file, function, line},
+                        localMsg);
             break;
         case QtWarningMsg:
-            LogCentral::getPtr()->log("Qt Warning", LogLevel::Warn, LogAudience::Developer, file,
-                                      function, context.line, localMsg);
+            log::report(LogLevel::Warn, SourceContext{"Qt Warning"_sl, file, function, line},
+                        localMsg);
             break;
         case QtCriticalMsg:
-            LogCentral::getPtr()->log("Qt Critical", LogLevel::Error, LogAudience::Developer, file,
-                                      function, context.line, localMsg);
+            log::report(LogLevel::Error, SourceContext{"Qt Critical"_sl, file, function, line},
+                        localMsg);
             break;
         case QtFatalMsg:
-            LogCentral::getPtr()->log("Qt Fatal", LogLevel::Error, LogAudience::Developer, file,
-                                      function, context.line, localMsg);
-            QMessageBox::critical(nullptr, "Fatal Error", msg);
+            log::report(LogLevel::Error, SourceContext{"Qt Fatal"_sl, file, function, line},
+                        localMsg);
             util::debugBreak();
+            showFatalMessage(msg);
             abort();
             break;
     }
@@ -268,7 +284,8 @@ void utilqt::configureAssertionHandler(InviwoApplication& app) {
                          .arg(context.line())
                          .arg(toQString(context.function()))
                          .arg(toQString(message));
-        QMessageBox::critical(nullptr, "Assertion Failed", error);
+
+        showFatalMessage(error);
     });
 }
 
