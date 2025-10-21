@@ -69,6 +69,8 @@ public:
     VolumeReuseCache& operator=(VolumeReuseCache&&) = delete;
     ~VolumeReuseCache() = default;
 
+    enum class Status : std::uint8_t { NoChange, ClearedCache };
+
     /**
      * @brief Returns the current VolumeConfig used by the cache.
      */
@@ -76,22 +78,24 @@ public:
 
     /**
      * @brief Sets a new VolumeConfig for the cache.
-     * 
+     *
      * Updates the configuration used for creating new Volume objects.
      * If the existing config does not match the new config,
      * existing volumes will be discarded and new Volumes will be created as needed.
      *
      * @param config The new VolumeConfig to use.
+     * @returns Status::ClearedCache if the config changed (the cache was cleared),
+     * Status::NoChange otherwise
      */
-    void setConfig(const VolumeConfig& config);
+    Status setConfig(const VolumeConfig& config);
 
     /**
      * @brief Retrieves a Volume from the cache or creates a new one if none are available.
-     * 
+     *
      * Returns a shared pointer to a Volume object matching the current configuration.
      * If the cache contains available Volumes, one is reused; otherwise, a new Volume is created.
      * After the volume is reused, call Volume::discardHistograms() to have them recalculated.
-     * 
+     *
      * @return std::shared_ptr<Volume> A shared pointer to a Volume instance.
      */
     std::shared_ptr<Volume> get();

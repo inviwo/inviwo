@@ -29,4 +29,10 @@
 
 #include <inviwo/core/datastructures/tfdata.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+TFData::Base::~Base() = default;
+
+TFData::~TFData() = default;
+
+}  // namespace inviwo
