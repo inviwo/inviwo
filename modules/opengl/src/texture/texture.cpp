@@ -420,9 +420,10 @@ void Texture::loadFromPBO(const Texture* src) {
 void Texture::setupAsyncReadBackPBO() const {
     bind();
     glBindBuffer(GL_PIXEL_PACK_BUFFER, pboBack_);
-    glBufferDataARB(GL_PIXEL_PACK_BUFFER, getNumberOfValues() * getSizeInBytes(), nullptr,
-                    GL_STREAM_READ);
-    glBindBufferARB(GL_PIXEL_PACK_BUFFER, 0);
+    glBufferData(GL_PIXEL_PACK_BUFFER,
+                 static_cast<GLsizeiptr>(getNumberOfValues() * getSizeInBytes()), nullptr,
+                 GL_STREAM_READ);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     unbind();
     pboBackHasData_ = false;
     LGL_ERROR;
