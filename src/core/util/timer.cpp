@@ -49,7 +49,7 @@ TimerThread::TimerThread()
 
 TimerThread::~TimerThread() {
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        const std::unique_lock<std::mutex> lock(mutex_);
         stop_ = true;
     }
     condition_.notify_all();
