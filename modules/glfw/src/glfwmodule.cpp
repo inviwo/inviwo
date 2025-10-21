@@ -105,6 +105,10 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
+
+
+    // restart the pool to ensure that all background threads as a proper context
+    app->waitForPool();
 }
 
 GLFWModule::~GLFWModule() {
