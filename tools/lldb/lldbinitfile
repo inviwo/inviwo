@@ -1,0 +1,12 @@
+# Custom LLDB configuration
+# We set CMAKE_XCODE_SCHEME_LLDB_INIT_FILE (in compileoptins.cmake) to this file to automcatically enable it in XCode
+# or add it manually using
+# command source <path>inviwo/tools/lldb/lldbinitfile
+
+# Adds glm vector formatters
+type category define -e -l c++ glm
+command script import -c glm_lldb.py
+
+# Adds some qt formatters
+type category define -e -l c++ qt
+command script import -c qt_lldb.py
