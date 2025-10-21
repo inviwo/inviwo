@@ -107,7 +107,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     app->getProcessorNetworkEvaluator()->addObserver(this);
 
 
-    // restart the pool to ensure that all background threads as a proper context
+    // restart the pool to ensure that all background threads have a proper render context
     app->waitForPool();
 }
 
