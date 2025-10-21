@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/formats.h>        // for DataFormatId, DataFormatBase, DataFormatI...
 #include <inviwo/core/util/sourcecontext.h>  // for SourceContext
+#include <inviwo/core/common/inviwocommondefines.h>
 #include <modules/opengl/inviwoopengl.h>     // for GLuint, GL_RED, GL_RG, GL_RGB, GL_RGBA
 #include <modules/opengl/openglexception.h>  // for OpenGLException
 
@@ -141,6 +142,16 @@ public:
     }
 
 private:
+    static constexpr auto Vec3Format = []() {
+        if constexpr (build::platform == build::Platform::MacOS) {
+            // Apple does not natively support GL_RGB32F on metal, and at sizes above
+            // ~100^3 we run into issues when downloading the data. Using GL_RGBA32F internally works.
+            return GL_RGBA32F;
+        } else {
+            return GL_RGB32F;
+        }
+    }();
+
     static constexpr std::array<GLFormat, size> formats_{{
         // clang-format off
         {},                                                                                                                                   // NotSpecialized
@@ -167,7 +178,8 @@ private:
         {GL_RG_INTEGER,   GL_RG32UI,       GL_UNSIGNED_INT,   std::string_view{"rg32ui"},       2, 4, utilgl::Normalization::None},           // Vec2UInt32
         {},                                                                                                                                   // Vec2UInt64
         // 3 channels
-        {GL_RGB,          GL_RGB32F,       GL_FLOAT,          std::string_view{},               3, 4, utilgl::Normalization::None},           // Vec3Float32
+        {GL_RGB,          Vec3Format,      GL_FLOAT,          std::string_view{},               3, 4, utilgl::Normalization::None},           // Vec3Float32
+
         {},                                                                                                                                   // Vec3Float64
         {GL_RGB,          GL_RGB8_SNORM,   GL_BYTE,           std::string_view{},               3, 1, utilgl::Normalization::SignNormalized}, // Vec3Int8
         {GL_RGB,          GL_RGB16_SNORM,  GL_SHORT,          std::string_view{},               3, 2, utilgl::Normalization::SignNormalized}, // Vec3Int16
