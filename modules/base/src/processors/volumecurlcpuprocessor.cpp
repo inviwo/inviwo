@@ -53,12 +53,28 @@ const ProcessorInfo VolumeCurlCPUProcessor::processorInfo_{
 const ProcessorInfo& VolumeCurlCPUProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCurlCPUProcessor::VolumeCurlCPUProcessor()
-    : Processor(), inport_("inport"), outport_("outport") {
+    : PoolProcessor(), inport_("inport"), outport_("outport"), tmp_{"tmp", "tmp", false} {
 
     addPort(inport_);
     addPort(outport_);
+
+    addProperty(tmp_);
 }
 
-void VolumeCurlCPUProcessor::process() { outport_.setData(util::curlVolume(inport_.getData())); }
+void VolumeCurlCPUProcessor::process() {
+    const auto calc = [data = inport_.getData(), method = tmp_.get()]() {
+        if (method) {
+            return util::curlVolume2(*data);
+        } else {
+            return util::curlVolume(data);
+        }
+    };
+
+    outport_.clear();
+    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+        outport_.setData(result);
+        newResults();
+    });
+}
 
 }  // namespace inviwo

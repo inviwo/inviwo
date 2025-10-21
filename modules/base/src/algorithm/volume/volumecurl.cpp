@@ -29,6 +29,7 @@
 
 #include <modules/base/algorithm/volume/volumecurl.h>
 
+#include <inviwo/core/algorithm/samplevolume.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
 #include <inviwo/core/datastructures/data.h>                            // for noData
 #include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
@@ -42,6 +43,7 @@
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
 #include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+#include <inviwo/core/util/rendercontext.h>
 
 #include <stdlib.h>       // for abs
 #include <algorithm>      // for max, min
@@ -119,6 +121,104 @@ std::unique_ptr<Volume> curlVolume(const Volume& volume) {
             newVolume->dataMap.dataRange = dvec2(-range, range);
             newVolume->dataMap.valueRange = dvec2(minV, maxV);
         });
+
+    return newVolume;
+}
+
+template <typename C, typename Init, typename BinaryOp>
+auto voxelReduceParallel(const size3_t dims, Init init, BinaryOp op, C callback, size_t jobs = 0)
+    -> Init {
+
+    const size_t poolSize = util::getPoolSize();
+    if (jobs == 0) {
+        jobs = 4 * poolSize;
+    }
+    // if ((jobs == 0) || (poolSize == 0)) {
+    //     // fallback to serial version
+    //     forEachVoxel(dims, callback);
+    //     return;
+    // }
+
+    std::vector<std::future<Init>> futures;
+
+    for (size_t job = 0; job < jobs; ++job) {
+        size3_t start = size3_t(0, 0, job * dims.z / jobs);
+        size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
+
+        futures.push_back(util::dispatchPool([&callback, init, op, start, stop]() {
+            size3_t pos{0};
+
+            rendercontext::activateLocal();
+
+            Init val = init;
+            for (pos.z = start.z; pos.z < stop.z; ++pos.z) {
+                for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
+                    for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
+                        val = std::invoke(op, val, callback(pos));
+                    }
+                }
+            }
+            return val;
+        }));
+    }
+
+    Init val = init;
+    for (auto& e : futures) {
+        val = std::invoke(op, val, e.get());
+    }
+    return val;
+}
+
+std::unique_ptr<Volume> curlVolume2(const Volume& volume) {
+    auto newVolume = std::make_unique<Volume>(volume, noData);
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume.getDimensions());
+    newVolume->addRepresentation(newVolumeRep);
+
+    const auto m = dmat4{newVolume->getCoordinateTransformer().getDataToWorldMatrix()};
+
+    const auto a = m * dvec4(0, 0, 0, 1);
+    const auto b = m * dvec4(1.0 / dvec3(volume.getDimensions() - size3_t(1)), 1);
+    const auto spacing = b - a;
+
+    const dvec3 ox(spacing.x, 0, 0);
+    const dvec3 oy(0, spacing.y, 0);
+    const dvec3 oz(0, 0, spacing.z);
+
+    auto dst = newVolumeRep->getView();
+    const auto im = util::IndexMapper3D(volume.getDimensions());
+
+    auto r = volume.getRepresentation<VolumeRAM>();
+    if (auto* p = dynamic_cast<const VolumeRAMPrecision<glm::vec3>*>(r)) {
+        const auto data = p->getView();
+        for (size_t i = 0; i < volume.getDimensions().z; ++i) {
+            log::info("{} -> {}", i, data[im(size3_t(50, 50, i))]);
+        }
+    }
+
+    const auto max = util::voxelReduceParallel(
+        newVolumeRep->getDimensions(), std::numeric_limits<double>::lowest(), std::ranges::max,
+        [&](const size3_t& pos) {
+            const dvec3 world{m *
+                              dvec4(dvec3(pos) / dvec3(volume.getDimensions() - size3_t(1)), 1)};
+
+            const auto samplePos = std::array<dvec3, 6>{world + ox, world - ox, world + oy,
+                                                        world - oy, world + oz, world - oz};
+
+            auto samples = std::array<dvec3, 6>{};
+            sample::sample(volume, samplePos, samples, CoordinateSpace::World,
+                           DataMapper::Space::Value);
+
+            const dvec3 Fx = (samples[0] - samples[1]) / (2.0 * spacing.x);
+            const dvec3 Fy = (samples[2] - samples[3]) / (2.0 * spacing.y);
+            const dvec3 Fz = (samples[4] - samples[5]) / (2.0 * spacing.z);
+            const dvec3 curl{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
+            dst[im(pos)] = static_cast<vec3>(curl);
+
+            return glm::compMax(glm::abs(curl));
+        });
+
+    newVolume->dataMap.dataRange = dvec2(-max, max);
+    newVolume->dataMap.valueRange = dvec2(-max, max);
 
     return newVolume;
 }
