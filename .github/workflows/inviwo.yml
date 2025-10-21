@@ -312,6 +312,7 @@ jobs:
         git config --global user.email 'team@inviwo.org'
         git add .
         git commit -am "Regression report for macos ${{ github.ref }}"
+        git pull --rebase=true origin --verbose || { echo "Report Git Conflict! Aborting." >> $GITHUB_STEP_SUMMARY; exit 1; }
         git push
 
         echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html" >> $GITHUB_STEP_SUMMARY
