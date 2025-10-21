@@ -111,6 +111,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     registerProcessor<CanvasWithPropertiesProcessor>();
     registerProcessorWidget<CanvasWithPropertiesProcessorWidgetQt, CanvasWithPropertiesProcessor>();
+
+    // restart the pool to ensure that all background threads have a proper render context
+    app->waitForPool();
 }
 
 OpenGLQtModule::~OpenGLQtModule() {

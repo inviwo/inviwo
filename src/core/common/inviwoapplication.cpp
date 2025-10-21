@@ -126,7 +126,17 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     }()}
     , progressCallback_()
     , pool_(
-          0, []() {}, []() { RenderContext::getPtr()->clearContext(); })
+          0,
+          []() {
+              if (RenderContext::isInitialized()) {
+                  RenderContext::getPtr()->activateLocalRenderContext();
+              }
+          },
+          []() {
+              if (RenderContext::isInitialized()) {
+                  RenderContext::getPtr()->clearContext();
+              }
+          })
     , queue_()
     , clearAllSingeltons_{[]() {
         PickingManager::deleteInstance();
@@ -165,13 +175,13 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
 
     registerSettings(systemSettings_.get());
 
-    resizePool(systemSettings_->poolSize_);
-    systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
-
     // initialize singletons
     init(this);
     RenderContext::init();
     PickingManager::init();
+
+    resizePool(systemSettings_->poolSize_);
+    systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
 
     workspaceManager_->registerFactory(getProcessorFactory());
     workspaceManager_->registerFactory(getMetaDataFactory());

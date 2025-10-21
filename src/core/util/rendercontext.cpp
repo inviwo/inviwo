@@ -54,6 +54,8 @@ void RenderContext::activateDefaultRenderContext() const {
 }
 
 void RenderContext::activateLocalRenderContext() const {
+    if (!defaultContext_) return;
+
     auto id = std::this_thread::get_id();
 
     if (id == mainThread_) {
