@@ -68,9 +68,10 @@ inline void checkContext(std::string_view error, Canvas::ContextID org,
 }
 
 GLuint FrameBufferObject::maxColorAttachments() {
-    static GLint max = []() {
-        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max);
-        return static_cast<GLuint>(max);
+    static const GLuint max = []() {
+        GLint temp{0};
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &temp);
+        return static_cast<GLuint>(temp);
     }();
     return max;
 }
