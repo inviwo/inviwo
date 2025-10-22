@@ -52,42 +52,46 @@ class IVW_CORE_API ProcessorObserver : public Observer {
 public:
     friend ProcessorObservable;
 
-    virtual void onAboutPropertyChange(Property*){};
-    virtual void onProcessorInvalidationBegin(Processor*){};
-    virtual void onProcessorInvalidationEnd(Processor*){};
+    virtual void onAboutPropertyChange(Property*) {};
+    virtual void onProcessorInvalidationBegin(Processor*) {};
+    virtual void onProcessorInvalidationEnd(Processor*) {};
 
-    virtual void onProcessorPortAdded(Processor*, Port*){};
-    virtual void onProcessorPortRemoved(Processor*, Port*){};
+    virtual void onProcessorPortAdded(Processor*, Port*) {};
+    virtual void onProcessorPortRemoved(Processor*, Port*) {};
 
-    virtual void onProcessorAboutToProcess(Processor*){};
-    virtual void onProcessorFinishedProcess(Processor*){};
+    virtual void onProcessorAboutToProcess(Processor*) {};
+    virtual void onProcessorFinishedProcess(Processor*) {};
 
     /**
      * Called after the processor has changed its source state.
      */
-    virtual void onProcessorSourceChanged(Processor*){};
+    virtual void onProcessorSourceChanged(Processor*) {};
     /**
      * Called after the processor has changed its sink state.
      */
-    virtual void onProcessorSinkChanged(Processor*){};
+    virtual void onProcessorSinkChanged(Processor*) {};
     /**
      * Called after the processor has changed its ready state.
      */
-    virtual void onProcessorReadyChanged(Processor*){};
+    virtual void onProcessorReadyChanged(Processor*) {};
     /**
      * Called after a processor inport and its connected outport(s) changed active state.
      * @see Processor::isConnectionActive
      */
-    virtual void onProcessorActiveConnectionsChanged(Processor*){};
+    virtual void onProcessorActiveConnectionsChanged(Processor*) {};
 
     /**
      * @brief Called when a processor initiates a background computation
      */
-    virtual void onProcessorStartBackgroundWork(Processor*, size_t /*jobs*/){};
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t /*jobs*/) {};
     /**
      * @brief Called when a processor finishes a background computation
      */
-    virtual void onProcessorFinishBackgroundWork(Processor*, size_t /*jobs*/){};
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t /*jobs*/) {};
+    /**
+     * @brief Called when a processor progress has changed
+     */
+    virtual void onProcessorProgressChanged(Processor*, std::optional<double>) {};
 };
 
 /** \class ProcessorObservable
@@ -142,6 +146,9 @@ protected:
     }
     void notifyObserversFinishBackgroundWork(Processor* p, size_t jobs = 1) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorFinishBackgroundWork(p, jobs); });
+    }
+    void notifyObserversProgressChanged(Processor* p, std::optional<double> progress) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorProgressChanged(p, progress); });
     }
 };
 

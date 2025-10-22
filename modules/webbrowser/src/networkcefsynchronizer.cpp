@@ -80,10 +80,6 @@ void NetWorkCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<
     for (auto& widget : widgets_[browser->GetIdentifier()]) {
         widget->setFrame(frame);
     }
-
-    for (auto& observer : progressObservers_) {
-        observer.second.setFrame(frame);
-    }
 }
 
 bool NetWorkCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -99,10 +95,6 @@ bool NetWorkCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
             return propertySubscribe(j, browser, frame, reponse);
         } else if (command.starts_with(propertyCommand)) {
             return propertyAction(j, browser, frame, query_id, request, persistent, reponse);
-        } else if (command == subscribeProgress) {
-            return processorSubscribeProgress(j, frame, reponse);
-        } else if (command == unsubscribeProgress) {
-            return processorUnsubscribeProgress(j, reponse);
         } else if (command == callbackCommand) {
             return handleCallback(j, browser, reponse);
         } else if (command.starts_with(networkCommand)) {
@@ -345,44 +337,6 @@ bool NetWorkCefSynchronizer::handleCallback(
     return true;
 }
 
-bool NetWorkCefSynchronizer::processorUnsubscribeProgress(
-    const json& j, CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback>& callback) {
-
-    auto p = j.at("path").get<std::string>();
-    if (auto processor = app_->getProcessorNetwork()->getProcessorByIdentifier(p)) {
-        // Remove observer
-        progressObservers_.erase(processor);
-        callback->Success("{}");
-    } else {
-        callback->Failure(0, "Could not find processor: " + p);
-    }
-    return true;
-}
-
-bool NetWorkCefSynchronizer::processorSubscribeProgress(
-    const json& j, CefRefPtr<CefFrame>& frame,
-    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback>& callback) {
-
-    const auto p = j.at("path").get<std::string>();
-    if (auto processor = app_->getProcessorNetwork()->getProcessorByIdentifier(p)) {
-        if (auto progressOwner = dynamic_cast<ProgressBarOwner*>(processor)) {
-            const auto onProgressChange = j.at("onProgressChange").get<std::string>();
-            const auto onVisibleChange = j.at("onVisibleChange").get<std::string>();
-
-            progressObservers_[processor] =
-                ProgressBarObserverCEF(frame, onProgressChange, onVisibleChange);
-            progressOwner->getProgressBar().ProgressBarObservable::addObserver(
-                &progressObservers_[processor]);
-            callback->Success("{}");
-        } else {
-            callback->Failure(0, "Processor " + p + " is not ProgressBarObservable");
-        }
-    } else {
-        callback->Failure(0, "Could not find processor: " + p);
-    }
-    return true;
-}
-
 bool NetWorkCefSynchronizer::propertySubscribe(const json& j, CefRefPtr<CefBrowser>& browser,
                                                CefRefPtr<CefFrame>& frame,
                                                CefRefPtr<Callback>& callback) {
@@ -433,10 +387,6 @@ void NetWorkCefSynchronizer::onWillRemoveProperty(Property* property, size_t /*i
         std::erase_if(widgets,
                       [property](const auto& widget) { return property == widget->getProperty(); });
     }
-}
-
-void NetWorkCefSynchronizer::onProcessorNetworkWillRemoveProcessor(Processor* p) {
-    progressObservers_.erase(p);
 }
 
 void NetWorkCefSynchronizer::clear(CefRefPtr<CefBrowser> browser) {
