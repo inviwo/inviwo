@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/detected.h>
 
 #include <span>
 
@@ -87,23 +88,26 @@ public:
 };
 
 namespace detail {
-template <typename T, typename P, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+
+template <typename T, typename P>
 inline T linearVectorInterpolation(const T& a, const T& b, P x) {
-    return Interpolation<T, P>::linear(a, b, x);
+    if constexpr (util::rank_v<T> == 0) {
+        return Interpolation<T, P>::linear(a, b, x);
+    } else if constexpr (util::rank_v<T> == 1) {
+        auto la = glm::length(a);
+        auto lb = glm::length(b);
+        auto l = Interpolation<P, P>::linear(std::array{la, lb}, x);
+        auto v = Interpolation<T, P>::linear(std::array{a, b}, x);
+        auto lOut = glm::length(v);
+        if (lOut == 0) {
+            return v;
+        }
+        return v * (l / lOut);
+    } else {
+        static_assert(util::alwaysFalse<T>(), "Mat types not supported");
+    }
 }
 
-template <typename T, typename P, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-inline T linearVectorInterpolation(const T& a, const T& b, P x) {
-    auto la = glm::length(a);
-    auto lb = glm::length(b);
-    auto l = Interpolation<P, P>::linear(std::array{la, lb}, x);
-    auto v = Interpolation<T, P>::linear(std::array{a, b}, x);
-    auto lOut = glm::length(v);
-    if (lOut == 0) {
-        return v;
-    }
-    return v * (l / lOut);
-}
 }  // namespace detail
 
 template <typename T, typename P>
