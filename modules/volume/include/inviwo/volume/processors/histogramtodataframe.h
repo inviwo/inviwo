@@ -32,7 +32,6 @@
 #include <inviwo/volume/volumemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -44,7 +43,7 @@
 namespace inviwo {
 
 template <typename T>
-class HistogramToDataFrame : public Processor, public ProgressBarOwner {
+class HistogramToDataFrame : public Processor{
 public:
     HistogramToDataFrame();
 
@@ -126,17 +125,17 @@ void HistogramToDataFrame<T>::process() {
     histogramResult_ =
         inport_.getData()->calculateHistograms([this](const std::vector<Histogram1D>& histograms) {
             dataframe_ = detail::createDataFrame(histograms, histogramMode_);
-            getProgressBar().finishProgress();
+            notifyObserversFinishBackgroundWork(this, 1);
             outport_.setData(dataframe_);
             outport_.invalidate(InvalidationLevel::Valid);
         });
 
     if (histogramResult_.progress == HistogramCache::Progress::NoData) {
         dataframe_ = nullptr;
-        getProgressBar().finishProgress();
+        notifyObserversFinishBackgroundWork(this, 1);
     } else if (histogramResult_.progress == HistogramCache::Progress::Calculating) {
         dataframe_ = nullptr;
-        updateProgress(0.0);
+        notifyObserversStartBackgroundWork(this, 1);
     }
 
     outport_.setData(dataframe_);

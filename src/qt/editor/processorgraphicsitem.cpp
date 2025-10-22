@@ -32,8 +32,6 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/chronoutils.h>
@@ -174,26 +172,26 @@ void drawCount(size_t count, QRectF position, QPainter& p) {
     p.drawText(position, Qt::AlignRight | Qt::AlignBottom, QString::number(count));
 }
 
-void drawProgress(float progress, QRectF progressBarRect, QPainter& p) {
+void drawProgress(double progress, QRectF progressBarRect, QPainter& p) {
     static constexpr QColor progressColor{192, 192, 192};
     static constexpr QColor shadeColor1{76, 76, 76, 120};
     static constexpr QColor shadeColor2{128, 128, 128, 120};
 
     QLinearGradient progressGrad(progressBarRect.topLeft(), progressBarRect.topRight());
     progressGrad.setColorAt(0.0f, progressColor);
-    const float left = std::max(0.0f, progress - 0.001f);
-    const float right = std::min(1.0f, progress + 0.001f);
+    const auto left = std::max(0.0, progress - 0.001);
+    const auto right = std::min(1.0, progress + 0.001);
     progressGrad.setColorAt(left, progressColor);
     progressGrad.setColorAt(right, Qt::black);
-    progressGrad.setColorAt(1.0f, Qt::black);
+    progressGrad.setColorAt(1.0, Qt::black);
     p.setPen(Qt::black);
     p.setBrush(progressGrad);
     p.drawRoundedRect(progressBarRect, 2.0, 2.0);
 
     QLinearGradient shadingGrad(progressBarRect.topLeft(), progressBarRect.bottomLeft());
-    shadingGrad.setColorAt(0.0f, shadeColor1);
-    shadingGrad.setColorAt(0.3f, shadeColor2);
-    shadingGrad.setColorAt(1.0f, shadeColor2);
+    shadingGrad.setColorAt(0.0, shadeColor1);
+    shadingGrad.setColorAt(0.3, shadeColor2);
+    shadingGrad.setColorAt(1.0, shadeColor2);
     p.setPen(Qt::NoPen);
     p.setBrush(shadingGrad);
     p.drawRoundedRect(progressBarRect, 2.0, 2.0);
@@ -292,20 +290,11 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         addOutport(outport);
     }
 
-    if (auto progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_)) {
-        progressBarOwner->getProgressBar().ProgressBarObservable::addObserver(this);
-        progressBarOwner->getProgressBar().ActivityIndicator::addObserver(this);
-    }
-
-    if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)) {
-        activityInd->getActivityIndicator().addObserver(this);
-    }
-
     setVisible(processorMeta_->isVisible());
     setSelected(processorMeta_->isSelected());
     setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
 
-    updateStatus(Running::No);
+    updateStatus();
 }
 
 QPointF ProcessorGraphicsItem::portOffset(PortType type, size_t index) {
@@ -503,7 +492,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         }
         case QGraphicsItem::ItemSceneHasChanged:
             updateWidgets();
-            updateStatus(Running::No);
+            updateStatus();
             break;
         default:
             break;
@@ -549,7 +538,7 @@ void ProcessorGraphicsItem::updateWidgets() {
 
 ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { return linkItem_; }
 
-void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { updateStatus(Running::No); }
+void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { updateStatus(); }
 
 void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
     if (auto inport = dynamic_cast<Inport*>(port)) {
@@ -572,12 +561,9 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     processCount_++;
     clock_.reset();
     clock_.start();
-    if (showCount_) {
-        delayedUpdate();
-    }
 #endif
 
-    updateStatus(Running::No);
+    updateStatus();
 }
 
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
@@ -589,6 +575,21 @@ void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
 #endif
 }
 
+void ProcessorGraphicsItem::onProcessorStartBackgroundWork(Processor*, size_t jobs) {
+    backgroundJobs_ += jobs;
+    updateStatus();
+}
+
+void ProcessorGraphicsItem::onProcessorFinishBackgroundWork(Processor*, size_t jobs) {
+    backgroundJobs_ -= jobs;
+    updateStatus();
+}
+
+void ProcessorGraphicsItem::onProcessorProgressChanged(Processor*, std::optional<double> progress) {
+    progress_ = progress;
+    updateStatus();
+}
+
 #if IVW_PROFILING
 
 void ProcessorGraphicsItem::resetTimeMeasurements() {
@@ -596,9 +597,8 @@ void ProcessorGraphicsItem::resetTimeMeasurements() {
     maxEvalTime_ = 0.0;
     evalTime_ = 0.0;
     totEvalTime_ = 0.0;
-    if (showCount_) {
-        delayedUpdate();
-    }
+
+    updateStatus();
 }
 
 void ProcessorGraphicsItem::setShowCount(bool show) { showCount_ = show; }
@@ -641,31 +641,8 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 
 void ProcessorGraphicsItem::setHighlight(bool val) { highlight_ = val; }
 
-void ProcessorGraphicsItem::activityIndicatorChanged(bool active) {
-    updateStatus(active ? Running::Yes : Running::No);
-}
-
-void ProcessorGraphicsItem::progressChanged(float p) {
-    if (currentProgress_ != p) {
-        progress_ = p;
-        delayedUpdate();
-    }
-}
-
-void ProcessorGraphicsItem::progressBarVisibilityChanged(bool visible) {
-    if (visible) {
-        if (!progress_.has_value()) {
-            progress_ = 0.0f;
-        }
-    } else {
-        progress_ = std::nullopt;
-    }
-
-    if (currentProgress_ != progress_) delayedUpdate();
-}
-
 void ProcessorGraphicsItem::processorException(std::string_view message) {
-    updateStatus(Running::No, std::string{message});
+    updateStatus(std::string{message});
 }
 
 void ProcessorGraphicsItem::setErrorText(std::string_view error) {
@@ -679,10 +656,19 @@ void ProcessorGraphicsItem::setErrorText(std::string_view error) {
     errorText_->setActive(isSelected());
 }
 
-void ProcessorGraphicsItem::updateStatus(Running running, std::optional<std::string> exception) {
+bool ProcessorGraphicsItem::needsUpdate() const {
+#if IVW_PROFILING
+    return currentState_ != state_ || currentProgress_ != progress_ ||
+           (showCount_ && currentProcessCount_ != processCount_);
+#else
+    return currentState_ != state_ || currentProgress_ != progress_;
+#endif
+}
+
+void ProcessorGraphicsItem::updateStatus(std::optional<std::string> exception) {
     if (exception) {
         state_ = State::Error;
-    } else if (running == Running::Yes) {
+    } else if (backgroundJobs_ > 0) {
         state_ = State::Running;
     } else {
         switch (processor_->status().status()) {
@@ -706,7 +692,7 @@ void ProcessorGraphicsItem::updateStatus(Running running, std::optional<std::str
     } else if (errorText_) {
         errorText_->clear();
         update();
-    } else if (currentState_ != state_) {
+    } else if (needsUpdate()) {
         delayedUpdate();
     }
 }
@@ -720,11 +706,7 @@ void ProcessorGraphicsItem::delayedUpdate() {
 
 bool ProcessorGraphicsItem::event(QEvent* e) {
     if (e->type() == UpdateStatusEvent::type()) {
-        if (currentState_ != state_ || currentProgress_ != progress_
-#if IVW_PROFILING
-            || (showCount_ && currentProcessCount_ != processCount_)
-#endif
-        ) {
+        if (needsUpdate()) {
             limitedUpdate_(this, this);
         }
         return true;  // event handled

@@ -156,11 +156,10 @@ void DistanceTransformRAM::process() {
                  square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
                  dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(),
                  volume =
-                     volumePort_.getData()](pool::Progress fprogress) -> std::shared_ptr<Volume> {
+                     volumePort_.getData()](pool::Progress progress) -> std::shared_ptr<Volume> {
         auto volDim = glm::max(volume->getDimensions(), size3_t(1u));
         auto dstRepr = std::make_shared<VolumeRAMPrecision<float>>(upsample * volDim);
 
-        const auto progress = [&](double f) { fprogress(static_cast<float>(f)); };
         util::volumeDistanceTransform(volume.get(), dstRepr.get(), upsample, threshold, normalize,
                                       flip, square, scale, progress);
 

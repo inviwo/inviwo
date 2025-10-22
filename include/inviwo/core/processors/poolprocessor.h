@@ -33,8 +33,6 @@
 #include <inviwo/core/util/threadutil.h>
 
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/activityindicator.h>
-#include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/rendercontext.h>
@@ -121,15 +119,15 @@ private:
  */
 enum class Option {
     /// Also call done for old jobs, by default old jobs will be discarded.
-    KeepOldResults = 1 << 0,  
+    KeepOldResults = 1 << 0,
     /// Don't submit new jobs while old ones are running. The last submission will be
     /// queued and submitted when the current one is finished
     QueuedDispatch = 1 << 1,
-    /// Wait for a small delay (500ms) of inactivity before submitting a job  
-    DelayDispatch = 1 << 2, 
+    /// Wait for a small delay (500ms) of inactivity before submitting a job
+    DelayDispatch = 1 << 2,
     /// Delay invalidation of outports until the job is finished. This
     /// will override the default processor invalidation.
-    DelayInvalidation = 1 << 3 
+    DelayInvalidation = 1 << 3
 };
 
 }  // namespace pool
@@ -146,7 +144,7 @@ using Options = flags::flags<pool::Option>;
 /**
  * PoolProcessor is a base class to help make processors that dispatch work to the thread pool.
  */
-class IVW_CORE_API PoolProcessor : public Processor, public ProgressBarOwner {
+class IVW_CORE_API PoolProcessor : public Processor {
 public:
     /**
      * Construct the pool processor with given options.
@@ -302,7 +300,7 @@ private:
     template <typename Job>
     void setupProgress();
 
-    void progress(pool::detail::State* state, float progress);
+    void progress(pool::detail::State* state, double progress);
 
     template <typename Result, typename Done>
     std::shared_ptr<pool::detail::StateTemplate<Result, Done>> makeState(size_t count, Done&& done);
@@ -337,13 +335,13 @@ struct IVW_CORE_API State {
     std::weak_ptr<PoolProcessor> processor;
     std::atomic<size_t> count;
     std::atomic<bool> stop;
-    std::vector<std::atomic<float>> progress;
+    std::vector<std::atomic<double>> progress;
     std::future<void> progressUpdate;
     size_t nJobs;
 
     Stop getStop() { return Stop(stop); }
 
-    void setProgress(size_t id, float progress);
+    void setProgress(size_t id, double progress);
 
     Progress getProgress(size_t id) {
         IVW_ASSERT(id < count, "Id has to be less than count to be valid");
@@ -384,9 +382,8 @@ struct JobTraits {
 template <typename Result, typename Done>
 inline void PoolProcessor::callDone(
     InviwoApplication* app, std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
-    static const auto done = [](PoolProcessor& p, auto state) {
-        // This code will run in the main thread, make sure the default context is active
-        RenderContext::getPtr()->activateDefaultRenderContext();
+    static const auto done = [](PoolProcessor& p,
+                                std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
         try {
             // The Done call callback should be callable with the Result type
             if constexpr (std::is_same_v<Result, void>) {
@@ -413,19 +410,20 @@ inline void PoolProcessor::callDone(
     };
 
     if (state->count.fetch_sub(1) == 1) {
-        util::dispatchFrontAndForget(app, [state]() {
+        util::dispatchFrontAndForget(app, [state = std::move(state)]() {
+            // This code will run in the main thread, make sure the default context is active
+            rendercontext::activateDefault();
             if (auto p = state->processor.lock()) {
                 const bool isLast = p->removeState(state);
-                p->getProgressBar().setActive(p->hasJobs());
-                if (isLast) p->getProgressBar().hide();
+
+                p->notifyObserversFinishBackgroundWork(p.get(), state->nJobs);
+                if (isLast) p->notifyObserversProgressChanged(p.get(), std::nullopt);
 
                 if (p->queuedDispatch() && !p->queue_.empty()) {
                     p->submit(p->queue_.front());
                     p->queue_.clear();
                     return;
                 }
-
-                p->notifyObserversFinishBackgroundWork(p.get(), state->nJobs);
 
                 if (state->stop) return;
 
@@ -462,10 +460,10 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         sub.tasks.emplace_back([state, task, app]() {
             if (!state->stop) {
                 // This code will run in a background thread, make sure the local context is active
-                RenderContext::getPtr()->activateLocalRenderContext();
+                rendercontext::activateLocal();
                 (*task)();
             }
-            callDone(app, state);
+            callDone(app, std::move(state));
         });
     }
 
@@ -510,10 +508,11 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     Submission sub{state,
                    {[state, task, app]() {
                        if (!state->stop) {
-                           RenderContext::getPtr()->activateLocalRenderContext();
+                           // This code will run in a background thread, make sure the local context is active
+                           rendercontext::activateLocal();
                            (*task)();
                        }
-                       callDone(app, state);
+                       callDone(app, std::move(state));
                    }},
                    [this]() { setupProgress<Job>(); }};
 
@@ -538,12 +537,10 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
 
 template <typename Job>
 inline void PoolProcessor::setupProgress() {
-    updateProgress(0.0f);
-    getProgressBar().setActive(true);
     if constexpr (std::is_invocable_v<Job, pool::Progress> ||
                   std::is_invocable_v<Job, pool::Stop, pool::Progress> ||
                   std::is_invocable_v<Job, pool::Progress, pool::Stop>) {
-        getProgressBar().show();
+        notifyObserversProgressChanged(this, 0.0);
     }
 }
 
