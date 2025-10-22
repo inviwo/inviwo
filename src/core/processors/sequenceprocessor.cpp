@@ -270,14 +270,12 @@ void SequenceProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
     }
 }
 
-void SequenceProcessor::onProcessorBackgroundJobsChanged(Processor*, int diff, int total) {
+void SequenceProcessor::onProcessorBackgroundJobsChanged(Processor*, int diff, int) {
     if (diff > 0) {
         notifyObserversStartBackgroundWork(this, diff);
     } else {
         notifyObserversFinishBackgroundWork(this, -diff);
     }
-
-    getProgressBar().setActive(total > 0);
 }
 
 void SequenceProcessor::onDidAddProperty(Property* prop, size_t) { registerProperty(prop); }
