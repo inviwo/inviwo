@@ -228,7 +228,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portinspectormanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/porttraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/volumeport.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/activityindicator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/canvasprocessorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessor.h
@@ -252,8 +251,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactoryobject.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequencecompositesink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequencecompositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequenceprocessor.h
@@ -629,7 +626,6 @@ set(SOURCE_FILES
     ports/portinspectorfactoryobject.cpp
     ports/portinspectormanager.cpp
     ports/porttraits.cpp
-    processors/activityindicator.cpp
     processors/canvasprocessor.cpp
     processors/canvasprocessorwidget.cpp
     processors/compositeprocessor.cpp
@@ -650,8 +646,6 @@ set(SOURCE_FILES
     processors/processorwidget.cpp
     processors/processorwidgetfactory.cpp
     processors/processorwidgetfactoryobject.cpp
-    processors/progressbar.cpp
-    processors/progressbarowner.cpp
     processors/sequencecompositesink.cpp
     processors/sequencecompositesource.cpp
     processors/sequenceprocessor.cpp

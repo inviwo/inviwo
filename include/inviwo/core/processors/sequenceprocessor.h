@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/propertyobserver.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
-#include <inviwo/core/processors/progressbarowner.h>
 
 namespace inviwo {
 
@@ -92,8 +91,7 @@ class SequenceCompositeSourceBase;
 class IVW_CORE_API SequenceProcessor : public Processor,
                                        public ProcessorNetworkObserver,
                                        public PropertyOwnerObserver,
-                                       public PropertyObserver,
-                                       public ProgressBarOwner {
+                                       public PropertyObserver {
 public:
     /**
      * Construct a SequenceProcessor, an optional workspace file can be supplied in which case it
