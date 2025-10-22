@@ -63,7 +63,7 @@ void Vector3DCurl::initializeShader(Shader& shader) {
     shader.getFragmentShaderObject()->setShaderDefine("WRITE_LENGTH_IN_FORTH",
                                                       writeLengthInForthComponent_);
 }
-void Vector3DCurl::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+void Vector3DCurl::preProcess(TextureUnitContainer&, Shader&, VolumeConfig& config) {
     if (writeLengthInForthComponent_) {
         config.format = DataVec4Float32::get();
     } else {
