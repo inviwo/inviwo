@@ -66,8 +66,10 @@ void Vector3DCurl::initializeShader(Shader& shader) {
 void Vector3DCurl::preProcess(TextureUnitContainer&, Shader&, VolumeConfig& config) {
     if (writeLengthInForthComponent_) {
         config.format = DataVec4Float32::get();
+        config.swizzleMask = swizzlemasks::defaultData(4);
     } else {
         config.format = DataVec3Float32::get();
+        config.swizzleMask = swizzlemasks::defaultData(3);
     }
 }
 
