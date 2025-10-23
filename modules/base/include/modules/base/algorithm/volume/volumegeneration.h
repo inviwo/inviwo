@@ -154,7 +154,6 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
     return generateVolume({2, 2, 2}, mat3(1.0), [&](const size3_t& ind) { return map[ind]; });
 }
 
-
 /* Originally from: https://web.cse.ohio-state.edu/~crawfis.3/Data/Tornado/tornadoSrc.c
  * can be found at:
  * https://web.archive.org/web/20220302130820/https://web.cse.ohio-state.edu/~crawfis.3/Data/Tornado/tornadoSrc.c
@@ -172,14 +171,15 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
  *
  * Developed by Roger A. Crawfis, The Ohio State University
  */
-inline void gen_tornado(int xs, int ys, int zs, int time, double* tornado) {
+inline void gen_tornado(const size3_t& size, double time, std::span<vec3> tornado) {
     const double SMALL = 0.00000000001;
-    const double xdelta = 1.0 / (xs - 1.0);
-    const double ydelta = 1.0 / (ys - 1.0);
-    const double zdelta = 1.0 / (zs - 1.0);
 
-    for (int iz = 0; iz < zs; iz++) {
-        const double z = iz * zdelta;  // map z to 0->1
+    const dvec3 delta = dvec3{1.0} / (dvec3{size} - dvec3{1.0});
+
+    auto it = tornado.begin();
+
+    for (size_t iz = 0; iz < size.z; iz++) {
+        const double z = iz * delta.z;  // map z to 0->1
 
         // For each z-slice, determine the spiral circle.
         const double xc = 0.5 + 0.1 * sin(0.04 * time + 10.0 * z);
@@ -193,10 +193,10 @@ inline void gen_tornado(int xs, int ys, int zs, int time, double* tornado) {
         // r is the center radius, r2 is for damping
         const double r2 = 0.2 + 0.1 * z;
 
-        for (int iy = 0; iy < ys; iy++) {
-            const double y = iy * ydelta;
-            for (int ix = 0; ix < xs; ix++) {
-                const double x = ix * xdelta;
+        for (size_t iy = 0; iy < size.y; iy++) {
+            const double y = iy * delta.y;
+            for (size_t ix = 0; ix < size.x; ix++) {
+                const double x = ix * delta.x;
                 double rdist = sqrt((y - yc) * (y - yc) + (x - xc) * (x - xc));
                 double scale = fabs(r - rdist);
                 /*
@@ -214,12 +214,30 @@ inline void gen_tornado(int xs, int ys, int zs, int time, double* tornado) {
                 scale = (r + r2 - rdist) * scale / (rdist + SMALL);
                 scale = scale / (1 + z);
 
-                *tornado++ = scale * (y - yc) + 0.1 * (x - xc);
-                *tornado++ = scale * -(x - xc) + 0.1 * (y - yc);
-                *tornado++ = scale * z0;
+                *it++ = vec3{scale * (y - yc) + 0.1 * (x - xc), scale * -(x - xc) + 0.1 * (y - yc),
+                             scale * z0};
             }
         }
     }
+}
+
+inline std::unique_ptr<Volume> makeTornadoVolume(const size3_t& dimensions, const size_t& index) {
+
+    auto ram = std::make_shared<VolumeRAMPrecision<vec3>>(dimensions);
+    auto data = ram->getView();
+
+    gen_tornado(dimensions, static_cast<double>(index), data);
+
+    auto minmax = util::volumeMinMax(ram.get(), IgnoreSpecialValues::Yes);
+
+    auto volume = std::make_unique<Volume>(ram);
+    const auto basis = mat3(1.0);
+    volume->setBasis(basis);
+    volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
+    volume->dataMap.dataRange.x = glm::compMin(minmax.first);
+    volume->dataMap.dataRange.y = glm::compMax(minmax.second);
+    volume->dataMap.valueRange = volume->dataMap.dataRange;
+    return volume;
 }
 
 }  // namespace util

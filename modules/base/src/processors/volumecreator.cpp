@@ -80,12 +80,14 @@ VolumeCreator::VolumeCreator()
                           the distance from the center
              * __Ripple__ A quickly oscillating density between 0 and 1
              * __Marching Cube__ A 2x2x2 volume corresponding to a marching cube case
-             * __Uniform Value__ A constant 'value' in the entire volume)"_unindentHelp,
+             * __Uniform Value__ A constant 'value' in the entire volume
+             * __Tornado__ A tornado vector field)"_unindentHelp,
             {{"singleVoxel", "Single Voxel", Type::SingleVoxel},
              {"sphere", "Sphere", Type::Sphere},
              {"ripple", "Ripple", Type::Ripple},
              {"marchingCube", "Marching Cube", Type::MarchingCube},
-             {"uniform", "Uniform Value", Type::Uniform}}}
+             {"uniform", "Uniform Value", Type::Uniform},
+             {"tornado", "Tornado", Type::Tornado}}}
     , format_{"format", "Format",
               OptionPropertyState<DataFormatId>{
                   .options =
@@ -140,6 +142,9 @@ void VolumeCreator::process() {
                         case Uniform:
                             return std::shared_ptr<Volume>(
                                 util::makeUniformVolume<T>(dimensions_.get(), value_.get()));
+                        case Tornado:
+                            return std::shared_ptr<Volume>(
+                                util::makeTornadoVolume(dimensions_.get(), index_.get()));
                         default:
                             return std::shared_ptr<Volume>{};
                     }
