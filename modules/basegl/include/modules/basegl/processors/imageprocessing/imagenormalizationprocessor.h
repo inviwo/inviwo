@@ -52,7 +52,7 @@ protected:
 
 private:
     BoolProperty normalizeSeparately_;
-    BoolProperty zeroCentered_;
+    BoolProperty signNormalized_;
     DoubleVec4Property dataMin_;
     DoubleVec4Property dataMax_;
 };
