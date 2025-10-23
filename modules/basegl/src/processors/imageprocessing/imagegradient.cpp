@@ -59,40 +59,19 @@ const ProcessorInfo& ImageGradient::getProcessorInfo() const { return processorI
 
 ImageGradient::ImageGradient()
     : ImageGLProcessor("img_gradient.frag")
-    , channel_("channel", "Channel", "Selects the channel used for the gradient computation"_help) {
+    , channel_{"channel", "Channel", "Selected channel used for gradient calculations"_help,
+               util::enumeratedOptions("Channel", 4)} {
 
     dataFormat_ = DataVec2Float32::get();
-    swizzleMask_ = {
-        {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One}};
-
-    channel_.addOption("Channel 1", "Channel 1", 0);
-    channel_.setCurrentStateAsDefault();
-
-    inport_.onChange([&]() {
-        if (inport_.hasData()) {
-            int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
-            if (channels == static_cast<int>(channel_.size())) return;
-            channel_.clearOptions();
-            for (int i = 0; i < channels; i++) {
-                std::stringstream ss;
-                ss << "Channel " << i;
-                channel_.addOption(ss.str(), ss.str(), i);
-            }
-            channel_.setCurrentStateAsDefault();
-        }
-    });
+    swizzleMask_ = swizzlemasks::defaultData(2);
 
     addProperty(channel_);
 }
 
 void ImageGradient::preProcess(TextureUnitContainer&) {
     const auto layer = inport_.getData()->getColorLayer();
-    const auto gradientSpacing{layer->getWorldSpaceGradientSpacing()};
-    shader_.setUniform("worldSpaceGradientSpacing", gradientSpacing);
-    shader_.setUniform("textureSpaceGradientSpacing",
-                       mat2{glm::scale(layer->getCoordinateTransformer().getWorldToTextureMatrix(),
-                                       vec3{gradientSpacing, 1.0f})});
-
+    shader_.setUniform("inverseMetricTensor",
+                       layer->getCoordinateTransformer().getInverseMetricTensor());
     shader_.setUniform("channel", channel_.getSelectedValue());
 
     const double gradientEstimate = glm::compMax(glm::abs(layer->dataMap.dataRange)) /

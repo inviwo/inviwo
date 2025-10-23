@@ -212,12 +212,25 @@ vec3 gradientPrecomputedYZW(sampler3D volume, VolumeParameters volumeParams, vec
     return (volumeParams.textureToWorldNormalMatrix * vec4(gradient, 0.0)).xyz;
 }
 
-// compute the partial differential for a given component using central differences
-float partialDiff(sampler2D tex, ImageParameters texParams, in vec2 texcoord, 
-                  in vec2 gradientTextureSpacing, in float gradientWorldSpacing, in int component) {
-    float fds = getNormalizedTexel(tex, texParams, texcoord + gradientTextureSpacing)[component]
-        - getNormalizedTexel(tex, texParams, texcoord - gradientTextureSpacing)[component];
-    return fds / gradientWorldSpacing * 0.5;
+// compute world space gradient using central differences
+vec2 gradientCentralDiff(sampler2D tex, ImageParameters texParams, in vec2 texcoord, 
+                         in mat3 inverseMetricTensor, in int component) {
+    vec2 offset = texParams.reciprocalDimensions;
+    vec2 d;
+    d.x = getNormalizedTexel(tex, texParams, texcoord + vec2(offset.x, 0.0))[component]
+          - getNormalizedTexel(tex, texParams, texcoord - vec2(offset.x, 0.0))[component];
+    d.y = getNormalizedTexel(tex, texParams, texcoord + vec2(0.0, offset.y))[component]
+          - getNormalizedTexel(tex, texParams, texcoord - vec2(0.0, offset.y))[component];
+    d /= 2.0 * offset;
+
+    // The gradient ∇f in world space is then computed based on the partial derivatives in u and v
+    // direction
+    //     ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2,
+    // where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.
+    //
+    // In the 2D case, we assume that the third basis vector is orthogonal to the first two. Thus, 
+    // the g_31, g_32, g_13, and g_23 are zero and the out-of-plane partial derivative is zero as well.
+      return mat2(inverseMetricTensor) * d;
 }
 
 #endif // IVW_GRADIENTS_GLSL

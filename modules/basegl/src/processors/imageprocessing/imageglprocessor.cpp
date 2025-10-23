@@ -145,6 +145,7 @@ void ImageGLProcessor::process() {
     shader_.activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters");
+    utilgl::setShaderUniforms(shader_, inport_, "inportParameters");
 
     // bind input image
     TextureUnitContainer cont;

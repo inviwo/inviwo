@@ -35,18 +35,31 @@ uniform sampler2D inport;
 uniform ImageParameters inportParameters;
 uniform ImageParameters outportParameters;
 
-uniform vec2 worldSpaceGradientSpacing = vec2(1.0);
-uniform mat2 textureSpaceGradientSpacing = mat2(1.0);
+uniform mat3 inverseMetricTensor = mat3(1.0);
 uniform int channel = 0;
-uniform bool renormalization = true;
+
+vec2 gradientCentralDiffTest(sampler2D tex, ImageParameters texParams, in vec2 texcoord, 
+                  in mat3 inverseMetricTensor, in int component) {
+    vec2 offset = texParams.reciprocalDimensions * 0.5;
+    vec2 d;
+    d.x = getNormalizedTexel(tex, texParams, texcoord + vec2(offset.x, 0.0))[component]
+          - getNormalizedTexel(tex, texParams, texcoord - vec2(offset.x, 0.0))[component];
+    d.y = getNormalizedTexel(tex, texParams, texcoord + vec2(0.0, offset.y))[component]
+          - getNormalizedTexel(tex, texParams, texcoord - vec2(0.0, offset.y))[component];
+    d /= 2.0 * offset;
+
+    // The gradient ∇f in world space is then computed based on the partial derivatives in u and v
+    // direction
+    //     ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2,
+    // where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.
+    //
+    // In the 2D case, we assume that the third basis vector is orthogonal to the first two. Thus, 
+    // the g_31, g_32, g_13, and g_23 are zero and the out-of-plane partial derivative is zero as well.
+      return mat2(inverseMetricTensor) * d;
+}
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-
-    float fdx = partialDiff(inport, inportParameters, texCoords.xy, 
-                            textureSpaceGradientSpacing[0], worldSpaceGradientSpacing[0], channel);
-    float fdy = partialDiff(inport, inportParameters, texCoords.xy, 
-                            textureSpaceGradientSpacing[1], worldSpaceGradientSpacing[1], channel);
-
-    FragData0 = vec4(fdx, fdy, 0, 0);
+    vec2 gradient = gradientCentralDiffTest(inport, inportParameters, texCoords.xy, inverseMetricTensor, channel);
+    FragData0 = vec4(gradient, 0, 1);
 }
