@@ -149,15 +149,17 @@ public:
      *
      *
      * The actual gradient spacing vectors are given by
-     * mat2{ gradientSpacing.x,        0,
-     *             0,            gradientSpacing.y }
+     * mat3{ gradientSpacing.x,        0,                0,
+     *             0,            gradientSpacing.y,      0,
+     *             0,                  0,           gradientSpacing.y
+     * }
      * However, we do not return the zeroes.
      *
      * To get the spacing in texture space use:
-     * mat3{glm::scale(worldToTextureMatrix, vec3{getWorldSpaceGradientSpacing(), 1.0f})};
+     * mat3{glm::scale(worldToTextureMatrix, getWorldSpaceGradientSpacing())};
      * @return Step size for gradient computation in world space.
      */
-    vec2 getWorldSpaceGradientSpacing() const;
+    vec3 getWorldSpaceGradientSpacing() const;
 
     /**
      * returns the axis information corresponding to \p index
