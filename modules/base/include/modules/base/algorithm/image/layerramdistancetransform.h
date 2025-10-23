@@ -78,28 +78,28 @@ namespace util {
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
-                               LayerRAMPrecision<U>* outDistanceField, const Matrix<3, U> basis,
-                               const size2_t upsample, Predicate predicate,
-                               ValueTransform valueTransform, ProgressCallback callback);
+                               LayerRAMPrecision<U>* outDistanceField, Matrix<3, U> basis,
+                               size2_t upsample, Predicate predicate, ValueTransform valueTransform,
+                               ProgressCallback callback);
 
 template <typename T, typename U>
 void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inVolume,
-                               LayerRAMPrecision<U>* outDistanceField, const Matrix<3, U> basis,
-                               const size2_t upsample);
+                               LayerRAMPrecision<U>* outDistanceField, Matrix<3, U> basis,
+                               size2_t upsample);
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                            const size2_t upsample, Predicate predicate,
-                            ValueTransform valueTransform, ProgressCallback callback);
+                            size2_t upsample, Predicate predicate, ValueTransform valueTransform,
+                            ProgressCallback callback);
 
 template <typename U, typename ProgressCallback>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                            const size2_t upsample, double threshold, bool normalize, bool flip,
+                            size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale, ProgressCallback callback);
 
 template <typename U>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                            const size2_t upsample, double threshold, bool normalize, bool flip,
+                            size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale);
 
 }  // namespace util
@@ -274,8 +274,9 @@ void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* ou
 
 template <typename U, typename ProgressCallback>
 void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                                  const size2_t upsample, double threshold, bool normalize,
-                                  bool flip, bool square, double scale, ProgressCallback progress) {
+                                  const size2_t upsample, const double threshold,
+                                  const bool normalize, const bool flip, const bool square,
+                                  const double scale, ProgressCallback progress) {
 
     const auto inputLayerRep = inLayer->getRepresentation<LayerRAM>();
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
@@ -328,8 +329,9 @@ void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* ou
 
 template <typename U>
 void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                                  const size2_t upsample, double threshold, bool normalize,
-                                  bool flip, bool square, double scale) {
+                                  const size2_t upsample, const double threshold,
+                                  const bool normalize, const bool flip, const bool square,
+                                  const double scale) {
     util::layerDistanceTransform(inLayer, outDistanceField, upsample, threshold, normalize, flip,
                                  square, scale, [](double) {});
 }

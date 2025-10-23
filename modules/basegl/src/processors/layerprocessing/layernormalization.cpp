@@ -93,7 +93,7 @@ void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, L
 
     float minDataType = 0.0f;
     float maxDataType = 1.0f;
-    auto dataformat = input.getDataFormat();
+    const auto* dataformat = input.getDataFormat();
     if (dataformat->getNumericType() != NumericType::Float) {
         minDataType = static_cast<float>(dataformat->getMin());
         maxDataType = static_cast<float>(dataformat->getMax());

@@ -263,26 +263,22 @@ void closeLineLoop(Intersection& intersection1, Intersection& intersection2,
     intersection2.type = PointType::Mid;
 }
 
-LineUpdate mergeLines(CurrentCell& intersects, size_t edge1, size_t edge2,
-                      std::vector<std::uint32_t>& line1, std::vector<std::uint32_t>& line2) {
-    if (!intersects[edge1].has_value() || !intersects[edge2].has_value()) {
-        throw Exception{SourceContext{}, "Invalid intersects when merging lines"};
-    }
-    const bool reverse = intersects[edge1]->type == intersects[edge2]->type;
+LineUpdate mergeLines(Intersection& intersection1, Intersection& intersection2, size_t edge1,
+                      size_t edge2, std::vector<std::uint32_t>& line1,
+                      std::vector<std::uint32_t>& line2) {
+    const bool reverse = intersection1.type == intersection2.type;
 
-    if (intersects[edge1]->type == PointType::Start &&
-        intersects[edge2]->type == PointType::Start) {
+    if (intersection1.type == PointType::Start && intersection2.type == PointType::Start) {
         // prepend reversed line of edge2
         auto view = line2 | std::views::reverse;
         line1.insert(line1.begin(), std::ranges::begin(view), std::ranges::end(view));
-    } else if (intersects[edge1]->type == PointType::End &&
-               intersects[edge2]->type == PointType::End) {
+    } else if (intersection1.type == PointType::End && intersection2.type == PointType::End) {
         // append reversed line of edge 2
         auto view = line2 | std::views::reverse;
         line1.insert(line1.end(), std::ranges::begin(view), std::ranges::end(view));
     } else {
         // different start and end, append start to end
-        if (intersects[edge1]->type == PointType::Start) {
+        if (intersection1.type == PointType::Start) {
             std::swap(edge1, edge2);
             line2.insert(line2.end(), std::begin(line1), std::end(line1));
         } else {
@@ -290,12 +286,12 @@ LineUpdate mergeLines(CurrentCell& intersects, size_t edge1, size_t edge2,
         }
     }
 
-    const size_t newLineIndex = intersects[edge1]->line;
-    const size_t outdatedLine = intersects[edge2]->line;
+    const size_t newLineIndex = intersection1.line;
+    const size_t outdatedLine = intersection2.line;
 
-    intersects[edge2]->line = newLineIndex;
-    intersects[edge1]->type = PointType::Mid;
-    intersects[edge2]->type = PointType::Mid;
+    intersection2.line = newLineIndex;
+    intersection1.type = PointType::Mid;
+    intersection2.type = PointType::Mid;
 
     return LineUpdate{.oldIndex = outdatedLine, .newIndex = newLineIndex, .reverse = reverse};
 }
@@ -317,34 +313,36 @@ std::pair<std::optional<Intersection>, std::optional<Intersection>> createIsoLin
         left,
     };
 
-    for (auto [edge1, edge2] : marchingSquareCases[theCase]) {
-        if (intersects[edge1].has_value() && intersects[edge2].has_value()) {
+    for (const auto [edge1, edge2] : marchingSquareCases[theCase]) {
+        auto& intersection1 = intersects[edge1];
+        auto& intersection2 = intersects[edge2];
+        if (intersection1.has_value() && intersection2.has_value()) {
             // connect lines, merge if line index is different
-            if (intersects[edge1]->line == intersects[edge2]->line) {
-                const size_t lineIndex = intersects[edge1]->line;
-                closeLineLoop(*intersects[edge1], *intersects[edge2], cache.lines[lineIndex]);
+            if (intersection1->line == intersection2->line) {
+                const size_t lineIndex = intersection1->line;
+                closeLineLoop(*intersection1, *intersection2, cache.lines[lineIndex]);
             } else {
                 auto update =
-                    mergeLines(intersects, edge1, edge2, cache.lines[intersects[edge1]->line],
-                               cache.lines[intersects[edge2]->line]);
+                    mergeLines(*intersection1, *intersection2, edge1, edge2,
+                               cache.lines[intersection1->line], cache.lines[intersection2->line]);
                 cache.lines[update.oldIndex].clear();
                 cache.unusedLines.push(update.oldIndex);
                 updateCacheFunc(update, row);
             }
-        } else if (intersects[edge1].has_value()) {
+        } else if (intersection1.has_value()) {
             // continue line
-            const size_t lineIndex = intersects[edge1]->line;
-            intersects[edge2] = continueLine(*intersects[edge1], calcPositionFunc(edge2),
-                                             cache.positions, lineIndex, cache.lines[lineIndex]);
-        } else if (intersects[edge2].has_value()) {
+            const size_t lineIndex = intersection1->line;
+            intersection2 = continueLine(*intersection1, calcPositionFunc(edge2), cache.positions,
+                                         lineIndex, cache.lines[lineIndex]);
+        } else if (intersection2.has_value()) {
             // continue line
-            const size_t lineIndex = intersects[edge2]->line;
-            intersects[edge1] = continueLine(*intersects[edge2], calcPositionFunc(edge1),
-                                             cache.positions, lineIndex, cache.lines[lineIndex]);
+            const size_t lineIndex = intersection2->line;
+            intersection1 = continueLine(*intersection2, calcPositionFunc(edge1), cache.positions,
+                                         lineIndex, cache.lines[lineIndex]);
         } else {
             // create new line segment
             const size_t lineIndex = cache.getNewLineIndex();
-            std::tie(intersects[edge1], intersects[edge2]) =
+            std::tie(intersection1, intersection2) =
                 createLineSegment(calcPositionFunc(edge1), calcPositionFunc(edge2), cache.positions,
                                   lineIndex, cache.lines[lineIndex]);
         }
