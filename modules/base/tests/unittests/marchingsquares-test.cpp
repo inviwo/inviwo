@@ -69,8 +69,8 @@ std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
 }
 
 std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
-    if (auto buffer = mesh.getIndices(ind)) {
-        if (auto ram = buffer->getEditableRAMRepresentation()) {
+    if (auto* buffer = mesh.getIndices(ind)) {
+        if (auto* ram = buffer->getEditableRAMRepresentation()) {
             return ram->getDataContainer();
         }
     }

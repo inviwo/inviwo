@@ -265,6 +265,9 @@ void closeLineLoop(Intersection& intersection1, Intersection& intersection2,
 
 LineUpdate mergeLines(CurrentCell& intersects, size_t edge1, size_t edge2,
                       std::vector<std::uint32_t>& line1, std::vector<std::uint32_t>& line2) {
+    if (!intersects[edge1].has_value() || !intersects[edge2].has_value()) {
+        throw Exception{SourceContext{}, "Invalid intersects when merging lines"};
+    }
     const bool reverse = intersects[edge1]->type == intersects[edge2]->type;
 
     if (intersects[edge1]->type == PointType::Start &&
@@ -315,7 +318,7 @@ std::pair<std::optional<Intersection>, std::optional<Intersection>> createIsoLin
     };
 
     for (auto [edge1, edge2] : marchingSquareCases[theCase]) {
-        if (intersects[edge1] && intersects[edge2]) {
+        if (intersects[edge1].has_value() && intersects[edge2].has_value()) {
             // connect lines, merge if line index is different
             if (intersects[edge1]->line == intersects[edge2]->line) {
                 const size_t lineIndex = intersects[edge1]->line;
@@ -328,12 +331,12 @@ std::pair<std::optional<Intersection>, std::optional<Intersection>> createIsoLin
                 cache.unusedLines.push(update.oldIndex);
                 updateCacheFunc(update, row);
             }
-        } else if (intersects[edge1]) {
+        } else if (intersects[edge1].has_value()) {
             // continue line
             const size_t lineIndex = intersects[edge1]->line;
             intersects[edge2] = continueLine(*intersects[edge1], calcPositionFunc(edge2),
                                              cache.positions, lineIndex, cache.lines[lineIndex]);
-        } else if (intersects[edge2]) {
+        } else if (intersects[edge2].has_value()) {
             // continue line
             const size_t lineIndex = intersects[edge2]->line;
             intersects[edge1] = continueLine(*intersects[edge2], calcPositionFunc(edge1),
