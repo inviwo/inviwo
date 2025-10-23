@@ -45,12 +45,14 @@
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
 #include <inviwo/core/util/rendercontext.h>
 
-#include <stdlib.h>       // for abs
-#include <algorithm>      // for max, min
+#include <stdlib.h>   // for abs
+#include <algorithm>  // for max, min
+#include <ranges>
 #include <cmath>          // for abs
 #include <limits>         // for numeric_limits
 #include <type_traits>    // for conditional_t
 #include <unordered_set>  // for unordered_set
+#include <atomic>
 
 #include <glm/common.hpp>  // for mix
 #include <glm/mat4x4.hpp>  // for operator*, mat
@@ -126,8 +128,8 @@ std::unique_ptr<Volume> curlVolume(const Volume& volume) {
 }
 
 template <typename C, typename Init, typename BinaryOp>
-auto voxelReduceParallel(const size3_t dims, Init init, BinaryOp op, C callback, size_t jobs = 0)
-    -> Init {
+auto voxelReduceParallel(const size3_t dims, Init init, BinaryOp op, C callback,
+                         std::function<void(double)> progress, size_t jobs = 0) -> Init {
 
     const size_t poolSize = util::getPoolSize();
     if (jobs == 0) {
@@ -140,26 +142,41 @@ auto voxelReduceParallel(const size3_t dims, Init init, BinaryOp op, C callback,
     // }
 
     std::vector<std::future<Init>> futures;
+    futures.reserve(jobs);
+
+    std::vector<std::atomic<size_t>> progresses(jobs);
+
+    auto updateProgress = [&, last = std::atomic<double>{0}](size_t job, size_t ind) mutable {
+        progresses[job] = ind;
+        const auto total = std::ranges::fold_left(progresses, 0.0, std::plus<>{});
+        const auto current = static_cast<double>(total) / progresses.size() / dims.z;
+        if (current > last + 0.01) {
+            progress(current);
+            last = current;
+        }
+    };
 
     for (size_t job = 0; job < jobs; ++job) {
         size3_t start = size3_t(0, 0, job * dims.z / jobs);
         size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
 
-        futures.push_back(util::dispatchPool([&callback, init, op, start, stop]() {
-            size3_t pos{0};
+        futures.push_back(
+            util::dispatchPool([&callback, &updateProgress, job, init, op, start, stop]() {
+                size3_t pos{0};
 
-            rendercontext::activateLocal();
+                rendercontext::activateLocal();
 
-            Init val = init;
-            for (pos.z = start.z; pos.z < stop.z; ++pos.z) {
-                for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
-                    for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
-                        val = std::invoke(op, val, callback(pos));
+                Init val = init;
+                for (pos.z = start.z; pos.z < stop.z; ++pos.z) {
+                    updateProgress(job, pos.z);
+                    for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
+                        for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
+                            val = std::invoke(op, val, callback(pos));
+                        }
                     }
                 }
-            }
-            return val;
-        }));
+                return val;
+            }));
     }
 
     Init val = init;
@@ -169,15 +186,20 @@ auto voxelReduceParallel(const size3_t dims, Init init, BinaryOp op, C callback,
     return val;
 }
 
-std::unique_ptr<Volume> curlVolume2(const Volume& volume) {
+std::unique_ptr<Volume> curlVolume2(const Volume& volume, std::function<void(double)> progress) {
+    progress(0.0);
+
+    auto volumeRam = volume.getRepresentation<VolumeRAM>();
+    const auto dims = volumeRam->getDimensions();
+
     auto newVolume = std::make_unique<Volume>(volume, noData);
-    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume.getDimensions());
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(dims);
     newVolume->addRepresentation(newVolumeRep);
 
     const auto m = dmat4{newVolume->getCoordinateTransformer().getDataToWorldMatrix()};
 
     const auto a = m * dvec4(0, 0, 0, 1);
-    const auto b = m * dvec4(1.0 / dvec3(volume.getDimensions() - size3_t(1)), 1);
+    const auto b = m * dvec4(1.0 / dvec3(dims - size3_t(1)), 1);
     const auto spacing = b - a;
 
     const dvec3 ox(spacing.x, 0, 0);
@@ -187,25 +209,21 @@ std::unique_ptr<Volume> curlVolume2(const Volume& volume) {
     auto dst = newVolumeRep->getView();
     const auto im = util::IndexMapper3D(volume.getDimensions());
 
-    auto r = volume.getRepresentation<VolumeRAM>();
-    if (auto* p = dynamic_cast<const VolumeRAMPrecision<glm::vec3>*>(r)) {
-        const auto data = p->getView();
-        for (size_t i = 0; i < volume.getDimensions().z; ++i) {
-            log::info("{} -> {}", i, data[im(size3_t(50, 50, i))]);
-        }
-    }
+    const auto& cm = volume.getCoordinateTransformer();
+    const auto pos2Data = cm.getMatrix(CoordinateSpace::World, CoordinateSpace::Data);
+    const auto data2Index = cm.getDataToIndexMatrix();
+    const auto dm = volume.dataMap;
 
     const auto max = util::voxelReduceParallel(
         newVolumeRep->getDimensions(), std::numeric_limits<double>::lowest(), std::ranges::max,
         [&](const size3_t& pos) {
-            const dvec3 world{m *
-                              dvec4(dvec3(pos) / dvec3(volume.getDimensions() - size3_t(1)), 1)};
+            const dvec3 world{m * dvec4(dvec3(pos) / dvec3(dims - size3_t(1)), 1)};
 
             const auto samplePos = std::array<dvec3, 6>{world + ox, world - ox, world + oy,
                                                         world - oy, world + oz, world - oz};
 
             auto samples = std::array<dvec3, 6>{};
-            sample::sample(volume, samplePos, samples, CoordinateSpace::World,
+            sample::sample(*volumeRam, samplePos, samples, pos2Data, data2Index, dm,
                            DataMapper::Space::Value);
 
             const dvec3 Fx = (samples[0] - samples[1]) / (2.0 * spacing.x);
@@ -215,7 +233,8 @@ std::unique_ptr<Volume> curlVolume2(const Volume& volume) {
             dst[im(pos)] = static_cast<vec3>(curl);
 
             return glm::compMax(glm::abs(curl));
-        });
+        },
+        progress);
 
     newVolume->dataMap.dataRange = dvec2(-max, max);
     newVolume->dataMap.valueRange = dvec2(-max, max);

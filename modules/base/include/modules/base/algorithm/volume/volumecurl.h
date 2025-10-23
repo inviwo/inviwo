@@ -32,6 +32,7 @@
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
 #include <memory>  // for unique_ptr, shared_ptr
+#include <functional>
 
 namespace inviwo {
 class Volume;
@@ -42,7 +43,7 @@ IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Vol
 
 IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume2(const Volume& volume);
+IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume2(const Volume& volume, std::function<void(double)>);
 
 }  // namespace util
 

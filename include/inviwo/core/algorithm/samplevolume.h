@@ -41,6 +41,14 @@
 namespace inviwo::sample {
 
 using ptrdiff3_t = glm::vec<3, std::ptrdiff_t>;
+
+struct SampleState {
+    size3_t dims;
+    util::IndexMapper3D im;
+    dmat4 posToTexture;
+    dmat4 textureToIndex;
+};
+
 namespace detail {
 
 template <typename Index, typename Functor, Index... Is>
@@ -95,47 +103,33 @@ size3_t wrap(const size3_t& p, const size3_t& dims) {
     return {wrap<X>(p.x, dims.x), wrap<Y>(p.y, dims.y), wrap<Z>(p.z, dims.z)};
 }
 
-template <typename T>
-struct SampleState {
-    std::span<const T> data;
-    size_t dims;
-    util::IndexMapper3D im;
-    dmat4 posToTexture;
-    dmat4 textureToIndex;
-};
-
 template <typename T, size_t N, InterpolationType I, Wrapping X, Wrapping Y, Wrapping Z>
-void sample(const VolumeRAMPrecision<T>& volume, std::span<const dvec3> positions,
-            std::span<Vector<N, double>> output, const dmat4& posToTexture,
-            const dmat4& textureToIndex) {
+void sample(std::span<const T> data, const SampleState& state, std::span<const dvec3> positions,
+            std::span<Vector<N, double>> output) {
 
     using R = util::same_extent_t<T, double>;
 
-    const auto dims = volume.getDimensions();
-    const auto im = util::IndexMapper3D{dims};
-    const auto data = volume.getView();
-
     const auto get = [&](const size3_t& index) {
-        const auto i = im(index);
+        const auto i = state.im(index);
         IVW_ASSERT(i < data.size(), "out of bounds access");
         return static_cast<R>(data[i]);
     };
 
     if constexpr (I == InterpolationType::Linear) {
         std::ranges::transform(positions, output.begin(), [&](dvec3 position) {
-            const auto texPos = wrap<X, Y, Z>(dvec3(posToTexture * dvec4{position, 1.0}));
-            const auto index = dvec3(textureToIndex * dvec4{texPos, 1.0});
+            const auto texPos = wrap<X, Y, Z>(dvec3(state.posToTexture * dvec4{position, 1.0}));
+            const auto index = dvec3(state.textureToIndex * dvec4{texPos, 1.0});
 
             const auto fIndex = static_cast<ptrdiff3_t>(glm::floor(index));
             const std::array<const R, 8> samples{
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 0, 0}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 0, 0}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 1, 0}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 1, 0}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 0, 1}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 0, 1}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 1, 1}, dims)),
-                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 1, 1}, dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 0, 0}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 0, 0}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 1, 0}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 1, 0}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 0, 1}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 0, 1}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{0, 1, 1}, state.dims)),
+                get(wrap<X, Y, Z>(fIndex + ptrdiff3_t{1, 1, 1}, state.dims)),
             };
 
             const auto value = interpolate::trilinear<R>(samples, index - glm::floor(index));
@@ -143,8 +137,8 @@ void sample(const VolumeRAMPrecision<T>& volume, std::span<const dvec3> position
         });
     } else {
         std::ranges::transform(positions, output.begin(), [&](dvec3 position) {
-            position = wrap<X, Y, Z>(dvec3(posToTexture * dvec4{position, 1.0}));
-            const auto index = dvec3(textureToIndex * dvec4{position, 1.0});
+            position = wrap<X, Y, Z>(dvec3(state.posToTexture * dvec4{position, 1.0}));
+            const auto index = dvec3(state.textureToIndex * dvec4{position, 1.0});
             const auto value = get(static_cast<size3_t>(glm::round(index)));
             return util::glm_convert<Vector<N, double>>(value);
         });
@@ -158,26 +152,25 @@ void sample(const VolumeRAMPrecision<T>& volume, std::span<const dvec3> position
             std::span<Vector<N, double>> output, const dmat4& posToTexture,
             const dmat4& textureToIndex, const DataMapper& dataMap, DataMapper::Space space) {
 
-    using Functor = void (*)(const VolumeRAMPrecision<T>&, std::span<const dvec3>,
-                             std::span<Vector<N, double>>, const dmat4&, const dmat4&);
+    using Functor = void (*)(std::span<const T>, const SampleState&, std::span<const dvec3>,
+                             std::span<Vector<N, double>>);
 
     constexpr auto table = detail::build_array<2>([&](auto i) constexpr {
         return detail::build_array<3>([&](auto x) constexpr {
             return detail::build_array<3>([&](auto y) constexpr {
                 return detail::build_array<3>([&](auto z) constexpr -> Functor {
-                    return
-                        [](const VolumeRAMPrecision<T>& vol, std::span<const dvec3> pos,
-                           std::span<Vector<N, double>> dst, const dmat4& p2t, const dmat4& t2i) {
-                            using IT = decltype(i);
-                            using XT = decltype(x);
-                            using YT = decltype(y);
-                            using ZT = decltype(z);
-                            constexpr auto I = static_cast<InterpolationType>(IT::value);
-                            constexpr auto X = static_cast<Wrapping>(XT::value);
-                            constexpr auto Y = static_cast<Wrapping>(YT::value);
-                            constexpr auto Z = static_cast<Wrapping>(ZT::value);
-                            detail::sample<T, N, I, X, Y, Z>(vol, pos, dst, p2t, t2i);
-                        };
+                    return [](std::span<const T> data, const SampleState& state,
+                              std::span<const dvec3> pos, std::span<Vector<N, double>> dst) {
+                        using IT = decltype(i);
+                        using XT = decltype(x);
+                        using YT = decltype(y);
+                        using ZT = decltype(z);
+                        constexpr auto I = static_cast<InterpolationType>(IT::value);
+                        constexpr auto X = static_cast<Wrapping>(XT::value);
+                        constexpr auto Y = static_cast<Wrapping>(YT::value);
+                        constexpr auto Z = static_cast<Wrapping>(ZT::value);
+                        detail::sample<T, N, I, X, Y, Z>(data, state, pos, dst);
+                    };
                 });
             });
         });
@@ -186,9 +179,13 @@ void sample(const VolumeRAMPrecision<T>& volume, std::span<const dvec3> position
     const auto wrapping = volume.getWrapping();
     const auto interpolation = volume.getInterpolation();
 
-    table[std::to_underlying(interpolation)][std::to_underlying(wrapping[0])]
-         [std::to_underlying(wrapping[1])][std::to_underlying(wrapping[2])](
-             volume, positions, output, posToTexture, textureToIndex);
+    SampleState state{.dims = volume.getDimensions(),
+                      .im = util::IndexMapper3D{volume.getDimensions()},
+                      .posToTexture = posToTexture,
+                      .textureToIndex = textureToIndex};
+
+    table[std::to_underlying(interpolation)][std::to_underlying(wrapping[0])][std::to_underlying(
+        wrapping[1])][std::to_underlying(wrapping[2])](volume.getView(), state, positions, output);
 
     if (space == DataMapper::Space::Normalized) {
         std::ranges::transform(output, output.begin(), [&](auto value) {

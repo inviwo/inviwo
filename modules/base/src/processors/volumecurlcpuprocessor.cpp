@@ -62,9 +62,9 @@ VolumeCurlCPUProcessor::VolumeCurlCPUProcessor()
 }
 
 void VolumeCurlCPUProcessor::process() {
-    const auto calc = [data = inport_.getData(), method = tmp_.get()]() {
+    const auto calc = [data = inport_.getData(), method = tmp_.get()](pool::Progress progress) {
         if (method) {
-            return util::curlVolume2(*data);
+            return util::curlVolume2(*data, progress);
         } else {
             return util::curlVolume(data);
         }
