@@ -54,7 +54,7 @@ LayerConfig Vector2DDivergence::outputConfig(const Layer& input) const {
     const double max = glm::compMax(glm::abs(input.dataMap.dataRange));
     const double gradientEstimate = max / glm::compMax(input.getWorldSpaceGradientSpacing());
     return input.config().updateFrom({.format = DataFloat32::get(),
-                                      .swizzleMask = swizzlemasks::defaultData(0),
+                                      .swizzleMask = swizzlemasks::defaultData(1),
                                       .dataRange = dvec2{0.0, 3.0 * gradientEstimate},
                                       .valueRange = dvec2{0.0, 3.0 * gradientEstimate}});
 }

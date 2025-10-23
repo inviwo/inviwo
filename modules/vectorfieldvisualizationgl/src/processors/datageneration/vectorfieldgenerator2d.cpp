@@ -96,7 +96,7 @@ void VectorFieldGenerator2D::process() {
     bool reattach = false;
     const LayerConfig newConfig{.dimensions = size_.get(),
                                 .format = DataVec2Float32::get(),
-                                .swizzleMask = swizzlemasks::defaultData(0)};
+                                .swizzleMask = swizzlemasks::defaultData(2)};
     if (!layer_ || config != newConfig) {
         config = newConfig;
         layer_ = std::make_shared<Layer>(config);
