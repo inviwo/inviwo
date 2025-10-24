@@ -105,10 +105,10 @@ LayerInformationProperty::LayerInformationProperty(std::string_view identifier,
                  "Y Wrapping",
                  {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror},
                  0}}}
-    , dataRange("dataRange", "Data Range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0,
-                0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , dataRange("dataRange", "Data Range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
+                0.001, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , valueRange("valueRange", "Value Range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
-                 0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+                 0.001, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , valueName{"valueName", "Value name", ""}
     , valueUnit{"valueUnit", "Value unit", ""}
     , axesNames{"axesNames", "Axes Names"}
