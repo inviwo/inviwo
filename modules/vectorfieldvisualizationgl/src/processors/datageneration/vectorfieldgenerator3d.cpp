@@ -78,64 +78,38 @@ const ProcessorInfo VectorFieldGenerator3D::processorInfo_{
 const ProcessorInfo& VectorFieldGenerator3D::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldGenerator3D::VectorFieldGenerator3D()
-    : Processor()
-    , outport_("outport")
+    : VolumeGLProcessor("vectorfieldgenerator3d.frag",
+                        {.dimensions = size3_t{16},
+                         .format = DataVec3Float32::get(),
+                         .dataRange = dvec2(0, 1),
+                         .valueRange = dvec2(-1, 1)},
+                        VolumeGLProcessor::UseInport::No)
     , size_("size", "Volume size", size3_t(16), size3_t(1), size3_t(1024))
     , xRange_("xRange", "X Range", -1, 1, -10, 10)
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , zRange_("zRange", "Z Range", -1, 1, -10, 10)
     , xValue_("x", "X", "-y", InvalidationLevel::InvalidResources)
     , yValue_("y", "Y", "x", InvalidationLevel::InvalidResources)
-    , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources)
-    , shader_("volume_gpu.vert", "volume_gpu.geom", "vectorfieldgenerator3d.frag",
-              Shader::Build::No)
-    , fbo_() {
-    addPort(outport_);
+    , zValue_("z", "Z", "(1-sqrt(x*x+y*y))*0.4", InvalidationLevel::InvalidResources) {
 
-    addProperty(size_);
-    addProperty(xValue_);
-    addProperty(yValue_);
-    addProperty(zValue_);
+    addProperties(size_, xValue_, yValue_, zValue_, xRange_, yRange_, zRange_);
 
-    addProperty(xRange_);
-    addProperty(yRange_);
-    addProperty(zRange_);
-
-    shader_.onReload([this]() { invalidate(InvalidationLevel::Valid); });
+    outport_.setIdentifier("outport");
 }
 
 VectorFieldGenerator3D::~VectorFieldGenerator3D() {}
 
-void VectorFieldGenerator3D::initializeResources() {
-    shader_.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y,z)", xValue_.get());
-    shader_.getFragmentShaderObject()->addShaderDefine("Y_VALUE(x,y,z)", yValue_.get());
-    shader_.getFragmentShaderObject()->addShaderDefine("Z_VALUE(x,y,z)", zValue_.get());
-
-    shader_.build();
+void VectorFieldGenerator3D::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y,z)", xValue_.get());
+    shader.getFragmentShaderObject()->addShaderDefine("Y_VALUE(x,y,z)", yValue_.get());
+    shader.getFragmentShaderObject()->addShaderDefine("Z_VALUE(x,y,z)", zValue_.get());
 }
-
-void VectorFieldGenerator3D::process() {
-
-    auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    volume->dataMap.dataRange = vec2(0, 1);
-    volume->dataMap.valueRange = vec2(-1, 1);
-
-    shader_.activate();
-    TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
-    utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
-    const size3_t dim{size_.get()};
-    fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
-
-    VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
-
-    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
-
-    shader_.deactivate();
-    fbo_.deactivate();
-
+void VectorFieldGenerator3D::preProcess(TextureUnitContainer&, Shader& shader,
+                                        VolumeConfig& config) {
+    utilgl::setUniforms(shader, xRange_, yRange_, zRange_);
+    config.dimensions = size_.get();
+}
+void VectorFieldGenerator3D::postProcess(Volume& volume) {
     vec3 corners[4];
     corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
     corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
@@ -147,9 +121,8 @@ void VectorFieldGenerator3D::process() {
     basis[1] = corners[2] - corners[0];
     basis[2] = corners[3] - corners[0];
 
-    volume->setBasis(basis);
-    volume->setOffset(corners[0]);
-    outport_.setData(volume);
+    volume.setBasis(basis);
+    volume.setOffset(corners[0]);
 }
 
 }  // namespace inviwo
