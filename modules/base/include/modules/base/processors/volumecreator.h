@@ -56,7 +56,7 @@ public:
     VolumeCreator();
     virtual ~VolumeCreator() = default;
 
-    enum class Type { SingleVoxel, Sphere, Ripple, MarchingCube, Uniform };
+    enum class Type : std::uint8_t { SingleVoxel, Sphere, Ripple, MarchingCube, Uniform };
 
     virtual void process() override;
 

@@ -38,9 +38,13 @@ uniform vec4 maxValue = vec4(1);
 uniform float minDataType = 0.0;
 uniform float maxDataType = 1.0;
 
+uniform float resultOffset = 0.0;
+uniform float resultScaling = 1.0;
+
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 value = texture(inport, texCoords) * (maxDataType - minDataType) + minDataType;
+    vec4 normalizedValue = (value - minValue) / (maxValue - minValue);
 
-    FragData0 = (value - minValue) / (maxValue - minValue);
+    FragData0 = normalizedValue * resultScaling + resultOffset;
 }

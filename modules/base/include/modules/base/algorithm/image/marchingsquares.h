@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,32 +29,32 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <memory>  // for shared_ptr
 
 namespace inviwo {
-class TextureUnitContainer;
 
-class IVW_MODULE_BASEGL_API ImageNormalizationProcessor : public ImageGLProcessor {
-public:
-    ImageNormalizationProcessor();
+class LayerRAM;
+class IsoValueCollection;
+class Mesh;
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+namespace util {
 
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
+/**
+ * Extracts a isocontours from a Layer using the Marching Squares algorithm
+ *
+ * Note: Shares interface with computeLayerContour
+ *
+ * @param layer      the source layer
+ * @param isovalues  iso-values of the extracted contours
+ * @param channel    selected channel of \p layer
+ * @return Mesh containing the isocontours or an empty Mesh if there are none
+ */
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> marchingSquares(const LayerRAM* layer,
+                                                          const IsoValueCollection& isovalues,
+                                                          size_t channel);
 
-private:
-    BoolProperty normalizeSeparately_;
-    BoolProperty signNormalized_;
-    DoubleVec4Property dataMin_;
-    DoubleVec4Property dataMax_;
-};
+}  // namespace util
 
 }  // namespace inviwo

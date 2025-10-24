@@ -31,11 +31,11 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/ports/imageport.h>             // for ImageInport
-#include <inviwo/core/ports/meshport.h>              // for MeshOutport
-#include <inviwo/core/processors/processor.h>        // for Processor
-#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
-#include <inviwo/core/properties/ordinalproperty.h>  // for DoubleProperty, FloatVec4Property
+#include <inviwo/core/processors/processor.h>  // for Processor
+#include <inviwo/core/ports/imageport.h>       // for ImageInport
+#include <inviwo/core/ports/meshport.h>        // for MeshOutport
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
 
 namespace inviwo {
 
@@ -52,9 +52,8 @@ public:
 private:
     ImageInport image_;
     MeshOutport outport_;
-    IntSizeTProperty channel_;
-    DoubleProperty isoValue_;
-    FloatVec4Property color_;
+    OptionPropertyInt channel_;
+    IsoValueProperty isoValues_;
 };
 
 }  // namespace inviwo

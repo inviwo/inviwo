@@ -30,11 +30,12 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -51,8 +52,7 @@ private:
     LayerInport inport_;
     MeshOutport outport_;
     OptionPropertyInt channel_;
-    DoubleProperty isoValue_;
-    FloatVec4Property color_;
+    IsoValueProperty isoValues_;
 };
 
 }  // namespace inviwo

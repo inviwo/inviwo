@@ -56,12 +56,7 @@ LayerGradient::LayerGradient()
 }
 
 void LayerGradient::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
-    const auto gradientSpacing{input.getWorldSpaceGradientSpacing()};
-    shader_.setUniform("worldSpaceGradientSpacing", gradientSpacing);
-    shader_.setUniform("textureSpaceGradientSpacing",
-                       mat2{glm::scale(input.getCoordinateTransformer().getWorldToTextureMatrix(),
-                                       vec3{gradientSpacing, 1.0f})});
-
+    shader_.setUniform("inverseMetricTensor", input.getCoordinateTransformer().getInverseMetricTensor());
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 

@@ -78,28 +78,28 @@ namespace util {
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
-                               LayerRAMPrecision<U>* outDistanceField, const Matrix<2, U> basis,
-                               const size2_t upsample, Predicate predicate,
-                               ValueTransform valueTransform, ProgressCallback callback);
+                               LayerRAMPrecision<U>* outDistanceField, Matrix<3, U> basis,
+                               size2_t upsample, Predicate predicate, ValueTransform valueTransform,
+                               ProgressCallback callback);
 
 template <typename T, typename U>
 void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inVolume,
-                               LayerRAMPrecision<U>* outDistanceField, const Matrix<2, U> basis,
-                               const size2_t upsample);
+                               LayerRAMPrecision<U>* outDistanceField, Matrix<3, U> basis,
+                               size2_t upsample);
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                            const size2_t upsample, Predicate predicate,
-                            ValueTransform valueTransform, ProgressCallback callback);
+                            size2_t upsample, Predicate predicate, ValueTransform valueTransform,
+                            ProgressCallback callback);
 
 template <typename U, typename ProgressCallback>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                            const size2_t upsample, double threshold, bool normalize, bool flip,
+                            size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale, ProgressCallback callback);
 
 template <typename U>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                            const size2_t upsample, double threshold, bool normalize, bool flip,
+                            size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale);
 
 }  // namespace util
@@ -108,7 +108,7 @@ template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
                                      LayerRAMPrecision<U>* outDistanceField,
-                                     const Matrix<2, U> basis, const size2_t upsample,
+                                     const Matrix<3, U> basis, const size2_t upsample,
                                      Predicate predicate, ValueTransform valueTransform,
                                      ProgressCallback callback) {
 
@@ -130,9 +130,10 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
     const i64vec2 sm{upsample};
 
     const auto squareBasis = glm::transpose(basis) * basis;
-    const Vector<2, U> squareBasisDiag{squareBasis[0][0], squareBasis[1][1]};
-    const Vector<2, U> squareVoxelSize{squareBasisDiag / Vector<2, U>{dstDim * dstDim}};
-    const Vector<2, U> invSquareVoxelSize{Vector<2, U>{1.0f} / squareVoxelSize};
+    const Vector<3, U> squareBasisDiag{squareBasis[0][0], squareBasis[1][1], squareBasis[2][2]};
+    const Vector<3, U> squareVoxelSize{squareBasisDiag /
+                                       Vector<3, U>{i64vec3{dstDim, 1} * i64vec3{dstDim, 1}}};
+    const Vector<3, U> invSquareVoxelSize{Vector<3, U>{1.0f} / squareVoxelSize};
 
     {
         const auto maxdist = glm::compMax(squareBasisDiag);
@@ -248,7 +249,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
 template <typename T, typename U>
 void util::layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
                                      LayerRAMPrecision<U>* outDistanceField,
-                                     const Matrix<2, U> basis, const size2_t upsample) {
+                                     const Matrix<3, U> basis, const size2_t upsample) {
 
     util::layerRAMDistanceTransform(
         inLayer, outDistanceField, basis, upsample,
@@ -273,8 +274,9 @@ void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* ou
 
 template <typename U, typename ProgressCallback>
 void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                                  const size2_t upsample, double threshold, bool normalize,
-                                  bool flip, bool square, double scale, ProgressCallback progress) {
+                                  const size2_t upsample, const double threshold,
+                                  const bool normalize, const bool flip, const bool square,
+                                  const double scale, ProgressCallback progress) {
 
     const auto inputLayerRep = inLayer->getRepresentation<LayerRAM>();
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
@@ -327,8 +329,9 @@ void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* ou
 
 template <typename U>
 void util::layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
-                                  const size2_t upsample, double threshold, bool normalize,
-                                  bool flip, bool square, double scale) {
+                                  const size2_t upsample, const double threshold,
+                                  const bool normalize, const bool flip, const bool square,
+                                  const double scale) {
     util::layerDistanceTransform(inLayer, outDistanceField, upsample, threshold, normalize, flip,
                                  square, scale, [](double) {});
 }

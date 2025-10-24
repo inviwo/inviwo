@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/basegl/algorithm/dataminmaxgl.h>
 #include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
 namespace inviwo {
@@ -50,9 +51,11 @@ private:
     virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
     BoolProperty normalizeIndividually_;
-    BoolProperty zeroCentered_;
+    BoolProperty signNormalized_;
     DoubleVec4Property dataMin_;
     DoubleVec4Property dataMax_;
+
+    utilgl::DataMinMaxGL dataMinMaxGL_;
 };
 
 }  // namespace inviwo

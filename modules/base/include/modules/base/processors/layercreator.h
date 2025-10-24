@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,19 +29,42 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/util/glmvec.h>  // for vec4
-
-#include <cstddef>  // for size_t
-#include <memory>   // for shared_ptr
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/layerport.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
 
 namespace inviwo {
-class LayerRepresentation;
-class Mesh;
+class Deserializer;
+class Volume;
 
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> computeLayerContour(const LayerRepresentation* in,
-                                                              size_t channel, double isoValue,
-                                                              vec4 color = vec4(1.0));
+class IVW_MODULE_BASE_API LayerCreator : public Processor {
+public:
+    LayerCreator();
+
+    enum class Type : std::uint8_t { SingleVoxel, Radial, Ripple, Uniform };
+
+    virtual void process() override;
+
+    virtual void deserialize(Deserializer& d) override;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    LayerOutport outport_;
+    OptionProperty<Type> type_;
+    OptionProperty<DataFormatId> format_;
+    IntSize2Property dimensions_;
+    DoubleVec4Property value_;
+
+    LayerInformationProperty information_;
+    BasisProperty basis_;
+    std::shared_ptr<Layer> loadedData_;
+    bool deserialized_ = false;
+};
 
 }  // namespace inviwo

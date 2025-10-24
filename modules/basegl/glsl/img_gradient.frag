@@ -35,18 +35,15 @@ uniform sampler2D inport;
 uniform ImageParameters inportParameters;
 uniform ImageParameters outportParameters;
 
-uniform vec2 worldSpaceGradientSpacing = vec2(1.0);
-uniform mat2 textureSpaceGradientSpacing = mat2(1.0);
+uniform mat3 inverseMetricTensor = mat3(1.0);
 uniform int channel = 0;
-uniform bool renormalization = true;
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
 
-    float fdx = partialDiff(inport, inportParameters, texCoords.xy, 
-                            textureSpaceGradientSpacing[0], worldSpaceGradientSpacing[0], channel);
-    float fdy = partialDiff(inport, inportParameters, texCoords.xy, 
-                            textureSpaceGradientSpacing[1], worldSpaceGradientSpacing[1], channel);
-
-    FragData0 = vec4(fdx, fdy, 0, 0);
+    // In the 2D case, we assume that the third basis vector is orthogonal to the first two. Thus, 
+    // the g_31, g_32, g_13, and g_23 of the inverse metric tensor are zero and the out-of-plane partial 
+    // derivative is zero as well.
+    vec2 gradient = gradientCentralDiff(inport, inportParameters, texCoords.xy, mat2(inverseMetricTensor), channel);
+    FragData0 = vec4(gradient, 0, 1);
 }

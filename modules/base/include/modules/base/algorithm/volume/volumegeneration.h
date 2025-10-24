@@ -66,7 +66,7 @@ namespace util {
  */
 template <typename Functor>
 std::unique_ptr<Volume> generateVolume(const size3_t& dimensions, const mat3& basis,
-                                       Functor&& function) {
+                                       const Functor& function) {
     using T = decltype(function(dimensions));
 
     auto ram = std::make_shared<VolumeRAMPrecision<T>>(dimensions);

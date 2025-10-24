@@ -197,6 +197,16 @@ glm::mat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
     }
 }
 
+glm::mat3 StructuredCoordinateTransformer::getInverseMetricTensor() const {
+    const auto m = glm::mat3(getTextureToWorldMatrix());
+    const glm::mat3 metricTensor{
+        glm::dot(m[0], m[0]), glm::dot(m[1], m[0]), glm::dot(m[2], m[0]),
+        glm::dot(m[0], m[1]), glm::dot(m[1], m[1]), glm::dot(m[2], m[1]),
+        glm::dot(m[0], m[2]), glm::dot(m[1], m[2]), glm::dot(m[2], m[2]),
+    };
+    return glm::inverse(metricTensor);
+}
+
 glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
                                                         CoordinateSpace to) const {
     switch (from) {

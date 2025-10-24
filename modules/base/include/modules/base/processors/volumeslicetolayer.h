@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,32 +29,31 @@
 
 #pragma once
 
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/layerport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 
 namespace inviwo {
-class TextureUnitContainer;
 
-class IVW_MODULE_BASEGL_API ImageNormalizationProcessor : public ImageGLProcessor {
+class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
 public:
-    ImageNormalizationProcessor();
+    VolumeSliceToLayer();
+
+    virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-
 private:
-    BoolProperty normalizeSeparately_;
-    BoolProperty signNormalized_;
-    DoubleVec4Property dataMin_;
-    DoubleVec4Property dataMax_;
+    VolumeInport inport_;
+    LayerOutport outport_;
+
+    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
+    IntSizeTProperty sliceNumber_;
 };
 
 }  // namespace inviwo

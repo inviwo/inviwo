@@ -75,27 +75,31 @@ const ProcessorInfo ImageNormalizationProcessor::processorInfo_{
     R"(
 Normalizes the RGB channels of the input image given a specific range.
 )"_unindentHelp};
-const ProcessorInfo& ImageNormalizationProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageNormalizationProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageNormalizationProcessor::ImageNormalizationProcessor()
     : ImageGLProcessor("img_normalize.frag")
     , normalizeSeparately_("normalizeSeparately", "Normalize Channels Separately",
                            "If true, each channel will be normalized on its own. "
                            "Otherwise the global min/max values are used for all channels."_help)
-    , zeroCentered_("zeroCentered", "Centered at Zero",
-                    "Toggles normalization centered at zero to range [-max, max]"_help, false)
+    , signNormalized_("signNormalized", "Sign Normalized",
+                      "Toggles normalization centered at zero to range [-max, max]"_help, false)
     , dataMin_{"dataMin", "Min Value",
                util::ordinalSymmetricVector(dvec4{0}, dvec4{100.0})
+                   .setInc(dvec4{0.0001})
                    .set(PropertySemantics::Text)
                    .set(InvalidationLevel::Valid)
                    .set("Minimum value of the input layer (read-only)"_help)}
     , dataMax_{"dataMax", "Max Value",
                util::ordinalSymmetricVector(dvec4{0}, dvec4{100.0})
+                   .setInc(dvec4{0.0001})
                    .set(PropertySemantics::Text)
                    .set(InvalidationLevel::Valid)
                    .set("Maximum value of the input layer (read-only)"_help)} {
 
-    addProperties(normalizeSeparately_, zeroCentered_, dataMin_, dataMax_);
+    addProperties(normalizeSeparately_, signNormalized_, dataMin_, dataMax_);
     dataMin_.setReadOnly(true);
     dataMax_.setReadOnly(true);
 }
@@ -113,7 +117,7 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
     dvec4 maxValue{dvec3{dataMax_.get()}, 1.0};
     dvec2 valueRange{0.0, 1.0};
 
-    if (zeroCentered_) {
+    if (signNormalized_) {
         maxValue = glm::max(glm::abs(minValue), glm::abs(maxValue));
         minValue = -maxValue;
         valueRange = dvec2{-1.0, 1.0};
@@ -137,7 +141,11 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
     shader_.setUniform("maxDataType", maxDataType);
 
     auto layer = outport_.getEditableData()->getColorLayer();
-    layer->dataMap.dataRange = DataMapper::defaultDataRangeFor(layer->getDataFormat());
+    dvec2 dataRange = DataMapper::defaultDataRangeFor(layer->getDataFormat());
+    if (layer->getDataFormat()->getNumericType() == NumericType::Float && signNormalized_) {
+        dataRange = dvec2{-1.0, 1.0};
+    }
+    layer->dataMap.dataRange = dataRange;
     layer->dataMap.valueRange = valueRange;
 }
 

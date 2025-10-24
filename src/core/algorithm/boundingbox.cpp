@@ -62,7 +62,11 @@ std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::op
 }
 
 mat4 boundingBox(const Layer& layer) {
-    return layer.getCoordinateTransformer().getDataToWorldMatrix();
+    mat4 m = layer.getCoordinateTransformer().getDataToModelMatrix();
+    const vec3 z = glm::cross(vec3{m[0]}, vec3{m[1]});
+    m[2] = vec4{z * 0.0001f, 0.0f};
+
+    return layer.getCoordinateTransformer().getModelToWorldMatrix() * m;
 }
 
 mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {

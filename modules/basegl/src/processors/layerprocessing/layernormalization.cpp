@@ -30,7 +30,6 @@
 #include <modules/basegl/processors/layerprocessing/layernormalization.h>
 
 #include <inviwo/core/util/formats.h>
-#include <modules/base/algorithm/dataminmax.h>
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
@@ -51,39 +50,41 @@ LayerNormalization::LayerNormalization()
     , normalizeIndividually_{"normalizeIndividually", "Normalize Channels Individually",
                              "If true, each channel will be normalized on its own. "
                              "Otherwise the global min/max values are used for all channels."_help}
-    , zeroCentered_{"zeroCentered", "Centered at Zero",
-                    "Toggles normalization centered at zero to range [-max, max]"_help, false}
+    , signNormalized_{"signNormalized", "Sign Normalized",
+                      "Toggles normalization centered at zero to range [-max, max]"_help, false}
     , dataMin_{"dataMin", "Min Value",
                util::ordinalSymmetricVector(dvec4{0}, dvec4{100.0})
+                   .setInc(dvec4{0.0001})
                    .set(PropertySemantics::Text)
                    .set(InvalidationLevel::Valid)
                    .set("Minimum value of the input layer (read-only)"_help)}
     , dataMax_{"dataMax", "Max Value",
                util::ordinalSymmetricVector(dvec4{0}, dvec4{100.0})
+                   .setInc(dvec4{0.0001})
                    .set(PropertySemantics::Text)
                    .set(InvalidationLevel::Valid)
                    .set("Maximum value of the input layer (read-only)"_help)} {
 
-    addProperties(normalizeIndividually_, zeroCentered_, dataMin_, dataMax_);
+    addProperties(normalizeIndividually_, signNormalized_, dataMin_, dataMax_);
     dataMin_.setReadOnly(true);
     dataMax_.setReadOnly(true);
 }
 
-void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, Layer& output) {
+void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
     if (inport_.isChanged()) {
-        auto minMax = util::layerMinMax(&input, IgnoreSpecialValues::Yes);
-        dataMin_.set(minMax.first);
-        dataMax_.set(minMax.second);
+        const auto [min, max] = dataMinMaxGL_.minMax(input);
+        dataMin_.set(min);
+        dataMax_.set(max);
+        // reactivate shader since DataMinMaxGL uses its own shaders
+        shader_.activate();
     }
 
     dvec4 minValue{dataMin_.get()};
     dvec4 maxValue{dataMax_.get()};
-    dvec2 valueRange{0.0, 1.0};
 
-    if (zeroCentered_) {
+    if (signNormalized_) {
         maxValue = glm::max(glm::abs(minValue), glm::abs(maxValue));
         minValue = -maxValue;
-        valueRange = dvec2{-1.0, 1.0};
     }
     if (!normalizeIndividually_) {
         maxValue = dvec4{glm::compMax(maxValue)};
@@ -92,24 +93,38 @@ void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, L
 
     float minDataType = 0.0f;
     float maxDataType = 1.0f;
-    if (auto dataformat = input.getDataFormat();
-        dataformat->getNumericType() != NumericType::Float) {
+    const auto* dataformat = input.getDataFormat();
+    if (dataformat->getNumericType() != NumericType::Float) {
         minDataType = static_cast<float>(dataformat->getMin());
         maxDataType = static_cast<float>(dataformat->getMax());
+    }
+    float resultOffset = 0.0f;
+    float resultScaling = 1.0f;
+    if (signNormalized_ && (dataformat->getNumericType() == NumericType::SignedInteger ||
+                            dataformat->getNumericType() == NumericType::Float)) {
+        resultOffset = -1.0f;
+        resultScaling = 2.0f;
     }
 
     shader_.setUniform("minValue", vec4{minValue});
     shader_.setUniform("maxValue", vec4{maxValue});
     shader_.setUniform("minDataType", minDataType);
     shader_.setUniform("maxDataType", maxDataType);
-
-    output.dataMap.valueRange = valueRange;
+    shader_.setUniform("resultOffset", resultOffset);
+    shader_.setUniform("resultScaling", resultScaling);
 }
 
 LayerConfig LayerNormalization::outputConfig(const Layer& input) const {
-    return input.config().updateFrom(
-        {.dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
-         .valueRange = dvec2(0.0, 1.0)});
+    dvec2 dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat());
+    dvec2 valueRange = signNormalized_ ? dvec2{-1.0, 1.0} : dvec2{0.0, 1.0};
+    if (input.getDataFormat()->getNumericType() == NumericType::Float && signNormalized_) {
+        dataRange = dvec2{-1.0, 1.0};
+    }
+
+    return input.config().updateFrom({
+        .dataRange = dataRange,
+        .valueRange = valueRange,
+    });
 }
 
 }  // namespace inviwo

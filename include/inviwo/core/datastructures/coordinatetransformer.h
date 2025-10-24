@@ -256,6 +256,18 @@ public:
      * to voxel index coordinates, i.e. from (-inf, inf) to [0, number of voxels)
      */
     virtual glm::mat4 getWorldToIndexMatrix() const = 0;
+    /**
+     * \brief Computes the inverse metric tensor to be used for gradient computation. Also works for
+     * layers with non-orthogonal basis.
+     *
+     * The gradient ∇f in world space is then computed based on the partial derivatives in u and v
+     * direction
+     *     ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2,
+     * where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.
+     *
+     * @return inverse metric tensor
+     */
+    glm::mat3 getInverseMetricTensor() const;
     
 protected:
     StructuredCoordinateTransformer(const StructuredCoordinateTransformer&) = default;

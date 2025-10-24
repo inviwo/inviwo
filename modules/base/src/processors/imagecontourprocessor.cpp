@@ -44,7 +44,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>                     // for IntSizeTProperty
 #include <inviwo/core/util/formats.h>                                   // for DataFormatBase
 #include <inviwo/core/util/glmvec.h>                                    // for vec4
-#include <modules/base/algorithm/image/layercontour.h>
+#include <modules/base/algorithm/image/marchingsquares.h>
 
 #include <memory>         // for shared_ptr, uniqu...
 #include <string>         // for string
@@ -59,9 +59,9 @@ const ProcessorInfo ImageContourProcessor::processorInfo_{
     "org.inviwo.ImageContourProcessor",  // Class identifier
     "Image Contour",                     // Display name
     "Image Processing",                  // Category
-    CodeState::Experimental,             // Code state
+    CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
-    R"(Extracts a contour line for a specific value in the image using marching squares.
+    R"(Extracts contour lines for each of the given isovalues in the input Image using marching squares.
     The output contour is provided as a line mesh.)"_unindentHelp};
 
 const ProcessorInfo& ImageContourProcessor::getProcessorInfo() const { return processorInfo_; }
@@ -70,24 +70,22 @@ ImageContourProcessor::ImageContourProcessor()
     : Processor()
     , image_("image", "Input image"_help, OutportDeterminesSize::Yes)
     , outport_("mesh", "Contour mesh"_help)
-    , channel_("channel", "Channel", "The image channel used to extract the contour"_help, 0,
-               {0, ConstraintBehavior::Immutable}, {4, ConstraintBehavior::Editable})
-    , isoValue_("iso", "Isovalue", "The isovalue of the contour "_help, 0.5,
-                {0, ConstraintBehavior::Ignore}, {1, ConstraintBehavior::Ignore})
-    , color_("color", "Color", util::ordinalColor(vec4(1.0)).set("The contour color"_help)) {
+    , channel_{"channel", "Channel", "Selected channel used to extract the contour"_help,
+               util::enumeratedOptions("Channel", 4)}
+    , isoValues_{"isovalues",
+                 "Isovalues",
+                 "Isovalues and corresponding colors for the contours"_help,
+                 {{{.pos = 0.5, .color = vec4{1.0f}}}}} {
 
     addPorts(image_, outport_);
-    addProperties(channel_, isoValue_, color_);
+    addProperties(channel_, isoValues_);
 }
 
 void ImageContourProcessor::process() {
-    if (image_.isChanged()) {
-        auto max = image_.getData()->getDataFormat()->getComponents() - 1;
-        channel_.setMaxValue(max);
-    }
-    outport_.setData(
-        computeLayerContour(image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(),
-                            channel_, isoValue_, color_));
+    auto mesh =
+        util::marchingSquares(image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(),
+                              isoValues_.get(), channel_);
+    outport_.setData(mesh);
 }
 
 }  // namespace inviwo

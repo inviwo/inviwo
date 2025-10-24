@@ -228,7 +228,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 10; }
+int BaseGLModule::getVersion() const { return 11; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -608,6 +608,13 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                 "org.inviwo.ImageMapping", "org.inviwo.ImageColorMapping");
             conv.convert(root);
 
+            [[fallthrough]];
+        }
+        case 10: {
+            res |= xml::renamePropertyIdentifier(root, "org.inviwo.LayerNormalization",
+                                                 "zeroCentered", "signNormalized");
+            res |= xml::renamePropertyIdentifier(root, "org.inviwo.ImageNormalization",
+                                                 "zeroCentered", "signNormalized");
             return res;
         }
 

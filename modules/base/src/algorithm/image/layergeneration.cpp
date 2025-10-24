@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/base/algorithm/image/layergeneration.h>
 
-#include <modules/basegl/baseglmoduledefine.h>
-
-#include <inviwo/core/processors/processorinfo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/util/glmvec.h>
-#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-
-namespace inviwo {
-class TextureUnitContainer;
-
-class IVW_MODULE_BASEGL_API ImageNormalizationProcessor : public ImageGLProcessor {
-public:
-    ImageNormalizationProcessor();
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
-
-private:
-    BoolProperty normalizeSeparately_;
-    BoolProperty signNormalized_;
-    DoubleVec4Property dataMin_;
-    DoubleVec4Property dataMax_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

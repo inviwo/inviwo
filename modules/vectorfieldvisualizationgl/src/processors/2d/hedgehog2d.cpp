@@ -162,6 +162,9 @@ void HedgeHog2D::process() {
         }
     }
 
+    mesh->setModelMatrix(inport_.getData()->getModelMatrix());
+    mesh->setWorldMatrix(inport_.getData()->getWorldMatrix());
+
     mesh_.setData(mesh);
 }
 

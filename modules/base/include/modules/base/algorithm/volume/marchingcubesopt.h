@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -50,7 +50,7 @@ namespace util {
 /**
  * Extracts an iso surface from a volume using the Marching Cubes algorithm
  *
- * Note: Shares interface with util::marchingcbes and util::marchingtetrahedron
+ * Note: Shares interface with util::marchingcubes and util::marchingtetrahedron
  * This is an optimized version of util::marchingcubes
  *
  * @param volume the scalar volume

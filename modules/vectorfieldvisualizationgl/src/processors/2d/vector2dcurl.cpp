@@ -51,18 +51,15 @@ const ProcessorInfo& Vector2DCurl::getProcessorInfo() const { return processorIn
 Vector2DCurl::Vector2DCurl() : LayerGLProcessor{utilgl::findShaderResource("vector2dcurl.frag")} {}
 
 void Vector2DCurl::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
-    const auto gradientSpacing{input.getWorldSpaceGradientSpacing()};
-    shader_.setUniform("worldSpaceGradientSpacing", gradientSpacing);
-    shader_.setUniform("textureSpaceGradientSpacing",
-                       mat2{glm::scale(input.getCoordinateTransformer().getWorldToTextureMatrix(),
-                                       vec3{gradientSpacing, 1.0f})});
+    shader_.setUniform("inverseMetricTensor",
+                       input.getCoordinateTransformer().getInverseMetricTensor());
 }
 
 LayerConfig Vector2DCurl::outputConfig(const Layer& input) const {
     const double gradientEstimate = glm::compMax(glm::abs(input.dataMap.dataRange)) /
                                     glm::compMax(input.getWorldSpaceGradientSpacing());
     return input.config().updateFrom({.format = DataFloat32::get(),
-                                      .swizzleMask = swizzlemasks::defaultData(0),
+                                      .swizzleMask = swizzlemasks::defaultData(1),
                                       .dataRange = dvec2{-gradientEstimate, gradientEstimate},
                                       .valueRange = dvec2{-gradientEstimate, gradientEstimate}});
 }

@@ -31,18 +31,18 @@
 
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/util/exception.h>
-#include <modules/base/algorithm/image/layercontour.h>
+#include <modules/base/algorithm/image/marchingsquares.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LayerContour::processorInfo_{
-    "org.inviwo.LayerContour",  // Class identifier
-    "Layer Contour",            // Display name
-    "Layer Processing",         // Category
-    CodeState::Experimental,    // Code state
-    Tags::CPU | Tag{"Layer"},   // Tags
-    R"(Extracts a contour line for a specific value in the input Layer using marching squares.
+    "org.inviwo.LayerContour",                           // Class identifier
+    "Layer Contour",                                     // Display name
+    "Layer Processing",                                  // Category
+    CodeState::Stable,                                   // Code state
+    Tags::CPU | Tag{"Layer"} | Tag{"Marching Squares"},  // Tags
+    R"(Extracts contour lines for each of the given isovalues in the input Layer using marching squares.
     The output contour is provided as a line mesh.)"_unindentHelp,
 };
 
@@ -51,27 +51,22 @@ const ProcessorInfo& LayerContour::getProcessorInfo() const { return processorIn
 LayerContour::LayerContour()
     : Processor{}
     , inport_{"inport", "Input layer"_help}
-    , outport_("mesh", "Contour mesh"_help)
-    , channel_("channel", "Channel", "Selected channel used to extract the contour"_help,
-               util::enumeratedOptions("Channel", 4))
-    , isoValue_("iso", "Isovalue", "The isovalue of the contour"_help, 0.5,
-                {0, ConstraintBehavior::Ignore}, {1, ConstraintBehavior::Ignore})
-    , color_("color", "Color", util::ordinalColor(vec4(1.0)).set("The color of the contour"_help)) {
+    , outport_{"mesh", "Contour mesh"_help}
+    , channel_{"channel", "Channel", "Selected channel used to extract the contour"_help,
+               util::enumeratedOptions("Channel", 4)}
+    , isoValues_{"isovalues",
+                 "Isovalues",
+                 "Isovalues and corresponding colors for the contours"_help,
+                 {{{.pos = 0.5, .color = vec4{1.0f}}}},
+                 TFData{&inport_}} {
 
     addPorts(inport_, outport_);
-    addProperties(channel_, isoValue_, color_);
+    addProperties(channel_, isoValues_);
 }
 
 void LayerContour::process() {
-    if (auto components = inport_.getData()->getDataFormat()->getComponents();
-        static_cast<int>(components) < channel_.get()) {
-        throw Exception(SourceContext{},
-                        "Invalid channel {} selected, input Layer has {} channels.",
-                        channel_.get() + 1, components);
-    }
-
-    auto mesh = computeLayerContour(inport_.getData()->getRepresentation<LayerRAM>(), channel_,
-                                    isoValue_, color_);
+    auto mesh = util::marchingSquares(inport_.getData()->getRepresentation<LayerRAM>(),
+                                      isoValues_.get(), channel_);
     outport_.setData(mesh);
 }
 
