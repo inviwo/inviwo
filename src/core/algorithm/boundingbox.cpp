@@ -37,20 +37,19 @@
 
 namespace inviwo::util {
 
-namespace detail {
-
+namespace {
 vec3 orthvec(const vec3& vec) {
-    vec3 u(1.0f, 0.0f, 0.0f);
-    vec3 n = glm::normalize(vec);
-    float p = glm::dot(u, n);
+    const vec3 u(1.0f, 0.0f, 0.0f);
+    const vec3 n = glm::normalize(vec);
+    const float p = glm::dot(u, n);
     if (std::abs(p) != 1.0f) {
         return glm::normalize(u - p * n);
     } else {
-        return vec3(0.0f, 1.0f, 0.0f);
+        return {0.0f, 1.0f, 0.0f};
     }
 }
 
-}  // namespace detail
+}  // namespace
 
 mat4 minExtentBoundingBox(mat4 boundingBox) {
     const float maxAspectRatio = 1000.0f;
@@ -75,10 +74,10 @@ mat4 minExtentBoundingBox(mat4 boundingBox) {
 
     if (util::almostEqual(extent[0], 0.0f)) {
         if (util::almostEqual(extent[1], 0.0f)) {
-            boundingBox[1] = vec4{detail::orthvec(vec3{boundingBox[2]}) * minExtent, 0.0f};
+            boundingBox[1] = vec4{orthvec(vec3{boundingBox[2]}) * minExtent, 0.0f};
             extent[1] = minExtent;
         } else if (util::almostEqual(extent[2], 0.0f)) {
-            boundingBox[2] = vec4{detail::orthvec(vec3{boundingBox[1]}) * minExtent, 0.0f};
+            boundingBox[2] = vec4{orthvec(vec3{boundingBox[1]}) * minExtent, 0.0f};
             extent[2] = minExtent;
         }
         const vec3 v =
@@ -87,7 +86,7 @@ mat4 minExtentBoundingBox(mat4 boundingBox) {
         boundingBox[0] = vec4{v, 0.0f};
     } else if (util::almostEqual(extent[1], 0.0f)) {
         if (util::almostEqual(extent[2], 0.0f)) {
-            boundingBox[2] = vec4{detail::orthvec(vec3{boundingBox[0]}) * minExtent, 0.0f};
+            boundingBox[2] = vec4{orthvec(vec3{boundingBox[0]}) * minExtent, 0.0f};
             extent[2] = minExtent;
         }
         const vec3 v =
