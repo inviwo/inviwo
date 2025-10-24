@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/algorithm/camerautils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/datastructures/camera/perspectivecamera.h>
@@ -122,21 +123,22 @@ std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam, const 
 void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir, vec3 inLookUp,
                    float fitRatio, UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
     NetworkLock lock(&cam);
+    const mat4 fixedBBox = util::minExtentBoundingBox(boundingBox);
     if (updateNearFar == UpdateNearFar::Yes) {
-        setCameraNearFar(cam, boundingBox);
+        setCameraNearFar(cam, fixedBBox);
     }
     if (updateLookRanges == UpdateLookRanges::Yes) {
-        setCameraLookRanges(cam, boundingBox);
+        setCameraLookRanges(cam, fixedBBox);
     }
     if (auto perspectiveCamera = dynamic_cast<PerspectiveCamera*>(&cam.get())) {
 
-        auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(*perspectiveCamera, boundingBox,
-                                                                   inViewDir, inLookUp, fitRatio);
+        auto [lookFrom, lookTo, lookUp] =
+            fitPerspectiveCameraView(*perspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
         cam.setLook(lookFrom, lookTo, lookUp);
     } else if (auto skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
 
         auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(
-            *skewedPerspectiveCamera, boundingBox, inViewDir, inLookUp, fitRatio);
+            *skewedPerspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
         cam.setLook(lookFrom, lookTo, lookUp);
     } else {
         log::warn("setCameraView does not support {}", cam.get().getClassIdentifier());
@@ -151,9 +153,10 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, float fitRatio,
 
 void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
-    const auto viewDir = mat3(boundingBox) * detail::getViewDir(side);
-    const auto lookUp = mat3(boundingBox) * detail::getLookUp(side);
-    setCameraView(cam, boundingBox, viewDir, lookUp, fitRatio, updateNearFar, updateLookRanges);
+    const mat4 fixedBBox = util::minExtentBoundingBox(boundingBox);
+    const auto viewDir = mat3(fixedBBox) * detail::getViewDir(side);
+    const auto lookUp = mat3(fixedBBox) * detail::getLookUp(side);
+    setCameraView(cam, fixedBBox, viewDir, lookUp, fitRatio, updateNearFar, updateLookRanges);
 }
 
 void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox, float zoomRange) {

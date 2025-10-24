@@ -53,10 +53,18 @@ class Volume;
 
 namespace util {
 
+/**
+ * Extend the given @p boundingBox so that none of its extents are zero.
+ *
+ * @param boundingBox  the bounding box to be fixed
+ * @return adjusted bounding box with guaranteed minimal extent
+ */
+IVW_CORE_API mat4 minExtentBoundingBox(mat4 boundingBox);
+
 IVW_CORE_API std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a,
                                                   const std::optional<mat4>& b);
 /**
- * Calculate a bounding box of the \p layer in world space. The bounding box is represented using a
+ * Calculate a bounding box of the @p layer in world space. The bounding box is represented using a
  * mat4, where all positions are between `bbox * (x,y,z,1)` where x, y, and z are between 0 and 1.
  * The bounding box will have a depth equal to a 1000th of the length of the cross product of the
  * layer's first two basis vectors.

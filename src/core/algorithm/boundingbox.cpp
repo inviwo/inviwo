@@ -33,10 +33,75 @@
 
 #include <numeric>
 #include <utility>
+#include <ranges>
 
-namespace inviwo {
+namespace inviwo::util {
 
-namespace util {
+namespace detail {
+
+vec3 orthvec(const vec3& vec) {
+    vec3 u(1.0f, 0.0f, 0.0f);
+    vec3 n = glm::normalize(vec);
+    float p = glm::dot(u, n);
+    if (std::abs(p) != 1.0f) {
+        return glm::normalize(u - p * n);
+    } else {
+        return vec3(0.0f, 1.0f, 0.0f);
+    }
+}
+
+}  // namespace detail
+
+mat4 minExtentBoundingBox(mat4 boundingBox) {
+    const float maxAspectRatio = 1000.0f;
+    vec3 extent{
+        glm::length(vec3{boundingBox[0]}),
+        glm::length(vec3{boundingBox[1]}),
+        glm::length(vec3{boundingBox[2]}),
+    };
+    const float maxExtent = glm::compMax(extent);
+    const float minExtent = maxExtent / maxAspectRatio;
+
+    if (util::almostEqual(maxExtent, 0.0f)) {
+        // bounding box with zero extent
+        mat4 m{1.0f};
+        if (glm::length2(vec3{boundingBox[3]}) > 0.0f) {
+            m[3] = boundingBox[3];
+        } else {
+            m[3] = vec4{-0.5f, -0.5f, -0.5f, 1.0f};
+        }
+        return m;
+    }
+
+    if (util::almostEqual(extent[0], 0.0f)) {
+        if (util::almostEqual(extent[1], 0.0f)) {
+            boundingBox[1] = vec4{detail::orthvec(vec3{boundingBox[2]}) * minExtent, 0.0f};
+            extent[1] = minExtent;
+        } else if (util::almostEqual(extent[2], 0.0f)) {
+            boundingBox[2] = vec4{detail::orthvec(vec3{boundingBox[1]}) * minExtent, 0.0f};
+            extent[2] = minExtent;
+        }
+        const vec3 v =
+            glm::cross(vec3{boundingBox[1]} / extent[1], vec3{boundingBox[2]} / extent[2]) *
+            minExtent;
+        boundingBox[0] = vec4{v, 0.0f};
+    } else if (util::almostEqual(extent[1], 0.0f)) {
+        if (util::almostEqual(extent[2], 0.0f)) {
+            boundingBox[2] = vec4{detail::orthvec(vec3{boundingBox[0]}) * minExtent, 0.0f};
+            extent[2] = minExtent;
+        }
+        const vec3 v =
+            glm::cross(vec3{boundingBox[2]} / extent[2], vec3{boundingBox[0]} / extent[0]) *
+            minExtent;
+        boundingBox[1] = vec4{v, 0.0f};
+    } else if (util::almostEqual(extent[2], 0.0f)) {
+        const vec3 v =
+            glm::cross(vec3{boundingBox[0]} / extent[0], vec3{boundingBox[1]} / extent[1]) *
+            minExtent;
+        boundingBox[2] = vec4{v, 0.0f};
+    }
+    return boundingBox;
+}
 
 std::optional<mat4> boundingBoxUnion(const std::optional<mat4>& a, const std::optional<mat4>& b) {
     if (!a && !b) return std::nullopt;
@@ -93,9 +158,8 @@ mat4 boundingBox(const std::vector<std::shared_ptr<Layer>>& layers) {
 
 mat4 boundingBox(const Mesh& mesh) {
     const auto& buffers = mesh.getBuffers();
-    auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
-        return buff.first.type == BufferType::PositionAttrib;
-    });
+    auto it = std::ranges::find_if(
+        buffers, [](const auto& buff) { return buff.first.type == BufferType::PositionAttrib; });
     if (it != buffers.end() && it->second->getSize() > 0) {
         const auto minmax =
             it->second->getRepresentation<BufferRAM>()->dispatch<std::pair<dvec4, dvec4>>(
@@ -291,6 +355,4 @@ std::function<std::optional<mat4>()> boundingBox(
     };
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util
