@@ -109,11 +109,11 @@ auto createRAM() {
 TEST(VolumeSampling, identity_linear_clamp) {
     const auto ram = createRAM();
     const auto vol = Volume(ram);
+
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
+
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, positions, samples,
-                      vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, positions, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref));
@@ -122,11 +122,9 @@ TEST(VolumeSampling, identity_linear_repeat) {
     const auto ram = createRAM();
     ram->setWrapping({Wrapping::Repeat, Wrapping::Repeat, Wrapping::Repeat});
     const auto vol = Volume(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, positions, samples,
-                      vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, positions, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref));
@@ -136,11 +134,9 @@ TEST(VolumeSampling, identity_linear_mirror) {
     const auto ram = createRAM();
     ram->setWrapping({Wrapping::Mirror, Wrapping::Mirror, Wrapping::Mirror});
     const auto vol = Volume(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, positions, samples,
-                      vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, positions, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref));
@@ -150,11 +146,9 @@ TEST(VolumeSampling, identity_nearest_clamp) {
     const auto ram = createRAM();
     ram->setInterpolation(InterpolationType::Nearest);
     const auto vol = Volume(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, positions, samples,
-                      vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, positions, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref));
@@ -165,11 +159,9 @@ TEST(VolumeSampling, identity_nearest_repeat) {
     ram->setWrapping({Wrapping::Repeat, Wrapping::Repeat, Wrapping::Repeat});
     ram->setInterpolation(InterpolationType::Nearest);
     const auto vol = Volume(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, positions, samples,
-                      vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, positions, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref));
@@ -180,11 +172,9 @@ TEST(VolumeSampling, identity_nearest_mirror) {
     ram->setWrapping({Wrapping::Mirror, Wrapping::Mirror, Wrapping::Mirror});
     ram->setInterpolation(InterpolationType::Nearest);
     const auto vol = Volume(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, positions, samples,
-                      vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, positions, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref));
@@ -215,10 +205,9 @@ TEST(VolumeSampling, zPlusPoint5) {
 
     const auto ram = createRAM();
     Volume vol(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, pos, samples, vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, pos, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref2));
@@ -248,10 +237,9 @@ TEST(VolumeSampling, zMinusPoint5) {
 
     const auto ram = createRAM();
     Volume vol(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, dim> samples{};
-    sample::sample<1>(*ram, pos, samples, vol.getCoordinateTransformer().getIndexToDataMatrix(),
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, pos, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref2));
@@ -315,10 +303,9 @@ TEST(VolumeSampling, xline) {
 
     const auto ram = createRAM();
     Volume vol(ram);
+    const auto state = sample::createState(vol, CoordinateSpace::Data, DataMapper::Space::Data);
     std::array<double, line.size()> samples{};
-    sample::sample<1>(*ram, line, samples, dmat4{1.0},
-                      vol.getCoordinateTransformer().getTextureToIndexMatrix(), vol.dataMap,
-                      DataMapper::Space::Data);
+    sample::sample<1>(state, *ram, line, samples);
 
     // since coordinateTransformer only uses float we need a large tolerance
     EXPECT_THAT(samples, ::testing::Pointwise(::testing::DoubleNear(1e-4), ref2));

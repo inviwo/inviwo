@@ -31,70 +31,83 @@
 
 namespace inviwo::sample {
 
-void sample(const VolumeRAM& volume, std::span<const dvec3> positions, std::span<double> output,
-            const dmat4& posToTexture, const dmat4& textureToIndex, const DataMapper& dataMap,
-            DataMapper::Space space) {
-
-    volume.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
-        sample<1, T>(*vr, positions, output, posToTexture, textureToIndex, dataMap, space);
+void sample(const State& state, std::span<const dvec3> positions, std::span<double> output) {
+    state.volumeRAM.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+        sample<1, T>(state, *vr, positions, output);
     });
 }
-void sample(const VolumeRAM& volume, std::span<const dvec3> positions, std::span<dvec2> output,
-            const dmat4& posToTexture, const dmat4& textureToIndex, const DataMapper& dataMap,
-            DataMapper::Space space) {
-
-    volume.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
-        sample<2, T>(*vr, positions, output, posToTexture, textureToIndex, dataMap, space);
+void sample(const State& state, std::span<const dvec3> positions, std::span<dvec2> output) {
+    state.volumeRAM.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+        sample<2, T>(state, *vr, positions, output);
     });
 }
-void sample(const VolumeRAM& volume, std::span<const dvec3> positions, std::span<dvec3> output,
-            const dmat4& posToTexture, const dmat4& textureToIndex, const DataMapper& dataMap,
-            DataMapper::Space space) {
-
-    volume.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
-        sample<3, T>(*vr, positions, output, posToTexture, textureToIndex, dataMap, space);
+void sample(const State& state, std::span<const dvec3> positions, std::span<dvec3> output) {
+    state.volumeRAM.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+        sample<3, T>(state, *vr, positions, output);
     });
 }
-void sample(const VolumeRAM& volume, std::span<const dvec3> positions, std::span<dvec4> output,
-            const dmat4& posToTexture, const dmat4& textureToIndex, const DataMapper& dataMap,
-            DataMapper::Space space) {
-
-    volume.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
-        sample<4, T>(*vr, positions, output, posToTexture, textureToIndex, dataMap, space);
+void sample(const State& state, std::span<const dvec3> positions, std::span<dvec4> output) {
+    state.volumeRAM.dispatch<void>([&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+        sample<4, T>(state, *vr, positions, output);
     });
 }
 
 void sample(const Volume& volume, std::span<const dvec3> positions, std::span<double> output,
             CoordinateSpace positionSpace, DataMapper::Space outputSpace) {
 
-    const auto& cm = volume.getCoordinateTransformer();
-    auto ram = volume.getRepresentation<VolumeRAM>();
-    sample(*ram, positions, output, cm.getMatrix(positionSpace, CoordinateSpace::Data),
-           cm.getDataToIndexMatrix(), volume.dataMap, outputSpace);
+    const auto state = createState(volume, positionSpace, outputSpace);
+    sample(state, positions, output);
 }
 void sample(const Volume& volume, std::span<const dvec3> positions, std::span<dvec2> output,
             CoordinateSpace positionSpace, DataMapper::Space outputSpace) {
 
-    const auto& cm = volume.getCoordinateTransformer();
-    auto ram = volume.getRepresentation<VolumeRAM>();
-    sample(*ram, positions, output, cm.getMatrix(positionSpace, CoordinateSpace::Data),
-           cm.getDataToIndexMatrix(), volume.dataMap, outputSpace);
+    const auto state = createState(volume, positionSpace, outputSpace);
+    sample(state, positions, output);
 }
 void sample(const Volume& volume, std::span<const dvec3> positions, std::span<dvec3> output,
             CoordinateSpace positionSpace, DataMapper::Space outputSpace) {
 
-    const auto& cm = volume.getCoordinateTransformer();
-    auto ram = volume.getRepresentation<VolumeRAM>();
-    sample(*ram, positions, output, cm.getMatrix(positionSpace, CoordinateSpace::Data),
-           cm.getDataToIndexMatrix(), volume.dataMap, outputSpace);
+    const auto state = createState(volume, positionSpace, outputSpace);
+    sample(state, positions, output);
 }
 void sample(const Volume& volume, std::span<const dvec3> positions, std::span<dvec4> output,
             CoordinateSpace positionSpace, DataMapper::Space outputSpace) {
 
-    const auto& cm = volume.getCoordinateTransformer();
-    auto ram = volume.getRepresentation<VolumeRAM>();
-    sample(*ram, positions, output, cm.getMatrix(positionSpace, CoordinateSpace::Data),
-           cm.getDataToIndexMatrix(), volume.dataMap, outputSpace);
+    const auto state = createState(volume, positionSpace, outputSpace);
+    sample(state, positions, output);
+}
+
+auto createVec1Functor(const Volume& volume, CoordinateSpace positionSpace, DataMapper::Space space)
+    -> SampleFunctor<1> {
+    const auto state = createState(volume, positionSpace, space);
+    return state.volumeRAM.dispatch<SampleFunctor<1>>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+            return createFunctor<1, T>(state, *vr);
+        });
+}
+auto createVec2Functor(const Volume& volume, CoordinateSpace positionSpace, DataMapper::Space space)
+    -> SampleFunctor<2> {
+    const auto state = createState(volume, positionSpace, space);
+    return state.volumeRAM.dispatch<SampleFunctor<2>>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+            return createFunctor<2, T>(state, *vr);
+        });
+}
+auto createVec3Functor(const Volume& volume, CoordinateSpace positionSpace, DataMapper::Space space)
+    -> SampleFunctor<3> {
+    const auto state = createState(volume, positionSpace, space);
+    return state.volumeRAM.dispatch<SampleFunctor<3>>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+            return createFunctor<3, T>(state, *vr);
+        });
+}
+auto createVec4Functor(const Volume& volume, CoordinateSpace positionSpace, DataMapper::Space space)
+    -> SampleFunctor<4> {
+    const auto state = createState(volume, positionSpace, space);
+    return state.volumeRAM.dispatch<SampleFunctor<4>>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* vr) {
+            return createFunctor<4, T>(state, *vr);
+        });
 }
 
 }  // namespace inviwo::sample

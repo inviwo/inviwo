@@ -37,6 +37,8 @@
 #include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
 #include <modules/base/algorithm/volume/volumecurl.h>  // for curlVolume
 
+#include <inviwo/core/util/clock.h>
+
 #include <string>       // for string
 #include <string_view>  // for string_view
 
@@ -63,6 +65,7 @@ VolumeCurlCPUProcessor::VolumeCurlCPUProcessor()
 
 void VolumeCurlCPUProcessor::process() {
     const auto calc = [data = inport_.getData(), method = tmp_.get()](pool::Progress progress) {
+        IVW_CPU_PROFILING("Curl");
         if (method) {
             return util::curlVolume2(*data, progress);
         } else {
