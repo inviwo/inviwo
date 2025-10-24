@@ -40,7 +40,6 @@
 #include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
 #include <modules/opengl/shader/shader.h>             // for Shader
 
-
 #include <memory>  // for shared_ptr
 #include <string>  // for string
 
@@ -63,9 +62,12 @@ class Volume;
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
+    enum class UseInport : bool { Yes, No };
+
     explicit VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShaderResource = {},
-                               VolumeConfig config = {});
-    explicit VolumeGLProcessor(std::string_view fragmentShaderName, VolumeConfig config = {});
+                               VolumeConfig config = {}, UseInport useInport = UseInport::Yes);
+    explicit VolumeGLProcessor(std::string_view fragmentShaderName, VolumeConfig config = {},
+     UseInport useInport = UseInport::Yes);
 
     virtual ~VolumeGLProcessor();
 
@@ -78,6 +80,7 @@ public:
         size_t textureId;
         std::chrono::high_resolution_clock::time_point lastUsed;
     };
+
 protected:
     /**
      * Override this to add any shader defines etc. The shader will be built automatically.
@@ -102,7 +105,7 @@ protected:
     void setFragmentShaderResource(std::shared_ptr<const ShaderResource> fragShaderResource);
     std::shared_ptr<const ShaderResource> getFragmentShaderResource();
 
-    VolumeInport inport_;
+    std::optional<VolumeInport> inport_;
     VolumeOutport outport_;
     BoolProperty calculateDataRange_;
     DataRangeProperty dataRange_;
