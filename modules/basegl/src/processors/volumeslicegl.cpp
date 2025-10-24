@@ -525,12 +525,14 @@ void VolumeSliceGL::process() {
     // update volume sample from indicator position, if active
     if (sampleQuery_.isChecked() && posPicking_.get()) {
         // convert world volume position to voxel coords
-        auto volume = inport_.getData();
-        const mat4 worldToIndex(volume->getCoordinateTransformer().getWorldToIndexMatrix());
-        const vec3 indexPos(ivec3(worldToIndex * vec4(worldPosition_.get(), 1)));
+        const auto volume = inport_.getData();
+        const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
+        const auto indexPos = vec3{worldToIndex * vec4{worldPosition_.get(), 1.0f}};
         const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
-        normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
-        volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+        const auto index =
+            size3_t{glm::clamp(glm::round(indexPos), vec3{0.0f}, vec3{volumeRAM->getDimensions()})};
+        normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(index));
+        volumeSample_.set(volumeRAM->getAsDVec4(index));
     }
 }
 
