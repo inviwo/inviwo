@@ -172,26 +172,26 @@ void drawCount(size_t count, QRectF position, QPainter& p) {
     p.drawText(position, Qt::AlignRight | Qt::AlignBottom, QString::number(count));
 }
 
-void drawProgress(float progress, QRectF progressBarRect, QPainter& p) {
+void drawProgress(double progress, QRectF progressBarRect, QPainter& p) {
     static constexpr QColor progressColor{192, 192, 192};
     static constexpr QColor shadeColor1{76, 76, 76, 120};
     static constexpr QColor shadeColor2{128, 128, 128, 120};
 
     QLinearGradient progressGrad(progressBarRect.topLeft(), progressBarRect.topRight());
     progressGrad.setColorAt(0.0f, progressColor);
-    const float left = std::max(0.0f, progress - 0.001f);
-    const float right = std::min(1.0f, progress + 0.001f);
+    const auto left = std::max(0.0, progress - 0.001);
+    const auto right = std::min(1.0, progress + 0.001);
     progressGrad.setColorAt(left, progressColor);
     progressGrad.setColorAt(right, Qt::black);
-    progressGrad.setColorAt(1.0f, Qt::black);
+    progressGrad.setColorAt(1.0, Qt::black);
     p.setPen(Qt::black);
     p.setBrush(progressGrad);
     p.drawRoundedRect(progressBarRect, 2.0, 2.0);
 
     QLinearGradient shadingGrad(progressBarRect.topLeft(), progressBarRect.bottomLeft());
-    shadingGrad.setColorAt(0.0f, shadeColor1);
-    shadingGrad.setColorAt(0.3f, shadeColor2);
-    shadingGrad.setColorAt(1.0f, shadeColor2);
+    shadingGrad.setColorAt(0.0, shadeColor1);
+    shadingGrad.setColorAt(0.3, shadeColor2);
+    shadingGrad.setColorAt(1.0, shadeColor2);
     p.setPen(Qt::NoPen);
     p.setBrush(shadingGrad);
     p.drawRoundedRect(progressBarRect, 2.0, 2.0);
