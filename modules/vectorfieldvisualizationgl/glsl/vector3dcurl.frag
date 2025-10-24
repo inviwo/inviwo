@@ -56,5 +56,9 @@ void main() {
     c.y = (Fz.x - Fx.z);
     c.z = (Fx.y - Fy.x);
 
+#if defined(WRITE_LENGTH_IN_FORTH)
     FragData0 = vec4(c, length(c));
+#else
+    FragData0 = vec4(c, 0.0);
+#endif
 }

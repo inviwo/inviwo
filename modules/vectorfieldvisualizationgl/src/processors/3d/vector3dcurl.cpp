@@ -50,11 +50,35 @@ const ProcessorInfo Vector3DCurl::processorInfo_{
 const ProcessorInfo& Vector3DCurl::getProcessorInfo() const { return processorInfo_; }
 
 Vector3DCurl::Vector3DCurl()
-    : VolumeGLProcessor("vector3dcurl.frag", VolumeConfig{.format = DataVec4Float32::get()}) {
+    : VolumeGLProcessor("vector3dcurl.frag", VolumeConfig{.format = DataVec4Float32::get()})
+    , writeLengthInForthComponent_{"writeLengthInForthComponent", "Write Length In Forth Component",
+                                   true, InvalidationLevel::InvalidResources} {
 
-    addProperty(calculateDataRange_);
+    addProperties(writeLengthInForthComponent_, calculateDataRange_, dataRange_);
     calculateDataRange_.set(true);
     calculateDataRange_.setCurrentStateAsDefault();
+}
+
+void Vector3DCurl::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->setShaderDefine("WRITE_LENGTH_IN_FORTH",
+                                                      writeLengthInForthComponent_);
+}
+void Vector3DCurl::preProcess(TextureUnitContainer&, Shader&, VolumeConfig& config) {
+    if (writeLengthInForthComponent_) {
+        config.format = DataVec4Float32::get();
+        config.swizzleMask = swizzlemasks::defaultData(4);
+    } else {
+        config.format = DataVec3Float32::get();
+        config.swizzleMask = swizzlemasks::defaultData(3);
+    }
+}
+
+void Vector3DCurl::postProcess(Volume& volume) {
+    if (calculateDataRange_) {
+        const auto max = glm::compMax(glm::abs(volume.dataMap.dataRange));
+        volume.dataMap.dataRange = dvec2(-max, max);
+        volume.dataMap.valueRange = dvec2(-max, max);
+    }
 }
 
 Vector3DCurl::~Vector3DCurl() = default;
