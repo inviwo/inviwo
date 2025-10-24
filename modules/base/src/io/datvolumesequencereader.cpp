@@ -342,15 +342,9 @@ void resolve(State& state) {
     }
 
     if (state.a && state.b && state.c) {
-        state.basis[0][0] = state.a->x;
-        state.basis[1][0] = state.a->y;
-        state.basis[2][0] = state.a->z;
-        state.basis[0][1] = state.b->x;
-        state.basis[1][1] = state.b->y;
-        state.basis[2][1] = state.b->z;
-        state.basis[0][2] = state.c->x;
-        state.basis[1][2] = state.c->y;
-        state.basis[2][2] = state.c->z;
+        state.basis[0] = vec4{*state.a, 0.0};
+        state.basis[1] = vec4{*state.b, 0.0};
+        state.basis[2] = vec4{*state.c, 0.0};
     }
 
     // If not specified, center the data around origo.
