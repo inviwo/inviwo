@@ -88,15 +88,15 @@ VolumeGradientMagnitude::~VolumeGradientMagnitude() = default;
 
 void VolumeGradientMagnitude::preProcess([[maybe_unused]] TextureUnitContainer& cont,
                                          Shader& shader, VolumeConfig& config) {
-    auto volume = inport_.getData();
+    auto volume = inport_->getData();
     if (channel_.getSelectedIndex() >= volume->getDataFormat()->getComponents()) {
         throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
                         channel_.getSelectedValue(), volume->getDataFormat()->getComponents());
     }
 
-    config.valueAxis =
-        Axis{.name = "Gradient magnitude",
-             .unit = inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit};
+    const auto& data = inport_->getData();
+    config.valueAxis = Axis{.name = "Gradient magnitude",
+                            .unit = data->dataMap.valueAxis.unit / data->axes[0].unit};
 
     shader.setUniform("channel", channel_.getSelectedValue());
     shader.setUniform("scaling", scaling_);
