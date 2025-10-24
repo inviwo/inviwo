@@ -90,9 +90,9 @@ void detachFBOs(std::span<VolumeGLProcessor::FBO> fbos) {
 }  // namespace
 
 VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShaderResource,
-                                     VolumeConfig config)
+                                     VolumeConfig config, UseInport useInport)
     : Processor{}
-    , inport_{"inputVolume", "Input volume"_help}
+    , inport_{std::nullopt}
     , outport_{"outputVolume", "Output volume"_help}
     , calculateDataRange_{"calculateDataRange_", "Calculate Data Range",
                           "Calculate and assign a new data range for the volume."_help, false}
@@ -107,12 +107,18 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
               Shader::Build::No)
     , fbos_{} {
 
-    addPorts(inport_, outport_);
+    if (useInport == UseInport::Yes) {
+        inport_.emplace("inputVolume", "Input volume"_help);
+        addPorts(*inport_);
+    }
+
+    addPorts(outport_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-VolumeGLProcessor::VolumeGLProcessor(std::string_view fragmentShader, VolumeConfig config)
-    : VolumeGLProcessor{utilgl::findShaderResource(fragmentShader), std::move(config)} {}
+VolumeGLProcessor::VolumeGLProcessor(std::string_view fragmentShader, VolumeConfig config,
+                                     UseInport useInport)
+    : VolumeGLProcessor{utilgl::findShaderResource(fragmentShader), std::move(config), useInport} {}
 
 VolumeGLProcessor::~VolumeGLProcessor() = default;
 
@@ -126,19 +132,25 @@ void VolumeGLProcessor::process() {
 
     TextureUnitContainer cont;
 
-    const auto srcVolume = inport_.getData();
-    auto config = srcVolume->config().updateFrom(config_);
+    auto config = [&]() {
+        if (inport_) {
+            const auto srcVolume = inport_->getData();
+            utilgl::bindAndSetUniforms(shader_, cont, *srcVolume, "volume");
+            auto config = srcVolume->config().updateFrom(config_);
+            return config;
+        } else {
+            return config_;
+        }
+    }();
 
     preProcess(cont, shader_, config);
-
-    utilgl::bindAndSetUniforms(shader_, cont, *srcVolume, "volume");
 
     if (volumes_.setConfig(config) == VolumeReuseCache::Status::ClearedCache) {
         detachFBOs(fbos_);
     }
     auto dstVolume = volumes_.get();
 
-    const size3_t dim{srcVolume->getDimensions()};
+    const size3_t dim{dstVolume->getDimensions()};
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
