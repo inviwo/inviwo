@@ -1,5 +1,15 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationEditorDockWidgetQt.html":[2,0,0,0,4],
+"classinviwo_1_1animation_1_1AnimationEditorDockWidgetQt.html":[4,0,0,2,5],
+"classinviwo_1_1animation_1_1AnimationEditorDockWidgetQt.html#afc94f3946968cf6e6cff91686171c70a":[2,0,0,0,4,0],
+"classinviwo_1_1animation_1_1AnimationEditorDockWidgetQt.html#afc94f3946968cf6e6cff91686171c70a":[4,0,0,2,5,0],
+"classinviwo_1_1animation_1_1AnimationEditorQt.html":[2,0,0,0,5],
+"classinviwo_1_1animation_1_1AnimationEditorQt.html":[4,0,0,2,6],
+"classinviwo_1_1animation_1_1AnimationEditorQt.html#aa819cfd5d0602043cdb933a34450ef07":[2,0,0,0,5,0],
+"classinviwo_1_1animation_1_1AnimationEditorQt.html#aa819cfd5d0602043cdb933a34450ef07":[4,0,0,2,6,0],
+"classinviwo_1_1animation_1_1AnimationLabelViewQt.html":[2,0,0,0,6],
+"classinviwo_1_1animation_1_1AnimationLabelViewQt.html":[4,0,0,2,7],
 "classinviwo_1_1animation_1_1AnimationManager.html":[2,0,0,0,7],
 "classinviwo_1_1animation_1_1AnimationManager.html":[4,0,0,2,8],
 "classinviwo_1_1animation_1_1AnimationManager.html#a4b40677291492cc9e3408bac5476978d":[2,0,0,0,7,0],
@@ -239,15 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1TrackObserver.html":[2,0,0,0,80],
 "classinviwo_1_1animation_1_1TrackObserver.html":[4,0,0,2,81],
 "classinviwo_1_1animation_1_1TrackTyped.html":[2,0,0,0,81],
-"classinviwo_1_1animation_1_1TrackTyped.html":[4,0,0,2,82],
-"classinviwo_1_1animation_1_1TrackWidgetQt.html":[2,0,0,0,82],
-"classinviwo_1_1animation_1_1TrackWidgetQt.html":[4,0,0,2,83],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactory.html":[2,0,0,0,83],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactory.html":[4,0,0,2,84],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObject.html":[2,0,0,0,84],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObject.html":[4,0,0,2,85],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[2,0,0,0,85],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[4,0,0,2,86],
-"classinviwo_1_1animation_1_1ValueKeyframe.html":[2,0,0,0,86],
-"classinviwo_1_1animation_1_1ValueKeyframe.html":[4,0,0,2,87]
+"classinviwo_1_1animation_1_1TrackTyped.html":[4,0,0,2,82]
 };

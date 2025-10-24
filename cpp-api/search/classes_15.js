@@ -143,12 +143,13 @@ var searchData=
   ['volumeshifter_140',['VolumeShifter',['../classinviwo_1_1VolumeShifter.html',1,'inviwo']]],
   ['volumesliceextractor_141',['VolumeSliceExtractor',['../classinviwo_1_1VolumeSliceExtractor.html',1,'inviwo']]],
   ['volumeslicegl_142',['VolumeSliceGL',['../classinviwo_1_1VolumeSliceGL.html',1,'inviwo']]],
-  ['volumeslicevisualizer_143',['VolumeSliceVisualizer',['../classinviwo_1_1VolumeSliceVisualizer.html',1,'inviwo']]],
-  ['volumesource_144',['VolumeSource',['../classinviwo_1_1VolumeSource.html',1,'inviwo']]],
-  ['volumesubset_145',['VolumeSubset',['../classinviwo_1_1VolumeSubset.html',1,'inviwo']]],
-  ['volumetetramesh_146',['VolumeTetraMesh',['../classinviwo_1_1VolumeTetraMesh.html',1,'inviwo']]],
-  ['volumetodataframe_147',['VolumeToDataFrame',['../classinviwo_1_1VolumeToDataFrame.html',1,'inviwo']]],
-  ['volumetospatialsampler_148',['VolumeToSpatialSampler',['../classinviwo_1_1VolumeToSpatialSampler.html',1,'inviwo']]],
-  ['volumetotetramesh_149',['VolumeToTetraMesh',['../classinviwo_1_1VolumeToTetraMesh.html',1,'inviwo']]],
-  ['volumevoronoisegmentation_150',['VolumeVoronoiSegmentation',['../classinviwo_1_1VolumeVoronoiSegmentation.html',1,'inviwo']]]
+  ['volumeslicetolayer_143',['VolumeSliceToLayer',['../classinviwo_1_1VolumeSliceToLayer.html',1,'inviwo']]],
+  ['volumeslicevisualizer_144',['VolumeSliceVisualizer',['../classinviwo_1_1VolumeSliceVisualizer.html',1,'inviwo']]],
+  ['volumesource_145',['VolumeSource',['../classinviwo_1_1VolumeSource.html',1,'inviwo']]],
+  ['volumesubset_146',['VolumeSubset',['../classinviwo_1_1VolumeSubset.html',1,'inviwo']]],
+  ['volumetetramesh_147',['VolumeTetraMesh',['../classinviwo_1_1VolumeTetraMesh.html',1,'inviwo']]],
+  ['volumetodataframe_148',['VolumeToDataFrame',['../classinviwo_1_1VolumeToDataFrame.html',1,'inviwo']]],
+  ['volumetospatialsampler_149',['VolumeToSpatialSampler',['../classinviwo_1_1VolumeToSpatialSampler.html',1,'inviwo']]],
+  ['volumetotetramesh_150',['VolumeToTetraMesh',['../classinviwo_1_1VolumeToTetraMesh.html',1,'inviwo']]],
+  ['volumevoronoisegmentation_151',['VolumeVoronoiSegmentation',['../classinviwo_1_1VolumeVoronoiSegmentation.html',1,'inviwo']]]
 ];

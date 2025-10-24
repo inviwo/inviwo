@@ -1,5 +1,15 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1TrackWidgetQt.html":[2,0,0,0,82],
+"classinviwo_1_1animation_1_1TrackWidgetQt.html":[4,0,0,2,83],
+"classinviwo_1_1animation_1_1TrackWidgetQtFactory.html":[2,0,0,0,83],
+"classinviwo_1_1animation_1_1TrackWidgetQtFactory.html":[4,0,0,2,84],
+"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObject.html":[2,0,0,0,84],
+"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObject.html":[4,0,0,2,85],
+"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[2,0,0,0,85],
+"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[4,0,0,2,86],
+"classinviwo_1_1animation_1_1ValueKeyframe.html":[2,0,0,0,86],
+"classinviwo_1_1animation_1_1ValueKeyframe.html":[4,0,0,2,87],
 "classinviwo_1_1animation_1_1ValueKeyframeSequence.html":[2,0,0,0,87],
 "classinviwo_1_1animation_1_1ValueKeyframeSequence.html":[4,0,0,2,88],
 "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserver.html":[2,0,0,0,88],
@@ -239,15 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1MinorTickSettings.html":[2,0,0,14,25],
 "classinviwo_1_1plot_1_1MinorTickSettings.html":[4,0,0,21,26],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html":[2,0,0,14,27],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html":[4,0,0,21,28],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[2,0,0,14,27,2],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[4,0,0,21,28,2],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[2,0,0,14,27,0],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[4,0,0,21,28,0],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a43526ad7fdffc9a2c6375e22afdbe7a4":[2,0,0,14,27,5],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a43526ad7fdffc9a2c6375e22afdbe7a4":[4,0,0,21,28,5],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#aa6ffe0d9bc67b39dc9ee0caddf17648f":[2,0,0,14,27,4],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#aa6ffe0d9bc67b39dc9ee0caddf17648f":[4,0,0,21,28,4],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#abf63cb70d5a15964fae7235007bc941f":[2,0,0,14,27,1],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#abf63cb70d5a15964fae7235007bc941f":[4,0,0,21,28,1]
+"classinviwo_1_1plot_1_1PCPAxisSettings.html":[4,0,0,21,28]
 };

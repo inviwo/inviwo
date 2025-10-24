@@ -1126,25 +1126,37 @@ IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItem
 IVW_MODULE_BASE_API std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bufferMinMax</b> (const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> *buffer, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
 <tr class="memitem:ae49e61ebf3b11c94b3497f88bb454634" id="r_ae49e61ebf3b11c94b3497f88bb454634"><td class="memTemplParams" colspan="2">template&lt;typename ValueType&gt; </td></tr>
 <tr class="memitem:ae49e61ebf3b11c94b3497f88bb454634 template"><td class="memItemLeft" align="right" valign="top">std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae49e61ebf3b11c94b3497f88bb454634">dataMinMax</a> (const ValueType *data, size_t size, IgnoreSpecialValues ignore=IgnoreSpecialValues::No)</td></tr>
-<tr class="memitem:a90dfea83005204a1c4beaa3714c38e74" id="r_a90dfea83005204a1c4beaa3714c38e74"><td class="memTemplParams" colspan="2">template&lt;typename T, typename U, typename Predicate, typename ValueTransform, typename ProgressCallback&gt; </td></tr>
-<tr class="memitem:a90dfea83005204a1c4beaa3714c38e74 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90dfea83005204a1c4beaa3714c38e74">layerRAMDistanceTransform</a> (const <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; T &gt; *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, const Matrix&lt; 2, U &gt; basis, const size2_t upsample, Predicate predicate, ValueTransform valueTransform, ProgressCallback callback)</td></tr>
-<tr class="memitem:aa197ca54aa9430e796e41f223f577635" id="r_aa197ca54aa9430e796e41f223f577635"><td class="memTemplParams" colspan="2"><a id="aa197ca54aa9430e796e41f223f577635" name="aa197ca54aa9430e796e41f223f577635"></a>
+<tr class="memitem:ac582bad753d46434b8e69daf4d73bed0" id="r_ac582bad753d46434b8e69daf4d73bed0"><td class="memTemplParams" colspan="2">template&lt;typename Functor&gt; </td></tr>
+<tr class="memitem:ac582bad753d46434b8e69daf4d73bed0 template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac582bad753d46434b8e69daf4d73bed0">generateLayer</a> (const size2_t &amp;dimensions, const mat3 &amp;basis, const Functor &amp;function)</td></tr>
+<tr class="memitem:a4adf43ab68efcedf2f4f57da34add75e" id="r_a4adf43ab68efcedf2f4f57da34add75e"><td class="memTemplParams" colspan="2">template&lt;typename T = float&gt; </td></tr>
+<tr class="memitem:a4adf43ab68efcedf2f4f57da34add75e template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4adf43ab68efcedf2f4f57da34add75e">makeSingleTexelLayer</a> (const size2_t &amp;size, const dvec4 &amp;value=dvec4{1.0})</td></tr>
+<tr class="memitem:a36e0121efc66168a980230a5bd63b235" id="r_a36e0121efc66168a980230a5bd63b235"><td class="memTemplParams" colspan="2"><a id="a36e0121efc66168a980230a5bd63b235" name="a36e0121efc66168a980230a5bd63b235"></a>
+template&lt;typename T = float&gt; </td></tr>
+<tr class="memitem:a36e0121efc66168a980230a5bd63b235 template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>makeUniformLayer</b> (const size2_t &amp;size, const dvec4 &amp;value=dvec4{1.0})</td></tr>
+<tr class="memitem:a0249619dcb7d23c05f34fc86dfafe8cd" id="r_a0249619dcb7d23c05f34fc86dfafe8cd"><td class="memTemplParams" colspan="2">template&lt;typename T = float&gt; </td></tr>
+<tr class="memitem:a0249619dcb7d23c05f34fc86dfafe8cd template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0249619dcb7d23c05f34fc86dfafe8cd">makeRadialLayer</a> (const size2_t &amp;size)</td></tr>
+<tr class="memitem:a4a0d389127210cdb1a5aaad18fed4649" id="r_a4a0d389127210cdb1a5aaad18fed4649"><td class="memTemplParams" colspan="2">template&lt;typename T = float&gt; </td></tr>
+<tr class="memitem:a4a0d389127210cdb1a5aaad18fed4649 template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a0d389127210cdb1a5aaad18fed4649">makeRippleLayer</a> (const size2_t &amp;size)</td></tr>
+<tr class="memitem:a2203e348dbca9cbd21f371144bfb4664" id="r_a2203e348dbca9cbd21f371144bfb4664"><td class="memTemplParams" colspan="2">template&lt;typename T, typename U, typename Predicate, typename ValueTransform, typename ProgressCallback&gt; </td></tr>
+<tr class="memitem:a2203e348dbca9cbd21f371144bfb4664 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2203e348dbca9cbd21f371144bfb4664">layerRAMDistanceTransform</a> (const <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; T &gt; *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, Matrix&lt; 3, U &gt; basis, size2_t upsample, Predicate predicate, ValueTransform valueTransform, ProgressCallback callback)</td></tr>
+<tr class="memitem:a16221a287d0e3e9c9653e3a65f5d15e6" id="r_a16221a287d0e3e9c9653e3a65f5d15e6"><td class="memTemplParams" colspan="2"><a id="a16221a287d0e3e9c9653e3a65f5d15e6" name="a16221a287d0e3e9c9653e3a65f5d15e6"></a>
 template&lt;typename T, typename U&gt; </td></tr>
-<tr class="memitem:aa197ca54aa9430e796e41f223f577635 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerRAMDistanceTransform</b> (const <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; T &gt; *inVolume, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, const Matrix&lt; 2, U &gt; basis, const size2_t upsample)</td></tr>
-<tr class="memitem:a26f9879e82cc4d9c7eb77c2724b2d019" id="r_a26f9879e82cc4d9c7eb77c2724b2d019"><td class="memTemplParams" colspan="2"><a id="a26f9879e82cc4d9c7eb77c2724b2d019" name="a26f9879e82cc4d9c7eb77c2724b2d019"></a>
+<tr class="memitem:a16221a287d0e3e9c9653e3a65f5d15e6 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerRAMDistanceTransform</b> (const <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; T &gt; *inVolume, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, Matrix&lt; 3, U &gt; basis, size2_t upsample)</td></tr>
+<tr class="memitem:a228b56eb82142a3b5e07907063a9bb47" id="r_a228b56eb82142a3b5e07907063a9bb47"><td class="memTemplParams" colspan="2"><a id="a228b56eb82142a3b5e07907063a9bb47" name="a228b56eb82142a3b5e07907063a9bb47"></a>
 template&lt;typename U, typename Predicate, typename ValueTransform, typename ProgressCallback&gt; </td></tr>
-<tr class="memitem:a26f9879e82cc4d9c7eb77c2724b2d019 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, const size2_t upsample, Predicate predicate, ValueTransform valueTransform, ProgressCallback callback)</td></tr>
-<tr class="memitem:aaae4dea32beba341f6b624c183d07277" id="r_aaae4dea32beba341f6b624c183d07277"><td class="memTemplParams" colspan="2"><a id="aaae4dea32beba341f6b624c183d07277" name="aaae4dea32beba341f6b624c183d07277"></a>
+<tr class="memitem:a228b56eb82142a3b5e07907063a9bb47 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, size2_t upsample, Predicate predicate, ValueTransform valueTransform, ProgressCallback callback)</td></tr>
+<tr class="memitem:ad437e0f7bade5e8a5ebb42f0c00a6d08" id="r_ad437e0f7bade5e8a5ebb42f0c00a6d08"><td class="memTemplParams" colspan="2"><a id="ad437e0f7bade5e8a5ebb42f0c00a6d08" name="ad437e0f7bade5e8a5ebb42f0c00a6d08"></a>
 template&lt;typename U, typename ProgressCallback&gt; </td></tr>
-<tr class="memitem:aaae4dea32beba341f6b624c183d07277 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, const size2_t upsample, double threshold, bool normalize, bool flip, bool square, double scale, ProgressCallback callback)</td></tr>
-<tr class="memitem:a6cf8c62d442b8dd2f6be424f09404859" id="r_a6cf8c62d442b8dd2f6be424f09404859"><td class="memTemplParams" colspan="2"><a id="a6cf8c62d442b8dd2f6be424f09404859" name="a6cf8c62d442b8dd2f6be424f09404859"></a>
+<tr class="memitem:ad437e0f7bade5e8a5ebb42f0c00a6d08 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, size2_t upsample, double threshold, bool normalize, bool flip, bool square, double scale, ProgressCallback callback)</td></tr>
+<tr class="memitem:aa52bfad23d0c865e28087e91ebaeb073" id="r_aa52bfad23d0c865e28087e91ebaeb073"><td class="memTemplParams" colspan="2"><a id="aa52bfad23d0c865e28087e91ebaeb073" name="aa52bfad23d0c865e28087e91ebaeb073"></a>
 template&lt;typename U&gt; </td></tr>
-<tr class="memitem:a6cf8c62d442b8dd2f6be424f09404859 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, const size2_t upsample, double threshold, bool normalize, bool flip, bool square, double scale)</td></tr>
+<tr class="memitem:aa52bfad23d0c865e28087e91ebaeb073 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>layerDistanceTransform</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *inLayer, <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; U &gt; *outDistanceField, size2_t upsample, double threshold, bool normalize, bool flip, bool square, double scale)</td></tr>
 <tr class="memitem:ab36aead3fc89df1f8274c4a4ad543f2b" id="r_ab36aead3fc89df1f8274c4a4ad543f2b"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab36aead3fc89df1f8274c4a4ad543f2b">layerSubSet</a> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *in, ivec2 offset, size2_t <a class="el" href="structinviwo_1_1util_1_1extent.html">extent</a>, bool clampBorderOutsideImage=false)</td></tr>
 <tr class="memdesc:ab36aead3fc89df1f8274c4a4ad543f2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">extracts a subregion from a layer and returns it as a new layer  <br /></td></tr>
 <tr class="memitem:a11440c1b6dc927f82d4ff5fd673d2ea9" id="r_a11440c1b6dc927f82d4ff5fd673d2ea9"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a11440c1b6dc927f82d4ff5fd673d2ea9 template"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRAMPrecision.html">LayerRAMPrecision</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a11440c1b6dc927f82d4ff5fd673d2ea9">typedLayerSubSet</a> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *in, ivec2 offset, size2_t <a class="el" href="structinviwo_1_1util_1_1extent.html">extent</a>, bool clampBorderOutsideImage=false)</td></tr>
 <tr class="memdesc:a11440c1b6dc927f82d4ff5fd673d2ea9"><td class="mdescLeft">&#160;</td><td class="mdescRight">extracts a subregion from a layer and converts it into a new layer  <br /></td></tr>
+<tr class="memitem:ae434fbf42706e103b643670510ce5f82" id="r_ae434fbf42706e103b643670510ce5f82"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae434fbf42706e103b643670510ce5f82">marchingSquares</a> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *layer, const <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &amp;isovalues, size_t channel)</td></tr>
 <tr class="memitem:af7308adb6800d1ef047b11afba120051" id="r_af7308adb6800d1ef047b11afba120051"><td class="memTemplParams" colspan="2"><a id="af7308adb6800d1ef047b11afba120051" name="af7308adb6800d1ef047b11afba120051"></a>
 template&lt;typename T, typename OutIt&gt; </td></tr>
 <tr class="memitem:af7308adb6800d1ef047b11afba120051 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>generatePoints</b> (OutIt outIt, std::variant&lt; <a class="el" href="structinviwo_1_1util_1_1Grid3DPointGeneration.html">Grid3DPointGeneration</a>, <a class="el" href="structinviwo_1_1util_1_1RandomCubicalPointGeneration.html">RandomCubicalPointGeneration</a>, <a class="el" href="structinviwo_1_1util_1_1RandomSphericalPointGeneration.html">RandomSphericalPointGeneration</a> &gt; opts)</td></tr>
@@ -1187,8 +1199,8 @@ IVW_MODULE_BASE_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volum
 IVW_MODULE_BASE_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>divergenceVolume</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume)</td></tr>
 <tr class="memitem:a4060da6b81ba276eccef48950775f5d0" id="r_a4060da6b81ba276eccef48950775f5d0"><td class="memItemLeft" align="right" valign="top"><a id="a4060da6b81ba276eccef48950775f5d0" name="a4060da6b81ba276eccef48950775f5d0"></a>
 IVW_MODULE_BASE_API std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>divergenceVolume</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; volume)</td></tr>
-<tr class="memitem:af36b4e4950c7c433f359ad1e2e32c8ac" id="r_af36b4e4950c7c433f359ad1e2e32c8ac"><td class="memTemplParams" colspan="2">template&lt;typename Functor&gt; </td></tr>
-<tr class="memitem:af36b4e4950c7c433f359ad1e2e32c8ac template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af36b4e4950c7c433f359ad1e2e32c8ac">generateVolume</a> (const size3_t &amp;dimensions, const mat3 &amp;basis, Functor &amp;&amp;function)</td></tr>
+<tr class="memitem:a5a243ad49641848e83c5e0e5b48a52b6" id="r_a5a243ad49641848e83c5e0e5b48a52b6"><td class="memTemplParams" colspan="2">template&lt;typename Functor&gt; </td></tr>
+<tr class="memitem:a5a243ad49641848e83c5e0e5b48a52b6 template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a243ad49641848e83c5e0e5b48a52b6">generateVolume</a> (const size3_t &amp;dimensions, const mat3 &amp;basis, const Functor &amp;function)</td></tr>
 <tr class="memitem:a51132df28ee7343316af711aadd8b80a" id="r_a51132df28ee7343316af711aadd8b80a"><td class="memTemplParams" colspan="2">template&lt;typename T = float&gt; </td></tr>
 <tr class="memitem:a51132df28ee7343316af711aadd8b80a template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51132df28ee7343316af711aadd8b80a">makeSingleVoxelVolume</a> (const size3_t &amp;size, const dvec4 &amp;value=dvec4{1.0})</td></tr>
 <tr class="memitem:a68f22f49618c96e1819b7d62ac1a9b37" id="r_a68f22f49618c96e1819b7d62ac1a9b37"><td class="memTemplParams" colspan="2"><a id="a68f22f49618c96e1819b7d62ac1a9b37" name="a68f22f49618c96e1819b7d62ac1a9b37"></a>
@@ -1949,7 +1961,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate a bounding box of the layers in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. The bounding box will have zero depth in most cases since the layer basis is two-dimensional. </p>
+<p>Calculate a bounding box of the <code class="param">layer</code> in world space. The bounding box is represented using a mat4, where all positions are between <span class="tt">bbox * (x,y,z,1)</span> where x, y, and z are between 0 and 1. The bounding box will have a depth equal to a 1000th of the length of the cross product of the layer's first two basis vectors. </p>
 
 </div>
 </div>
@@ -1967,7 +1979,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+<p>Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is represented using a mat4, where all positions are between <span class="tt">bbox * (x,y,z,1)</span> where x, y, and z are between 0 and 1. </p>
 
 </div>
 </div>
@@ -1985,7 +1997,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate a bounding box of the position buffers of all the meshes in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+<p>Calculate a bounding box of the position buffers of all the meshes in world space. The bounding box is represented using a mat4, where all positions are between <span class="tt">bbox * (x,y,z,1)</span> where x, y, and z are between 0 and 1. </p>
 
 </div>
 </div>
@@ -2003,7 +2015,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate a bounding box of all layers in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+<p>Calculate a bounding box of all layers in world space. The bounding box is represented using a mat4, where all positions are between <span class="tt">bbox * (x,y,z,1)</span> where x, y, and z are between 0 and 1. </p>
 
 </div>
 </div>
@@ -2021,7 +2033,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate a bounding box of all the volumes in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+<p>Calculate a bounding box of all the volumes in world space. The bounding box is represented using a mat4, where all positions are between <span class="tt">bbox * (x,y,z,1)</span> where x, y, and z are between 0 and 1. </p>
 
 </div>
 </div>
@@ -2039,7 +2051,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculate a bounding box of the volume in world space. The bounding box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+<p>Calculate a bounding box of the volume in world space. The bounding box is represented using a mat4, where all positions are between <span class="tt">bbox * (x,y,z,1)</span> where x, y, and z are between 0 and 1. </p>
 
 </div>
 </div>
@@ -3057,8 +3069,44 @@ template&lt;typename Func&gt; </div>
 
 </div>
 </div>
-<a id="af36b4e4950c7c433f359ad1e2e32c8ac" name="af36b4e4950c7c433f359ad1e2e32c8ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af36b4e4950c7c433f359ad1e2e32c8ac">&#9670;&#160;</a></span>generateVolume()</h2>
+<a id="ac582bad753d46434b8e69daf4d73bed0" name="ac582bad753d46434b8e69daf4d73bed0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac582bad753d46434b8e69daf4d73bed0">&#9670;&#160;</a></span>generateLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Functor&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; inviwo::util::generateLayer </td>
+          <td>(</td>
+          <td class="paramtype">const size2_t &amp;</td>          <td class="paramname"><span class="paramname"><em>dimensions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const mat3 &amp;</td>          <td class="paramname"><span class="paramname"><em>basis</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Functor &amp;</td>          <td class="paramname"><span class="paramname"><em>function</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convenience function for generating layers </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dimensions</td><td><a class="el" href="classinviwo_1_1Layer.html">Layer</a> dimensions </td></tr>
+    <tr><td class="paramname">basis</td><td><a class="el" href="classinviwo_1_1Layer.html">Layer</a> basis, offset automatically set to center the layer around origo </td></tr>
+    <tr><td class="paramname">function</td><td>Functor called for each texel of the layer. T(const size2_t&amp; ind). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5a243ad49641848e83c5e0e5b48a52b6" name="a5a243ad49641848e83c5e0e5b48a52b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a243ad49641848e83c5e0e5b48a52b6">&#9670;&#160;</a></span>generateVolume()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3078,7 +3126,7 @@ template&lt;typename Functor&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Functor &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>function</em></span>&#160;)</td>
+          <td class="paramtype">const Functor &amp;</td>          <td class="paramname"><span class="paramname"><em>function</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -5464,8 +5512,8 @@ template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviw
 
 </div>
 </div>
-<a id="a90dfea83005204a1c4beaa3714c38e74" name="a90dfea83005204a1c4beaa3714c38e74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90dfea83005204a1c4beaa3714c38e74">&#9670;&#160;</a></span>layerRAMDistanceTransform()</h2>
+<a id="a2203e348dbca9cbd21f371144bfb4664" name="a2203e348dbca9cbd21f371144bfb4664"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2203e348dbca9cbd21f371144bfb4664">&#9670;&#160;</a></span>layerRAMDistanceTransform()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -5485,12 +5533,12 @@ template&lt;typename T, typename U, typename Predicate, typename ValueTransform,
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const Matrix&lt; 2, U &gt;</td>          <td class="paramname"><span class="paramname"><em>basis</em></span>, </td>
+          <td class="paramtype">Matrix&lt; 3, U &gt;</td>          <td class="paramname"><span class="paramname"><em>basis</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size2_t</td>          <td class="paramname"><span class="paramname"><em>upsample</em></span>, </td>
+          <td class="paramtype">size2_t</td>          <td class="paramname"><span class="paramname"><em>upsample</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -5711,6 +5759,46 @@ template&lt;typename T, typename... Args&gt; </div>
 
 </div>
 </div>
+<a id="a0249619dcb7d23c05f34fc86dfafe8cd" name="a0249619dcb7d23c05f34fc86dfafe8cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0249619dcb7d23c05f34fc86dfafe8cd">&#9670;&#160;</a></span>makeRadialLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; inviwo::util::makeRadialLayer </td>
+          <td>(</td>
+          <td class="paramtype">const size2_t &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Radially symmetric density centered in the <a class="el" href="classinviwo_1_1Layer.html">Layer</a> decaying with the distance from the center </p>
+
+</div>
+</div>
+<a id="a4a0d389127210cdb1a5aaad18fed4649" name="a4a0d389127210cdb1a5aaad18fed4649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a0d389127210cdb1a5aaad18fed4649">&#9670;&#160;</a></span>makeRippleLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; inviwo::util::makeRippleLayer </td>
+          <td>(</td>
+          <td class="paramtype">const size2_t &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>A quickly oscillating density between 0 and 1 </p>
+
+</div>
+</div>
 <a id="a5167c56b9fc5c53f102462d89bbf1f11" name="a5167c56b9fc5c53f102462d89bbf1f11"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5167c56b9fc5c53f102462d89bbf1f11">&#9670;&#160;</a></span>makeRippleVolume()</h2>
 
@@ -5728,6 +5816,30 @@ template&lt;typename T = float&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>A quickly oscillating density between 0 and 1 </p>
+
+</div>
+</div>
+<a id="a4adf43ab68efcedf2f4f57da34add75e" name="a4adf43ab68efcedf2f4f57da34add75e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4adf43ab68efcedf2f4f57da34add75e">&#9670;&#160;</a></span>makeSingleTexelLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = float&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; inviwo::util::makeSingleTexelLayer </td>
+          <td>(</td>
+          <td class="paramtype">const size2_t &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const dvec4 &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span><span class="paramdefsep"> = </span><span class="paramdefval">dvec4{1.0}</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Center texel equal to value, all others are set to zero </p>
 
 </div>
 </div>
@@ -5879,7 +5991,7 @@ template&lt;typename T = float&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Extracts an iso surface from a volume using the Marching Cubes algorithm</p>
-<p>Note: Shares interface with util::marchingcbes and <a class="el" href="#ad05c658162fd0c9fb67eb70cfd537e52">util::marchingtetrahedron</a> This is an optimized version of <a class="el" href="#a5bec0b925a8be26aebea592ce1b00fd2">util::marchingcubes</a></p>
+<p>Note: Shares interface with <a class="el" href="#a5bec0b925a8be26aebea592ce1b00fd2">util::marchingcubes</a> and <a class="el" href="#ad05c658162fd0c9fb67eb70cfd537e52">util::marchingtetrahedron</a> This is an optimized version of <a class="el" href="#a5bec0b925a8be26aebea592ce1b00fd2">util::marchingcubes</a></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">volume</td><td>the scalar volume </td></tr>
@@ -5892,6 +6004,43 @@ template&lt;typename T = float&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ae434fbf42706e103b643670510ce5f82" name="ae434fbf42706e103b643670510ce5f82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae434fbf42706e103b643670510ce5f82">&#9670;&#160;</a></span>marchingSquares()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; inviwo::util::marchingSquares </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *</td>          <td class="paramname"><span class="paramname"><em>layer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>isovalues</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>channel</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Extracts a isocontours from a <a class="el" href="classinviwo_1_1Layer.html">Layer</a> using the Marching Squares algorithm</p>
+<p>Note: Shares interface with computeLayerContour</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>the source layer </td></tr>
+    <tr><td class="paramname">isovalues</td><td>iso-values of the extracted contours </td></tr>
+    <tr><td class="paramname">channel</td><td>selected channel of <code class="param">layer</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> containing the isocontours or an empty <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> if there are none </dd></dl>
 
 </div>
 </div>
