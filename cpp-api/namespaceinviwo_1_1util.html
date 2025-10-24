@@ -271,6 +271,7 @@ IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>b
 IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>base64_encode_mime</b> (std::span&lt; char &gt; s)</td></tr>
 <tr class="memitem:a0721194f56ccea706c8eb3e5b1d2c38d" id="r_a0721194f56ccea706c8eb3e5b1d2c38d"><td class="memItemLeft" align="right" valign="top"><a id="a0721194f56ccea706c8eb3e5b1d2c38d" name="a0721194f56ccea706c8eb3e5b1d2c38d"></a>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>base64_decode</b> (std::string_view s, bool remove_linebreaks=false)</td></tr>
+<tr class="memitem:a4dd2955122b137fe4ce5e573d25a4e27" id="r_a4dd2955122b137fe4ce5e573d25a4e27"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4dd2955122b137fe4ce5e573d25a4e27">minExtentBoundingBox</a> (mat4 <a class="el" href="#a0123d642715c707b5cc76d11ca0bad95">boundingBox</a>)</td></tr>
 <tr class="memitem:ad646944af1abb5d57419c279f02c2f0c" id="r_ad646944af1abb5d57419c279f02c2f0c"><td class="memItemLeft" align="right" valign="top"><a id="ad646944af1abb5d57419c279f02c2f0c" name="ad646944af1abb5d57419c279f02c2f0c"></a>
 IVW_CORE_API std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBoxUnion</b> (const std::optional&lt; mat4 &gt; &amp;a, const std::optional&lt; mat4 &gt; &amp;b)</td></tr>
 <tr class="memitem:a0123d642715c707b5cc76d11ca0bad95" id="r_a0123d642715c707b5cc76d11ca0bad95"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0123d642715c707b5cc76d11ca0bad95">boundingBox</a> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer)</td></tr>
@@ -6126,6 +6127,31 @@ template&lt;typename T = float&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>an inviwo <a class="el" href="classinviwo_1_1Document.html" title="A class to represent a structured document, usually some html.">Document</a> with an html representation of the parsed markdown </dd></dl>
+
+</div>
+</div>
+<a id="a4dd2955122b137fe4ce5e573d25a4e27" name="a4dd2955122b137fe4ce5e573d25a4e27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dd2955122b137fe4ce5e573d25a4e27">&#9670;&#160;</a></span>minExtentBoundingBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_CORE_API mat4 inviwo::util::minExtentBoundingBox </td>
+          <td>(</td>
+          <td class="paramtype">mat4</td>          <td class="paramname"><span class="paramname"><em>boundingBox</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Extend the given <code class="param">boundingBox</code> so that none of its extents are zero.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">boundingBox</td><td>the bounding box to be fixed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>adjusted bounding box with guaranteed minimal extent </dd></dl>
 
 </div>
 </div>

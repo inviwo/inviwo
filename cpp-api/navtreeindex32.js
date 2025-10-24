@@ -1,5 +1,6 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[4,0,0,1054,0],
 "structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[2,0,0,1045,1],
 "structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[4,0,0,1054,1],
 "structinviwo_1_1ShaderSegment.html":[2,0,0,1047],
@@ -248,6 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html":[4,0,0,13,7,0],
 "structinviwo_1_1filters_1_1ItemFilter.html":[4,0,0,14,0],
 "structinviwo_1_1filters_1_1ItemFilter.html#a4204578d94a092c3daa1f01740ad1223":[4,0,0,14,0,1],
-"structinviwo_1_1filters_1_1ItemFilter.html#a5bc29c92ccbdd35feb9168fa5e8e3a0e":[4,0,0,14,0,0],
-"structinviwo_1_1hdf5_1_1Handle_1_1Selection.html":[4,0,0,16,1,0]
+"structinviwo_1_1filters_1_1ItemFilter.html#a5bc29c92ccbdd35feb9168fa5e8e3a0e":[4,0,0,14,0,0]
 };

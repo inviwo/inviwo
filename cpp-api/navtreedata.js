@@ -85,11 +85,11 @@ var NAVTREEINDEX =
 "classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855",
 "functions_w.html",
 "namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a9a8bd28a9c0cdf4614bc4703467aec3e",
-"namespaceinviwo_1_1util.html#af791b6c40d260174cfe13d1b910a2997",
+"namespaceinviwo_1_1util.html#af74c8c14214ac56aeafc8d0165333c57",
 "structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html",
-"structinviwo_1_1ShaderObject_1_1OutDeclaration.html",
-"structinviwo_1_1hdf5_1_1MetaData.html",
-"structinviwo_1_1utilgl_1_1ColorMaskiState.html"
+"structinviwo_1_1ShaderObject_1_1InDeclaration.html",
+"structinviwo_1_1hdf5_1_1Handle_1_1Selection.html",
+"structinviwo_1_1utilgl_1_1ColorMaski.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

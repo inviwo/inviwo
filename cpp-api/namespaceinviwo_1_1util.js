@@ -261,6 +261,7 @@ var namespaceinviwo_1_1util =
     [ "marchingSquares", "namespaceinviwo_1_1util.html#ae434fbf42706e103b643670510ce5f82", null ],
     [ "marchingtetrahedron", "namespaceinviwo_1_1util.html#ad05c658162fd0c9fb67eb70cfd537e52", null ],
     [ "md2doc", "namespaceinviwo_1_1util.html#ae84a9ec3e9841aca2ea06fa34aaaed50", null ],
+    [ "minExtentBoundingBox", "namespaceinviwo_1_1util.html#a4dd2955122b137fe4ce5e573d25a4e27", null ],
     [ "msToString", "namespaceinviwo_1_1util.html#af1136c71f85d4df4b2b2449aee7121b0", null ],
     [ "offsetPosition", "namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779", null ],
     [ "ordinalColor", "namespaceinviwo_1_1util.html#ada3f90c8cfa64a0898b021cca551de05", null ],
