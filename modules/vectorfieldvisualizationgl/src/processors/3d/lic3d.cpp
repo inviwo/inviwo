@@ -94,7 +94,7 @@ LIC3D::LIC3D()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    inport_.setHelp("Input noise volume"_help);
+    inport_->setHelp("Input noise volume"_help);
 }
 
 void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
