@@ -42,11 +42,19 @@ namespace inviwo::sample {
 
 using ptrdiff3_t = glm::vec<3, std::ptrdiff_t>;
 
-struct SampleState {
-    size3_t dims;
+struct IVW_CORE_API SampleState {
+    ptrdiff3_t dims;
     util::IndexMapper3D im;
     dmat4 posToTexture;
     dmat4 textureToIndex;
+};
+
+struct IVW_CORE_API State {
+    const VolumeRAM& volumeRAM;
+    dmat4 posToData;
+    dmat4 dataToIndex;
+    DataMapper dataMap;
+    DataMapper::Space space;
 };
 
 namespace detail {
@@ -99,7 +107,7 @@ dvec3 wrap(const dvec3& p) {
 }
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
-size3_t wrap(const size3_t& p, const size3_t& dims) {
+size3_t wrap(const ptrdiff3_t& p, const ptrdiff3_t& dims) {
     return {wrap<X>(p.x, dims.x), wrap<Y>(p.y, dims.y), wrap<Z>(p.z, dims.z)};
 }
 
@@ -148,9 +156,8 @@ void sample(std::span<const T> data, const SampleState& state, std::span<const d
 }  // namespace detail
 
 template <size_t N, typename T>
-void sample(const VolumeRAMPrecision<T>& volume, std::span<const dvec3> positions,
-            std::span<Vector<N, double>> output, const dmat4& posToTexture,
-            const dmat4& textureToIndex, const DataMapper& dataMap, DataMapper::Space space) {
+void sample(const State& state, const VolumeRAMPrecision<T>& volume,
+            std::span<const dvec3> positions, std::span<Vector<N, double>> output) {
 
     using Functor = void (*)(std::span<const T>, const SampleState&, std::span<const dvec3>,
                              std::span<Vector<N, double>>);
@@ -179,45 +186,119 @@ void sample(const VolumeRAMPrecision<T>& volume, std::span<const dvec3> position
     const auto wrapping = volume.getWrapping();
     const auto interpolation = volume.getInterpolation();
 
-    SampleState state{.dims = volume.getDimensions(),
-                      .im = util::IndexMapper3D{volume.getDimensions()},
-                      .posToTexture = posToTexture,
-                      .textureToIndex = textureToIndex};
+    SampleState sstate{.dims = volume.getDimensions(),
+                       .im = util::IndexMapper3D{volume.getDimensions()},
+                       .posToTexture = state.posToData,
+                       .textureToIndex = state.dataToIndex};
 
     table[std::to_underlying(interpolation)][std::to_underlying(wrapping[0])][std::to_underlying(
-        wrapping[1])][std::to_underlying(wrapping[2])](volume.getView(), state, positions, output);
+        wrapping[1])][std::to_underlying(wrapping[2])](volume.getView(), sstate, positions, output);
 
-    if (space == DataMapper::Space::Normalized) {
+    if (state.space == DataMapper::Space::Normalized) {
         std::ranges::transform(output, output.begin(), [&](auto value) {
-            return dataMap.mapFromDataTo<DataMapper::Space::Normalized>(value);
+            return state.dataMap.mapFromDataTo<DataMapper::Space::Normalized>(value);
         });
-    } else if (space == DataMapper::Space::SignNormalized) {
+    } else if (state.space == DataMapper::Space::SignNormalized) {
         std::ranges::transform(output, output.begin(), [&](auto value) {
-            return dataMap.mapFromDataTo<DataMapper::Space::SignNormalized>(value);
+            return state.dataMap.mapFromDataTo<DataMapper::Space::SignNormalized>(value);
         });
-    } else if (space == DataMapper::Space::Value) {
+    } else if (state.space == DataMapper::Space::Value) {
         std::ranges::transform(output, output.begin(), [&](auto value) {
-            return dataMap.mapFromDataTo<DataMapper::Space::Value>(value);
+            return state.dataMap.mapFromDataTo<DataMapper::Space::Value>(value);
         });
     }
 }
 
-IVW_CORE_API void sample(const VolumeRAM& volume, std::span<const dvec3> positions,
-                         std::span<double> output, const dmat4& posToTexture,
-                         const dmat4& textureToIndex, const DataMapper& dataMap,
-                         DataMapper::Space space);
-IVW_CORE_API void sample(const VolumeRAM& volume, std::span<const dvec3> positions,
-                         std::span<dvec2> output, const dmat4& posToTexture,
-                         const dmat4& textureToIndex, const DataMapper& dataMap,
-                         DataMapper::Space space);
-IVW_CORE_API void sample(const VolumeRAM& volume, std::span<const dvec3> positions,
-                         std::span<dvec3> output, const dmat4& posToTexture,
-                         const dmat4& textureToIndex, const DataMapper& dataMap,
-                         DataMapper::Space space);
-IVW_CORE_API void sample(const VolumeRAM& volume, std::span<const dvec3> positions,
-                         std::span<dvec4> output, const dmat4& posToTexture,
-                         const dmat4& textureToIndex, const DataMapper& dataMap,
-                         DataMapper::Space space);
+template <size_t N, typename T>
+auto createFunctor(const State& state, const VolumeRAMPrecision<T>& volume)
+    -> std::function<void(std::span<const dvec3>, std::span<Vector<N, double>>)> {
+
+    using Functor = void (*)(std::span<const T>, const SampleState&, std::span<const dvec3>,
+                             std::span<Vector<N, double>>);
+
+    constexpr auto table = detail::build_array<2>([&](auto i) constexpr {
+        return detail::build_array<3>([&](auto x) constexpr {
+            return detail::build_array<3>([&](auto y) constexpr {
+                return detail::build_array<3>([&](auto z) constexpr -> Functor {
+                    return [](std::span<const T> data, const SampleState& state,
+                              std::span<const dvec3> pos, std::span<Vector<N, double>> dst) {
+                        using IT = decltype(i);
+                        using XT = decltype(x);
+                        using YT = decltype(y);
+                        using ZT = decltype(z);
+                        constexpr auto I = static_cast<InterpolationType>(IT::value);
+                        constexpr auto X = static_cast<Wrapping>(XT::value);
+                        constexpr auto Y = static_cast<Wrapping>(YT::value);
+                        constexpr auto Z = static_cast<Wrapping>(ZT::value);
+                        detail::sample<T, N, I, X, Y, Z>(data, state, pos, dst);
+                    };
+                });
+            });
+        });
+    });
+
+    const auto wrapping = volume.getWrapping();
+    const auto interpolation = volume.getInterpolation();
+
+    SampleState sstate{.dims = volume.getDimensions(),
+                       .im = util::IndexMapper3D{volume.getDimensions()},
+                       .posToTexture = state.posToData,
+                       .textureToIndex = state.dataToIndex};
+
+    const auto func = table[std::to_underlying(interpolation)][std::to_underlying(wrapping[0])]
+                           [std::to_underlying(wrapping[1])][std::to_underlying(wrapping[2])];
+
+    if (state.space == DataMapper::Space::Normalized) {
+        return [func, data = volume.getView(), sstate, dm = state.dataMap](
+                   std::span<const dvec3> positions, std::span<Vector<N, double>> output) {
+            func(data, sstate, positions, output);
+            std::ranges::transform(output, output.begin(), [&](auto value) {
+                return dm.mapFromDataTo<DataMapper::Space::Normalized>(value);
+            });
+        };
+    } else if (state.space == DataMapper::Space::SignNormalized) {
+        return [func, data = volume.getView(), sstate, dm = state.dataMap](
+                   std::span<const dvec3> positions, std::span<Vector<N, double>> output) {
+            func(data, sstate, positions, output);
+            std::ranges::transform(output, output.begin(), [&](auto value) {
+                return dm.mapFromDataTo<DataMapper::Space::SignNormalized>(value);
+            });
+        };
+    } else if (state.space == DataMapper::Space::Value) {
+        return [func, data = volume.getView(), sstate, dm = state.dataMap](
+                   std::span<const dvec3> positions, std::span<Vector<N, double>> output) {
+            func(data, sstate, positions, output);
+            std::ranges::transform(output, output.begin(), [&](auto value) {
+                return dm.mapFromDataTo<DataMapper::Space::Value>(value);
+            });
+        };
+    } else {
+        return [func, data = volume.getView(), sstate](std::span<const dvec3> positions,
+                                                       std::span<Vector<N, double>> output) {
+            func(data, sstate, positions, output);
+        };
+    }
+}
+
+inline State createState(const Volume& volume,
+                         CoordinateSpace positionSpace = CoordinateSpace::World,
+                         DataMapper::Space space = DataMapper::Space::Value) {
+    const auto& cm = volume.getCoordinateTransformer();
+    return {.volumeRAM = *volume.getRepresentation<VolumeRAM>(),
+            .posToData = cm.getMatrix(positionSpace, CoordinateSpace::Data),
+            .dataToIndex = cm.getDataToIndexMatrix(),
+            .dataMap = volume.dataMap,
+            .space = space};
+}
+
+IVW_CORE_API void sample(const State& state, std::span<const dvec3> positions,
+                         std::span<double> outpu);
+IVW_CORE_API void sample(const State& state, std::span<const dvec3> positions,
+                         std::span<dvec2> output);
+IVW_CORE_API void sample(const State& state, std::span<const dvec3> positions,
+                         std::span<dvec3> output);
+IVW_CORE_API void sample(const State& state, std::span<const dvec3> positions,
+                         std::span<dvec4> output);
 
 IVW_CORE_API void sample(const Volume& volume, std::span<const dvec3> positions,
                          std::span<double> output, CoordinateSpace positionSpace,
@@ -231,5 +312,17 @@ IVW_CORE_API void sample(const Volume& volume, std::span<const dvec3> positions,
 IVW_CORE_API void sample(const Volume& volume, std::span<const dvec3> positions,
                          std::span<dvec4> output, CoordinateSpace positionSpace,
                          DataMapper::Space outputSpace);
+
+template <size_t N>
+using SampleFunctor = std::function<void(std::span<const dvec3>, std::span<Vector<N, double>>)>;
+
+auto createVec1Functor(const Volume& volume, CoordinateSpace positionSpace = CoordinateSpace::World,
+                       DataMapper::Space space = DataMapper::Space::Value) -> SampleFunctor<1>;
+auto createVec2Functor(const Volume& volume, CoordinateSpace positionSpace = CoordinateSpace::World,
+                       DataMapper::Space space = DataMapper::Space::Value) -> SampleFunctor<2>;
+auto createVec3Functor(const Volume& volume, CoordinateSpace positionSpace = CoordinateSpace::World,
+                       DataMapper::Space space = DataMapper::Space::Value) -> SampleFunctor<3>;
+auto createVec4Functor(const Volume& volume, CoordinateSpace positionSpace = CoordinateSpace::World,
+                       DataMapper::Space space = DataMapper::Space::Value) -> SampleFunctor<4>;
 
 }  // namespace inviwo::sample
