@@ -69,6 +69,8 @@ public:
         Symmetric,   //!< uses a symmetric range, i.e. [-2^(b-1) + 1, 2^(b-1) - 1]
     };
 
+    enum class Space { Data, Normalized, SignNormalized, Value };
+
     // asymetric
 
     DataMapper();
@@ -187,6 +189,22 @@ public:
     util::same_extent_t<T, double> mapFromNormalizedToValue(T val) const {
         return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                              valueRange);
+    }
+
+    /**
+     * Map from `dataRange` to the `Space`
+     */
+    template <Space space, typename T>
+    util::same_extent_t<T, double> mapFromDataTo(T val) const {
+        if constexpr (space == Space::Data) {
+            return static_cast<util::same_extent_t<T, double>>(val);
+        } else if constexpr (space == Space::Normalized) {
+            return mapFromDataToNormalized(val);
+        } else if constexpr (space == Space::SignNormalized) {
+            return mapFromDataToSignNormalized(val);
+        } else if constexpr (space == Space::Value) {
+            return mapFromDataToValue(val);
+        }
     }
 
     bool operator==(const DataMapper&) const = default;
