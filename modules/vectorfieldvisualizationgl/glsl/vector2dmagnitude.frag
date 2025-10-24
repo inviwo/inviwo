@@ -36,7 +36,7 @@ uniform ImageParameters inportParameters;
 in vec3 texCoord_;
 
 void main(void) {
-    vec2 value = getNormalizedTexel(inport, inportParameters, texCoord_.xy).xy;
+    vec2 value = getSignNormalizedTexel(inport, inportParameters, texCoord_.xy).xy;
     float magnitude = length(value);
 
     FragData0 = vec4(magnitude);

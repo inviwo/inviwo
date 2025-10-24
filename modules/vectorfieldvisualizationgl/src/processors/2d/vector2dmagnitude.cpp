@@ -59,4 +59,13 @@ LayerConfig Vector2DMagnitude::outputConfig(const Layer& input) const {
                                       .valueRange = dvec2{0.0, conservativeMax}});
 }
 
+void Vector2DMagnitude::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
+    if (input.getDataFormat()->getNumericType() == NumericType::Float) {
+        shader_.setUniform("inportParameters.formatScaling", 0.0f);
+        shader_.setUniform("inportParameters.formatOffset", 0.0f);
+        shader_.setUniform("inportParameters.signedFormatScaling", 0.0f);
+        shader_.setUniform("inportParameters.signedFormatOffset", 0.0f);
+    }
+}
+
 }  // namespace inviwo
