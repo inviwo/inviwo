@@ -31,8 +31,6 @@
 
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/core/processors/activityindicator.h>
-#include <inviwo/core/processors/progressbar.h>
 #include <inviwo/core/metadata/processormetadata.h>
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
@@ -104,9 +102,7 @@ class Outport;
 class IVW_QTEDITOR_API ProcessorGraphicsItem : public QObject,
                                                public EditorGraphicsItem,
                                                public ProcessorObserver,
-                                               public ProcessorMetaDataObserver,
-                                               public ActivityIndicatorObserver,
-                                               public ProgressBarObserver {
+                                               public ProcessorMetaDataObserver {
     Q_OBJECT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
@@ -175,24 +171,14 @@ protected:
     virtual void onProcessorAboutToProcess(Processor*) override;
     virtual void onProcessorFinishedProcess(Processor*) override;
 
-    virtual void onProcessorStartBackgroundWork(Processor*, size_t jobs) override {
-        backgroundJobs_ += jobs;
-    };
-    virtual void onProcessorFinishBackgroundWork(Processor*, size_t jobs) override {
-        backgroundJobs_ -= jobs;
-    };
+    virtual void onProcessorStartBackgroundWork(Processor*, size_t jobs) override;
+    virtual void onProcessorFinishBackgroundWork(Processor*, size_t jobs) override;
+    virtual void onProcessorProgressChanged(Processor*, std::optional<double>) override;
 
     // ProcessorMetaDataObserver overrides
     virtual void onProcessorMetaDataPositionChange() override;
     virtual void onProcessorMetaDataVisibilityChange() override;
     virtual void onProcessorMetaDataSelectionChange() override;
-
-    // ActivityIndicatorObserver overrides
-    virtual void activityIndicatorChanged(bool active) override;
-
-    // ProgressBarObserver overrides
-    virtual void progressChanged(float) override;
-    virtual void progressBarVisibilityChanged(bool visible) override;
 
     // QObject override
     virtual bool event(QEvent* e) override;
@@ -200,8 +186,8 @@ protected:
 private:
     void delayedUpdate();
 
-    enum class Running : std::uint8_t { Yes, No };
-    void updateStatus(Running running, std::optional<std::string> exception = std::nullopt);
+    bool needsUpdate() const;
+    void updateStatus(std::optional<std::string> exception = std::nullopt);
 
     Processor* processor_;
     ProcessorMetaData* processorMeta_;
@@ -241,10 +227,10 @@ private:
     State currentState_;
     std::unique_ptr<ProcessorErrorItem> errorText_;
 
-    std::optional<float> progress_;
-    std::optional<float> currentProgress_;
+    std::optional<double> progress_;
+    std::optional<double> currentProgress_;
     bool dirty_;
-    RateLimiter<250, void (*)(QGraphicsItem* p)> limitedUpdate_;
+    RateLimiter<200, void (*)(QGraphicsItem* p)> limitedUpdate_;
 };
 
 }  // namespace inviwo

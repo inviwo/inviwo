@@ -81,7 +81,6 @@ set(HEADER_FILES
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
     include/modules/webbrowser/networkcefsynchronizer.h
     include/modules/webbrowser/processors/basicwebbrowser.h
-    include/modules/webbrowser/processors/progressbarobservercef.h
     include/modules/webbrowser/processors/webbrowserbase.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
     include/modules/webbrowser/properties/propertywidgetcef.h
@@ -102,7 +101,6 @@ set(SOURCE_FILES
     src/interaction/cefkeyboardmapping.cpp
     src/networkcefsynchronizer.cpp
     src/processors/basicwebbrowser.cpp
-    src/processors/progressbarobservercef.cpp
     src/processors/webbrowserbase.cpp
     src/processors/webbrowserprocessor.cpp
     src/properties/propertywidgetcef.cpp
