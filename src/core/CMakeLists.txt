@@ -823,6 +823,7 @@ ivw_group("Header Files" BASE "${CMAKE_CURRENT_BINARY_DIR}/include/inviwo/core/"
 set(TEST_FILES
     tests/unittests/bitset-test.cpp
     tests/unittests/brickiterator-test.cpp
+    tests/unittests/boundingbox-test.cpp
     tests/unittests/colorconversion-test.cpp
     tests/unittests/commandlineparser-test.cpp
     tests/unittests/compositeproperty-test.cpp
