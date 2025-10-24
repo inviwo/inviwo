@@ -100,6 +100,10 @@ void exposeImage(py::module& m) {
         .def_property_readonly_static("redGreen", [](py::object) { return swizzlemasks::redGreen; })
         .def_property_readonly_static("depth", [](py::object) { return swizzlemasks::depth; })
         // clang-format on
+        .def_static("defaultColor",
+                    [](int components) { return swizzlemasks::defaultColor(components); })
+        .def_static("defaultData",
+                    [](int components) { return swizzlemasks::defaultData(components); })
         .def("__repr__", [](const SwizzleMask& self) { return toString(self); });
 
     py::enum_<InterpolationType>(m, "InterpolationType")
