@@ -1,5 +1,11 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855":[2,0,0,14,24,0],
+"classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855":[4,0,0,21,25,0],
+"classinviwo_1_1plot_1_1MinorTickSettings.html":[2,0,0,14,25],
+"classinviwo_1_1plot_1_1MinorTickSettings.html":[4,0,0,21,26],
+"classinviwo_1_1plot_1_1PCPAxisSettings.html":[2,0,0,14,27],
+"classinviwo_1_1plot_1_1PCPAxisSettings.html":[4,0,0,21,28],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[2,0,0,14,27,2],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[4,0,0,21,28,2],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[2,0,0,14,27,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX27 =
 "functions_type.html":[4,3,3],
 "functions_u.html":[4,3,0,20],
 "functions_v.html":[4,3,0,21],
-"functions_vars.html":[4,3,2],
-"functions_w.html":[4,3,0,22],
-"functions_x.html":[4,3,0,23],
-"functions_~.html":[4,3,0,24],
-"group__dataio.html":[1,0],
-"group__datastructures.html":[1,1],
-"group__ports.html":[1,2]
+"functions_vars.html":[4,3,2]
 };

@@ -1,5 +1,11 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[2,0,0,1045,1],
+"structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[4,0,0,1054,1],
+"structinviwo_1_1ShaderSegment.html":[2,0,0,1047],
+"structinviwo_1_1ShaderSegment.html":[4,0,0,1056],
+"structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6":[2,0,0,1047,4],
+"structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6":[4,0,0,1056,4],
 "structinviwo_1_1ShaderSegment.html#aab6d0db0f80c160f28903dd73d18122b":[2,0,0,1047,2],
 "structinviwo_1_1ShaderSegment.html#aab6d0db0f80c160f28903dd73d18122b":[4,0,0,1056,2],
 "structinviwo_1_1ShaderSegment.html#acd66d7f1d9d02fa81434d6af24a779e4":[2,0,0,1047,3],
@@ -243,11 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1filters_1_1ItemFilter.html":[4,0,0,14,0],
 "structinviwo_1_1filters_1_1ItemFilter.html#a4204578d94a092c3daa1f01740ad1223":[4,0,0,14,0,1],
 "structinviwo_1_1filters_1_1ItemFilter.html#a5bc29c92ccbdd35feb9168fa5e8e3a0e":[4,0,0,14,0,0],
-"structinviwo_1_1hdf5_1_1Handle_1_1Selection.html":[4,0,0,16,1,0],
-"structinviwo_1_1hdf5_1_1MetaData.html":[4,0,0,16,3],
-"structinviwo_1_1hdf5_1_1TypeMap.html":[4,0,0,16,7],
-"structinviwo_1_1hdf5_1_1TypeMap_3_01char_01_4.html":[4,0,0,16,8],
-"structinviwo_1_1hdf5_1_1TypeMap_3_01double_01_4.html":[4,0,0,16,9],
-"structinviwo_1_1hdf5_1_1TypeMap_3_01float_01_4.html":[4,0,0,16,10],
-"structinviwo_1_1hdf5_1_1TypeMap_3_01int_01_4.html":[4,0,0,16,11]
+"structinviwo_1_1hdf5_1_1Handle_1_1Selection.html":[4,0,0,16,1,0]
 };

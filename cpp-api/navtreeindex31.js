@@ -1,5 +1,11 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html":[4,0,0,509,0],
+"structinviwo_1_1KDNodeDistWrapper.html":[2,0,0,533],
+"structinviwo_1_1KDNodeDistWrapper.html":[4,0,0,542],
+"structinviwo_1_1LambdaNetworkVisitor.html":[2,0,0,541],
+"structinviwo_1_1LambdaNetworkVisitor.html":[4,0,0,550],
+"structinviwo_1_1LambdaNetworkVisitor.html#a39bf7f583d52d3954a8712a26b826e63":[2,0,0,541,2],
 "structinviwo_1_1LambdaNetworkVisitor.html#a39bf7f583d52d3954a8712a26b826e63":[4,0,0,550,2],
 "structinviwo_1_1LambdaNetworkVisitor.html#a5780335e03e2b1118665a039fb60cc64":[2,0,0,541,0],
 "structinviwo_1_1LambdaNetworkVisitor.html#a5780335e03e2b1118665a039fb60cc64":[4,0,0,550,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149":[2,0,0,1042,0,2],
 "structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149":[4,0,0,1051,0,2],
 "structinviwo_1_1ShaderObject_1_1InDeclaration.html":[2,0,0,1045,0],
-"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[4,0,0,1054,0],
-"structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[2,0,0,1045,1],
-"structinviwo_1_1ShaderObject_1_1OutDeclaration.html":[4,0,0,1054,1],
-"structinviwo_1_1ShaderSegment.html":[2,0,0,1047],
-"structinviwo_1_1ShaderSegment.html":[4,0,0,1056],
-"structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6":[2,0,0,1047,4],
-"structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6":[4,0,0,1056,4]
+"structinviwo_1_1ShaderObject_1_1InDeclaration.html":[4,0,0,1054,0]
 };

@@ -78,18 +78,18 @@ var NAVTREEINDEX =
 "classinviwo_1_1StructuredCoordinateTransformer.html#a2a5a6aee6c2cbdbdae36a477f9b8d82e",
 "classinviwo_1_1TestMatrix.html",
 "classinviwo_1_1TrackballObject.html",
-"classinviwo_1_1VolumeComponent.html",
-"classinviwo_1_1VolumeSequenceToDataFrame.html#a2282d199512e0636e17bee5fcb61768d",
-"classinviwo_1_1animation_1_1AnimationEditorDockWidgetQt.html",
-"classinviwo_1_1animation_1_1TrackWidgetQt.html",
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b",
-"group__processors.html",
-"namespaceinviwo_1_1swizzlemasks.html",
-"namespaceinviwo_1_1utilcl.html",
-"structinviwo_1_1LambdaNetworkVisitor.html#a39bf7f583d52d3954a8712a26b826e63",
-"structinviwo_1_1ShaderSegment.html#aab6d0db0f80c160f28903dd73d18122b",
-"structinviwo_1_1hdf5_1_1TypeMap_3_01long_01long_01_4.html",
-"structinviwo_1_1utilgl_1_1GlBoolState.html"
+"classinviwo_1_1VolumeChannelCombiner.html#a4a82294b54906fd417044b6aa1383d90",
+"classinviwo_1_1VolumeSequenceSource.html",
+"classinviwo_1_1animation_1_1AnimationController.html#ae1ef38e74a4948f380b7f721c52650b0",
+"classinviwo_1_1animation_1_1TrackObservable.html",
+"classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855",
+"functions_w.html",
+"namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a9a8bd28a9c0cdf4614bc4703467aec3e",
+"namespaceinviwo_1_1util.html#af791b6c40d260174cfe13d1b910a2997",
+"structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html",
+"structinviwo_1_1ShaderObject_1_1OutDeclaration.html",
+"structinviwo_1_1hdf5_1_1MetaData.html",
+"structinviwo_1_1utilgl_1_1ColorMaskiState.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

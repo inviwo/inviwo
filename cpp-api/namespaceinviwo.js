@@ -1360,7 +1360,7 @@ var namespaceinviwo =
     [ "Vector2DCurl", "classinviwo_1_1Vector2DCurl.html", null ],
     [ "Vector2DDivergence", "classinviwo_1_1Vector2DDivergence.html", null ],
     [ "Vector2DMagnitude", "classinviwo_1_1Vector2DMagnitude.html", null ],
-    [ "Vector3DCurl", "classinviwo_1_1Vector3DCurl.html", null ],
+    [ "Vector3DCurl", "classinviwo_1_1Vector3DCurl.html", "classinviwo_1_1Vector3DCurl" ],
     [ "Vector3DDivergence", "classinviwo_1_1Vector3DDivergence.html", null ],
     [ "VectorElementSelectorProcessor", "classinviwo_1_1VectorElementSelectorProcessor.html", "classinviwo_1_1VectorElementSelectorProcessor" ],
     [ "VectorFieldGenerator2D", "classinviwo_1_1VectorFieldGenerator2D.html", "classinviwo_1_1VectorFieldGenerator2D" ],
