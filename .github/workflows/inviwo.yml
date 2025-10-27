@@ -178,35 +178,35 @@ jobs:
 
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
     - name: "Upload doxygen"
       if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
     - name: "Upload shpinx"
       if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
     - name: "Upload ccache-logs"
       if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: ccache-debug/*
 
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: vcpkg/buildtrees/**/*.log
@@ -443,7 +443,7 @@ jobs:
 
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: vcpkg-logs-clang-tidy
         path: vcpkg/buildtrees/**/*.log
@@ -549,7 +549,7 @@ jobs:
         echo "${{ steps.changelog.outputs.changelog }}"
         echo "-- End --"
     - name: "Upload Changelog"
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: changelog.md
         path: changelog.md
