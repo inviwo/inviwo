@@ -1,7 +1,7 @@
 var classinviwo_1_1TextRenderer =
 [
-    [ "FontCache", "structinviwo_1_1TextRenderer_1_1FontCache.html", null ],
     [ "GlyphEntry", "structinviwo_1_1TextRenderer_1_1GlyphEntry.html", "structinviwo_1_1TextRenderer_1_1GlyphEntry" ],
+    [ "FontCache", "structinviwo_1_1TextRenderer_1_1FontCache.html", null ],
     [ "clear", "classinviwo_1_1TextRenderer.html#a92ea603ba81f4ecdc395cc20b296e58e", null ],
     [ "computeBoundingBox", "classinviwo_1_1TextRenderer.html#a123e0d392f365b7648e6ee88d9d0e059", null ],
     [ "computeTextSize", "classinviwo_1_1TextRenderer.html#a36812d1bafe0e08feb87f4a4ba9a6832", null ],

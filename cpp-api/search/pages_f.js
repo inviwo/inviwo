@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['usage_0',['Simple Usage',['../classinviwo_1_1TypedMesh.html#autotoc_md11',1,'']]]
+  ['visualization_20workshop_0',['Inviwo - Interactive Visualization Workshop',['../index.html',1,'']]]
 ];

@@ -1,12 +1,12 @@
 var group__datastructures =
 [
     [ "TypedMesh", "group__typedmesh.html", "group__typedmesh" ],
-    [ "inviwo::Buffer< T, Target >", "classinviwo_1_1Buffer.html", null ],
+    [ "inviwo::Buffer&lt; T, Target &gt;", "classinviwo_1_1Buffer.html", null ],
     [ "inviwo::BufferRAM", "classinviwo_1_1BufferRAM.html", [
       [ "dispatch", "classinviwo_1_1BufferRAM.html#a52cc9bdcef20869e5c658f170645350d", null ],
       [ "dispatch", "classinviwo_1_1BufferRAM.html#a7db2b36678a0cd46eccc8b126cc5d870", null ]
     ] ],
-    [ "inviwo::BufferRAMPrecision< T, Target >", "classinviwo_1_1BufferRAMPrecision.html", [
+    [ "inviwo::BufferRAMPrecision&lt; T, Target &gt;", "classinviwo_1_1BufferRAMPrecision.html", [
       [ "getSize", "classinviwo_1_1BufferRAMPrecision.html#a73a77328614ee93a6814c8e71edfcf94", null ]
     ] ],
     [ "inviwo::BufferRepresentation", "classinviwo_1_1BufferRepresentation.html", [
@@ -24,7 +24,7 @@ var group__datastructures =
       [ "farPlaneDist_", "classinviwo_1_1Camera.html#a4823d919759dcfcbd2b6566dd295675e", null ],
       [ "nearPlaneDist_", "classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683", null ]
     ] ],
-    [ "inviwo::Data< Self, Repr >", "classinviwo_1_1Data.html", [
+    [ "inviwo::Data&lt; Self, Repr &gt;", "classinviwo_1_1Data.html", [
       [ "addRepresentation", "classinviwo_1_1Data.html#ac51800a8529036a231cddf5628c80778", null ],
       [ "clearRepresentations", "classinviwo_1_1Data.html#ae8f203803ac5a396782176ee4611875b", null ],
       [ "getEditableRepresentation", "classinviwo_1_1Data.html#a5a0bc7c8cd54a98e41e600bda03e9936", null ],
@@ -35,15 +35,15 @@ var group__datastructures =
       [ "removeOtherRepresentations", "classinviwo_1_1Data.html#a797196dea1d291bd8fc203effbb083e2", null ],
       [ "removeRepresentation", "classinviwo_1_1Data.html#acf122b40c140a6de251287ea4a67d31e", null ]
     ] ],
-    [ "inviwo::DataGroup< Self, Repr >", "classinviwo_1_1DataGroup.html", null ],
-    [ "inviwo::DataGroupRepresentation< Owner >", "classinviwo_1_1DataGroupRepresentation.html", null ],
-    [ "inviwo::DataRepresentation< Owner >", "classinviwo_1_1DataRepresentation.html", null ],
-    [ "inviwo::DiskRepresentation< Repr, Self >", "classinviwo_1_1DiskRepresentation.html", null ],
+    [ "inviwo::DataGroup&lt; Self, Repr &gt;", "classinviwo_1_1DataGroup.html", null ],
+    [ "inviwo::DataGroupRepresentation&lt; Owner &gt;", "classinviwo_1_1DataGroupRepresentation.html", null ],
+    [ "inviwo::DataRepresentation&lt; Owner &gt;", "classinviwo_1_1DataRepresentation.html", null ],
+    [ "inviwo::DiskRepresentation&lt; Repr, Self &gt;", "classinviwo_1_1DiskRepresentation.html", null ],
     [ "inviwo::Mesh", "classinviwo_1_1Mesh.html", [
+      [ "MeshInfo", "structinviwo_1_1Mesh_1_1MeshInfo.html", null ],
       [ "BufferInfo", "structinviwo_1_1Mesh_1_1BufferInfo.html", [
         [ "location", "structinviwo_1_1Mesh_1_1BufferInfo.html#a65732f89f41b151b2d1e55bc02da1124", null ]
       ] ],
-      [ "MeshInfo", "structinviwo_1_1Mesh_1_1MeshInfo.html", null ],
       [ "addBuffer", "classinviwo_1_1Mesh.html#a309a0cd2c0490ae0828ef1b21dd7ee07", null ],
       [ "addBuffer", "classinviwo_1_1Mesh.html#abcde901cd30d548842ff09837aa09d6e", null ],
       [ "addBuffers", "classinviwo_1_1Mesh.html#acac292b50e32aa7bf6f06a9d7a2b2f1f", null ],
@@ -110,7 +110,7 @@ var group__datastructures =
       [ "dispatch", "classinviwo_1_1LayerRAM.html#acfb36dd32b7369ec364f4d1cc89d07ca", null ],
       [ "dispatch", "classinviwo_1_1LayerRAM.html#a9440d5aab0f084470843663927115e92", null ]
     ] ],
-    [ "inviwo::LayerRAMPrecision< T >", "classinviwo_1_1LayerRAMPrecision.html", [
+    [ "inviwo::LayerRAMPrecision&lt; T &gt;", "classinviwo_1_1LayerRAMPrecision.html", [
       [ "setDimensions", "classinviwo_1_1LayerRAMPrecision.html#a76f01c657ac41421f9823784a4267962", null ],
       [ "setInterpolation", "classinviwo_1_1LayerRAMPrecision.html#a3dd83965cdcdf6f34086b2fbfed838df", null ],
       [ "setSwizzleMask", "classinviwo_1_1LayerRAMPrecision.html#a8b6cb028f4e807c9891e85e923bd7712", null ],
@@ -131,7 +131,7 @@ var group__datastructures =
       [ "dispatch", "classinviwo_1_1VolumeRAM.html#a7e07e1af27f5d635444f8b474d622473", null ],
       [ "setData", "classinviwo_1_1VolumeRAM.html#a462509c2fbfac098ef575c4ee5a1d995", null ]
     ] ],
-    [ "inviwo::VolumeRAMPrecision< T >", "classinviwo_1_1VolumeRAMPrecision.html", [
+    [ "inviwo::VolumeRAMPrecision&lt; T &gt;", "classinviwo_1_1VolumeRAMPrecision.html", [
       [ "setData", "classinviwo_1_1VolumeRAMPrecision.html#af87c20e89976b1ea06a7ea740fcb66e3", null ],
       [ "setSwizzleMask", "classinviwo_1_1VolumeRAMPrecision.html#a39d6664131d0a7227c7af9b1900e6ea4", null ]
     ] ],
@@ -145,7 +145,7 @@ var group__datastructures =
       [ "getRange", "classinviwo_1_1Column.html#aa953c4ce798dd8942bf5667154a67b1d", null ],
       [ "setCustomRange", "classinviwo_1_1Column.html#a11cfd96282f974bfb57301f05c8db309", null ]
     ] ],
-    [ "inviwo::TemplateColumn< T >", "classinviwo_1_1TemplateColumn.html", [
+    [ "inviwo::TemplateColumn&lt; T &gt;", "classinviwo_1_1TemplateColumn.html", [
       [ "add", "classinviwo_1_1TemplateColumn.html#a34d52d630091b79b103bf29d37f948e2", null ],
       [ "append", "classinviwo_1_1TemplateColumn.html#ae1f1eb4cd62c486e82295c74d2187245", null ],
       [ "getCustomRange", "classinviwo_1_1TemplateColumn.html#af69f60d076b92c7aa355c4ae02d72258", null ],
@@ -244,7 +244,7 @@ var group__datastructures =
       [ "getDataRange", "classinviwo_1_1VolumeTetraMesh.html#abe3cd1a8801029771b762afeab897505", null ],
       [ "setData", "classinviwo_1_1VolumeTetraMesh.html#a1e7d021b6485855ed842c2704e880a12", null ]
     ] ],
-    [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", [
+    [ "inviwo::TypedMesh&lt; BufferTraits &gt;", "classinviwo_1_1TypedMesh.html", [
       [ "addVertex", "classinviwo_1_1TypedMesh.html#a827a74be2582dbde141ec2a2c1cbd05b", null ],
       [ "addVertices", "classinviwo_1_1TypedMesh.html#a50d621b6246bf8320aa072fb964e669a", null ],
       [ "append", "classinviwo_1_1TypedMesh.html#ac2c7cc734dafc15fa30fb4efabc10cf9", null ],

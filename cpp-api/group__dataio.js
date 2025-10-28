@@ -4,7 +4,7 @@ var group__dataio =
       [ "getOption", "classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88", null ],
       [ "setOption", "classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148", null ]
     ] ],
-    [ "inviwo::DataReaderType< T >", "classinviwo_1_1DataReaderType.html", [
+    [ "inviwo::DataReaderType&lt; T &gt;", "classinviwo_1_1DataReaderType.html", [
       [ "readData", "classinviwo_1_1DataReaderType.html#ae0105fa2debe3f46d4d90358e7d0f92b", null ]
     ] ],
     [ "inviwo::DataWriter", "classinviwo_1_1DataWriter.html", [
@@ -13,7 +13,7 @@ var group__dataio =
       [ "open", "classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6", null ],
       [ "setOption", "classinviwo_1_1DataWriter.html#ad2352d071b77129614c1e0d172dd2099", null ]
     ] ],
-    [ "inviwo::DataWriterType< T >", "classinviwo_1_1DataWriterType.html", [
+    [ "inviwo::DataWriterType&lt; T &gt;", "classinviwo_1_1DataWriterType.html", [
       [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
     ] ],
     [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],

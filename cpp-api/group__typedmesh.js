@@ -1,17 +1,17 @@
 var group__typedmesh =
 [
     [ "inviwo::buffertraits", "namespaceinviwo_1_1buffertraits.html", null ],
-    [ "inviwo::buffertraits::TypedMeshBufferBase< T, DIM, attrib, location >", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", null ],
-    [ "inviwo::buffertraits::PositionsBufferBase< DIMS >", "classinviwo_1_1buffertraits_1_1PositionsBufferBase.html", null ],
+    [ "inviwo::buffertraits::TypedMeshBufferBase&lt; T, DIM, attrib, location &gt;", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", null ],
+    [ "inviwo::buffertraits::PositionsBufferBase&lt; DIMS &gt;", "classinviwo_1_1buffertraits_1_1PositionsBufferBase.html", null ],
     [ "inviwo::buffertraits::NormalBuffer", "classinviwo_1_1buffertraits_1_1NormalBuffer.html", null ],
     [ "inviwo::buffertraits::ColorsBuffer", "classinviwo_1_1buffertraits_1_1ColorsBuffer.html", null ],
-    [ "inviwo::buffertraits::TexCoordBuffer< DIMS >", "classinviwo_1_1buffertraits_1_1TexCoordBuffer.html", null ],
+    [ "inviwo::buffertraits::TexCoordBuffer&lt; DIMS &gt;", "classinviwo_1_1buffertraits_1_1TexCoordBuffer.html", null ],
     [ "inviwo::buffertraits::CurvatureBuffer", "classinviwo_1_1buffertraits_1_1CurvatureBuffer.html", null ],
     [ "inviwo::buffertraits::IndexBuffer", "classinviwo_1_1buffertraits_1_1IndexBuffer.html", null ],
     [ "inviwo::buffertraits::RadiiBuffer", "classinviwo_1_1buffertraits_1_1RadiiBuffer.html", null ],
     [ "inviwo::buffertraits::PickingBuffer", "classinviwo_1_1buffertraits_1_1PickingBuffer.html", null ],
     [ "inviwo::buffertraits::ScalarMetaBuffer", "classinviwo_1_1buffertraits_1_1ScalarMetaBuffer.html", null ],
-    [ "inviwo::TypedMesh< BufferTraits >", "classinviwo_1_1TypedMesh.html", [
+    [ "inviwo::TypedMesh&lt; BufferTraits &gt;", "classinviwo_1_1TypedMesh.html", [
       [ "addVertex", "classinviwo_1_1TypedMesh.html#a827a74be2582dbde141ec2a2c1cbd05b", null ],
       [ "addVertices", "classinviwo_1_1TypedMesh.html#a50d621b6246bf8320aa072fb964e669a", null ],
       [ "append", "classinviwo_1_1TypedMesh.html#ac2c7cc734dafc15fa30fb4efabc10cf9", null ],
