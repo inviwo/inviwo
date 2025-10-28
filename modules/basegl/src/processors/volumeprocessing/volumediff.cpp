@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 #include <modules/opengl/volume/volumeutils.h>                             // for bindAndSetUnif...
+#include <inviwo/core/util/assertion.h>
 
 #include <memory>       // for shared_ptr
 #include <string>       // for string
