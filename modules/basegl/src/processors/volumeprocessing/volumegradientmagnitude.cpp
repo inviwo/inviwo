@@ -94,6 +94,7 @@ void VolumeGradientMagnitude::preProcess([[maybe_unused]] TextureUnitContainer& 
                         channel_.getSelectedValue(), volume->getDataFormat()->getComponents());
     }
 
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
     const auto& data = inport_->getData();
     config.valueAxis = Axis{.name = "Gradient magnitude",
                             .unit = data->dataMap.valueAxis.unit / data->axes[0].unit};

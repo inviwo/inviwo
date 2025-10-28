@@ -30,6 +30,8 @@
 #include <modules/basegl/processors/volumemasker.h>
 #include <modules/opengl/volume/volumeutils.h>
 
+#include <inviwo/core/util/assertion.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -77,6 +79,7 @@ void VolumeMasker::preProcess(TextureUnitContainer& cont, Shader& shader,
     utilgl::bindAndSetUniforms(shader, cont, *mask_.getData(), "mask");
 
     if (useWorldSpace_) {
+        IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
         shader.setUniform(
             "texTrafo", mask_.getData()->getCoordinateTransformer().getWorldToDataMatrix() *
                             inport_->getData()->getCoordinateTransformer().getDataToWorldMatrix());

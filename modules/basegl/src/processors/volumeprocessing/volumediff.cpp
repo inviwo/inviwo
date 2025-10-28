@@ -61,6 +61,7 @@ VolumeDiff::VolumeDiff()
 
     addProperties(calculateDataRange_, dataRange_);
 
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
     inport_->setHelp("Input volume 2"_help);
     outport_.setHelp(
         "Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0) / 2.0</tt>"_help);

@@ -83,7 +83,7 @@ VectorMagnitudeProcessor::~VectorMagnitudeProcessor() = default;
 void VectorMagnitudeProcessor::preProcess([[maybe_unused]] TextureUnitContainer& cont,
                                           Shader& shader, [[maybe_unused]] VolumeConfig& config) {
     int numChannels = 3;
-    if (inport_->hasData()) {
+    if (inport_ && inport_->hasData()) {
         numChannels = static_cast<int>(inport_->getData()->getDataFormat()->getComponents());
     }
 

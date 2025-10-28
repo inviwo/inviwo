@@ -67,7 +67,7 @@ public:
     explicit VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragmentShaderResource = {},
                                VolumeConfig config = {}, UseInport useInport = UseInport::Yes);
     explicit VolumeGLProcessor(std::string_view fragmentShaderName, VolumeConfig config = {},
-     UseInport useInport = UseInport::Yes);
+                               UseInport useInport = UseInport::Yes);
 
     virtual ~VolumeGLProcessor();
 

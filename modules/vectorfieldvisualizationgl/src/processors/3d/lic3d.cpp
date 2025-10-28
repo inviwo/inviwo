@@ -94,6 +94,7 @@ LIC3D::LIC3D()
 
     setAllPropertiesCurrentStateAsDefault();
 
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
     inport_->setHelp("Input noise volume"_help);
 }
 

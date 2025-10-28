@@ -69,9 +69,7 @@ public:
         Symmetric,   //!< uses a symmetric range, i.e. [-2^(b-1) + 1, 2^(b-1) - 1]
     };
 
-    enum class Space { Data, Normalized, SignNormalized, Value };
-
-    // asymetric
+    enum class Space : std::uint8_t { Data, Normalized, SignNormalized, Value };
 
     DataMapper();
     explicit DataMapper(const DataFormatBase* format,

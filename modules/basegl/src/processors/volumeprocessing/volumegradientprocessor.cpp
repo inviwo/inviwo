@@ -92,6 +92,7 @@ void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& 
         config.format = DataVec3Float32::get();
     }
 
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
     const auto& data = inport_->getData();
 
     const int channels = static_cast<int>(data->getDataFormat()->getComponents());
