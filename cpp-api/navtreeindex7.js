@@ -1,5 +1,7 @@
 var NAVTREEINDEX7 =
 {
+"classinviwo_1_1ImageContourProcessor.html#a8a113921ab0a6ec065b34d575135226d":[4,0,0,673,0],
+"classinviwo_1_1ImageConvolution.html":[2,0,0,774],
 "classinviwo_1_1ImageConvolution.html":[4,0,0,783],
 "classinviwo_1_1ImageDistanceTransform.html":[2,0,0,665],
 "classinviwo_1_1ImageDistanceTransform.html":[4,0,0,674],
@@ -247,7 +249,5 @@ var NAVTREEINDEX7 =
 "classinviwo_1_1IndexColumn.html":[4,0,0,934],
 "classinviwo_1_1IndexList.html":[2,0,0,906],
 "classinviwo_1_1IndexList.html":[4,0,0,915],
-"classinviwo_1_1IndexList.html#ac2dba12219024b56ada6d97bef32b75c":[2,0,0,906,0],
-"classinviwo_1_1IndexList.html#ac2dba12219024b56ada6d97bef32b75c":[4,0,0,915,0],
-"classinviwo_1_1IndicatorWidget.html":[2,0,0,1215]
+"classinviwo_1_1IndexList.html#ac2dba12219024b56ada6d97bef32b75c":[2,0,0,906,0]
 };

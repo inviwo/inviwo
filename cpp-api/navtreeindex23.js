@@ -1,5 +1,7 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1VolumeComponent.html#a3bdb1ec5fcc38c8fd5c402469d36aeca":[4,0,0,903,1],
+"classinviwo_1_1VolumeComponent.html#a3c80532d0a5dcd04fd7bb1030112d5ce":[2,0,0,894,0],
 "classinviwo_1_1VolumeComponent.html#a3c80532d0a5dcd04fd7bb1030112d5ce":[4,0,0,903,0],
 "classinviwo_1_1VolumeComponent.html#a48021dbd2fd06e4be1471502f3682821":[2,0,0,894,3],
 "classinviwo_1_1VolumeComponent.html#a48021dbd2fd06e4be1471502f3682821":[4,0,0,903,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1VolumeSequenceToDataFrame.html#a2282d199512e0636e17bee5fcb61768d":[2,0,0,952,1],
 "classinviwo_1_1VolumeSequenceToDataFrame.html#a2282d199512e0636e17bee5fcb61768d":[4,0,0,961,1],
 "classinviwo_1_1VolumeSequenceToDataFrame.html#ae4e7fac959f22de2f85dd5d985da8475":[2,0,0,952,0],
-"classinviwo_1_1VolumeSequenceToDataFrame.html#ae4e7fac959f22de2f85dd5d985da8475":[4,0,0,961,0],
-"classinviwo_1_1VolumeSequenceToSpatial4DSampler.html":[2,0,0,747],
-"classinviwo_1_1VolumeSequenceToSpatial4DSampler.html":[4,0,0,756]
+"classinviwo_1_1VolumeSequenceToDataFrame.html#ae4e7fac959f22de2f85dd5d985da8475":[4,0,0,961,0]
 };

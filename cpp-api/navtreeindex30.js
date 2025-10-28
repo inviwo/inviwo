@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"namespaceinviwo_1_1utilqt.html#a213608509ff09667a1fca92522f6759d":[2,0,0,11,30],
+"namespaceinviwo_1_1utilqt.html#a237dc6a67d1f4c0c3bff23a023bdb15d":[2,0,0,11,31],
 "namespaceinviwo_1_1utilqt.html#a29bdcb20eceda58d17346a1fe2df6755":[2,0,0,11,13],
 "namespaceinviwo_1_1utilqt.html#a311b90073105033955d885663fc6c37d":[2,0,0,11,19],
 "namespaceinviwo_1_1utilqt.html#a331aa2b4fc9021acd553c44cb59b1f29":[2,0,0,11,29],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1LayerReprConfig.html":[4,0,0,114],
 "structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html":[2,0,0,837,0],
 "structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html":[4,0,0,846,0],
-"structinviwo_1_1LightingConfig.html":[2,0,0,116],
-"structinviwo_1_1LightingConfig.html":[4,0,0,125],
-"structinviwo_1_1LightingState.html":[2,0,0,117]
+"structinviwo_1_1LightingConfig.html":[2,0,0,116]
 };
