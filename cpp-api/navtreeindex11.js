@@ -1,7 +1,5 @@
 var NAVTREEINDEX11 =
 {
-"classinviwo_1_1LinkEvaluator.html":[4,0,0,245],
-"classinviwo_1_1LinkEvaluator.html#acb20c35d0436dec150e552872ac38c55":[2,0,0,236,0],
 "classinviwo_1_1LinkEvaluator.html#acb20c35d0436dec150e552872ac38c55":[4,0,0,245,0],
 "classinviwo_1_1LinkGraphicsItem.html":[2,0,0,579],
 "classinviwo_1_1LinkGraphicsItem.html":[4,0,0,588],
@@ -249,5 +247,7 @@ var NAVTREEINDEX11 =
 "classinviwo_1_1MeshVolumeRenderer.html#a23e25a38aabf8b6ed5a412c7c905a054":[4,0,0,1037,0],
 "classinviwo_1_1MetaData.html":[2,0,0,240],
 "classinviwo_1_1MetaData.html":[4,0,0,249],
-"classinviwo_1_1MetaDataFactory.html":[2,0,0,242]
+"classinviwo_1_1MetaDataFactory.html":[2,0,0,242],
+"classinviwo_1_1MetaDataFactory.html":[4,0,0,251],
+"classinviwo_1_1MetaDataMap.html":[2,0,0,243]
 };

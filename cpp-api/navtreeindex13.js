@@ -1,7 +1,5 @@
 var NAVTREEINDEX13 =
 {
-"classinviwo_1_1OpacityOptimization.html#a702615c335995d3133235c1dadf70f6f":[2,0,0,1041,1],
-"classinviwo_1_1OpacityOptimization.html#a702615c335995d3133235c1dadf70f6f":[4,0,0,1050,1],
 "classinviwo_1_1OpacityOptimization.html#aaebd4b8e184514b514b1b8371209762a":[2,0,0,1041,2],
 "classinviwo_1_1OpacityOptimization.html#aaebd4b8e184514b514b1b8371209762a":[4,0,0,1050,2],
 "classinviwo_1_1OpactOptModule.html":[2,0,0,1040],
@@ -249,5 +247,7 @@ var NAVTREEINDEX13 =
 "classinviwo_1_1PickingController.html":[2,0,0,193],
 "classinviwo_1_1PickingController.html":[4,0,0,202],
 "classinviwo_1_1PickingControllerMouseState.html":[2,0,0,194],
-"classinviwo_1_1PickingControllerMouseState.html":[4,0,0,203]
+"classinviwo_1_1PickingControllerMouseState.html":[4,0,0,203],
+"classinviwo_1_1PickingControllerTouchState.html":[2,0,0,195],
+"classinviwo_1_1PickingControllerTouchState.html":[4,0,0,204]
 };

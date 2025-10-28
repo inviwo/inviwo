@@ -1,7 +1,5 @@
 var NAVTREEINDEX32 =
 {
-"structinviwo_1_1StrBuffer.html":[2,0,0,529],
-"structinviwo_1_1StrBuffer.html":[4,0,0,538],
 "structinviwo_1_1StrBuffer.html#a03afbda1e02f8fb7a2d2416e7b7178b5":[2,0,0,529,2],
 "structinviwo_1_1StrBuffer.html#a03afbda1e02f8fb7a2d2416e7b7178b5":[4,0,0,538,2],
 "structinviwo_1_1StrBuffer.html#a06f42f319c5cfe5e08451e691b47e186":[2,0,0,529,6],
@@ -249,5 +247,7 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1kind_1_1Disk.html":[4,0,0,3,1],
 "structinviwo_1_1kind_1_1GL.html":[4,0,0,3,3],
 "structinviwo_1_1kind_1_1RAM.html":[4,0,0,3,2],
-"structinviwo_1_1marching_1_1Config.html":[4,0,0,22,0]
+"structinviwo_1_1marching_1_1Config.html":[4,0,0,22,0],
+"structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html":[2,0,0,16,19,1],
+"structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html":[4,0,0,17,20,1]
 };

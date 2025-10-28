@@ -1,7 +1,5 @@
 var NAVTREEINDEX31 =
 {
-"structinviwo_1_1LightingConfig.html":[4,0,0,125],
-"structinviwo_1_1LightingState.html":[2,0,0,117],
 "structinviwo_1_1LightingState.html":[4,0,0,126],
 "structinviwo_1_1LineNumberResolver.html":[2,0,0,1071],
 "structinviwo_1_1LineNumberResolver.html":[4,0,0,1080],
@@ -249,5 +247,7 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1StaticString.html":[2,0,0,528],
 "structinviwo_1_1StaticString.html":[4,0,0,537],
 "structinviwo_1_1Statistics.html":[2,0,0,95],
-"structinviwo_1_1Statistics.html":[4,0,0,104]
+"structinviwo_1_1Statistics.html":[4,0,0,104],
+"structinviwo_1_1StrBuffer.html":[2,0,0,529],
+"structinviwo_1_1StrBuffer.html":[4,0,0,538]
 };

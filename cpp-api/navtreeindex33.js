@@ -1,7 +1,5 @@
 var NAVTREEINDEX33 =
 {
-"structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html":[2,0,0,16,19,1],
-"structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html":[4,0,0,17,20,1],
 "structinviwo_1_1plot_1_1detail_1_1AxisCaption.html":[4,0,0,17,0,7],
 "structinviwo_1_1plot_1_1detail_1_1AxisLabels.html":[4,0,0,17,0,6],
 "structinviwo_1_1plot_1_1detail_1_1AxisMeshes.html":[4,0,0,17,0,5],
@@ -249,5 +247,7 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1utilqt_1_1WidgetCloseEventFilter.html":[2,0,0,11,1],
 "structinviwo_1_1utilqt_1_1WidgetCloseEventFilter.html":[4,0,0,14,2],
 "structinviwo_1_1xml_1_1ElementMatcher.html":[2,0,0,4,0],
-"structinviwo_1_1xml_1_1ElementMatcher.html":[4,0,0,6,0]
+"structinviwo_1_1xml_1_1ElementMatcher.html":[4,0,0,6,0],
+"structinviwo_1_1xml_1_1ElementMatcher_1_1Attribute.html":[2,0,0,4,0,0],
+"structinviwo_1_1xml_1_1ElementMatcher_1_1Attribute.html":[4,0,0,6,0,0]
 };

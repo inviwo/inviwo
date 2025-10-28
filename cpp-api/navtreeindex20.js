@@ -1,7 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"classinviwo_1_1StructuredCoordinateTransformer.html#a718b1fe51926ecd94788523174a7672a":[2,0,0,56,11],
-"classinviwo_1_1StructuredCoordinateTransformer.html#a718b1fe51926ecd94788523174a7672a":[4,0,0,65,11],
 "classinviwo_1_1StructuredCoordinateTransformer.html#a8ab98d8646ea5520ea805b99c340e18d":[2,0,0,56,7],
 "classinviwo_1_1StructuredCoordinateTransformer.html#a8ab98d8646ea5520ea805b99c340e18d":[4,0,0,65,7],
 "classinviwo_1_1StructuredCoordinateTransformer.html#aa2e085b04868549ded484ddcfd5b6eb7":[2,0,0,56,1],
@@ -249,5 +247,7 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1TetraMesh.html#a5cffd83b9a73015ded6808b144800e60":[1,1,37,2],
 "classinviwo_1_1TetraMesh.html#ac7c7b1ff0cac8fc73b27fbfeeb7e5cfd":[1,1,37,1],
 "classinviwo_1_1TetraMeshBoundaryExtractor.html":[2,0,0,1291],
-"classinviwo_1_1TetraMeshBoundaryExtractor.html":[4,0,0,1300]
+"classinviwo_1_1TetraMeshBoundaryExtractor.html":[4,0,0,1300],
+"classinviwo_1_1TetraMeshBoundaryExtractor.html#a17737aff252bb97567caad5badac8bf3":[2,0,0,1291,0],
+"classinviwo_1_1TetraMeshBoundaryExtractor.html#a17737aff252bb97567caad5badac8bf3":[4,0,0,1300,0]
 };

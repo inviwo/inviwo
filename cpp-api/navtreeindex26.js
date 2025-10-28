@@ -1,7 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObject.html":[2,0,0,20,74],
-"classinviwo_1_1animation_1_1TrackWidgetQtFactoryObject.html":[4,0,0,20,75],
 "classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[2,0,0,20,75],
 "classinviwo_1_1animation_1_1TrackWidgetQtFactoryObjectTemplate.html":[4,0,0,20,76],
 "classinviwo_1_1animation_1_1ValueKeyframe.html":[2,0,0,20,36],
@@ -249,5 +247,7 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[2,0,0,16,30,2],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[4,0,0,17,31,2],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[2,0,0,16,30,0],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[4,0,0,17,31,0]
+"classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[4,0,0,17,31,0],
+"classinviwo_1_1plot_1_1PCPAxisSettings.html#a43526ad7fdffc9a2c6375e22afdbe7a4":[2,0,0,16,30,5],
+"classinviwo_1_1plot_1_1PCPAxisSettings.html#a43526ad7fdffc9a2c6375e22afdbe7a4":[4,0,0,17,31,5]
 };

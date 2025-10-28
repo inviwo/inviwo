@@ -1,7 +1,5 @@
 var NAVTREEINDEX16 =
 {
-"classinviwo_1_1PropertyConverter.html#aa81fdb980a4c22e5eb6b6c84092360c3":[2,0,0,376,0],
-"classinviwo_1_1PropertyConverter.html#aa81fdb980a4c22e5eb6b6c84092360c3":[4,0,0,385,0],
 "classinviwo_1_1PropertyConverterManager.html":[2,0,0,392],
 "classinviwo_1_1PropertyConverterManager.html":[4,0,0,401],
 "classinviwo_1_1PropertyEditorWidget.html":[2,0,0,393],
@@ -249,5 +247,7 @@ var NAVTREEINDEX16 =
 "classinviwo_1_1Rasterizer.html#ae865e126a3c01ae1041a606acc12acd3":[4,0,0,1039,0],
 "classinviwo_1_1Rasterizer.html#af655a9aaed160762644ee53381181f6b":[2,0,0,1030,7],
 "classinviwo_1_1Rasterizer.html#af655a9aaed160762644ee53381181f6b":[4,0,0,1039,7],
-"classinviwo_1_1RateLimiter.html":[2,0,0,589]
+"classinviwo_1_1RateLimiter.html":[2,0,0,589],
+"classinviwo_1_1RateLimiter.html":[4,0,0,598],
+"classinviwo_1_1RawDataReaderDialogQt.html":[2,0,0,1258]
 };
