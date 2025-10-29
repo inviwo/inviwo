@@ -104,6 +104,11 @@ Public Types</h2></td></tr>
 <tr class="memitem:a66564110d98821113d007cae18bd2387" id="r_a66564110d98821113d007cae18bd2387"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66564110d98821113d007cae18bd2387">SignedNormalization</a> { <a class="el" href="#a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0">Asymmetric</a>
 , <a class="el" href="#a66564110d98821113d007cae18bd2387af334649ef5e5d0ffe200751d07012626">Symmetric</a>
  }</td></tr>
+<tr class="memitem:a8692677b4f5a33bf901c2f90dfffebc2" id="r_a8692677b4f5a33bf901c2f90dfffebc2"><td class="memItemLeft" align="right" valign="top"><a id="a8692677b4f5a33bf901c2f90dfffebc2" name="a8692677b4f5a33bf901c2f90dfffebc2"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Space</b> : std::uint8_t { <b>Data</b>
+, <b>Normalized</b>
+, <b>SignNormalized</b>
+, <b>Value</b>
+ }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -139,6 +144,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initWithFormat</b> (c
 <tr class="memitem:a8878192a26497418c729382b88ece29e template"><td class="memItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8878192a26497418c729382b88ece29e">mapFromValueToNormalized</a> (T val) const</td></tr>
 <tr class="memitem:a75c426163dc82adac2f75ea23f5ef758" id="r_a75c426163dc82adac2f75ea23f5ef758"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a75c426163dc82adac2f75ea23f5ef758 template"><td class="memItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75c426163dc82adac2f75ea23f5ef758">mapFromNormalizedToValue</a> (T val) const</td></tr>
+<tr class="memitem:ae8997ff7a9a377da8526a6b5f379fbdf" id="r_ae8997ff7a9a377da8526a6b5f379fbdf"><td class="memTemplParams" colspan="2">template&lt;Space space, typename T&gt; </td></tr>
+<tr class="memitem:ae8997ff7a9a377da8526a6b5f379fbdf template"><td class="memItemLeft" align="right" valign="top">util::same_extent_t&lt; T, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8997ff7a9a377da8526a6b5f379fbdf">mapFromDataTo</a> (T val) const</td></tr>
 <tr class="memitem:a43e0fa197184ea98eefebd8146af3b10" id="r_a43e0fa197184ea98eefebd8146af3b10"><td class="memItemLeft" align="right" valign="top"><a id="a43e0fa197184ea98eefebd8146af3b10" name="a43e0fa197184ea98eefebd8146af3b10"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const DataMapper &amp;) const =default</td></tr>
 </table><table class="memberdecls">
@@ -189,6 +196,34 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ae8997ff7a9a377da8526a6b5f379fbdf" name="ae8997ff7a9a377da8526a6b5f379fbdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8997ff7a9a377da8526a6b5f379fbdf">&#9670;&#160;</a></span>mapFromDataTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;Space space, typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">util::same_extent_t&lt; T, double &gt; inviwo::DataMapper::mapFromDataTo </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Map from <span class="tt"><a class="el" href="#ace2bd755e9c66a1075c0215966cc4bd0">dataRange</a></span> to the <span class="tt">Space</span> </p>
+
+</div>
+</div>
 <a id="abfca23a4c6c956367356d7e7b6dbda99" name="abfca23a4c6c956367356d7e7b6dbda99"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfca23a4c6c956367356d7e7b6dbda99">&#9670;&#160;</a></span>mapFromDataToNormalized()</h2>
 

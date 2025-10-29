@@ -1,5 +1,7 @@
 var NAVTREEINDEX15 =
 {
+"classinviwo_1_1Processor.html#adac1b6040b74014c3fe47b7c250b7323":[1,3,0,2],
+"classinviwo_1_1Processor.html#ae040682770c4afbfcffabfc5dcb871cf":[1,3,0,18],
 "classinviwo_1_1ProcessorDockWidgetQt.html":[2,0,0,1194],
 "classinviwo_1_1ProcessorDockWidgetQt.html":[4,0,0,1203],
 "classinviwo_1_1ProcessorDragHelper.html":[2,0,0,587],
@@ -247,7 +249,5 @@ var NAVTREEINDEX15 =
 "classinviwo_1_1Property.html#af516e46114d9890ef5460e389688dbe4":[1,4,18,7],
 "classinviwo_1_1Property.html#af8646a9dd52ea2bd7f33b3a6b1410739":[1,4,18,18],
 "classinviwo_1_1PropertyConverter.html":[2,0,0,376],
-"classinviwo_1_1PropertyConverter.html":[4,0,0,385],
-"classinviwo_1_1PropertyConverter.html#aa81fdb980a4c22e5eb6b6c84092360c3":[2,0,0,376,0],
-"classinviwo_1_1PropertyConverter.html#aa81fdb980a4c22e5eb6b6c84092360c3":[4,0,0,385,0]
+"classinviwo_1_1PropertyConverter.html":[4,0,0,385]
 };

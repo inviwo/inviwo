@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"classinviwo_1_1Document_1_1DocumentHandle.html":[2,0,0,461,2],
+"classinviwo_1_1Document_1_1DocumentHandle.html":[4,0,0,470,2],
 "classinviwo_1_1Document_1_1Element.html":[2,0,0,461,0],
 "classinviwo_1_1Document_1_1Element.html":[4,0,0,470,0],
 "classinviwo_1_1Document_1_1PathComponent.html":[2,0,0,461,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX5 =
 "classinviwo_1_1FragmentListRenderer.html#a91eee23289764776eb8ea13e32ffb3e8":[2,0,0,1037,1],
 "classinviwo_1_1FragmentListRenderer.html#a91eee23289764776eb8ea13e32ffb3e8":[4,0,0,1046,1],
 "classinviwo_1_1FragmentListRenderer.html#aef573f3f43f0a122df84ef166772fc80":[2,0,0,1037,2],
-"classinviwo_1_1FragmentListRenderer.html#aef573f3f43f0a122df84ef166772fc80":[4,0,0,1046,2],
-"classinviwo_1_1FragmentListRenderer.html#af9672bc9a6f5f9edcddf5417a2323595":[2,0,0,1037,3],
-"classinviwo_1_1FragmentListRenderer.html#af9672bc9a6f5f9edcddf5417a2323595":[4,0,0,1046,3]
+"classinviwo_1_1FragmentListRenderer.html#aef573f3f43f0a122df84ef166772fc80":[4,0,0,1046,2]
 };

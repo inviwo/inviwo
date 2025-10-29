@@ -1,5 +1,7 @@
 var NAVTREEINDEX22 =
 {
+"classinviwo_1_1TransferFunctionITFWriter.html#a6a7167fea4c1f6bcb6d0e7258db3afdc":[4,0,0,236,0],
+"classinviwo_1_1TransferFunctionLayerReader.html":[2,0,0,228],
 "classinviwo_1_1TransferFunctionLayerReader.html":[4,0,0,237],
 "classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[2,0,0,229],
 "classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[4,0,0,238],
@@ -247,7 +249,5 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1VolumeComponent.html":[4,0,0,903],
 "classinviwo_1_1VolumeComponent.html#a3428f6f1b2ce33f3720ea0ae65f09834":[2,0,0,894,2],
 "classinviwo_1_1VolumeComponent.html#a3428f6f1b2ce33f3720ea0ae65f09834":[4,0,0,903,2],
-"classinviwo_1_1VolumeComponent.html#a3bdb1ec5fcc38c8fd5c402469d36aeca":[2,0,0,894,1],
-"classinviwo_1_1VolumeComponent.html#a3bdb1ec5fcc38c8fd5c402469d36aeca":[4,0,0,903,1],
-"classinviwo_1_1VolumeComponent.html#a3c80532d0a5dcd04fd7bb1030112d5ce":[2,0,0,894,0]
+"classinviwo_1_1VolumeComponent.html#a3bdb1ec5fcc38c8fd5c402469d36aeca":[2,0,0,894,1]
 };

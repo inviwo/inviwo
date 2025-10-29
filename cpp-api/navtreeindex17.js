@@ -1,5 +1,7 @@
 var NAVTREEINDEX17 =
 {
+"classinviwo_1_1RateLimiter.html":[4,0,0,598],
+"classinviwo_1_1RawDataReaderDialogQt.html":[2,0,0,1258],
 "classinviwo_1_1RawDataReaderDialogQt.html":[4,0,0,1267],
 "classinviwo_1_1RawVolumeRAMLoader.html":[2,0,0,211],
 "classinviwo_1_1RawVolumeRAMLoader.html":[4,0,0,220],
@@ -247,7 +249,5 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1ShaderObject.html#a6f4ea27eba2786a424a607f2c0fe0554":[4,0,0,1083,8],
 "classinviwo_1_1ShaderObject.html#aa6fceb7de9928852e6bdd3bda404581c":[2,0,0,1074,2],
 "classinviwo_1_1ShaderObject.html#aa6fceb7de9928852e6bdd3bda404581c":[4,0,0,1083,2],
-"classinviwo_1_1ShaderObject.html#ad321ce15496dec171e41cf28aa4eec44":[2,0,0,1074,6],
-"classinviwo_1_1ShaderObject.html#ad321ce15496dec171e41cf28aa4eec44":[4,0,0,1083,6],
-"classinviwo_1_1ShaderObject.html#ad3f2012a17e1487a12a84e8648f285f2":[2,0,0,1074,5]
+"classinviwo_1_1ShaderObject.html#ad321ce15496dec171e41cf28aa4eec44":[2,0,0,1074,6]
 };

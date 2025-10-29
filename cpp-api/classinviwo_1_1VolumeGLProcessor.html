@@ -138,12 +138,28 @@ $(function(){initNavTree('classinviwo_1_1VolumeGLProcessor.html','','classinviwo
 Classes</h2></td></tr>
 <tr class="memitem:FBO" id="r_FBO"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1VolumeGLProcessor_1_1FBO.html">FBO</a></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a6b30afbbcbf7d4b68de5dbeb8960c9ad" id="r_a6b30afbbcbf7d4b68de5dbeb8960c9ad"><td class="memItemLeft" align="right" valign="top"><a id="a6b30afbbcbf7d4b68de5dbeb8960c9ad" name="a6b30afbbcbf7d4b68de5dbeb8960c9ad"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>UseInport</b> : bool { <b>Yes</b>
+, <b>No</b>
+ }</td></tr>
+<tr class="inherit_header pub_types_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
+<tr class="memitem:a54efc0672583e4cc7676c0c377eaf9c7 inherit pub_types_classinviwo_1_1Processor" id="r_a54efc0672583e4cc7676c0c377eaf9c7"><td class="memItemLeft" align="right" valign="top">
+using&#160;</td><td class="memItemRight" valign="bottom"><b>NameDispatcher</b> = <a class="el" href="classinviwo_1_1Dispatcher.html">Dispatcher</a>&lt;void(std::string_view, std::string_view)&gt;</td></tr>
+<tr class="memitem:a93ac5724a55f3f9c59ec6ac4dafeb272 inherit pub_types_classinviwo_1_1Processor" id="r_a93ac5724a55f3f9c59ec6ac4dafeb272"><td class="memItemLeft" align="right" valign="top">
+using&#160;</td><td class="memItemRight" valign="bottom"><b>NameDispatcherHandle</b> = typename NameDispatcher::Handle</td></tr>
+<tr class="inherit_header pub_types_classinviwo_1_1PropertyOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1PropertyOwner')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a></td></tr>
+<tr class="memitem:af123641012bc263955cd12d6b365f05b inherit pub_types_classinviwo_1_1PropertyOwner" id="r_af123641012bc263955cd12d6b365f05b"><td class="memItemLeft" align="right" valign="top">
+using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::iterator</td></tr>
+<tr class="memitem:a22da3c1ecbe5a89a651f4d3feef13c99 inherit pub_types_classinviwo_1_1PropertyOwner" id="r_a22da3c1ecbe5a89a651f4d3feef13c99"><td class="memItemLeft" align="right" valign="top">
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::const_iterator</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac3852fd39aa1fbffbc7869e835283fbb" id="r_ac3852fd39aa1fbffbc7869e835283fbb"><td class="memItemLeft" align="right" valign="top"><a id="ac3852fd39aa1fbffbc7869e835283fbb" name="ac3852fd39aa1fbffbc7869e835283fbb"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragmentShaderResource={}, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={})</td></tr>
-<tr class="memitem:a88e3d02f4099accb5f588f286e1cf496" id="r_a88e3d02f4099accb5f588f286e1cf496"><td class="memItemLeft" align="right" valign="top"><a id="a88e3d02f4099accb5f588f286e1cf496" name="a88e3d02f4099accb5f588f286e1cf496"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::string_view fragmentShaderName, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={})</td></tr>
+<tr class="memitem:af9a6785cb3c333cb7fe829ad013c8997" id="r_af9a6785cb3c333cb7fe829ad013c8997"><td class="memItemLeft" align="right" valign="top"><a id="af9a6785cb3c333cb7fe829ad013c8997" name="af9a6785cb3c333cb7fe829ad013c8997"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragmentShaderResource={}, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={}, UseInport useInport=UseInport::Yes)</td></tr>
+<tr class="memitem:a0f6c77bc299c5dfec3462c031c643dda" id="r_a0f6c77bc299c5dfec3462c031c643dda"><td class="memItemLeft" align="right" valign="top"><a id="a0f6c77bc299c5dfec3462c031c643dda" name="a0f6c77bc299c5dfec3462c031c643dda"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VolumeGLProcessor</b> (std::string_view fragmentShaderName, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> config={}, UseInport useInport=UseInport::Yes)</td></tr>
 <tr class="memitem:afe36914b86a9dbb525ffd249dc225fcb" id="r_afe36914b86a9dbb525ffd249dc225fcb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe36914b86a9dbb525ffd249dc225fcb">initializeResources</a> () final</td></tr>
 <tr class="memitem:a119dcda49973aad33ca20630e74db120" id="r_a119dcda49973aad33ca20630e74db120"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a119dcda49973aad33ca20630e74db120">process</a> () final</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
@@ -466,8 +482,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:af3b6c1c812292666a50e5d0e9b2232ae" id="r_af3b6c1c812292666a50e5d0e9b2232ae"><td class="memItemLeft" align="right" valign="top"><a id="af3b6c1c812292666a50e5d0e9b2232ae" name="af3b6c1c812292666a50e5d0e9b2232ae"></a>
-VolumeInport&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></td></tr>
+<tr class="memitem:afd45dd2d505148de2fa84b27b5035460" id="r_afd45dd2d505148de2fa84b27b5035460"><td class="memItemLeft" align="right" valign="top"><a id="afd45dd2d505148de2fa84b27b5035460" name="afd45dd2d505148de2fa84b27b5035460"></a>
+std::optional&lt; VolumeInport &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></td></tr>
 <tr class="memitem:a2660ac3aca6d5e2e7b3b7191e326e3a6" id="r_a2660ac3aca6d5e2e7b3b7191e326e3a6"><td class="memItemLeft" align="right" valign="top"><a id="a2660ac3aca6d5e2e7b3b7191e326e3a6" name="a2660ac3aca6d5e2e7b3b7191e326e3a6"></a>
 VolumeOutport&#160;</td><td class="memItemRight" valign="bottom"><b>outport_</b></td></tr>
 <tr class="memitem:a327c264d53c57322f2b4af43950a936b" id="r_a327c264d53c57322f2b4af43950a936b"><td class="memItemLeft" align="right" valign="top"><a id="a327c264d53c57322f2b4af43950a936b" name="a327c264d53c57322f2b4af43950a936b"></a>
@@ -503,16 +519,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
-<tr class="memitem:a54efc0672583e4cc7676c0c377eaf9c7 inherit pub_types_classinviwo_1_1Processor" id="r_a54efc0672583e4cc7676c0c377eaf9c7"><td class="memItemLeft" align="right" valign="top">
-using&#160;</td><td class="memItemRight" valign="bottom"><b>NameDispatcher</b> = <a class="el" href="classinviwo_1_1Dispatcher.html">Dispatcher</a>&lt;void(std::string_view, std::string_view)&gt;</td></tr>
-<tr class="memitem:a93ac5724a55f3f9c59ec6ac4dafeb272 inherit pub_types_classinviwo_1_1Processor" id="r_a93ac5724a55f3f9c59ec6ac4dafeb272"><td class="memItemLeft" align="right" valign="top">
-using&#160;</td><td class="memItemRight" valign="bottom"><b>NameDispatcherHandle</b> = typename NameDispatcher::Handle</td></tr>
-<tr class="inherit_header pub_types_classinviwo_1_1PropertyOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classinviwo_1_1PropertyOwner')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a></td></tr>
-<tr class="memitem:af123641012bc263955cd12d6b365f05b inherit pub_types_classinviwo_1_1PropertyOwner" id="r_af123641012bc263955cd12d6b365f05b"><td class="memItemLeft" align="right" valign="top">
-using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::iterator</td></tr>
-<tr class="memitem:a22da3c1ecbe5a89a651f4d3feef13c99 inherit pub_types_classinviwo_1_1PropertyOwner" id="r_a22da3c1ecbe5a89a651f4d3feef13c99"><td class="memItemLeft" align="right" valign="top">
-using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::const_iterator</td></tr>
 <tr class="inherit_header pro_static_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_static_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:af79dedcc137d212c5d0225dc8cee3380 inherit pro_static_methods_classinviwo_1_1Processor" id="r_af79dedcc137d212c5d0225dc8cee3380"><td class="memItemLeft" align="right" valign="top">
 static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html">ProcessorStatus</a>()&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getDefaultIsReadyUpdater</b> (<a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> *)</td></tr>

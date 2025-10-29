@@ -4,6 +4,7 @@ var classinviwo_1_1DataMapper =
       [ "Asymmetric", "classinviwo_1_1DataMapper.html#a66564110d98821113d007cae18bd2387a314084a577b998d8089dff72c98c58b0", null ],
       [ "Symmetric", "classinviwo_1_1DataMapper.html#a66564110d98821113d007cae18bd2387af334649ef5e5d0ffe200751d07012626", null ]
     ] ],
+    [ "mapFromDataTo", "classinviwo_1_1DataMapper.html#ae8997ff7a9a377da8526a6b5f379fbdf", null ],
     [ "mapFromDataToNormalized", "classinviwo_1_1DataMapper.html#abfca23a4c6c956367356d7e7b6dbda99", null ],
     [ "mapFromDataToSignNormalized", "classinviwo_1_1DataMapper.html#afd16a476f51c4273a78f22736e17cf3d", null ],
     [ "mapFromDataToValue", "classinviwo_1_1DataMapper.html#afa19794edd95ad5e37ae539fa523e0c2", null ],
