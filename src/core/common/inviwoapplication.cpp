@@ -421,7 +421,7 @@ size_t InviwoApplication::processFront() {
     while (true) {
         std::function<void()> task;
         {
-            std::unique_lock<std::mutex> lock{queue_.mutex};
+            const std::unique_lock<std::mutex> lock{queue_.mutex};
             if (queue_.tasks.empty()) break;
             task = std::move(queue_.tasks.front());
             queue_.tasks.pop();
@@ -429,7 +429,7 @@ size_t InviwoApplication::processFront() {
         task();
     }
 
-    std::unique_lock<std::mutex> lock{queue_.mutex};
+    const std::unique_lock<std::mutex> lock{queue_.mutex};
     return queue_.tasks.size();
 }
 

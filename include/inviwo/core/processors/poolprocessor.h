@@ -152,6 +152,10 @@ public:
      */
     PoolProcessor(pool::Options options = pool::Options{flags::empty},
                   const std::string& identifier = "", const std::string& displayName = "");
+    PoolProcessor(const PoolProcessor&) = delete;
+    PoolProcessor(PoolProcessor&&) = delete;
+    PoolProcessor& operator=(const PoolProcessor&) = delete;
+    PoolProcessor& operator=(PoolProcessor&&) = delete;
 
     virtual ~PoolProcessor();
 
@@ -412,8 +416,11 @@ inline void PoolProcessor::callDone(
     if (state->count.fetch_sub(1) == 1) {
         util::dispatchFrontAndForget(app, [state = std::move(state)]() {
             // This code will run in the main thread, make sure the default context is active
+            // Always activate the context since it might be needed to delete the state.
             rendercontext::activateDefault();
+
             if (auto p = state->processor.lock()) {
+
                 const bool isLast = p->removeState(state);
 
                 p->notifyObserversFinishBackgroundWork(p.get(), state->nJobs);
@@ -508,7 +515,8 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     Submission sub{state,
                    {[state, task, app]() {
                        if (!state->stop) {
-                           // This code will run in a background thread, make sure the local context is active
+                           // This code will run in a background thread, make sure the local context
+                           // is active
                            rendercontext::activateLocal();
                            (*task)();
                        }

@@ -43,7 +43,7 @@
 namespace inviwo {
 
 template <typename T>
-class HistogramToDataFrame : public Processor{
+class HistogramToDataFrame : public Processor {
 public:
     HistogramToDataFrame();
 
