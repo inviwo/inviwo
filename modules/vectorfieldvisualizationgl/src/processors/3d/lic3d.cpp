@@ -94,7 +94,8 @@ LIC3D::LIC3D()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    inport_.setHelp("Input noise volume"_help);
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
+    inport_->setHelp("Input noise volume"_help);
 }
 
 void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {

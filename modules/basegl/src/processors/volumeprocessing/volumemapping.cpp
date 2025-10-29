@@ -57,7 +57,9 @@ VolumeMapping::VolumeMapping()
     : VolumeGLProcessor{"volume_mapping.frag", VolumeConfig{.format = DataFloat32::get()}}
     , tfProperty_{"transferFunction", "Transfer function",
                   "Defines the transfer function for mapping voxel values to opacity"_help,
-                  TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_}
+                  TransferFunction(
+                      {{.pos = 0.0, .color = vec4(0.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}),
+                  inport_.transform([](auto& port) { return &port; }).value_or(nullptr)}
     , channel_{"channel", "Channel", "Selected channel for the TF lookup"_help,
                util::enumeratedOptions("Channel", 4)} {
 

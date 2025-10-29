@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processortags.h>                          // for Tags, Tags::GL
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>  // for VolumeGLProcessor
 #include <modules/opengl/volume/volumeutils.h>                             // for bindAndSetUnif...
+#include <inviwo/core/util/assertion.h>
 
 #include <memory>       // for shared_ptr
 #include <string>       // for string
@@ -61,7 +62,8 @@ VolumeDiff::VolumeDiff()
 
     addProperties(calculateDataRange_, dataRange_);
 
-    inport_.setHelp("Input volume 2"_help);
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
+    inport_->setHelp("Input volume 2"_help);
     outport_.setHelp(
         "Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0) / 2.0</tt>"_help);
 }

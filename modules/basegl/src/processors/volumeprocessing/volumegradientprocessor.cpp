@@ -92,20 +92,22 @@ void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& 
         config.format = DataVec3Float32::get();
     }
 
-    const int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
+    IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
+    const auto& data = inport_->getData();
+
+    const int channels = static_cast<int>(data->getDataFormat()->getComponents());
     if (channel_.getSelectedValue() >= channels) {
         throw Exception(SourceContext{}, "Selected channel out of bounds {} of {}",
                         channel_.getSelectedValue(), channels);
     }
 
     if (!dataInChannel4_) {
-        config.valueAxis = Axis{
-            .name = "Gradient",
-            .unit = inport_.getData()->dataMap.valueAxis.unit / inport_.getData()->axes[0].unit};
+        config.valueAxis =
+            Axis{.name = "Gradient", .unit = data->dataMap.valueAxis.unit / data->axes[0].unit};
     }
 
     shader.setUniform("channel", channel_.getSelectedValue());
-    shader.setUniform("dataRange", vec2(inport_.getData()->dataMap.dataRange));
+    shader.setUniform("dataRange", vec2(data->dataMap.dataRange));
 }
 
 }  // namespace inviwo
