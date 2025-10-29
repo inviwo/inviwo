@@ -51,7 +51,7 @@ vec4 getTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
 // not the same as the min/max of the data type. And at the same time take into account that OpenGL
 // also does its own normalization, which if different for floating point and integer types
 // see: https://www.opengl.org/wiki/Normalized_Integer
-// the actual calculation of the scaling parameters is done in imageutils.cpp
+// The scaling parameters are calculated in utilgl::createGLFormatRenormalization() (glformatutils.h)
 vec4 getNormalizedTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
     return (texture(image, samplePos) + imageParams.formatOffset)
         * (1.0 - imageParams.formatScaling);
