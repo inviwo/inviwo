@@ -31,7 +31,6 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -50,7 +49,7 @@ class InviwoApplication;
 /**
  * @brief Render webpage into the color and picking layers (OpenGL).
  */
-class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public ProgressBarOwner {
+class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor {
 public:
     explicit WebBrowserProcessor(InviwoApplication* app);
 

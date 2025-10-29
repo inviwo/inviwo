@@ -71,6 +71,7 @@
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/rendercontext.h>
 
 #include <inviwo/core/resourcemanager/resourcemanagerobserver.h>
 
@@ -416,19 +417,19 @@ void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
 }
 
 size_t InviwoApplication::processFront() {
-    {
+
+    while (true) {
         std::function<void()> task;
-        while (true) {
-            {
-                std::unique_lock<std::mutex> lock{queue_.mutex};
-                if (queue_.tasks.empty()) break;
-                task = std::move(queue_.tasks.front());
-                queue_.tasks.pop();
-            }
-            task();
+        {
+            const std::unique_lock<std::mutex> lock{queue_.mutex};
+            if (queue_.tasks.empty()) break;
+            task = std::move(queue_.tasks.front());
+            queue_.tasks.pop();
         }
+        task();
     }
-    std::unique_lock<std::mutex> lock{queue_.mutex};
+
+    const std::unique_lock<std::mutex> lock{queue_.mutex};
     return queue_.tasks.size();
 }
 

@@ -33,9 +33,6 @@
 #include <inviwo/core/processors/processor.h>  // for Processor
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/processors/progressbarowner.h>
-
-#include <modules/webbrowser/processors/progressbarobservercef.h>
 
 #include <modules/json/json.h>
 #include <modules/json/jsonpropertyconverter.h>
@@ -152,8 +149,6 @@ public:
     // Remove widget if property is removed
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor* p) override;
-
     void clear(CefRefPtr<CefBrowser> browser);
 
     CallbackHandle registerCallback(CefRefPtr<CefBrowser> browser, const std::string& name,
@@ -202,11 +197,6 @@ private:
     bool handleProperty(const json& j, CefRefPtr<CefBrowser>& browser,
                         CefRefPtr<Callback>& reponse);
 
-    bool processorUnsubscribeProgress(const json& j, CefRefPtr<Callback>& callback);
-
-    bool processorSubscribeProgress(const json& j, CefRefPtr<CefFrame>& frame,
-                                    CefRefPtr<Callback>& callback);
-
     // Searches first for the property in Processors and then in Settings
     Property* findProperty(std::string_view path);
 
@@ -229,8 +219,6 @@ private:
     const JSONOutportConverter& jsonOutportConverter_;    /// Non-owning reference
 
     std::map<int, std::vector<std::unique_ptr<PropertyWidgetCEF>>> widgets_;
-
-    std::map<Processor*, ProgressBarObserverCEF> progressObservers_;
 
     std::map<int, std::map<std::string, std::weak_ptr<std::function<CallbackFunc>>>> callbacks_;
 
