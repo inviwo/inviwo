@@ -37,8 +37,7 @@
 
 namespace inviwo::utilgl {
 
-GLFormatConversion createGLFormatConversion(const DataMapper& dataMapIn,
-                                            const DataMapper& dataMapOut,
+RangeConversionMap createGLOutputConversion(const DataMapper& dataMapOut,
                                             const DataFormatBase* formatOut) {
     using enum DataMapper::SignedNormalization;
 
@@ -46,10 +45,6 @@ GLFormatConversion createGLFormatConversion(const DataMapper& dataMapIn,
 
     const DataMapper defaultRange(formatOut, Symmetric);
 
-    // map normalized input [0,1] to valueRange
-    const dvec2 valueRangeIn = dataMapIn.valueRange;
-    const double toValueScaling = valueRangeIn.y - valueRangeIn.x;
-    const double toValueOffset = valueRangeIn.x;
     // map from value range to dataRange (float, non-normalized),
     // normalized dataRange [0,1] (normalized, unsigned),
     // or sign normalized dataRange [-1,1] (normalized, signed)
@@ -59,38 +54,36 @@ GLFormatConversion createGLFormatConversion(const DataMapper& dataMapIn,
         (dataRangeOut.y - dataRangeOut.x) / (defaultRange.dataRange.y - defaultRange.dataRange.x);
     const double dataOutToDefaultOffset = (dataRangeOut.x - defaultRange.dataRange.x) /
                                           (defaultRange.dataRange.y - defaultRange.dataRange.x);
-    double outputValueOffset = 0.0;
+    double inputOffset = 0.0;
     double outputScaling = 1.0;
     double outputOffset = 0.0;
     switch (glFormatOut.normalization) {
         case utilgl::Normalization::None:  // map to data range
-            outputValueOffset = valueRangeOut.x;
+            inputOffset = valueRangeOut.x;
             outputScaling = (dataRangeOut.y - dataRangeOut.x) / (valueRangeOut.y - valueRangeOut.x);
             outputOffset = dataRangeOut.x;
             break;
         case utilgl::Normalization::Normalized:  // map to [0,1]
-            outputValueOffset = valueRangeOut.x;
+            inputOffset = valueRangeOut.x;
             outputScaling = dataOutToDefault / (valueRangeOut.y - valueRangeOut.x);
             outputOffset = dataOutToDefaultOffset;
             break;
         case utilgl::Normalization::SignNormalized:  // map to [-1,1]
-            outputValueOffset = valueRangeOut.x;
+            inputOffset = valueRangeOut.x;
             outputScaling = dataOutToDefault / (valueRangeOut.y - valueRangeOut.x) * 2.0;
             outputOffset = dataOutToDefaultOffset * 2.0 - 1.0;
             break;
     }
 
-    return GLFormatConversion{
-        .toValueScaling = toValueScaling,
-        .toValueOffset = toValueOffset,
-        .outputValueOffset = outputValueOffset,
-        .outputScaling = outputScaling,
+    return RangeConversionMap{
+        .inputOffset = inputOffset,
+        .scale = outputScaling,
         .outputOffset = outputOffset,
     };
 }
 
-GLFormatRenormalization createGLFormatRenormalization(const DataMapper& dataMap,
-                                                      const DataFormatBase* format) {
+FormatConversion createGLFormatRenormalization(const DataMapper& dataMap,
+                                               const DataFormatBase* format) {
     using enum DataMapper::SignedNormalization;
 
     const dvec2 dataRange = dataMap.dataRange;
@@ -103,37 +96,48 @@ GLFormatRenormalization createGLFormatRenormalization(const DataMapper& dataMap,
     const double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
                                        (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
-    double formatScaling = 1.0;
-    double signedFormatScaling = 1.0;
-    double formatOffset = 0.0;
-    double signedFormatOffset = 0.0;
+    const dvec2 valueRange = dataMap.valueRange;
+    const double toValueScaling = valueRange.y - valueRange.x;
+
+    NormalizationMap texToNormalized;
+    NormalizationMap texToSignNormalized;
+    RangeConversionMap texToValue;
 
     switch (GLFormats::get(format->getId()).normalization) {
         case utilgl::Normalization::None:
-            formatScaling = invRange;
-            formatOffset = -dataRange.x;
-            signedFormatScaling = formatScaling;
-            signedFormatOffset = formatOffset;
+            texToNormalized.scale = invRange;
+            texToNormalized.offset = dataRange.x;
+            texToSignNormalized = texToNormalized;
+
+            texToValue.scale = invRange * toValueScaling;
+            texToValue.inputOffset = dataRange.x;
+            texToValue.outputOffset = valueRange.x;
             break;
         case utilgl::Normalization::Normalized:
-            formatScaling = defaultToDataRange;
-            formatOffset = -defaultToDataOffset;
-            signedFormatScaling = formatScaling;
-            signedFormatOffset = formatOffset;
+            texToNormalized.scale = defaultToDataRange;
+            texToNormalized.offset = defaultToDataOffset;
+            texToSignNormalized = texToNormalized;
+
+            texToValue.scale = defaultToDataRange * toValueScaling;
+            texToValue.inputOffset = defaultToDataOffset;
+            texToValue.outputOffset = valueRange.x;
             break;
         case utilgl::Normalization::SignNormalized:
-            formatScaling = 0.5 * defaultToDataRange;
-            formatOffset = 1.0 - 2 * defaultToDataOffset;
-            signedFormatScaling = defaultToDataRange;
-            signedFormatOffset = -defaultToDataOffset;
+            texToNormalized.scale = 0.5 * defaultToDataRange;
+            texToNormalized.offset = -1.0 + 2 * defaultToDataOffset;
+            texToSignNormalized.scale = defaultToDataRange;
+            texToSignNormalized.offset = defaultToDataOffset;
+
+            texToValue.scale = 0.5 * defaultToDataRange * toValueScaling;
+            texToValue.inputOffset = -1.0 + 2 * defaultToDataOffset;
+            texToValue.outputOffset = valueRange.x;
             break;
     }
 
-    return GLFormatRenormalization{
-        .formatScaling = formatScaling,
-        .signedFormatScaling = signedFormatScaling,
-        .formatOffset = formatOffset,
-        .signedFormatOffset = signedFormatOffset,
+    return FormatConversion{
+        .texToNormalized = texToNormalized,
+        .texToSignNormalized = texToSignNormalized,
+        .texToValue = texToValue,
     };
 }
 

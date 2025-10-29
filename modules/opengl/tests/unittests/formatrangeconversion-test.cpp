@@ -43,8 +43,8 @@ namespace inviwo {
 TEST(RangeConversion, DoubleIdentity) {
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Float32);
 
-    DataMapper srcMap{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
-    DataMapper dstMap{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
+    const DataMapper srcMap{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
+    const DataMapper dstMap{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -61,8 +61,8 @@ TEST(RangeConversion, DoubleIdentity) {
 TEST(RangeConversion, DoubleSymmetric) {
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Float32);
 
-    DataMapper srcMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
-    DataMapper dstMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
+    const DataMapper srcMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
+    const DataMapper dstMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -78,8 +78,8 @@ TEST(RangeConversion, DoubleSymmetric) {
 TEST(RangeConversion, DoubleSignedToPositive) {
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Float32);
 
-    DataMapper srcMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
-    DataMapper dstMap{dvec2{0.0, 1.0}, dvec2{0.0, 2.0}};
+    const DataMapper srcMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
+    const DataMapper dstMap{dvec2{0.0, 1.0}, dvec2{0.0, 2.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -98,8 +98,10 @@ TEST(RangeConversion, Int16) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric), dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
+                            dvec2{0.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -116,8 +118,10 @@ TEST(RangeConversion, Int16Symmetric) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric), dvec2{-10.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
+                            dvec2{-10.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -132,8 +136,9 @@ TEST(RangeConversion, Int16Positive) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{dvec2{0.0, dstFormat->getMax()}, dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{dvec2{0.0, dstFormat->getMax()}, dvec2{0.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -148,8 +153,10 @@ TEST(RangeConversion, UInt16) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::UInt16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::UInt16);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric), dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
+                            dvec2{0.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -167,8 +174,10 @@ TEST(RangeConversion, Int32) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int32);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric), dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
+                            dvec2{0.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -185,8 +194,10 @@ TEST(RangeConversion, Int32Symmetric) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int32);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric), dvec2{-10.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
+                            dvec2{-10.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 
@@ -201,8 +212,10 @@ TEST(RangeConversion, UInt32) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::UInt32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::UInt32);
 
-    DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric), dvec2{-5.0, 5.0}};
-    DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric), dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
+                            dvec2{-5.0, 5.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
+                            dvec2{0.0, 10.0}};
 
     const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
 

@@ -33,48 +33,30 @@
 #include "utils/structs.glsl" //! #include "./structs.glsl"
 
 /**
- * Map a normalized OpenGL value @p normalizedValue to value space as specified by @p conversion.
- *
- * @param normalizedValue  normalized value [0,1] as obtained by getNormalizedTexel() in
- *                         sampler2d.glsl
- * @param conversion       parameters used for the range conversion
- * @return converted value in value space
- */
-float mapFromNormalizedGLToValue(in float normalizedValue, in GLFormatConversion conversion) {
-    return normalizedValue * conversion.toValueScaling + conversion.toValueOffset;
-}
-vec2 mapFromNormalizedGLToValue(in vec2 normalizedValue, in GLFormatConversion conversion) {
-    return normalizedValue * conversion.toValueScaling + conversion.toValueOffset;
-}
-vec3 mapFromNormalizedGLToValue(in vec3 normalizedValue, in GLFormatConversion conversion) {
-    return normalizedValue * conversion.toValueScaling + conversion.toValueOffset;
-}
-vec4 mapFromNormalizedGLToValue(in vec4 normalizedValue, in GLFormatConversion conversion) {
-    return normalizedValue * conversion.toValueScaling + conversion.toValueOffset;
-}
-
-/**
  * Map the value @p value from value space to the OpenGL output range as defined by the underlying
- * data format and specified by @p conversion as follows:
+ * data format and specified by @p map as follows:
  *   + map from value range to dataRange for float and non-normalized GL data formats
  *   + normalized dataRange [0,1] for normalized, unsigned GL data formats
  *   + or sign normalized dataRange [-1,1] for normalized, signed GL data formats
+ * 
+ * NOTE: negative values of sign normalized data are clamped to zero by OpenGL before
+ *       renormalization when writing those in a fragment shader (confirmed on NVIDIA)
  *
- * @param value        value in value space
- * @param conversion   parameters used for the range conversion
+ * @param value   value in value space
+ * @param map     parameters used for the range map
  * @return @p value converted to the OpenGL output range
  */
-float mapFromValueToGLOutput(in float value, in GLFormatConversion conversion) {
-    return ((value - conversion.outputValueOffset) * conversion.outputScaling) + conversion.outputOffset;
+float mapFromValueToGLOutput(in float value, in RangeConversionMap map) {
+    return ((value - map.inputOffset) * map.scale) + map.outputOffset;
 }
-vec2 mapFromValueToGLOutput(in vec2 value, in GLFormatConversion conversion) {
-    return ((value - conversion.outputValueOffset) * conversion.outputScaling) + conversion.outputOffset;
+vec2 mapFromValueToGLOutput(in vec2 value, in RangeConversionMap map) {
+    return ((value - map.inputOffset) * map.scale) + map.outputOffset;
 }
-vec3 mapFromValueToGLOutput(in vec3 value, in GLFormatConversion conversion) {
-    return ((value - conversion.outputValueOffset) * conversion.outputScaling) + conversion.outputOffset;
+vec3 mapFromValueToGLOutput(in vec3 value, in RangeConversionMap map) {
+    return ((value - map.inputOffset) * map.scale) + map.outputOffset;
 }
-vec4 mapFromValueToGLOutput(in vec4 value, in GLFormatConversion conversion) {
-    return ((value - conversion.outputValueOffset) * conversion.outputScaling) + conversion.outputOffset;
+vec4 mapFromValueToGLOutput(in vec4 value, in RangeConversionMap map) {
+    return ((value - map.inputOffset) * map.scale) + map.outputOffset;
 }
 
 #endif  // IVW_CONVERSION_GLSL

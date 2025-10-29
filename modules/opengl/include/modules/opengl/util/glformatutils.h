@@ -39,19 +39,21 @@ class DataFormatBase;
 
 namespace utilgl {
 
-struct IVW_MODULE_OPENGL_API GLFormatConversion {
-    double toValueScaling = 1.0;
-    double toValueOffset = 0.0;
-    double outputValueOffset = 0.0;
-    double outputScaling = 1.0;
+struct IVW_MODULE_OPENGL_API NormalizationMap {
+    double scale = 1.0;
+    double offset = 0.0;
+};
+
+struct IVW_MODULE_OPENGL_API RangeConversionMap {
+    double inputOffset = 0.0;
+    double scale = 1.0;
     double outputOffset = 0.0;
 };
 
-struct IVW_MODULE_OPENGL_API GLFormatRenormalization {
-    double formatScaling = 1.0;
-    double signedFormatScaling = 1.0;
-    double formatOffset = 0.0;
-    double signedFormatOffset = 0.0;
+struct IVW_MODULE_OPENGL_API FormatConversion {
+    NormalizationMap texToNormalized;
+    NormalizationMap texToSignNormalized;
+    RangeConversionMap texToValue;
 };
 
 /**
@@ -59,15 +61,15 @@ struct IVW_MODULE_OPENGL_API GLFormatRenormalization {
  * normalized) to a normalized range [0,1] using the [min,max] data range of the DataMapper.
  *
  * @tparam scalar or glm vector type
- * @param glValue          value in OpenGL data range (regular, normalize, or sign normalized)
- * @param renormalization  parameters used for the range conversion
+ * @param glValue  value in OpenGL data range (regular, normalize, or sign normalized)
+ * @param conversion      parameters used for the range conversion
  * @return @p glValue renormalized from the OpenGL data range to [0,1]
  *
  * * @see getNormalizedTexel (sampler2d.glsl), getNormalizedVoxel (sampler3d.glsl)
  */
 template <typename T>
-T mapFromGLInputToNormalized(T glValue, const GLFormatRenormalization& renormalization) {
-    return (glValue + renormalization.formatOffset) * (1.0 - renormalization.formatScaling);
+T mapFromGLInputToNormalized(T glValue, const FormatConversion& conversion) {
+    return (glValue - conversion.texToNormalized.offset) * conversion.texToNormalized.scale;
 }
 
 /**
@@ -75,30 +77,30 @@ T mapFromGLInputToNormalized(T glValue, const GLFormatRenormalization& renormali
  * normalized) to a sign normalized range [-1,1] using the [min,max] data range of the DataMapper.
  *
  * @tparam scalar or glm vector type
- * @param glValue          value in OpenGL data range (regular, normalize, or sign normalized)
- * @param renormalization  parameters used for the range conversion
+ * @param glValue  value in OpenGL data range (regular, normalize, or sign normalized)
+ * @param conversion      parameters used for the range conversion
  * @return @p glValue renormalized from the OpenGL data range to [-1,1]
  *
  * @see getSignNormalizedTexel (sampler2d.glsl), getSignNormalizedVoxel (sampler3d.glsl)
  */
 template <typename T>
-T mapFromGLInputToSignNormalized(T glValue, const GLFormatRenormalization& renormalization) {
-    return (glValue + renormalization.signedFormatOffset) *
-           (1.0 - renormalization.signedFormatScaling);
+T mapFromGLInputToSignNormalized(T glValue, const FormatConversion& conversion) {
+    return (glValue - conversion.texToSignNormalized.offset) * conversion.texToSignNormalized.scale;
 }
 
 /**
- * Map a normalized OpenGL value @p normalizedValue to value space as specified by @p conversion.
+ * Map the value @p glValue from the OpenGL texture input range to value space as specified by @p
+ * conversion.
  *
  * @tparam scalar or glm vector type
- * @param normalizedValue  normalized value [0,1] as obtained by getNormalizedTexel() in
- *                         sampler2d.glsl
+ * @param glValue  value in OpenGL data range (regular, normalize, or sign normalized)
  * @param conversion       parameters used for the range conversion
  * @return converted value in value space
  */
 template <typename T>
-T mapFromNormalizedGLToValue(T normalizedValue, const GLFormatConversion& conversion) {
-    return normalizedValue * conversion.toValueScaling + conversion.toValueOffset;
+T mapFromGLInputToValue(T glValue, const FormatConversion& conversion) {
+    return (glValue - conversion.texToValue.inputOffset) * conversion.texToValue.scale +
+           conversion.texToValue.outputOffset;
 }
 
 /**
@@ -110,24 +112,21 @@ T mapFromNormalizedGLToValue(T normalizedValue, const GLFormatConversion& conver
  *
  * @tparam scalar or glm vector type
  * @param value        value in value space
- * @param conversion   parameters used for the range conversion
+ * @param map   parameters used for the range conversion
  * @return @p value converted to the OpenGL output range
  */
 template <typename T>
-T mapFromValueToGLOutput(T value, const GLFormatConversion& conversion) {
-    return ((value - conversion.outputValueOffset) * conversion.outputScaling) +
-           conversion.outputOffset;
+T mapFromValueToGLOutput(T value, const RangeConversionMap& map) {
+    return ((value - map.inputOffset) * map.scale) + map.outputOffset;
 }
 
 /**
- * Calculate the parameters for a format conversion from normalized values to value range of
- * @p dataMapIn and the conversion from value range to the OpenGL output range based on the value
- * and data range of @p dataMapOut and the underlying format @p formatOut as follows:
+ * Calculate the parameters for the conversion from value range to the OpenGL output range based on
+ * the value and data range of @p dataMapOut and the underlying format @p formatOut as follows:
  *   + map from value range to dataRange for float and non-normalized GL data formats
  *   + normalized dataRange [0,1] for normalized, unsigned GL data formats
  *   + or sign normalized dataRange [-1,1] for normalized, signed GL data formats
  *
- * @param dataMapIn   used for mapping normalized GL values to the corresponding value space
  * @param dataMapOut  used for mapping from value space to the GL output range of @p formatOut
  * @param formatOut   destination data format
  *
@@ -135,22 +134,21 @@ T mapFromValueToGLOutput(T value, const GLFormatConversion& conversion) {
  *
  * @see mapFromNormalizedGLToValue, mapFromValueToGLOutput
  */
-IVW_MODULE_OPENGL_API GLFormatConversion createGLFormatConversion(const DataMapper& dataMapIn,
-                                                                  const DataMapper& dataMapOut,
+IVW_MODULE_OPENGL_API RangeConversionMap createGLOutputConversion(const DataMapper& dataMapOut,
                                                                   const DataFormatBase* formatOut);
 /**
  * Calculate the parameters for a OpenGL data range re-normalization based on @p dataMapIn and
- * source format @p format. Used in getNormalizedTexel/Voxel and getSignNormalizedTexel/Voxel in
- * sampler2d.glsl and sampler3d.glsl
+ * source format @p format. Used in getNormalizedTexel/Voxel and getSignNormalizedTexel/Voxel as
+ * well as getValueTexel/Voxel in sampler2d.glsl and sampler3d.glsl
  *
  * @param dataMap
  * @param format
- * @return struct containing the parameters for the data range normalization for @p format
+ * @return struct containing the parameters for the data range mapping for @p format
  *
  * @see setShaderUniforms(Shader&, const DataMapper&, const DataFormatBase*, std::string_view)
  */
-IVW_MODULE_OPENGL_API GLFormatRenormalization
-createGLFormatRenormalization(const DataMapper& dataMap, const DataFormatBase* format);
+IVW_MODULE_OPENGL_API FormatConversion createGLFormatRenormalization(const DataMapper& dataMap,
+                                                                     const DataFormatBase* format);
 
 }  // namespace utilgl
 

@@ -75,34 +75,34 @@ class ShaderResource;
 
 namespace utilgl {
 
-void setShaderUniforms(Shader& shader, GLFormatConversion&& conv, std::string_view name) {
+void setShaderUniforms(Shader& shader, const RangeConversionMap& map, std::string_view name) {
     StrBuffer buff;
-    shader.setUniform(buff.replace("{}.toValueScaling", name),
-                      static_cast<float>(conv.toValueScaling));
-    shader.setUniform(buff.replace("{}.toValueOffset", name),
-                      static_cast<float>(conv.toValueOffset));
-    shader.setUniform(buff.replace("{}.outputValueOffset", name),
-                      static_cast<float>(conv.outputValueOffset));
-    shader.setUniform(buff.replace("{}.outputScaling", name),
-                      static_cast<float>(conv.outputScaling));
-    shader.setUniform(buff.replace("{}.outputOffset", name), static_cast<float>(conv.outputOffset));
+    shader.setUniform(buff.replace("{}.inputOffset", name), static_cast<float>(map.inputOffset));
+    shader.setUniform(buff.replace("{}.scale", name), static_cast<float>(map.scale));
+    shader.setUniform(buff.replace("{}.outputOffset", name), static_cast<float>(map.outputOffset));
 }
 
 void setShaderUniforms(Shader& shader, const DataMapper& dataMapper, const DataFormatBase* format,
                        std::string_view name) {
     const auto renormalization = utilgl::createGLFormatRenormalization(dataMapper, format);
 
-    // offset scaling because of reversed scaling in the shader, i.e. (1 - formatScaling_)
     StrBuffer buff;
-    shader.setUniform(buff.replace("{}.formatScaling", name),
-                      static_cast<float>(1.0 - renormalization.formatScaling));
-    shader.setUniform(buff.replace("{}.formatOffset", name),
-                      static_cast<float>(renormalization.formatOffset));
+    shader.setUniform(buff.replace("{}.texToNormalized.scale", name),
+                      static_cast<float>(renormalization.texToNormalized.scale));
+    shader.setUniform(buff.replace("{}.texToNormalized.offset", name),
+                      static_cast<float>(renormalization.texToNormalized.offset));
 
-    shader.setUniform(buff.replace("{}.signedFormatScaling", name),
-                      static_cast<float>(1.0 - renormalization.signedFormatScaling));
-    shader.setUniform(buff.replace("{}.signedFormatOffset", name),
-                      static_cast<float>(renormalization.signedFormatOffset));
+    shader.setUniform(buff.replace("{}.texToSignNormalized.scale", name),
+                      static_cast<float>(renormalization.texToSignNormalized.scale));
+    shader.setUniform(buff.replace("{}.texToSignNormalized.offset", name),
+                      static_cast<float>(renormalization.texToSignNormalized.offset));
+
+    shader.setUniform(buff.replace("{}.texToValue.scale", name),
+                      static_cast<float>(renormalization.texToValue.scale));
+    shader.setUniform(buff.replace("{}.texToValue.inputOffset", name),
+                      static_cast<float>(renormalization.texToValue.inputOffset));
+    shader.setUniform(buff.replace("{}.texToValue.outputOffset", name),
+                      static_cast<float>(renormalization.texToValue.outputOffset));
 }
 
 void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {

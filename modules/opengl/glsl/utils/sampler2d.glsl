@@ -53,8 +53,8 @@ vec4 getTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
 // see: https://www.opengl.org/wiki/Normalized_Integer
 // The scaling parameters are calculated in utilgl::createGLFormatRenormalization() (glformatutils.h)
 vec4 getNormalizedTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
-    return (texture(image, samplePos) + imageParams.formatOffset)
-        * (1.0 - imageParams.formatScaling);
+    return (texture(image, samplePos) - imageParams.texToNormalized.offset) *
+           imageParams.texToNormalized.scale;
 }
 
 float getNormalizedTexelChannel(sampler2D image, ImageParameters imageParams, vec2 samplePos,int channel) {
@@ -62,14 +62,23 @@ float getNormalizedTexelChannel(sampler2D image, ImageParameters imageParams, ve
     return v[channel];
 }
 
-
 // Return a value mapped from data range [min,max] to [-1,1]
 // Same as getNormalizedTexel but for signed types. 
 vec4 getSignNormalizedTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
-    return (texture(image, samplePos) + imageParams.signedFormatOffset)
-        * (1.0 - imageParams.signedFormatScaling);
+    return (texture(image, samplePos) - imageParams.texToSignNormalized.offset) *
+           imageParams.texToSignNormalized.scale;
 }
 
+
+vec4 getValueTexel(sampler2D image, ImageParameters imageParams, vec2 samplePos) {
+    return ((texture(image, samplePos) - imageParams.texToValue.inputOffset) *
+            imageParams.texToValue.scale) + imageParams.texToValue.outputOffset;
+}
+
+float getValueTexelChannel(sampler2D image, ImageParameters imageParams, vec2 samplePos,int channel) {
+    vec4 v = getValueTexel(image,imageParams,samplePos);
+    return v[channel];
+}
 
 //
 // Fetch texture data using texture indices [0,N]
@@ -86,21 +95,32 @@ vec4 getTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
 // Return a value mapped from data range [min,max] to [0,1]
 vec4 getNormalizedTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
 #ifdef GLSL_VERSION_140
-    return (texelFetch(image, samplePos, 0) + imageParams.formatOffset)
-        * (1.0 - imageParams.formatScaling);
+    return (texelFetch(image, samplePos, 0) - imageParams.texToNormalized.offset) *
+           imageParams.texToNormalized.scale;
 #else
-    return (texture(image, samplePos) + imageParams.formatOffset)
-        * (1.0 - imageParams.formatScaling);
+    return (texture(image, samplePos) - imageParams.texToNormalized.offset) *
+           imageParams.texToNormalized.scale;
 #endif
 }
 // Return a value mapped from data range [min,max] to [-1,1]
 vec4 getSignNormalizedTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
 #ifdef GLSL_VERSION_140
-    return (texelFetch(image, samplePos, 0) + imageParams.signedFormatOffset)
-        * (1.0 - imageParams.signedFormatScaling);
+    return (texelFetch(image, samplePos, 0) - imageParams.texToSignNormalized.offset) *
+           imageParams.texToSignNormalized.scale;
 #else
-    return (texture(image, samplePos) + imageParams.signedFormatOffset)
-        * (1.0 - imageParams.signedFormatScaling);
+    return (texture(image, samplePos) - imageParams.texToSignNormalized.offset) *
+           imageParams.texToSignNormalized.scale;
+#endif
+}
+
+// Return a value mapped from data range [min,max] to value range
+vec4 getValueTexel(sampler2D image, ImageParameters imageParams, ivec2 samplePos) {
+#ifdef GLSL_VERSION_140
+    return ((texelFetch(image, samplePos, 0) - imageParams.texToValue.inputOffset) *
+            imageParams.texToValue.scale) + imageParams.texToValue.outputOffset;
+#else
+    return ((texture(image, samplePos) - imageParams.texToValue.inputOffset) *
+            imageParams.texToValue.scale) + imageParams.texToValue.outputOffset;
 #endif
 }
 
