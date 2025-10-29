@@ -60,10 +60,12 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
             util::ordinalCount(ivec2{16}, ivec2{1024}).set("Dimensions of the vector field"_help)}
     , domainU_("xRange", "U Domain",
                "Domain in u direction for which the functions are evaluated."_help, -1.0f, 1.0f,
-               -10.0f, 10.0f)
+               -10.0f, 10.0f, 0.01f, 0.0f, InvalidationLevel::InvalidOutput,
+               PropertySemantics::Text)
     , domainV_("yRange", "V Domain",
                "Domain in v direction for which the functions are evaluated."_help, -1.0f, 1.0f,
-               -10.0f, 10.0f)
+               -10.0f, 10.0f, 0.01f, 0.0f, InvalidationLevel::InvalidOutput,
+               PropertySemantics::Text)
     , xValue_("x", "U",
               "Function u(x,y) evaluated along u direction (uses GLSL functionality)."_help, "-x",
               InvalidationLevel::InvalidResources)
@@ -76,11 +78,7 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
 
     addPort(outport_);
 
-    domainU_.setSemantics(PropertySemantics::Text);
-    domainV_.setSemantics(PropertySemantics::Text);
     addProperties(size_, xValue_, yValue_, domainU_, domainV_, information_, basis_);
-
-    setAllPropertiesCurrentStateAsDefault();
 }
 
 VectorFieldGenerator2D::~VectorFieldGenerator2D() = default;

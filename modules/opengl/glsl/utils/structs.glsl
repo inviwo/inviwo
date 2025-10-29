@@ -147,4 +147,19 @@ struct StipplingParameters {
     float worldScale;
 };
 
+// Conversion factors for conversions from [0,1] obtained from getNormalizedTexel/Voxel() to 
+// value space and to the OpenGL output range
+// see glformatsutil.h
+struct GLFormatConversion {
+    // used for conversion from normalized values [0,1] to value space
+    float toValueScaling;
+    float toValueOffset;
+
+    // conversion from value space to OpenGL output range basd on output texture format 
+    // (regular, normalized, sign normalized)
+    float outputValueOffset;
+    float outputScaling;
+    float outputOffset;
+}; 
+
 #endif // IVW_STRUCTS_GLSL
