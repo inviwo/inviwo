@@ -50,6 +50,7 @@ set(HEADER_FILES
     include/modules/opengl/texture/textureobserver.h
     include/modules/opengl/texture/textureunit.h
     include/modules/opengl/texture/textureutils.h
+    include/modules/opengl/util/glformatutils.h
     include/modules/opengl/volume/volumegl.h
     include/modules/opengl/volume/volumeglconverter.h
     include/modules/opengl/volume/volumeutils.h
@@ -101,6 +102,7 @@ set(SOURCE_FILES
     src/texture/texture3d.cpp
     src/texture/textureunit.cpp
     src/texture/textureutils.cpp
+    src/util/glformatutils.cpp
     src/volume/volumegl.cpp
     src/volume/volumeglconverter.cpp
     src/volume/volumeutils.cpp
@@ -133,6 +135,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/classification.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/colorconversion.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/compositing.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/conversion.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/depth.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/glyphs.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/gradients.glsl

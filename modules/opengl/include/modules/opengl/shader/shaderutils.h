@@ -78,11 +78,27 @@ class TemplateProperty;
 using ImageInport = BaseImageInport<1>;
 
 namespace utilgl {
+struct GLFormatConversion;
 
 /**
- * Set the shader uniforms of \p shader related to format scaling based on \p dataMapper and the
- * corresponding data format \p format  using \p name as a base name, that is `<name>.formatScaling`
+ * Set the shader uniforms of @p shader related to format conversions from normalized values to
+ * value space and to the OpenGL output range.
+ *
+ scaling based on @p dataMapper and the corresponding
+ * data format @p format using @p name as a base name, that is `<name>.formatScaling` etc. These
+ * uniforms are used in connection with sampler2d.glsl and sampler3d.glsl.
+ *
+ * @see utilgl::createGLFormatConversion
+ */
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, GLFormatConversion&& conversion,
+                                             std::string_view name);
+
+/**
+ * Set the shader uniforms of @p shader related to format scaling based on @p dataMapper and the
+ * corresponding data format @p format using @p name as a base name, that is `<name>.formatScaling`
  * etc. These uniforms are used in connection with sampler2d.glsl and sampler3d.glsl.
+ *
+ * @see utilgl::createGLFormatRenormalization
  */
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const DataMapper& dataMapper,
                                              const DataFormatBase* format, std::string_view name);
