@@ -155,6 +155,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 set(TEST_FILES
     tests/unittests/opengl-unittest-main.cpp
     tests/unittests/shaderobject-test.cpp
+    tests/unittests/formatrangeconversion-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
