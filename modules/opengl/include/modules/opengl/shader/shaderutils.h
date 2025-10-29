@@ -90,7 +90,7 @@ struct GLFormatConversion;
  *
  * @see utilgl::createGLFormatConversion
  */
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, GLFormatConversion&& conversion,
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const GLFormatConversion& conversion,
                                              std::string_view name);
 
 /**

@@ -75,7 +75,7 @@ class ShaderResource;
 
 namespace utilgl {
 
-void setShaderUniforms(Shader& shader, GLFormatConversion&& conv, std::string_view name) {
+void setShaderUniforms(Shader& shader, const GLFormatConversion& conv, std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.toValueScaling", name),
                       static_cast<float>(conv.toValueScaling));
