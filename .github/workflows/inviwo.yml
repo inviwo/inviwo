@@ -535,7 +535,7 @@ jobs:
     steps:
     - name: "Generate Changelog"
       id: changelog
-      uses: mikepenz/release-changelog-builder-action@v5
+      uses: mikepenz/release-changelog-builder-action@v6
       with:
         toTag: ${{ github.ref }}
         outputFile: changelog.md
