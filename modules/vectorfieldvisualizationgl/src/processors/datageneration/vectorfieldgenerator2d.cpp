@@ -60,10 +60,12 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
             util::ordinalCount(ivec2{16}, ivec2{1024}).set("Dimensions of the vector field"_help)}
     , domainU_("xRange", "U Domain",
                "Domain in u direction for which the functions are evaluated."_help, -1.0f, 1.0f,
-               -10.0f, 10.0f)
+               -10.0f, 10.0f, 0.01f, 0.0f, InvalidationLevel::InvalidOutput,
+               PropertySemantics::Text)
     , domainV_("yRange", "V Domain",
                "Domain in v direction for which the functions are evaluated."_help, -1.0f, 1.0f,
-               -10.0f, 10.0f)
+               -10.0f, 10.0f, 0.01f, 0.0f, InvalidationLevel::InvalidOutput,
+               PropertySemantics::Text)
     , xValue_("x", "U",
               "Function u(x,y) evaluated along u direction (uses GLSL functionality)."_help, "-x",
               InvalidationLevel::InvalidResources)
@@ -76,11 +78,7 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
 
     addPort(outport_);
 
-    domainU_.setSemantics(PropertySemantics::Text);
-    domainV_.setSemantics(PropertySemantics::Text);
     addProperties(size_, xValue_, yValue_, domainU_, domainV_, information_, basis_);
-
-    setAllPropertiesCurrentStateAsDefault();
 }
 
 VectorFieldGenerator2D::~VectorFieldGenerator2D() = default;
@@ -93,16 +91,10 @@ void VectorFieldGenerator2D::initializeResources() {
 }
 
 void VectorFieldGenerator2D::process() {
-    bool reattach = false;
-    const LayerConfig newConfig{.dimensions = size_.get(),
-                                .format = DataVec2Float32::get(),
-                                .swizzleMask = swizzlemasks::defaultData(2)};
-    if (!layer_ || config != newConfig) {
-        config = newConfig;
-        layer_ = std::make_shared<Layer>(config);
-        reattach = true;
-        outport_.setData(layer_);
-    }
+    const LayerConfig config{.dimensions = size_.get(),
+                             .format = DataVec2Float32::get(),
+                             .swizzleMask = swizzlemasks::defaultData(2)};
+    auto layer = std::make_shared<Layer>(config);
 
     shader_.activate();
     utilgl::setUniforms(shader_, domainU_, domainV_);
@@ -115,10 +107,8 @@ void VectorFieldGenerator2D::process() {
 
         // We always need to ask for an editable representation, this will invalidate any other
         // representations
-        auto destLayer = layer_->getEditableRepresentation<LayerGL>();
-        if (reattach) {
-            fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
-        }
+        auto destLayer = layer->getEditableRepresentation<LayerGL>();
+        fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
 
         utilgl::singleDrawImagePlaneRect();
     }
@@ -126,11 +116,13 @@ void VectorFieldGenerator2D::process() {
     shader_.deactivate();
 
     const bool deserializing = getNetwork()->isDeserializing();
-    basis_.updateForNewEntity(*layer_, deserializing);
+    basis_.updateForNewEntity(*layer, deserializing);
     information_.updateForNewLayer(
-        *layer_, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
-    basis_.updateEntity(*layer_);
-    information_.updateLayer(*layer_);
+        *layer, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
+    basis_.updateEntity(*layer);
+    information_.updateLayer(*layer);
+
+    outport_.setData(layer);
 }
 
 }  // namespace inviwo
