@@ -122,7 +122,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aac4226f134284f9d97b0c26a820bd0c6" id="r_aac4226f134284f9d97b0c26a820bd0c6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac4226f134284f9d97b0c26a820bd0c6">OnLoadEnd</a> (CefRefPtr&lt; CefBrowser &gt; browser, CefRefPtr&lt; CefFrame &gt; frame, int httpStatusCode) override</td></tr>
 <tr class="memitem:af3b5978da48582fa4db2446b969e2c42" id="r_af3b5978da48582fa4db2446b969e2c42"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3b5978da48582fa4db2446b969e2c42">OnQuery</a> (CefRefPtr&lt; CefBrowser &gt; browser, CefRefPtr&lt; CefFrame &gt; frame, int64_t query_id, const CefString &amp;request, bool persistent, CefRefPtr&lt; Callback &gt; callback) override</td></tr>
 <tr class="memitem:aeb4bc5c895bbdfc413eee0429e3779f2" id="r_aeb4bc5c895bbdfc413eee0429e3779f2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb4bc5c895bbdfc413eee0429e3779f2">onWillRemoveProperty</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, size_t index) override</td></tr>
-<tr class="memitem:a78bdfcdf5fc82a89995524f73995b71f" id="r_a78bdfcdf5fc82a89995524f73995b71f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78bdfcdf5fc82a89995524f73995b71f">onProcessorNetworkWillRemoveProcessor</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *p) override</td></tr>
 <tr class="memitem:a0580fb429ff21f8f1639119b22a336f5" id="r_a0580fb429ff21f8f1639119b22a336f5"><td class="memItemLeft" align="right" valign="top"><a id="a0580fb429ff21f8f1639119b22a336f5" name="a0580fb429ff21f8f1639119b22a336f5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
 <tr class="memitem:aa302ba3ca46986a1bb0d2b297469cb52" id="r_aa302ba3ca46986a1bb0d2b297469cb52"><td class="memItemLeft" align="right" valign="top"><a id="aa302ba3ca46986a1bb0d2b297469cb52" name="aa302ba3ca46986a1bb0d2b297469cb52"></a>
@@ -156,6 +155,8 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNe
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillAddProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
 <tr class="memitem:aeeff371acfe291eabf14fd332655cd0f inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver" id="r_aeeff371acfe291eabf14fd332655cd0f"><td class="memItemLeft" align="right" valign="top">
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkDidAddProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
+<tr class="memitem:a691f05f72a22eefcb08770db9b4a9726 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver" id="r_a691f05f72a22eefcb08770db9b4a9726"><td class="memItemLeft" align="right" valign="top">
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillRemoveProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
 <tr class="memitem:a9e55dca8bc2d7b971088f320bb878d87 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver" id="r_a9e55dca8bc2d7b971088f320bb878d87"><td class="memItemLeft" align="right" valign="top">
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkDidRemoveProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
 <tr class="memitem:a623f0cda8ec3a34d921c624a20bd47d5 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver" id="r_a623f0cda8ec3a34d921c624a20bd47d5"><td class="memItemLeft" align="right" valign="top">
@@ -259,33 +260,6 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 </table>
 </div><div class="memdoc">
 <p>Removes all property synchronizations. </p>
-
-</div>
-</div>
-<a id="a78bdfcdf5fc82a89995524f73995b71f" name="a78bdfcdf5fc82a89995524f73995b71f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78bdfcdf5fc82a89995524f73995b71f">&#9670;&#160;</a></span>onProcessorNetworkWillRemoveProcessor()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::NetWorkCefSynchronizer::onProcessorNetworkWillRemoveProcessor </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a>.</p>
 
 </div>
 </div>

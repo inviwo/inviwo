@@ -103,12 +103,8 @@ $(function(){initNavTree('classinviwo_1_1ProcessorGraphicsItem.html','','classin
 <area href="classinviwo_1_1EditorGraphicsItem.html" alt="inviwo::EditorGraphicsItem" shape="rect" coords="230,56,450,80"/>
 <area href="classinviwo_1_1ProcessorObserver.html" alt="inviwo::ProcessorObserver" shape="rect" coords="460,56,680,80"/>
 <area href="classinviwo_1_1ProcessorMetaDataObserver.html" alt="inviwo::ProcessorMetaDataObserver" shape="rect" coords="690,56,910,80"/>
-<area href="classinviwo_1_1ActivityIndicatorObserver.html" alt="inviwo::ActivityIndicatorObserver" shape="rect" coords="920,56,1140,80"/>
-<area href="classinviwo_1_1ProgressBarObserver.html" alt="inviwo::ProgressBarObserver" shape="rect" coords="1150,56,1370,80"/>
 <area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="460,0,680,24"/>
 <area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="690,0,910,24"/>
-<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="920,0,1140,24"/>
-<area href="classinviwo_1_1Observer.html" alt="inviwo::Observer" shape="rect" coords="1150,0,1370,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -238,12 +234,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOutport</b> (<a
 <tr class="memdesc:a89b7940b8724ae05e50c09555fc3ff37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a processor initiates a background computation.  <br /></td></tr>
 <tr class="memitem:a19b5d20319b47d2e5a571252350d0a43" id="r_a19b5d20319b47d2e5a571252350d0a43"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19b5d20319b47d2e5a571252350d0a43">onProcessorFinishBackgroundWork</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, size_t jobs) override</td></tr>
 <tr class="memdesc:a19b5d20319b47d2e5a571252350d0a43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a processor finishes a background computation.  <br /></td></tr>
+<tr class="memitem:ac6c47ebb6be4a209a36a7f208feb118d" id="r_ac6c47ebb6be4a209a36a7f208feb118d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6c47ebb6be4a209a36a7f208feb118d">onProcessorProgressChanged</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, std::optional&lt; double &gt;) override</td></tr>
+<tr class="memdesc:ac6c47ebb6be4a209a36a7f208feb118d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when a processor progress has changed.  <br /></td></tr>
 <tr class="memitem:a29032f5f1d1c12d059082103466518c5" id="r_a29032f5f1d1c12d059082103466518c5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29032f5f1d1c12d059082103466518c5">onProcessorMetaDataPositionChange</a> () override</td></tr>
 <tr class="memitem:a5744ee45a2286eb0c4b9fe7aea05a71f" id="r_a5744ee45a2286eb0c4b9fe7aea05a71f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5744ee45a2286eb0c4b9fe7aea05a71f">onProcessorMetaDataVisibilityChange</a> () override</td></tr>
 <tr class="memitem:a27d5d7421dd8f0255db27720f02a2f63" id="r_a27d5d7421dd8f0255db27720f02a2f63"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27d5d7421dd8f0255db27720f02a2f63">onProcessorMetaDataSelectionChange</a> () override</td></tr>
-<tr class="memitem:ad190fbd14be97f569ae3e38e5a87aab8" id="r_ad190fbd14be97f569ae3e38e5a87aab8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad190fbd14be97f569ae3e38e5a87aab8">activityIndicatorChanged</a> (bool active) override</td></tr>
-<tr class="memitem:a5cdab08534238b9d6a93c974bdb19224" id="r_a5cdab08534238b9d6a93c974bdb19224"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cdab08534238b9d6a93c974bdb19224">progressChanged</a> (float) override</td></tr>
-<tr class="memitem:a634ce5a028cc853a6796bc656b59fcde" id="r_a634ce5a028cc853a6796bc656b59fcde"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a634ce5a028cc853a6796bc656b59fcde">progressBarVisibilityChanged</a> (bool visible) override</td></tr>
 <tr class="memitem:a4faf697d01f8af6c392c004c3e1e14f5" id="r_a4faf697d01f8af6c392c004c3e1e14f5"><td class="memItemLeft" align="right" valign="top"><a id="a4faf697d01f8af6c392c004c3e1e14f5" name="a4faf697d01f8af6c392c004c3e1e14f5"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>event</b> (QEvent *e) override</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1EditorGraphicsItem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1EditorGraphicsItem')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1EditorGraphicsItem.html">inviwo::EditorGraphicsItem</a></td></tr>
@@ -269,33 +264,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorObservable
 std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>observables_</b></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="ad190fbd14be97f569ae3e38e5a87aab8" name="ad190fbd14be97f569ae3e38e5a87aab8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad190fbd14be97f569ae3e38e5a87aab8">&#9670;&#160;</a></span>activityIndicatorChanged()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::ProcessorGraphicsItem::activityIndicatorChanged </td>
-          <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>active</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1ActivityIndicatorObserver.html">inviwo::ActivityIndicatorObserver</a>.</p>
-
-</div>
-</div>
 <a id="a0937cc165060e4bbeb2ab2d539c722e4" name="a0937cc165060e4bbeb2ab2d539c722e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0937cc165060e4bbeb2ab2d539c722e4">&#9670;&#160;</a></span>onProcessorAboutToProcess()</h2>
 
@@ -345,7 +313,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -526,6 +494,39 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 
 </div>
 </div>
+<a id="ac6c47ebb6be4a209a36a7f208feb118d" name="ac6c47ebb6be4a209a36a7f208feb118d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c47ebb6be4a209a36a7f208feb118d">&#9670;&#160;</a></span>onProcessorProgressChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ProcessorGraphicsItem::onProcessorProgressChanged </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; double &gt;</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called when a processor progress has changed. </p>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorObserver.html#a3648c6416844b6836352403eb790d2ce">inviwo::ProcessorObserver</a>.</p>
+
+</div>
+</div>
 <a id="af1231d85a8f38e921bf495686dfae7ec" name="af1231d85a8f38e921bf495686dfae7ec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1231d85a8f38e921bf495686dfae7ec">&#9670;&#160;</a></span>onProcessorReadyChanged()</h2>
 
@@ -576,7 +577,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -584,72 +585,6 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 <p>Called when a processor initiates a background computation. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorObserver.html#ae8e2501e7138ce16906a1b1ffa8ac8ba">inviwo::ProcessorObserver</a>.</p>
-
-</div>
-</div>
-<a id="a634ce5a028cc853a6796bc656b59fcde" name="a634ce5a028cc853a6796bc656b59fcde"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a634ce5a028cc853a6796bc656b59fcde">&#9670;&#160;</a></span>progressBarVisibilityChanged()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::ProcessorGraphicsItem::progressBarVisibilityChanged </td>
-          <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>visibility</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>This method will be called when observed object changes. Override it to add behavior. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">visibility</td><td>state that <a class="el" href="classinviwo_1_1ProgressBar.html">ProgressBar</a> changed into </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1ProgressBarObserver.html#a6e5f5e2eab8d24f92e0a66ac2b37f19d">inviwo::ProgressBarObserver</a>.</p>
-
-</div>
-</div>
-<a id="a5cdab08534238b9d6a93c974bdb19224" name="a5cdab08534238b9d6a93c974bdb19224"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5cdab08534238b9d6a93c974bdb19224">&#9670;&#160;</a></span>progressChanged()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::ProcessorGraphicsItem::progressChanged </td>
-          <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>progress</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>This method will be called when observed object changes. Override it to add behavior. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">progress</td><td>New progress between [0 1] </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1ProgressBarObserver.html#abd9f653dfac1f2ad1efccb2772fe9a1e">inviwo::ProgressBarObserver</a>.</p>
 
 </div>
 </div>

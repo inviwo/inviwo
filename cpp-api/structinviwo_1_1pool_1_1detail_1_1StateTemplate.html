@@ -113,8 +113,8 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>State</b> (std::weak_ptr&lt; <a class="el" href="classinviwo_1_1PoolProcessor.html">PoolProcessor</a> &gt; processor, size_t count)</td></tr>
 <tr class="memitem:ae91300f77a11940854d64403278d7969 inherit pub_methods_structinviwo_1_1pool_1_1detail_1_1State" id="r_ae91300f77a11940854d64403278d7969"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1pool_1_1Stop.html">Stop</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getStop</b> ()</td></tr>
-<tr class="memitem:a0705990f7491eee7b15641117dcbefc1 inherit pub_methods_structinviwo_1_1pool_1_1detail_1_1State" id="r_a0705990f7491eee7b15641117dcbefc1"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setProgress</b> (size_t id, float progress)</td></tr>
+<tr class="memitem:a4c3884ed03a7ec359ffab7aa2f70ccdb inherit pub_methods_structinviwo_1_1pool_1_1detail_1_1State" id="r_a4c3884ed03a7ec359ffab7aa2f70ccdb"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setProgress</b> (size_t id, double progress)</td></tr>
 <tr class="memitem:a8ad19c522cb930ce3e54e95770c257cd inherit pub_methods_structinviwo_1_1pool_1_1detail_1_1State" id="r_a8ad19c522cb930ce3e54e95770c257cd"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1pool_1_1Progress.html">Progress</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getProgress</b> (size_t id)</td></tr>
 </table><table class="memberdecls">
@@ -131,8 +131,8 @@ std::weak_ptr&lt; <a class="el" href="classinviwo_1_1PoolProcessor.html">PoolPro
 std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>count</b></td></tr>
 <tr class="memitem:a440ba1de25330d259bc6199571e741f1 inherit pub_attribs_structinviwo_1_1pool_1_1detail_1_1State" id="r_a440ba1de25330d259bc6199571e741f1"><td class="memItemLeft" align="right" valign="top">
 std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stop</b></td></tr>
-<tr class="memitem:a98094ba5aa462dce544aca03dc861caa inherit pub_attribs_structinviwo_1_1pool_1_1detail_1_1State" id="r_a98094ba5aa462dce544aca03dc861caa"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; std::atomic&lt; float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>progress</b></td></tr>
+<tr class="memitem:a597433e962a6a2c6465d1a9cd9deed38 inherit pub_attribs_structinviwo_1_1pool_1_1detail_1_1State" id="r_a597433e962a6a2c6465d1a9cd9deed38"><td class="memItemLeft" align="right" valign="top">
+std::vector&lt; std::atomic&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>progress</b></td></tr>
 <tr class="memitem:a4a24cfeec2b3a9484e0a7ebeb2b046b7 inherit pub_attribs_structinviwo_1_1pool_1_1detail_1_1State" id="r_a4a24cfeec2b3a9484e0a7ebeb2b046b7"><td class="memItemLeft" align="right" valign="top">
 std::future&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>progressUpdate</b></td></tr>
 <tr class="memitem:a77b1529e8f906e28f9e15031fee30db7 inherit pub_attribs_structinviwo_1_1pool_1_1detail_1_1State" id="r_a77b1529e8f906e28f9e15031fee30db7"><td class="memItemLeft" align="right" valign="top">

@@ -5,7 +5,6 @@ var hierarchy =
     ] ],
     [ "inviwo::utilgl::Activate&lt; T &gt;", "structinviwo_1_1utilgl_1_1Activate.html", null ],
     [ "inviwo::utilgl::ActivateFBO", "classinviwo_1_1utilgl_1_1ActivateFBO.html", null ],
-    [ "inviwo::ActivityIndicatorOwner", "classinviwo_1_1ActivityIndicatorOwner.html", null ],
     [ "inviwo::util::detail_indirect::add_const_to_reference&lt; T &gt;", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference.html", null ],
     [ "inviwo::util::detail_indirect::add_const_to_reference&lt; T &amp; &gt;", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_01_4.html", null ],
     [ "inviwo::util::detail_indirect::add_const_to_reference&lt; T &amp;&amp; &gt;", "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_6_01_4.html", null ],
@@ -1844,11 +1843,6 @@ var hierarchy =
     [ "inviwo::util::NotificationBlocker", "classinviwo_1_1util_1_1NotificationBlocker.html", null ],
     [ "inviwo::NumberWidgetConfig", "structinviwo_1_1NumberWidgetConfig.html", null ],
     [ "inviwo::ObservableInterface", "classinviwo_1_1ObservableInterface.html", [
-      [ "inviwo::Observable< ActivityIndicatorObserver >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::ActivityIndicator", "classinviwo_1_1ActivityIndicator.html", [
-          [ "inviwo::ProgressBar", "classinviwo_1_1ProgressBar.html", null ]
-        ] ]
-      ] ],
       [ "inviwo::Observable< BufferObjectObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::BufferObject", "classinviwo_1_1BufferObject.html", null ]
       ] ],
@@ -1898,11 +1892,6 @@ var hierarchy =
       ] ],
       [ "inviwo::Observable< ProcessorWidgetMetaDataObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ProcessorWidgetMetaData", "classinviwo_1_1ProcessorWidgetMetaData.html", null ]
-      ] ],
-      [ "inviwo::Observable< ProgressBarObserver >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::ProgressBarObservable", "classinviwo_1_1ProgressBarObservable.html", [
-          [ "inviwo::ProgressBar", "classinviwo_1_1ProgressBar.html", null ]
-        ] ]
       ] ],
       [ "inviwo::Observable< PropertyObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::PropertyObservable", "classinviwo_1_1PropertyObservable.html", [
@@ -2049,9 +2038,6 @@ var hierarchy =
       [ "inviwo::FactoryObserver< ProcessorFactoryObject >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::ProcessorTreeWidget", "classinviwo_1_1ProcessorTreeWidget.html", null ]
       ] ],
-      [ "inviwo::ActivityIndicatorObserver", "classinviwo_1_1ActivityIndicatorObserver.html", [
-        [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ]
-      ] ],
       [ "inviwo::BufferObjectObserver", "classinviwo_1_1BufferObjectObserver.html", null ],
       [ "inviwo::CompositePropertyObserver", "classinviwo_1_1CompositePropertyObserver.html", [
         [ "inviwo::BoolCompositePropertyWidgetQt", "classinviwo_1_1BoolCompositePropertyWidgetQt.html", null ],
@@ -2113,10 +2099,6 @@ var hierarchy =
             [ "inviwo::DataFrameTableProcessorWidget", "classinviwo_1_1DataFrameTableProcessorWidget.html", null ]
           ] ]
         ] ]
-      ] ],
-      [ "inviwo::ProgressBarObserver", "classinviwo_1_1ProgressBarObserver.html", [
-        [ "inviwo::ProcessorGraphicsItem", "classinviwo_1_1ProcessorGraphicsItem.html", null ],
-        [ "inviwo::ProgressBarObserverCEF", "classinviwo_1_1ProgressBarObserverCEF.html", null ]
       ] ],
       [ "inviwo::PropertyObserver", "classinviwo_1_1PropertyObserver.html", [
         [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
@@ -2528,12 +2510,6 @@ var hierarchy =
       [ "inviwo::ProcessorWidgetFactoryObjectTemplate< T, ProcessorType >", "classinviwo_1_1ProcessorWidgetFactoryObjectTemplate.html", null ]
     ] ],
     [ "inviwo::pool::Progress", "classinviwo_1_1pool_1_1Progress.html", null ],
-    [ "inviwo::ProgressBarOwner", "classinviwo_1_1ProgressBarOwner.html", [
-      [ "inviwo::CompositeProcessor", "classinviwo_1_1CompositeProcessor.html", null ],
-      [ "inviwo::HistogramToDataFrame< T >", "classinviwo_1_1HistogramToDataFrame.html", null ],
-      [ "inviwo::PoolProcessor", "classinviwo_1_1PoolProcessor.html", null ],
-      [ "inviwo::WebBrowserProcessor", "classinviwo_1_1WebBrowserProcessor.html", null ]
-    ] ],
     [ "inviwo::LightVolumeGL::PropagationParameters", "structinviwo_1_1LightVolumeGL_1_1PropagationParameters.html", null ],
     [ "inviwo::approximations::Properties", "structinviwo_1_1approximations_1_1Properties.html", null ],
     [ "inviwo::PropertyConverter", "classinviwo_1_1PropertyConverter.html", [
