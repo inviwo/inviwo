@@ -65,12 +65,13 @@
 #include <modules/opengl/rendering/meshdrawergl.h>         // for MeshDrawerGL::DrawObject, Mesh...
 #include <modules/opengl/shader/shader.h>                  // for Shader, Shader::Build
 #include <modules/opengl/shader/shaderobject.h>            // for ShaderObject
-#include <modules/opengl/shader/stringshaderresource.h>          // for StringShaderResource
+#include <modules/opengl/shader/stringshaderresource.h>    // for StringShaderResource
 #include <modules/opengl/shader/shadersegment.h>           // for ShaderSegment, ShaderSegment::...
 #include <modules/opengl/shader/shadertype.h>              // for ShaderType, ShaderType::Fragment
 #include <modules/opengl/shader/shaderutils.h>             // for addShaderDefines, setShaderUni...
 #include <modules/opengl/texture/textureutils.h>           // for activateTargetAndClearOrCopySo...
 #include <modules/opengl/buffer/buffergl.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 #include <algorithm>    // for for_each, min_element
 #include <string>       // for basic_string, operator==, string
@@ -134,18 +135,39 @@ constexpr std::string_view vertexShader = util::trim(R"(
 #include "utils/structs.glsl"
 
 mat4 rotate(vec3 axis, float angle) {
-  axis = normalize(axis);
+  vec3 a = normalize(axis);
   float s = sin(angle);
   float c = cos(angle);
   float oc = 1.0 - c;
 
   return mat4(
-    oc * axis.x * axis.x + c,           oc * axis.y * axis.x + axis.z * s,  oc * axis.z * axis.x - axis.y * s,  0.0,
-    oc * axis.x * axis.y - axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.z * axis.y + axis.x * s,  0.0,
-    oc * axis.x * axis.z + axis.y * s,  oc * axis.y * axis.z - axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-    0.0,                                0.0,                                0.0,                                1.0
+    oc*a.x*a.x + c,      oc*a.y*a.x + a.z*s,  oc*a.z*a.x - a.y*s,  0.0,
+    oc*a.x*a.y - a.z*s,  oc*a.y*a.y + c,      oc*a.z*a.y + a.x*s,  0.0,
+    oc*a.x*a.z + a.y*s,  oc*a.y*a.z - a.x*s,  oc*a.z*a.z + c,      0.0,
+    0.0,                 0.0,                 0.0,                 1.0
   );
 }
+
+mat4 rotate(vec3 from, vec3 to) {
+    vec3 v1 = normalize(from);
+    vec3 w1 = normalize(to);
+    float cosTheta = dot(v1, w1);
+
+    if (cosTheta > 1.0 - 1e-6) { // vectors are the same 
+        return mat4(1.0);
+    }
+
+    if (cosTheta < -1.0 + 1e-6) { // vectors are opposite
+        vec3 orthogonal = abs(v1.x) < 0.1 ? vec3(1, 0, 0) : vec3(0, 1, 0);
+        return rotate(cross(v1, orthogonal),  3.14159265);
+    }
+
+    // General case
+    vec3 axis = cross(v1, w1);
+    float angle = acos(clamp(cosTheta, -1.0, 1.0));
+    return rotate(axis, angle);
+}
+
 
 mat4 scale(vec3 scale) {
   return mat4(
@@ -155,6 +177,16 @@ mat4 scale(vec3 scale) {
     0.0, 0.0, 0.0,     1.0
   );
 }
+
+mat4 translate(vec3 dist) {
+  return mat4(
+    1.0, 0.0, 0.0, dist.x,
+    0.0, 1.0, 0.0, dist.y,
+    0.0, 0.0, 1.0, dist.z,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
+
 
 layout(location = 7) in uint in_PickId;
 
@@ -166,7 +198,7 @@ uniform CameraParameters camera;
 out vec4 color;
 out vec3 normal;
 out vec3 texCoord;
-out vec4 worldPosition;
+out vec3 worldPosition;
 flat out vec4 picking;
  
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_SETUP
@@ -176,7 +208,7 @@ void main() {
 
 #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_TRANSFORMS
 
-    gl_Position = camera.worldToClip * worldPosition;
+    gl_Position = camera.worldToClip * vec4(worldPosition, 1.0);
 }
 )");
 
@@ -189,7 +221,7 @@ uniform CameraParameters camera;
 in vec4 color;
 in vec3 normal;
 in vec3 texCoord;
-in vec4 worldPosition;
+in vec3 worldPosition;
 flat in vec4 picking;
  
 void main() {
@@ -197,59 +229,17 @@ void main() {
     if (color.a == 0) { discard; }
 
     vec4 fragColor = color;
-    vec3 toCameraDir = camera.position - worldPosition.xyz;
+    vec3 toCameraDir = camera.position - worldPosition;
 
-    fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition.xyz,
+    fragColor.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0f), worldPosition,
                                    normalize(normal), normalize(toCameraDir));
     FragData0 = fragColor;
     PickingData = picking;
 }
 )");
 
-}  // namespace
-
-namespace detail {
-
-DynPort::DynPort(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-                 std::function<std::optional<size_t>()> aSize,
-                 std::function<void(Shader&, size_t)> aSet,
-                 std::function<void(ShaderObject&)> aAddUniform)
-    : renderer{theRenderer}
-    , port{std::move(aPort)}
-    , size{aSize}
-    , set{aSet}
-    , addUniform{aAddUniform} {
-
-    renderer->addPort(*port);
-}
-
-DynPort::DynPort(DynPort&& rhs)
-    : renderer{nullptr}
-    , port{nullptr}
-    , size{std::move(rhs.size)}
-    , set{std::move(rhs.set)}
-    , addUniform{std::move(rhs.addUniform)} {
-    std::swap(rhs.renderer, renderer);
-    std::swap(rhs.port, port);
-}
-
-DynPort& DynPort::operator=(DynPort&& that) {
-    if (this != &that) {
-        std::swap(that.renderer, renderer);
-        std::swap(that.port, port);
-        std::swap(that.size, size);
-        std::swap(that.set, set);
-        std::swap(that.addUniform, addUniform);
-    }
-    return *this;
-}
-DynPort::~DynPort() {
-    if (port) renderer->removePort(port.get());
-}
-
 template <typename T>
-DynPort createDynPortManager(InstanceRenderer* theRenderer, std::string_view identifier,
-                             StringProperty* uniform) {
+detail::DynPort createDynPortManager(std::string_view identifier, StringProperty* uniform) {
 
     auto port = std::make_unique<DataInport<std::vector<T>>>(identifier);
     port->setOptional(true);
@@ -271,28 +261,14 @@ DynPort createDynPortManager(InstanceRenderer* theRenderer, std::string_view ide
             fmt::format("uniform {0} {1} = {0}(0);", utilgl::glslTypeName<T>(), u->get())});
     };
 
-    return DynPort{theRenderer, std::move(port), std::move(size), std::move(set),
-                   std::move(addUniform)};
+    return {.port = std::move(port),
+            .size = std::move(size),
+            .set = std::move(set),
+            .addUniform = std::move(addUniform),
+            .bindAndSetUniforms = [](Shader&, TextureUnitContainer&) {}};
 }
 
-DynUniform::DynUniform(std::function<void(Shader&, TextureUnitContainer&)> aSetAndBind,
-                       std::function<void(ShaderObject&)> aAddUniform)
-    : setAndBind{aSetAndBind}, addUniform{aAddUniform} {}
-
-DynUniform::DynUniform(DynUniform&& rhs)
-    : setAndBind{std::move(rhs.setAndBind)}, addUniform{std::move(rhs.addUniform)} {}
-
-DynUniform::~DynUniform() = default;
-
-DynUniform& DynUniform::operator=(DynUniform&& that) {
-    if (this != &that) {
-        std::swap(that.setAndBind, setAndBind);
-        std::swap(that.addUniform, addUniform);
-    }
-    return *this;
-}
-
-}  // namespace detail
+}  // namespace
 
 InstanceRenderer::InstanceRenderer()
     : Processor()
@@ -319,6 +295,7 @@ InstanceRenderer::InstanceRenderer()
     , vecPorts_{}
     , camera_("camera", "Camera",
               [this]() -> std::optional<mat4> {
+                  if (!isReady()) return std::nullopt;
                   rendercontext::activateDefault();
                   return render(true);
               })
@@ -350,8 +327,8 @@ InstanceRenderer::InstanceRenderer()
                    {"worldPosition", "World Position",
                     "Equation for the vertex world position, defaults to ´geometry.dataToWorld "
                     "* in_Vertex'. Apply a translation based on a data from a port here to move "
-                    "each instance to a unique position for example. Expects a vec4."_help,
-                    "geometry.dataToWorld * in_Vertex", InvalidationLevel::InvalidResources,
+                    "each instance to a unique position for example. Expects a vec3."_help,
+                    "vec3(geometry.dataToWorld * in_Vertex)", InvalidationLevel::InvalidResources,
                     PropertySemantics::Multiline},
                    {"normal", "Normal",
                     "Equation for the vertex normal, defaults to "
@@ -436,10 +413,32 @@ std::vector<std::unique_ptr<Property>> InstanceRenderer::portPrefabs() {
         res.push_back(std::move(comp));
     }
 
+    {
+        auto comp = std::make_unique<CompositeProperty>("volumePort", "Volume Port");
+        comp->addProperty(std::make_unique<StringProperty>("sampler", "Sampler", "volume",
+                                                           InvalidationLevel::InvalidResources));
+        res.push_back(std::move(comp));
+    }
+
+    {
+        auto comp = std::make_unique<CompositeProperty>("layerPort", "Layer Port");
+        comp->addProperty(std::make_unique<StringProperty>("sampler", "Sampler", "layer",
+                                                           InvalidationLevel::InvalidResources));
+        res.push_back(std::move(comp));
+    }
+
     return res;
 }
 
-InstanceRenderer::~InstanceRenderer() { ports_.PropertyOwnerObservable::removeObserver(this); }
+InstanceRenderer::~InstanceRenderer() {
+    ports_.PropertyOwnerObservable::removeObserver(this);
+
+    for (auto&& item : vecPorts_) {
+        if (item.port) {
+            removePort(item.port.get());
+        }
+    }
+}
 
 void InstanceRenderer::onSetDisplayName(Property*, const std::string&) {
     invalidate(InvalidationLevel::InvalidResources);
@@ -497,58 +496,110 @@ void InstanceRenderer::onDidAddPort(Property* property) {
     auto comp = dynamic_cast<CompositeProperty*>(property);
     IVW_ASSERT(comp, "should always exist");
 
-    auto uniform = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
-    IVW_ASSERT(uniform, "should always exist");
+    if (comp->getIdentifier().starts_with("volumePort")) {
+        auto sampler = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("sampler"));
+        IVW_ASSERT(sampler, "should always exist");
 
-    const auto uniqueID = util::findUniqueIdentifier(
-        uniform->get(),
-        [&](std::string_view id) {
-            for (auto prop : ports_) {
-                if (prop == property) continue;
+        static constexpr std::string_view uniforms =
+            "uniform VolumeParameters {0}Parameters;\n"
+            "uniform sampler3D {0};";
 
-                auto comp = dynamic_cast<CompositeProperty*>(prop);
-                auto uniform =
-                    dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
-                if (uniform->get() == id) return false;
+        auto port = std::make_unique<DataInport<Volume>>("volumePort");
+        const auto p = port.get();
+        vecPorts_.emplace_back(detail::DynPort{
+            .port = std::move(port),
+            .size = []() { return std::nullopt; },
+            .set = [](Shader& shader, size_t index) {},
+            .addUniform =
+                [s = sampler](ShaderObject& so) {
+                    so.addSegment(ShaderSegment{irplaceholder::uniform, s->get(),
+                                                fmt::format(uniforms, s->get())});
+                },
+            .bindAndSetUniforms =
+                [p, s = sampler](Shader& shader, TextureUnitContainer& cont) {
+                    utilgl::bindAndSetUniforms(shader, cont, *p->getData(), s->get());
+                }});
+
+    } else if (comp->getIdentifier().starts_with("layerPort")) {
+        auto sampler = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("sampler"));
+        IVW_ASSERT(sampler, "should always exist");
+
+        static constexpr std::string_view uniforms =
+            "uniform ImageParameters {0}Parameters;\n"
+            "uniform sampler2D {0};";
+
+        auto port = std::make_unique<DataInport<Layer>>("layerPort");
+        const auto p = port.get();
+        vecPorts_.emplace_back(detail::DynPort{
+            .port = std::move(port),
+            .size = []() { return std::nullopt; },
+            .set = [](Shader& shader, size_t index) {},
+            .addUniform =
+                [s = sampler](ShaderObject& so) {
+                    so.addSegment(ShaderSegment{irplaceholder::uniform, s->get(),
+                                                fmt::format(uniforms, s->get())});
+                },
+            .bindAndSetUniforms =
+                [p, s = sampler](Shader& shader, TextureUnitContainer& cont) {
+                    utilgl::bindAndSetUniforms(shader, cont, *p->getData(), s->get());
+                }});
+    } else {
+        auto uniform = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
+        IVW_ASSERT(uniform, "should always exist");
+
+        const auto uniqueID = util::findUniqueIdentifier(
+            uniform->get(),
+            [&](std::string_view id) {
+                for (auto prop : ports_) {
+                    if (prop == property) continue;
+
+                    auto comp = dynamic_cast<CompositeProperty*>(prop);
+                    auto uniform =
+                        dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
+                    if (uniform && uniform->get() == id) return false;
+                }
+                return true;
+            },
+            "");
+        uniform->set(uniqueID);
+
+        auto components1D = dynamic_cast<IntProperty*>(comp->getPropertyByIdentifier("components"));
+        auto components2D =
+            dynamic_cast<IntVec2Property*>(comp->getPropertyByIdentifier("components"));
+        IVW_ASSERT(components1D || components2D, "should always exist");
+
+        const auto& id = property->getIdentifier();
+        if (components1D) {
+            switch (components1D->get()) {
+                case 1:
+                    vecPorts_.push_back(createDynPortManager<float>(id, uniform));
+                    break;
+                case 2:
+                    vecPorts_.push_back(createDynPortManager<vec2>(id, uniform));
+                    break;
+                case 3:
+                    vecPorts_.push_back(createDynPortManager<vec3>(id, uniform));
+                    break;
+                case 4:
+                    vecPorts_.push_back(createDynPortManager<vec4>(id, uniform));
+                    break;
             }
-            return true;
-        },
-        "");
-    uniform->set(uniqueID);
-
-    auto components1D = dynamic_cast<IntProperty*>(comp->getPropertyByIdentifier("components"));
-    auto components2D = dynamic_cast<IntVec2Property*>(comp->getPropertyByIdentifier("components"));
-    IVW_ASSERT(components1D || components2D, "should always exist");
-
-    const auto& id = property->getIdentifier();
-    if (components1D) {
-        switch (components1D->get()) {
-            case 1:
-                vecPorts_.push_back(detail::createDynPortManager<float>(this, id, uniform));
-                break;
-            case 2:
-                vecPorts_.push_back(detail::createDynPortManager<vec2>(this, id, uniform));
-                break;
-            case 3:
-                vecPorts_.push_back(detail::createDynPortManager<vec3>(this, id, uniform));
-                break;
-            case 4:
-                vecPorts_.push_back(detail::createDynPortManager<vec4>(this, id, uniform));
-                break;
-        }
-    } else if (components2D) {
-        switch (components2D->get().x) {
-            case 2:
-                vecPorts_.push_back(detail::createDynPortManager<mat2>(this, id, uniform));
-                break;
-            case 3:
-                vecPorts_.push_back(detail::createDynPortManager<mat3>(this, id, uniform));
-                break;
-            case 4:
-                vecPorts_.push_back(detail::createDynPortManager<mat4>(this, id, uniform));
-                break;
+        } else if (components2D) {
+            switch (components2D->get().x) {
+                case 2:
+                    vecPorts_.push_back(createDynPortManager<mat2>(id, uniform));
+                    break;
+                case 3:
+                    vecPorts_.push_back(createDynPortManager<mat3>(id, uniform));
+                    break;
+                case 4:
+                    vecPorts_.push_back(createDynPortManager<mat4>(id, uniform));
+                    break;
+            }
         }
     }
+
+    addPort(*vecPorts_.back().port);
 
     invalidate(InvalidationLevel::InvalidResources);
 }
@@ -570,6 +621,7 @@ void InstanceRenderer::onDidRemoveUniform(Property* /*property*/, size_t index) 
 
 void InstanceRenderer::onDidRemovePort(Property* /*property*/, size_t index) {
     if (index < vecPorts_.size()) {
+        removePort(vecPorts_[index].port.get());
         vecPorts_.erase(vecPorts_.begin() + index);
         invalidate(InvalidationLevel::InvalidResources);
     }
@@ -719,6 +771,10 @@ std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     TextureUnitContainer units;
     for (auto& uniform : dynUniforms_) {
         uniform.setAndBind(shader_, units);
+    }
+
+    for (auto& item : vecPorts_) {
+        item.bindAndSetUniforms(shader_, units);
     }
 
     if (enableBoundingBoxCalc) {
