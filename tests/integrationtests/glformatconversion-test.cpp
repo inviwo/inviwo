@@ -57,8 +57,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 namespace {
@@ -306,16 +304,6 @@ std::vector<T> GLFormatConversionTest::test(const LayerConfig& sourceConfig,
     }
 
     return result;
-
-    // for (auto&& [index, expected] : std::views::zip(std::views::iota(0), expectedValues)) {
-    //     const auto result = layerRam->getAsDouble(size2_t{index, 0});
-    //     if constexpr (std::is_floating_point_v<U>) {
-    //         EXPECT_DOUBLE_EQ(result, expected);
-    //     } else {
-    //         const auto res = static_cast<U>(result);
-    //         EXPECT_EQ(res, expected);
-    //     }
-    // }
 }
 
 // GLSL shader output
@@ -462,11 +450,11 @@ TEST_F(GLFormatConversionTest, OutputInt16Symmetric) {
 
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    LayerConfig sourceConfig{
+    const LayerConfig sourceConfig{
         .dataRange = dvec2{0.0, 1.0},
         .valueRange = dvec2{0.0, 1.0},
     };
-    LayerConfig destConfig{
+    const LayerConfig destConfig{
         .dataRange = DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
         .valueRange = dvec2{-10.0, 10.0},
     };
@@ -579,7 +567,7 @@ TEST_F(GLFormatConversionTest, NormalizedUInt32) {
     const DataMapper dataMap{
         DataMapper::defaultDataRangeFor(DataFormatBase::get(DataFormatId::UInt32), Symmetric),
         dvec2{-4.0, 4.0}};
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dataMap.dataRange,
         .valueRange = dataMap.valueRange,
     };
