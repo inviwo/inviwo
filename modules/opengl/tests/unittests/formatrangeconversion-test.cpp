@@ -40,56 +40,61 @@
 
 namespace inviwo {
 
-TEST(RangeConversion, DoubleIdentity) {
+TEST(RangeConversion, Float32Identity) {
+    const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Float32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Float32);
 
     const DataMapper srcMap{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
     const DataMapper dstMap{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
+    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromGLInputToValue(0.5, renormalization));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
-
-    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromValueToGLOutput(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-1.0, conversion));
-    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(1.0, conversion));
-    EXPECT_DOUBLE_EQ(2.0, utilgl::mapFromValueToGLOutput(2.0, conversion));
+    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromValueToGLOutput(0.5, outputConversion));
+    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-1.0, outputConversion));
+    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(1.0, outputConversion));
+    EXPECT_DOUBLE_EQ(2.0, utilgl::mapFromValueToGLOutput(2.0, outputConversion));
 }
 
-TEST(RangeConversion, DoubleSymmetric) {
+TEST(RangeConversion, Float32Symmetric) {
+    const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Float32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Float32);
 
     const DataMapper srcMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
     const DataMapper dstMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
+    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromGLInputToValue(0.5, renormalization));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromValueToGLOutput(0.5, conversion));
-    EXPECT_DOUBLE_EQ(1.5, utilgl::mapFromValueToGLOutput(1.5, conversion));
-    EXPECT_DOUBLE_EQ(-1.5, utilgl::mapFromValueToGLOutput(-1.5, conversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromValueToGLOutput(0.5, outputConversion));
+    EXPECT_DOUBLE_EQ(1.5, utilgl::mapFromValueToGLOutput(1.5, outputConversion));
+    EXPECT_DOUBLE_EQ(-1.5, utilgl::mapFromValueToGLOutput(-1.5, outputConversion));
 }
 
-TEST(RangeConversion, DoubleSignedToPositive) {
+TEST(RangeConversion, Float32SignedToPositive) {
+    const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Float32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Float32);
 
     const DataMapper srcMap{dvec2{-1.0, 1.0}, dvec2{-1.0, 1.0}};
     const DataMapper dstMap{dvec2{0.0, 1.0}, dvec2{0.0, 2.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
+    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromGLInputToValue(0.5, renormalization));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromValueToGLOutput(1.0, conversion));
-    EXPECT_DOUBLE_EQ(-0.25, utilgl::mapFromValueToGLOutput(-0.5, conversion));
-    EXPECT_DOUBLE_EQ(1.5, utilgl::mapFromValueToGLOutput(3.0, conversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(0.5, utilgl::mapFromValueToGLOutput(1.0, outputConversion));
+    EXPECT_DOUBLE_EQ(-0.25, utilgl::mapFromValueToGLOutput(-0.5, outputConversion));
+    EXPECT_DOUBLE_EQ(1.5, utilgl::mapFromValueToGLOutput(3.0, outputConversion));
 }
 
 TEST(RangeConversion, Int16) {
@@ -98,18 +103,21 @@ TEST(RangeConversion, Int16) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Asymmetric),
+                            dvec2{-4.0, 4.0}};
     const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
-                            dvec2{0.0, 10.0}};
+                            dvec2{0.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-5.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
+    EXPECT_DOUBLE_EQ(2.0, utilgl::mapFromGLInputToValue(0.5, renormalization));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
+    EXPECT_DOUBLE_EQ(-4.0, utilgl::mapFromGLInputToValue(-1.0, renormalization));
+    EXPECT_DOUBLE_EQ(4.0, utilgl::mapFromGLInputToValue(1.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 TEST(RangeConversion, Int16Symmetric) {
@@ -119,15 +127,15 @@ TEST(RangeConversion, Int16Symmetric) {
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
     const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
+                            dvec2{-4.0, 4.0}};
     const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
-                            dvec2{-10.0, 10.0}};
+                            dvec2{-8.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-10.0, conversion));
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-8.0, outputConversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 TEST(RangeConversion, Int16Positive) {
@@ -136,15 +144,16 @@ TEST(RangeConversion, Int16Positive) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::Int16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
-    const DataMapper dstMap{dvec2{0.0, dstFormat->getMax()}, dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Asymmetric),
+                            dvec2{-4.0, 4.0}};
+    const DataMapper dstMap{dvec2{0.0, dstFormat->getMax()}, dvec2{0.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-10.0, conversion));
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-8.0, outputConversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 TEST(RangeConversion, UInt16) {
@@ -153,19 +162,20 @@ TEST(RangeConversion, UInt16) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::UInt16);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::UInt16);
 
-    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
-    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
-                            dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Asymmetric),
+                            dvec2{-4.0, 4.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Asymmetric),
+                            dvec2{0.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-5.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.5, renormalization));
+    EXPECT_DOUBLE_EQ(-4.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(-0.1, utilgl::mapFromValueToGLOutput(-1.0, conversion));
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(-0.125, utilgl::mapFromValueToGLOutput(-1.0, outputConversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(1.0, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 TEST(RangeConversion, Int32) {
@@ -175,17 +185,18 @@ TEST(RangeConversion, Int32) {
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int32);
 
     const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
+                            dvec2{-4.0, 4.0}};
     const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
-                            dvec2{0.0, 10.0}};
+                            dvec2{0.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-5.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
+    EXPECT_DOUBLE_EQ(-4.0, utilgl::mapFromGLInputToValue(-2147483647.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(dstMap.dataRange.y, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(dstMap.dataRange.y, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 TEST(RangeConversion, Int32Symmetric) {
@@ -195,15 +206,15 @@ TEST(RangeConversion, Int32Symmetric) {
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int32);
 
     const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
+                            dvec2{-4.0, 4.0}};
     const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
-                            dvec2{-10.0, 10.0}};
+                            dvec2{-8.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(-10.0, conversion));
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(dstMap.dataRange.y, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(-8.0, outputConversion));
+    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(dstMap.dataRange.y, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 TEST(RangeConversion, UInt32) {
@@ -212,18 +223,19 @@ TEST(RangeConversion, UInt32) {
     const DataFormatBase* srcFormat = DataFormatBase::get(DataFormatId::UInt32);
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::UInt32);
 
-    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Symmetric),
-                            dvec2{-5.0, 5.0}};
-    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
-                            dvec2{0.0, 10.0}};
+    const DataMapper srcMap{DataMapper::defaultDataRangeFor(srcFormat, Asymmetric),
+                            dvec2{-4.0, 4.0}};
+    const DataMapper dstMap{DataMapper::defaultDataRangeFor(dstFormat, Asymmetric),
+                            dvec2{0.0, 8.0}};
 
-    const auto conversion = utilgl::createGLFormatConversion(srcMap, dstMap, dstFormat);
+    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
+    const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromNormalizedGLToValue(0.5, conversion));
-    EXPECT_DOUBLE_EQ(-5.0, utilgl::mapFromNormalizedGLToValue(0.0, conversion));
+    EXPECT_NEAR(0.0, utilgl::mapFromGLInputToValue(2147483648.0, renormalization), 1e8);
+    EXPECT_DOUBLE_EQ(-4.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
 
-    EXPECT_DOUBLE_EQ(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(0.0, conversion));
-    EXPECT_DOUBLE_EQ(dstMap.dataRange.y, utilgl::mapFromValueToGLOutput(10.0, conversion));
+    EXPECT_DOUBLE_EQ(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(0.0, outputConversion));
+    EXPECT_DOUBLE_EQ(dstMap.dataRange.y, utilgl::mapFromValueToGLOutput(8.0, outputConversion));
 }
 
 }  // namespace inviwo
