@@ -148,7 +148,6 @@ TEST(RangeConversion, Int16Positive) {
                             dvec2{-4.0, 4.0}};
     const DataMapper dstMap{dvec2{0.0, dstFormat->getMax()}, dvec2{0.0, 8.0}};
 
-    const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
     const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
     EXPECT_DOUBLE_EQ(-1.0, utilgl::mapFromValueToGLOutput(-8.0, outputConversion));

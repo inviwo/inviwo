@@ -158,7 +158,7 @@ template <typename T>
 
 template <typename T>
 [[nodiscard]] std::shared_ptr<Layer> createLayer(LayerConfig config, size_t dim) {
-    return createLayer(config, std::vector<T>(dim, T{0}));
+    return createLayer(std::move(config), std::vector<T>(dim, T{0}));
 }
 
 }  // namespace
@@ -228,7 +228,7 @@ void GLSLShaderOutputTest::render(const std::vector<float>& sourceValues, Layer&
     fbo_.activate();
     fbo_.attachColorTexture(outputLayerGL->getTexture().get(), 0);
 
-    ivec2 dims{output.getDimensions()};
+    const ivec2 dims{output.getDimensions()};
     glViewport(0, 0, dims.x, dims.y);
 
     shader_.activate();
@@ -246,7 +246,7 @@ std::vector<U> GLSLShaderOutputTest::test(const std::vector<float>& sourceValues
 
     render(sourceValues, *output);
 
-    const auto* layerRam = output->getRepresentation<LayerRAM>();
+    const auto* layerRam = output->template getRepresentation<LayerRAM>();
     std::vector<U> result;
     for (auto index : std::views::iota(0) | std::views::take(sourceValues.size())) {
         const auto val = layerRam->getAsDouble(size2_t{index, 0});
@@ -270,7 +270,7 @@ void GLFormatConversionTest::render(const Layer& input, Layer& output, TestOutpu
     fbo_.activate();
     fbo_.attachColorTexture(outputLayerGL->getTexture().get(), 0);
 
-    ivec2 dims{output.getDimensions()};
+    const ivec2 dims{output.getDimensions()};
     glViewport(0, 0, dims.x, dims.y);
 
     shader_.activate();
@@ -297,7 +297,7 @@ std::vector<T> GLFormatConversionTest::test(const LayerConfig& sourceConfig,
 
     render(*input, *output, testOutput);
 
-    const auto* layerRam = output->getRepresentation<LayerRAM>();
+    const auto* layerRam = output->template getRepresentation<LayerRAM>();
 
     std::vector<T> result;
     for (auto index : std::views::iota(0) | std::views::take(sourceValues.size())) {
@@ -337,7 +337,7 @@ TEST_F(GLSLShaderOutputTest, Int8) {
     const std::vector<int> expected{0, 0, max, 63, 0, max};
 
     auto result = test<std::int8_t>(values);
-    std::vector<int> resultInt{result.begin(), result.end()};
+    const std::vector<int> resultInt{result.begin(), result.end()};
     EXPECT_EQ(resultInt, expected);
 }
 
@@ -371,7 +371,7 @@ TEST_F(GLSLShaderOutputTest, UInt8) {
     const std::vector<unsigned int> expected{0, 0, max, 127, 0, max};
 
     auto result = test<std::uint8_t>(values);
-    std::vector<unsigned int> resultUInt{result.begin(), result.end()};
+    const std::vector<unsigned int> resultUInt{result.begin(), result.end()};
     EXPECT_EQ(resultUInt, expected);
 }
 
@@ -395,7 +395,7 @@ TEST_F(GLSLShaderOutputTest, UInt32) {
 
 // GLSL Shader output conversion
 TEST_F(GLFormatConversionTest, OutputFloat32) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{0.0, 1.0},
         .valueRange = dvec2{0.0, 1.0},
     };
@@ -406,7 +406,7 @@ TEST_F(GLFormatConversionTest, OutputFloat32) {
 }
 
 TEST_F(GLFormatConversionTest, OutputFloat32Symmetric) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{-1.0, 1.0},
         .valueRange = dvec2{-1.0, 1.0},
     };
@@ -417,11 +417,11 @@ TEST_F(GLFormatConversionTest, OutputFloat32Symmetric) {
 }
 
 TEST_F(GLFormatConversionTest, OutputFloat32SignedToPositive) {
-    LayerConfig sourceConfig{
+    const LayerConfig sourceConfig{
         .dataRange = dvec2{-1.0, 1.0},
         .valueRange = dvec2{-1.0, 1.0},
     };
-    LayerConfig destConfig{
+    const LayerConfig destConfig{
         .dataRange = dvec2{0.0, 1.0},
         .valueRange = dvec2{0.0, 2.0},
     };
@@ -437,11 +437,11 @@ TEST_F(GLFormatConversionTest, OutputInt16) {
 
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    LayerConfig sourceConfig{
+    const LayerConfig sourceConfig{
         .dataRange = dvec2{0.0, 1.0},
         .valueRange = dvec2{0.0, 1.0},
     };
-    LayerConfig destConfig{
+    const LayerConfig destConfig{
         .dataRange = DataMapper::defaultDataRangeFor(dstFormat, Symmetric),
         .valueRange = dvec2{0.0, 10.0},
     };
@@ -487,11 +487,11 @@ TEST_F(GLFormatConversionTest, OutputInt16Positive) {
 
     const DataFormatBase* dstFormat = DataFormatBase::get(DataFormatId::Int16);
 
-    LayerConfig sourceConfig{
+    const LayerConfig sourceConfig{
         .dataRange = dvec2{0.0, 1.0},
         .valueRange = dvec2{0.0, 1.0},
     };
-    LayerConfig destConfig{
+    const LayerConfig destConfig{
         .dataRange = dvec2{0.0, dstFormat->getMax()},
         .valueRange = dvec2{0.0, 10.0},
     };
@@ -508,7 +508,7 @@ TEST_F(GLFormatConversionTest, OutputInt16Positive) {
 // Normalized texel fetch
 TEST_F(GLFormatConversionTest, NormalizedFloat32) {
     const DataMapper dataMap{dvec2{-4.0, 4.0}};
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dataMap.dataRange,
     };
     const std::vector<float> values{0.0f, -4.0f, 4.0f, 2.0f};
@@ -523,7 +523,7 @@ TEST_F(GLFormatConversionTest, NormalizedFloat32) {
 
 TEST_F(GLFormatConversionTest, NormalizedInt16) {
     const DataMapper dataMap{dvec2{-4.0, 4.0}};
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dataMap.dataRange,
     };
     const std::vector<std::int16_t> values{0, -4, 4, 2};
@@ -532,16 +532,13 @@ TEST_F(GLFormatConversionTest, NormalizedInt16) {
         return static_cast<float>(dataMap.mapFromDataToNormalized(val));
     });
 
-    auto renorm = utilgl::createGLFormatRenormalization(
-        DataMapper{dvec2{-4.0, 4.0}, dvec2{-4.0, 4.0}}, DataFormatBase::get(DataFormatId::Int16));
-
     auto result = test<float>(config, values, {}, TestOutput::NormalizedInput);
     EXPECT_EQ(result, expected);
 }
 
 TEST_F(GLFormatConversionTest, NormalizedInt32) {
     const DataMapper dataMap{dvec2{-4.0, 4.0}};
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dataMap.dataRange,
     };
 
@@ -561,7 +558,7 @@ TEST_F(GLFormatConversionTest, NormalizedUInt16) {
     const DataMapper dataMap{
         DataMapper::defaultDataRangeFor(DataFormatBase::get(DataFormatId::UInt16), Symmetric),
         dvec2{-4.0, 4.0}};
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dataMap.dataRange,
         .valueRange = dataMap.valueRange,
     };
@@ -600,7 +597,7 @@ TEST_F(GLFormatConversionTest, NormalizedUInt32) {
 
 // Value space
 TEST_F(GLFormatConversionTest, ValueSpaceFloat32) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{-4.0, 4.0},
         .valueRange = dvec2{-4.0, 4.0},
     };
@@ -611,26 +608,12 @@ TEST_F(GLFormatConversionTest, ValueSpaceFloat32) {
 }
 
 TEST_F(GLFormatConversionTest, ValueSpaceInt16) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{-4.0, 4.0},
         .valueRange = dvec2{-4.0, 4.0},
     };
     const std::vector<std::int16_t> values{0, -4, 4, 2};
     const std::vector<float> expected{0.0f, -4.0f, 4.0f, 2.0f};
-
-    auto renorm = utilgl::createGLFormatRenormalization(
-        DataMapper{dvec2{-4.0, 4.0}, dvec2{-4.0, 4.0}}, DataFormatBase::get(DataFormatId::Int16));
-
-    std::vector<float> expected2;
-    DataMapper dataMap{dvec2{-4.0, 4.0}, dvec2{-4.0, 4.0}};
-    std::ranges::transform(values, std::back_inserter(expected2), [&dataMap](auto val) {
-        return static_cast<float>(dataMap.mapFromDataToValue(val));
-    });
-    std::vector<float> expected3;
-    std::ranges::transform(values, std::back_inserter(expected3), [&dataMap](auto val) {
-        return static_cast<float>(
-            dataMap.mapFromNormalizedToValue(dataMap.mapFromDataToNormalized(val)));
-    });
 
     auto result = test<float>(config, values, {}, TestOutput::ValueSpace);
     for (auto&& [res, expect] : std::views::zip(result, expected)) {
@@ -639,7 +622,7 @@ TEST_F(GLFormatConversionTest, ValueSpaceInt16) {
 }
 
 TEST_F(GLFormatConversionTest, ValueSpaceInt32) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{-4.0, 4.0},
         .valueRange = dvec2{-4.0, 4.0},
     };
@@ -651,15 +634,12 @@ TEST_F(GLFormatConversionTest, ValueSpaceInt32) {
 }
 
 TEST_F(GLFormatConversionTest, ValueSpaceUInt16) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{0.0, 16.0},
         .valueRange = dvec2{-4.0, 4.0},
     };
     const std::vector<std::uint16_t> values{0, 16, 8, 4};
     const std::vector<float> expected{-4.0f, 4.0f, 0.0f, -2.0f};
-
-    auto renorm = utilgl::createGLFormatRenormalization(
-        DataMapper{dvec2{0.0, 16.0}, dvec2{-4.0, 4.0}}, DataFormatBase::get(DataFormatId::UInt16));
 
     auto result = test<float>(config, values, {}, TestOutput::ValueSpace);
     for (auto&& [res, expect] : std::views::zip(result, expected)) {
@@ -668,7 +648,7 @@ TEST_F(GLFormatConversionTest, ValueSpaceUInt16) {
 }
 
 TEST_F(GLFormatConversionTest, ValueSpaceUInt32) {
-    LayerConfig config{
+    const LayerConfig config{
         .dataRange = dvec2{0.0, 16.0},
         .valueRange = dvec2{-4.0, 4.0},
     };

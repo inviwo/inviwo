@@ -107,7 +107,7 @@ void VectorFieldGenerator2D::process() {
 
         // We always need to ask for an editable representation, this will invalidate any other
         // representations
-        auto destLayer = layer->getEditableRepresentation<LayerGL>();
+        auto* destLayer = layer->getEditableRepresentation<LayerGL>();
         fbo_.attachColorTexture(destLayer->getTexture().get(), 0);
 
         utilgl::singleDrawImagePlaneRect();
