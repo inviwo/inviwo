@@ -38,6 +38,11 @@ __constant sampler_t smpNormClampEdgeLinear = CLK_NORMALIZED_COORDS_TRUE | CLK_A
 __constant sampler_t smpNormClampEdgeNearest = CLK_NORMALIZED_COORDS_TRUE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
 
+typedef struct NormalizationMap_t {
+    float scale;
+    float offset;
+} NormalizationMap;
+
 typedef struct VolumeParameters_t {
     float16 modelToWorld;
     float16 worldToModel;
@@ -46,11 +51,9 @@ typedef struct VolumeParameters_t {
     float16 textureToIndex;                 // Transform from [0 1] to [-0.5 dim-0.5]
     float16 indexToTexture;                 // Transform from [-0.5 dim-0.5] to [0 1]
     float16 textureSpaceGradientSpacing;    // Maximum possible distance to go without ending up outside of a voxel (half of minimum voxel spacing for volumes with orthogonal basis)
-    float3 worldSpaceGradientSpacing;        // Spacing between gradient samples in world space 
-    float formatScaling;                    // Scaling of data values.
-    float formatOffset;                     // Offset of data values.
-    float signedFormatScaling;              // Scaling of signed data values.
-    float signedFormatOffset;               // Offset of signed data values.
+    float3 worldSpaceGradientSpacing;       // Spacing between gradient samples in world space 
+    NormalizationMap texToNormalized;
+    NormalizationMap texToSignNormalized;
     char padding__[32];                     // Padding to align to 512 bytes
 } VolumeParameters;
 
@@ -81,7 +84,7 @@ float getVoxelUnorm(read_only image3d_t volume, int4 pos) {
  * @param pos Coordinate in [0 1]^3
  */
 float4 getNormalizedVoxel(read_only image3d_t volume, __constant VolumeParameters* volumeParams, float4 pos) {
-    return (read_imagef(volume, smpNormClampEdgeLinear, pos) + volumeParams->formatOffset) * volumeParams->formatScaling;  
+    return (read_imagef(volume, smpNormClampEdgeLinear, pos) - volumeParams->texToNormalized.offset) * volumeParams->texToNormalized.scale;  
 }
 
 
@@ -90,7 +93,7 @@ float4 getNormalizedVoxel(read_only image3d_t volume, __constant VolumeParameter
  * @param pos Coordinate in [0 get_image_dim(volume)-1]
  */
 float4 getNormalizedVoxelUnorm(read_only image3d_t volume, __constant VolumeParameters* volumeParams, int4 pos) {
-    return (read_imagef(volume, smpUNormNoClampNearest, pos) + volumeParams->formatOffset) * volumeParams->formatScaling;  
+    return (read_imagef(volume, smpUNormNoClampNearest, pos) - volumeParams->texToNormalized.offset) * volumeParams->texToNormalized.scale;  
 }
 
 /*
@@ -98,7 +101,7 @@ float4 getNormalizedVoxelUnorm(read_only image3d_t volume, __constant VolumePara
  * @param pos Coordinate in [0 1]^3
  */
 float4 getSignNormalizedVoxel(read_only image3d_t volume, __constant VolumeParameters* volumeParams, float4 pos) {
-    return (read_imagef(volume, smpNormClampEdgeLinear, pos) + volumeParams->signedFormatOffset) * volumeParams->signedFormatScaling;  
+    return (read_imagef(volume, smpNormClampEdgeLinear, pos) - volumeParams->texToSignNormalized.offset) * volumeParams->texToSignNormalized.scale;  
 }
 
 /*
@@ -106,7 +109,7 @@ float4 getSignNormalizedVoxel(read_only image3d_t volume, __constant VolumeParam
  * @param pos Coordinate in [0 get_image_dim(volume)-1]
  */
 float4 getSignNormalizedVoxelUnorm(read_only image3d_t volume, __constant VolumeParameters* volumeParams, int4 pos) {
-    return (read_imagef(volume, smpUNormNoClampNearest, pos) + volumeParams->signedFormatOffset) * volumeParams->signedFormatScaling;  
+    return (read_imagef(volume, smpUNormNoClampNearest, pos) - volumeParams->texToSignNormalized.offset) * volumeParams->texToSignNormalized.scale;  
 }
 
 #endif // SAMPLERS_CL

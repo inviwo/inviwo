@@ -132,8 +132,8 @@ float sampleVolume(in sampler3D volume, in uint volumeIndex, in vec3 posWorld) {
     vec3 samplePosData = (volumeParameters[volumeIndex].worldToData * vec4(posWorld, 1)).xyz;
     float scalar = texture(volume, samplePosData)[volumeChannels[volumeIndex]];
     // normalize scalar value to [0,1]
-    scalar = (scalar  + volumeParameters[volumeIndex].formatOffset) * 
-        (1.0 - volumeParameters[volumeIndex].formatScaling);
+    scalar = (scalar  - volumeParameters[volumeIndex].texToNormalized.offset) * 
+        volumeParameters[volumeIndex].texToNormalized.scale;
     return scalar;
 }
 

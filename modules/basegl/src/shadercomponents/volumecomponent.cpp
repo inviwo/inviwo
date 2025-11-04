@@ -81,7 +81,7 @@ vec3 {0}Gradient = vec3(0);
     normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
                                            samplePosition, channel));
 if (!useSurfaceNormals) {{
-    {0}Gradient *= sign({0}Voxel[channel] / (1.0 - {0}Parameters.formatScaling) - {0}Parameters.formatOffset);
+    {0}Gradient *= sign({0}Voxel[channel] / {0}Parameters.texToNormalized.scale + {0}Parameters.texToNormalized.offset);
 }}
 #endif
 )");
@@ -91,7 +91,7 @@ constexpr std::string_view gradient = util::trim(R"(
 {0}GradientPrev = {0}Gradient;
 {0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
                                                      samplePosition, channel));
-{0}Gradient *= sign({0}Voxel[channel] / (1.0 - {0}Parameters.formatScaling) - {0}Parameters.formatOffset);
+{0}Gradient *= sign({0}Voxel[channel] / {0}Parameters.texToNormalized.scale + {0}Parameters.texToNormalized.offset);
 #endif
 )");
 

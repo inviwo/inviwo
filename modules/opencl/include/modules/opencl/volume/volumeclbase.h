@@ -43,6 +43,11 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API VolumeCLBase {
 
 public:
+    struct NormalizationMap {
+        float scale = 1.0f;
+        float offset = 0.0f;
+    };
+
     struct VolumeParameters {
         mat4 modelToWorld;
         mat4 worldToModel;
@@ -55,10 +60,8 @@ public:
                                            // volumes with orthogonal basis)
         vec4 worldSpaceGradientSampleSpacing;  // Spacing (xyz) between gradient samples in world
                                                // space (OpenCL memory layout does not support vec3)
-        float formatScaling;                   // Scaling of data values.
-        float formatOffset;                    // Offset of data values.
-        float signedFormatScaling;             // Scaling of signed data values.
-        float signedFormatOffset;              // Offset of signed data values.
+        NormalizationMap texToNormalized;      // Scaling of data values.
+        NormalizationMap texToSignNormalized;  // Scaling of signed data values.
         char padding__[32];                    // Padding to align to 512 bytes
     };
     VolumeCLBase();
