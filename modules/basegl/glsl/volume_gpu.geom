@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -33,33 +33,33 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform VolumeParameters volumeParameters;
+uniform vec3 reciprocalDimensions;
+uniform vec3 reciprocalDimensionsM1;
+uniform mat4 textureToWorld;
 
 in int instanceID_[3];
 in vec2 texCoord2D_[3];
 
-out vec4 texCoord_; 
+// texCoord_ starts at 1/dims and goes to 1 - 1/dims
+out vec4 texCoord_;
+
+// dataposition_ ranges from zero to one, including zero and one.
 out vec4 dataposition_;
 out vec4 worldPos_;
-out vec4 permutedPosInv_;
-out vec4 permutedPosInvSec_;
 
 void main() {
-    float reciprocalz = 1.0 / (volumeParameters.dimensions.z - 1.0);
+    float datapositionz = instanceID_[0] * reciprocalDimensionsM1.z;
+    float texCoordz = (instanceID_[0] * reciprocalDimensions.z) + (0.5 * reciprocalDimensions.z);
 
-    dataposition_.z = instanceID_[0] * reciprocalz;
-    texCoord_.z = (instanceID_[0] * volumeParameters.reciprocalDimensions.z)
-        + (0.5 * volumeParameters.reciprocalDimensions.z);
-    texCoord_.w = 1.f;
-    dataposition_.w = 1.f;
     gl_Layer = instanceID_[0];
 
-    for (int i = 0; i < gl_in.length(); ++i) { 
+    for (int i = 0; i < gl_in.length(); ++i) {
         gl_Position = gl_in[i].gl_Position;
-        texCoord_.xy = texCoord2D_[i];
-        dataposition_.xy = texCoord2D_[i] - volumeParameters.reciprocalDimensions.xy * 0.5f;
-        dataposition_.xy /= 1.0f-volumeParameters.reciprocalDimensions.xy;
-        worldPos_ = volumeParameters.textureToWorld * texCoord_;
+        texCoord_ = vec4(texCoord2D_[i], texCoordz, 1.0f);
+        dataposition_ = vec4(
+            (texCoord2D_[i] - reciprocalDimensions.xy * 0.5f) / (1.0f - reciprocalDimensions.xy),
+            datapositionz, 1.0f);
+        worldPos_ = textureToWorld * texCoord_;
         EmitVertex();
     }
 

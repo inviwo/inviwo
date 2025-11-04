@@ -40,6 +40,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 #include <memory>
 #include <string>
@@ -47,7 +48,7 @@
 namespace inviwo {
 class Volume;
 
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public Processor {
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public VolumeGLProcessor {
 public:
     VectorFieldGenerator3D();
     virtual ~VectorFieldGenerator3D();
@@ -55,13 +56,12 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
-
 protected:
-    virtual void process() override;
+    virtual void initializeShader(Shader& shader) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
+                            VolumeConfig& config) override;
+    virtual void postProcess(Volume& volume) override;
 
-    VolumeOutport outport_;
-    std::shared_ptr<Volume> volume_;
 
     OrdinalProperty<size3_t> size_;
 
@@ -72,9 +72,6 @@ protected:
     StringProperty xValue_;
     StringProperty yValue_;
     StringProperty zValue_;
-
-    Shader shader_;
-    FrameBufferObject fbo_;
 };
 
 }  // namespace inviwo

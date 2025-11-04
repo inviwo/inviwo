@@ -41,9 +41,6 @@
 #define M_SQRT2    1.41421356237309504880   // sqrt(2)
 #define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
 
-
-uniform ivec3 volumeSize_;
-
 in vec4 texCoord_;
 in vec4 dataposition_;
 
@@ -51,26 +48,19 @@ uniform vec2 xRange;
 uniform vec2 yRange;
 uniform vec2 zRange;
 
-float getPos(float v ,vec2 range){ 
-	return range.x + v * (range.y - range.x);
-}
-
-vec4 getPos(){
-	return vec4(
-		      getPos(dataposition_.x , xRange)
-			, getPos(dataposition_.y , yRange)
-			, getPos(dataposition_.z , zRange)
-			, 1.0
-		);
-}
-
 void main() {
-    vec4 pos = getPos();
+    vec3 pos = vec3(
+        mix(xRange.x, xRange.y, dataposition_.x),
+        mix(yRange.x, yRange.y, dataposition_.y),
+        mix(zRange.x, zRange.y, dataposition_.z)
+    );
 
-    vec4 value = vec4(0,0,0,1);
-    value.x = X_VALUE(pos.x,pos.y,pos.z);
-    value.y = Y_VALUE(pos.x,pos.y,pos.z);
-    value.z = Z_VALUE(pos.x,pos.y,pos.z);
+    vec4 value = vec4(
+        X_VALUE(pos.x, pos.y, pos.z),
+        Y_VALUE(pos.x, pos.y, pos.z),
+        Z_VALUE(pos.x, pos.y, pos.z),
+        1.0
+    );
 
     FragData0 = value;
 }

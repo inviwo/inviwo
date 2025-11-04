@@ -49,7 +49,6 @@
 #include <modules/opengl/volume/volumegl.h>     // for VolumeGL
 #include <modules/opengl/volume/volumeutils.h>  // for bindAndSetUniforms
 #include <modules/opengl/openglutils.h>
-
 #include <algorithm>
 #include <string_view>    // for string_view
 #include <type_traits>    // for remove_extent_t
@@ -151,6 +150,11 @@ void VolumeGLProcessor::process() {
     auto dstVolume = volumes_.get();
 
     const size3_t dim{dstVolume->getDimensions()};
+
+    shader_.setUniform("reciprocalDimensions", vec3{1.0f} / static_cast<vec3>(dim));
+    shader_.setUniform("reciprocalDimensionsM1", vec3{1.0f} / static_cast<vec3>(dim - size3_t(1)));
+    shader_.setUniform("textureToWorld",
+                       dstVolume->getCoordinateTransformer().getTextureToWorldMatrix());
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
