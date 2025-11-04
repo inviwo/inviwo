@@ -1,7 +1,18 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-11-04 Updated GLSL data range conversions
+Utility functions `getValueTexel()` were added to `utils/sampler2d.glsl` and `utils/sampler3d.glsl`. These functions are similar to `getNormalizedTexel()` but instead return the sampled texture value in value space.
+
+Similarly, `mapFromValueToGLOutput()` (`utils/conversion.glsl`) was added to convert values back from value space to the GLSL ouptut range corresponding to the underlying data format of the output texture. Use `utilgl::createOutputConversion()` from `glformatutils.h` to generate the required conversion map, which then can be set in the shader with `utilgl::setShaderUniforms()`.
+
 ## 2025-10-28 Removed ProgressBar and ActivityIndicator
 The Processor `ProgressBar` and `ActivityIndicator` and related `Owner` and `Observer` classes have been removed. The new `Processor::notifyObserversProgressChanged` and `ProcessorObserver::onProcessorProgressChanged` functions replaces them. Most processor using background work, should use the `PoolProcessor`, and are not affected by this change. 
+
+## 2025-10-24 `LayerCreator` and `VolumeSliceToLayer` processors
+Added a `Layer Creator` processor for creating various 2D Layers similar to `Volume Creator`. The `Volume Slice To Layer` processor extracts an axis-aligned slice from a Volume and places the resulting layer into the same spatial location in contrast to `VolumeSliceExtractor` and `VolumeSliceGL` which output an Image. 
+
+## 2023-01-26 `MeshAxis` and `LayerAxis` processors
+Added a `Mesh Axis` processor for adding 3D axes to a mesh and `Layer Axis` for 2D axes next to a layer. These processor share most of their functionality with the `Volume Axis` processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.
 
 ## 2025-09-23 Updated Inviwo Python bindings
 The explicit `Vector` types for both scalar and glm vectors were moved from `inviwopy` to the `inviwopy.glm` module. 
