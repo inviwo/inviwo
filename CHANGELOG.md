@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-10-28 Removed ProgressBar and ActivityIndicator
+The Processor `ProgressBar` and `ActivityIndicator` and related `Owner` and `Observer` classes have been removed. The new `Processor::notifyObserversProgressChanged` and `ProcessorObserver::onProcessorProgressChanged` functions replaces them. Most processor using background work, should use the `PoolProcessor`, and are not affected by this change. 
+
 ## 2025-09-23 Updated Inviwo Python bindings
 The explicit `Vector` types for both scalar and glm vectors were moved from `inviwopy` to the `inviwopy.glm` module. 
 

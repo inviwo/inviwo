@@ -42,21 +42,21 @@ void pool::Progress::operator()(float progress) const noexcept {
 }
 
 void pool::Progress::operator()(double progress) const noexcept {
-    state_.setProgress(id_, static_cast<float>(progress));
+    state_.setProgress(id_, progress);
 }
 
 void pool::Progress::operator()(size_t i, size_t max) const noexcept {
-    state_.setProgress(id_, static_cast<float>(i) / max);
+    state_.setProgress(id_, static_cast<double>(i) / static_cast<double>(max));
 }
 
-void pool::detail::State::setProgress(size_t id, float newProgress) {
+void pool::detail::State::setProgress(size_t id, double newProgress) {
     IVW_ASSERT(id < progress.size(), "Invalid job id");
 
     progress[id] = newProgress;
 
     if (!progressUpdate.valid() || util::is_future_ready(progressUpdate)) {
-        const auto total =
-            std::accumulate(progress.begin(), progress.end(), 0.0f) / progress.size();
+        const auto total = std::accumulate(progress.begin(), progress.end(), 0.0) /
+                           static_cast<double>(progress.size());
         progressUpdate = dispatchFront([this, poolProcessor = processor, total]() {
             if (auto p = poolProcessor.lock()) {
                 p->progress(this, total);
@@ -162,9 +162,9 @@ void PoolProcessor::newResults(const std::vector<Outport*>& outports) {
     notifyObserversInvalidationEnd(this);
 }
 
-void PoolProcessor::progress(pool::detail::State* state, float progress) {
+void PoolProcessor::progress(pool::detail::State* state, double progress) {
     if (!states_.empty() && states_.back().get() == state) {
-        updateProgress(progress);
+        notifyObserversProgressChanged(this, progress);
     }
 }
 
