@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,6 @@ protected:
         minmaxGL_ = std::make_unique<utilgl::DataMinMaxGL>();
     }
     void testVolume(std::string_view filename);
-    // void testVolume(std::string_view filename);
     void test(const std::shared_ptr<Volume>& volume);
     void test(const std::shared_ptr<Layer>& layer);
     void test(const std::shared_ptr<BufferBase>& buffer);
