@@ -27,11 +27,11 @@
  * 
  *********************************************************************************/
 
-out vec2 texCoord2D_;
-out int instanceID_;
+out vec2 texCoord2D;
+out int instanceID;
 
 void main() {
-    texCoord2D_ = in_TexCoord.xy;
-    instanceID_ = gl_InstanceID;
+    texCoord2D = in_TexCoord.xy;
+    instanceID = gl_InstanceID;
     gl_Position = in_Vertex;
 }

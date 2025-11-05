@@ -38,20 +38,20 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform VolumeParameters lightVolumeParameters_;
+uniform VolumeParameters lightVolumeParameters;
 
-uniform mat4 permutationMatrix_;
+uniform mat4 permutationMatrix;
 
-in int instanceID_[3];
-in vec2 texCoord2D_[3];
+in int instanceID[3];
+in vec2 texCoord2D[3];
 
-out vec4 texCoord_;
-out vec4 permutedTexCoord_;
+out vec4 texCoord;
+out vec4 permutedTexCoord;
 
 void main() {
     int i;
-    texCoord_.z = (instanceID_[0] * lightVolumeParameters_.reciprocalDimensions.z) + (0.5 * lightVolumeParameters_.reciprocalDimensions.z);
-    texCoord_.w = 1.f;
+    texCoord.z = (instanceID[0] * lightVolumeParameters.reciprocalDimensions.z) + (0.5 * lightVolumeParameters.reciprocalDimensions.z);
+    texCoord.w = 1.f;
 
     for (i = 0; i<gl_in.length(); ++i) {
 #ifndef GLSL_VERSION_150
@@ -59,8 +59,8 @@ void main() {
 #else
         gl_Position = gl_in[i].gl_Position;
 #endif
-        texCoord_.xy = texCoord2D_[i];
-        permutedTexCoord_ = permutationMatrix_ * texCoord_;
+        texCoord.xy = texCoord2D[i];
+        permutedTexCoord = permutationMatrix * texCoord;
         EmitVertex();
     }
 
