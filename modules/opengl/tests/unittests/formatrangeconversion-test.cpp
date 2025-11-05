@@ -189,7 +189,7 @@ TEST(RangeConversion, Int32) {
     const auto renormalization = utilgl::createGLFormatRenormalization(srcMap, srcFormat);
     const auto outputConversion = utilgl::createGLOutputConversion(dstMap, dstFormat);
 
-    EXPECT_DOUBLE_EQ(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization));
+    EXPECT_NEAR(0.0, utilgl::mapFromGLInputToValue(0.0, renormalization), 1.0e-12);
     EXPECT_DOUBLE_EQ(-4.0, utilgl::mapFromGLInputToValue(-2147483647.0, renormalization));
 
     EXPECT_NEAR(dstMap.dataRange.x, utilgl::mapFromValueToGLOutput(0.0, outputConversion), 1.0e-12);

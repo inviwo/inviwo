@@ -160,16 +160,28 @@ template <typename T>
     return createLayer(std::move(config), std::vector<T>(dim, T{0}));
 }
 
+const OpenGLCapabilities& getOpenGLCapabilities() {
+    if (auto* app = util::getInviwoApplication()) {
+        if (const auto* capa = app->getCapabilitiesByType<OpenGLCapabilities>()) {
+            return *capa;
+        }
+    }
+    throw OpenGLException(SourceContext{}, "OpenGLCapabilities not available");
+}
+
 }  // namespace
 
 class GLSLShaderOutputTest : public ::testing::Test {
 public:
+    using enum OpenGLCapabilities::GlVendor;
+
     GLSLShaderOutputTest()
         : shader_{{{ShaderType::Vertex,
                     std::make_shared<StringShaderResource>("vertex.vert", vertexShaderSource)},
                    {ShaderType::Fragment, std::make_shared<StringShaderResource>(
                                               "shaderoutput.frag", shaderoutputSource)}},
-                  Shader::Build::No} {}
+                  Shader::Build::No}
+        , vendor_{getOpenGLCapabilities().getVendor()} {}
 
 protected:
     void render(const std::vector<float>& sourceValues, Layer& output);
@@ -177,8 +189,11 @@ protected:
     template <typename U>
     std::vector<U> test(const std::vector<float>& sourceValues);
 
+    OpenGLCapabilities::GlVendor getVendor() const { return vendor_; }
+
 private:
     Shader shader_;
+    OpenGLCapabilities::GlVendor vendor_;
 
     FrameBufferObject fbo_;
 };
@@ -186,13 +201,15 @@ private:
 class GLFormatConversionTest : public ::testing::Test {
 public:
     enum class TestOutput : std::uint8_t { GLOutput, ValueSpace, NormalizedInput };
+    using enum OpenGLCapabilities::GlVendor;
 
     GLFormatConversionTest()
         : shader_{{{ShaderType::Vertex,
                     std::make_shared<StringShaderResource>("vertex.vert", vertexShaderSource)},
                    {ShaderType::Fragment,
                     std::make_shared<StringShaderResource>("fragment.frag", fragmentShaderSource)}},
-                  Shader::Build::No} {}
+                  Shader::Build::No}
+        , vendor_{getOpenGLCapabilities().getVendor()} {}
 
 protected:
     void render(const Layer& input, Layer& output, TestOutput testOutput);
@@ -201,8 +218,11 @@ protected:
     std::vector<T> test(const LayerConfig& sourceConfig, const std::vector<U>& sourceValues,
                         const LayerConfig& destConfig, TestOutput testOutput);
 
+    OpenGLCapabilities::GlVendor getVendor() const { return vendor_; }
+
 private:
     Shader shader_;
+    OpenGLCapabilities::GlVendor vendor_;
 
     FrameBufferObject fbo_;
 };
@@ -323,7 +343,10 @@ TEST_F(GLSLShaderOutputTest, Int8) {
 
     const std::vector<float> values{0.0f, -1.0f, 1.0f, 0.5f, -2.0f, 1.5f};
     // NOTE: negative values are clamped to zero (confirmed on NVIDIA)
-    const std::vector<int> expected{0, 0, max, 63, 0, max};
+    std::vector<int> expected{0, min, max, 64, min, max};
+    if (getVendor() == Nvidia) {
+        expected = {0, 0 /* min */, max, 63, 0 /* min */, max};
+    }
 
     auto result = test<std::int8_t>(values);
     const std::vector<int> resultInt{result.begin(), result.end()};
@@ -338,8 +361,11 @@ TEST_F(GLSLShaderOutputTest, Int16) {
             : std::numeric_limits<std::int16_t>::min();
 
     const std::vector<float> values{0.0f, -1.0f, 1.0f, 0.5f, -2.0f, 1.5f};
-    // NOTE: negative values are clamped to zero (confirmed on NVIDIA)
-    const std::vector<std::int16_t> expected{0, 0, max, 16383, 0, max};
+    std::vector<std::int16_t> expected{0, min, max, 16384, min, max};
+    if (getVendor() == Nvidia) {
+        // NOTE: negative values are clamped to zero (confirmed on NVIDIA)
+        expected = {0, 0 /* min */, max, 16383, 0 /* min */, max};
+    }
 
     auto result = test<std::int16_t>(values);
     EXPECT_EQ(result, expected);
@@ -357,7 +383,10 @@ TEST_F(GLSLShaderOutputTest, UInt8) {
     constexpr std::uint8_t max = std::numeric_limits<std::uint8_t>::max();
 
     const std::vector<float> values{0.0f, -1.0f, 1.0f, 0.5f, -2.0f, 1.5f};
-    const std::vector<unsigned int> expected{0, 0, max, 127, 0, max};
+    std::vector<unsigned int> expected{0, 0, max, 128, 0, max};
+    if (getVendor() == Nvidia) {
+        expected = {0, 0, max, 127, 0, max};
+    }
 
     auto result = test<std::uint8_t>(values);
     const std::vector<unsigned int> resultUInt{result.begin(), result.end()};
@@ -368,7 +397,10 @@ TEST_F(GLSLShaderOutputTest, UInt16) {
     constexpr std::uint16_t max = std::numeric_limits<std::uint16_t>::max();
 
     const std::vector<float> values{0.0f, -1.0f, 1.0f, 0.5f, -2.0f, 1.5f};
-    const std::vector<std::uint16_t> expected{0, 0, max, 32767, 0, max};
+    std::vector<std::uint16_t> expected{0, 0, max, 32768, 0, max};
+    if (getVendor() == Nvidia) {
+        expected = {0, 0, max, 32767, 0, max};
+    }
 
     auto result = test<std::uint16_t>(values);
     EXPECT_EQ(result, expected);
@@ -435,12 +467,14 @@ TEST_F(GLFormatConversionTest, OutputInt16) {
         .valueRange = dvec2{0.0, 10.0},
     };
 
-    const glm::vec<2, std::int16_t> range{destConfig.dataRange.value()};
+    const glm::vec<2, std::int16_t> range{-dstFormat->getMax(), dstFormat->getMax()};
 
     const std::vector<float> values{0.0f, 5.0f, 10.0f};
-    // NOTE: negative values are clamped to zero before renormalization (confirmed on NVIDIA)
-    // meaning 0.0f will not be mapped to range.x
-    const std::vector<std::int16_t> expected{0 /* range.x */, 0, range.y};
+    std::vector<std::int16_t> expected{range.x, 0, range.y};
+    if (getVendor() == Nvidia) {
+        // NOTE: negative values are clamped to zero before renormalization (confirmed on NVIDIA)
+        expected = {0 /* range.x */, 0, range.y};
+    }
 
     auto result = test<std::int16_t>(sourceConfig, values, destConfig, TestOutput::GLOutput);
     EXPECT_EQ(result, expected);
@@ -460,12 +494,14 @@ TEST_F(GLFormatConversionTest, OutputInt16Symmetric) {
         .valueRange = dvec2{-10.0, 10.0},
     };
 
-    const glm::vec<2, std::int16_t> range{destConfig.dataRange.value()};
+    const glm::vec<2, std::int16_t> range{-dstFormat->getMax(), dstFormat->getMax()};
 
     const std::vector<float> values{-10.0f, 0.0f, 10.0f};
-    // NOTE: negative values are clamped to zero before renormalization (confirmed on NVIDIA)
-    // meaning -10.0f will not be mapped to range.x
-    const std::vector<std::int16_t> expected{0 /* range.x */, 0, range.y};
+    std::vector<std::int16_t> expected{range.x, 0, range.y};
+    if (getVendor() == Nvidia) {
+        // NOTE: negative values are clamped to zero before renormalization (confirmed on NVIDIA)
+        expected = {0 /* range.x */, 0, range.y};
+    }
 
     auto result = test<std::int16_t>(sourceConfig, values, destConfig, TestOutput::GLOutput);
     EXPECT_EQ(result, expected);
@@ -481,14 +517,18 @@ TEST_F(GLFormatConversionTest, OutputInt16Positive) {
         .valueRange = dvec2{0.0, 1.0},
     };
     const LayerConfig destConfig{
-        .dataRange = dvec2{0.0, dstFormat->getMax()},
+        .dataRange = dvec2{0, dstFormat->getMax()},
         .valueRange = dvec2{0.0, 10.0},
     };
 
-    const glm::vec<2, std::int16_t> range{destConfig.dataRange.value()};
+    const glm::vec<2, std::int16_t> range{-dstFormat->getMax(), dstFormat->getMax()};
 
     const std::vector<float> values{-10.0f, 0.0f, 10.0f};
-    const std::vector<std::int16_t> expected{range.x, 0, range.y};
+    std::vector<std::int16_t> expected{range.x, 0, range.y};
+    if (getVendor() == Nvidia) {
+        // NOTE: negative values are clamped to zero before renormalization (confirmed on NVIDIA)
+        expected = {0 /* range.x */, 0, range.y};
+    }
 
     auto result = test<std::int16_t>(sourceConfig, values, destConfig, TestOutput::GLOutput);
     EXPECT_EQ(result, expected);
@@ -602,9 +642,9 @@ TEST_F(GLFormatConversionTest, ValueSpaceInt16) {
         .valueRange = dvec2{-4.0, 4.0},
     };
     const std::vector<std::int16_t> values{0, -4, 4, 2};
-    const std::vector<float> expected{0.0f, -4.0f, 4.0f, 2.0f};
 
     auto result = test<float>(config, values, {}, TestOutput::ValueSpace);
+    const std::vector<float> expected{0.0f, -4.0f, 4.0f, 2.0f};
     EXPECT_THAT(result, ::testing::Pointwise(::testing::FloatNear(1.0e-8f), expected));
 }
 
