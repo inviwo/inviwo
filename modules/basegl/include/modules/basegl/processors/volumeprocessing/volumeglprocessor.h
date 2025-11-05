@@ -78,6 +78,7 @@ public:
     struct FBO {
         FrameBufferObject fbo;
         size_t textureId;
+        std::array<GLenum, 1> drawBuffers{0};
         std::chrono::high_resolution_clock::time_point lastUsed;
     };
 

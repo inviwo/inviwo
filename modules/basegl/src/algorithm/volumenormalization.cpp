@@ -77,11 +77,12 @@ void VolumeNormalization::setNormalizeChannels(bvec4 normalize) { normalizeChann
 void VolumeNormalization::reset() { normalizeChannel_ = bvec4{true}; }
 
 std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
-    std::shared_ptr<Volume> outVolume;
+    const size3_t dims{volume.getDimensions()};
 
-    outVolume = std::make_shared<Volume>(volume, noData);
-    outVolume->setDataFormat(
-        DataFormatBase::get(NumericType::Float, volume.getDataFormat()->getComponents(), 32));
+    auto outVolume = std::make_shared<Volume>(
+        volume, noData,
+        VolumeConfig{.format = DataFormatBase::get(NumericType::Float,
+                                                   volume.getDataFormat()->getComponents(), 32)});
 
     shader_.activate();
 
@@ -89,15 +90,14 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     utilgl::bindAndSetUniforms(shader_, cont, volume, "volume");
     shader_.setUniform("normalizeChannel", normalizeChannel_);
 
-    const size3_t dim{volume.getDimensions()};
     fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
+    glViewport(0, 0, static_cast<GLsizei>(dims.x), static_cast<GLsizei>(dims.y));
 
     VolumeGL* outVolumeGL = outVolume->getEditableRepresentation<VolumeGL>();
 
-    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
-
-    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
+    const auto drawBuff = fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+    glDrawBuffer(drawBuff);
+    utilgl::multiDrawImagePlaneRect(static_cast<int>(dims.z));
 
     shader_.deactivate();
     fbo_.deactivate();

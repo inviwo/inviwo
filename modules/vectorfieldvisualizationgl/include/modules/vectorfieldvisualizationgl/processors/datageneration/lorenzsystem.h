@@ -39,6 +39,7 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/base/datastructures/volumereusecache.h>
 
 #include <string>
 
@@ -69,6 +70,11 @@ protected:
     FloatProperty betaValue_;
 
     Shader shader_;
+
+    VolumeReuseCache vecVolumes_;
+    VolumeReuseCache curlVolumes_;
+    VolumeReuseCache divVolumes_;
+
     FrameBufferObject fbo_;
 };
 

@@ -43,7 +43,7 @@
 namespace inviwo {
 class Volume;
 
-/** \class VolumeNormalization
+/** @class VolumeNormalization
  *
  * GL implementation of volume normalization. The algorithm takes in a volume and normalizes its
  * data in the selected channels to range [0, 1].

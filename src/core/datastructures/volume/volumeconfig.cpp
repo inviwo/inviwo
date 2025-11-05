@@ -29,6 +29,9 @@
 
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
 
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+
 namespace inviwo {
 
 dvec2 VolumeConfig::defaultDataRange(const DataFormatBase* format) {
@@ -71,6 +74,30 @@ VolumeConfig& VolumeConfig::updateFrom(const VolumeConfig& config) {
     update(world, config.world);
 
     return *this;
+}
+
+VolumeReprConfig VolumeConfig::reprConfig() const {
+    return {.dimensions = dimensions,
+            .format = format,
+            .swizzleMask = swizzleMask,
+            .interpolation = interpolation,
+            .wrapping = wrapping};
+}
+
+bool VolumeReprConfig::operator==(const Volume& vol) const {
+    return vol.getDimensions() == dimensions.value_or(VolumeConfig::defaultDimensions) &&
+           vol.getDataFormat() == (format ? format : VolumeConfig::defaultFormat) &&
+           vol.getSwizzleMask() == swizzleMask.value_or(VolumeConfig::defaultSwizzleMask) &&
+           vol.getInterpolation() == interpolation.value_or(VolumeConfig::defaultInterpolation) &&
+           vol.getWrapping() == wrapping.value_or(VolumeConfig::defaultWrapping);
+}
+
+bool VolumeReprConfig::operator==(const VolumeRepresentation& rep) const {
+    return rep.getDimensions() == dimensions.value_or(VolumeConfig::defaultDimensions) &&
+           rep.getDataFormat() == (format ? format : VolumeConfig::defaultFormat) &&
+           rep.getSwizzleMask() == swizzleMask.value_or(VolumeConfig::defaultSwizzleMask) &&
+           rep.getInterpolation() == interpolation.value_or(VolumeConfig::defaultInterpolation) &&
+           rep.getWrapping() == wrapping.value_or(VolumeConfig::defaultWrapping);
 }
 
 }  // namespace inviwo

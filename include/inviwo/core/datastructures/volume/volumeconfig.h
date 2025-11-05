@@ -41,6 +41,21 @@
 
 namespace inviwo {
 
+class Volume;
+class VolumeRepresentation;
+
+struct IVW_CORE_API VolumeReprConfig {
+    std::optional<size3_t> dimensions = std::nullopt;
+    const DataFormatBase* format = nullptr;
+    std::optional<SwizzleMask> swizzleMask = std::nullopt;
+    std::optional<InterpolationType> interpolation = std::nullopt;
+    std::optional<Wrapping3D> wrapping = std::nullopt;
+
+    constexpr bool operator==(const VolumeReprConfig&) const = default;
+    bool operator==(const Volume&) const;
+    bool operator==(const VolumeRepresentation&) const;
+};
+
 struct IVW_CORE_API VolumeConfig {
     std::optional<size3_t> dimensions = std::nullopt;
     const DataFormatBase* format = nullptr;
@@ -73,16 +88,9 @@ struct IVW_CORE_API VolumeConfig {
     DataMapper dataMap() const;
     DataMapper dataMap(const DataMapper& defaultMapper) const;
     VolumeConfig& updateFrom(const VolumeConfig& config);
+    VolumeReprConfig reprConfig() const;
 
-    friend bool operator==(const VolumeConfig&, const VolumeConfig&) = default;
-};
-
-struct IVW_CORE_API VolumeReprConfig {
-    std::optional<size3_t> dimensions = std::nullopt;
-    const DataFormatBase* format = nullptr;
-    std::optional<SwizzleMask> swizzleMask = std::nullopt;
-    std::optional<InterpolationType> interpolation = std::nullopt;
-    std::optional<Wrapping3D> wrapping = std::nullopt;
+    constexpr bool operator==(const VolumeConfig&) const = default;
 };
 
 }  // namespace inviwo

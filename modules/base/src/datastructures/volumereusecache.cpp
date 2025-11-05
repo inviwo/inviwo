@@ -48,8 +48,21 @@ auto VolumeReuseCache::setConfig(const VolumeConfig& config) -> Status {
 std::shared_ptr<Volume> VolumeReuseCache::get() {
     auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
-        (*it)->getMetaDataMap()->removeAll();
-        return *it;
+        auto volume = *it;
+        volume->getMetaDataMap()->removeAll();
+
+        volume->axes[0] = config_.xAxis.value_or(VolumeConfig::defaultYAxis);
+        volume->axes[1] = config_.yAxis.value_or(VolumeConfig::defaultYAxis);
+        volume->axes[2] = config_.zAxis.value_or(VolumeConfig::defaultZAxis);
+        volume->dataMap = config_.dataMap();
+        volume->setModelMatrix(config_.model.value_or(VolumeConfig::defaultModel));
+        volume->setModelMatrix(config_.world.value_or(VolumeConfig::defaultWorld));
+
+        if (*volume != config_.reprConfig()) {
+            throw Exception("Unexpected changes found in cache");
+        }
+
+        return volume;
     } else {
         auto vol = std::make_shared<Volume>(config_);
         cache_.push_back(vol);
