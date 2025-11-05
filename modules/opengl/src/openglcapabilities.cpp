@@ -264,7 +264,11 @@ bool OpenGLCapabilities::isShaderStorageBuffersSupported() {
 }
 
 bool OpenGLCapabilities::isSignedIntNormalizationSymmetric() {
+#ifdef __APPLE__
+    return OpenGLCapabilities::getOpenGLVersion() >= 410;
+#else
     return OpenGLCapabilities::getOpenGLVersion() >= 420;
+#endif
 }
 
 int OpenGLCapabilities::getMaxProgramLoopCount() const { return maxProgramLoopCount_; }
