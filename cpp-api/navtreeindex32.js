@@ -1,5 +1,7 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1TFPrimitiveData.html":[2,0,0,142],
+"structinviwo_1_1TFPrimitiveData.html":[4,0,0,151],
 "structinviwo_1_1TetraMeshBuffers.html":[2,0,0,1282],
 "structinviwo_1_1TetraMeshBuffers.html":[4,0,0,1291],
 "structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf":[2,0,0,1282,4],
@@ -56,12 +58,12 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1ViewEvent_1_1FlipUp.html":[4,0,0,198,0],
 "structinviwo_1_1ViewManager_1_1View.html":[2,0,0,894,0],
 "structinviwo_1_1ViewManager_1_1View.html":[4,0,0,903,0],
-"structinviwo_1_1VolumeConfig.html":[2,0,0,153],
-"structinviwo_1_1VolumeConfig.html":[4,0,0,162],
+"structinviwo_1_1VolumeConfig.html":[2,0,0,154],
+"structinviwo_1_1VolumeConfig.html":[4,0,0,163],
 "structinviwo_1_1VolumeGLProcessor_1_1FBO.html":[2,0,0,856,0],
 "structinviwo_1_1VolumeGLProcessor_1_1FBO.html":[4,0,0,865,0],
-"structinviwo_1_1VolumeReprConfig.html":[2,0,0,154],
-"structinviwo_1_1VolumeReprConfig.html":[4,0,0,163],
+"structinviwo_1_1VolumeReprConfig.html":[2,0,0,153],
+"structinviwo_1_1VolumeReprConfig.html":[4,0,0,162],
 "structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[2,0,0,601,0],
 "structinviwo_1_1WorkspaceAnnotationsQt_1_1ProcessorShim.html":[4,0,0,610,0],
 "structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html":[2,0,0,266,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[2,0,0,158],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[4,0,0,167],
 "structinviwo_1_1resource_1_1GL.html":[4,0,0,8,1],
-"structinviwo_1_1resource_1_1PY.html":[4,0,0,8,2],
-"structinviwo_1_1resource_1_1RAM.html":[4,0,0,8,0],
-"structinviwo_1_1shuntingyard_1_1TokenBase.html":[4,0,0,13,0]
+"structinviwo_1_1resource_1_1PY.html":[4,0,0,8,2]
 };

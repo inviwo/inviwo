@@ -1,5 +1,7 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1VolumeDivergenceCPUProcessor.html#a271e01d39f4ef170b31b10b32f18c984":[4,0,0,738,0],
+"classinviwo_1_1VolumeDownsample.html":[2,0,0,730],
 "classinviwo_1_1VolumeDownsample.html":[4,0,0,739],
 "classinviwo_1_1VolumeDownsample.html#ae0f7d1ccdf89bed10220c892baba40b7":[2,0,0,730,0],
 "classinviwo_1_1VolumeDownsample.html#ae0f7d1ccdf89bed10220c892baba40b7":[4,0,0,739,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1VolumeSliceVisualizer.html#a052a8114bfb96786e5e8f3955576d776":[2,0,0,781,2],
 "classinviwo_1_1VolumeSliceVisualizer.html#a052a8114bfb96786e5e8f3955576d776":[4,0,0,790,2],
 "classinviwo_1_1VolumeSliceVisualizer.html#a227f76e336f79d56f7e5174cd49e0690":[2,0,0,781,7],
-"classinviwo_1_1VolumeSliceVisualizer.html#a227f76e336f79d56f7e5174cd49e0690":[4,0,0,790,7],
-"classinviwo_1_1VolumeSliceVisualizer.html#a8a099bde449416f9cd6d11b1388d9b86":[2,0,0,781,6],
-"classinviwo_1_1VolumeSliceVisualizer.html#a8a099bde449416f9cd6d11b1388d9b86":[4,0,0,790,6]
+"classinviwo_1_1VolumeSliceVisualizer.html#a227f76e336f79d56f7e5174cd49e0690":[4,0,0,790,7]
 };

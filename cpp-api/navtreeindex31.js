@@ -1,5 +1,7 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1NetworkDebugObserver.html#a59f44997825abef80cdfdb3d62599c71":[2,0,0,497,1],
+"structinviwo_1_1NetworkDebugObserver.html#a59f44997825abef80cdfdb3d62599c71":[4,0,0,506,1],
 "structinviwo_1_1NetworkDebugObserver.html#a600a329cf90e891d584b9e5742c79f2b":[2,0,0,497,0],
 "structinviwo_1_1NetworkDebugObserver.html#a600a329cf90e891d584b9e5742c79f2b":[4,0,0,506,0],
 "structinviwo_1_1NetworkDebugObserver.html#a9947ecd98a93c5b164b460ed419bc656":[2,0,0,497,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1TFData_1_1Base.html":[2,0,0,139,0],
 "structinviwo_1_1TFData_1_1Base.html":[4,0,0,148,0],
 "structinviwo_1_1TFData_1_1Implementation.html":[2,0,0,139,1],
-"structinviwo_1_1TFData_1_1Implementation.html":[4,0,0,148,1],
-"structinviwo_1_1TFPrimitiveData.html":[2,0,0,142],
-"structinviwo_1_1TFPrimitiveData.html":[4,0,0,151]
+"structinviwo_1_1TFData_1_1Implementation.html":[4,0,0,148,1]
 };

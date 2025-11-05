@@ -78,18 +78,18 @@ var NAVTREEINDEX =
 "classinviwo_1_1StructuredCoordinateTransformerImpl.html#a6c903835d4c93495378649defbbc14bd",
 "classinviwo_1_1TextRenderer.html",
 "classinviwo_1_1TransformListProperty.html#a07b7f14cca76dc37a9be32c8b6d4963b",
-"classinviwo_1_1VolumeDownsample.html",
-"classinviwo_1_1VolumeSliceVisualizer.html#a90f140ebb387f980f859a6c0391b36b2",
-"classinviwo_1_1animation_1_1AnimationsModel.html",
-"classinviwo_1_1buffertraits_1_1RadiiBuffer.html",
-"classinviwo_1_1plot_1_1PersistenceDiagramPlotGL.html",
-"namespaceinviwo.html#a8615e9e00c0b4a68ec0a151e8efbbf46",
-"namespaceinviwo_1_1util.html#a2ec11e63479fff3c005d159414687d4e",
-"namespacemembers.html",
-"structinviwo_1_1NetworkDebugObserver.html#a600a329cf90e891d584b9e5742c79f2b",
-"structinviwo_1_1TetraMeshBuffers.html",
-"structinviwo_1_1statsutil_1_1RegresionResult.html",
-"topics.html"
+"classinviwo_1_1VolumeDivergenceCPUProcessor.html#a271e01d39f4ef170b31b10b32f18c984",
+"classinviwo_1_1VolumeSliceVisualizer.html#a8a099bde449416f9cd6d11b1388d9b86",
+"classinviwo_1_1animation_1_1AnimationViewQt.html",
+"classinviwo_1_1buffertraits_1_1PickingBuffer.html",
+"classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9",
+"namespaceinviwo.html#a838f26078e90e1892227113c4835d6f7",
+"namespaceinviwo_1_1util.html#a2d48f7460aa46b805b25b7c8802e1433",
+"namespaceinviwo_1_1xml.html#ada43f2730d4c12e2e9c3887914d4c261",
+"structinviwo_1_1NetworkDebugObserver.html#a59f44997825abef80cdfdb3d62599c71",
+"structinviwo_1_1TFPrimitiveData.html",
+"structinviwo_1_1resource_1_1RAM.html",
+"structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

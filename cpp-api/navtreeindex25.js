@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationViewQt.html":[2,0,0,20,68],
+"classinviwo_1_1animation_1_1AnimationViewQt.html":[4,0,0,20,69],
 "classinviwo_1_1animation_1_1AnimationsModel.html":[2,0,0,20,90],
 "classinviwo_1_1animation_1_1AnimationsModel.html":[4,0,0,20,91],
 "classinviwo_1_1animation_1_1BaseKeyframe.html":[2,0,0,20,9],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1buffertraits_1_1ColorsBuffer.html":[1,1,0,4],
 "classinviwo_1_1buffertraits_1_1CurvatureBuffer.html":[1,1,0,6],
 "classinviwo_1_1buffertraits_1_1IndexBuffer.html":[1,1,0,7],
-"classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3],
-"classinviwo_1_1buffertraits_1_1PickingBuffer.html":[1,1,0,9],
-"classinviwo_1_1buffertraits_1_1PositionsBufferBase.html":[1,1,0,2]
+"classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3]
 };
