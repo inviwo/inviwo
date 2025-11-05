@@ -58,7 +58,7 @@ struct GeometryParameters {
     mat3 dataToWorldNormalMatrix;  // Equivalent to normalMatrix
 };
 
-// Conversion from OpenGL texture space to normalized [0,1] or sign normalized [-1,1]
+// Conversion from OpenGL texture space to normalized [0,1] or sign normalized [-1,1] or vice versa
 struct NormalizationMap {
     float scale;
     float offset;

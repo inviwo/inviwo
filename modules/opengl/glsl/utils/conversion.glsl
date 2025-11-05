@@ -43,7 +43,7 @@
  *       renormalization when writing those in a fragment shader (confirmed on NVIDIA)
  *
  * @param value   value in value space
- * @param map     parameters used for the range map
+ * @param map     parameters used for the range mapping
  * @return @p value converted to the OpenGL output range
  */
 float mapFromValueToGLOutput(in float value, in RangeConversionMap map) {
@@ -57,6 +57,46 @@ vec3 mapFromValueToGLOutput(in vec3 value, in RangeConversionMap map) {
 }
 vec4 mapFromValueToGLOutput(in vec4 value, in RangeConversionMap map) {
     return ((value - map.inputOffset) * map.scale) + map.outputOffset;
+}
+
+/**
+ * Map the normalized value @p value from [0,1] to value space
+ * 
+ * @param value   normalized value in [0,1]
+ * @param map     parameters used for the range mapping
+ * @return @p value converted to value space
+ */
+float mapFromNormalizedToValue(in float value, in ImageParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+vec2 mapFromNormalizedToValue(in vec2 value, in ImageParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+vec3 mapFromNormalizedToValue(in vec3 value, in ImageParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+vec4 mapFromNormalizedToValue(in vec4 value, in ImageParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+float mapFromNormalizedToValue(in float value, in VolumeParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+vec2 mapFromNormalizedToValue(in vec2 value, in VolumeParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+vec3 mapFromNormalizedToValue(in vec3 value, in VolumeParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
+}
+vec4 mapFromNormalizedToValue(in vec4 value, in VolumeParameters params) {
+    float valueScale = params.texToValue.scale / params.texToNormalized.scale;
+    return (value * valueScale) + params.texToValue.outputOffset;
 }
 
 #endif  // IVW_CONVERSION_GLSL
