@@ -51,6 +51,10 @@ class Volume;
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator3D : public VolumeGLProcessor {
 public:
     VectorFieldGenerator3D();
+    VectorFieldGenerator3D(const VectorFieldGenerator3D&) = delete;
+    VectorFieldGenerator3D(VectorFieldGenerator3D&&) = delete;
+    VectorFieldGenerator3D& operator=(const VectorFieldGenerator3D&) = delete;
+    VectorFieldGenerator3D& operator=(VectorFieldGenerator3D&&) = delete;
     virtual ~VectorFieldGenerator3D();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -61,7 +65,6 @@ protected:
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
                             VolumeConfig& config) override;
     virtual void postProcess(Volume& volume) override;
-
 
     OrdinalProperty<size3_t> size_;
 

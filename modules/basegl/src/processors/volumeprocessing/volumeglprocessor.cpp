@@ -49,6 +49,7 @@
 #include <modules/opengl/volume/volumegl.h>     // for VolumeGL
 #include <modules/opengl/volume/volumeutils.h>  // for bindAndSetUniforms
 #include <modules/opengl/openglutils.h>
+
 #include <algorithm>
 #include <string_view>    // for string_view
 #include <type_traits>    // for remove_extent_t
@@ -68,13 +69,14 @@ FrameBufferObject& getActiveFBO(Texture3D& texture, std::span<VolumeGLProcessor:
         it = std::ranges::min_element(
             fbos, [](const auto& a, const auto& b) { return a.lastUsed < b.lastUsed; });
         it->fbo.activate();
-        it->fbo.attachColorTexture(&texture, 0);
+        it->drawBuffers[0] = it->fbo.attachColorTexture(&texture, 0);
         it->textureId = texture.getID();
     } else {
         it->fbo.activate();
     }
     it->lastUsed = std::chrono::high_resolution_clock::now();
 
+    glDrawBuffers(static_cast<GLsizei>(it->drawBuffers.size()), it->drawBuffers.data());
     return it->fbo;
 }
 
@@ -149,12 +151,13 @@ void VolumeGLProcessor::process() {
     }
     auto dstVolume = volumes_.get();
 
-    const size3_t dim{dstVolume->getDimensions()};
+    const size3_t dims{dstVolume->getDimensions()};
+    if (glm::compMin(dims) < 2) {
+        throw Exception(SourceContext{}, "All volume dimensions has to be greater then 1, got {}",
+                        dims);
+    }
 
-    shader_.setUniform("reciprocalDimensions", vec3{1.0f} / static_cast<vec3>(dim));
-    shader_.setUniform("reciprocalDimensionsM1", vec3{1.0f} / static_cast<vec3>(dim - size3_t(1)));
-    shader_.setUniform("textureToWorld",
-                       dstVolume->getCoordinateTransformer().getTextureToWorldMatrix());
+    utilgl::setShaderUniforms(shader_, *dstVolume, "volumeParameters");
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations
@@ -162,9 +165,9 @@ void VolumeGLProcessor::process() {
 
     auto& fbo = getActiveFBO(*outVolumeGL->getTexture(), fbos_);
 
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
+    glViewport(0, 0, static_cast<GLsizei>(dims.x), static_cast<GLsizei>(dims.y));
 
-    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
+    utilgl::multiDrawImagePlaneRect(static_cast<int>(dims.z));
 
     shader_.deactivate();
     fbo.deactivate();

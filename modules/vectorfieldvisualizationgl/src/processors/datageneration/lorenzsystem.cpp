@@ -83,7 +83,7 @@ LorenzSystem::LorenzSystem()
     , curlOutport_("curl")
     , divOutport_("divergence")
 
-    , size_("size", "Volume size", size3_t(32, 32, 32), size3_t(1, 1, 1), size3_t(1024, 1024, 1024))
+    , size_("size", "Volume size", size3_t(32, 32, 32), size3_t(2, 2, 2), size3_t(1024, 1024, 1024))
     , xRange_("xRange", "X Range", -20, 20, -100, 100)
     , yRange_("yRange", "Y Range", -30, 30, -100, 100)
     , zRange_("zRange", "Z Range", 0, 50, 0, 100)
@@ -91,47 +91,46 @@ LorenzSystem::LorenzSystem()
     , sigmaValue_("sigma", "σ Value", 10, 0, 100)
     , betaValue_("beta", "β Value", 8.0f / 3.0f, 0, 100)
     , shader_("volume_gpu.vert", "volume_gpu.geom", "lorenzsystem.frag")
+    , vecVolumes_{}
+    , curlVolumes_{}
+    , divVolumes_{}
     , fbo_() {
-    addPort(outport_);
-    addPort(curlOutport_);
-    addPort(divOutport_);
 
-    addProperty(size_);
+    addPorts(outport_, curlOutport_, divOutport_);
 
-    addProperty(xRange_);
-    addProperty(yRange_);
-    addProperty(zRange_);
-
-    addProperty(rhoValue_);
-    addProperty(sigmaValue_);
-    addProperty(betaValue_);
+    addProperties(size_, xRange_, yRange_, zRange_, rhoValue_, sigmaValue_, betaValue_);
 
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-LorenzSystem::~LorenzSystem() {}
+LorenzSystem::~LorenzSystem() = default;
 
 void LorenzSystem::process() {
-    auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    volume->dataMap.dataRange = vec2(0, 1);
-    volume->dataMap.valueRange = vec2(-1, 1);
+    const size3_t dims{size_.get()};
 
-    auto curlvolume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    curlvolume->dataMap.dataRange = vec2(0, 1);
-    curlvolume->dataMap.valueRange = vec2(-1, 1);
+    vecVolumes_.setConfig(VolumeConfig{.dimensions = dims,
+                                       .format = DataVec3Float32::get(),
+                                       .dataRange = dvec2{0, 1},
+                                       .valueRange = dvec2{-1, 1}});
+    curlVolumes_.setConfig(VolumeConfig{.dimensions = dims,
+                                        .format = DataVec3Float32::get(),
+                                        .dataRange = dvec2{0, 1},
+                                        .valueRange = dvec2{-1, 1}});
+    divVolumes_.setConfig(VolumeConfig{.dimensions = dims,
+                                       .format = DataFloat32::get(),
+                                       .dataRange = dvec2{0, 1},
+                                       .valueRange = dvec2{-1, 1}});
 
-    auto divvolume = std::make_shared<Volume>(size_.get(), DataFloat32::get());
-    divvolume->dataMap.dataRange = vec2(0, 1);
-    divvolume->dataMap.valueRange = vec2(-1, 1);
+    auto volume = vecVolumes_.get();
+    auto curlvolume = curlVolumes_.get();
+    auto divvolume = divVolumes_.get();
 
     // Basis and offset
-    vec3 corners[4];
-    corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
-    corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
-    corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
-    corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
-
-    mat3 basis(corners[1] - corners[0], corners[2] - corners[0], corners[3] - corners[0]);
+    const std::array<vec3, 4> corners{{{xRange_.get().x, yRange_.get().x, zRange_.get().x},
+                                       {xRange_.get().y, yRange_.get().x, zRange_.get().x},
+                                       {xRange_.get().x, yRange_.get().y, zRange_.get().x},
+                                       {xRange_.get().x, yRange_.get().x, zRange_.get().y}}};
+    const mat3 basis(corners[1] - corners[0], corners[2] - corners[0], corners[3] - corners[0]);
 
     volume->setBasis(basis);
     volume->setOffset(corners[0]);
@@ -140,20 +139,15 @@ void LorenzSystem::process() {
     divvolume->setBasis(basis);
     divvolume->setOffset(corners[0]);
 
-    outport_.setData(volume);
-    curlOutport_.setData(curlvolume);
-    divOutport_.setData(divvolume);
 
     shader_.activate();
-    TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *outport_.getData(), "volume");
-
+    utilgl::setShaderUniforms(shader_, *volume, "volumeParameters");
     utilgl::setShaderUniforms(shader_, rhoValue_);
     utilgl::setShaderUniforms(shader_, sigmaValue_);
     utilgl::setShaderUniforms(shader_, betaValue_);
-    const size3_t dim{size_.get()};
+
     fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
+    glViewport(0, 0, static_cast<GLsizei>(dims.x), static_cast<GLsizei>(dims.y));
 
     std::array<GLenum, 3> drawBuffers{0};
 
@@ -168,10 +162,14 @@ void LorenzSystem::process() {
 
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
 
-    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
+    utilgl::multiDrawImagePlaneRect(static_cast<int>(dims.z));
 
     shader_.deactivate();
     fbo_.deactivate();
+
+    outport_.setData(volume);
+    curlOutport_.setData(curlvolume);
+    divOutport_.setData(divvolume);
 }
 
 }  // namespace inviwo

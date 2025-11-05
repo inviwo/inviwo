@@ -60,6 +60,7 @@
 #include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
+#include <array>
 
 #include <glm/detail/qualifier.hpp>  // for tvec2
 #include <glm/mat3x3.hpp>            // for mat<>::col_type
@@ -84,7 +85,8 @@ VectorFieldGenerator3D::VectorFieldGenerator3D()
                          .dataRange = dvec2(0, 1),
                          .valueRange = dvec2(-1, 1)},
                         VolumeGLProcessor::UseInport::No)
-    , size_("size", "Volume size", size3_t(16), size3_t(1), size3_t(1024))
+    , size_("size", "Volume size", size3_t(16), {size3_t(3), ConstraintBehavior::Immutable},
+            {size3_t(1024), ConstraintBehavior::Ignore})
     , xRange_("xRange", "X Range", -1, 1, -10, 10)
     , yRange_("yRange", "Y Range", -1, 1, -10, 10)
     , zRange_("zRange", "Z Range", -1, 1, -10, 10)
@@ -110,16 +112,11 @@ void VectorFieldGenerator3D::preProcess(TextureUnitContainer&, Shader& shader,
     config.dimensions = size_.get();
 }
 void VectorFieldGenerator3D::postProcess(Volume& volume) {
-    vec3 corners[4];
-    corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
-    corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
-    corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
-    corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
-
-    mat3 basis;
-    basis[0] = corners[1] - corners[0];
-    basis[1] = corners[2] - corners[0];
-    basis[2] = corners[3] - corners[0];
+    const std::array<vec3, 4> corners{{{xRange_.get().x, yRange_.get().x, zRange_.get().x},
+                                       {xRange_.get().y, yRange_.get().x, zRange_.get().x},
+                                       {xRange_.get().x, yRange_.get().y, zRange_.get().x},
+                                       {xRange_.get().x, yRange_.get().x, zRange_.get().y}}};
+    const mat3 basis{corners[1] - corners[0], corners[2] - corners[0], corners[3] - corners[0]};
 
     volume.setBasis(basis);
     volume.setOffset(corners[0]);

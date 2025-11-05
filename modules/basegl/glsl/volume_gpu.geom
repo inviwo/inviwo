@@ -33,9 +33,7 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform vec3 reciprocalDimensions;
-uniform vec3 reciprocalDimensionsM1;
-uniform mat4 textureToWorld;
+uniform VolumeParameters volumeParameters;
 
 in int instanceID_[3];
 in vec2 texCoord2D_[3];
@@ -48,18 +46,19 @@ out vec4 dataposition_;
 out vec4 worldPos_;
 
 void main() {
-    float datapositionz = instanceID_[0] * reciprocalDimensionsM1.z;
-    float texCoordz = (instanceID_[0] * reciprocalDimensions.z) + (0.5 * reciprocalDimensions.z);
+    float datapositionz = instanceID_[0] / (volumeParameters.dimensions.z - 1.0);
+    float texCoordz = (instanceID_[0] * volumeParameters.reciprocalDimensions.z) +
+                      (0.5 * volumeParameters.reciprocalDimensions.z);
 
     gl_Layer = instanceID_[0];
 
     for (int i = 0; i < gl_in.length(); ++i) {
         gl_Position = gl_in[i].gl_Position;
         texCoord_ = vec4(texCoord2D_[i], texCoordz, 1.0f);
-        dataposition_ = vec4(
-            (texCoord2D_[i] - reciprocalDimensions.xy * 0.5f) / (1.0f - reciprocalDimensions.xy),
-            datapositionz, 1.0f);
-        worldPos_ = textureToWorld * texCoord_;
+        dataposition_ = vec4((texCoord2D_[i] - volumeParameters.reciprocalDimensions.xy * 0.5f) /
+                                 (1.0f - volumeParameters.reciprocalDimensions.xy),
+                             datapositionz, 1.0f);
+        worldPos_ = volumeParameters.textureToWorld * texCoord_;
         EmitVertex();
     }
 

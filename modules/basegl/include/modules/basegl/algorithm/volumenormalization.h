@@ -31,6 +31,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/util/glmvec.h>                  // for bvec4
 #include <modules/opengl/buffer/framebufferobject.h>  // for FrameBufferObject
 #include <modules/opengl/shader/shader.h>             // for Shader
@@ -43,7 +44,7 @@
 namespace inviwo {
 class Volume;
 
-/** \class VolumeNormalization
+/** @class VolumeNormalization
  *
  * GL implementation of volume normalization. The algorithm takes in a volume and normalizes its
  * data in the selected channels to range [0, 1].
