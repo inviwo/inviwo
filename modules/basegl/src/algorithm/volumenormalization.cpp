@@ -79,9 +79,10 @@ void VolumeNormalization::reset() { normalizeChannel_ = bvec4{true}; }
 std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     const size3_t dims{volume.getDimensions()};
 
-    std::shared_ptr<Volume> outVolume = std::make_shared<Volume>(volume, noData);
-    outVolume->setDataFormat(
-        DataFormatBase::get(NumericType::Float, volume.getDataFormat()->getComponents(), 32));
+    auto outVolume = std::make_shared<Volume>(
+        volume, noData,
+        VolumeConfig{.format = DataFormatBase::get(NumericType::Float,
+                                                   volume.getDataFormat()->getComponents(), 32)});
 
     shader_.activate();
 

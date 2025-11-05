@@ -157,7 +157,9 @@ void VolumeGLProcessor::process() {
                         dims);
     }
 
-    utilgl::setShaderUniforms(shader_, *dstVolume, "volumeParameters");
+    if (!inport_) {
+        utilgl::setShaderUniforms(shader_, *dstVolume, "volumeParameters");
+    }
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations

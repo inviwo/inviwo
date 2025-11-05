@@ -502,11 +502,12 @@ Document MinMaxProperty<T>::getDescription() const {
     Document doc = Property::getDescription();
 
     utildoc::TableBuilder tb(doc.handle(), P::end());
-    tb(H("Min"), H("Start"), H("Stop"), H("Max"));
-    tb(range_.value[0], value_.value[0], value_.value[1], range_.value[1]);
+    tb(H("Min"), range_.value[0]);
+    tb(H("Start"), value_.value[0]);
+    tb(H("Stop"), value_.value[1]);
+    tb(H("Max"), range_.value[1]);
 
-    utildoc::TableBuilder tb2(doc.handle(), P::end());
-    util::for_each_argument([&tb2](auto p) { tb2(H(camelCaseToHeader(p.name)), p.value); },
+    util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); },
                             increment_, minSeparation_);
 
     return doc;
