@@ -55,6 +55,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <gmock/gmock-matchers.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -604,9 +605,7 @@ TEST_F(GLFormatConversionTest, ValueSpaceInt16) {
     const std::vector<float> expected{0.0f, -4.0f, 4.0f, 2.0f};
 
     auto result = test<float>(config, values, {}, TestOutput::ValueSpace);
-    for (auto&& [res, expect] : std::views::zip(result, expected)) {
-        EXPECT_NEAR(res, expect, 1.0e-8f);
-    }
+    EXPECT_THAT(result, ::testing::Pointwise(::testing::FloatNear(1.0e-8f), expected));
 }
 
 TEST_F(GLFormatConversionTest, ValueSpaceInt32) {
@@ -630,9 +629,7 @@ TEST_F(GLFormatConversionTest, ValueSpaceUInt16) {
     const std::vector<float> expected{-4.0f, 4.0f, 0.0f, -2.0f};
 
     auto result = test<float>(config, values, {}, TestOutput::ValueSpace);
-    for (auto&& [res, expect] : std::views::zip(result, expected)) {
-        EXPECT_NEAR(res, expect, 1.0e-8f);
-    }
+    EXPECT_THAT(result, ::testing::Pointwise(::testing::FloatNear(1.0e-8f), expected));
 }
 
 TEST_F(GLFormatConversionTest, ValueSpaceUInt32) {
