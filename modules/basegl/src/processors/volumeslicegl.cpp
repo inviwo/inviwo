@@ -529,8 +529,9 @@ void VolumeSliceGL::process() {
         const auto worldToIndex = volume->getCoordinateTransformer().getWorldToIndexMatrix();
         const auto indexPos = vec3{worldToIndex * vec4{worldPosition_.get(), 1.0f}};
         const auto* const volumeRAM = volume->getRepresentation<VolumeRAM>();
-        const auto index =
-            size3_t{glm::clamp(glm::round(indexPos), vec3{0.0f}, vec3{volumeRAM->getDimensions()})};
+
+        const auto index = glm::clamp(size3_t{glm::round(indexPos)}, size3_t{0},
+                                      volumeRAM->getDimensions() - size3_t{1});
         normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(index));
         volumeSample_.set(volumeRAM->getAsDVec4(index));
     }
