@@ -37,8 +37,11 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
 #include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
 #include <inviwo/core/properties/ordinalproperty.h>        // for FloatVec3Property, IntSizeTPro...
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/glmvec.h>                       // for vec3
 #include <inviwo/core/util/staticstring.h>                 // for operator+
+#include <modules/base/algorithm/pointgeneration.h>        // for generatePoints, Grid3DPointGen...
+
 
 #include <string>  // for operator+, string
 #include <vector>  // for vector
@@ -69,6 +72,7 @@ private:
         BoolProperty autoCenter;
         FloatVec3Property offset;
         IntSize3Property nPoints;
+        OptionProperty<util::Grid3DPointGeneration::Mode> mode;
         FloatVec3Property jitter;
         IntSizeTProperty seed;
     };

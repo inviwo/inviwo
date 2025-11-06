@@ -330,7 +330,7 @@ jobs:
       run: |
         if [[ ${UNIT_TESTS} == "failure" ]]
         then
-          gh pr edit "$NUMBER" --add-label "J: Unit Test Failure"
+          gh pr edit "$NUMBER" --add-label "J: Unit Test Failure" || echo "Warning: could not add unit test label"
           echo "### :bug: Unit Test Failure:bangbang:" >> $GITHUB_STEP_SUMMARY
         fi
         if [[ ${UNIT_TESTS} == "success" ]]
@@ -340,7 +340,7 @@ jobs:
 
         if [[ ${INTEGRATION} == "failure" ]]
         then
-          gh pr edit "$NUMBER" --add-label "J: Integration Test Failure"
+          gh pr edit "$NUMBER" --add-label "J: Integration Test Failure" || echo "Warning: could not add integration label"
           echo "### :bug: Integration Test Failure:bangbang:" >> $GITHUB_STEP_SUMMARY
         fi
         if [[ ${INTEGRATION} == "success" ]]
@@ -350,7 +350,7 @@ jobs:
 
         if [[ ${REGRESSION} == "failure" ]]
         then
-          gh pr edit "$NUMBER" --add-label "J: Regression Test Failure"
+          gh pr edit "$NUMBER" --add-label "J: Regression Test Failure" || echo "Warning: could not add regression label"
           echo "### :beetle: Regression Test Failure:bangbang:" >> $GITHUB_STEP_SUMMARY
         fi
         if [[ ${REGRESSION} == "success" ]]

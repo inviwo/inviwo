@@ -335,7 +335,7 @@
                 <Properties>
                     <Property type="org.inviwo.BoolCompositeProperty" identifier="grid">
                         <Properties>
-                            <Property type="org.inviwo.FloatVec3Property" identifier="basis">
+                            <Property type="org.inviwo.FloatVec3Property" identifier="axis1">
                                 <value x="4" y="0" z="0" />
                             </Property>
                             <Property type="org.inviwo.FloatVec3Property" identifier="axis2">

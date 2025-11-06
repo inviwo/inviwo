@@ -29,19 +29,16 @@
 
 #include <modules/base/processors/pointgenerationprocessor.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>      // for mat4
-#include <inviwo/core/ports/dataoutport.h>                 // for DataOutport
-#include <inviwo/core/ports/outportiterable.h>             // for OutportIterableImpl<>::const_i...
-#include <inviwo/core/processors/processor.h>              // for Processor
-#include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>          // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>        // for ordinalSymmetricVector, ordina...
-#include <inviwo/core/util/glmmat.h>                       // for dmat4
-#include <inviwo/core/util/glmvec.h>                       // for vec3, vec4, vec2, dvec3, size3_t
-#include <inviwo/core/util/staticstring.h>                 // for operator+
-#include <modules/base/algorithm/pointgeneration.h>        // for generatePoints, Grid3DPointGen...
+#include <inviwo/core/datastructures/camera/camera.h>  // for mat4
+#include <inviwo/core/ports/dataoutport.h>             // for DataOutport
+#include <inviwo/core/ports/outportiterable.h>         // for OutportIterableImpl<>::const_i...
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
+#include <inviwo/core/util/glmmat.h>                   // for dmat4
+#include <inviwo/core/util/glmvec.h>                   // for vec3, vec4, vec2, dvec3, size3_t
+#include <inviwo/core/util/staticstring.h>             // for operator+
 
 #include <cstddef>      // for size_t
 #include <functional>   // for __base
@@ -70,31 +67,41 @@ const ProcessorInfo& Point3DGenerationProcessor::getProcessorInfo() const { retu
 Point3DGenerationProcessor::Point3DGenerationProcessor()
     : Processor()
     , outport_("outport")
-    , grid_{{"basis", "Basis", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
-            {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
-            {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
-            {"autoCenter", "Auto Center", true},
-            {"offset", "Offset", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
-            {"nPoints", "Number of Points", util::ordinalCount(size3_t{10}, 100u)},
-            {"jitter", "jitter", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 10.f)},
-            {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
-    , box_{{"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
-           {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
-           {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
-           {"autoCenter", "Auto Center", true},
-           {"offset", "Offset", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
-           {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
-           {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
-    , sphere_{{"center", "Center", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
-              {"radius", "Radius", util::ordinalLength(vec2{0.0f, 1.0f}, 100.f)},
-              {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
-              {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
+    , grid_{.a1 = {"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
+            .a2 = {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
+            .a3 = {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
+            .autoCenter = {"autoCenter", "Auto Center", true},
+            .offset = {"offset", "Offset",
+                       util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
+            .nPoints = {"nPoints", "Number of Points", util::ordinalCount(size3_t{10}, 100u)},
+            .mode = {"mode",
+                     "Mode",
+                     {{{"HalfOpen", "HalfOpen", util::Grid3DPointGeneration::Mode::HalfOpen},
+                       {"Closed", "Closed", util::Grid3DPointGeneration::Mode::Closed},
+                       {"Center", "Center", util::Grid3DPointGeneration::Mode::Center}}},
+                     0},
+            .jitter = {"jitter", "jitter",
+                       util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 10.f)},
+            .seed = {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
+    , box_{.a1 = {"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
+           .a2 = {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
+           .a3 = {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
+           .autoCenter = {"autoCenter", "Auto Center", true},
+           .offset = {"offset", "Offset",
+                      util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
+           .nPoints = {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
+           .seed = {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
+    , sphere_{.center = {"center", "Center",
+                         util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
+              .radius = {"radius", "Radius", util::ordinalLength(vec2{0.0f, 1.0f}, 100.f)},
+              .nPoints = {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
+              .seed = {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
     , gridProps_{"grid", "Grid", true}
     , boxProps_{"box", "Random box", false}
     , sphereProps_{"sphere", "Random Sphere", false} {
 
     gridProps_.addProperties(grid_.a1, grid_.a2, grid_.a3, grid_.autoCenter, grid_.offset,
-                             grid_.nPoints, grid_.jitter, grid_.seed);
+                             grid_.nPoints, grid_.mode, grid_.jitter, grid_.seed);
     boxProps_.addProperties(box_.a1, box_.a2, box_.a3, box_.autoCenter, box_.offset, box_.nPoints,
                             box_.seed);
     sphereProps_.addProperties(sphere_.center, sphere_.radius, sphere_.nPoints, sphere_.seed);
@@ -112,7 +119,7 @@ Point3DGenerationProcessor::Point3DGenerationProcessor()
         item.a2.onChange(callback);
         item.a3.onChange(callback);
         item.autoCenter.onChange([&item, callback]() {
-            item.autoCenter.setReadOnly(item.autoCenter);
+            item.offset.setReadOnly(item.autoCenter);
             if (item.autoCenter) callback();
         });
     };
@@ -126,25 +133,30 @@ void Point3DGenerationProcessor::process() {
 
     if (gridProps_) {
         util::Grid3DPointGeneration opts{
-            mat4{vec4{grid_.a1.get(), 0.0f}, vec4{grid_.a2.get(), 0.0f}, vec4{grid_.a3.get(), 0.0f},
-                 vec4{grid_.offset.get(), 1.0f}},
-            grid_.nPoints.get(),
-            grid_.jitter.get() == vec3(0) ? std::nullopt : std::optional<vec3>(grid_.jitter.get()),
-            grid_.seed.get()};
+            .basis = mat4{vec4{grid_.a1.get(), 0.0f}, vec4{grid_.a2.get(), 0.0f},
+                          vec4{grid_.a3.get(), 0.0f}, vec4{grid_.offset.get(), 1.0f}},
+            .nPoints = grid_.nPoints.get(),
+            .jitter = grid_.jitter.get() == vec3(0) ? std::nullopt
+                                                    : std::optional<vec3>(grid_.jitter.get()),
+            .seed = grid_.seed.get(),
+            .mode = grid_.mode.get()};
         util::generatePoints<float>(std::back_inserter(*points), opts);
     }
 
     if (boxProps_) {
         util::RandomCubicalPointGeneration opts{
-            mat4{vec4{box_.a1.get(), 0.0f}, vec4{box_.a2.get(), 0.0f}, vec4{box_.a3.get(), 0.0f},
-                 vec4{box_.offset.get(), 1.0f}},
-            box_.nPoints.get(), box_.seed.get()};
+            .basis = mat4{vec4{box_.a1.get(), 0.0f}, vec4{box_.a2.get(), 0.0f},
+                          vec4{box_.a3.get(), 0.0f}, vec4{box_.offset.get(), 1.0f}},
+            .nPoints = box_.nPoints.get(),
+            .seed = box_.seed.get()};
         util::generatePoints<float>(std::back_inserter(*points), opts);
     }
 
     if (sphereProps_) {
-        util::RandomSphericalPointGeneration opts{sphere_.center.get(), sphere_.radius.get(),
-                                                  sphere_.nPoints.get(), sphere_.seed.get()};
+        util::RandomSphericalPointGeneration opts{.center = sphere_.center.get(),
+                                                  .radius = sphere_.radius.get(),
+                                                  .nPoints = sphere_.nPoints.get(),
+                                                  .seed = sphere_.seed.get()};
         util::generatePoints<float>(std::back_inserter(*points), opts);
     }
 

@@ -53,14 +53,16 @@ namespace inviwo {
 namespace util {
 
 struct Grid3DPointGeneration {
-    dmat4 bases = dmat4(1.0);
+    enum class Mode : std::uint8_t { HalfOpen, Closed, Center };
+    dmat4 basis = dmat4(1.0);
     size3_t nPoints = {5, 5, 5};
     std::optional<dvec3> jitter = std::nullopt;
     std::optional<size_t> seed = std::nullopt;
+    Mode mode = Mode::HalfOpen;
 };
 
 struct RandomCubicalPointGeneration {
-    dmat4 bases = dmat4(1.0);
+    dmat4 basis = dmat4(1.0);
     size_t nPoints = 25;
     std::optional<size_t> seed = std::nullopt;
 };
@@ -91,14 +93,24 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
     std::visit(
         util::overloaded{
             [&](const Grid3DPointGeneration& opts) {
-                const auto bases =
-                    opts.bases * glm::scale(dvec3{1.0 / opts.nPoints.x, 1.0 / opts.nPoints.y,
-                                                  1.0 / opts.nPoints.z});
+                const auto basis = opts.basis * [&]() {
+                    if (opts.mode == Grid3DPointGeneration::Mode::HalfOpen) {
+                        return glm::scale(dvec3{1.0} / dvec3{opts.nPoints});
+                    } else if (opts.mode == Grid3DPointGeneration::Mode::Closed) {
+                        return glm::scale(dvec3{1.0} /
+                                          dvec3{glm::max(opts.nPoints, size3_t{2}) - size3_t{1}});
+                    } else if (opts.mode == Grid3DPointGeneration::Mode::Center) {
+                        return glm::scale(dvec3{1.0} / dvec3{opts.nPoints}) *
+                               glm::translate(dvec3{0.5} / dvec3{opts.nPoints});
+                    } else {
+                        return dmat4{1.0f};
+                    }
+                }();
                 if (opts.jitter) {
                     auto mt = makeMT(opts);
                     util::forEachVoxel(opts.nPoints, [&](const auto& pos) {
                         const auto point =
-                            dvec3(bases * dvec4(pos, 1.0)) +
+                            dvec3(basis * dvec4(pos, 1.0)) +
                             dvec3{util::randomNumber<double>(mt, -opts.jitter->x, opts.jitter->x),
                                   util::randomNumber<double>(mt, -opts.jitter->y, opts.jitter->y),
                                   util::randomNumber<double>(mt, -opts.jitter->z, opts.jitter->z)};
@@ -107,7 +119,7 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
 
                 } else {
                     util::forEachVoxel(opts.nPoints, [&](const auto& pos) {
-                        const auto point = bases * dvec4(pos, 1.0);
+                        const auto point = basis * dvec4(pos, 1.0);
                         outIt++ = glm::vec<3, T>{point};
                     });
                 }
@@ -117,7 +129,7 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
 
                 for (size_t i = 0; i < opts.nPoints; ++i) {
                     const auto point =
-                        opts.bases * dvec4{util::randomNumber<T>(mt, T{0.0}, T{1.0}),
+                        opts.basis * dvec4{util::randomNumber<T>(mt, T{0.0}, T{1.0}),
                                            util::randomNumber<T>(mt, T{0.0}, T{1.0}),
                                            util::randomNumber<T>(mt, T{0.0}, T{1.0}), T{1.0}};
                     outIt++ = glm::vec<3, T>{point};
