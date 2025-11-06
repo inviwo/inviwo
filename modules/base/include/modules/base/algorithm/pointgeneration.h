@@ -53,7 +53,7 @@ namespace inviwo {
 namespace util {
 
 struct Grid3DPointGeneration {
-    enum class Mode { HalfOpen, Closed, Center };
+    enum class Mode : std::uint8_t { HalfOpen, Closed, Center };
     dmat4 basis = dmat4(1.0);
     size3_t nPoints = {5, 5, 5};
     std::optional<dvec3> jitter = std::nullopt;

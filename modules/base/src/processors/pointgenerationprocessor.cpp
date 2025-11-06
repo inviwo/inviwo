@@ -67,31 +67,35 @@ const ProcessorInfo& Point3DGenerationProcessor::getProcessorInfo() const { retu
 Point3DGenerationProcessor::Point3DGenerationProcessor()
     : Processor()
     , outport_("outport")
-    , grid_{{"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
-            {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
-            {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
-            {"autoCenter", "Auto Center", true},
-            {"offset", "Offset", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
-            {"nPoints", "Number of Points", util::ordinalCount(size3_t{10}, 100u)},
-            {"mode",
-             "Mode",
-             {{{"HalfOpen", "HalfOpen", util::Grid3DPointGeneration::Mode::HalfOpen},
-               {"Closed", "Closed", util::Grid3DPointGeneration::Mode::Closed},
-               {"Center", "Center", util::Grid3DPointGeneration::Mode::Center}}},
-             0},
-            {"jitter", "jitter", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 10.f)},
-            {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
-    , box_{{"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
-           {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
-           {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
-           {"autoCenter", "Auto Center", true},
-           {"offset", "Offset", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
-           {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
-           {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
-    , sphere_{{"center", "Center", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
-              {"radius", "Radius", util::ordinalLength(vec2{0.0f, 1.0f}, 100.f)},
-              {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
-              {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
+    , grid_{.a1 = {"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
+            .a2 = {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
+            .a3 = {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
+            .autoCenter = {"autoCenter", "Auto Center", true},
+            .offset = {"offset", "Offset",
+                       util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
+            .nPoints = {"nPoints", "Number of Points", util::ordinalCount(size3_t{10}, 100u)},
+            .mode = {"mode",
+                     "Mode",
+                     {{{"HalfOpen", "HalfOpen", util::Grid3DPointGeneration::Mode::HalfOpen},
+                       {"Closed", "Closed", util::Grid3DPointGeneration::Mode::Closed},
+                       {"Center", "Center", util::Grid3DPointGeneration::Mode::Center}}},
+                     0},
+            .jitter = {"jitter", "jitter",
+                       util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 10.f)},
+            .seed = {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
+    , box_{.a1 = {"axis1", "Axis 1", util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, 100.f)},
+           .a2 = {"axis2", "Axis 2", util::ordinalSymmetricVector(vec3{0.0f, 1.0f, 0.0f}, 100.f)},
+           .a3 = {"axis3", "Axis 3", util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, 100.f)},
+           .autoCenter = {"autoCenter", "Auto Center", true},
+           .offset = {"offset", "Offset",
+                      util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
+           .nPoints = {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
+           .seed = {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
+    , sphere_{.center = {"center", "Center",
+                         util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 0.0f}, 100.f)},
+              .radius = {"radius", "Radius", util::ordinalLength(vec2{0.0f, 1.0f}, 100.f)},
+              .nPoints = {"nPoints", "Number of Points", util::ordinalCount(size_t{10}, 100u)},
+              .seed = {"seed", "Seed", util::ordinalCount(size_t{0}, 1000u)}}
     , gridProps_{"grid", "Grid", true}
     , boxProps_{"box", "Random box", false}
     , sphereProps_{"sphere", "Random Sphere", false} {
