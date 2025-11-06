@@ -85,7 +85,7 @@ void EntryExitPointsCLProcessor::process() {
     auto mesh = geometryPort_.getData();
     if (!mesh) return;
 
-    if (mesh->getNumberOfIndicies() == 0) {
+    if (mesh->getNumberOfIndices() == 0) {
         LogInfo("Unable to compute entry exit points for a mesh without indices");
         return;
     }
