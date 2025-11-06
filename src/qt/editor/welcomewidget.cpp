@@ -354,8 +354,14 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                     const auto file = utilqt::toPath(filename);
 
                     loadConnection_ = QObject::connect(
-                        loadWorkspaceBtn_, &QToolButton::clicked, this,
-                        [this, file, isExample]() { emit loadWorkspace(file, isExample); });
+                        loadWorkspaceBtn_, &QToolButton::clicked, this, [this, file, isExample]() {
+                            if (util::getModifierAction(QApplication::keyboardModifiers()) ==
+                                ModifierAction::OpenWithPath) {
+                                emit loadWorkspace(file, false);
+                            } else {
+                                emit loadWorkspace(file, isExample);
+                            }
+                        });
                     appendConnection_ =
                         QObject::connect(appendWorkspaceBtn_, &QToolButton::clicked, this,
                                          [this, file]() { emit appendWorkspace(file); });
