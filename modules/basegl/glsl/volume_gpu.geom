@@ -34,12 +34,14 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 uniform VolumeParameters volumeParameters;
+uniform VolumeParameters outputVolumeParameters;
 
 in int instanceID_[3];
 in vec2 texCoord2D_[3];
 
 // texCoord_ starts at 1/dims and goes to 1 - 1/dims
 out vec4 texCoord_;
+out vec3 outputTexCoord_;
 
 // dataposition_ ranges from zero to one, including zero and one.
 out vec4 dataposition_;
@@ -49,12 +51,15 @@ void main() {
     float datapositionz = instanceID_[0] / (volumeParameters.dimensions.z - 1.0);
     float texCoordz = (instanceID_[0] * volumeParameters.reciprocalDimensions.z) +
                       (0.5 * volumeParameters.reciprocalDimensions.z);
+    float outTexCoordz = (instanceID_[0] * outputVolumeParameters.reciprocalDimensions.z) +
+                      (0.5 * outputVolumeParameters.reciprocalDimensions.z);
 
     gl_Layer = instanceID_[0];
 
     for (int i = 0; i < gl_in.length(); ++i) {
         gl_Position = gl_in[i].gl_Position;
         texCoord_ = vec4(texCoord2D_[i], texCoordz, 1.0f);
+        outputTexCoord_ = vec3(texCoord2D_[i], outTexCoordz);
         dataposition_ = vec4((texCoord2D_[i] - volumeParameters.reciprocalDimensions.xy * 0.5f) /
                                  (1.0f - volumeParameters.reciprocalDimensions.xy),
                              datapositionz, 1.0f);
