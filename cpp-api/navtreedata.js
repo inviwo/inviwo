@@ -85,11 +85,11 @@ var NAVTREEINDEX =
 "classinviwo_1_1plot_1_1ParallelCoordinates.html#a1efbc85263eb29061b7f0948b0932ef9",
 "namespaceinviwo.html#a838f26078e90e1892227113c4835d6f7",
 "namespaceinviwo_1_1util.html#a2d48f7460aa46b805b25b7c8802e1433",
-"namespaceinviwo_1_1xml.html#ada43f2730d4c12e2e9c3887914d4c261",
-"structinviwo_1_1NetworkDebugObserver.html#a59f44997825abef80cdfdb3d62599c71",
-"structinviwo_1_1TFPrimitiveData.html",
-"structinviwo_1_1resource_1_1RAM.html",
-"structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html"
+"namespaceinviwo_1_1utilqt.html#aeddec5366e9c6d9bd9445ac846432408",
+"structinviwo_1_1NetworkAutomation_1_1AutoIn.html",
+"structinviwo_1_1StringHash.html",
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html",
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

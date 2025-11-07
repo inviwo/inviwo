@@ -1,5 +1,12 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1StringHash.html":[4,0,0,541],
+"structinviwo_1_1StringLessPMR.html":[2,0,0,534],
+"structinviwo_1_1StringLessPMR.html":[4,0,0,543],
+"structinviwo_1_1TFData_1_1Base.html":[2,0,0,139,0],
+"structinviwo_1_1TFData_1_1Base.html":[4,0,0,148,0],
+"structinviwo_1_1TFData_1_1Implementation.html":[2,0,0,139,1],
+"structinviwo_1_1TFData_1_1Implementation.html":[4,0,0,148,1],
 "structinviwo_1_1TFPrimitiveData.html":[2,0,0,142],
 "structinviwo_1_1TFPrimitiveData.html":[4,0,0,151],
 "structinviwo_1_1TetraMeshBuffers.html":[2,0,0,1282],
@@ -242,12 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1representation__traits.html":[4,0,0,145],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[2,0,0,162],
 "structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[4,0,0,171],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[2,0,0,156],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[4,0,0,165],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html":[2,0,0,1084],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1GL_01_4.html":[4,0,0,1093],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[2,0,0,158],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1RAM_01_4.html":[4,0,0,167],
-"structinviwo_1_1resource_1_1GL.html":[4,0,0,8,1],
-"structinviwo_1_1resource_1_1PY.html":[4,0,0,8,2]
+"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[2,0,0,156]
 };

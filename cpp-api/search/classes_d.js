@@ -29,9 +29,10 @@ var searchData=
   ['nonesuch_26',['nonesuch',['../structinviwo_1_1util_1_1nonesuch.html',1,'inviwo::util']]],
   ['nop_27',['Nop',['../structinviwo_1_1command_1_1Nop.html',1,'inviwo::command']]],
   ['normalbuffer_28',['NormalBuffer',['../classinviwo_1_1buffertraits_1_1NormalBuffer.html',1,'inviwo::buffertraits']]],
-  ['notificationblocker_29',['NotificationBlocker',['../classinviwo_1_1util_1_1NotificationBlocker.html',1,'inviwo::util']]],
-  ['nullpointerexception_30',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
-  ['numberlineedit_31',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
-  ['numberwidget_32',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidgetconfig_33',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
+  ['normalizationmap_29',['NormalizationMap',['../structinviwo_1_1utilgl_1_1NormalizationMap.html',1,'inviwo::utilgl']]],
+  ['notificationblocker_30',['NotificationBlocker',['../classinviwo_1_1util_1_1NotificationBlocker.html',1,'inviwo::util']]],
+  ['nullpointerexception_31',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
+  ['numberlineedit_32',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
+  ['numberwidget_33',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_34',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
 ];

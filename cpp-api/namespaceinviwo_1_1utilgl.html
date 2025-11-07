@@ -137,6 +137,9 @@ Classes</h2></td></tr>
 <tr class="memitem:SimpleState" id="r_SimpleState"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1utilgl_1_1SimpleState.html">SimpleState</a></td></tr>
 <tr class="memitem:Enable" id="r_Enable"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1utilgl_1_1Enable.html">Enable</a></td></tr>
 <tr class="memitem:Activate" id="r_Activate"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1utilgl_1_1Activate.html">Activate</a></td></tr>
+<tr class="memitem:NormalizationMap" id="r_NormalizationMap"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1utilgl_1_1NormalizationMap.html">NormalizationMap</a></td></tr>
+<tr class="memitem:RangeConversionMap" id="r_RangeConversionMap"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a></td></tr>
+<tr class="memitem:FormatConversion" id="r_FormatConversion"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -203,6 +206,7 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a96d5d76903fb148c305645b3ac567547 template"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>glslTypeName</b> ()</td></tr>
 <tr class="memitem:aab7bb508dd169d81e3a96072d0c27d6a" id="r_aab7bb508dd169d81e3a96072d0c27d6a"><td class="memItemLeft" align="right" valign="top"><a id="aab7bb508dd169d81e3a96072d0c27d6a" name="aab7bb508dd169d81e3a96072d0c27d6a"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>parseShaderSource</b> (std::string_view key, std::string_view source, std::ostream &amp;output, <a class="el" href="structinviwo_1_1LineNumberResolver.html">LineNumberResolver</a> &amp;lnr, std::unordered_map&lt; typename <a class="el" href="structinviwo_1_1ShaderSegment_1_1Placeholder.html">ShaderSegment::Placeholder</a>, std::vector&lt; <a class="el" href="structinviwo_1_1ShaderSegment.html">ShaderSegment</a> &gt; &gt; replacements, std::function&lt; std::optional&lt; std::pair&lt; std::string, std::string &gt; &gt;(std::string_view)&gt; getSource)</td></tr>
+<tr class="memitem:a74da414d1d373950b127ce0d9cf44466" id="r_a74da414d1d373950b127ce0d9cf44466"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74da414d1d373950b127ce0d9cf44466">setShaderUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> &amp;map, std::string_view name)</td></tr>
 <tr class="memitem:ad0989204ab71fccc9fc50b3dce9a975a" id="r_ad0989204ab71fccc9fc50b3dce9a975a"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0989204ab71fccc9fc50b3dce9a975a">setShaderUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMapper, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, std::string_view name)</td></tr>
 <tr class="memitem:addd64a1525f147ab1665e9fe0453ac1d" id="r_addd64a1525f147ab1665e9fe0453ac1d"><td class="memTemplParams" colspan="2"><a id="addd64a1525f147ab1665e9fe0453ac1d" name="addd64a1525f147ab1665e9fe0453ac1d"></a>
 template&lt;typename T&gt; </td></tr>
@@ -478,6 +482,16 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const ImageInport &amp;image, ImageType type)</td></tr>
 <tr class="memitem:a5a34845b5af7ed1c38fae93747e36ad2" id="r_a5a34845b5af7ed1c38fae93747e36ad2"><td class="memItemLeft" align="right" valign="top"><a id="a5a34845b5af7ed1c38fae93747e36ad2" name="a5a34845b5af7ed1c38fae93747e36ad2"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> &amp;image, ImageType type)</td></tr>
+<tr class="memitem:ac727f6972dda25e600f7a008f279d29b" id="r_ac727f6972dda25e600f7a008f279d29b"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ac727f6972dda25e600f7a008f279d29b template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac727f6972dda25e600f7a008f279d29b">mapFromGLInputToNormalized</a> (T glValue, const <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> &amp;conversion)</td></tr>
+<tr class="memitem:a0312e6a18a7fbbfcbe372655ca4e19bf" id="r_a0312e6a18a7fbbfcbe372655ca4e19bf"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a0312e6a18a7fbbfcbe372655ca4e19bf template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0312e6a18a7fbbfcbe372655ca4e19bf">mapFromGLInputToSignNormalized</a> (T glValue, const <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> &amp;conversion)</td></tr>
+<tr class="memitem:a7c5204c0697b7a5b83f6de756e4e65ea" id="r_a7c5204c0697b7a5b83f6de756e4e65ea"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a7c5204c0697b7a5b83f6de756e4e65ea template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c5204c0697b7a5b83f6de756e4e65ea">mapFromGLInputToValue</a> (T glValue, const <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> &amp;conversion)</td></tr>
+<tr class="memitem:ab351f9645f49307051507867b7a0b091" id="r_ab351f9645f49307051507867b7a0b091"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ab351f9645f49307051507867b7a0b091 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab351f9645f49307051507867b7a0b091">mapFromValueToGLOutput</a> (T value, const <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> &amp;map)</td></tr>
+<tr class="memitem:a4769941605263491f479a0ab2981b82a" id="r_a4769941605263491f479a0ab2981b82a"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4769941605263491f479a0ab2981b82a">createGLOutputConversion</a> (const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMapOut, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *formatOut)</td></tr>
+<tr class="memitem:a3d09cbb3a0c406ef52827f62bcf965ae" id="r_a3d09cbb3a0c406ef52827f62bcf965ae"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3d09cbb3a0c406ef52827f62bcf965ae">createGLFormatRenormalization</a> (const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMap, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format)</td></tr>
 <tr class="memitem:a7762c35b2c0bc9f2c46d3a6ae2e27789" id="r_a7762c35b2c0bc9f2c46d3a6ae2e27789"><td class="memItemLeft" align="right" valign="top"><a id="a7762c35b2c0bc9f2c46d3a6ae2e27789" name="a7762c35b2c0bc9f2c46d3a6ae2e27789"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume, std::string_view samplerID)</td></tr>
 <tr class="memitem:a66a1fff7ce2795e08a34527413479be2" id="r_a66a1fff7ce2795e08a34527413479be2"><td class="memItemLeft" align="right" valign="top"><a id="a66a1fff7ce2795e08a34527413479be2" name="a66a1fff7ce2795e08a34527413479be2"></a>
@@ -547,6 +561,72 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight" valign="bottom"
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a3d09cbb3a0c406ef52827f62bcf965ae" name="a3d09cbb3a0c406ef52827f62bcf965ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d09cbb3a0c406ef52827f62bcf965ae">&#9670;&#160;</a></span>createGLFormatRenormalization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_OPENGL_API <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> inviwo::utilgl::createGLFormatRenormalization </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dataMap</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *</td>          <td class="paramname"><span class="paramname"><em>format</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate the parameters for a OpenGL data range re-normalization based on <code class="param">dataMapIn</code> and source format <code class="param">format</code>. Used in getNormalizedTexel/Voxel and getSignNormalizedTexel/Voxel as well as getValueTexel/Voxel in sampler2d.glsl and sampler3d.glsl</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dataMap</td><td></td></tr>
+    <tr><td class="paramname">format</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>struct containing the parameters for the data range mapping for <code class="param">format</code> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ad0989204ab71fccc9fc50b3dce9a975a">setShaderUniforms(Shader&amp;, const DataMapper&amp;, const DataFormatBase*, std::string_view)</a> </dd></dl>
+
+</div>
+</div>
+<a id="a4769941605263491f479a0ab2981b82a" name="a4769941605263491f479a0ab2981b82a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4769941605263491f479a0ab2981b82a">&#9670;&#160;</a></span>createGLOutputConversion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_OPENGL_API <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> inviwo::utilgl::createGLOutputConversion </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dataMapOut</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *</td>          <td class="paramname"><span class="paramname"><em>formatOut</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate the parameters for the conversion from value range to the OpenGL output range based on the value and data range of <code class="param">dataMapOut</code> and the underlying format <code class="param">formatOut</code> as follows:</p><ul>
+<li>map from value range to dataRange for float and non-normalized GL data formats</li>
+<li>normalized dataRange [0,1] for normalized, unsigned GL data formats</li>
+<li>or sign normalized dataRange [-1,1] for normalized, signed GL data formats</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dataMapOut</td><td>used for mapping from value space to the GL output range of <code class="param">formatOut</code> </td></tr>
+    <tr><td class="paramname">formatOut</td><td>destination data format</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>struct containing the parameters for the format conversion</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>mapFromNormalizedGLToValue, <a class="el" href="#ab351f9645f49307051507867b7a0b091">mapFromValueToGLOutput</a> </dd></dl>
+
+</div>
+</div>
 <a id="a1f97a21b07263e03ee154fb747a58ccb" name="a1f97a21b07263e03ee154fb747a58ccb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f97a21b07263e03ee154fb747a58ccb">&#9670;&#160;</a></span>imgIdentityVert()</h2>
 
@@ -601,6 +681,167 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight" valign="bottom"
 
 </div>
 </div>
+<a id="ac727f6972dda25e600f7a008f279d29b" name="ac727f6972dda25e600f7a008f279d29b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac727f6972dda25e600f7a008f279d29b">&#9670;&#160;</a></span>mapFromGLInputToNormalized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T inviwo::utilgl::mapFromGLInputToNormalized </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>glValue</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>conversion</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Map the value <code class="param">glValue</code> from the OpenGL texture input range (regular, normalize, or sign normalized) to a normalized range [0,1] using the [min,max] data range of the <a class="el" href="classinviwo_1_1DataMapper.html" title="Map values into data or value ranges. Data range refers to the range of the data type,...">DataMapper</a>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">scalar</td><td>or glm vector type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">glValue</td><td>value in OpenGL data range (regular, normalize, or sign normalized) </td></tr>
+    <tr><td class="paramname">conversion</td><td>parameters used for the range conversion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code class="param">glValue</code> renormalized from the OpenGL data range to [0,1]</dd></dl>
+<ul>
+<li><dl class="section see"><dt>See also</dt><dd>getNormalizedTexel (sampler2d.glsl), getNormalizedVoxel (sampler3d.glsl) </dd></dl>
+</li>
+</ul>
+
+</div>
+</div>
+<a id="a0312e6a18a7fbbfcbe372655ca4e19bf" name="a0312e6a18a7fbbfcbe372655ca4e19bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0312e6a18a7fbbfcbe372655ca4e19bf">&#9670;&#160;</a></span>mapFromGLInputToSignNormalized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T inviwo::utilgl::mapFromGLInputToSignNormalized </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>glValue</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>conversion</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Map the value <code class="param">glValue</code> from the OpenGL texture input range (regular, normalize, or sign normalized) to a sign normalized range [-1,1] using the [min,max] data range of the <a class="el" href="classinviwo_1_1DataMapper.html" title="Map values into data or value ranges. Data range refers to the range of the data type,...">DataMapper</a>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">scalar</td><td>or glm vector type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">glValue</td><td>value in OpenGL data range (regular, normalize, or sign normalized) </td></tr>
+    <tr><td class="paramname">conversion</td><td>parameters used for the range conversion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code class="param">glValue</code> renormalized from the OpenGL data range to [-1,1]</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>getSignNormalizedTexel (sampler2d.glsl), getSignNormalizedVoxel (sampler3d.glsl) </dd></dl>
+
+</div>
+</div>
+<a id="a7c5204c0697b7a5b83f6de756e4e65ea" name="a7c5204c0697b7a5b83f6de756e4e65ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c5204c0697b7a5b83f6de756e4e65ea">&#9670;&#160;</a></span>mapFromGLInputToValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T inviwo::utilgl::mapFromGLInputToValue </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>glValue</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1utilgl_1_1FormatConversion.html">FormatConversion</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>conversion</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Map the value <code class="param">glValue</code> from the OpenGL texture input range to value space as specified by <code class="param">conversion</code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">scalar</td><td>or glm vector type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">glValue</td><td>value in OpenGL data range (regular, normalize, or sign normalized) </td></tr>
+    <tr><td class="paramname">conversion</td><td>parameters used for the range conversion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>converted value in value space </dd></dl>
+
+</div>
+</div>
+<a id="ab351f9645f49307051507867b7a0b091" name="ab351f9645f49307051507867b7a0b091"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab351f9645f49307051507867b7a0b091">&#9670;&#160;</a></span>mapFromValueToGLOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T inviwo::utilgl::mapFromValueToGLOutput </td>
+          <td>(</td>
+          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>map</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Map the value <code class="param">value</code> from value space to the OpenGL output range as defined by the underlying data format and specified by <code class="param">conversion</code> as follows:</p><ul>
+<li>map from value range to dataRange for float and non-normalized GL data formats</li>
+<li>normalized dataRange [0,1] for normalized, unsigned GL data formats</li>
+<li>or sign normalized dataRange [-1,1] for normalized, signed GL data formats</li>
+</ul>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">scalar</td><td>or glm vector type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>value in value space </td></tr>
+    <tr><td class="paramname">map</td><td>parameters used for the range conversion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code class="param">value</code> converted to the OpenGL output range </dd></dl>
+
+</div>
+</div>
 <a id="a01ba6d71bea79602047826daf38988ae" name="a01ba6d71bea79602047826daf38988ae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a01ba6d71bea79602047826daf38988ae">&#9670;&#160;</a></span>planeRect()</h2>
 
@@ -621,7 +862,7 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight" valign="bottom"
 </div>
 </div>
 <a id="ad0989204ab71fccc9fc50b3dce9a975a" name="ad0989204ab71fccc9fc50b3dce9a975a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0989204ab71fccc9fc50b3dce9a975a">&#9670;&#160;</a></span>setShaderUniforms()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0989204ab71fccc9fc50b3dce9a975a">&#9670;&#160;</a></span>setShaderUniforms() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -648,7 +889,36 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight" valign="bottom"
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the shader uniforms of <code class="param">shader</code> related to format scaling based on <code class="param">dataMapper</code> and the corresponding data format <code class="param">format</code> using <code class="param">name</code> as a base name, that is <span class="tt">&lt;name&gt;.formatScaling</span> etc. These uniforms are used in connection with sampler2d.glsl and sampler3d.glsl. </p>
+<p>Set the shader uniforms of <code class="param">shader</code> related to format scaling based on <code class="param">dataMapper</code> and the corresponding data format <code class="param">format</code> using <code class="param">name</code> as a base name, that is <span class="tt">&lt;name&gt;.texToNormalized</span> etc. These uniforms are used in connection with sampler2d.glsl and sampler3d.glsl.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a3d09cbb3a0c406ef52827f62bcf965ae">utilgl::createGLFormatRenormalization</a> </dd></dl>
+
+</div>
+</div>
+<a id="a74da414d1d373950b127ce0d9cf44466" name="a74da414d1d373950b127ce0d9cf44466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74da414d1d373950b127ce0d9cf44466">&#9670;&#160;</a></span>setShaderUniforms() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">IVW_MODULE_OPENGL_API void inviwo::utilgl::setShaderUniforms </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>map</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the shader uniforms of <code class="param">shader</code> related to format conversions from value space to the OpenGL output range. The uniforms are used by <a class="el" href="#ab351f9645f49307051507867b7a0b091">mapFromValueToGLOutput()</a> (conversions.glsl)</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a4769941605263491f479a0ab2981b82a">utilgl::createGLOutputConversion</a> </dd></dl>
 
 </div>
 </div>

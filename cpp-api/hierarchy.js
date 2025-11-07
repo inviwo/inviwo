@@ -1195,6 +1195,7 @@ var hierarchy =
     [ "inviwo::util::for_each_type&lt; std::tuple&lt; T, Types... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_00_01Types_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::util::for_each_type_pair&lt; ATypes, BTypes &gt;", "structinviwo_1_1util_1_1for__each__type__pair.html", null ],
     [ "inviwo::util::for_each_type_pair&lt; std::tuple&lt; ATypes... &gt;, std::tuple&lt; BTypes... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type__pair_3_01std_1_1tuple_3_01ATypes_8_8_8_01_4_00_01std_1_980543efefbc8ab89773d2539d3c1f94.html", null ],
+    [ "inviwo::utilgl::FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
     [ "fmt::formatter", null, [
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
@@ -1841,6 +1842,7 @@ var hierarchy =
     ] ],
     [ "inviwo::util::nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
     [ "inviwo::command::Nop", "structinviwo_1_1command_1_1Nop.html", null ],
+    [ "inviwo::utilgl::NormalizationMap", "structinviwo_1_1utilgl_1_1NormalizationMap.html", null ],
     [ "inviwo::util::NotificationBlocker", "classinviwo_1_1util_1_1NotificationBlocker.html", null ],
     [ "inviwo::NumberWidgetConfig", "structinviwo_1_1NumberWidgetConfig.html", null ],
     [ "inviwo::ObservableInterface", "classinviwo_1_1ObservableInterface.html", [
@@ -2860,6 +2862,7 @@ var hierarchy =
     [ "inviwo::util::RandomCubicalPointGeneration", "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html", null ],
     [ "inviwo::util::detail::RandomNumberRangeValues", "structinviwo_1_1util_1_1detail_1_1RandomNumberRangeValues.html", null ],
     [ "inviwo::util::RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],
+    [ "inviwo::utilgl::RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
     [ "std::rank", null, [
       [ "inviwo::util::rank< const T >", "structinviwo_1_1util_1_1rank_3_01const_01T_01_4.html", null ],
       [ "inviwo::util::rank< T >", "structinviwo_1_1util_1_1rank.html", [

@@ -267,7 +267,10 @@ var annotated_dup =
         [ "ColorMaskiState", "structinviwo_1_1utilgl_1_1ColorMaskiState.html", null ],
         [ "SimpleState", "structinviwo_1_1utilgl_1_1SimpleState.html", null ],
         [ "Enable", "structinviwo_1_1utilgl_1_1Enable.html", null ],
-        [ "Activate", "structinviwo_1_1utilgl_1_1Activate.html", null ]
+        [ "Activate", "structinviwo_1_1utilgl_1_1Activate.html", null ],
+        [ "NormalizationMap", "structinviwo_1_1utilgl_1_1NormalizationMap.html", null ],
+        [ "RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
+        [ "FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ]
       ] ],
       [ "cimgutil", "namespaceinviwo_1_1cimgutil.html", [
         [ "TIFFHeader", "structinviwo_1_1cimgutil_1_1TIFFHeader.html", null ]
