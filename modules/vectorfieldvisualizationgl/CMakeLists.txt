@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h
     include/modules/vectorfieldvisualizationgl/processors/4d/tmip.h
     include/modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h
+    include/modules/vectorfieldvisualizationgl/processors/datageneration/tornadogenerator.h
     include/modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h
     include/modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h
     include/modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator4d.h
@@ -38,6 +39,7 @@ set(SOURCE_FILES
     src/processors/3d/vector3ddivergence.cpp
     src/processors/4d/tmip.cpp
     src/processors/datageneration/lorenzsystem.cpp
+    src/processors/datageneration/tornadogenerator.cpp
     src/processors/datageneration/vectorfieldgenerator2d.cpp
     src/processors/datageneration/vectorfieldgenerator3d.cpp
     src/processors/datageneration/vectorfieldgenerator4d.cpp
