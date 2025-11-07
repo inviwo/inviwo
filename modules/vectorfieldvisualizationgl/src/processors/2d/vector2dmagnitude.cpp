@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/util/glformatutils.h>
 
 #include <glm/gtx/component_wise.hpp>
 
@@ -57,6 +58,12 @@ LayerConfig Vector2DMagnitude::outputConfig(const Layer& input) const {
                                       .swizzleMask = swizzlemasks::defaultData(1),
                                       .dataRange = dvec2{0.0, conservativeMax},
                                       .valueRange = dvec2{0.0, conservativeMax}});
+}
+
+void Vector2DMagnitude::preProcess(TextureUnitContainer&, const Layer&, Layer& output) {
+    utilgl::setShaderUniforms(
+        shader_, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
+        "outputMap");
 }
 
 }  // namespace inviwo

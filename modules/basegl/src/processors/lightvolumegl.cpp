@@ -58,6 +58,7 @@
 #include <modules/opengl/openglutils.h>                                 // for DepthFuncState
 #include <modules/opengl/shader/shader.h>                               // for Shader
 #include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                          // for utilgl::setUniform
 #include <modules/opengl/sharedopenglresources.h>                       // for SharedOpenGLResou...
 #include <modules/opengl/texture/texture3d.h>                           // for Texture3D
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
@@ -211,11 +212,13 @@ void LightVolumeGL::process() {
     glActiveTexture(GL_TEXTURE0);
 
     propagationShader_.activate();
-    propagationShader_.setUniform("volume_", volUnit.getUnitNumber());
-    utilgl::setShaderUniforms(propagationShader_, *inport_.getData(), "volumeParameters_");
-    propagationShader_.setUniform("transferFunc_", transFuncUnit.getUnitNumber());
-    propagationShader_.setUniform("lightVolumeParameters_.dimensions", volumeDimOutF_);
-    propagationShader_.setUniform("lightVolumeParameters_.reciprocalDimensions", volumeDimOutFRCP_);
+    propagationShader_.setUniform("volume", volUnit.getUnitNumber());
+    utilgl::setShaderUniforms(propagationShader_, *inport_.getData(), "volumeParameters");
+    propagationShader_.setUniform("transferFunc", transFuncUnit.getUnitNumber());
+    propagationShader_.setUniform("lightVolumeParameters.dimensions", volumeDimOutF_);
+    propagationShader_.setUniform("lightVolumeParameters.reciprocalDimensions", volumeDimOutFRCP_);
+    utilgl::setShaderUniforms(propagationShader_, volume_->dataMap, volume_->getDataFormat(),
+                              "lightVolumeParameters");
 
     {
         const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
@@ -232,22 +235,22 @@ void LightVolumeGL::process() {
                 propParams_[i].fbo.attachColorTexture(&propParams_[i].tex, 0);
             }
 
-            propagationShader_.setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
-            propagationShader_.setUniform("permutationMatrix_", propParams_[i].axisPermutation);
+            propagationShader_.setUniform("lightVolume", lightVolUnit[i].getUnitNumber());
+            propagationShader_.setUniform("permutationMatrix", propParams_[i].axisPermutation);
 
             if (lightSource_.getData()->getLightSourceType() == LightSourceType::Point) {
-                propagationShader_.setUniform("lightPos_", lightPos_);
-                propagationShader_.setUniform("permutedLightMatrix_",
+                propagationShader_.setUniform("lightPos", lightPos_);
+                propagationShader_.setUniform("permutedLightMatrix",
                                               propParams_[i].axisPermutationLight);
             } else {
-                propagationShader_.setUniform("permutedLightDirection_",
+                propagationShader_.setUniform("permutedLightDirection",
                                               propParams_[i].permutedLightDirection);
             }
 
             for (unsigned int z = 0; z < volumeDimOut_.z; ++z) {
                 glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                           GL_TEXTURE_3D, propParams_[i].tex.getID(), 0, z);
-                propagationShader_.setUniform("sliceNum_", static_cast<GLint>(z));
+                propagationShader_.setUniform("sliceNum", static_cast<GLint>(z));
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
                 glFlush();
             }
@@ -258,13 +261,15 @@ void LightVolumeGL::process() {
 
     propagationShader_.deactivate();
     mergeShader_.activate();
-    mergeShader_.setUniform("lightVolume_", lightVolUnit[0].getUnitNumber());
-    mergeShader_.setUniform("lightVolumeSec_", lightVolUnit[1].getUnitNumber());
-    mergeShader_.setUniform("lightVolumeParameters_.dimensions", volumeDimOutF_);
-    mergeShader_.setUniform("lightVolumeParameters_.reciprocalDimensions", volumeDimOutFRCP_);
-    mergeShader_.setUniform("permMatInv_", propParams_[0].axisPermutationINV);
-    mergeShader_.setUniform("permMatInvSec_", propParams_[1].axisPermutationINV);
-    mergeShader_.setUniform("blendingFactor_", blendingFactor_);
+    mergeShader_.setUniform("lightVolume", lightVolUnit[0].getUnitNumber());
+    mergeShader_.setUniform("lightVolumeSec", lightVolUnit[1].getUnitNumber());
+    mergeShader_.setUniform("lightVolumeParameters.dimensions", volumeDimOutF_);
+    mergeShader_.setUniform("lightVolumeParameters.reciprocalDimensions", volumeDimOutFRCP_);
+    utilgl::setShaderUniforms(mergeShader_, volume_->dataMap, volume_->getDataFormat(),
+                              "lightVolumeParameters");
+    mergeShader_.setUniform("permMatInv", propParams_[0].axisPermutationINV);
+    mergeShader_.setUniform("permMatInvSec", propParams_[1].axisPermutationINV);
+    mergeShader_.setUniform("blendingFactor", blendingFactor_);
     // Perform merge pass
     mergeFBO_.activate();
     glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));

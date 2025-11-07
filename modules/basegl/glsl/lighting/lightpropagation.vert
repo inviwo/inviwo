@@ -27,13 +27,13 @@
  * 
  *********************************************************************************/
 
-uniform int sliceNum_;
+uniform int sliceNum;
 
-out vec2 texCoord2D_;
-out int instanceID_;
+out vec2 texCoord2D;
+out int instanceID;
 
 void main() {
-    texCoord2D_ = in_TexCoord.xy;
-    instanceID_ = sliceNum_;
+    texCoord2D = in_TexCoord.xy;
+    instanceID = sliceNum;
     gl_Position = in_Vertex;
 }

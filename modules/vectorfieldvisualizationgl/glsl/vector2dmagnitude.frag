@@ -29,15 +29,17 @@
 
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
+#include "utils/conversion.glsl"
 
 uniform sampler2D inport;
 uniform ImageParameters inportParameters;
+uniform RangeConversionMap outputMap;
 
 in vec3 texCoord_;
 
 void main(void) {
-    vec2 value = getNormalizedTexel(inport, inportParameters, texCoord_.xy).xy;
-    float magnitude = length(value);
+    vec2 value = getValueTexel(inport, inportParameters, texCoord_.xy).xy;
+    float valueMagnitude = length(value);
 
-    FragData0 = vec4(magnitude);
+    FragData0 = vec4(mapFromValueToGLOutput(valueMagnitude, outputMap));
 }

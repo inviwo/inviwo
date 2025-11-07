@@ -33,8 +33,15 @@
 </style>
 </head>
 <body>
+<h2>2025-11-04 Updated GLSL data range conversions</h2>
+<p>Utility functions <code class="notranslate">getValueTexel()</code> were added to <code class="notranslate">utils/sampler2d.glsl</code> and <code class="notranslate">utils/sampler3d.glsl</code>. These functions are similar to <code class="notranslate">getNormalizedTexel()</code> but instead return the sampled texture value in value space.</p>
+<p>Similarly, <code class="notranslate">mapFromValueToGLOutput()</code> (<code class="notranslate">utils/conversion.glsl</code>) was added to convert values back from value space to the GLSL ouptut range corresponding to the underlying data format of the output texture. Use <code class="notranslate">utilgl::createOutputConversion()</code> from <code class="notranslate">glformatutils.h</code> to generate the required conversion map, which then can be set in the shader with <code class="notranslate">utilgl::setShaderUniforms()</code>.</p>
 <h2>2025-10-28 Removed ProgressBar and ActivityIndicator</h2>
 <p>The Processor <code class="notranslate">ProgressBar</code> and <code class="notranslate">ActivityIndicator</code> and related <code class="notranslate">Owner</code> and <code class="notranslate">Observer</code> classes have been removed. The new <code class="notranslate">Processor::notifyObserversProgressChanged</code> and <code class="notranslate">ProcessorObserver::onProcessorProgressChanged</code> functions replaces them. Most processor using background work, should use the <code class="notranslate">PoolProcessor</code>, and are not affected by this change.</p>
+<h2>2025-10-24 <code class="notranslate">LayerCreator</code> and <code class="notranslate">VolumeSliceToLayer</code> processors</h2>
+<p>Added a <code class="notranslate">Layer Creator</code> processor for creating various 2D Layers similar to <code class="notranslate">Volume Creator</code>. The <code class="notranslate">Volume Slice To Layer</code> processor extracts an axis-aligned slice from a Volume and places the resulting layer into the same spatial location in contrast to <code class="notranslate">VolumeSliceExtractor</code> and <code class="notranslate">VolumeSliceGL</code> which output an Image.</p>
+<h2>2023-01-26 <code class="notranslate">MeshAxis</code> and <code class="notranslate">LayerAxis</code> processors</h2>
+<p>Added a <code class="notranslate">Mesh Axis</code> processor for adding 3D axes to a mesh and <code class="notranslate">Layer Axis</code> for 2D axes next to a layer. These processor share most of their functionality with the <code class="notranslate">Volume Axis</code> processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.</p>
 <h2>2025-09-23 Updated Inviwo Python bindings</h2>
 <p>The explicit <code class="notranslate">Vector</code> types for both scalar and glm vectors were moved from <code class="notranslate">inviwopy</code> to the <code class="notranslate">inviwopy.glm</code> module.</p>
 <h3>Migration guide for Python processors and scripts</h3>

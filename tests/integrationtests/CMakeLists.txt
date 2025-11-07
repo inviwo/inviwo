@@ -4,14 +4,15 @@ project(inviwo-integrationtests)
 # Add source files
 set(SOURCE_FILES
     inviwo-integrationtests.cpp
+    dataminmaxgl-test.cpp
+    glformatconversion-test.cpp
     image-test.cpp
     inviwoapplication-test.cpp
     network-test.cpp
     processorcreation-test.cpp
     propertycreation-test.cpp
-    volume-test.cpp
     shader-test.cpp
-    dataminmaxgl-test.cpp
+    volume-test.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

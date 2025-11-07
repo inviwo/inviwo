@@ -58,6 +58,22 @@ struct GeometryParameters {
     mat3 dataToWorldNormalMatrix;  // Equivalent to normalMatrix
 };
 
+// Conversion from OpenGL texture space to normalized [0,1] or sign normalized [-1,1] or vice versa
+struct NormalizationMap {
+    float scale;
+    float offset;
+};
+
+// Conversion from linear range [a,b] to [c,d]. Used to map from OpenGL texture space to value space and 
+// from value space to OpenGL output range basd on output texture format (regular, normalized, sign normalized)
+//     ((value - inputOffset) * scale) + outputOffset
+// see glformatsutil.h
+struct RangeConversionMap {
+    float inputOffset;
+    float scale;
+    float outputOffset;
+}; 
+
 struct VolumeParameters {
     mat4 dataToModel;
     mat4 modelToData;
@@ -75,11 +91,14 @@ struct VolumeParameters {
                                            // for volumes with orthogonal basis)
     vec3 dimensions;                       // Number of voxels (dim) per axis
     vec3 reciprocalDimensions;             // 1 over the number of voxels
-    vec3 worldSpaceGradientSpacing;       // Spacing between gradient samples in world space
-    float formatScaling;                   // This scaling and offset parameters is used to
-    float formatOffset;                    // map value from data range [min,max] to [0,1]
-    float signedFormatScaling;             // or to [-1,1] for signed data. It is used by
-    float signedFormatOffset;              // sampler3d.glsl, and is calculated in shaderutils.cpp
+    vec3 worldSpaceGradientSpacing;        // Spacing between gradient samples in world space
+
+    // various conversions from texture space to [0,1], [-1,1], and value space [min,max]
+    // as used by getNormalizedTexel/Voxel() and getValueTexel/Voxel()
+    // see glformatutils.h
+    NormalizationMap texToNormalized;
+    NormalizationMap texToSignNormalized;
+    RangeConversionMap texToValue;
 };
 
 struct ImageParameters {
@@ -96,10 +115,12 @@ struct ImageParameters {
     vec2 dimensions;
     vec2 reciprocalDimensions;
 
-    float formatScaling;                   // This scaling and offset parameters is used to
-    float formatOffset;                    // map value from data range [min,max] to [0,1]
-    float signedFormatScaling;             // or to [-1,1] for signed data. It is used by
-    float signedFormatOffset;              // sampler2d.glsl, and is calculated in shaderutils.cpp
+    // various conversions from texture space to [0,1], [-1,1], and value space [min,max]
+    // as used by getNormalizedTexel/Voxel() and getValueTexel/Voxel()
+    // see glformatutils.h
+    NormalizationMap texToNormalized;
+    NormalizationMap texToSignNormalized;
+    RangeConversionMap texToValue;
 };
 
 struct LightParameters {

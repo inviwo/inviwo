@@ -71,8 +71,6 @@ protected:
 
     Shader shader_;
     FrameBufferObject fbo_;
-    std::shared_ptr<Layer> layer_;
-    LayerConfig config;
 };
 
 }  // namespace inviwo

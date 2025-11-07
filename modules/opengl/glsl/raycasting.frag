@@ -150,7 +150,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
                 gradient = normalize(gradient);
 
                 // make sure that the gradient always points away from zero
-                gradient *= sign(voxel[channel] / (1.0 - volumeParameters.formatScaling) - volumeParameters.formatOffset);
+                gradient *= sign(voxel[channel] / volumeParameters.texToNormalized.scale + volumeParameters.texToNormalized.offset);
             }
 
             shadingParams = shading(color.rgb, -gradient, 

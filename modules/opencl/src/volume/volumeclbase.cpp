@@ -126,10 +126,8 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
     double typescale = CLFormats::get(volume->getDataFormat()->getId()).scaling;
     defaultRange.dataRange *= typescale;
 
-    double formatScalingFactor = 1.0;
-    double signedFormatScalingFactor = 1.0;
-    double formatOffset = 0.0;
-    double signedFormatOffset = 0.0;
+    NormalizationMap texToNormalized;
+    NormalizationMap texToSignNormalized;
 
     double invRange = 1.0 / (dataRange.y - dataRange.x);
     double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
@@ -138,29 +136,25 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
 
     switch (CLFormats::get(volume->getDataFormat()->getId()).normalization) {
         case CLFormats::Normalization::None:
-            formatScalingFactor = invRange;
-            formatOffset = -dataRange.x;
-            signedFormatScalingFactor = formatScalingFactor;
-            signedFormatOffset = formatOffset;
+            texToNormalized.scale = static_cast<float>(invRange);
+            texToNormalized.offset = static_cast<float>(dataRange.x);
+            texToSignNormalized = texToNormalized;
             break;
         case CLFormats::Normalization::Normalized:
-            formatScalingFactor = defaultToDataRange;
-            formatOffset = -defaultToDataOffset;
-            signedFormatScalingFactor = formatScalingFactor;
-            signedFormatOffset = formatOffset;
+            texToNormalized.scale = static_cast<float>(defaultToDataRange);
+            texToNormalized.offset = static_cast<float>(defaultToDataOffset);
+            texToSignNormalized = texToNormalized;
             break;
         case CLFormats::Normalization::SignNormalized:
-            formatScalingFactor = 0.5 * defaultToDataRange;
-            formatOffset = 1.0 - 2 * defaultToDataOffset;
-            signedFormatScalingFactor = defaultToDataRange;
-            signedFormatOffset = -defaultToDataOffset;
+            texToNormalized.scale = static_cast<float>(0.5 * defaultToDataRange);
+            texToNormalized.offset = static_cast<float>(-1.0 + 2 * defaultToDataOffset);
+            texToSignNormalized.scale = static_cast<float>(defaultToDataRange);
+            texToSignNormalized.offset = static_cast<float>(defaultToDataOffset);
             break;
     }
 
-    volumeStruct->formatScaling = static_cast<float>(formatScalingFactor);
-    volumeStruct->formatOffset = static_cast<float>(formatOffset);
-    volumeStruct->signedFormatScaling = static_cast<float>(signedFormatScalingFactor);
-    volumeStruct->signedFormatOffset = static_cast<float>(signedFormatOffset);
+    volumeStruct->texToNormalized = texToNormalized;
+    volumeStruct->texToSignNormalized = texToSignNormalized;
 
     return volumeStruct_;
 }

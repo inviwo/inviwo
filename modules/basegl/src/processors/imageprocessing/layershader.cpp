@@ -36,6 +36,7 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/util/glformatutils.h>
 
 namespace inviwo {
 
@@ -55,18 +56,12 @@ void main() {
 
 constexpr std::string_view defaultFrag = R"(#include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
+#include "utils/conversion.glsl"
 
 uniform sampler2D inport;
 uniform ImageParameters outportParameters;
 
-struct FormatScaling {
-    float formatScaling;
-    float formatOffset;
-    float signedFormatScaling;
-    float signedFormatOffset;
-};
-
-uniform FormatScaling destRange = FormatScaling(1.0, 0.0, 1.0, 0.0);
+uniform RangeConversionMap outputMap = RangeConversionMap(0.0, 1.0, 0.0);
 
 in Fragment {
     smooth vec4 color;
@@ -74,9 +69,9 @@ in Fragment {
 } in_frag;
 
 void main() {
-    // access normalized input value, then renormalize with respect to output data range
-    vec4 value = getNormalizedTexel(inport, outportParameters, in_frag.texCoord);
-    FragData0 = value / (1.0 - destRange.formatScaling) - destRange.formatOffset;
+    // access input value in value space, then renormalize with respect to output data range
+    vec4 value = getValueTexel(inport, outportParameters, in_frag.texCoord);
+    FragData0 = mapFromValueToGLOutput(value, outputMap);
 
     // regular texture access, no output mapping
     // vec4 value = texture(inport, in_frag.texCoord);
@@ -206,7 +201,9 @@ LayerShader::LayerShader()
 }
 
 void LayerShader::preProcess(TextureUnitContainer&, const Layer&, Layer& output) {
-    utilgl::setShaderUniforms(shader_, output.dataMap, output.getDataFormat(), "destRange");
+    utilgl::setShaderUniforms(
+        shader_, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
+        "outputMap");
 }
 
 LayerConfig LayerShader::outputConfig(const Layer& input) const {

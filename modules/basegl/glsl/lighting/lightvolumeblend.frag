@@ -30,22 +30,22 @@
 #include "utils/structs.glsl"
 #include "utils/sampler3d.glsl"
 
-uniform sampler3D lightVolume_;
-uniform sampler3D lightVolumeSec_;
+uniform sampler3D lightVolume;
+uniform sampler3D lightVolumeSec;
 
-uniform VolumeParameters lightVolumeParameters_;
+uniform VolumeParameters lightVolumeParameters;
 
-uniform float blendingFactor_;
+uniform float blendingFactor;
 
-in vec4 texCoord_;
+in vec4 texCoord;
 
-in vec4 permutedPosInv_;
-in vec4 permutedPosInvSec_;
+in vec4 permutedPosInv;
+in vec4 permutedPosInvSec;
 
 void main() {
     //Lookup light values
-    vec4 lightValue = getNormalizedVoxel(lightVolume_, lightVolumeParameters_, permutedPosInv_.xyz);
-    vec4 lightValueSec = getNormalizedVoxel(lightVolumeSec_, lightVolumeParameters_, permutedPosInvSec_.xyz);
+    vec4 lightValue = getNormalizedVoxel(lightVolume, lightVolumeParameters, permutedPosInv.xyz);
+    vec4 lightValueSec = getNormalizedVoxel(lightVolumeSec, lightVolumeParameters, permutedPosInvSec.xyz);
     //Output blend between light volumes
-    FragData0 = (lightValue * blendingFactor_) + (lightValueSec * (1.0 - blendingFactor_));
+    FragData0 = mix(lightValueSec, lightValue, blendingFactor);
 }

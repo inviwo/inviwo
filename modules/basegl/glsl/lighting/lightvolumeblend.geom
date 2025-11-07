@@ -38,25 +38,25 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform VolumeParameters lightVolumeParameters_;
+uniform VolumeParameters lightVolumeParameters;
 
-uniform mat4 permMatInv_;
-uniform mat4 permMatInvSec_;
+uniform mat4 permMatInv;
+uniform mat4 permMatInvSec;
 
-in int instanceID_[3];
-in vec2 texCoord2D_[3];
+in int instanceID[3];
+in vec2 texCoord2D[3];
 
-out vec4 texCoord_;
+out vec4 texCoord;
 
-out vec4 permutedPosInv_;
-out vec4 permutedPosInvSec_;
+out vec4 permutedPosInv;
+out vec4 permutedPosInvSec;
 
 void main() {
     int i;
-    texCoord_.z = (instanceID_[0] * lightVolumeParameters_.reciprocalDimensions.z) 
-                    + (0.5 * lightVolumeParameters_.reciprocalDimensions.z);
-    texCoord_.w = 1.f;
-    gl_Layer = instanceID_[0];
+    texCoord.z = (instanceID[0] * lightVolumeParameters.reciprocalDimensions.z) 
+                    + (0.5 * lightVolumeParameters.reciprocalDimensions.z);
+    texCoord.w = 1.f;
+    gl_Layer = instanceID[0];
 
     for (i = 0; i<gl_in.length(); ++i) {
 #ifndef GLSL_VERSION_150
@@ -64,9 +64,9 @@ void main() {
 #else
         gl_Position = gl_in[i].gl_Position;
 #endif
-        texCoord_.xy = texCoord2D_[i];
-        permutedPosInv_ = permMatInv_ * texCoord_;
-        permutedPosInvSec_ = permMatInvSec_ * texCoord_;
+        texCoord.xy = texCoord2D[i];
+        permutedPosInv = permMatInv * texCoord;
+        permutedPosInvSec = permMatInvSec * texCoord;
         EmitVertex();
     }
 
