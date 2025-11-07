@@ -31,79 +31,77 @@
 #include "utils/sampler3d.glsl"
 #include "utils/classification.glsl"
 
+#if !defined(KERNEL)
+#define KERNEL(s) box(s)
+#endif
+#if !defined(INTEGRATION_DIRECTION)
+#define INTEGRATION_DIRECTION 0
+#endif
+
 uniform sampler3D volume;  // noise
 uniform VolumeParameters volumeParameters;
 
 uniform sampler3D vectorField;
 uniform VolumeParameters vectorFieldParameters;
 
-uniform sampler2D tf;
 uniform float velocityScale;
 uniform float alphaScale;
 
 uniform int samples;
 uniform float stepLength;
 uniform mat3 invBasis;
-uniform bool normalizeVectors;
-uniform bool intensityMapping;
 
 in vec4 texCoord_;
-
-#define noise volume
-#define noiseParameters volumeParameters
+in vec3 outputTexCoord_;
 
 uniform float noiseRepeat = 5.f;
 
+bool insideUnitCube(in vec3 pos) {
+    return pos == clamp(pos, vec3(0), vec3(1));
+}
+
+float box(in int step) {
+    return 1.0;
+}
+
+float gaussian(in int step) {
+    float dist = step / float(samples);
+    float distSq = dot(dist, dist);
+    float kernelSizeSq = 1.0 / 9.0;
+    return  clamp(exp(-0.693147180559945 * distSq / kernelSizeSq), 0.0, 1.0);
+}
+
+float integration(in vec3 pos, in int steps, in int integrationDirection) {
+    float density = 0.0;
+    for (int i = 0; i < steps; ++i) {
+        vec3 v = getValueVoxel(vectorField, vectorFieldParameters, pos).xyz;
+#if defined(NORMALIZATION)
+        v = normalize(v);
+#endif
+        v *= stepLength * integrationDirection;
+        pos += invBasis * v;
+        // TODO: consider texture repeat?
+        if (!insideUnitCube(pos)) {
+            break;
+        }
+        density += texture(volume, mod(pos * noiseRepeat, 1)).x * KERNEL(i);
+    }
+    return density;
+}
+
 void main(void) {
-    float v = texture(noise, mod(texCoord_.xyz * noiseRepeat, 1)).r;
-    float voxelVelo = length(vec3(getVoxel(vectorField, vectorFieldParameters, texCoord_.xyz)));
+    vec3 pos = outputTexCoord_.xyz;
+    float density = texture(volume, mod(pos * noiseRepeat, 1)).x * KERNEL(0);
 
-    if (voxelVelo < 0.000001) {
-        discard;
+    float speed = length(getValueVoxel(vectorField, vectorFieldParameters, pos).xyz);
+    if (speed > 1.0e-8) {
+#if INTEGRATION_DIRECTION >= 0
+        density += integration(pos, samples, +1);
+#endif
+#if INTEGRATION_DIRECTION <= 0
+        density += integration(pos, samples, -1);
+#endif
     }
 
-    int c = 1;
-    vec3 posF;
-
-    posF = texCoord_.xyz;
-    for (int i = 0; i < samples / 2; i++) {
-        vec3 V0 = getVoxel(vectorField, vectorFieldParameters, posF).rgb;
-        if (normalizeVectors) {
-            V0 = normalize(V0);
-        }
-
-        posF += invBasis * (V0 * stepLength);
-
-        if (any(lessThan(posF, vec3(0)))) break;
-        if (any(greaterThan(posF, vec3(1)))) break;
-
-        v += texture(noise, mod(posF * noiseRepeat, 1)).r;
-        c += 1;
-    }
-    posF = texCoord_.xyz;
-    for (int i = 0; i < samples / 2; i++) {
-        vec3 V0 = getVoxel(vectorField, vectorFieldParameters, posF).rgb;
-        if (normalizeVectors) {
-            V0 = normalize(V0);
-        }
-
-        posF -= invBasis * (V0 * stepLength);
-
-        if (any(lessThan(posF, vec3(0)))) break;
-        if (any(greaterThan(posF, vec3(1)))) break;
-
-        v += texture(noise, mod(posF * noiseRepeat, 1)).r;
-        c += 1;
-    }
-
-    v /= c;
-
-    if (intensityMapping) {
-        v = pow(v, (4.0 / pow((v + 1.0), 4)));
-    }
-
-    vec4 color = applyTF(tf, voxelVelo / velocityScale);
-    color.a *= v * alphaScale;
-
-    FragData0 = color;
+    FragData0 = vec4(density * alphaScale);
 }
