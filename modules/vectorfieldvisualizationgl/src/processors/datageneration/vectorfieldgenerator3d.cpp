@@ -82,7 +82,7 @@ VectorFieldGenerator3D::VectorFieldGenerator3D()
     : VolumeGLProcessor("vectorfieldgenerator3d.frag",
                         {.dimensions = size3_t{16},
                          .format = DataVec3Float32::get(),
-                         .dataRange = dvec2(0, 1),
+                         .dataRange = dvec2(-1, 1),
                          .valueRange = dvec2(-1, 1)},
                         VolumeGLProcessor::UseInport::No)
     , size_("size", "Volume size", size3_t(16), {size3_t(3), ConstraintBehavior::Immutable},
