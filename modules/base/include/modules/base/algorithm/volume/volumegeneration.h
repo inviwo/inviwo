@@ -179,7 +179,7 @@ inline void gen_tornado(const size3_t& size, double time, std::span<vec3> tornad
     auto it = tornado.begin();
 
     for (size_t iz = 0; iz < size.z; iz++) {
-        const double z = static_cast<double>(iz) * delta.z;  // map z to 0->1tornadogenerator.h
+        const double z = static_cast<double>(iz) * delta.z;  // map z to 0->1
 
         // For each z-slice, determine the spiral circle.
         const double xc = 0.5 + 0.1 * sin(0.04 * time + 10.0 * z);
@@ -194,9 +194,10 @@ inline void gen_tornado(const size3_t& size, double time, std::span<vec3> tornad
         const double r2 = 0.2 + 0.1 * z;
 
         for (size_t iy = 0; iy < size.y; iy++) {
-            const double y = static_cast<double>(iy) * delta.y;
+            const double y = static_cast<double>(iy) * delta.y; // map y to 0->1
             for (size_t ix = 0; ix < size.x; ix++) {
-                const double x = static_cast<double>(ix) * delta.x;
+                const double x = static_cast<double>(ix) * delta.x; // map x to 0->1
+
                 double rdist = sqrt((y - yc) * (y - yc) + (x - xc) * (x - xc));
                 double scale = fabs(r - rdist);
                 /*

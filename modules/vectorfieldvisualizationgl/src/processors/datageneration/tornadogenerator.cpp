@@ -71,8 +71,7 @@ void main() {
     } else {
         scale = 1.0;
     }
-    float z0 = 0.1 * (0.1 - rdist * z);
-    if (z0 < 0.0) z0 = 0.0;
+    float z0 = max(0.1 * (0.1 - rdist * z), 0.0);
     rdist = sqrt(rdist * rdist + z0 * z0);
     scale = (r + r2 - rdist) * scale / (rdist + 0.00000000001);
     scale = scale / (1 + z);
@@ -104,8 +103,8 @@ TornadoGenerator::TornadoGenerator()
     : VolumeGLProcessor{std::make_shared<StringShaderResource>("tornado.frag", tornado),
                         {.dimensions = size3_t{16},
                          .format = DataVec3Float32::get(),
-                         .dataRange = dvec2(0, 1),
-                         .valueRange = dvec2(-1, 1)},
+                         .dataRange = dvec2(-1.0, 1.0),
+                         .valueRange = dvec2(-1.0, 1.0)},
                         VolumeGLProcessor::UseInport::No}
     , size_("size", "Volume size", size3_t(16), {size3_t(3), ConstraintBehavior::Immutable},
             {size3_t(1024), ConstraintBehavior::Ignore})
@@ -118,12 +117,12 @@ TornadoGenerator::TornadoGenerator()
     addProperties(size_, time_);
 }
 
-void TornadoGenerator::initializeShader(Shader& shader) {}
+void TornadoGenerator::initializeShader(Shader&) {}
 
 void TornadoGenerator::preProcess(TextureUnitContainer&, Shader& shader, VolumeConfig& config) {
     config.dimensions = size_.get();
     utilgl::setUniforms(shader, time_);
 }
-void TornadoGenerator::postProcess(Volume& volume) {}
+void TornadoGenerator::postProcess(Volume&) {}
 
 }  // namespace inviwo
