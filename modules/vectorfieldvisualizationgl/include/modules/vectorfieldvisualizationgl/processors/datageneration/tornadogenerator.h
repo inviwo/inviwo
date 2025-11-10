@@ -51,7 +51,6 @@ protected:
 private:
     OrdinalProperty<size3_t> size_;
     OrdinalProperty<float> time_;
-
 };
 
 }  // namespace inviwo
