@@ -33,28 +33,25 @@
 
 #include <string>
 #include <vector>
+#include <optional>
 
 class TiXmlElement;
 
-namespace inviwo {
+namespace inviwo::deserializer {
 
-struct IVW_CORE_API NodeDebugger {
-    struct Node {
-        explicit Node(std::string_view k = "", std::string_view i = "", std::string_view t = "");
-        std::string key;
-        std::string identifier;
-        std::string type;
-    };
-
-    explicit NodeDebugger(TiXmlElement* node);
-
-    const Node& operator[](std::size_t idx) const;
-    std::string toString(std::size_t idx) const;
-    std::vector<std::string> getPath() const;
-    std::string getDescription() const;
-    size_t size() const;
-
-    std::vector<Node> nodes_;
+struct IVW_CORE_API Node {
+    std::string key;
+    std::optional<std::string> identifier = std::nullopt;
+    std::optional<std::string> type = std::nullopt;
 };
 
-}  // namespace inviwo
+IVW_CORE_API Node getNode(const TiXmlElement* node);
+
+IVW_CORE_API std::vector<Node> getStack(const TiXmlElement* node);
+
+IVW_CORE_API std::vector<std::string> getPath(const std::vector<Node>& stack);
+IVW_CORE_API std::string getDescription(const std::vector<Node>& stack);
+
+IVW_CORE_API std::string format_as(const Node& node);
+
+}  // namespace inviwo::deserializer

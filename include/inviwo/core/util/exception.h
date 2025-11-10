@@ -62,8 +62,6 @@ public:
     virtual const SourceContext& getContext() const;
     const std::vector<std::string>& getStack() const;
 
-    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Exception& e);
-
 private:
     SourceContext context_;
     std::vector<std::string> stack_;
@@ -119,6 +117,8 @@ private:
 struct IVW_CORE_API StandardExceptionHandler {
     void operator()(SourceContext);
 };
+
+IVW_CORE_API std::string format_as(const Exception& e);
 
 }  // namespace inviwo
 

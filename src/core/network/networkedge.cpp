@@ -59,14 +59,17 @@ PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
     constexpr std::string_view err =
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
     if (!outport && !inport) {
-        const auto message = fmt::format(err, srcPath, dstPath, "Outport and Inport not found.");
-        throw SerializationException(message, SourceContext{}, "Connection");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{"Connection"}}, err, srcPath,
+                                     dstPath, "Outport and Inport not found.");
     } else if (!outport) {
-        const auto message = fmt::format(err, srcPath, dstPath, "Outport not found.");
-        throw SerializationException(message, SourceContext{}, "Connection");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{"Connection"}}, err, srcPath,
+                                     dstPath, "Outport not found.");
     } else if (!inport) {
-        const auto message = fmt::format(err, srcPath, dstPath, "Inport not found.");
-        throw SerializationException(message, SourceContext{}, "Connection");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{"Connection"}}, err, srcPath,
+                                     dstPath, "Inport not found.");
     }
 
     return {outport, inport};
@@ -79,16 +82,17 @@ PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
     constexpr std::string_view err =
         "Could not create Property Link from:\nSource '{}'\nto\nDestination '{}'\n{}";
     if (!sprop && !dprop) {
-        const auto message =
-            fmt::format(err, srcPath, dstPath, "Source and destination properties not found.");
-        throw SerializationException(message, SourceContext{}, "PropertyLink");
+        throw SerializationException(
+            SourceContext{}, std::vector<deserializer::Node>{{"PropertyLink"}}, err, srcPath,
+            dstPath, "Source and destination properties not found.");
     } else if (!sprop) {
-        const auto message = fmt::format(err, srcPath, dstPath, "Source property not found.");
-        throw SerializationException(message, SourceContext{}, "PropertyLink");
-
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{"PropertyLink"}}, err,
+                                     srcPath, dstPath, "Source property not found.");
     } else if (!dprop) {
-        const auto message = fmt::format(err, srcPath, dstPath, "Destination property not found.");
-        throw SerializationException(message, SourceContext{}, "PropertyLink");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{"PropertyLink"}}, err,
+                                     srcPath, dstPath, "Destination property not found.");
     }
 
     return {sprop, dprop};

@@ -197,6 +197,15 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getVersion() const { return version_; }
 
+bool Deserializer::hasRegisteredType(std::string_view className) const {
+    for (auto base : registeredFactories_) {
+        if (base->hasKey(className)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::optional<std::string_view> detail::attribute(const TiXmlElement* node, std::string_view key) {
     return node->Attribute(key);
 }
