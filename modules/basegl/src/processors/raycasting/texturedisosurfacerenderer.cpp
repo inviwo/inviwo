@@ -245,7 +245,7 @@ TexturedIsosurfaceRenderer::TexturedIsosurfaceRenderer(std::string_view identifi
     , iso_{"iso", "Iso Surfaces", "iso surfaces applied to the 'volume' data"_help,
            volume_.volumePort}
     , tf_{"tf", "Color TF",
-          "tf used to texture the iso surface with the data in the 'colorVolume'"_help,
+          "TF used to texture the iso surface with the data in the 'colorVolume'"_help,
           texturedComponent_.colorPort}
     , entryExit_{}
     , background_{*this}
