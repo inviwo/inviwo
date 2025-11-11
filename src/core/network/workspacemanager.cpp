@@ -126,9 +126,8 @@ private:
 };
 
 struct ErrorHandle {
-    ErrorHandle(const InviwoSetupInfo& info, const std::filesystem::path& filename,
-                SourceContext context)
-        : info_(info), filename_(filename), context_{context} {}
+    ErrorHandle(const InviwoSetupInfo& info, std::filesystem::path filename, SourceContext context)
+        : info_(&info), filename_(std::move(filename)), context_{context} {}
 
     ~ErrorHandle() {
         if (!messages.empty()) {
@@ -147,7 +146,7 @@ struct ErrorHandle {
     void operator()(SourceContext) {
         constexpr auto processorType =
             [](const SerializationException& error) -> std::optional<std::string> {
-            if (error.stack.size() > 0) {
+            if (!error.stack.empty()) {
                 return error.stack.front().type;
             }
             return std::nullopt;
@@ -157,7 +156,7 @@ struct ErrorHandle {
             throw;
         } catch (const SerializationException& error) {
             if (auto type = processorType(error)) {
-                if (auto moduleInfo = info_.getModuleForProcessor(*type)) {
+                if (const auto* moduleInfo = info_->getModuleForProcessor(*type)) {
                     messages.emplace_back(error.getContext(),
                                           fmt::format("{}\nProcessor was in module: \"{}\".",
                                                       error.getMessage(), moduleInfo->name),
@@ -176,7 +175,7 @@ struct ErrorHandle {
     }
 
     std::vector<std::tuple<SourceContext, std::string, std::vector<deserializer::Node>>> messages;
-    const InviwoSetupInfo& info_;
+    const InviwoSetupInfo* info_;
     std::filesystem::path filename_;
     SourceContext context_;
 };
