@@ -443,11 +443,7 @@ double NumberWidget<T>::getUIIncrement() const {
     }
     const double increment =
         static_cast<double>(maxValue_ - minValue_) / static_cast<double>(width());
-    if constexpr (std::is_integral_v<T>) {
-        return std::max(increment, 1.0);
-    } else {
-        return increment;
-    }
+    return increment;
 }
 
 }  // namespace inviwo
