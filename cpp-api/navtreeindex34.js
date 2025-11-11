@@ -1,5 +1,13 @@
 var NAVTREEINDEX34 =
 {
+"structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html":[4,0,1,2],
+"structstd_1_1hash_3_01inviwo_1_1PropertyLink_01_4.html":[2,0,1,0],
+"structstd_1_1hash_3_01inviwo_1_1PropertyLink_01_4.html":[4,0,1,0],
+"structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html":[2,0,1,13],
+"structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html":[4,0,1,13],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html":[2,0,1,4],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html":[4,0,1,4],
+"structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html":[2,0,1,5],
 "structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html":[4,0,1,5],
 "structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html":[2,0,1,3],
 "structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html":[4,0,1,3],

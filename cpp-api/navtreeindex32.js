@@ -1,5 +1,13 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1StrBuffer.html#a9f2e6501018649c2903785b84c7cfb44":[4,0,0,531,5],
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[2,0,0,522,4],
+"structinviwo_1_1StrBuffer.html#ac8ce8999a9604f19ef57792502cec9ec":[4,0,0,531,4],
+"structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[2,0,0,522,7],
+"structinviwo_1_1StrBuffer.html#af02e0e7f508f36534cb6315394e713e4":[4,0,0,531,7],
+"structinviwo_1_1StringComparePMR.html":[2,0,0,533],
+"structinviwo_1_1StringComparePMR.html":[4,0,0,542],
+"structinviwo_1_1StringHash.html":[2,0,0,532],
 "structinviwo_1_1StringHash.html":[4,0,0,541],
 "structinviwo_1_1StringLessPMR.html":[2,0,0,534],
 "structinviwo_1_1StringLessPMR.html":[4,0,0,543],
@@ -241,13 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1pool_1_1detail_1_1JobTraits.html":[4,0,0,7,0,2],
 "structinviwo_1_1pool_1_1detail_1_1State.html":[2,0,0,5,0,1],
 "structinviwo_1_1pool_1_1detail_1_1State.html":[4,0,0,7,0,1],
-"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[2,0,0,5,0,0],
-"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[4,0,0,7,0,0],
-"structinviwo_1_1pyutil_1_1ModulePath.html":[2,0,0,17,0],
-"structinviwo_1_1pyutil_1_1ModulePath.html":[4,0,0,18,0],
-"structinviwo_1_1representation__traits.html":[2,0,0,136],
-"structinviwo_1_1representation__traits.html":[4,0,0,145],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[2,0,0,162],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Base_01_4.html":[4,0,0,171],
-"structinviwo_1_1representation__traits_3_01Volume_00_01kind_1_1Disk_01_4.html":[2,0,0,156]
+"structinviwo_1_1pool_1_1detail_1_1StateTemplate.html":[2,0,0,5,0,0]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[2,0,0,20,63,4],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[4,0,0,20,64,4],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[2,0,0,20,63,3],
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[4,0,0,20,64,3],
+"classinviwo_1_1buffertraits_1_1ColorsBuffer.html":[1,1,0,4],
+"classinviwo_1_1buffertraits_1_1CurvatureBuffer.html":[1,1,0,6],
+"classinviwo_1_1buffertraits_1_1IndexBuffer.html":[1,1,0,7],
+"classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3],
 "classinviwo_1_1buffertraits_1_1PickingBuffer.html":[1,1,0,9],
 "classinviwo_1_1buffertraits_1_1PositionsBufferBase.html":[1,1,0,2],
 "classinviwo_1_1buffertraits_1_1RadiiBuffer.html":[1,1,0,8],
@@ -241,13 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a00146ad228fa4f6fa30ec386fc710bbb":[2,0,0,16,26,1],
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a00146ad228fa4f6fa30ec386fc710bbb":[4,0,0,17,27,1],
 "classinviwo_1_1plot_1_1PCPLabelSettings.html#a8dcc95dcc2ee0f67398e2ad3db877e0f":[2,0,0,16,26,2],
-"classinviwo_1_1plot_1_1PCPLabelSettings.html#a8dcc95dcc2ee0f67398e2ad3db877e0f":[4,0,0,17,27,2],
-"classinviwo_1_1plot_1_1PCPLabelSettings.html#a9912988b4abeec86f65ffe5390cc0b8f":[2,0,0,16,26,0],
-"classinviwo_1_1plot_1_1PCPLabelSettings.html#a9912988b4abeec86f65ffe5390cc0b8f":[4,0,0,17,27,0],
-"classinviwo_1_1plot_1_1PCPMajorTickSettings.html":[2,0,0,16,28],
-"classinviwo_1_1plot_1_1PCPMajorTickSettings.html":[4,0,0,17,29],
-"classinviwo_1_1plot_1_1PCPMinorTickSettings.html":[2,0,0,16,29],
-"classinviwo_1_1plot_1_1PCPMinorTickSettings.html":[4,0,0,17,30],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html":[2,0,0,16,25],
-"classinviwo_1_1plot_1_1ParallelCoordinates.html":[4,0,0,17,26]
+"classinviwo_1_1plot_1_1PCPLabelSettings.html#a8dcc95dcc2ee0f67398e2ad3db877e0f":[4,0,0,17,27,2]
 };

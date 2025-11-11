@@ -1,5 +1,13 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationSupplier.html":[2,0,0,20,4],
+"classinviwo_1_1animation_1_1AnimationSupplier.html":[4,0,0,20,5],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a2bfc1a33c13448c08f4eadff51160a4c":[2,0,0,20,4,0],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a2bfc1a33c13448c08f4eadff51160a4c":[4,0,0,20,5,0],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9c878433103c41eb4dc0b704e953ddd5":[2,0,0,20,4,2],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9c878433103c41eb4dc0b704e953ddd5":[4,0,0,20,5,2],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9fa6375eb8ecced6f69a4e3b410b9d83":[2,0,0,20,4,1],
+"classinviwo_1_1animation_1_1AnimationSupplier.html#a9fa6375eb8ecced6f69a4e3b410b9d83":[4,0,0,20,5,1],
 "classinviwo_1_1animation_1_1AnimationViewQt.html":[2,0,0,20,68],
 "classinviwo_1_1animation_1_1AnimationViewQt.html":[4,0,0,20,69],
 "classinviwo_1_1animation_1_1AnimationsModel.html":[2,0,0,20,90],
@@ -241,13 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#a997b3ae57696abf6c3244bbab12b2be8":[2,0,0,20,63,0],
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#a997b3ae57696abf6c3244bbab12b2be8":[4,0,0,20,64,0],
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[2,0,0,20,63,1],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[4,0,0,20,64,1],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[2,0,0,20,63,4],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#ac6036cc9fe9c23a2258714dc648852f1":[4,0,0,20,64,4],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[2,0,0,20,63,3],
-"classinviwo_1_1animation_1_1WorkspaceAnimations.html#adf5e1e8ef2af247ef8a5fc604f2d9a01":[4,0,0,20,64,3],
-"classinviwo_1_1buffertraits_1_1ColorsBuffer.html":[1,1,0,4],
-"classinviwo_1_1buffertraits_1_1CurvatureBuffer.html":[1,1,0,6],
-"classinviwo_1_1buffertraits_1_1IndexBuffer.html":[1,1,0,7],
-"classinviwo_1_1buffertraits_1_1NormalBuffer.html":[1,1,0,3]
+"classinviwo_1_1animation_1_1WorkspaceAnimations.html#abad6372ef03076baecbacdadfd7abaff":[4,0,0,20,64,1]
 };

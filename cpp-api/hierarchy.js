@@ -848,6 +848,7 @@ var hierarchy =
         [ "inviwo::VolumeDivergenceCPUProcessor", "classinviwo_1_1VolumeDivergenceCPUProcessor.html", null ],
         [ "inviwo::VolumeGLProcessor", "classinviwo_1_1VolumeGLProcessor.html", [
           [ "inviwo::LIC3D", "classinviwo_1_1LIC3D.html", null ],
+          [ "inviwo::TornadoGenerator", "classinviwo_1_1TornadoGenerator.html", null ],
           [ "inviwo::Vector3DCurl", "classinviwo_1_1Vector3DCurl.html", null ],
           [ "inviwo::Vector3DDivergence", "classinviwo_1_1Vector3DDivergence.html", null ],
           [ "inviwo::VectorFieldGenerator3D", "classinviwo_1_1VectorFieldGenerator3D.html", null ],
