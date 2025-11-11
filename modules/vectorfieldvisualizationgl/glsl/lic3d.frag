@@ -93,7 +93,7 @@ void main(void) {
     vec3 pos = outputTexCoord_.xyz;
     float density = texture(volume, mod(pos * noiseRepeat, 1)).x * KERNEL(0);
 
-    float speed = length(getValueVoxel(vectorField, vectorFieldParameters, pos).xyz);
+    float speed = length(invBasis * getValueVoxel(vectorField, vectorFieldParameters, pos).xyz);
     if (speed > 1.0e-8) {
 #if INTEGRATION_DIRECTION >= 0
         density += integration(pos, samples, +1);

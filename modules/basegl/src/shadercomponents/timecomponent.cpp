@@ -103,8 +103,9 @@ void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
 }
 
 auto TimeComponent::getSegments() -> std::vector<Segment> {
-    return {
-        Segment{fmt::format("uniform float {};", name_), placeholder::uniform, 600}};
+    return {Segment{.snippet = fmt::format("uniform float {};", name_),
+                    .placeholder = placeholder::uniform,
+                    .priority = 600}};
 }
 
 std::vector<Property*> TimeComponent::getProperties() { return {&enabled_}; }

@@ -148,7 +148,7 @@ void LIC3D::initializeShader(Shader& shader) {
 void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
     if (outputDimensions_.isModified()) {
         if (auto value = outputDimensions_.getSelectedValue();
-            value == OutputDimensions::NoiseVolume) {
+            value == OutputDimensions::NoiseVolume && inport_.has_value()) {
             dims_ = ivec3{(*inport_).getData()->getDimensions()};
         } else if (value == OutputDimensions::VectorField) {
             dims_ = ivec3{vectorField_.getData()->getDimensions()};

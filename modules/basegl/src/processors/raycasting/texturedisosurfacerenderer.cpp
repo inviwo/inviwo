@@ -193,22 +193,36 @@ auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
     std::vector<Segment> segments{
-        {fmt::format(uniforms, colorPort.getIdentifier()), placeholder::uniform, 400},
+        {.snippet = fmt::format(uniforms, colorPort.getIdentifier()),
+         .placeholder = placeholder::uniform,
+         .priority = 400},
 
-        {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
-        {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100},
-        {std::string(R"(uniform int colorChannel = 0;)"), placeholder::uniform, 1101},
+        {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
+         .placeholder = placeholder::include,
+         .priority = 1100},
+        {.snippet = std::string(R"(uniform int channel = 0;)"),
+         .placeholder = placeholder::uniform,
+         .priority = 1100},
+        {.snippet = std::string(R"(uniform int colorChannel = 0;)"),
+         .placeholder = placeholder::uniform,
+         .priority = 1101},
 
-        {fmt::format(isoCalc, "color"_a = colorPort.getIdentifier(), "tf"_a = tf->getIdentifier()),
-         placeholder::uniform, 3000},
-        {std::string{isoDraw}, placeholder::uniform, 3005},
+        {.snippet = fmt::format(isoCalc, "color"_a = colorPort.getIdentifier(),
+                                "tf"_a = tf->getIdentifier()),
+         .placeholder = placeholder::uniform,
+         .priority = 3000},
+        {.snippet = std::string{isoDraw}, .placeholder = placeholder::uniform, .priority = 3005},
 
-        {fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                     "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
-         placeholder::first, 600},
-        {fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                     "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
-         placeholder::loop, 600},
+        {.snippet =
+             fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
+                         "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
+         .placeholder = placeholder::first,
+         .priority = 600},
+        {.snippet =
+             fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
+                         "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
+         .placeholder = placeholder::loop,
+         .priority = 600},
     };
 
     return segments;
