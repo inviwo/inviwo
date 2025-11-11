@@ -494,7 +494,7 @@ void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
     IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
     property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
     if (!property_) {
-        throw SerializationException(SourceContext{}, "Could not find property {}");
+        throw SerializationException(SourceContext{}, "Could not find property {}", propertyId);
     }
 }
 

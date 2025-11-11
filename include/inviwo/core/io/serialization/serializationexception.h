@@ -39,13 +39,11 @@ namespace inviwo {
 
 class IVW_CORE_API SerializationException : public Exception {
 public:
-    template <typename... Args>
-    SerializationException(SourceContext context, std::string_view format, Args&&... args)
-        : Exception{format, fmt::make_format_args(args...), std::move(context)} {}
+    using Exception::Exception;
 
     template <typename... Args>
     SerializationException(SourceContext context, std::vector<deserializer::Node> stack,
-                           std::string_view format, Args&&... args)
+                           fmt::format_string<Args...> format, Args&&... args)
         : Exception{format, fmt::make_format_args(args...), std::move(context)}
         , stack{std::move(stack)} {}
 

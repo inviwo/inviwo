@@ -54,7 +54,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, std::string_view r
         doc_->LinkEndChild(rootElement_);
 
     } catch (const TiXmlError& e) {
-        throw SerializationException(SourceContext{}, e.what());
+        throw SerializationException{e.what()};
     }
 }
 
@@ -135,7 +135,7 @@ void Serializer::writeFile() {
     try {
         doc_->SaveFile(getFileName().string());
     } catch (const TiXmlError& e) {
-        throw SerializationException(SourceContext{}, e.what());
+        throw SerializationException(e.what());
     }
 }
 
@@ -151,7 +151,7 @@ void Serializer::write(std::pmr::string& xml, bool format) {
         TiXmlPrinter printer{xml, format ? TiXmlStreamPrint::No : TiXmlStreamPrint::Yes};
         doc_->Accept(&printer);
     } catch (const TiXmlError& e) {
-        throw SerializationException(SourceContext{}, e.what());
+        throw SerializationException(e.what());
     }
 }
 
