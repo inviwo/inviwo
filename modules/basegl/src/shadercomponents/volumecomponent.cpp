@@ -125,27 +125,23 @@ constexpr std::string_view allGradients = util::trim(R"(
 
 auto VolumeComponent::getSegments() -> std::vector<Segment> {
 
-    std::vector<Segment> segments{
-        {fmt::format(FMT_STRING(uniforms), getName()), placeholder::uniform, 400},
-        {fmt::format(FMT_STRING(voxelFirst), getName()), placeholder::first, 400},
-        {fmt::format(FMT_STRING(voxel), getName()), placeholder::loop, 400}};
+    std::vector<Segment> segments{{fmt::format(uniforms, getName()), placeholder::uniform, 400},
+                                  {fmt::format(voxelFirst, getName()), placeholder::first, 400},
+                                  {fmt::format(voxel, getName()), placeholder::loop, 400}};
 
     if (gradients != Gradients::None) {
         segments.push_back(
             Segment{std::string{R"(#include "utils/gradients.glsl")"}, placeholder::include, 400});
     }
     if (gradients == Gradients::Single) {
-        segments.push_back(
-            Segment{fmt::format(FMT_STRING(gradientFirst), getName()), placeholder::first, 410});
-        segments.push_back(
-            Segment{fmt::format(FMT_STRING(gradient), getName()), placeholder::loop, 410});
+        segments.push_back(Segment{fmt::format(gradientFirst, getName()), placeholder::first, 410});
+        segments.push_back(Segment{fmt::format(gradient, getName()), placeholder::loop, 410});
     }
 
     if (gradients == Gradients::All) {
-        segments.push_back(Segment{fmt::format(FMT_STRING(allGradientsFirst), getName()),
-                                   placeholder::first, 410});
         segments.push_back(
-            Segment{fmt::format(FMT_STRING(allGradients), getName()), placeholder::loop, 410});
+            Segment{fmt::format(allGradientsFirst, getName()), placeholder::first, 410});
+        segments.push_back(Segment{fmt::format(allGradients, getName()), placeholder::loop, 410});
     }
 
     return segments;

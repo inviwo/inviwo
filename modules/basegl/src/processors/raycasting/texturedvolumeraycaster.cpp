@@ -108,12 +108,12 @@ std::vector<Property*> TexturedVolumeComponent::getProperties() {
 namespace {
 
 constexpr std::string_view uniforms = util::trim(R"(
-uniform VolumeParameters {0}Parameters;
-uniform sampler3D {0};
+uniform VolumeParameters {lookup}Parameters;
+uniform sampler3D {lookup};
 uniform sampler2D {tf};
-uniform sampler2D {0}TF;
+uniform sampler2D {lookup}TF;
 uniform int channel = 0;
-uniform int {0}Channel = 0;
+uniform int {lookup}Channel = 0;
 )");
 
 constexpr std::string_view lookupFunction = util::trim(R"(
@@ -122,8 +122,8 @@ vec4 applyDependentLookup(in vec4 color, in vec3 samplePosition) {{
     return color;
 #endif
 
-    float {0}Sampled = getNormalizedVoxel({0}, {0}Parameters, samplePosition)[{0}Channel];
-    vec4 dependentLookup = texture({0}TF, vec2({0}Sampled, 0.5));
+    float {lookup}Sampled = getNormalizedVoxel({lookup}, {lookup}Parameters, samplePosition)[{lookup}Channel];
+    vec4 dependentLookup = texture({lookup}TF, vec2({lookup}Sampled, 0.5));
     
 #if DEPENDENT_LOOKUP_OP == 3 // multiply primary color and alpha
     color *= dependentLookup;
@@ -179,21 +179,21 @@ auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
         {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
          .placeholder = placeholder::include,
          .priority = 1100},
-        {.snippet = fmt::format(FMT_STRING(uniforms), "lookup"_a = getName(), "tf"_a = tf),
+        {.snippet = fmt::format(uniforms, "lookup"_a = getName(), "tf"_a = tf),
          .placeholder = placeholder::uniform,
          .priority = 1080},
-        {.snippet = fmt::format(FMT_STRING(lookupFunction), "lookup"_a = getName()),
+        {.snippet = fmt::format(lookupFunction, "lookup"_a = getName()),
          .placeholder = placeholder::uniform,
          .priority = 1500},
         {.snippet = fmt::format(init, "lookup"_a = getName(), "tf"_a = tf, "volume"_a = volume_),
          .placeholder = placeholder::first,
          .priority = 600},
-        {.snippet = fmt::format(FMT_STRING(classification), "lookup"_a = getName(), "tf"_a = tf,
-                                "volume"_a = volume_),
+        {.snippet =
+             fmt::format(classification, "lookup"_a = getName(), "tf"_a = tf, "volume"_a = volume_),
          .placeholder = placeholder::first,
          .priority = 710},
-        {.snippet = fmt::format(FMT_STRING(classification), "lookup"_a = getName(), "tf"_a = tf,
-                                "volume"_a = volume_),
+        {.snippet =
+             fmt::format(classification, "lookup"_a = getName(), "tf"_a = tf, "volume"_a = volume_),
          .placeholder = placeholder::loop,
          .priority = 710},
         {.snippet = fmt::format(shadeAndComposite, "lookup"_a = getName(), "volume"_a = volume_,

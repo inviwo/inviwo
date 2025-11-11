@@ -193,7 +193,7 @@ auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
     std::vector<Segment> segments{
-        {fmt::format(FMT_STRING(uniforms), colorPort.getIdentifier()), placeholder::uniform, 400},
+        {fmt::format(uniforms, colorPort.getIdentifier()), placeholder::uniform, 400},
 
         {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
         {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100},

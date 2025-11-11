@@ -104,7 +104,7 @@ void TimeComponent::process(Shader& shader, TextureUnitContainer&) {
 
 auto TimeComponent::getSegments() -> std::vector<Segment> {
     return {
-        Segment{fmt::format(FMT_STRING("uniform float {};"), name_), placeholder::uniform, 600}};
+        Segment{fmt::format("uniform float {};", name_), placeholder::uniform, 600}};
 }
 
 std::vector<Property*> TimeComponent::getProperties() { return {&enabled_}; }
