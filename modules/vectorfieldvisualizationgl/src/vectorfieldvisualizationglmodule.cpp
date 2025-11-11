@@ -45,6 +45,7 @@
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h>
 #include <modules/vectorfieldvisualizationgl/processors/4d/tmip.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
+#include <modules/vectorfieldvisualizationgl/processors/datageneration/tornadogenerator.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator4d.h>
@@ -68,6 +69,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<LIC2D>();
     registerProcessor<HedgeHog2D>();
 
+    registerProcessor<TornadoGenerator>();
     registerProcessor<Vector2DMagnitude>();
     registerProcessor<Vector2DCurl>();
     registerProcessor<Vector2DDivergence>();
