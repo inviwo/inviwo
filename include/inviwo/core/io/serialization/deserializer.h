@@ -256,14 +256,6 @@ public:
     void deserialize(std::string_view key, std::vector<T, A>& sVector,
                      std::string_view itemKey = "item");
 
-    template <typename T, typename H, typename P, typename A>
-    void deserialize(std::string_view key, std::unordered_set<T, H, P, A>& sSet,
-                     std::string_view itemKey = "item");
-
-    template <typename T>
-    void deserialize(std::string_view key, std::list<T>& sContainer,
-                     std::string_view itemKey = "item");
-
     template <typename T, size_t N>
     void deserialize(std::string_view key, std::array<T, N>& sContainer,
                      std::string_view itemKey = "item");
@@ -902,40 +894,6 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
     });
 
     for (const auto& item : toRemove) f.onRemove(item);
-}
-
-template <typename T, typename H, typename P, typename A>
-void Deserializer::deserialize(std::string_view key, std::unordered_set<T, H, P, A>& set,
-                               std::string_view itemKey) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
-
-    NodeSwitch vectorNodeSwitch(*this, key);
-    if (!vectorNodeSwitch) return;
-
-    forEachChild(itemKey, [&](TiXmlElement& child) {
-        T item;
-        deserialize(itemKey, item);
-        set.insert(std::move(item));
-    });
-}
-
-template <typename T>
-void Deserializer::deserialize(std::string_view key, std::list<T>& container,
-                               std::string_view itemKey) {
-    static_assert(detail::canDeserialize<T>(), "Type is not serializable");
-
-    const NodeSwitch vectorNodeSwitch(*this, key);
-    if (!vectorNodeSwitch) return;
-
-    forEachChild(itemKey, [&](TiXmlElement& child, size_t index) {
-        if (container.size() <= index) {
-            T item;
-            deserialize(itemKey, item);
-            container.push_back(item);
-        } else {
-            deserialize(itemKey, *std::next(container.begin(), index));
-        }
-    });
 }
 
 template <typename T, size_t N>

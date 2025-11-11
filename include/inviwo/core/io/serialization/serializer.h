@@ -104,13 +104,6 @@ public:
               typename Proj = util::identity>
     void serialize(std::string_view key, const std::vector<T, Alloc>& sVector,
                    std::string_view itemKey = "item", Pred pred = {}, Proj proj = {});
-    template <typename T>
-    void serialize(std::string_view key, const std::unordered_set<T>& sSet,
-                   std::string_view itemKey = "item");
-
-    template <typename T>
-    void serialize(std::string_view key, const std::list<T>& container,
-                   std::string_view itemKey = "item");
 
     template <typename T, size_t N>
     void serialize(std::string_view key, const std::array<T, N>& container,
@@ -231,28 +224,6 @@ void Serializer::serialize(std::string_view key, const std::vector<T, Alloc>& ve
         if (std::invoke(pred, item)) {
             serialize(itemKey, std::invoke(proj, item));
         }
-    }
-}
-
-template <typename T>
-void Serializer::serialize(std::string_view key, const std::unordered_set<T>& set,
-                           std::string_view itemKey) {
-    if (set.empty()) return;
-
-    const auto nodeSwitch = switchToNewNode(key);
-    for (const auto& item : set) {
-        serialize(itemKey, item);
-    }
-}
-
-template <typename T>
-void Serializer::serialize(std::string_view key, const std::list<T>& container,
-                           std::string_view itemKey) {
-    if (container.empty()) return;
-
-    const auto nodeSwitch = switchToNewNode(key);
-    for (const auto& item : container) {
-        serialize(itemKey, item);
     }
 }
 
