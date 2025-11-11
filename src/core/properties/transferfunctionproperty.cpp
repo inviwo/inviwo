@@ -151,7 +151,7 @@ TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
     modified |= zoomV_.reset();
     modified |= histogramMode_.reset();
     modified |= histogramSelection_.reset();
-    if (modified) this->propertyModified();
+    if (modified) propertyModified();
     return *this;
 }
 
@@ -174,22 +174,22 @@ TransferFunctionProperty& TransferFunctionProperty::setDefault(const TransferFun
 void TransferFunctionProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
-    tf_.serialize(s, this->serializationMode_);
-    zoomH_.serialize(s, this->serializationMode_);
-    zoomV_.serialize(s, this->serializationMode_);
-    histogramMode_.serialize(s, this->serializationMode_);
-    histogramSelection_.serialize(s, this->serializationMode_);
+    tf_.serialize(s, serializationMode_);
+    zoomH_.serialize(s, serializationMode_);
+    zoomV_.serialize(s, serializationMode_);
+    histogramMode_.serialize(s, serializationMode_);
+    histogramSelection_.serialize(s, serializationMode_);
 }
 
 void TransferFunctionProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
-    tf_.deserialize(d, this->serializationMode_);
-    modified |= zoomH_.deserialize(d, this->serializationMode_);
-    modified |= zoomV_.deserialize(d, this->serializationMode_);
-    modified |= histogramMode_.deserialize(d, this->serializationMode_);
-    modified |= histogramSelection_.deserialize(d, this->serializationMode_);
+    tf_.deserialize(d, serializationMode_);
+    modified |= zoomH_.deserialize(d, serializationMode_);
+    modified |= zoomV_.deserialize(d, serializationMode_);
+    modified |= histogramMode_.deserialize(d, serializationMode_);
+    modified |= histogramSelection_.deserialize(d, serializationMode_);
     if (modified) propertyModified();
 }
 
@@ -240,7 +240,10 @@ TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, do
 
 TransferFunctionProperty& TransferFunctionProperty::set(const TransferFunction& tf) {
     tf_.value.removeObserver(this);
-    if (tf_.update(tf)) propertyModified();
+    if (tf_.update(tf)) {
+        invalidLookup_ = true;
+        propertyModified();
+    }
     tf_.value.addObserver(this);
     return *this;
 }
