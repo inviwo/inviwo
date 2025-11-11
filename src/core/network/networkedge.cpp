@@ -60,16 +60,16 @@ PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
     if (!outport && !inport) {
         throw SerializationException(SourceContext{},
-                                     std::vector<deserializer::Node>{{"Connection"}}, err, srcPath,
-                                     dstPath, "Outport and Inport not found.");
+                                     std::vector<deserializer::Node>{{.key = "Connection"}}, err,
+                                     srcPath, dstPath, "Outport and Inport not found.");
     } else if (!outport) {
         throw SerializationException(SourceContext{},
-                                     std::vector<deserializer::Node>{{"Connection"}}, err, srcPath,
-                                     dstPath, "Outport not found.");
+                                     std::vector<deserializer::Node>{{.key = "Connection"}}, err,
+                                     srcPath, dstPath, "Outport not found.");
     } else if (!inport) {
         throw SerializationException(SourceContext{},
-                                     std::vector<deserializer::Node>{{"Connection"}}, err, srcPath,
-                                     dstPath, "Inport not found.");
+                                     std::vector<deserializer::Node>{{.key = "Connection"}}, err,
+                                     srcPath, dstPath, "Inport not found.");
     }
 
     return {outport, inport};
@@ -83,15 +83,15 @@ PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
         "Could not create Property Link from:\nSource '{}'\nto\nDestination '{}'\n{}";
     if (!sprop && !dprop) {
         throw SerializationException(
-            SourceContext{}, std::vector<deserializer::Node>{{"PropertyLink"}}, err, srcPath,
+            SourceContext{}, std::vector<deserializer::Node>{{.key = "PropertyLink"}}, err, srcPath,
             dstPath, "Source and destination properties not found.");
     } else if (!sprop) {
         throw SerializationException(SourceContext{},
-                                     std::vector<deserializer::Node>{{"PropertyLink"}}, err,
+                                     std::vector<deserializer::Node>{{.key = "PropertyLink"}}, err,
                                      srcPath, dstPath, "Source property not found.");
     } else if (!dprop) {
         throw SerializationException(SourceContext{},
-                                     std::vector<deserializer::Node>{{"PropertyLink"}}, err,
+                                     std::vector<deserializer::Node>{{.key = "PropertyLink"}}, err,
                                      srcPath, dstPath, "Destination property not found.");
     }
 

@@ -65,18 +65,15 @@ class InviwoApplication;
 
 namespace detail {
 template <typename T>
-concept is_transparent = requires { typename T::key_compare::is_transparent; } ||
-                         requires {
-                             typename T::hasher::is_transparent;
-                             typename T::key_equal::is_transparent;
-                         };
+concept is_transparent = requires { typename T::key_compare::is_transparent; } || requires {
+    typename T::hasher::is_transparent;
+    typename T::key_equal::is_transparent;
+};
 
 template <typename T>
 concept derefClassIdentifiable = requires(const T& t) {
-                                     {
-                                         t->getClassIdentifier()
-                                         } -> std::equality_comparable_with<std::string_view>;
-                                 };
+    { t->getClassIdentifier() } -> std::equality_comparable_with<std::string_view>;
+};
 
 }  // namespace detail
 
@@ -85,15 +82,18 @@ namespace deserializer {
 constexpr auto defaultOnNew = []<typename T>(T&, size_t) {};
 constexpr auto defaultOnRemove = [](std::string_view) {};
 constexpr auto defaultOnMove = []<typename T>(T&, size_t) {};
-constexpr auto defaultFilter = [](std::string_view, size_t) { return true; };
+constexpr auto defaultShouldMakeNew = [](std::string_view, size_t) { return true; };
+constexpr auto defaultCanRecreate = [](std::string_view, size_t) { return true; };
 
-template <typename GetID, typename MakeNew, typename Filter = decltype(defaultFilter),
+template <typename GetID, typename MakeNew, typename ShouldMakeNew = decltype(defaultShouldMakeNew),
+          typename CanRecreate = decltype(defaultCanRecreate),
           typename OnNew = decltype(defaultOnNew), typename OnRemove = decltype(defaultOnRemove),
           typename OnMove = decltype(defaultOnMove)>
 struct IdentifierFunctions {
     GetID getID;
     MakeNew makeNew;
-    Filter filter = defaultFilter;
+    ShouldMakeNew shouldMakeNew = defaultShouldMakeNew;
+    CanRecreate canRecreate = defaultCanRecreate;
     OnNew onNew = defaultOnNew;
     OnRemove onRemove = defaultOnRemove;
     OnMove onMove = defaultOnMove;
@@ -111,16 +111,20 @@ struct IndexFunctions {
 
 constexpr auto defaultOnNewMap = []<typename K, typename T>(const K&, T&) {};
 constexpr auto defaultOnRemoveMap = []<typename K>(const K&) {};
-constexpr auto defaultFilterMap = []<typename K>(const K&) { return true; };
+constexpr auto defaultShouldMakeNewMap = []<typename K>(const K&) { return true; };
+constexpr auto defaultCanRecreateMap = []<typename K>(const K&) { return true; };
 
-template <typename IdTransform, typename MakeNew, typename Filter = decltype(defaultFilterMap),
+template <typename IdTransform, typename MakeNew,
+          typename ShouldMakeNew = decltype(defaultShouldMakeNewMap),
+          typename CanRecreate = decltype(defaultCanRecreateMap),
           typename OnNew = decltype(defaultOnNewMap),
           typename OnRemove = decltype(defaultOnRemoveMap)>
 struct MapFunctions {
     std::string_view attributeKey = SerializeConstants::KeyAttribute;
     IdTransform idTransform;
     MakeNew makeNew;
-    Filter filter = defaultFilterMap;
+    ShouldMakeNew shouldMakeNew = defaultShouldMakeNewMap;
+    CanRecreate canRecreate = defaultCanRecreateMap;
     OnNew onNew = defaultOnNewMap;
     OnRemove onRemove = defaultOnRemoveMap;
 };
@@ -298,23 +302,24 @@ public:
     template <typename C, typename T = typename C::value_type, typename... Funcs>
         requires requires(T& t, size_t i, std::string_view s,
                           deserializer::IndexFunctions<Funcs...> f) {
-                     { std::invoke(f.makeNew) } -> std::same_as<T>;
-                     { std::invoke(f.onNew, t, i) };
-                     { std::invoke(f.onRemove, t) };
-                 }
+            { std::invoke(f.makeNew) } -> std::same_as<T>;
+            { std::invoke(f.onNew, t, i) };
+            { std::invoke(f.onRemove, t) };
+        }
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IndexFunctions<Funcs...> f);
 
     template <typename C, typename T = typename C::value_type, typename... Funcs>
         requires requires(T& t, size_t i, std::string_view s,
                           deserializer::IdentifierFunctions<Funcs...> f) {
-                     { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-                     { std::invoke(f.makeNew) } -> std::same_as<T>;
-                     { std::invoke(f.filter, s, i) } -> std::same_as<bool>;
-                     { std::invoke(f.onNew, t, i) };
-                     { std::invoke(f.onRemove, s) };
-                     { std::invoke(f.onMove, t, i) };
-                 }
+            { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+            { std::invoke(f.makeNew) } -> std::same_as<T>;
+            { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
+            { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
+            { std::invoke(f.onNew, t, i) };
+            { std::invoke(f.onRemove, s) };
+            { std::invoke(f.onMove, t, i) };
+        }
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IdentifierFunctions<Funcs...> f);
 
@@ -322,12 +327,13 @@ public:
               typename... Funcs>
         requires requires(const K& k, T& t, size_t i, std::string_view s,
                           deserializer::MapFunctions<Funcs...> f) {
-                     { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-                     { std::invoke(f.makeNew) } -> std::same_as<T>;
-                     { std::invoke(f.filter, k) } -> std::same_as<bool>;
-                     { std::invoke(f.onNew, k, t) };
-                     { std::invoke(f.onRemove, k) };
-                 }
+            { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+            { std::invoke(f.makeNew) } -> std::same_as<T>;
+            { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
+            { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
+            { std::invoke(f.onNew, k, t) };
+            { std::invoke(f.onRemove, k) };
+        }
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::MapFunctions<Funcs...> f);
 
@@ -391,8 +397,8 @@ public:
     template <class T>
     void deserialize(std::string_view key, T& sObj)
         requires requires(T& t, Deserializer& d) {
-                     { t.deserialize(d) };
-                 };
+            { t.deserialize(d) };
+        };
 
     std::optional<std::string_view> attribute(std::string_view key) const;
     std::optional<std::string_view> attribute(std::string_view child, std::string_view key) const;
@@ -661,7 +667,7 @@ void Deserializer::deserialize(std::string_view key, std::vector<T, A>& vector,
     const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return;
 
-    const size_t count = forEachChild(itemKey, [&](TiXmlElement& child, size_t index) {
+    const size_t count = forEachChild(itemKey, [&](TiXmlElement&, size_t index) {
         if (vector.size() <= index) {
             vector.emplace_back();
             try {
@@ -690,7 +696,7 @@ Deserializer::Result Deserializer::deserializeTrackChanges(std::string_view key,
 
     Result result = NoChange;
     T old{};
-    const size_t count = forEachChild(itemKey, [&](TiXmlElement& child, size_t index) {
+    const size_t count = forEachChild(itemKey, [&](TiXmlElement&, size_t index) {
         if (vector.size() <= index) {
             result = Modified;
             vector.emplace_back();
@@ -722,8 +728,7 @@ void Deserializer::deserializeRange(std::string_view key, std::string_view itemK
     const NodeSwitch vectorNodeSwitch{*this, key};
     if (!vectorNodeSwitch) return;
 
-    forEachChild(itemKey,
-                 [&](TiXmlElement& child, size_t index) { deserializeFunction(*this, index); });
+    forEachChild(itemKey, [&](TiXmlElement&, size_t index) { deserializeFunction(*this, index); });
 }
 
 namespace detail {
@@ -754,13 +759,14 @@ void reorder(Functions& f, C& list, const std::pmr::vector<std::string_view>& or
 template <typename C, typename T, typename... Funcs>
     requires requires(T& t, size_t i, std::string_view s,
                       deserializer::IdentifierFunctions<Funcs...> f) {
-                 { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-                 { std::invoke(f.makeNew) } -> std::same_as<T>;
-                 { std::invoke(f.filter, s, i) } -> std::same_as<bool>;
-                 { std::invoke(f.onNew, t, i) };
-                 { std::invoke(f.onRemove, s) };
-                 { std::invoke(f.onMove, t, i) };
-             }
+        { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+        { std::invoke(f.makeNew) } -> std::same_as<T>;
+        { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
+        { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
+        { std::invoke(f.onNew, t, i) };
+        { std::invoke(f.onRemove, s) };
+        { std::invoke(f.onMove, t, i) };
+    }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::IdentifierFunctions<Funcs...> f) {
 
@@ -786,7 +792,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 
         auto it = std::ranges::find(container, identifier, f.getID);
         if (it != container.end()) {
-            if (objectNeedsRecreation(*it)) {
+            if (objectNeedsRecreation(*it) && f.canRecreate(identifier, index)) {
                 f.onRemove(f.getID(*it));
 
                 T newItem = f.makeNew();
@@ -795,7 +801,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
             } else {
                 deserialize(itemKey, *it);
             }
-        } else if (f.filter(identifier, index)) {
+        } else if (f.shouldMakeNew(identifier, index)) {
             T newItem = f.makeNew();
             deserialize(itemKey, newItem);
             f.onNew(newItem, index);
@@ -810,10 +816,10 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 template <typename C, typename T, typename... Funcs>
     requires requires(T& t, size_t i, std::string_view s,
                       deserializer::IndexFunctions<Funcs...> f) {
-                 { std::invoke(f.makeNew) } -> std::same_as<T>;
-                 { std::invoke(f.onNew, t, i) };
-                 { std::invoke(f.onRemove, t) };
-             }
+        { std::invoke(f.makeNew) } -> std::same_as<T>;
+        { std::invoke(f.onNew, t, i) };
+        { std::invoke(f.onRemove, t) };
+    }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::IndexFunctions<Funcs...> f) {
 
@@ -827,7 +833,7 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
         return;
     }
 
-    const auto count = forEachChild(itemKey, [&](TiXmlElement& child, size_t index) {
+    const auto count = forEachChild(itemKey, [&](TiXmlElement&, size_t index) {
         if (index < container.size()) {
             if (objectNeedsRecreation(container[index])) {
                 f.onRemove(container[index]);
@@ -855,12 +861,13 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 template <typename C, typename K, typename T, typename... Funcs>
     requires requires(const K& k, T& t, size_t i, std::string_view s,
                       deserializer::MapFunctions<Funcs...> f) {
-                 { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-                 { std::invoke(f.makeNew) } -> std::same_as<T>;
-                 { std::invoke(f.filter, k) } -> std::same_as<bool>;
-                 { std::invoke(f.onNew, k, t) };
-                 { std::invoke(f.onRemove, k) };
-             }
+        { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+        { std::invoke(f.makeNew) } -> std::same_as<T>;
+        { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
+        { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
+        { std::invoke(f.onNew, k, t) };
+        { std::invoke(f.onRemove, k) };
+    }
 void Deserializer::deserialize(std::string_view key, C& container, std::string_view itemKey,
                                deserializer::MapFunctions<Funcs...> f) {
     std::pmr::vector<K> toRemove(getAllocator());
@@ -886,13 +893,13 @@ void Deserializer::deserialize(std::string_view key, C& container, std::string_v
 
         auto it = container.find(key);
         if (it != container.end()) {
-            if (objectNeedsRecreation(it->second)) {
+            if (objectNeedsRecreation(it->second) && f.canRecreate(key)) {
                 f.onRemove(it->first);
                 newItem(key);
             } else {
                 deserialize(itemKey, it->second);
             }
-        } else if (f.filter(key)) {
+        } else if (f.shouldMakeNew(key)) {
             newItem(key);
         }
     });
@@ -989,7 +996,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
     const NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
 
-    forEachChild(itemKey, [&](TiXmlElement& child, size_t index) {
+    forEachChild(itemKey, [&](TiXmlElement& child, size_t) {
         const auto childKey =
             detail::getChildKey<K, detail::is_transparent<std::unordered_map<K, V, H, C, A>>>(
                 child, comparisonAttribute);
@@ -1168,8 +1175,8 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
 template <typename T>
 void Deserializer::deserialize(std::string_view key, T& sObj)
     requires requires(T& t, Deserializer& d) {
-                 { t.deserialize(d) };
-             }
+        { t.deserialize(d) };
+    }
 {
     if (const NodeSwitch nodeSwitch{*this, key}) {
         sObj.deserialize(*this);

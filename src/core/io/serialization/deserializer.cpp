@@ -34,6 +34,7 @@
 #include <inviwo/core/util/exception.h>
 
 #include <iostream>
+#include <ranges>
 
 #include <inviwo/core/io/serialization/ticpp.h>
 
@@ -198,12 +199,9 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 int Deserializer::getVersion() const { return version_; }
 
 bool Deserializer::hasRegisteredType(std::string_view className) const {
-    for (auto base : registeredFactories_) {
-        if (base->hasKey(className)) {
-            return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(registeredFactories_, [className](const FactoryBase* base) {
+        return base->hasKey(className);
+    });
 }
 
 std::optional<std::string_view> detail::attribute(const TiXmlElement* node, std::string_view key) {

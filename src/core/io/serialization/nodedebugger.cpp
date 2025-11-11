@@ -33,6 +33,7 @@
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+#include <ranges>
 
 namespace inviwo::deserializer {
 
@@ -49,13 +50,12 @@ std::string format_as(const Node& node) {
 }
 
 Node getNode(const TiXmlElement* node) {
-    return {std::string{node->Value()},
-            node->Attribute("identifier").transform([](std::string_view str) {
+    return {.key = std::string{node->Value()},
+            .identifier = node->Attribute("identifier").transform([](std::string_view str) {
                 return std::string{str};
             }),
-            node->Attribute(SerializeConstants::TypeAttribute).transform([](std::string_view str) {
-                return std::string{str};
-            })};
+            .type = node->Attribute(SerializeConstants::TypeAttribute)
+                        .transform([](std::string_view str) { return std::string{str}; })};
 }
 
 std::vector<Node> getStack(const TiXmlElement* elem) {
@@ -69,8 +69,8 @@ std::vector<Node> getStack(const TiXmlElement* elem) {
 
 std::vector<std::string> getPath(const std::vector<Node>& stack) {
     std::vector<std::string> path;
-    for (auto it = stack.rbegin(); it != stack.rend(); ++it) {
-        if (it->identifier) path.push_back(*it->identifier);
+    for (const auto& elem : stack | std::views::reverse) {
+        if (elem.identifier) path.push_back(*elem.identifier);
     }
     return path;
 }

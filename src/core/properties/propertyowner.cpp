@@ -386,7 +386,10 @@ void PropertyOwner::deserialize(Deserializer& d) {
         deserializer::IdentifierFunctions{
             .getID = [](Property* const& p) -> std::string_view { return p->getIdentifier(); },
             .makeNew = []() -> Property* { return nullptr; },
-            .filter = [&](std::string_view id, size_t) -> bool {
+            .shouldMakeNew = [&](std::string_view id, size_t) -> bool {
+                return util::contains(ownedIdentifiers, id);
+            },
+            .canRecreate = [&](std::string_view id, size_t) -> bool {
                 return util::contains(ownedIdentifiers, id);
             },
             .onNew = [&](Property*& p, size_t i) { insertProperty(i, p, true); },
