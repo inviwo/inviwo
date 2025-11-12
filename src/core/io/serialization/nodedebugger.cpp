@@ -28,57 +28,55 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/nodedebugger.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 #include <ticpp/tinyxml.h>
 
-#include <sstream>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+#include <ranges>
 
-namespace inviwo {
+namespace inviwo::deserializer {
 
-NodeDebugger::NodeDebugger(TiXmlElement* elem) {
+std::string format_as(const Node& node) {
+    if (node.identifier && node.type) {
+        return fmt::format("{}: \"{}\" of class {}", node.key, *node.identifier, *node.type);
+    } else if (node.identifier) {
+        return fmt::format("{}: \"{}\"", node.key, *node.identifier);
+    } else if (node.type) {
+        return fmt::format("{} of class {}", node.key, *node.type);
+    } else {
+        return node.key;
+    }
+}
+
+Node getNode(const TiXmlElement* node) {
+    return {.key = std::string{node->Value()},
+            .identifier = node->Attribute("identifier").transform([](std::string_view str) {
+                return std::string{str};
+            }),
+            .type = node->Attribute(SerializeConstants::TypeAttribute)
+                        .transform([](std::string_view str) { return std::string{str}; })};
+}
+
+std::vector<Node> getStack(const TiXmlElement* elem) {
+    std::vector<Node> stack;
     while (elem) {
-        const auto id = elem->Attribute("identifier");
-        const auto type = elem->Attribute("type");
-        nodes_.emplace_back(elem->Value(), id.value_or(""), type.value_or(""));
+        stack.emplace_back(getNode(elem));
         elem = elem->Parent()->ToElement();
     }
+    return stack;
 }
 
-const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const { return nodes_[idx]; }
-
-std::string NodeDebugger::toString(std::size_t idx) const {
-    if (idx < nodes_.size()) {
-        return nodes_[idx].key + ": \"" + nodes_[idx].identifier + "\" of class \"" +
-               nodes_[idx].type;
-    } else {
-        return "";
-    }
-}
-
-std::vector<std::string> NodeDebugger::getPath() const {
+std::vector<std::string> getPath(const std::vector<Node>& stack) {
     std::vector<std::string> path;
-    for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
-         ++it) {
-        if (!it->identifier.empty()) path.push_back(it->identifier);
+    for (const auto& elem : stack | std::views::reverse) {
+        if (elem.identifier) path.push_back(*elem.identifier);
     }
     return path;
 }
 
-std::string NodeDebugger::getDescription() const {
-    std::vector<std::string> parts;
-    for (const auto& elem : nodes_) {
-        if (!elem.identifier.empty()) {
-            std::stringstream ss;
-            ss << elem.key << " '" << elem.identifier << "' of class '" << elem.type << "'";
-            parts.push_back(ss.str());
-        }
-    }
-    return joinString(parts, " in\n   ");
+std::string getDescription(const std::vector<Node>& stack) {
+    return fmt::format("{}", fmt::join(stack, " in\n   "));
 }
 
-size_t NodeDebugger::size() const { return nodes_.size(); }
-
-NodeDebugger::Node::Node(std::string_view k, std::string_view i, std::string_view t)
-    : key(k), identifier(i), type(t) {}
-
-}  // namespace inviwo
+}  // namespace inviwo::deserializer

@@ -396,8 +396,10 @@ void Processor::deserialize(Deserializer& d) {
                     return port->getIdentifier();
                 },
                 .makeNew = []() -> Inport* { return nullptr; },
-                .filter = [&](std::string_view id,
-                              size_t) { return util::contains(ownedInportIds, id); },
+                .shouldMakeNew = [&](std::string_view id,
+                                     size_t) { return util::contains(ownedInportIds, id); },
+                .canRecreate = [&](std::string_view id,
+                                      size_t) { return util::contains(ownedInportIds, id); },
                 .onNew =
                     [&](Inport*& port, size_t) {
                         if (const auto it = portGroups.find(port->getIdentifier());
@@ -427,8 +429,10 @@ void Processor::deserialize(Deserializer& d) {
                     return port->getIdentifier();
                 },
                 .makeNew = []() -> Outport* { return nullptr; },
-                .filter = [&](std::string_view id,
-                              size_t) { return util::contains(ownedOutportIds, id); },
+                .shouldMakeNew = [&](std::string_view id,
+                                     size_t) { return util::contains(ownedOutportIds, id); },
+                .canRecreate = [&](std::string_view id,
+                                      size_t) { return util::contains(ownedOutportIds, id); },
                 .onNew =
                     [&](Outport*& port, size_t) {
                         if (const auto it = portGroups.find(port->getIdentifier());

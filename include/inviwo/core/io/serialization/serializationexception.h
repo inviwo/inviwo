@@ -33,40 +33,21 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
 
-#include <string>
-
 class TiXmlElement;
 
 namespace inviwo {
 
 class IVW_CORE_API SerializationException : public Exception {
 public:
-    struct SerializationExceptionData {
-        std::string key{};
-        std::string type{};
-        std::string id{};
-        NodeDebugger nd{nullptr};
-    };
+    using Exception::Exception;
 
-    SerializationException(std::string_view message,
-                           SourceContext context = std::source_location::current(),
-                           std::string_view key = "", std::string_view type = "",
-                           std::string_view id = "", TiXmlElement* n = nullptr);
-    SerializationException(std::string_view format, fmt::format_args&& args, SourceContext context);
     template <typename... Args>
-    SerializationException(SourceContext context, std::string_view format, Args&&... args)
-        : Exception{format, fmt::make_format_args(std::forward<Args>(args)...),
-                    std::move(context)} {}
+    SerializationException(SourceContext context, std::vector<deserializer::Node> stack,
+                           fmt::format_string<Args...> format, Args&&... args)
+        : Exception{format, fmt::make_format_args(args...), std::move(context)}
+        , stack{std::move(stack)} {}
 
-    virtual ~SerializationException() noexcept = default;
-
-    virtual const std::string& getKey() const noexcept;
-    virtual const std::string& getType() const noexcept;
-    virtual const std::string& getId() const noexcept;
-    virtual const SerializationExceptionData& getData() const noexcept;
-
-private:
-    SerializationExceptionData data_;
+    std::vector<deserializer::Node> stack;
 };
 
 }  // namespace inviwo

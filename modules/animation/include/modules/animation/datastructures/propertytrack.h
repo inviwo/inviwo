@@ -478,7 +478,7 @@ Seq* PropertyTrack<Prop, Key, Seq>::addSequenceUsingPropertyValue(
 template <typename Prop, typename Key, typename Seq>
 void PropertyTrack<Prop, Key, Seq>::serialize(Serializer& s) const {
     if (!property_) {
-        throw SerializationException("No property set for the PropertyTrack");
+        throw SerializationException(SourceContext{}, "No property set for the PropertyTrack");
     }
     BaseTrack<Seq>::serialize(s);
     s.serialize("property", property_->getPath());
@@ -494,7 +494,7 @@ void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
     IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
     property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
     if (!property_) {
-        throw SerializationException(SourceContext{}, "Could not find property {}");
+        throw SerializationException(SourceContext{}, "Could not find property {}", propertyId);
     }
 }
 

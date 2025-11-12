@@ -436,7 +436,8 @@ PortConnection retrieveConnection(Deserializer& d, const ProcessorNetwork& net) 
     const auto dst = d.attribute("dst");
 
     if (!src || !dst) {
-        throw SerializationException("Missing src or dst attribute in PortConnection");
+        throw SerializationException(SourceContext{},
+                                     "Missing src or dst attribute in PortConnection");
     }
 
     auto* outport = net.getOutport(*src);
@@ -445,14 +446,17 @@ PortConnection retrieveConnection(Deserializer& d, const ProcessorNetwork& net) 
     constexpr std::string_view err =
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
     if (!outport && !inport) {
-        const auto message = fmt::format(err, *src, *dst, "Outport and Inport not found.");
-        throw SerializationException(message, SourceContext{}, "Connection");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{.key = "Connection"}}, err,
+                                     *src, *dst, "Outport and Inport not found.");
     } else if (!outport) {
-        const auto message = fmt::format(err, *src, *dst, "Outport not found.");
-        throw SerializationException(message, SourceContext{}, "Connection");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{.key = "Connection"}}, err,
+                                     *src, *dst, "Outport not found.");
     } else if (!inport) {
-        const auto message = fmt::format(err, *src, *dst, "Inport not found.");
-        throw SerializationException(message, SourceContext{}, "Connection");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{.key = "Connection"}}, err,
+                                     *src, *dst, "Inport not found.");
     }
 
     return {outport, inport};
@@ -463,7 +467,8 @@ PropertyLink retrieveLink(Deserializer& d, const ProcessorNetwork& net) {
     const auto dst = d.attribute("dst");
 
     if (!src || !dst) {
-        throw SerializationException("Missing src or dst attribute in PropertyLink");
+        throw SerializationException(SourceContext{},
+                                     "Missing src or dst attribute in PropertyLink");
     }
 
     auto* sprop = net.getProperty(*src);
@@ -472,16 +477,17 @@ PropertyLink retrieveLink(Deserializer& d, const ProcessorNetwork& net) {
     constexpr std::string_view err =
         "Could not create Property Link from:\nSource '{}'\nto\nDestination '{}'\n{}";
     if (!sprop && !dprop) {
-        const auto message =
-            fmt::format(err, *src, *dst, "Source and destination properties not found.");
-        throw SerializationException(message, SourceContext{}, "PropertyLink");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{.key = "PropertyLink"}}, err,
+                                     *src, *dst, "Source and destination properties not found.");
     } else if (!sprop) {
-        const auto message = fmt::format(err, *src, *dst, "Source property not found.");
-        throw SerializationException(message, SourceContext{}, "PropertyLink");
-
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{.key = "PropertyLink"}}, err,
+                                     *src, *dst, "Source property not found.");
     } else if (!dprop) {
-        const auto message = fmt::format(err, *src, *dst, "Destination property not found.");
-        throw SerializationException(message, SourceContext{}, "PropertyLink");
+        throw SerializationException(SourceContext{},
+                                     std::vector<deserializer::Node>{{.key = "PropertyLink"}}, err,
+                                     *src, *dst, "Destination property not found.");
     }
 
     return {sprop, dprop};

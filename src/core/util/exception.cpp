@@ -122,9 +122,6 @@ void StandardExceptionHandler::operator()(SourceContext context) {
     }
 }
 
-std::ostream& operator<<(std::ostream& ss, const Exception& e) {
-    ss << e.getFullMessage();
-    return ss;
-}
+std::string format_as(const Exception& e) { return e.getFullMessage(); }
 
 }  // namespace inviwo

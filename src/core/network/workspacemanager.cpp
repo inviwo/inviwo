@@ -44,6 +44,7 @@
 #include <fmt/std.h>
 
 #include <memory_resource>
+#include <tuple>
 
 namespace inviwo {
 
@@ -125,44 +126,58 @@ private:
 };
 
 struct ErrorHandle {
-    ErrorHandle(const InviwoSetupInfo& info, const std::filesystem::path& filename)
-        : info_(info), filename_(filename) {}
+    ErrorHandle(const InviwoSetupInfo& info, std::filesystem::path filename, SourceContext context)
+        : info_(&info), filename_(std::move(filename)), context_{context} {}
 
     ~ErrorHandle() {
         if (!messages.empty()) {
-            log::error("There were errors while loading workspace: {}", filename_);
-            for (auto& message : messages) {
-                log::report(LogLevel::Error, message);
+            log::report(LogLevel::Error, context_, "There were errors while loading workspace: {}",
+                        filename_);
+            for (auto& [context, message, stack] : messages) {
+                log::report(LogLevel::Error, message, context);
+                if (!stack.empty()) {
+                    log::report(LogLevel::Error, context, "Occurred in:\n   {}",
+                                deserializer::getDescription(stack));
+                }
             }
         }
     }
 
     void operator()(SourceContext) {
+        constexpr auto processorType =
+            [](const SerializationException& error) -> std::optional<std::string> {
+            if (!error.stack.empty()) {
+                return error.stack.front().type;
+            }
+            return std::nullopt;
+        };
+
         try {
             throw;
-        } catch (SerializationException& error) {
-            auto key = error.getKey();
-            if (key == "Processor") {
-                if (auto moduleInfo = info_.getModuleForProcessor(error.getType())) {
-                    messages.push_back(fmt::format("{} ({})\nProcessor was in module: \"{}\".",
-                                                   error.getMessage(), error.getContext(),
-                                                   moduleInfo->name));
+        } catch (const SerializationException& error) {
+            if (auto type = processorType(error)) {
+                if (const auto* moduleInfo = info_->getModuleForProcessor(*type)) {
+                    messages.emplace_back(error.getContext(),
+                                          fmt::format("{}\nProcessor was in module: \"{}\".",
+                                                      error.getMessage(), moduleInfo->name),
+                                          error.stack);
                 } else {
-                    messages.push_back(
-                        fmt::format("{} ({})", error.getMessage(), error.getContext()));
+                    messages.emplace_back(error.getContext(), error.getMessage(), error.stack);
                 }
             } else {
-                messages.push_back(fmt::format("{} ({})", error.getMessage(), error.getContext()));
+                messages.emplace_back(error.getContext(), error.getMessage(), error.stack);
             }
-        } catch (Exception& error) {
-            messages.push_back("" + fmt::format("Deserialization error: {} ({})",
-                                                error.getMessage(), error.getContext()));
+        } catch (const Exception& error) {
+            messages.emplace_back(error.getContext(),
+                                  fmt::format("Deserialization error: {}", error.getMessage()),
+                                  std::vector<deserializer::Node>{});
         }
     }
 
-    std::vector<std::string> messages;
-    const InviwoSetupInfo& info_;
+    std::vector<std::tuple<SourceContext, std::string, std::vector<deserializer::Node>>> messages;
+    const InviwoSetupInfo* info_;
     std::filesystem::path filename_;
+    SourceContext context_;
 };
 
 WorkspaceManager::WorkspaceManager(InviwoApplication* app)
@@ -231,7 +246,8 @@ void WorkspaceManager::load(std::istream& stream, const std::filesystem::path& r
 
     auto [deserializer, info] =
         createWorkspaceDeserializerAndInfo(stream, refPath, LogCentral::getPtr(), &mbr);
-    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath,
+                                                              SourceContext{});
     deserializers_.invoke(deserializer, exceptionHandler, mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
@@ -247,7 +263,8 @@ void WorkspaceManager::load(const std::pmr::string& xml, const std::filesystem::
 
     auto [deserializer, info] =
         createWorkspaceDeserializerAndInfo(xml, refPath, LogCentral::getPtr(), &mbr);
-    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
+    const DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath,
+                                                              SourceContext{});
     deserializers_.invoke(deserializer, exceptionHandler, mode);
 
     if (mode != WorkspaceSaveMode::Undo) {

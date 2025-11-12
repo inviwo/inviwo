@@ -54,7 +54,7 @@ Serializer::Serializer(const std::filesystem::path& fileName, std::string_view r
         doc_->LinkEndChild(rootElement_);
 
     } catch (const TiXmlError& e) {
-        throw SerializationException(e.what());
+        throw SerializationException{e.what()};
     }
 }
 
