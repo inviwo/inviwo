@@ -124,6 +124,9 @@ public:
     Property* getPropertyByIdentifier(std::string_view identifier,
                                       bool recursiveSearch = false) const;
 
+    template <std::derived_from<Property> T = Property>
+    T* getProperty(std::string_view identifier);
+
     Property* getPropertyByPath(std::string_view path) const;
 
     template <class T>
@@ -195,6 +198,11 @@ private:
     Property* removePropertyImpl(iterator it);
     InvalidationLevel invalidationLevel_;
 };
+
+template <std::derived_from<Property> T>
+T* PropertyOwner::getProperty(std::string_view identifier) {
+    return dynamic_cast<T*>(getPropertyByIdentifier(identifier));
+}
 
 template <class T>
 std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch) const {

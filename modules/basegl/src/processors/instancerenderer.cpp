@@ -256,9 +256,10 @@ detail::DynPort createDynPortManager(std::string_view identifier, StringProperty
         }
     };
     auto addUniform = [u = uniform](ShaderObject& so) {
-        so.addSegment(ShaderSegment{
-            irplaceholder::uniform, u->get(),
-            fmt::format("uniform {0} {1} = {0}(0);", utilgl::glslTypeName<T>(), u->get())});
+        so.addSegment(ShaderSegment{.placeholder = irplaceholder::uniform,
+                                    .name = u->get(),
+                                    .snippet = fmt::format("uniform {0} {1} = {0}(0);",
+                                                           utilgl::glslTypeName<T>(), u->get())});
     };
 
     return {.port = std::move(port),
@@ -457,7 +458,7 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
                              FloatProperty, FloatVec2Property, FloatVec3Property, FloatVec4Property,
                              FloatMat2Property, FloatMat3Property, FloatMat4Property>;
     util::for_each_type<types>{}([&]<typename T>() {
-        if (auto prop = dynamic_cast<T*>(property)) {
+        if (auto* prop = dynamic_cast<T*>(property)) {
             dynUniforms_.emplace_back(
                 [prop](Shader& shader, TextureUnitContainer&) {
                     auto name = util::stripIdentifier(prop->getDisplayName());
@@ -466,13 +467,15 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
                 [prop](ShaderObject& so) {
                     const auto type = utilgl::glslTypeName<typename T::value_type>();
                     auto name = util::stripIdentifier(prop->getDisplayName());
-                    so.addSegment(ShaderSegment{irplaceholder::uniform, name,
-                                                fmt::format("uniform {} {};", type, name)});
+                    so.addSegment(
+                        ShaderSegment{.placeholder = irplaceholder::uniform,
+                                      .name = name,
+                                      .snippet = fmt::format("uniform {} {};", type, name)});
                 });
         }
     });
 
-    if (auto tfProp = dynamic_cast<TransferFunctionProperty*>(property)) {
+    if (auto* tfProp = dynamic_cast<TransferFunctionProperty*>(property)) {
         dynUniforms_.emplace_back(
             [tfProp](Shader& shader, TextureUnitContainer& units) {
                 auto name = util::stripIdentifier(tfProp->getDisplayName());
@@ -482,8 +485,9 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
             },
             [tfProp](ShaderObject& so) {
                 auto name = util::stripIdentifier(tfProp->getDisplayName());
-                so.addSegment(ShaderSegment{irplaceholder::uniform, name,
-                                            fmt::format("uniform sampler2D {};", name)});
+                so.addSegment(ShaderSegment{.placeholder = irplaceholder::uniform,
+                                            .name = name,
+                                            .snippet = fmt::format("uniform sampler2D {};", name)});
             });
     }
 
@@ -493,11 +497,11 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
 }
 
 void InstanceRenderer::onDidAddPort(Property* property) {
-    auto comp = dynamic_cast<CompositeProperty*>(property);
+    auto* comp = dynamic_cast<CompositeProperty*>(property);
     IVW_ASSERT(comp, "should always exist");
 
     if (comp->getIdentifier().starts_with("volumePort")) {
-        auto sampler = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("sampler"));
+        auto* sampler = comp->getProperty<StringProperty>("sampler");
         IVW_ASSERT(sampler, "should always exist");
 
         static constexpr std::string_view uniforms =
@@ -505,15 +509,16 @@ void InstanceRenderer::onDidAddPort(Property* property) {
             "uniform sampler3D {0};";
 
         auto port = std::make_unique<DataInport<Volume>>("volumePort");
-        const auto p = port.get();
+        const auto* p = port.get();
         vecPorts_.emplace_back(detail::DynPort{
             .port = std::move(port),
             .size = []() { return std::nullopt; },
             .set = [](Shader& shader, size_t index) {},
             .addUniform =
                 [s = sampler](ShaderObject& so) {
-                    so.addSegment(ShaderSegment{irplaceholder::uniform, s->get(),
-                                                fmt::format(uniforms, s->get())});
+                    so.addSegment(ShaderSegment{.placeholder = irplaceholder::uniform,
+                                                .name = s->get(),
+                                                .snippet = fmt::format(uniforms, s->get())});
                 },
             .bindAndSetUniforms =
                 [p, s = sampler](Shader& shader, TextureUnitContainer& cont) {
@@ -521,7 +526,7 @@ void InstanceRenderer::onDidAddPort(Property* property) {
                 }});
 
     } else if (comp->getIdentifier().starts_with("layerPort")) {
-        auto sampler = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("sampler"));
+        auto* sampler = comp->getProperty<StringProperty>("sampler");
         IVW_ASSERT(sampler, "should always exist");
 
         static constexpr std::string_view uniforms =
@@ -529,43 +534,42 @@ void InstanceRenderer::onDidAddPort(Property* property) {
             "uniform sampler2D {0};";
 
         auto port = std::make_unique<DataInport<Layer>>("layerPort");
-        const auto p = port.get();
+        const auto* p = port.get();
         vecPorts_.emplace_back(detail::DynPort{
             .port = std::move(port),
             .size = []() { return std::nullopt; },
             .set = [](Shader& shader, size_t index) {},
             .addUniform =
                 [s = sampler](ShaderObject& so) {
-                    so.addSegment(ShaderSegment{irplaceholder::uniform, s->get(),
-                                                fmt::format(uniforms, s->get())});
+                    so.addSegment(ShaderSegment{.placeholder = irplaceholder::uniform,
+                                                .name = s->get(),
+                                                .snippet = fmt::format(uniforms, s->get())});
                 },
             .bindAndSetUniforms =
                 [p, s = sampler](Shader& shader, TextureUnitContainer& cont) {
                     utilgl::bindAndSetUniforms(shader, cont, *p->getData(), s->get());
                 }});
     } else {
-        auto uniform = dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
+        auto* uniform = comp->getProperty<StringProperty>("uniform");
         IVW_ASSERT(uniform, "should always exist");
 
         const auto uniqueID = util::findUniqueIdentifier(
             uniform->get(),
             [&](std::string_view id) {
-                for (auto prop : ports_) {
-                    if (prop == property) continue;
+                return std::ranges::none_of(ports_, [&](auto* prop) {
+                    if (prop == property) return false;
 
-                    auto comp = dynamic_cast<CompositeProperty*>(prop);
-                    auto uniform =
-                        dynamic_cast<StringProperty*>(comp->getPropertyByIdentifier("uniform"));
-                    if (uniform && uniform->get() == id) return false;
-                }
-                return true;
+                    auto* comp = dynamic_cast<CompositeProperty*>(prop);
+                    IVW_ASSERT(comp, "should always exist");
+                    auto* uniform = comp->getProperty<StringProperty>("uniform");
+                    return uniform && uniform->get() == id;
+                });
             },
             "");
         uniform->set(uniqueID);
 
-        auto components1D = dynamic_cast<IntProperty*>(comp->getPropertyByIdentifier("components"));
-        auto components2D =
-            dynamic_cast<IntVec2Property*>(comp->getPropertyByIdentifier("components"));
+        auto* components1D = comp->getProperty<IntProperty>("components");
+        auto* components2D = comp->getProperty<IntVec2Property>("components");
         IVW_ASSERT(components1D || components2D, "should always exist");
 
         const auto& id = property->getIdentifier();
@@ -583,6 +587,9 @@ void InstanceRenderer::onDidAddPort(Property* property) {
                 case 4:
                     vecPorts_.push_back(createDynPortManager<vec4>(id, uniform));
                     break;
+                default:
+                    throw Exception{SourceContext{}, "Invalid number of components {}",
+                                    components1D->get()};
             }
         } else if (components2D) {
             switch (components2D->get().x) {
@@ -595,6 +602,9 @@ void InstanceRenderer::onDidAddPort(Property* property) {
                 case 4:
                     vecPorts_.push_back(createDynPortManager<mat4>(id, uniform));
                     break;
+                default:
+                    throw Exception{SourceContext{}, "Invalid number of components {}",
+                                    components2D->get()};
             }
         }
     }
@@ -633,11 +643,13 @@ void InstanceRenderer::initializeResources() {
     auto* vso = shader_.getVertexShaderObject();
     vso->clearSegments();
 
-    vso->addSegment(
-        ShaderSegment{irplaceholder::setupVert, setupVert_.getIdentifier(), setupVert_.get()});
+    vso->addSegment(ShaderSegment{.placeholder = irplaceholder::setupVert,
+                                  .name = setupVert_.getIdentifier(),
+                                  .snippet = setupVert_.get()});
 
-    vso->addSegment(
-        ShaderSegment{irplaceholder::commonCode, commonCode_.getIdentifier(), commonCode_.get()});
+    vso->addSegment(ShaderSegment{.placeholder = irplaceholder::commonCode,
+                                  .name = commonCode_.getIdentifier(),
+                                  .snippet = commonCode_.get()});
 
     std::for_each(vecPorts_.begin(), vecPorts_.end(), [&](auto& port) { port.addUniform(*vso); });
 
@@ -647,8 +659,10 @@ void InstanceRenderer::initializeResources() {
     size_t prio = 100;
     for (auto& transform : transforms_) {
         vso->addSegment(ShaderSegment{
-            irplaceholder::transforms, transform.getIdentifier(),
-            fmt::format("{} = {};", transform.getIdentifier(), transform.get()), prio});
+            .placeholder = irplaceholder::transforms,
+            .name = transform.getIdentifier(),
+            .snippet = fmt::format("{} = {};", transform.getIdentifier(), transform.get()),
+            .priority = prio});
         prio += 100;
     }
 
