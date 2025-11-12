@@ -1273,7 +1273,7 @@ var hierarchy =
     [ "inviwo::Histogram2D", "structinviwo_1_1Histogram2D.html", null ],
     [ "inviwo::HistogramCache", "classinviwo_1_1HistogramCache.html", null ],
     [ "inviwo::util::identifier", "structinviwo_1_1util_1_1identifier.html", null ],
-    [ "inviwo::deserializer::IdentifierFunctions&lt; GetID, MakeNew, Filter, OnNew, OnRemove, OnMove &gt;", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
+    [ "inviwo::deserializer::IdentifierFunctions&lt; GetID, MakeNew, ShouldMakeNew, CanRecreate, OnNew, OnRemove, OnMove &gt;", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
     [ "inviwo::xml::IdentifierReplacement", "structinviwo_1_1xml_1_1IdentifierReplacement.html", null ],
     [ "inviwo::util::identity", "structinviwo_1_1util_1_1identity.html", null ],
     [ "inviwo::FragmentListRenderer::IllustrationSettings", "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html", null ],
@@ -1600,7 +1600,7 @@ var hierarchy =
       [ "inviwo::plot::MajorTickProperty", "classinviwo_1_1plot_1_1MajorTickProperty.html", null ],
       [ "inviwo::plot::PCPMajorTickSettings", "classinviwo_1_1plot_1_1PCPMajorTickSettings.html", null ]
     ] ],
-    [ "inviwo::deserializer::MapFunctions&lt; IdTransform, MakeNew, Filter, OnNew, OnRemove &gt;", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
+    [ "inviwo::deserializer::MapFunctions&lt; IdTransform, MakeNew, ShouldMakeNew, CanRecreate, OnNew, OnRemove &gt;", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
     [ "inviwo::MarchingTetrahedron", "classinviwo_1_1MarchingTetrahedron.html", null ],
     [ "inviwo::amira::Material", "structinviwo_1_1amira_1_1Material.html", null ],
     [ "inviwo::util::MemoryFileHandle", "classinviwo_1_1util_1_1MemoryFileHandle.html", null ],
@@ -1831,8 +1831,7 @@ var hierarchy =
     [ "inviwo::NetworkVisitorEnter", "classinviwo_1_1NetworkVisitorEnter.html", null ],
     [ "inviwo::NetworkVisitorExit", "classinviwo_1_1NetworkVisitorExit.html", null ],
     [ "inviwo::NoData", "structinviwo_1_1NoData.html", null ],
-    [ "inviwo::NodeDebugger::Node", "structinviwo_1_1NodeDebugger_1_1Node.html", null ],
-    [ "inviwo::NodeDebugger", "structinviwo_1_1NodeDebugger.html", null ],
+    [ "inviwo::deserializer::Node", "structinviwo_1_1deserializer_1_1Node.html", null ],
     [ "inviwo::NodeSwitch", "classinviwo_1_1NodeSwitch.html", null ],
     [ "inviwo::ffmpeg::NoMoveCopy", "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html", [
       [ "inviwo::ffmpeg::Codec", "classinviwo_1_1ffmpeg_1_1Codec.html", null ],
@@ -3201,7 +3200,6 @@ var hierarchy =
       [ "inviwo::animation::Track", "classinviwo_1_1animation_1_1Track.html", null ],
       [ "inviwo::util::detail::PartialProcessorNetwork", "structinviwo_1_1util_1_1detail_1_1PartialProcessorNetwork.html", null ]
     ] ],
-    [ "inviwo::SerializationException::SerializationExceptionData", "structinviwo_1_1SerializationException_1_1SerializationExceptionData.html", null ],
     [ "inviwo::SerializeBase", "classinviwo_1_1SerializeBase.html", [
       [ "inviwo::Deserializer", "classinviwo_1_1Deserializer.html", null ],
       [ "inviwo::Serializer", "classinviwo_1_1Serializer.html", null ]

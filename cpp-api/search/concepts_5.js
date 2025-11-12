@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pathlike_0',['pathlike',['../conceptinviwo_1_1detail_1_1pathlike.html',1,'inviwo::detail']]]
+  ['mappablefunctions_0',['MappableFunctions',['../conceptinviwo_1_1deserializer_1_1MappableFunctions.html',1,'inviwo::deserializer']]]
 ];

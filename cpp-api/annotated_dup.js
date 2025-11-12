@@ -165,7 +165,8 @@ var annotated_dup =
       [ "deserializer", null, [
         [ "IdentifierFunctions", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
         [ "IndexFunctions", "structinviwo_1_1deserializer_1_1IndexFunctions.html", null ],
-        [ "MapFunctions", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ]
+        [ "MapFunctions", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
+        [ "Node", "structinviwo_1_1deserializer_1_1Node.html", null ]
       ] ],
       [ "xml", "namespaceinviwo_1_1xml.html", [
         [ "ElementMatcher", "structinviwo_1_1xml_1_1ElementMatcher.html", "structinviwo_1_1xml_1_1ElementMatcher" ],
@@ -734,9 +735,8 @@ var annotated_dup =
       [ "RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
       [ "Deserializer", "classinviwo_1_1Deserializer.html", "classinviwo_1_1Deserializer" ],
       [ "DeserializationErrorHandle", "classinviwo_1_1DeserializationErrorHandle.html", null ],
-      [ "NodeDebugger", "structinviwo_1_1NodeDebugger.html", "structinviwo_1_1NodeDebugger" ],
       [ "Serializable", "classinviwo_1_1Serializable.html", null ],
-      [ "SerializationException", "classinviwo_1_1SerializationException.html", "classinviwo_1_1SerializationException" ],
+      [ "SerializationException", "classinviwo_1_1SerializationException.html", null ],
       [ "SerializeBase", "classinviwo_1_1SerializeBase.html", "classinviwo_1_1SerializeBase" ],
       [ "NodeSwitch", "classinviwo_1_1NodeSwitch.html", "classinviwo_1_1NodeSwitch" ],
       [ "SerializeConstants", "classinviwo_1_1SerializeConstants.html", null ],

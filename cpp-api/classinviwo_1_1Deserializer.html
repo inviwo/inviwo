@@ -141,12 +141,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a03a48275563ce92e41e018ee8a6cb348" id="r_a03a48275563ce92e41e018ee8a6cb348"><td class="memTemplParams" colspan="2">template&lt;typename T, typename A&gt; </td></tr>
 <tr class="memitem:a03a48275563ce92e41e018ee8a6cb348 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03a48275563ce92e41e018ee8a6cb348">deserialize</a> (std::string_view key, std::vector&lt; T, A &gt; &amp;sVector, std::string_view itemKey=&quot;item&quot;)</td></tr>
 <tr class="memdesc:a03a48275563ce92e41e018ee8a6cb348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserialize a vector.  <br /></td></tr>
-<tr class="memitem:a527b93a8ffde10850105d3d82ed03eb5" id="r_a527b93a8ffde10850105d3d82ed03eb5"><td class="memTemplParams" colspan="2"><a id="a527b93a8ffde10850105d3d82ed03eb5" name="a527b93a8ffde10850105d3d82ed03eb5"></a>
-template&lt;typename T, typename H, typename P, typename A&gt; </td></tr>
-<tr class="memitem:a527b93a8ffde10850105d3d82ed03eb5 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, std::unordered_set&lt; T, H, P, A &gt; &amp;sSet, std::string_view itemKey=&quot;item&quot;)</td></tr>
-<tr class="memitem:a302b432e99af21c8a29093fa8df59b4b" id="r_a302b432e99af21c8a29093fa8df59b4b"><td class="memTemplParams" colspan="2"><a id="a302b432e99af21c8a29093fa8df59b4b" name="a302b432e99af21c8a29093fa8df59b4b"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a302b432e99af21c8a29093fa8df59b4b template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, std::list&lt; T &gt; &amp;sContainer, std::string_view itemKey=&quot;item&quot;)</td></tr>
 <tr class="memitem:aa57e2e604639a283070d4a7b88a80b87" id="r_aa57e2e604639a283070d4a7b88a80b87"><td class="memTemplParams" colspan="2"><a id="aa57e2e604639a283070d4a7b88a80b87" name="aa57e2e604639a283070d4a7b88a80b87"></a>
 template&lt;typename T, size_t N&gt; </td></tr>
 <tr class="memitem:aa57e2e604639a283070d4a7b88a80b87 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, std::array&lt; T, N &gt; &amp;sContainer, std::string_view itemKey=&quot;item&quot;)</td></tr>
@@ -162,17 +156,17 @@ template&lt;typename DeserializeFunction&gt; </td></tr>
 <tr class="memitem:ad3519b309e03af0d15665c35e3fdc6ca" id="r_ad3519b309e03af0d15665c35e3fdc6ca"><td class="memTemplParams" colspan="2"><a id="ad3519b309e03af0d15665c35e3fdc6ca" name="ad3519b309e03af0d15665c35e3fdc6ca"></a>
 template&lt;typename K, typename V, typename H, typename C, typename A&gt; </td></tr>
 <tr class="memitem:ad3519b309e03af0d15665c35e3fdc6ca template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, std::unordered_map&lt; K, V, H, C, A &gt; &amp;map, std::string_view itemKey=&quot;item&quot;, std::string_view comparisonAttribute=SerializeConstants::KeyAttribute)</td></tr>
-<tr class="memitem:a6d23d60c0e71d30b36f0d49b0316b8e4" id="r_a6d23d60c0e71d30b36f0d49b0316b8e4"><td class="memTemplParams" colspan="2">template&lt;typename C, typename T = typename C::value_type, typename... Funcs&gt; <br />
-requires requires(T&amp; t, size_t i, std::string_view s, <a class="el" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>&lt;Funcs...&gt; f) { { std::invoke(f.makeNew) } -&gt; std::same_as&lt;T&gt;; { std::invoke(f.onNew, t, i) }; { std::invoke(f.onRemove, t) }; }</td></tr>
-<tr class="memitem:a6d23d60c0e71d30b36f0d49b0316b8e4 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d23d60c0e71d30b36f0d49b0316b8e4">deserialize</a> (std::string_view key, C &amp;container, std::string_view itemKey, <a class="el" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>&lt; Funcs... &gt; f)</td></tr>
-<tr class="memitem:a19db33218de40a03bbf48bf19c6b0e83" id="r_a19db33218de40a03bbf48bf19c6b0e83"><td class="memTemplParams" colspan="2"><a id="a19db33218de40a03bbf48bf19c6b0e83" name="a19db33218de40a03bbf48bf19c6b0e83"></a>
+<tr class="memitem:a4160c16216425a5bd8c2aadfc0dbb99f" id="r_a4160c16216425a5bd8c2aadfc0dbb99f"><td class="memTemplParams" colspan="2">template&lt;typename C, typename T = typename C::value_type, typename... Funcs&gt; <br />
+requires deserializer::IndexableFunctions&lt;T, <a class="el" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>&lt;Funcs...&gt;&gt;</td></tr>
+<tr class="memitem:a4160c16216425a5bd8c2aadfc0dbb99f template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4160c16216425a5bd8c2aadfc0dbb99f">deserialize</a> (std::string_view key, C &amp;container, std::string_view itemKey, <a class="el" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>&lt; Funcs... &gt; f)</td></tr>
+<tr class="memitem:a1fd9131e4734496e90c5ba77ee2109d3" id="r_a1fd9131e4734496e90c5ba77ee2109d3"><td class="memTemplParams" colspan="2"><a id="a1fd9131e4734496e90c5ba77ee2109d3" name="a1fd9131e4734496e90c5ba77ee2109d3"></a>
 template&lt;typename C, typename T = typename C::value_type, typename... Funcs&gt; <br />
-requires requires(T&amp; t, size_t i, std::string_view s, <a class="el" href="structinviwo_1_1deserializer_1_1IdentifierFunctions.html">deserializer::IdentifierFunctions</a>&lt;Funcs...&gt; f) { { std::invoke(f.getID, t) } -&gt; std::same_as&lt;std::string_view&gt;; { std::invoke(f.makeNew) } -&gt; std::same_as&lt;T&gt;; { std::invoke(f.filter, s, i) } -&gt; std::same_as&lt;bool&gt;; { std::invoke(f.onNew, t, i) }; { std::invoke(f.onRemove, s) }; { std::invoke(f.onMove, t, i) }; }</td></tr>
-<tr class="memitem:a19db33218de40a03bbf48bf19c6b0e83 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, C &amp;container, std::string_view itemKey, <a class="el" href="structinviwo_1_1deserializer_1_1IdentifierFunctions.html">deserializer::IdentifierFunctions</a>&lt; Funcs... &gt; f)</td></tr>
-<tr class="memitem:a8c2b0ee6e82574a4da49ed0819e6b5ea" id="r_a8c2b0ee6e82574a4da49ed0819e6b5ea"><td class="memTemplParams" colspan="2"><a id="a8c2b0ee6e82574a4da49ed0819e6b5ea" name="a8c2b0ee6e82574a4da49ed0819e6b5ea"></a>
+requires deserializer::IdentifiableFunctions&lt;T, <a class="el" href="structinviwo_1_1deserializer_1_1IdentifierFunctions.html">deserializer::IdentifierFunctions</a>&lt;Funcs...&gt;&gt;</td></tr>
+<tr class="memitem:a1fd9131e4734496e90c5ba77ee2109d3 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, C &amp;container, std::string_view itemKey, <a class="el" href="structinviwo_1_1deserializer_1_1IdentifierFunctions.html">deserializer::IdentifierFunctions</a>&lt; Funcs... &gt; f)</td></tr>
+<tr class="memitem:a587732fccdfa57950c2bf03103073a85" id="r_a587732fccdfa57950c2bf03103073a85"><td class="memTemplParams" colspan="2"><a id="a587732fccdfa57950c2bf03103073a85" name="a587732fccdfa57950c2bf03103073a85"></a>
 template&lt;typename C, typename K = typename C::key_type, typename T = typename C::mapped_type, typename... Funcs&gt; <br />
-requires requires(const K&amp; k, T&amp; t, size_t i, std::string_view s, <a class="el" href="structinviwo_1_1deserializer_1_1MapFunctions.html">deserializer::MapFunctions</a>&lt;Funcs...&gt; f) { { std::invoke(f.idTransform, s) } -&gt; std::same_as&lt;K&gt;; { std::invoke(f.makeNew) } -&gt; std::same_as&lt;T&gt;; { std::invoke(f.filter, k) } -&gt; std::same_as&lt;bool&gt;; { std::invoke(f.onNew, k, t) }; { std::invoke(f.onRemove, k) }; }</td></tr>
-<tr class="memitem:a8c2b0ee6e82574a4da49ed0819e6b5ea template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, C &amp;container, std::string_view itemKey, <a class="el" href="structinviwo_1_1deserializer_1_1MapFunctions.html">deserializer::MapFunctions</a>&lt; Funcs... &gt; f)</td></tr>
+requires deserializer::MappableFunctions&lt;K, T, <a class="el" href="structinviwo_1_1deserializer_1_1MapFunctions.html">deserializer::MapFunctions</a>&lt;Funcs...&gt;&gt;</td></tr>
+<tr class="memitem:a587732fccdfa57950c2bf03103073a85 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, C &amp;container, std::string_view itemKey, <a class="el" href="structinviwo_1_1deserializer_1_1MapFunctions.html">deserializer::MapFunctions</a>&lt; Funcs... &gt; f)</td></tr>
 <tr class="memitem:a7d6763e4f017966031359809af10e907" id="r_a7d6763e4f017966031359809af10e907"><td class="memItemLeft" align="right" valign="top"><a id="a7d6763e4f017966031359809af10e907" name="a7d6763e4f017966031359809af10e907"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (std::string_view key, signed char &amp;data, const SerializationTarget &amp;target=SerializationTarget::Node)</td></tr>
 <tr class="memitem:ae910225daa019021a41dabf6de649786" id="r_ae910225daa019021a41dabf6de649786"><td class="memItemLeft" align="right" valign="top"><a id="ae910225daa019021a41dabf6de649786" name="ae910225daa019021a41dabf6de649786"></a>
@@ -535,14 +529,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></t
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a6d23d60c0e71d30b36f0d49b0316b8e4" name="a6d23d60c0e71d30b36f0d49b0316b8e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6d23d60c0e71d30b36f0d49b0316b8e4">&#9670;&#160;</a></span>deserialize() <span class="overload">[1/3]</span></h2>
+<a id="a4160c16216425a5bd8c2aadfc0dbb99f" name="a4160c16216425a5bd8c2aadfc0dbb99f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4160c16216425a5bd8c2aadfc0dbb99f">&#9670;&#160;</a></span>deserialize() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename C, typename T, typename... Funcs&gt; <br />
-requires requires(T&amp; t, size_t i, std::string_view s, <a class="el" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>&lt;Funcs...&gt; f) { { std::invoke(f.makeNew) } -&gt; std::same_as&lt;T&gt;; { std::invoke(f.onNew, t, i) }; { std::invoke(f.onRemove, t) }; }</div>
+requires deserializer::IndexableFunctions&lt;T, <a class="el" href="structinviwo_1_1deserializer_1_1IndexFunctions.html">deserializer::IndexFunctions</a>&lt;Funcs...&gt;&gt;</div>
       <table class="memname">
         <tr>
           <td class="memname">void inviwo::Deserializer::deserialize </td>
@@ -575,7 +569,7 @@ requires requires(T&amp; t, size_t i, std::string_view s, <a class="el" href="st
 <div class="line">      .onRemove = [&amp;](std::unique_ptr&lt;TFPrimitiveSet&gt;&amp; primitive) {</div>
 <div class="line">              notifyControlPointRemoved(primitive.get());</div>
 <div class="line">          }});</div>
-<div class="ttc" id="astructinviwo_1_1deserializer_1_1IndexFunctions_html"><div class="ttname"><a href="structinviwo_1_1deserializer_1_1IndexFunctions.html">inviwo::deserializer::IndexFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:97</div></div>
+<div class="ttc" id="astructinviwo_1_1deserializer_1_1IndexFunctions_html"><div class="ttname"><a href="structinviwo_1_1deserializer_1_1IndexFunctions.html">inviwo::deserializer::IndexFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:116</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

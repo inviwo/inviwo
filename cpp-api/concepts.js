@@ -6,7 +6,15 @@ var concepts =
       ] ],
       [ "detail", null, [
         [ "is_transparent", "conceptinviwo_1_1detail_1_1is__transparent.html", null ],
+        [ "derefClassIdentifiable", "conceptinviwo_1_1detail_1_1derefClassIdentifiable.html", null ],
+        [ "is_shared_ptr", "conceptinviwo_1_1detail_1_1is__shared__ptr.html", null ],
+        [ "is_unique_ptr", "conceptinviwo_1_1detail_1_1is__unique__ptr.html", null ],
         [ "pathlike", "conceptinviwo_1_1detail_1_1pathlike.html", null ]
+      ] ],
+      [ "deserializer", null, [
+        [ "IdentifiableFunctions", "conceptinviwo_1_1deserializer_1_1IdentifiableFunctions.html", null ],
+        [ "IndexableFunctions", "conceptinviwo_1_1deserializer_1_1IndexableFunctions.html", null ],
+        [ "MappableFunctions", "conceptinviwo_1_1deserializer_1_1MappableFunctions.html", null ]
       ] ],
       [ "animation", "namespaceinviwo_1_1animation.html", [
         [ "detail", null, [

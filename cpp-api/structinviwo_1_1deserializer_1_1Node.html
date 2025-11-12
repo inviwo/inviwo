@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.15.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Inviwo: Member List</title>
+<title>Inviwo: inviwo::deserializer::Node Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,7 +64,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('classinviwo_1_1Exception.html','',''); });
+$(function(){initNavTree('structinviwo_1_1deserializer_1_1Node.html','','structinviwo_1_1deserializer_1_1Node-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -90,27 +90,36 @@ $(function(){initNavTree('classinviwo_1_1Exception.html','',''); });
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">inviwo::Exception Member List</div></div>
+  <div class="headertitle"><div class="title">inviwo::deserializer::Node Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>This is the complete list of members for <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>, including all inherited members.</p>
-<table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Exception</b>(std::string_view message=&quot;&quot;, SourceContext context=std::source_location::current()) (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>Exception</b>(fmt::string_view format, fmt::format_args &amp;&amp;args, SourceContext context) (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Exception</b>(SourceContext context, fmt::format_string&lt; Args... &gt; format, Args &amp;&amp;... args) (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>getContext</b>() const (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>getFullMessage</b>() const (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>getFullMessage</b>(size_t maxFrames) const (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>getMessage</b>() const (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>getStack</b>() const (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~Exception</b>() noexcept (defined in <a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a>)</td><td class="entry"><a class="el" href="classinviwo_1_1Exception.html">inviwo::Exception</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
-</table></div><!-- contents -->
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:aed2cef5a4f6416e6b136bed6b5a2a482" id="r_aed2cef5a4f6416e6b136bed6b5a2a482"><td class="memItemLeft" align="right" valign="top"><a id="aed2cef5a4f6416e6b136bed6b5a2a482" name="aed2cef5a4f6416e6b136bed6b5a2a482"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>key</b></td></tr>
+<tr class="memitem:a3f70cf84fd83b16e1395997b8445c7b6" id="r_a3f70cf84fd83b16e1395997b8445c7b6"><td class="memItemLeft" align="right" valign="top"><a id="a3f70cf84fd83b16e1395997b8445c7b6" name="a3f70cf84fd83b16e1395997b8445c7b6"></a>
+std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>identifier</b> = std::nullopt</td></tr>
+<tr class="memitem:a5358d64810fde49932e75a3f4598e09f" id="r_a5358d64810fde49932e75a3f4598e09f"><td class="memItemLeft" align="right" valign="top"><a id="a5358d64810fde49932e75a3f4598e09f" name="a5358d64810fde49932e75a3f4598e09f"></a>
+std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> = std::nullopt</td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li><b>nodedebugger.h</b></li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a href="namespaceinviwo.html">inviwo</a></li><li class="navelem"><b>deserializer</b></li><li class="navelem"><a href="structinviwo_1_1deserializer_1_1Node.html">Node</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
   </ul>
 </div>
