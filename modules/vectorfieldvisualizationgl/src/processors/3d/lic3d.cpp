@@ -109,7 +109,7 @@ LIC3D::LIC3D()
                         {{"noiseVolume", "Noise Volume", OutputDimensions::NoiseVolume},
                          {"vectorField", "Vector Field", OutputDimensions::VectorField},
                          {"custom", "Custom", OutputDimensions::Custom}}}
-    , dims_{"dims", "Dimensions",
+    , dims_{"dims", "Custom Dimensions",
             OrdinalPropertyState<ivec3>{.value = ivec3{1},
                                         .min = ivec3{1},
                                         .minConstraint = ConstraintBehavior::Immutable,
@@ -146,14 +146,19 @@ void LIC3D::initializeShader(Shader& shader) {
 }
 
 void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
-    if (outputDimensions_.isModified()) {
-        if (auto value = outputDimensions_.getSelectedValue();
-            value == OutputDimensions::NoiseVolume && inport_.has_value()) {
-            dims_ = ivec3{(*inport_).getData()->getDimensions()};
-        } else if (value == OutputDimensions::VectorField) {
-            dims_ = ivec3{vectorField_.getData()->getDimensions()};
+    const size3_t dims = [&]() {
+        using enum OutputDimensions;
+        switch (outputDimensions_.getSelectedValue()) {
+            case NoiseVolume:
+                return inport_->getData()->getDimensions();
+            case VectorField:
+                return vectorField_.getData()->getDimensions();
+            case Custom:
+                return size3_t{dims_.get()};
+            default:
+                return size3_t{dims_.get()};
         }
-    }
+    }();
 
     utilgl::bindAndSetUniforms(shader, cont, *vectorField_.getData(), "vectorField");
     utilgl::setUniforms(shader, samples_, stepLength_, noiseRepeat_, alphaScale_);
@@ -168,7 +173,7 @@ void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig&
     config.zAxis = source->axes[2];
     config.model = source->getModelMatrix();
     config.world = source->getWorldMatrix();
-    config.dimensions = size3_t{dims_.get()};
+    config.dimensions = dims;
 }
 
 void LIC3D::postProcess(Volume& volume) {

@@ -49,7 +49,7 @@ uniform float alphaScale;
 
 uniform int samples;
 uniform float stepLength;
-uniform mat3 invBasis;
+uniform mat3 invBasis = mat3(1);
 
 in vec4 texCoord_;
 in vec3 outputTexCoord_;
