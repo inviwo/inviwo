@@ -96,23 +96,8 @@ $(function(){initNavTree('structinviwo_1_1detail_1_1DynPort.html','','structinvi
 
 <p><code>#include &lt;instancerenderer.h&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:a23a18ff0cf35c0027c7b3d3b8536e7da" id="r_a23a18ff0cf35c0027c7b3d3b8536e7da"><td class="memItemLeft" align="right" valign="top"><a id="a23a18ff0cf35c0027c7b3d3b8536e7da" name="a23a18ff0cf35c0027c7b3d3b8536e7da"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DynPort</b> (<a class="el" href="classinviwo_1_1InstanceRenderer.html">InstanceRenderer</a> *theRenderer, std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Inport.html">Inport</a> &gt; aPort, std::function&lt; std::optional&lt; size_t &gt;()&gt; aSize, std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;, size_t)&gt; aSet, std::function&lt; void(<a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a> &amp;)&gt; aAddUniform)</td></tr>
-<tr class="memitem:a0f8ea3b32df51634838ca505cdbe8ab5" id="r_a0f8ea3b32df51634838ca505cdbe8ab5"><td class="memItemLeft" align="right" valign="top"><a id="a0f8ea3b32df51634838ca505cdbe8ab5" name="a0f8ea3b32df51634838ca505cdbe8ab5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DynPort</b> (const DynPort &amp;)=delete</td></tr>
-<tr class="memitem:a703abde92a43a31c540a698591efe84c" id="r_a703abde92a43a31c540a698591efe84c"><td class="memItemLeft" align="right" valign="top"><a id="a703abde92a43a31c540a698591efe84c" name="a703abde92a43a31c540a698591efe84c"></a>
-DynPort &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DynPort &amp;)=delete</td></tr>
-<tr class="memitem:aa266a169a9a92321683349f15ae633ff" id="r_aa266a169a9a92321683349f15ae633ff"><td class="memItemLeft" align="right" valign="top"><a id="aa266a169a9a92321683349f15ae633ff" name="aa266a169a9a92321683349f15ae633ff"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DynPort</b> (DynPort &amp;&amp;)</td></tr>
-<tr class="memitem:a77907243f09ec96892321a82ef3551eb" id="r_a77907243f09ec96892321a82ef3551eb"><td class="memItemLeft" align="right" valign="top"><a id="a77907243f09ec96892321a82ef3551eb" name="a77907243f09ec96892321a82ef3551eb"></a>
-DynPort &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DynPort &amp;&amp;)</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:abe0403402a4b78e9a92f1d2e697eeb47" id="r_abe0403402a4b78e9a92f1d2e697eeb47"><td class="memItemLeft" align="right" valign="top"><a id="abe0403402a4b78e9a92f1d2e697eeb47" name="abe0403402a4b78e9a92f1d2e697eeb47"></a>
-<a class="el" href="classinviwo_1_1InstanceRenderer.html">InstanceRenderer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>renderer</b></td></tr>
 <tr class="memitem:a33894243bab508b368de3fd655fd5550" id="r_a33894243bab508b368de3fd655fd5550"><td class="memItemLeft" align="right" valign="top"><a id="a33894243bab508b368de3fd655fd5550" name="a33894243bab508b368de3fd655fd5550"></a>
 std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Inport.html">Inport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>port</b></td></tr>
 <tr class="memitem:a1a5e9d688208be0596e81dfd96d0c30d" id="r_a1a5e9d688208be0596e81dfd96d0c30d"><td class="memItemLeft" align="right" valign="top"><a id="a1a5e9d688208be0596e81dfd96d0c30d" name="a1a5e9d688208be0596e81dfd96d0c30d"></a>
@@ -121,6 +106,8 @@ std::function&lt; std::optional&lt; size_t &gt;()&gt;&#160;</td><td class="memIt
 std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;, size_t)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>set</b></td></tr>
 <tr class="memitem:a27d33b6c21e2b0d98d77d250d05b64cf" id="r_a27d33b6c21e2b0d98d77d250d05b64cf"><td class="memItemLeft" align="right" valign="top"><a id="a27d33b6c21e2b0d98d77d250d05b64cf" name="a27d33b6c21e2b0d98d77d250d05b64cf"></a>
 std::function&lt; void(<a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a> &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>addUniform</b></td></tr>
+<tr class="memitem:afb0523573f67f87b5a7ea4c71d58fa26" id="r_afb0523573f67f87b5a7ea4c71d58fa26"><td class="memItemLeft" align="right" valign="top"><a id="afb0523573f67f87b5a7ea4c71d58fa26" name="afb0523573f67f87b5a7ea4c71d58fa26"></a>
+std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper class for the <a class="el" href="classinviwo_1_1InstanceRenderer.html">InstanceRenderer</a> to manage construction, destruction, binding, and setting of uniforms for dynamically created ports. </p>
