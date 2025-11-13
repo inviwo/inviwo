@@ -65,33 +65,14 @@ namespace detail {
  * of uniforms for dynamically created ports.
  */
 struct IVW_MODULE_BASEGL_API DynPort {
-    DynPort(InstanceRenderer* theRenderer, std::unique_ptr<Inport> aPort,
-            std::function<std::optional<size_t>()> aSize, std::function<void(Shader&, size_t)> aSet,
-            std::function<void(ShaderObject&)> aAddUniform);
-
-    DynPort(const DynPort&) = delete;
-    DynPort& operator=(const DynPort&) = delete;
-    DynPort(DynPort&&);
-    DynPort& operator=(DynPort&&);
-    ~DynPort();
-
-    InstanceRenderer* renderer;
     std::unique_ptr<Inport> port;
     std::function<std::optional<size_t>()> size;
     std::function<void(Shader&, size_t)> set;
     std::function<void(ShaderObject&)> addUniform;
+    std::function<void(Shader&, TextureUnitContainer&)> bindAndSetUniforms;
 };
 
 struct IVW_MODULE_BASEGL_API DynUniform {
-    DynUniform(std::function<void(Shader&, TextureUnitContainer&)> setAndBind,
-               std::function<void(ShaderObject&)> addUniform);
-
-    DynUniform(const DynUniform&) = delete;
-    DynUniform& operator=(const DynUniform&) = delete;
-    DynUniform(DynUniform&&);
-    DynUniform& operator=(DynUniform&&);
-    ~DynUniform();
-
     std::function<void(Shader&, TextureUnitContainer&)> setAndBind;
     std::function<void(ShaderObject&)> addUniform;
 };
