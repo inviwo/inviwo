@@ -100,8 +100,8 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
                         return glm::scale(dvec3{1.0} /
                                           dvec3{glm::max(opts.nPoints, size3_t{2}) - size3_t{1}});
                     } else if (opts.mode == Grid3DPointGeneration::Mode::Center) {
-                        return glm::scale(dvec3{1.0} / dvec3{opts.nPoints}) *
-                               glm::translate(dvec3{0.5} / dvec3{opts.nPoints});
+                        return glm::translate(dvec3{0.5} / dvec3{opts.nPoints}) *
+                               glm::scale(dvec3{1.0} / dvec3{opts.nPoints});
                     } else {
                         return dmat4{1.0f};
                     }
