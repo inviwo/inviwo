@@ -14,6 +14,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/markdown.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/permutations.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/samplevolume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/factoryutil.h
@@ -454,6 +455,7 @@ set(SOURCE_FILES
     algorithm/linearmap.cpp
     algorithm/markdown.cpp
     algorithm/permutations.cpp
+    algorithm/samplevolume.cpp
     algorithm/searchdsl.cpp
     common/factoryutil.cpp
     common/inviwoapplication.cpp
@@ -881,6 +883,7 @@ set(TEST_FILES
     tests/unittests/unitsystem-test.cpp
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
+    tests/unittests/voluemsampling-tests.cpp
     tests/unittests/zip-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
