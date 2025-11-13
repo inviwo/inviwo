@@ -945,6 +945,8 @@ var namespaceinviwo =
     [ "StandardVolumeRaycaster", "classinviwo_1_1StandardVolumeRaycaster.html", null ],
     [ "TexturedIsoSurfaceComponent", "classinviwo_1_1TexturedIsoSurfaceComponent.html", "classinviwo_1_1TexturedIsoSurfaceComponent" ],
     [ "TexturedIsosurfaceRenderer", "classinviwo_1_1TexturedIsosurfaceRenderer.html", null ],
+    [ "TexturedVolumeComponent", "classinviwo_1_1TexturedVolumeComponent.html", "classinviwo_1_1TexturedVolumeComponent" ],
+    [ "TexturedVolumeRaycaster", "classinviwo_1_1TexturedVolumeRaycaster.html", null ],
     [ "VolumeRaycasterBase", "classinviwo_1_1VolumeRaycasterBase.html", null ],
     [ "RedGreenProcessor", "classinviwo_1_1RedGreenProcessor.html", "classinviwo_1_1RedGreenProcessor" ],
     [ "ShaderComponentProcessorBase", "classinviwo_1_1ShaderComponentProcessorBase.html", "classinviwo_1_1ShaderComponentProcessorBase" ],

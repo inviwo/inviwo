@@ -811,7 +811,8 @@ var hierarchy =
             [ "inviwo::MultiChannelVolumeRaycaster", "classinviwo_1_1MultiChannelVolumeRaycaster.html", null ],
             [ "inviwo::SphericalVolumeRaycaster", "classinviwo_1_1SphericalVolumeRaycaster.html", null ],
             [ "inviwo::StandardVolumeRaycaster", "classinviwo_1_1StandardVolumeRaycaster.html", null ],
-            [ "inviwo::TexturedIsosurfaceRenderer", "classinviwo_1_1TexturedIsosurfaceRenderer.html", null ]
+            [ "inviwo::TexturedIsosurfaceRenderer", "classinviwo_1_1TexturedIsosurfaceRenderer.html", null ],
+            [ "inviwo::TexturedVolumeRaycaster", "classinviwo_1_1TexturedVolumeRaycaster.html", null ]
           ] ]
         ] ],
         [ "inviwo::SingleVoxel", "classinviwo_1_1SingleVoxel.html", null ],
@@ -1722,6 +1723,9 @@ var hierarchy =
           [ "inviwo::OptionProperty< CoordinateSpace >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BrushBy >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Output >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< IntegrationDirection >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< Kernel >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< OutputDimensions >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Type >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< DataFormatId >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Upsampling >", "classinviwo_1_1OptionProperty.html", null ],
@@ -1765,6 +1769,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< SeedingSpace >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< MessageBreakLevel >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< OutputType >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< Operation >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BufferUsage >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BufferTarget >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Operator >", "classinviwo_1_1OptionProperty.html", null ],
@@ -2964,6 +2969,9 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< CoordinateSpace >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BrushBy >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Output >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< IntegrationDirection >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< Kernel >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< OutputDimensions >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Type >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< DataFormatId >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Upsampling >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3007,6 +3015,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< SeedingSpace >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< MessageBreakLevel >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< OutputType >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< Operation >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BufferUsage >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BufferTarget >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Operator >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3224,6 +3233,7 @@ var hierarchy =
       [ "inviwo::SphericalComponent", "classinviwo_1_1SphericalComponent.html", null ],
       [ "inviwo::TFComponent", "classinviwo_1_1TFComponent.html", null ],
       [ "inviwo::TexturedIsoSurfaceComponent", "classinviwo_1_1TexturedIsoSurfaceComponent.html", null ],
+      [ "inviwo::TexturedVolumeComponent", "classinviwo_1_1TexturedVolumeComponent.html", null ],
       [ "inviwo::TimeComponent", "classinviwo_1_1TimeComponent.html", null ],
       [ "inviwo::VolumeComponent", "classinviwo_1_1VolumeComponent.html", null ]
     ] ],
