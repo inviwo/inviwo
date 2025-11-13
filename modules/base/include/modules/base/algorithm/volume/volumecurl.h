@@ -31,16 +31,17 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <memory>  // for unique_ptr, shared_ptr
+#include <memory>
+#include <functional>
 
 namespace inviwo {
 class Volume;
 
 namespace util {
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
-
-IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
+IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(
+    const Volume& volume, std::function<void(double)> progress = nullptr,
+    std::function<bool()> stop = nullptr);
 
 }  // namespace util
 

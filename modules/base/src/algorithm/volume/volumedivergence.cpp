@@ -61,11 +61,10 @@
 namespace inviwo {
 namespace util {
 
-std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
-    return divergenceVolume(*volume);
-}
+std::unique_ptr<Volume> divergenceVolume(const Volume& volume,
+                                         std::function<void(double)> progress,
+                                         std::function<bool()> stop) {
 
-std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
     auto newVolume = std::make_unique<Volume>(volume, noData);
     auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume.getDimensions());
     newVolume->addRepresentation(newVolumeRep);

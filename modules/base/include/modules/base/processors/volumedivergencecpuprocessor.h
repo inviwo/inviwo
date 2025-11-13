@@ -32,12 +32,12 @@
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
 #include <inviwo/core/ports/volumeport.h>          // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>      // for Processor
+#include <inviwo/core/processors/poolprocessor.h>  // for Processor
 #include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeDivergenceCPUProcessor : public Processor {
+class IVW_MODULE_BASE_API VolumeDivergenceCPUProcessor : public PoolProcessor {
 public:
     VolumeDivergenceCPUProcessor();
     virtual ~VolumeDivergenceCPUProcessor() = default;
