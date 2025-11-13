@@ -27,6 +27,9 @@
  *
  *********************************************************************************/
 
+ #ifndef IVW_ISO_GLSL
+ #define IVW_ISO_GLSL
+
 #if !defined MAX_ISOVALUE_COUNT
 #define MAX_ISOVALUE_COUNT 1
 #endif
@@ -145,3 +148,5 @@ vec4 drawISO(in vec4 result, in IsovalueParameters isoparams, in float value,
 
     return result;
 }
+
+#endif // IVW_ISO_GLSL

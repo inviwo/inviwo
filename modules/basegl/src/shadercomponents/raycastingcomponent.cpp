@@ -166,8 +166,8 @@ if (color{color}.a > 0) {{
 auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    const auto isoparam = isotf_.isovalues_.getIdentifier();
-    const auto tf = isotf_.tf_.getIdentifier();
+    const auto& isoparam = isotf_.isovalues_.getIdentifier();
+    const auto& tf = isotf_.tf_.getIdentifier();
 
     std::vector<Segment> segments{
         {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},

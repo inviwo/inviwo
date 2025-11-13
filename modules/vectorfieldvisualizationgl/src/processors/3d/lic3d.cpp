@@ -53,6 +53,8 @@
 #include <glm/mat3x3.hpp>  // for mat
 #include <glm/matrix.hpp>  // for inverse
 
+#include <fmt/base.h>
+
 namespace inviwo {
 class TextureUnitContainer;
 
@@ -62,57 +64,116 @@ const ProcessorInfo LIC3D::processorInfo_{
     "Vector Field Visualization",  // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
+    R"(Computes the line integral convolution (LIC) in three dimensions by advecting a noise field
+along a vector field and an optional convolution kernel. The result is a density volume representing
+the 3D LIC.)"_unindentHelp,
 };
 
 const ProcessorInfo& LIC3D::getProcessorInfo() const { return processorInfo_; }
 
 LIC3D::LIC3D()
-    : VolumeGLProcessor(
-          "lic3d.frag",
-          VolumeConfig{.format = DataVec4UInt8::get(),
-                       .swizzleMask = swizzlemasks::rgba,
-                       .dataRange = DataMapper::defaultDataRangeFor(DataVec4UInt8::get())})
-    , vectorField_("vectorField")
-    , samples_("samples", "Number of steps", 200, 3, 1000)
-    , stepLength_("stepLength", "Step Length", 0.003f, 0.0001f, 0.01f, 0.0001f)
-    , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
-    , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
-    , noiseRepeat_("noiseRepeat", "Noise Repeat", 2, 0.01f, 20)
-    , tf_("tf", "Velocity Transfer function")
-    , velocityScale_("velocityScale", "Velocity Scale (inverse)", 1, 0, 10)
-    , alphaScale_("alphaScale", "Alpha Scale", 500, 0.01f, 100000, 0.01f)
-    , noiseVolume_(nullptr) {
+    : VolumeGLProcessor{"lic3d.frag", VolumeConfig{.format = DataFloat32::get(),
+                                                   .swizzleMask = swizzlemasks::defaultData(1),
+                                                   .dataRange = DataMapper::defaultDataRangeFor(
+                                                       DataFloat32::get())}}
+    , vectorField_{"vectorField", "Input vector field"_help}
+    , direction_{"direction",
+                 "Integration Direction",
+                 "Specificies the direction for the line integral convolution"_help,
+                 {{"bidirectional", "Forward & Backward", IntegrationDirection::Bidirectional},
+                  {"forward", "Forward", IntegrationDirection::Forward},
+                  {"backward", "Backward", IntegrationDirection::Backward}},
+                 0,
+                 InvalidationLevel::InvalidResources}
+    , kernel_{"convolutionKernel",
+              "Convolution Kernel",
+              "Kernel used in the line integral convolution"_help,
+              {{"box", "Box Filter", Kernel::Box}, {"gaussian", "Gaussian", Kernel::Gaussian}},
+              0,
+              InvalidationLevel::InvalidResources}
+    , samples_{"samples", "Steps",
+               util::ordinalCount(100, 500).set(
+                   "Number of integration steps in each direction"_help)}
+    , stepLength_{"stepLength", "Step Length",
+                  util::ordinalScale(0.003f, 1.0f)
+                      .setInc(0.0001f)
+                      .set("Distance between each step along of the integration"_help)}
+    , normalizeVectors_{"normalizeVectors", "Normalize vectors",
+                        "If set, the vectors are normalized "_help, true,
+                        InvalidationLevel::InvalidResources}
+    , noiseRepeat_{"noiseRepeat", "Noise Repeat", util::ordinalScale(2.0f, 10.0f).setInc(0.001f)}
+    , alphaScale_{"alphaScale", "Density Scaling", util::ordinalScale(10.0f, 100.0f).setInc(0.001f)}
+    , outputDimensions_{"outputDimensions",
+                        "Output Dimensions",
+                        "Sets the dimensions of the resulting 3D LIC Volume"_help,
+                        {{"noiseVolume", "Noise Volume", OutputDimensions::NoiseVolume},
+                         {"vectorField", "Vector Field", OutputDimensions::VectorField},
+                         {"custom", "Custom", OutputDimensions::Custom}}}
+    , dims_{"dims", "Custom Dimensions",
+            OrdinalPropertyState<ivec3>{.value = ivec3{1},
+                                        .min = ivec3{1},
+                                        .minConstraint = ConstraintBehavior::Immutable,
+                                        .max = ivec3{2048},
+                                        .maxConstraint = ConstraintBehavior::Ignore,
+                                        .semantics = PropertySemantics::Text}} {
 
     addPort(vectorField_);
-    addProperties(samples_, stepLength_, normalizeVectors_, intensityMapping_, noiseRepeat_, tf_,
-                  velocityScale_, alphaScale_);
+    addProperties(outputDimensions_, dims_, direction_, kernel_, samples_, stepLength_,
+                  normalizeVectors_, noiseRepeat_, alphaScale_);
 
-    tf_.get().clear();
-    tf_.get().add(0.0, vec4(0, 0, 1, 1));
-    tf_.get().add(0.5, vec4(1, 1, 0, 1));
-    tf_.get().add(1.0, vec4(1, 0, 0, 1));
-
-    setAllPropertiesCurrentStateAsDefault();
+    dims_.readonlyDependsOn(outputDimensions_, [](auto& p) {
+        return p.getSelectedValue() != OutputDimensions::Custom;
+    });
 
     IVW_ASSERT(inport_.has_value(), "Inport should be constructed");
     inport_->setHelp("Input noise volume"_help);
 }
 
-void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
-    utilgl::bindAndSetUniforms(shader, cont, *vectorField_.getData(), "vectorField");
-    utilgl::setUniforms(shader, samples_, stepLength_, normalizeVectors_, intensityMapping_,
-                        noiseRepeat_, alphaScale_, velocityScale_);
+void LIC3D::initializeShader(Shader& shader) {
+    auto* fragShader = shader.getFragmentShaderObject();
+    if (kernel_ == Kernel::Gaussian) {
+        fragShader->addShaderDefine("KERNEL", "gaussian");
+    } else {
+        fragShader->addShaderDefine("KERNEL", "box");
+    }
+    fragShader->addShaderDefine("INTEGRATION_DIRECTION",
+                                fmt::format("{}", static_cast<int>(direction_.getSelectedValue())));
+    if (normalizeVectors_) {
+        fragShader->addShaderDefine("NORMALIZATION");
+    } else {
+        fragShader->removeShaderDefine("NORMALIZATION");
+    }
+}
 
-    utilgl::bindAndSetUniforms(shader, cont, tf_);
+void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
+    const size3_t dims = [&]() {
+        using enum OutputDimensions;
+        switch (outputDimensions_.getSelectedValue()) {
+            case NoiseVolume:
+                return inport_->getData()->getDimensions();
+            case VectorField:
+                return vectorField_.getData()->getDimensions();
+            case Custom:
+                return size3_t{dims_.get()};
+            default:
+                return size3_t{dims_.get()};
+        }
+    }();
+
+    utilgl::bindAndSetUniforms(shader, cont, *vectorField_.getData(), "vectorField");
+    utilgl::setUniforms(shader, samples_, stepLength_, noiseRepeat_, alphaScale_);
 
     shader.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
 
     auto source = vectorField_.getData();
+    config.dataRange = dvec2{0.0, 1.0};
+    config.valueRange = dvec2{0.0, 1.0};
     config.xAxis = source->axes[0];
     config.yAxis = source->axes[1];
     config.zAxis = source->axes[2];
     config.model = source->getModelMatrix();
     config.world = source->getWorldMatrix();
+    config.dimensions = dims;
 }
 
 void LIC3D::postProcess(Volume& volume) {

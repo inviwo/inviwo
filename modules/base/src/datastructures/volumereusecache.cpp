@@ -56,7 +56,7 @@ std::shared_ptr<Volume> VolumeReuseCache::get() {
         volume->axes[2] = config_.zAxis.value_or(VolumeConfig::defaultZAxis);
         volume->dataMap = config_.dataMap();
         volume->setModelMatrix(config_.model.value_or(VolumeConfig::defaultModel));
-        volume->setModelMatrix(config_.world.value_or(VolumeConfig::defaultWorld));
+        volume->setWorldMatrix(config_.world.value_or(VolumeConfig::defaultWorld));
 
         if (*volume != config_.reprConfig()) {
             throw Exception("Unexpected changes found in cache");

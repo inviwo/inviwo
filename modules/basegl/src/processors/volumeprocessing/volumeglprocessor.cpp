@@ -153,13 +153,14 @@ void VolumeGLProcessor::process() {
 
     const size3_t dims{dstVolume->getDimensions()};
     if (glm::compMin(dims) < 2) {
-        throw Exception(SourceContext{}, "All volume dimensions has to be greater then 1, got {}",
+        throw Exception(SourceContext{}, "All volume dimensions have to be greater than 1, got {}",
                         dims);
     }
 
     if (!inport_) {
         utilgl::setShaderUniforms(shader_, *dstVolume, "volumeParameters");
     }
+    utilgl::setShaderUniforms(shader_, *dstVolume, "outputVolumeParameters");
 
     // We always need to ask for an editable representation
     // this will invalidate any other representations

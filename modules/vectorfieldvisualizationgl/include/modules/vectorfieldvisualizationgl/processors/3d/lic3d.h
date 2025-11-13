@@ -36,7 +36,7 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 #include <memory>
@@ -52,25 +52,28 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void initializeShader(Shader& shader) override;
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
                             VolumeConfig& config) override;
     virtual void postProcess(Volume& volume) override;
 
 protected:
+    enum class IntegrationDirection : int { Bidirectional = 0, Forward = 1, Backward = -1 };
+    enum class Kernel : std::uint8_t { Box, Gaussian };
+    enum class OutputDimensions : std::uint8_t { NoiseVolume, VectorField, Custom };
+
     VolumeInport vectorField_;
+    OptionProperty<IntegrationDirection> direction_;
+    OptionProperty<Kernel> kernel_;
     IntProperty samples_;
     FloatProperty stepLength_;
     BoolProperty normalizeVectors_;
-    BoolProperty intensityMapping_;
 
     FloatProperty noiseRepeat_;
-
-    TransferFunctionProperty tf_;
-    FloatProperty velocityScale_;
-
     FloatProperty alphaScale_;
 
-    std::unique_ptr<Volume> noiseVolume_;
+    OptionProperty<OutputDimensions> outputDimensions_;
+    IntVec3Property dims_;
 };
 
 }  // namespace inviwo

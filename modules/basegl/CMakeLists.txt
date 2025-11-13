@@ -79,6 +79,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/raycasting/sphericalvolumeraycaster.h
     include/modules/basegl/processors/raycasting/standardvolumeraycaster.h
     include/modules/basegl/processors/raycasting/texturedisosurfacerenderer.h
+    include/modules/basegl/processors/raycasting/texturedvolumeraycaster.h
     include/modules/basegl/processors/raycasting/volumeraycasterbase.h
     include/modules/basegl/processors/redgreenprocessor.h
     include/modules/basegl/processors/shadercomponentprocessorbase.h
@@ -210,6 +211,7 @@ set(SOURCE_FILES
     src/processors/raycasting/sphericalvolumeraycaster.cpp
     src/processors/raycasting/standardvolumeraycaster.cpp
     src/processors/raycasting/texturedisosurfacerenderer.cpp
+    src/processors/raycasting/texturedvolumeraycaster.cpp
     src/processors/raycasting/volumeraycasterbase.cpp
     src/processors/redgreenprocessor.cpp
     src/processors/shadercomponentprocessorbase.cpp
