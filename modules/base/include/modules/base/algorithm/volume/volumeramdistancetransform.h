@@ -126,8 +126,8 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
 
     progress(0.0);
 
-    const T* src = inVolume->getDataTyped();
-    U* dst = outDistanceField->getDataTyped();
+    const auto src = inVolume->getView();
+    auto dst = outDistanceField->getView();
 
     const i64vec3 srcDim{inVolume->getDimensions()};
     const i64vec3 dstDim{outDistanceField->getDimensions()};

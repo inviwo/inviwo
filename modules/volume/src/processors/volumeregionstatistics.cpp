@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/volume/processors/volumeregionstatistics.h>
+
+#include <inviwo/core/algorithm/buildarray.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -222,26 +224,15 @@ private:
     Accumulator<wrapX, wrapY, wrapZ> centerOfMass;
 };
 
-template <typename Index, typename Functor, Index... Is>
-constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
-    return std::array{func(std::integral_constant<Index, Is>{})...};
-}
-
-template <std::size_t N, typename Index = std::size_t, typename Functor>
-constexpr auto build_array(Functor&& func) noexcept {
-    return build_array_impl<Index>(std::forward<Functor>(func),
-                                   std::make_integer_sequence<Index, N>());
-}
-
 template <typename Ret = void, typename Functor, typename... Args>
 constexpr auto wrappingDispatch(Functor&& func, const Wrapping3D& wrapping, Args&&... args) {
-    using DispatchFunctor = Ret (*)(Functor&& func, Args&&...);
+    using DispatchFunctor = Ret (*)(Functor && func, Args && ...);
 
-    constexpr auto table = build_array<3>([](auto x) constexpr {
+    constexpr auto table = util::build_array<3>([](auto x) constexpr {
         using XT = decltype(x);
-        return build_array<3>([](auto y) constexpr {
+        return util::build_array<3>([](auto y) constexpr {
             using YT = decltype(y);
-            return build_array<3>([](auto z) constexpr -> DispatchFunctor {
+            return util::build_array<3>([](auto z) constexpr -> DispatchFunctor {
                 using ZT = decltype(z);
                 return [](Functor&& func, Args&&... args) {
                     constexpr auto X = static_cast<Wrapping>(XT::value);

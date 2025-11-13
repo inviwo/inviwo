@@ -29,6 +29,7 @@
 
 #include <modules/base/algorithm/volume/volumevoronoi.h>
 
+#include <inviwo/core/algorithm/buildarray.h>
 #include <inviwo/core/datastructures/datamapper.h>        // for DataMapper
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for Wrapping, Wrapping3D, Wrapping:...
 #include <inviwo/core/datastructures/volume/volume.h>     // for Volume
@@ -78,17 +79,6 @@ auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
     }
 
     return glm::length2(dataToModelMatrix * delta);
-}
-
-template <typename Index, typename Functor, Index... Is>
-constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
-    return std::array{func(std::integral_constant<Index, Is>{})...};
-}
-
-template <std::size_t N, typename Index = size_t, typename Functor>
-constexpr auto build_array(Functor&& func) noexcept {
-    return build_array_impl<Index>(std::forward<Functor>(func),
-                                   std::make_integer_sequence<Index, N>());
 }
 
 }  // namespace detail
@@ -199,9 +189,9 @@ std::shared_ptr<Volume> voronoiSegmentation(
                                  const std::vector<std::pair<unsigned short, vec3>>&,
                                  const std::vector<float>&, VolumeRAMPrecision<unsigned short>&);
 
-        constexpr auto table = detail::build_array<3>([&](auto x) constexpr {
-            return detail::build_array<3>([&](auto y) constexpr {
-                return detail::build_array<3>([&](auto z) constexpr -> Functor {
+        constexpr auto table = util::build_array<3>([&](auto x) constexpr {
+            return util::build_array<3>([&](auto y) constexpr {
+                return util::build_array<3>([&](auto z) constexpr -> Functor {
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
                               const std::vector<std::pair<unsigned short, vec3>>& sp,
                               const std::vector<float>& w,
@@ -228,9 +218,9 @@ std::shared_ptr<Volume> voronoiSegmentation(
                                  const std::vector<std::pair<unsigned short, vec3>>&,
                                  VolumeRAMPrecision<unsigned short>&);
 
-        constexpr auto table = detail::build_array<3>([&](auto x) constexpr {
-            return detail::build_array<3>([&](auto y) constexpr {
-                return detail::build_array<3>([&](auto z) constexpr -> Functor {
+        constexpr auto table = util::build_array<3>([&](auto x) constexpr {
+            return util::build_array<3>([&](auto y) constexpr {
+                return util::build_array<3>([&](auto z) constexpr -> Functor {
                     return [](const size3_t dim, const mat4& i2d, const mat4& d2m,
                               const std::vector<std::pair<unsigned short, vec3>>& sp,
                               VolumeRAMPrecision<unsigned short>& volRep) {
