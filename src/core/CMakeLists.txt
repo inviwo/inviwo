@@ -4,6 +4,7 @@ project(inviwo-core)
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/base64.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/buildarray.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/easing.h
@@ -430,6 +431,7 @@ ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 set(SOURCE_FILES
     algorithm/base64.cpp
     algorithm/boundingbox.cpp
+    algorithm/buildarray.cpp
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
     algorithm/easing.cpp
