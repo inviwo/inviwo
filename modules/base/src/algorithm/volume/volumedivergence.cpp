@@ -29,6 +29,8 @@
 
 #include <modules/base/algorithm/volume/volumedivergence.h>
 
+#include <inviwo/core/algorithm/buildarray.h>
+#include <inviwo/core/algorithm/gridtools.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
 #include <inviwo/core/datastructures/data.h>                            // for noData
 #include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
@@ -43,6 +45,7 @@
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
 #include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+#include <inviwo/core/util/assertion.h>
 
 #include <stdlib.h>       // for abs
 #include <algorithm>      // for max, min
@@ -61,72 +64,114 @@
 namespace inviwo {
 namespace util {
 
-std::unique_ptr<Volume> divergenceVolume(std::shared_ptr<const Volume> volume) {
-    return divergenceVolume(*volume);
+namespace {
+
+using namespace grid;
+
+template <typename T, Wrapping Wx, Wrapping Wy, Wrapping Wz>
+double calcDivergenceVolume(size3_t dims, std::span<const T> src, std::span<float> dst,
+                            DataMapper dm, dmat3 basis, std::function<void(double)> progress,
+                            std::function<bool()> stop) {
+
+    const auto im = util::IndexMapper3D(dims);
+
+    double max = 0.0;
+    const dmat3 invBasis = glm::inverse(basis);
+    const auto delta = static_cast<dvec3>(dims);
+
+    grid::loop(
+        dims,
+        [&]<Part Px, Part Py, Part Pz>(size_t x, size_t y, size_t z) {
+            std::array<dvec3, 6> samples{
+                src[im(next<Px, Wx>(x, dims.x), y, z)], src[im(prev<Px, Wx>(x, dims.x), y, z)],
+                src[im(x, next<Py, Wy>(y, dims.y), z)], src[im(x, prev<Py, Wy>(y, dims.y), z)],
+                src[im(x, y, next<Pz, Wz>(z, dims.z))], src[im(x, y, prev<Pz, Wz>(z, dims.z))]};
+
+            for (auto& item : samples) {
+                item = invBasis * dm.mapFromDataTo<DataMapper::Space::Value>(item);
+            }
+
+            const dvec3 Fx = (samples[0] - samples[1]) * delta.x * invStep<Px, Wx>();
+            const dvec3 Fy = (samples[2] - samples[3]) * delta.y * invStep<Py, Wy>();
+            const dvec3 Fz = (samples[4] - samples[5]) * delta.z * invStep<Pz, Wz>();
+
+            const auto div = Fx.x + Fy.y + Fz.z;
+
+            max = std::max(max, std::abs(div));
+
+            dst[im(x, y, z)] = static_cast<float>(div);
+        },
+        progress, stop);
+
+    return max;
 }
 
-std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
-    auto newVolume = std::make_unique<Volume>(volume, noData);
-    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<float>>(volume.getDimensions());
-    newVolume->addRepresentation(newVolumeRep);
+template <size_t I>
+using index = std::integral_constant<size_t, I>;
 
-    const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
+}  // namespace
 
-    const auto a = m * vec4(0, 0, 0, 1);
-    const auto b = m * vec4(1.0f / vec3(volume.getDimensions() - size3_t(1)), 1);
-    const auto spacing = b - a;
+std::shared_ptr<Volume> divergenceVolume(
+    const Volume& srcVolume, std::function<std::shared_ptr<Volume>(const VolumeConfig&)> getVolume,
+    std::function<void(double)> progress, std::function<bool()> stop) {
 
-    const vec3 ox(spacing.x, 0, 0);
-    const vec3 oy(0, spacing.y, 0);
-    const vec3 oz(0, 0, spacing.z);
+    if (progress) progress(0.0);
 
-    volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
-        [&](auto vol) {
-            using DataType = util::PrecisionValueType<decltype(vol)>;
-            using ComponentType = util::value_type_t<DataType>;
-            using SampleType =
-                typename std::conditional_t<std::is_same<float, ComponentType>::value, vec3, dvec3>;
-            using Sampler = TemplateVolumeSampler<SampleType, DataType>;
-            ;
+    if (srcVolume.getDataFormat()->getNumericType() != NumericType::Float ||
+        srcVolume.getDataFormat()->getComponents() != 3) {
 
-            util::IndexMapper3D index(volume.getDimensions());
-            auto data = newVolumeRep->getDataTyped();
-            float minV = std::numeric_limits<float>::max();
-            float maxV = std::numeric_limits<float>::lowest();
+        throw Exception(SourceContext{},
+                        "divergenceVolume only supports vec3 or dvec3 volumes, got {}",
+                        srcVolume.getDataFormat()->getString());
+    }
 
-            const Sampler sampler{volume, CoordinateSpace::World};
+    const auto srcConfig = srcVolume.config();
+    const auto config = VolumeConfig{srcConfig}.updateFrom(
+        {.format = DataFloat32::get(),
+         .swizzleMask = swizzlemasks::rgb,
+         .interpolation = InterpolationType::Linear,
+         .valueAxis =
+             Axis{"Divergence", srcConfig.valueAxis.value_or(VolumeConfig::defaultValueAxis).unit /
+                                    srcConfig.xAxis.value_or(VolumeConfig::defaultXAxis).unit}});
+    auto dstVolume = getVolume(config);
 
-            util::forEachVoxel(*vol, [&](const size3_t& pos) {
-                const vec3 world{m *
-                                 vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};
+    auto* dstVolumeRep =
+        dynamic_cast<VolumeRAMPrecision<float>*>(dstVolume->getEditableRepresentation<VolumeRAM>());
 
-                const auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
-                const auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
-                const auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
-                const auto Fym = static_cast<vec3>(sampler.sample(world - oy));
-                const auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
-                const auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
+    IVW_ASSERT(dstVolumeRep, "should exist");
 
-                const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
-                const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
-                const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
+    const auto basis = dstVolume->getCoordinateTransformer().getDataToWorldMatrix();
+    const auto dims = dstVolumeRep->getDimensions();
+    const auto wrapping = srcVolume.getWrapping();
+    const auto srcRep = srcVolume.getRepresentation<VolumeRAM>();
 
-                const float d = Fx.x + Fy.y + Fz.z;
+    const auto max = srcRep->dispatch<double, dispatching::filter::Float3s>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* srcTRep) {
+            static constexpr auto table =
+                build_array_t_nd<3uz, 3uz, 3uz>([]<size_t x, size_t y, size_t z>() {
+                    return +[](size3_t dims, std::span<const T> src, std::span<float> dst,
+                               DataMapper dm, dmat3 basis, std::function<void(double)> p,
+                               std::function<bool()> s) -> double {
+                        constexpr auto Wx = static_cast<Wrapping>(x);
+                        constexpr auto Wy = static_cast<Wrapping>(y);
+                        constexpr auto Wz = static_cast<Wrapping>(z);
+                        return calcDivergenceVolume<T, Wx, Wy, Wz>(dims, src, dst, dm, basis, p, s);
+                    };
+                });
 
-                minV = std::min(minV, d);
-                maxV = std::max(maxV, d);
+            const auto& func =
+                table[std::to_underlying(wrapping[0])][std::to_underlying(wrapping[1])]
+                     [std::to_underlying(wrapping[2])];
 
-                data[index(pos)] = d;
-            });
-
-            auto range = std::max(std::abs(minV), std::abs(maxV));
-            newVolume->dataMap.dataRange = dvec2(-range, range);
-            newVolume->dataMap.valueRange = dvec2(minV, maxV);
-            newVolume->dataMap.valueAxis.name = "divergence";
-            newVolume->dataMap.valueAxis.unit = volume.dataMap.valueAxis.unit / volume.axes[0].unit;
+            return func(dims, srcTRep->getView(), dstVolumeRep->getView(), srcVolume.dataMap,
+                        dmat3{basis}, progress, stop);
         });
 
-    return newVolume;
+    dstVolume->dataMap.dataRange = dvec2(-max, max);
+    dstVolume->dataMap.valueRange = dvec2(-max, max);
+    if (progress) progress(1.0);
+
+    return dstVolume;
 }
 
 }  // namespace util

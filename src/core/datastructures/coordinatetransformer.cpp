@@ -79,6 +79,22 @@ glm::vec3 SpatialCoordinateTransformer::transformNormal(const vec3& normal, Coor
     return m * normal;
 }
 
+glm::mat3 SpatialCoordinateTransformer::getMetricTensor(mat3 basis) {
+    return {
+        glm::dot(basis[0], basis[0]), glm::dot(basis[1], basis[0]), glm::dot(basis[2], basis[0]),
+        glm::dot(basis[0], basis[1]), glm::dot(basis[1], basis[1]), glm::dot(basis[2], basis[1]),
+        glm::dot(basis[0], basis[2]), glm::dot(basis[1], basis[2]), glm::dot(basis[2], basis[2]),
+    };
+}
+
+glm::mat3 SpatialCoordinateTransformer::getMetricTensor() const {
+    return getMetricTensor(glm::mat3(getDataToWorldMatrix()));
+}
+
+glm::mat3 SpatialCoordinateTransformer::getInverseMetricTensor() const {
+    return glm::inverse(getMetricTensor());
+}
+
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 glm::mat4 SpatialCoordinateTransformer::getMatrix(CoordinateSpace from, CoordinateSpace to) const {
@@ -195,16 +211,6 @@ glm::mat4 StructuredCoordinateTransformer::getMatrix(CoordinateSpace from,
             throw Exception(SourceContext{}, "getMatrix is not available for the given space: {}",
                             from);
     }
-}
-
-glm::mat3 StructuredCoordinateTransformer::getInverseMetricTensor() const {
-    const auto m = glm::mat3(getTextureToWorldMatrix());
-    const glm::mat3 metricTensor{
-        glm::dot(m[0], m[0]), glm::dot(m[1], m[0]), glm::dot(m[2], m[0]),
-        glm::dot(m[0], m[1]), glm::dot(m[1], m[1]), glm::dot(m[2], m[1]),
-        glm::dot(m[0], m[2]), glm::dot(m[1], m[2]), glm::dot(m[2], m[2]),
-    };
-    return glm::inverse(metricTensor);
 }
 
 glm::mat4 SpatialCameraCoordinateTransformer::getMatrix(CoordinateSpace from,
