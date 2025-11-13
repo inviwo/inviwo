@@ -8,6 +8,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/easing.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/gridtools.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/histogram1d.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/histogram2d.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/linearmap.h
@@ -435,6 +436,7 @@ set(SOURCE_FILES
     algorithm/camerautils.cpp
     algorithm/cubeplaneintersection.cpp
     algorithm/easing.cpp
+    algorithm/gridtools.cpp
     algorithm/histogram1d.cpp
     algorithm/histogram2d.cpp
     algorithm/linearmap.cpp
