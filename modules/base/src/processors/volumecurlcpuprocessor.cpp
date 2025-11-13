@@ -37,6 +37,8 @@
 #include <inviwo/core/processors/processortags.h>      // for Tags, Tags::CPU
 #include <modules/base/algorithm/volume/volumecurl.h>  // for curlVolume
 
+#include <inviwo/core/util/clock.h>
+
 #include <string>       // for string
 #include <string_view>  // for string_view
 
@@ -53,12 +55,21 @@ const ProcessorInfo VolumeCurlCPUProcessor::processorInfo_{
 const ProcessorInfo& VolumeCurlCPUProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeCurlCPUProcessor::VolumeCurlCPUProcessor()
-    : Processor(), inport_("inport"), outport_("outport") {
+    : PoolProcessor(), inport_("inport"), outport_("outport") {
 
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 }
 
-void VolumeCurlCPUProcessor::process() { outport_.setData(util::curlVolume(inport_.getData())); }
+void VolumeCurlCPUProcessor::process() {
+    const auto calc = [data = inport_.getData(), this](pool::Progress progress, pool::Stop stop) {
+        return util::curlVolume(*data, std::ref(cache_), progress, stop);
+    };
+
+    outport_.clear();
+    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+        outport_.setData(result);
+        newResults();
+    });
+}
 
 }  // namespace inviwo

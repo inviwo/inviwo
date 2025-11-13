@@ -42,4 +42,36 @@ constexpr auto build_array(const Functor& func) noexcept {
     }(func, std::make_integer_sequence<Index, N>());
 }
 
+template <std::size_t N, typename Index = size_t, typename Functor>
+constexpr auto build_array_t(const Functor& func) noexcept {
+    return []<typename F, Index... Is>(const F& func, std::integer_sequence<Index, Is...>) {
+        return std::array { func.template operator()<std::integral_constant<Index, Is>{}>()... };
+    }(func, std::make_integer_sequence<Index, N>());
+}
+
+template <auto N, decltype(N)... Ns, typename Functor>
+constexpr auto build_array_nd(const Functor& func) {
+    return [&]<decltype(N)... Is>(std::integer_sequence<decltype(N), Is...>) {
+        if constexpr (sizeof...(Ns) == 0) {  // Base case: produce a 1D array
+            return std::array{func(std::integral_constant<decltype(N), Is>{})...};
+        } else {  // Recursive case
+            return std::array{build_array_nd<Ns...>([&](auto... rest) {
+                return func(std::integral_constant<decltype(N), Is>{}, rest...);
+            })...};
+        }
+    }(std::make_integer_sequence<decltype(N), N>{});
+}
+
+template <auto N, decltype(N)... Ns, typename Functor>
+constexpr auto build_array_t_nd(const Functor& func) {
+    return [&]<decltype(N)... Is>(std::integer_sequence<decltype(N), Is...>) {
+        if constexpr (sizeof...(Ns) == 0) {  // Base case: produce a 1D array
+            return std::array { func.template operator()<Is>()... };
+        } else {  // Recursive case
+            return std::array{build_array_t_nd<Ns...>(
+                [&]<auto... rest>() { return func.template operator()<Is, rest...>(); })...};
+        }
+    }(std::make_integer_sequence<decltype(N), N>{});
+}
+
 }  // namespace inviwo::util

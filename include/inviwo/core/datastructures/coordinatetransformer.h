@@ -128,13 +128,14 @@ public:
     virtual ~SpatialCoordinateTransformer() = default;
     virtual SpatialCoordinateTransformer* clone() const = 0;
     /**
-     * Returns the matrix transformation mapping from \p from coordinates
-     * to \p to coordinates
+     * Returns the matrix transformation mapping from @p from coordinates
+     * to @p to coordinates
      */
     virtual glm::mat4 getMatrix(CoordinateSpace from, CoordinateSpace to) const;
     /**
      * Returns the matrix transformation mapping from model space coordinates
-     * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for textures)
+     * to raw data numbers, i.e. from (data min, data max) to generally (-inf, inf), ([0,1] for
+     * textures)
      */
     virtual glm::mat4 getModelToDataMatrix() const = 0;
     /**
@@ -144,12 +145,14 @@ public:
     virtual glm::mat4 getModelToWorldMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
-     * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (data min, data max)
+     * to model space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to
+     * (data min, data max)
      */
     virtual glm::mat4 getDataToModelMatrix() const = 0;
     /**
      * Returns the matrix transformation mapping from raw data numbers
-     * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to (-inf, inf)
+     * to world space coordinates, i.e. from generally (-inf, inf), ([0,1] for textures) to
+     * (-inf, inf)
      */
     virtual glm::mat4 getDataToWorldMatrix() const = 0;
     /**
@@ -163,21 +166,56 @@ public:
      */
     virtual glm::mat4 getWorldToDataMatrix() const = 0;
     /**
-     * Transforms the given position \p pos from \p from coordinates to \p to coordinates. The
+     * Transforms the given position @p pos from @p from coordinates to @p to coordinates. The
      * resulting position is divided by w.
      */
     virtual glm::vec3 transformPosition(const vec3& pos, CoordinateSpace from, CoordinateSpace to) const;
     /**
-     * Transforms the given position \p pos from \p from coordinates to \p to coordinates using homogeneous coordinates
+     * Transforms the given position @p pos from @p from coordinates to @p to coordinates using
+     * homogeneous coordinates
      */
     virtual glm::vec4 transformPositionHomogeneous(const vec4& pos, CoordinateSpace from, CoordinateSpace to) const;
     /**
-     * Transforms the given \p normal from \p from coordinates to \p to coordinates. Only considers
+     * Transforms the given @p normal from @p from coordinates to @p to coordinates. Only considers
      * transformations between supported by this SpatialCoordinateTransformer. That is Data to
      * Model, Model to World, Data to World and their inverse, camera or index coordinates are
      * not supported.
      */
     virtual glm::vec3 transformNormal(const vec3& normal, CoordinateSpace from, CoordinateSpace to) const;
+
+    /**
+     * @brief Computes the metric tensor g_ij from a set of basis vectors.
+     *
+     * The metric tensor is defined as:
+     *
+     *     g_ij = dot(a_i, a_j)
+     *
+     * where a_i are the basis vectors of the coordinate system.
+     *
+     * @param basis A 3×3 matrix whose columns contain the basis vectors
+     *              of the coordinate system expressed in Cartesian coordinates.
+     *
+     * @return A 3×3 symmetric matrix containing the metric tensor g_ij.
+     */
+    static glm::mat3 getMetricTensor(glm::mat3 basis);
+
+    /**
+     * @brief Computes the metric tensor for the dataToWorld basis
+     */
+    glm::mat3 getMetricTensor() const;
+
+    /**
+     * @brief Computes the inverse metric tensor for the dataToWorld basis.
+     * This it useful for gradient computation.
+     *
+     * The gradient ∇f in world space is then computed based on the partial derivatives in u and v
+     * direction
+     *     ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2,
+     * where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.
+     *
+     * @return inverse metric tensor
+     */
+    glm::mat3 getInverseMetricTensor() const;
 
 protected:
     SpatialCoordinateTransformer(const SpatialCoordinateTransformer&) = default;
@@ -256,19 +294,7 @@ public:
      * to voxel index coordinates, i.e. from (-inf, inf) to [0, number of voxels)
      */
     virtual glm::mat4 getWorldToIndexMatrix() const = 0;
-    /**
-     * \brief Computes the inverse metric tensor to be used for gradient computation. Also works for
-     * layers with non-orthogonal basis.
-     *
-     * The gradient ∇f in world space is then computed based on the partial derivatives in u and v
-     * direction
-     *     ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2,
-     * where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.
-     *
-     * @return inverse metric tensor
-     */
-    glm::mat3 getInverseMetricTensor() const;
-    
+
 protected:
     StructuredCoordinateTransformer(const StructuredCoordinateTransformer&) = default;
     StructuredCoordinateTransformer(StructuredCoordinateTransformer&&) = delete;
