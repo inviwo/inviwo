@@ -31,14 +31,15 @@
 #include <array>
 #include <utility>
 #include <type_traits>
+#include <cstddef>
 
 namespace inviwo::util {
 
 template <std::size_t N, typename Index = size_t, typename Functor>
-constexpr auto build_array(Functor&& func) noexcept {
-    return []<typename F, Index... Is>(F&& func, std::integer_sequence<Index, Is...>) {
+constexpr auto build_array(const Functor& func) noexcept {
+    return []<typename F, Index... Is>(const F& func, std::integer_sequence<Index, Is...>) {
         return std::array{func(std::integral_constant<Index, Is>{})...};
-    }(std::forward<Functor>(func), std::make_integer_sequence<Index, N>());
+    }(func, std::make_integer_sequence<Index, N>());
 }
 
 }  // namespace inviwo::util
