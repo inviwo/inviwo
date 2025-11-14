@@ -183,13 +183,13 @@ void LorenzSystem::process() {
 
     std::array<GLenum, 3> drawBuffers{0};
 
-    VolumeGL* volGL = velocityVolume->getEditableRepresentation<VolumeGL>();
+    auto* volGL = velocityVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[0] = fbo_.attachColorTexture(volGL->getTexture().get(), 0);
 
-    VolumeGL* curlGL = curlVolume->getEditableRepresentation<VolumeGL>();
+    auto* curlGL = curlVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[1] = fbo_.attachColorTexture(curlGL->getTexture().get(), 1);
 
-    VolumeGL* divGL = divVolume->getEditableRepresentation<VolumeGL>();
+    auto* divGL = divVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[2] = fbo_.attachColorTexture(divGL->getTexture().get(), 2);
 
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
