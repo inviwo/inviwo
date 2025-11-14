@@ -74,12 +74,29 @@ const ProcessorInfo LorenzSystem::processorInfo_{
     "Data Creation",            // Category
     CodeState::Stable,          // Code state
     "GL, Generator",            // Tags
-};
+    R"(Calculates the velocity, curl and div, of a lorenz system
+    The velocity is given by
+        
+        sigma * (y - x)
+        x * (rho - z) - y
+        x * y - beta * z
+        
+    the curl is given by:
+        
+        2 * x
+        -y
+        rho - z - sigma
+        
+    and the div:
+        
+        -1 - sigma - beta
+        
+    )"_unindentHelp};
 const ProcessorInfo& LorenzSystem::getProcessorInfo() const { return processorInfo_; }
 
 LorenzSystem::LorenzSystem()
     : Processor()
-    , outport_("outport")
+    , velocityOutport_("outport")
     , curlOutport_("curl")
     , divOutport_("divergence")
 
@@ -87,18 +104,18 @@ LorenzSystem::LorenzSystem()
     , xRange_("xRange", "X Range", -20, 20, -100, 100)
     , yRange_("yRange", "Y Range", -30, 30, -100, 100)
     , zRange_("zRange", "Z Range", 0, 50, 0, 100)
-    , rhoValue_("rho", "ρ Value", 28, 0, 100)
-    , sigmaValue_("sigma", "σ Value", 10, 0, 100)
-    , betaValue_("beta", "β Value", 8.0f / 3.0f, 0, 100)
+    , rho_("rho", "ρ Value", 28, 0, 100)
+    , sigma_("sigma", "σ Value", 10, 0, 100)
+    , beta_("beta", "β Value", 8.0f / 3.0f, 0, 100)
     , shader_("volume_gpu.vert", "volume_gpu.geom", "lorenzsystem.frag")
-    , vecVolumes_{}
+    , velocityVolumes_{}
     , curlVolumes_{}
     , divVolumes_{}
     , fbo_() {
 
-    addPorts(outport_, curlOutport_, divOutport_);
+    addPorts(velocityOutport_, curlOutport_, divOutport_);
 
-    addProperties(size_, xRange_, yRange_, zRange_, rhoValue_, sigmaValue_, betaValue_);
+    addProperties(size_, xRange_, yRange_, zRange_, rho_, sigma_, beta_);
 
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
@@ -108,22 +125,13 @@ LorenzSystem::~LorenzSystem() = default;
 void LorenzSystem::process() {
     const size3_t dims{size_.get()};
 
-    vecVolumes_.setConfig(VolumeConfig{.dimensions = dims,
-                                       .format = DataVec3Float32::get(),
-                                       .dataRange = dvec2{0, 1},
-                                       .valueRange = dvec2{-1, 1}});
-    curlVolumes_.setConfig(VolumeConfig{.dimensions = dims,
-                                        .format = DataVec3Float32::get(),
-                                        .dataRange = dvec2{0, 1},
-                                        .valueRange = dvec2{-1, 1}});
-    divVolumes_.setConfig(VolumeConfig{.dimensions = dims,
-                                       .format = DataFloat32::get(),
-                                       .dataRange = dvec2{0, 1},
-                                       .valueRange = dvec2{-1, 1}});
+    velocityVolumes_.setConfig(VolumeConfig{.dimensions = dims, .format = DataVec3Float32::get()});
+    curlVolumes_.setConfig(VolumeConfig{.dimensions = dims, .format = DataVec3Float32::get()});
+    divVolumes_.setConfig(VolumeConfig{.dimensions = dims, .format = DataFloat32::get()});
 
-    auto volume = vecVolumes_.get();
-    auto curlvolume = curlVolumes_.get();
-    auto divvolume = divVolumes_.get();
+    auto velocityVolume = velocityVolumes_.get();
+    auto curlVolume = curlVolumes_.get();
+    auto divVolume = divVolumes_.get();
 
     // Basis and offset
     const std::array<vec3, 4> corners{{{xRange_.get().x, yRange_.get().x, zRange_.get().x},
@@ -132,32 +140,56 @@ void LorenzSystem::process() {
                                        {xRange_.get().x, yRange_.get().x, zRange_.get().y}}};
     const mat3 basis(corners[1] - corners[0], corners[2] - corners[0], corners[3] - corners[0]);
 
-    volume->setBasis(basis);
-    volume->setOffset(corners[0]);
-    curlvolume->setBasis(basis);
-    curlvolume->setOffset(corners[0]);
-    divvolume->setBasis(basis);
-    divvolume->setOffset(corners[0]);
+    // data range
+    float maxVelocity{0};
+    float maxCurl{0};
+    const float maxDiv{std::abs(-1 - sigma_.get() - beta_.get())};
 
+    for (auto x : {xRange_.get().x, xRange_.get().y}) {
+        for (auto y : {yRange_.get().x, yRange_.get().y}) {
+            for (auto z : {zRange_.get().x, zRange_.get().y}) {
+                maxVelocity = std::max({maxVelocity, std::abs(sigma_.get() * (y - x)),
+                                        std::abs(x * (rho_.get() - z) - y),
+                                        std::abs(x * y - beta_.get() * z)});
+                maxCurl = std::max({maxCurl, std::abs(2 * x), std::abs(-y),
+                                    std::abs(rho_.get() - z - sigma_.get())});
+            }
+        }
+    }
+
+    velocityVolume->setBasis(basis);
+    velocityVolume->setOffset(corners[0]);
+    velocityVolume->dataMap.dataRange = dvec2{-maxVelocity, maxVelocity};
+    velocityVolume->dataMap.valueRange = dvec2{-maxVelocity, maxVelocity};
+
+    curlVolume->setBasis(basis);
+    curlVolume->setOffset(corners[0]);
+    curlVolume->dataMap.dataRange = dvec2{-maxCurl, maxCurl};
+    curlVolume->dataMap.valueRange = dvec2{-maxCurl, maxCurl};
+
+    divVolume->setBasis(basis);
+    divVolume->setOffset(corners[0]);
+    divVolume->dataMap.dataRange = dvec2{-maxDiv, maxDiv};
+    divVolume->dataMap.valueRange = dvec2{-maxDiv, maxDiv};
 
     shader_.activate();
-    utilgl::setShaderUniforms(shader_, *volume, "volumeParameters");
-    utilgl::setShaderUniforms(shader_, rhoValue_);
-    utilgl::setShaderUniforms(shader_, sigmaValue_);
-    utilgl::setShaderUniforms(shader_, betaValue_);
+    utilgl::setShaderUniforms(shader_, *velocityVolume, "volumeParameters");
+    utilgl::setShaderUniforms(shader_, rho_);
+    utilgl::setShaderUniforms(shader_, sigma_);
+    utilgl::setShaderUniforms(shader_, beta_);
 
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dims.x), static_cast<GLsizei>(dims.y));
 
     std::array<GLenum, 3> drawBuffers{0};
 
-    VolumeGL* volGL = volume->getEditableRepresentation<VolumeGL>();
+    auto* volGL = velocityVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[0] = fbo_.attachColorTexture(volGL->getTexture().get(), 0);
 
-    VolumeGL* curlGL = curlvolume->getEditableRepresentation<VolumeGL>();
+    auto* curlGL = curlVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[1] = fbo_.attachColorTexture(curlGL->getTexture().get(), 1);
 
-    VolumeGL* divGL = divvolume->getEditableRepresentation<VolumeGL>();
+    auto* divGL = divVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[2] = fbo_.attachColorTexture(divGL->getTexture().get(), 2);
 
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());
@@ -167,9 +199,9 @@ void LorenzSystem::process() {
     shader_.deactivate();
     fbo_.deactivate();
 
-    outport_.setData(volume);
-    curlOutport_.setData(curlvolume);
-    divOutport_.setData(divvolume);
+    velocityOutport_.setData(velocityVolume);
+    curlOutport_.setData(curlVolume);
+    divOutport_.setData(divVolume);
 }
 
 }  // namespace inviwo

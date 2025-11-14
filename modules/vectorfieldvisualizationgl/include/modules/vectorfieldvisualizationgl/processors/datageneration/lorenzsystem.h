@@ -55,7 +55,7 @@ public:
     virtual void process() override;
 
 protected:
-    VolumeOutport outport_;
+    VolumeOutport velocityOutport_;
     VolumeOutport curlOutport_;
     VolumeOutport divOutport_;
 
@@ -65,13 +65,13 @@ protected:
     FloatMinMaxProperty yRange_;
     FloatMinMaxProperty zRange_;
 
-    FloatProperty rhoValue_;
-    FloatProperty sigmaValue_;
-    FloatProperty betaValue_;
+    FloatProperty rho_;
+    FloatProperty sigma_;
+    FloatProperty beta_;
 
     Shader shader_;
 
-    VolumeReuseCache vecVolumes_;
+    VolumeReuseCache velocityVolumes_;
     VolumeReuseCache curlVolumes_;
     VolumeReuseCache divVolumes_;
 
