@@ -125,7 +125,7 @@ vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis, size
     const size3_t dims = v->getDimensions();
     const vec3 offset = v->getOwner()->getOffset();
     const mat3 basis = v->getOwner()->getBasis();
-    const vec3 t = vec3{static_cast<float>(slice)} / vec3{dims};
+    const vec3 t = vec3{static_cast<float>(slice)} / vec3{dims - size3_t{1}};
 
     switch (axis) {
         default:
