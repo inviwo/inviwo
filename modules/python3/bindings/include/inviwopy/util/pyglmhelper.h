@@ -80,7 +80,8 @@ template <typename T, int Cols, int Rows>
 void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
            std::string_view postfix) {
 
-    using Mat = typename util::glmtype<T, Cols, Rows>::type;
+    using Mat = glm::mat<Cols, Rows, T>;
+
 
     static_assert(std::is_standard_layout_v<Mat>, "has to be standard_layout");
     static_assert(std::is_trivially_copyable_v<Mat>, "has to be trivially_copyable");
@@ -88,10 +89,6 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
 
     using ColumnVector = typename Mat::col_type;
     using RowVector = typename Mat::row_type;
-
-    using Mat2 = typename util::glmtype<T, 2, Cols>::type;
-    using Mat3 = typename util::glmtype<T, 3, Cols>::type;
-    using Mat4 = typename util::glmtype<T, 4, Cols>::type;
 
     const auto classname = [&]() {
         if constexpr (Cols != Rows) {
@@ -175,12 +172,6 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
                  return m[idx][idy] = t;
              })
 
-        .def(pybind11::self * RowVector())
-        .def(ColumnVector() * pybind11::self)
-        .def(pybind11::self * Mat2())
-        .def(pybind11::self * Mat3())
-        .def(pybind11::self * Mat4())
-
         .def_property_readonly(
             "array",
             [](Mat& self) {
@@ -216,6 +207,18 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
                 {sizeof(T), sizeof(T) * Rows}             /* Strides (in bytes) for each index */
             );
         });
+
+    if constexpr (std::floating_point<T>) {
+        using Mat2 = glm::mat<2, Cols, T>;
+        using Mat3 = glm::mat<3, Cols, T>;
+        using Mat4 = glm::mat<4, Cols, T>;
+
+        pym.def(pybind11::self * RowVector())
+            .def(ColumnVector() * pybind11::self)
+            .def(pybind11::self * Mat2())
+            .def(pybind11::self * Mat3())
+            .def(pybind11::self * Mat4());
+    }
 
     pybind11::bind_vector<std::vector<Mat>, pybind11::smart_holder>(m, classname + "Vector",
                                                                     "Vectors of glm matrices");
