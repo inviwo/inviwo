@@ -569,7 +569,7 @@ requires deserializer::IndexableFunctions&lt;T, <a class="el" href="structinviwo
 <div class="line">      .onRemove = [&amp;](std::unique_ptr&lt;TFPrimitiveSet&gt;&amp; primitive) {</div>
 <div class="line">              notifyControlPointRemoved(primitive.get());</div>
 <div class="line">          }});</div>
-<div class="ttc" id="astructinviwo_1_1deserializer_1_1IndexFunctions_html"><div class="ttname"><a href="structinviwo_1_1deserializer_1_1IndexFunctions.html">inviwo::deserializer::IndexFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:116</div></div>
+<div class="ttc" id="astructinviwo_1_1deserializer_1_1IndexFunctions_html"><div class="ttname"><a href="structinviwo_1_1deserializer_1_1IndexFunctions.html">inviwo::deserializer::IndexFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:120</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -656,15 +656,15 @@ template&lt;typename T, typename A&gt; </div>
 
 <p>Deserialize a vector. </p>
 <p>Deserialize the vector that has pre-allocated objects of type T or allocated by deserializer. A vector is identified by key and vector items are identified by itemKey</p>
-<p>eg. xml tree with key=Properties and itemKey=<a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> </p><pre class="fragment">&lt;Properties&gt;
-     &lt;Property identifier="enableMIP" displayName="MIP"&gt;
-         &lt;value content="0" /&gt;
-     &lt;/Property&gt;
-     &lt;Property identifier="enableShading" displayName="Shading"&gt;
-         &lt;value content="0" /&gt;
-     &lt;/Property&gt;
-&lt;Properties&gt;
-</pre><dl class="params"><dt>Parameters</dt><dd>
+<p>eg. xml tree with key=Properties and itemKey=<a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> </p><div class="fragment"><div class="line">&lt;<span class="keywordtype">Properties</span>&gt;</div>
+<div class="line">     &lt;<span class="keywordtype">Property</span> <span class="keyword">identifier</span>=<span class="stringliteral">&quot;enableMIP&quot;</span> <span class="keyword">displayName</span>=<span class="stringliteral">&quot;MIP&quot;</span>&gt;</div>
+<div class="line">         &lt;<span class="keywordtype">value</span> <span class="keyword">content</span>=<span class="stringliteral">&quot;0&quot;</span> /&gt;</div>
+<div class="line">     &lt;/<span class="keywordtype">Property</span>&gt;</div>
+<div class="line">     &lt;<span class="keywordtype">Property</span> <span class="keyword">identifier</span>=<span class="stringliteral">&quot;enableShading&quot;</span> <span class="keyword">displayName</span>=<span class="stringliteral">&quot;Shading&quot;</span>&gt;</div>
+<div class="line">         &lt;<span class="keywordtype">value</span> <span class="keyword">content</span>=<span class="stringliteral">&quot;0&quot;</span> /&gt;</div>
+<div class="line">     &lt;/<span class="keywordtype">Property</span>&gt;</div>
+<div class="line">&lt;<span class="keywordtype">Properties</span>&gt;</div>
+</div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key</td><td>vector key. </td></tr>
     <tr><td class="paramname">sVector</td><td>vector to be deserialized. </td></tr>
