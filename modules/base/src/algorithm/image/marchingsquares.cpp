@@ -313,7 +313,7 @@ std::pair<std::optional<Intersection>, std::optional<Intersection>> createIsoLin
         left,
     };
 
-    for (const auto [edge1, edge2] : marchingSquareCases[theCase]) {
+    for (const auto& [edge1, edge2] : marchingSquareCases[theCase]) {
         auto& intersection1 = intersects[edge1];
         auto& intersection2 = intersects[edge2];
         if (intersection1.has_value() && intersection2.has_value()) {

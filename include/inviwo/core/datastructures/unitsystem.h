@@ -71,9 +71,8 @@ constexpr std::array<Unit, 4> defaultAxesUnits = {Unit{}, Unit{}, Unit{}, Unit{}
 template <size_t N>
 std::array<Axis, N> defaultAxes() {
     static_assert(N <= defaultAxesNames.size());
-    return util::make_array<N>([](auto i) {
-        return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]};
-    });
+    return util::make_array<N>(
+        [](auto i) { return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]}; });
 }
 
 }  // namespace util
@@ -98,93 +97,95 @@ namespace unitgroups {
 
 // clang-format off
 constexpr std::array<UnitDesc, 10> si = {{
-    {units::precise::meter,    "meter",    "m",   UnitFlag::UsesPrefix},
-    {units::precise::kg,       "kilogram", "kg",  UnitFlag::None},
-    {units::precise::second,   "second",   "s",   UnitFlag::UsesPrefix},
-    {units::precise::Ampere,   "ampere",   "A",   UnitFlag::UsesPrefix},
-    {units::precise::Kelvin,   "kelvin",   "K",   UnitFlag::UsesPrefix},
-    {units::precise::mol,      "mole",     "mol", UnitFlag::UsesPrefix},
-    {units::precise::candela,  "candela",  "Cd",  UnitFlag::UsesPrefix},
-    {units::precise::currency, "currency", "$",   UnitFlag::UsesPrefix},
-    {units::precise::count,    "count",    "#",   UnitFlag::None},
-    {units::precise::radian,   "radian",   "rad", UnitFlag::None}
+    {.unit=units::precise::meter,    .name="meter",    .abbr="m",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::kg,       .name="kilogram", .abbr="kg",  .flags=UnitFlag::None},
+    {.unit=units::precise::second,   .name="second",   .abbr="s",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::Ampere,   .name="ampere",   .abbr="A",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::Kelvin,   .name="kelvin",   .abbr="K",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::mol,      .name="mole",     .abbr="mol", .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::candela,  .name="candela",  .abbr="Cd",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::currency, .name="currency", .abbr="$",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::count,    .name="count",    .abbr="#",   .flags=UnitFlag::None},
+    {.unit=units::precise::radian,   .name="radian",   .abbr="rad", .flags=UnitFlag::None}
 }};
 
 constexpr std::array<UnitDesc, 17> derived = {{
-    {units::precise::hertz,     "hertz",     "Hz",  UnitFlag::UsesPrefix |
-                                                        UnitFlag::OnlyPositivePowers |
-                                                        UnitFlag::OnlyByItSelf},
-    {units::precise::volt,      "volt",      "V",   UnitFlag::UsesPrefix},
-    {units::precise::newton,    "newton",    "N",   UnitFlag::UsesPrefix},
-    {units::precise::Pa,        "pascal",    "Pa",  UnitFlag::UsesPrefix},
-    {units::precise::joule,     "joule",     "J",   UnitFlag::UsesPrefix},
-    {units::precise::watt,      "watt",      "W",   UnitFlag::UsesPrefix},
-    {units::precise::farad,     "farad",     "F",   UnitFlag::UsesPrefix},
-    {units::precise::siemens,   "siemens",   "S",   UnitFlag::UsesPrefix},
-    {units::precise::weber,     "weber",     "Wb",  UnitFlag::UsesPrefix},
-    {units::precise::tesla,     "tesla",     "T",   UnitFlag::UsesPrefix},
-    {units::precise::henry,     "henry",     "H",   UnitFlag::UsesPrefix},
-    {units::precise::lumen,     "lumen",     "lm",  UnitFlag::UsesPrefix},
-    {units::precise::lux,       "lux",       "lx",  UnitFlag::UsesPrefix},
-    {units::precise::becquerel, "becquerel", "Bq",  UnitFlag::UsesPrefix},
-    {units::precise::gray,      "gray",      "Gy",  UnitFlag::UsesPrefix},
-    {units::precise::sievert,   "sievert",   "Sv",  UnitFlag::UsesPrefix},
-    {units::precise::katal,     "katal",     "kat", UnitFlag::UsesPrefix}
+    {.unit=units::precise::hertz,     .name="hertz",     .abbr="Hz",  .flags=UnitFlag::UsesPrefix |
+                                                                             UnitFlag::OnlyPositivePowers |
+                                                                             UnitFlag::OnlyByItSelf},
+    {.unit=units::precise::volt,      .name="volt",      .abbr="V",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::newton,    .name="newton",    .abbr="N",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::Pa,        .name="pascal",    .abbr="Pa",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::joule,     .name="joule",     .abbr="J",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::watt,      .name="watt",      .abbr="W",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::farad,     .name="farad",     .abbr="F",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::siemens,   .name="siemens",   .abbr="S",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::weber,     .name="weber",     .abbr="Wb",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::tesla,     .name="tesla",     .abbr="T",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::henry,     .name="henry",     .abbr="H",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::lumen,     .name="lumen",     .abbr="lm",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::lux,       .name="lux",       .abbr="lx",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::becquerel, .name="becquerel", .abbr="Bq",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::gray,      .name="gray",      .abbr="Gy",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::sievert,   .name="sievert",   .abbr="Sv",  .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::katal,     .name="katal",     .abbr="kat", .flags=UnitFlag::UsesPrefix}
 }};
 
 constexpr std::array<UnitDesc, 3> extra = {{
-    {units::precise::bar, "bar",   "bar", UnitFlag::UsesPrefix},
-    {units::precise::L,   "liter", "L",   UnitFlag::UsesPrefix},
-    {units::precise::g,   "gram",  "g",   UnitFlag::UsesPrefix}
+    {.unit=units::precise::bar, .name="bar",   .abbr="bar", .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::L,   .name="liter", .abbr="L",   .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::g,   .name="gram",  .abbr="g",   .flags=UnitFlag::UsesPrefix}
 }};
 
 constexpr std::array<UnitDesc, 5> time = {{
-    {units::precise::time::minute,  "minute", "min",  UnitFlag::None},
-    {units::precise::time::h,       "hour",   "h",    UnitFlag::None},
-    {units::precise::time::day,     "day",    "day",  UnitFlag::None},
-    {units::precise::time::week,    "week",   "week", UnitFlag::None},
-    {units::precise::time::yr,      "year",   "yr",   UnitFlag::None}
+    {.unit=units::precise::time::minute,  .name="minute", .abbr="min",  .flags=UnitFlag::None},
+    {.unit=units::precise::time::h,       .name="hour",   .abbr="h",    .flags=UnitFlag::None},
+    {.unit=units::precise::time::day,     .name="day",    .abbr="day",  .flags=UnitFlag::None},
+    {.unit=units::precise::time::week,    .name="week",   .abbr="week", .flags=UnitFlag::None},
+    {.unit=units::precise::time::yr,      .name="year",   .abbr="yr",   .flags=UnitFlag::None}
 }};
 
 constexpr std::array<UnitDesc, 1> temperature = {{
-    {units::precise::temperature::celsius,  "celsius", "°C", UnitFlag::None},
+    {.unit=units::precise::temperature::celsius,  .name="celsius", .abbr="°C", .flags=UnitFlag::None},
 }};
 
 
 constexpr Unit elementary_charge{1.602176634e-19, units::precise::C};
 
 constexpr std::array<UnitDesc, 4> atomic = {{
-    {units::precise::distance::angstrom,  "\u00C5ngstr\u00F6m", "\u00C5", UnitFlag::None},
-    {units::precise::energy::eV,          "electron volt",      "eV",     UnitFlag::UsesPrefix},
-    {units::precise::energy::hartree,     "hartree",            "Ha",     UnitFlag::None},
-    {elementary_charge,                   "elementary charge",  "e",      UnitFlag::None}
+    {.unit=units::precise::distance::angstrom,  .name="\u00C5ngstr\u00F6m", .abbr="\u00C5", .flags=UnitFlag::None},
+    {.unit=units::precise::energy::eV,          .name="electron volt",      .abbr="eV",     .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::energy::hartree,     .name="hartree",            .abbr="Ha",     .flags=UnitFlag::None},
+    {.unit=elementary_charge,                   .name="elementary charge",  .abbr="e",      .flags=UnitFlag::None}
 }};
 
-constexpr std::array<UnitDesc, 3> astronomical = {{
-    {units::precise::distance::parsec,  "parsec",            "pc", UnitFlag::None},
-    {units::precise::distance::au,      "astronomical unit", "au", UnitFlag::None},
-    {units::precise::distance::ly,      "light-year",        "ly", UnitFlag::None},
+constexpr std::array<UnitDesc, 4> astronomical = {{
+    {.unit=units::precise::distance::parsec,  .name="parsec",            .abbr="pc", .flags=UnitFlag::None},
+    {.unit=units::precise::distance::au,      .name="astronomical unit", .abbr="au", .flags=UnitFlag::None},
+    {.unit=units::precise::distance::ly,      .name="light-year",        .abbr="ly", .flags=UnitFlag::None},
+    {.unit=units::precise_unit{1e-26, units::precise::W / units::precise::m / units::precise::m / units::precise::Hz},
+                                              .name="Jansky",            .abbr="Jy", .flags=UnitFlag::UsesPrefix},
 }};
 
 
 constexpr std::array<UnitDesc, 17> prefixes = {{
-    {units::precise::yocto, "yocto", "y", UnitFlag::None},
-    {units::precise::zepto, "zepto", "z", UnitFlag::None},
-    {units::precise::atto,  "atto",  "a", UnitFlag::None},
-    {units::precise::femto, "femto", "f", UnitFlag::None},
-    {units::precise::pico,  "pico",  "p", UnitFlag::None},
-    {units::precise::nano,  "nano",  "n", UnitFlag::None},
-    {units::precise::micro, "micro", "\u00B5", UnitFlag::None},
-    {units::precise::milli, "milli", "m", UnitFlag::None},
-    {units::precise::one,   "",      "",  UnitFlag::None},
-    {units::precise::kilo,  "kilo",  "k", UnitFlag::None},
-    {units::precise::mega,  "mega",  "M", UnitFlag::None},
-    {units::precise::giga,  "giga",  "G", UnitFlag::None},
-    {units::precise::tera,  "tera",  "T", UnitFlag::None},
-    {units::precise::peta,  "peta",  "P", UnitFlag::None},
-    {units::precise::exa,   "exa",   "E", UnitFlag::None},
-    {units::precise::zetta, "zetta", "Z", UnitFlag::None},
-    {units::precise::yotta, "yotta", "Y", UnitFlag::None},
+    {.unit=units::precise::yocto, .name="yocto", .abbr="y", .flags=UnitFlag::None},
+    {.unit=units::precise::zepto, .name="zepto", .abbr="z", .flags=UnitFlag::None},
+    {.unit=units::precise::atto,  .name="atto",  .abbr="a", .flags=UnitFlag::None},
+    {.unit=units::precise::femto, .name="femto", .abbr="f", .flags=UnitFlag::None},
+    {.unit=units::precise::pico,  .name="pico",  .abbr="p", .flags=UnitFlag::None},
+    {.unit=units::precise::nano,  .name="nano",  .abbr="n", .flags=UnitFlag::None},
+    {.unit=units::precise::micro, .name="micro", .abbr="\u00B5", .flags=UnitFlag::None},
+    {.unit=units::precise::milli, .name="milli", .abbr="m", .flags=UnitFlag::None},
+    {.unit=units::precise::one,   .name="",      .abbr="",  .flags=UnitFlag::None},
+    {.unit=units::precise::kilo,  .name="kilo",  .abbr="k", .flags=UnitFlag::None},
+    {.unit=units::precise::mega,  .name="mega",  .abbr="M", .flags=UnitFlag::None},
+    {.unit=units::precise::giga,  .name="giga",  .abbr="G", .flags=UnitFlag::None},
+    {.unit=units::precise::tera,  .name="tera",  .abbr="T", .flags=UnitFlag::None},
+    {.unit=units::precise::peta,  .name="peta",  .abbr="P", .flags=UnitFlag::None},
+    {.unit=units::precise::exa,   .name="exa",   .abbr="E", .flags=UnitFlag::None},
+    {.unit=units::precise::zetta, .name="zetta", .abbr="Z", .flags=UnitFlag::None},
+    {.unit=units::precise::yotta, .name="yotta", .abbr="Y", .flags=UnitFlag::None},
 }};
 
 // clang-format on
