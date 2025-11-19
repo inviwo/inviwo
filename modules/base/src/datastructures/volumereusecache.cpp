@@ -40,7 +40,7 @@ const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
 auto VolumeReuseCache::get(const VolumeConfig& config)
     -> std::pair<std::shared_ptr<Volume>, Status> {
 
-    std::scoped_lock lock{mutex_};
+    const std::scoped_lock lock{mutex_};
 
     // only check for dim/format
     auto status = Status::NoChange;
@@ -49,7 +49,6 @@ auto VolumeReuseCache::get(const VolumeConfig& config)
         status = Status::ClearedCache;
     }
     config_ = config;
-
 
     auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {

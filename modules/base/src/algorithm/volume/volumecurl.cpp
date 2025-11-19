@@ -46,7 +46,7 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/assertion.h>
 
-#include <stdlib.h>   // for abs
+#include <cstdlib>    // for abs
 #include <algorithm>  // for max, min
 #include <ranges>
 #include <cmath>          // for abs
@@ -68,9 +68,10 @@ namespace {
 using namespace grid;
 
 template <typename T, Wrapping Wx, Wrapping Wy, Wrapping Wz>
-double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst, DataMapper dm,
-                      dmat3 g, dmat3 basis, std::function<void(double)> progress,
-                      std::function<bool()> stop) {
+double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
+                      const DataMapper& dm, dmat3 g, dmat3 basis,
+                      const std::function<void(double)>& progress,
+                      const std::function<bool()>& stop) {
 
     const auto im = util::IndexMapper3D(dims);
 
@@ -111,8 +112,9 @@ double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
 }  // namespace
 
 std::shared_ptr<Volume> curlVolume(
-    const Volume& srcVolume, std::function<std::shared_ptr<Volume>(const VolumeConfig&)> getVolume,
-    std::function<void(double)> progress, std::function<bool()> stop) {
+    const Volume& srcVolume,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
+    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
     if (progress) progress(0.0);
 
     if (srcVolume.getDataFormat()->getNumericType() != NumericType::Float ||
@@ -125,11 +127,12 @@ std::shared_ptr<Volume> curlVolume(
     const auto srcConfig = srcVolume.config();
     const auto config = VolumeConfig{srcConfig}.updateFrom(
         {.format = DataVec3Float32::get(),
-         .swizzleMask = swizzlemasks::rgb,
+         .swizzleMask = swizzlemasks::defaultData(3),
          .interpolation = InterpolationType::Linear,
          .valueAxis =
-             Axis{"Curl", srcConfig.valueAxis.value_or(VolumeConfig::defaultValueAxis).unit /
-                              srcConfig.xAxis.value_or(VolumeConfig::defaultXAxis).unit}});
+             Axis{.name = "Curl",
+                  .unit = srcConfig.valueAxis.value_or(VolumeConfig::defaultValueAxis).unit /
+                          srcConfig.xAxis.value_or(VolumeConfig::defaultXAxis).unit}});
 
     auto dstVolume = getVolume(config);
     auto* dstVolumeRep =
@@ -141,15 +144,16 @@ std::shared_ptr<Volume> curlVolume(
     const auto basis = dstVolume->getCoordinateTransformer().getDataToWorldMatrix();
     const auto dims = dstVolumeRep->getDimensions();
     const auto wrapping = srcVolume.getWrapping();
-    const auto srcRep = srcVolume.getRepresentation<VolumeRAM>();
+    const auto* const srcRep = srcVolume.getRepresentation<VolumeRAM>();
 
     const auto max = srcRep->dispatch<double, dispatching::filter::Float3s>(
         [&]<typename T>(const VolumeRAMPrecision<T>* srcTRep) {
             static constexpr auto table =
                 build_array_t_nd<3uz, 3uz, 3uz>([&]<size_t x, size_t y, size_t z>() constexpr {
                     return +[](size3_t dims, std::span<const T> src, std::span<vec3> dst,
-                               DataMapper dm, dmat3 g, dmat3 basis, std::function<void(double)> p,
-                               std::function<bool()> s) -> double {
+                               const DataMapper& dm, dmat3 g, dmat3 basis,
+                               const std::function<void(double)>& p,
+                               const std::function<bool()>& s) -> double {
                         constexpr auto Wx = static_cast<Wrapping>(x);
                         constexpr auto Wy = static_cast<Wrapping>(y);
                         constexpr auto Wz = static_cast<Wrapping>(z);
