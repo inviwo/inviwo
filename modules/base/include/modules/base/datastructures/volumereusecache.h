@@ -36,6 +36,7 @@
 #include <memory>   // for shared_ptr, make_shared
 #include <utility>  // for pair
 #include <vector>   // for vector
+#include <mutex>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeReuseCache {
 public:
-    explicit VolumeReuseCache(VolumeConfig config = {});
+    VolumeReuseCache();
     VolumeReuseCache(const VolumeReuseCache&) = delete;
     VolumeReuseCache(VolumeReuseCache&&) = delete;
     VolumeReuseCache& operator=(const VolumeReuseCache&) = delete;
@@ -77,30 +78,22 @@ public:
     const VolumeConfig& getConfig() const;
 
     /**
-     * @brief Sets a new VolumeConfig for the cache.
-     *
-     * Updates the configuration used for creating new Volume objects.
-     * If the existing config does not match the new config,
-     * existing volumes will be discarded and new Volumes will be created as needed.
-     *
-     * @param config The new VolumeConfig to use.
-     * @returns Status::ClearedCache if the config changed (the cache was cleared),
-     * Status::NoChange otherwise
-     */
-    Status setConfig(const VolumeConfig& config);
-
-    /**
      * @brief Retrieves a Volume from the cache or creates a new one if none are available.
      *
-     * Returns a shared pointer to a Volume object matching the current configuration.
+     * Returns a shared pointer to a Volume object matching the given configuration.
      * If the cache contains available Volumes, one is reused; otherwise, a new Volume is created.
      * After the volume is reused, call Volume::discardHistograms() to have them recalculated.
      *
+     * @param config The VolumeConfig to use for retrieving or creating the Volume.
+     *
      * @return std::shared_ptr<Volume> A shared pointer to a Volume instance.
      */
-    std::shared_ptr<Volume> get();
+    std::pair<std::shared_ptr<Volume>, Status> get(const VolumeConfig& config);
+
+    std::shared_ptr<Volume> operator()(const VolumeConfig& config) { return get(config).first; }
 
 private:
+    std::mutex mutex_;
     VolumeConfig config_;
     std::vector<std::shared_ptr<Volume>> cache_;
 };
