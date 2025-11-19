@@ -41,9 +41,10 @@ namespace util {
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(
     const Volume& volume,
-    std::function<std::shared_ptr<Volume>(const VolumeConfig&)> getVolume =
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume =
         [](const VolumeConfig& config) { return std::make_shared<Volume>(config); },
-    std::function<void(double)> progress = nullptr, std::function<bool()> stop = nullptr);
+    const std::function<void(double)>& progress = nullptr,
+    const std::function<bool()>& stop = nullptr);
 
 }  // namespace util
 

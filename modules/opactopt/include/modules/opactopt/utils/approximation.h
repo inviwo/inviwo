@@ -42,7 +42,7 @@ namespace inviwo::approximations {
 // In how may ways can I select k items from n items without repetition and without order
 constexpr size_t choose(size_t n, size_t k) {
     if (k == 0 || k == n) return 1;
-    if (k < 0 || k > n) return 0;
+    if (k > n) return 0;
 
     k = std::min(k, n - k);  // Use symmetry
 

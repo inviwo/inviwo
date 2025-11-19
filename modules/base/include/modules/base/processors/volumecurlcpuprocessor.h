@@ -41,6 +41,11 @@ namespace inviwo {
 class IVW_MODULE_BASE_API VolumeCurlCPUProcessor : public PoolProcessor {
 public:
     VolumeCurlCPUProcessor();
+    VolumeCurlCPUProcessor(const VolumeCurlCPUProcessor&) = delete;
+    VolumeCurlCPUProcessor(VolumeCurlCPUProcessor&&) = delete;
+    VolumeCurlCPUProcessor& operator=(const VolumeCurlCPUProcessor&) = delete;
+    VolumeCurlCPUProcessor& operator=(VolumeCurlCPUProcessor&&) = delete;
+
     virtual ~VolumeCurlCPUProcessor() = default;
 
     virtual void process() override;

@@ -513,7 +513,7 @@ void InstanceRenderer::onDidAddPort(Property* property) {
         vecPorts_.emplace_back(detail::DynPort{
             .port = std::move(port),
             .size = []() { return std::nullopt; },
-            .set = [](Shader& shader, size_t index) {},
+            .set = [](Shader&, size_t) {},
             .addUniform =
                 [s = sampler](ShaderObject& so) {
                     so.addSegment(ShaderSegment{.placeholder = irplaceholder::uniform,
@@ -538,7 +538,7 @@ void InstanceRenderer::onDidAddPort(Property* property) {
         vecPorts_.emplace_back(detail::DynPort{
             .port = std::move(port),
             .size = []() { return std::nullopt; },
-            .set = [](Shader& shader, size_t index) {},
+            .set = [](Shader&, size_t) {},
             .addUniform =
                 [s = sampler](ShaderObject& so) {
                     so.addSegment(ShaderSegment{.placeholder = irplaceholder::uniform,

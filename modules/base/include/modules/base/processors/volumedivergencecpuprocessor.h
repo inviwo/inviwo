@@ -41,6 +41,11 @@ namespace inviwo {
 class IVW_MODULE_BASE_API VolumeDivergenceCPUProcessor : public PoolProcessor {
 public:
     VolumeDivergenceCPUProcessor();
+    VolumeDivergenceCPUProcessor(const VolumeDivergenceCPUProcessor&) = delete;
+    VolumeDivergenceCPUProcessor(VolumeDivergenceCPUProcessor&&) = delete;
+    VolumeDivergenceCPUProcessor& operator=(const VolumeDivergenceCPUProcessor&) = delete;
+    VolumeDivergenceCPUProcessor& operator=(VolumeDivergenceCPUProcessor&&) = delete;
+
     virtual ~VolumeDivergenceCPUProcessor() = default;
 
     virtual void process() override;

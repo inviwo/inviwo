@@ -65,7 +65,7 @@ void VolumeDivergenceCPUProcessor::process() {
     };
 
     outport_.clear();
-    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+    dispatchOne(calc, [this](const std::shared_ptr<Volume>& result) {
         outport_.setData(result);
         newResults();
     });

@@ -49,8 +49,8 @@ void loop(size_t N, Func func) {
 }
 
 template <typename Func>
-void loop(size3_t dims, Func func, std::function<void(double)> progress = nullptr,
-          std::function<bool()> stop = nullptr) {
+void loop(size3_t dims, Func func, const std::function<void(double)>& progress = nullptr,
+          const std::function<bool()>& stop = nullptr) {
 
     loop(dims.z, [&]<Part Pz>(size_t z) {
         if (stop && stop()) return;

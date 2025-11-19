@@ -47,8 +47,6 @@ namespace inviwo {
 
 static constexpr std::string_view subscribeCommand = "subscribe";
 static constexpr std::string_view propertyCommand = "property";
-static constexpr std::string_view subscribeProgress = "processor.progress.subscribe";
-static constexpr std::string_view unsubscribeProgress = "processor.progress.unsubscribe";
 
 static constexpr std::string_view callbackCommand = "callback";
 static constexpr std::string_view networkCommand = "network.";
