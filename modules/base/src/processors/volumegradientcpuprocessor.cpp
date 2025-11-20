@@ -30,7 +30,6 @@
 #include <modules/base/processors/volumegradientcpuprocessor.h>
 
 #include <inviwo/core/ports/volumeport.h>                  // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>              // for Processor
 #include <inviwo/core/processors/processorinfo.h>          // for ProcessorInfo
 #include <inviwo/core/processors/processorstate.h>         // for CodeState, CodeState::Experime...
 #include <inviwo/core/processors/processortags.h>          // for Tags, Tags::CPU
@@ -52,14 +51,21 @@ const ProcessorInfo VolumeGradientCPUProcessor::processorInfo_{
 const ProcessorInfo& VolumeGradientCPUProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientCPUProcessor::VolumeGradientCPUProcessor()
-    : Processor(), inport_("inport"), outport_("outport") {
+    : PoolProcessor(), inport_("inport"), outport_("outport") {
 
-    addPort(inport_);
-    addPort(outport_);
+    addPorts(inport_, outport_);
 }
 
 void VolumeGradientCPUProcessor::process() {
-    outport_.setData(util::gradientVolume(inport_.getData(), 0));
+    const auto calc = [data = inport_.getData(), this](pool::Progress progress, pool::Stop stop) {
+        return util::gradientVolume(*data, 0, std::ref(cache_), progress, stop);
+    };
+
+    outport_.clear();
+    dispatchOne(calc, [this](const std::shared_ptr<Volume>& result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

@@ -61,35 +61,41 @@
 namespace inviwo {
 namespace util {
 
-std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel) {
+// TODO Refactor
+
+std::shared_ptr<Volume> gradientVolume(
+    const Volume& srcVolume, int channel,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
+    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+
     auto newVolume = std::make_unique<Volume>(
-        *volume, noData,
-        volume->config().updateFrom({
-            .valueAxis = Axis{"gradient", volume->dataMap.valueAxis.unit / volume->axes[0].unit},
+        srcVolume, noData,
+        srcVolume.config().updateFrom({
+            .valueAxis = Axis{"gradient", srcVolume.dataMap.valueAxis.unit / srcVolume.axes[0].unit},
         }));
 
-    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume->getDimensions());
+    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(srcVolume.getDimensions());
     newVolume->addRepresentation(newVolumeRep);
 
     auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
 
     const auto a = m * vec4(0, 0, 0, 1);
-    const auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
+    const auto b = m * vec4(1.0f / vec3(srcVolume.getDimensions() - size3_t(1)), 1);
     const auto spacing = b - a;
 
     const vec3 ox(spacing.x, 0, 0);
     const vec3 oy(0, spacing.y, 0);
     const vec3 oz(0, 0, spacing.z);
 
-    VolumeSampler sampler{volume, CoordinateSpace::World};
+    VolumeSampler sampler{srcVolume, CoordinateSpace::World};
 
-    util::IndexMapper3D index(volume->getDimensions());
+    util::IndexMapper3D index(srcVolume.getDimensions());
     auto data = newVolumeRep->getDataTyped();
 
     const dvec3 spacing2 = spacing * 2.0;
     float max = std::numeric_limits<float>::lowest();
     auto func = [&](const size3_t& pos) {
-        const vec3 world{m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)};
+        const vec3 world{m * vec4(vec3(pos) / vec3(srcVolume.getDimensions() - size3_t(1)), 1)};
 
         const auto g = static_cast<vec3>(
             dvec3{(sampler.sample(world + ox) - sampler.sample(world - ox))[channel],
@@ -101,7 +107,7 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
         max = glm::max(max, glm::compMax(glm::abs(g)));
     };
 
-    util::forEachVoxelParallel(*volume->getRepresentation<VolumeRAM>(), func);
+    util::forEachVoxelParallel(*srcVolume.getRepresentation<VolumeRAM>(), func);
 
     newVolume->dataMap.dataRange = dvec2(-max, max);
     newVolume->dataMap.valueRange = dvec2(-max, max);
