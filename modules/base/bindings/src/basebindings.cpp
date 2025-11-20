@@ -35,6 +35,7 @@
 #include <modules/base/pythonbindings/io/curlutils.h>
 #include <modules/base/pythonbindings/io/volumewriting.h>
 #include <modules/base/pythonbindings/algorithm/volumeoperations.h>
+#include <modules/base/pythonbindings/properties/pybaseproperties.h>
 #include <modules/base/algorithm/tfconstruction.h>
 
 #include <modules/python3/pybindmodule.h>
@@ -60,6 +61,7 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
 
     auto ioMod = m.def_submodule("io", "Input and Output functions");
     auto utilMod = m.def_submodule("algorithm", "Algorithms and util functions");
+    auto propertiesMod = m.def_submodule("properties", "Properties");
 
 #ifdef INVIWO_ALL_DYN_LINK
     py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
@@ -69,6 +71,7 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
     inviwo::exposeCurlUtils(ioMod);
     inviwo::exposeVolumeWriteMethods(ioMod);
     inviwo::exposeVolumeOperations(utilMod);
+    inviwo::exposeBaseProperties(propertiesMod);
 
     utilMod.def(
         "tfSawTooth",
