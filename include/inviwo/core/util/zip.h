@@ -36,40 +36,6 @@
 #include <iterator>
 #include <type_traits>
 #include <limits>
-/**
- * This file contains convenience functions for iterating.
- * Examples:
- *
- * \code{.cpp}
- * Iterate over containers in sync (@see inviwo::util::zip).
- * std::vector<int> a(10);
- * std::vector<int> b(10);
- * for (auto&& i : util::zip(a, b)) {
- *      std::cout << i.first() << " " << i.second() << std::endl;
- *      // alternatively, get<0>(i) and get<1>(i) can be used
- * }
- * \endcode
- *
- *
- * Enumerate element in a container (@see inviwo::util::enumerate).
- * \code{.cpp}
- * std::vector<int> vec(10);
- * for (auto&& item : util::enumerate(vec)) {
- *      auto&& ind = item.first();
- *      auto&& elem = item.second();
- * }
- * \endcode
- *
- * Iterate over sequence (@see inviwo::util::make_sequence).
- * \code{.cpp}
- * size_t end = 3;
- * size_t inc = 2;
- * for (auto&& i : util::make_sequence(0, end, inc)) {
- *      // iterates over 0 and 2
- * }
- * \endcode
- *
- */
 
 namespace inviwo {
 

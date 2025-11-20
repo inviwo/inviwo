@@ -155,7 +155,6 @@ private:
     MessageBreakLevel breakLevel_ = MessageBreakLevel::Off;
 };
 
-namespace log {
 
 /**
  * All log functions either take an explicit SourceContext argument,
@@ -181,10 +180,11 @@ namespace log {
  *
  * # Log to a custom logger
  * * `report(Logger&, LogLevel, SourceContext, fmt::format_string, Args&&...)`
- * * `report(Logger&, LogLevel, SourceContext, std::string_view)
+ * * `report(Logger&, LogLevel, SourceContext, std::string_view)`
  * * `report(Logger&, LogLevel, std::string_view)`
  * * `message(Logger&, LogLevel level, fmt::format_string<Args...>, Args&&...)`
  */
+namespace log {
 
 namespace detail {
 IVW_CORE_API void logDirectly(LogLevel level, SourceContext context, std::string_view message);
