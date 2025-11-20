@@ -29,8 +29,10 @@ set(HEADER_FILES
     include/inviwopy/pyglmportsuint.h
     include/inviwopy/pyglmtypes.h
     include/inviwopy/pyimage.h
+    include/inviwopy/pyimagetypes.h
     include/inviwopy/pyinviwoapplication.h
     include/inviwopy/pyinviwomodule.h
+    include/inviwopy/pylayer.h
     include/inviwopy/pylogging.h
     include/inviwopy/pymesh.h
     include/inviwopy/pynetwork.h
@@ -40,6 +42,7 @@ set(HEADER_FILES
     include/inviwopy/pyproperties.h
     include/inviwopy/pypropertyowner.h
     include/inviwopy/pyserialization.h
+    include/inviwopy/pyspatialdata.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
     include/inviwopy/util/pyglmhelper.h
@@ -79,8 +82,10 @@ set(SOURCE_FILES
     src/pyglmportsuint.cpp
     src/pyglmtypes.cpp
     src/pyimage.cpp
+    src/pyimagetypes.cpp
     src/pyinviwoapplication.cpp
     src/pyinviwomodule.cpp
+    src/pylayer.cpp
     src/pylogging.cpp
     src/pymesh.cpp
     src/pynetwork.cpp
@@ -90,6 +95,7 @@ set(SOURCE_FILES
     src/pyproperties.cpp
     src/pypropertyowner.cpp
     src/pyserialization.cpp
+    src/pyspatialdata.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
     src/util/pyglmhelper.cpp
