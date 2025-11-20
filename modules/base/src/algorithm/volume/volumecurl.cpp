@@ -65,8 +65,6 @@ namespace util {
 
 namespace {
 
-using namespace grid;
-
 template <typename T, Wrapping Wx, Wrapping Wy, Wrapping Wz>
 double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
                       const DataMapper& dm, dmat3 g, dmat3 basis,
@@ -74,17 +72,17 @@ double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
                       const std::function<bool()>& stop) {
 
     const auto im = util::IndexMapper3D(dims);
-
     double max = 0.0;
-
     const double sqrt_g = std::sqrt(determinant(g));
     const dmat3 invBasis = glm::inverse(basis);
-
     const auto delta = static_cast<dvec3>(dims);
+
+    using grid::next;
+    using grid::prev;
 
     grid::loop(
         dims,
-        [&]<Part Px, Part Py, Part Pz>(size_t x, size_t y, size_t z) {
+        [&]<grid::Part Px, grid::Part Py, grid::Part Pz>(size_t x, size_t y, size_t z) {
             std::array<dvec3, 6> samples{
                 src[im(next<Px, Wx>(x, dims.x), y, z)], src[im(prev<Px, Wx>(x, dims.x), y, z)],
                 src[im(x, next<Py, Wy>(y, dims.y), z)], src[im(x, prev<Py, Wy>(y, dims.y), z)],
@@ -94,9 +92,9 @@ double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
                 item = g * invBasis * dm.mapFromDataTo<DataMapper::Space::Value>(item);
             }
 
-            const dvec3 Fx = (samples[0] - samples[1]) * delta.x * invStep<Px, Wx>();
-            const dvec3 Fy = (samples[2] - samples[3]) * delta.y * invStep<Py, Wy>();
-            const dvec3 Fz = (samples[4] - samples[5]) * delta.z * invStep<Pz, Wz>();
+            const dvec3 Fx = (samples[0] - samples[1]) * delta.x * grid::invStep<Px, Wx>();
+            const dvec3 Fy = (samples[2] - samples[3]) * delta.y * grid::invStep<Py, Wy>();
+            const dvec3 Fz = (samples[4] - samples[5]) * delta.z * grid::invStep<Pz, Wz>();
 
             const auto curl = basis * (1.0 / sqrt_g) * dvec3{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
 
