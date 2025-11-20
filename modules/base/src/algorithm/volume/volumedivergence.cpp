@@ -127,15 +127,12 @@ std::shared_ptr<Volume> divergenceVolume(
                         srcVolume.getDataFormat()->getString());
     }
 
-    const auto srcConfig = srcVolume.config();
-    const auto config = VolumeConfig{srcConfig}.updateFrom(
+    const auto config = VolumeConfig{srcVolume.config()}.updateFrom(
         {.format = DataFloat32::get(),
-         .swizzleMask = swizzlemasks::defaultData(3),
+         .swizzleMask = swizzlemasks::defaultData(1),
          .interpolation = InterpolationType::Linear,
-         .valueAxis =
-             Axis{.name = "Divergence",
-                  .unit = srcConfig.valueAxis.value_or(VolumeConfig::defaultValueAxis).unit /
-                          srcConfig.xAxis.value_or(VolumeConfig::defaultXAxis).unit}});
+         .valueAxis = Axis{.name = "Divergence",
+                           .unit = srcVolume.dataMap.valueAxis.unit / srcVolume.axes[0].unit}});
     auto dstVolume = getVolume(config);
 
     auto* dstVolumeRep =

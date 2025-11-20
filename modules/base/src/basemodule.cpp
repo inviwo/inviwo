@@ -129,6 +129,7 @@
 #include <modules/base/processors/spotlightsourceprocessor.h>              // for SpotLightSou...
 #include <modules/base/processors/stereocamerasyncer.h>                    // for StereoCamera...
 #include <modules/base/processors/surfaceextractionprocessor.h>            // for SurfaceExtra...
+#include <modules/base/processors/testvolumecreator.h>
 #include <modules/base/processors/tfselector.h>                            // for TFSelector
 #include <modules/base/processors/transform.h>                             // for Transform
 #include <modules/base/processors/trianglestowireframe.h>                  // for TrianglesToW...
@@ -267,6 +268,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<StereoCameraSyncer>();
     registerProcessor<SurfaceExtraction>();
     registerProcessor<TFSelector>();
+    registerProcessor<TestVolumeCreator>();
     registerProcessor<TransformLayer>();
     registerProcessor<TransformMesh>();
     registerProcessor<TransformVolume>();

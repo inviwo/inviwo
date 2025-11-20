@@ -119,6 +119,7 @@ set(HEADER_FILES
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
+    include/modules/base/processors/testvolumecreator.h
     include/modules/base/processors/tfselector.h
     include/modules/base/processors/transform.h
     include/modules/base/processors/trianglestowireframe.h
@@ -278,6 +279,7 @@ set(SOURCE_FILES
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp
+    src/processors/testvolumecreator.cpp
     src/processors/tfselector.cpp
     src/processors/transform.cpp
     src/processors/trianglestowireframe.cpp

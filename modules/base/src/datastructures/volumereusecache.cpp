@@ -60,7 +60,7 @@ auto VolumeReuseCache::get(const VolumeConfig& config)
             config_.interpolation.value_or(VolumeConfig::defaultInterpolation));
         volume->setWrapping(config_.wrapping.value_or(VolumeConfig::defaultWrapping));
 
-        volume->axes[0] = config_.xAxis.value_or(VolumeConfig::defaultYAxis);
+        volume->axes[0] = config_.xAxis.value_or(VolumeConfig::defaultXAxis);
         volume->axes[1] = config_.yAxis.value_or(VolumeConfig::defaultYAxis);
         volume->axes[2] = config_.zAxis.value_or(VolumeConfig::defaultZAxis);
         volume->dataMap = config_.dataMap();
