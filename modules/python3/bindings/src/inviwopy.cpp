@@ -40,33 +40,36 @@
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <inviwopy/pybitset.h>
-#include <inviwopy/pydataformat.h>
-#include <inviwopy/pydatareaders.h>
-#include <inviwopy/pydatawriters.h>
-#include <inviwopy/pyinviwoapplication.h>
-#include <inviwopy/pyinviwomodule.h>
-#include <inviwopy/pydocument.h>
-#include <inviwopy/pyimage.h>
-#include <inviwopy/pynetwork.h>
-#include <inviwopy/pyprocessors.h>
-#include <inviwopy/pyglmtypes.h>
-#include <inviwopy/pyglmmattypes.h>
-#include <inviwopy/pyglmports.h>
-#include <inviwopy/pyport.h>
-#include <inviwopy/pycompositeproperties.h>
-#include <inviwopy/pyproperties.h>
-#include <inviwopy/pypropertyowner.h>
-#include <inviwopy/pyvolume.h>
-#include <inviwopy/pydatamapper.h>
 #include <inviwopy/pybuffer.h>
-#include <inviwopy/pymesh.h>
-#include <inviwopy/pytfprimitiveset.h>
-#include <inviwopy/pypickingmapper.h>
-#include <inviwopy/pyserialization.h>
-#include <inviwopy/pylogging.h>
-#include <inviwopy/pyevent.h>
 #include <inviwopy/pycamera.h>
 #include <inviwopy/pycameraproperty.h>
+#include <inviwopy/pycompositeproperties.h>
+#include <inviwopy/pydataformat.h>
+#include <inviwopy/pydatamapper.h>
+#include <inviwopy/pydatareaders.h>
+#include <inviwopy/pydatawriters.h>
+#include <inviwopy/pydocument.h>
+#include <inviwopy/pyevent.h>
+#include <inviwopy/pyglmmattypes.h>
+#include <inviwopy/pyglmports.h>
+#include <inviwopy/pyglmtypes.h>
+#include <inviwopy/pyimage.h>
+#include <inviwopy/pyimagetypes.h>
+#include <inviwopy/pyinviwoapplication.h>
+#include <inviwopy/pyinviwomodule.h>
+#include <inviwopy/pylayer.h>
+#include <inviwopy/pylogging.h>
+#include <inviwopy/pymesh.h>
+#include <inviwopy/pynetwork.h>
+#include <inviwopy/pypickingmapper.h>
+#include <inviwopy/pyport.h>
+#include <inviwopy/pyprocessors.h>
+#include <inviwopy/pyproperties.h>
+#include <inviwopy/pypropertyowner.h>
+#include <inviwopy/pyserialization.h>
+#include <inviwopy/pyspatialdata.h>
+#include <inviwopy/pytfprimitiveset.h>
+#include <inviwopy/pyvolume.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/moduleutils.h>
@@ -158,6 +161,9 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
 
     exposeGLMPorts(m);
     exposeDataMapper(dataModule);
+    exposeSpatialData(dataModule);
+    exposeImageTypes(dataModule);
+    exposeLayer(dataModule);
     exposeImage(dataModule);
     exposeVolume(dataModule);
     exposeBuffer(dataModule);
