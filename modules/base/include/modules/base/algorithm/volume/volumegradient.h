@@ -30,17 +30,21 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 #include <memory>
+#include <functional>
 
 namespace inviwo {
 
-class Volume;
-
 namespace util {
 
-IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,
-                                                           int channel);
+IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(
+    const Volume& volume, size_t channel,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume =
+        [](const VolumeConfig& config) { return std::make_shared<Volume>(config); },
+    const std::function<void(double)>& progress = nullptr,
+    const std::function<bool()>& stop = nullptr);
 
 }  // namespace util
 

@@ -106,8 +106,8 @@ void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& 
             Axis{.name = "Gradient", .unit = data->dataMap.valueAxis.unit / data->axes[0].unit};
     }
 
+    config.swizzleMask = swizzlemasks::defaultData(3);
     shader.setUniform("channel", channel_.getSelectedValue());
-    shader.setUniform("dataRange", vec2(data->dataMap.dataRange));
 }
 
 }  // namespace inviwo

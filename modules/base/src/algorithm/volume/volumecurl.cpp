@@ -60,115 +60,70 @@
 #include <glm/vec3.hpp>    // for operator/, operator*
 #include <glm/vec4.hpp>    // for operator*, operator+
 
-namespace inviwo {
-namespace util {
-
-namespace {
-
-template <typename T, Wrapping Wx, Wrapping Wy, Wrapping Wz>
-double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
-                      const DataMapper& dm, dmat3 g, dmat3 basis,
-                      const std::function<void(double)>& progress,
-                      const std::function<bool()>& stop) {
-
-    const auto im = util::IndexMapper3D(dims);
-    double max = 0.0;
-    const double sqrt_g = std::sqrt(determinant(g));
-    const dmat3 invBasis = glm::inverse(basis);
-    const auto delta = static_cast<dvec3>(dims);
-
-    using grid::next;
-    using grid::prev;
-
-    grid::loop(
-        dims,
-        [&]<grid::Part Px, grid::Part Py, grid::Part Pz>(size_t x, size_t y, size_t z) {
-            std::array<dvec3, 6> samples{
-                src[im(next<Px, Wx>(x, dims.x), y, z)], src[im(prev<Px, Wx>(x, dims.x), y, z)],
-                src[im(x, next<Py, Wy>(y, dims.y), z)], src[im(x, prev<Py, Wy>(y, dims.y), z)],
-                src[im(x, y, next<Pz, Wz>(z, dims.z))], src[im(x, y, prev<Pz, Wz>(z, dims.z))]};
-
-            for (auto& item : samples) {
-                item = g * invBasis * dm.mapFromDataTo<DataMapper::Space::Value>(item);
-            }
-
-            const dvec3 Fx = (samples[0] - samples[1]) * delta.x * grid::invStep<Px, Wx>();
-            const dvec3 Fy = (samples[2] - samples[3]) * delta.y * grid::invStep<Py, Wy>();
-            const dvec3 Fz = (samples[4] - samples[5]) * delta.z * grid::invStep<Pz, Wz>();
-
-            const auto curl = basis * (1.0 / sqrt_g) * dvec3{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
-
-            max = std::max(max, glm::compMax(glm::abs(curl)));
-
-            dst[im(x, y, z)] = static_cast<vec3>(curl);
-        },
-        progress, stop);
-
-    return max;
-}
-
-}  // namespace
+namespace inviwo::util {
 
 std::shared_ptr<Volume> curlVolume(
     const Volume& srcVolume,
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
     const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+
     if (progress) progress(0.0);
 
-    if (srcVolume.getDataFormat()->getNumericType() != NumericType::Float ||
-        srcVolume.getDataFormat()->getComponents() != 3) {
-
-        throw Exception(SourceContext{}, "curlVolume only supports vec3 or dvec3 volumes, got {}",
+    if (srcVolume.getDataFormat()->getComponents() != 3) {
+        throw Exception(SourceContext{}, "curlVolume only supports 3 component vector data, got {}",
                         srcVolume.getDataFormat()->getString());
     }
 
-    const auto srcConfig = srcVolume.config();
-    const auto config = VolumeConfig{srcConfig}.updateFrom(
+    const auto config = VolumeConfig{srcVolume.config()}.updateFrom(
         {.format = DataVec3Float32::get(),
          .swizzleMask = swizzlemasks::defaultData(3),
          .interpolation = InterpolationType::Linear,
-         .valueAxis =
-             Axis{.name = "Curl",
-                  .unit = srcConfig.valueAxis.value_or(VolumeConfig::defaultValueAxis).unit /
-                          srcConfig.xAxis.value_or(VolumeConfig::defaultXAxis).unit}});
-
+         .valueAxis = Axis{.name = srcVolume.dataMap.valueAxis.name.empty()
+                                       ? "Curl"
+                                       : fmt::format("{} Curl", srcVolume.dataMap.valueAxis.name),
+                           .unit = srcVolume.dataMap.valueAxis.unit / srcVolume.axes[0].unit}});
     auto dstVolume = getVolume(config);
-    auto* dstVolumeRep =
+    auto* dstRep =
         dynamic_cast<VolumeRAMPrecision<vec3>*>(dstVolume->getEditableRepresentation<VolumeRAM>());
+    IVW_ASSERT(dstRep, "should exist");
 
-    IVW_ASSERT(dstVolumeRep, "should exist");
-
-    const auto g = dmat3{dstVolume->getCoordinateTransformer().getMetricTensor()};
-    const auto basis = dstVolume->getCoordinateTransformer().getDataToWorldMatrix();
-    const auto dims = dstVolumeRep->getDimensions();
+    const auto dims = srcVolume.getDimensions();
+    const auto g = dmat3{srcVolume.getCoordinateTransformer().getMetricTensor()};
+    const auto sqrt_g = std::sqrt(determinant(g));
+    const auto basis = dmat3{srcVolume.getCoordinateTransformer().getDataToWorldMatrix()};
+    const auto invBasis = glm::inverse(basis);
     const auto wrapping = srcVolume.getWrapping();
+    const auto dm = srcVolume.dataMap;
+    const auto im = util::IndexMapper3D(dims);
+    const auto delta = static_cast<dvec3>(dims);
     const auto* const srcRep = srcVolume.getRepresentation<VolumeRAM>();
+    const auto srcFmt = srcRep->getDataFormatId();
+    const auto dst = dstRep->getView();
+    double max = 0.0;
 
-    const auto max = srcRep->dispatch<double, dispatching::filter::Float3s>(
-        [&]<typename T>(const VolumeRAMPrecision<T>* srcTRep) {
-            static constexpr auto table =
-                build_array_t_nd<3uz, 3uz, 3uz>([&]<size_t x, size_t y, size_t z>() constexpr {
-                    return +[](size3_t dims, std::span<const T> src, std::span<vec3> dst,
-                               const DataMapper& dm, dmat3 g, dmat3 basis,
-                               const std::function<void(double)>& p,
-                               const std::function<bool()>& s) -> double {
-                        constexpr auto Wx = static_cast<Wrapping>(x);
-                        constexpr auto Wy = static_cast<Wrapping>(y);
-                        constexpr auto Wz = static_cast<Wrapping>(z);
-                        return calcCurlVolume<T, Wx, Wy, Wz>(dims, src, dst, dm, g, basis, p, s);
-                    };
+    grid::centralDifferences(
+        dims, wrapping,
+        [&](size3_t voxel, const std::array<size3_t, 6>& positions, const dvec3& invStep) {
+            std::array<dvec3, 6> samples{};
+            for (auto&& [pos, dest] : std::views::zip(positions, samples)) {
+                grid::dispatch<dispatching::filter::Vec3s>(srcFmt, [&]<typename T> {
+                    auto src = static_cast<const VolumeRAMPrecision<T>*>(srcRep)->getView();
+                    const auto val = static_cast<dvec3>(src[im(pos)]);
+                    dest = g * invBasis * dm.mapFromDataTo<DataMapper::Space::Value>(val);
                 });
-            const auto& func =
-                table[std::to_underlying(wrapping[0])][std::to_underlying(wrapping[1])]
-                     [std::to_underlying(wrapping[2])];
+            }
 
-            return func(dims, srcTRep->getView(), dstVolumeRep->getView(), srcVolume.dataMap, g,
-                        dmat3{basis}, progress, stop);
+            const dvec3 Fx = (samples[0] - samples[1]) * delta.x * invStep.x;
+            const dvec3 Fy = (samples[2] - samples[3]) * delta.y * invStep.y;
+            const dvec3 Fz = (samples[4] - samples[5]) * delta.z * invStep.z;
+
+            const auto curl = basis * (1.0 / sqrt_g) * dvec3{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
+            max = std::max(max, glm::compMax(glm::abs(curl)));
+            dst[im(voxel)] = static_cast<vec3>(curl);
         });
 
     dstVolume->dataMap.dataRange = dvec2(-max, max);
     dstVolume->dataMap.valueRange = dvec2(-max, max);
-
     dstVolume->discardHistograms();
 
     if (progress) progress(1.0);
@@ -176,5 +131,4 @@ std::shared_ptr<Volume> curlVolume(
     return dstVolume;
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -24,13 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SAMPLER3D_GLSL
 #define IVW_SAMPLER3D_GLSL
 
-#include "utils/structs.glsl" //! #include "./structs.glsl"
+#include "utils/structs.glsl"  //! #include "./structs.glsl"
 
 //
 // Fetch texture data using texture coordinates [0,1]
@@ -53,30 +53,30 @@ vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 sa
            volumeParams.texToNormalized.scale;
 }
 
-float getNormalizedVoxelChannel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos,int channel) {
-    vec4 v = getNormalizedVoxel(volume,volumeParams,samplePos);
+float getNormalizedVoxelChannel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos,
+                                int channel) {
+    vec4 v = getNormalizedVoxel(volume, volumeParams, samplePos);
     return v[channel];
 }
 
-
 // Return a value mapped from data range [min,max] to [-1,1]
-// Same as getNormalizedVoxel but for signed types. 
+// Same as getNormalizedVoxel but for signed types.
 vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
     return (texture(volume, samplePos) - volumeParams.texToSignNormalized.offset) *
            volumeParams.texToSignNormalized.scale;
 }
 
-
 vec4 getValueVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
-    return ((texture(volume, samplePos) - volumeParams.texToValue.inputOffset) * 
-            volumeParams.texToValue.scale) + volumeParams.texToValue.outputOffset;
+    return ((texture(volume, samplePos) - volumeParams.texToValue.inputOffset) *
+            volumeParams.texToValue.scale) +
+           volumeParams.texToValue.outputOffset;
 }
 
-float getValueVoxelChannel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos,int channel) {
-    vec4 v = getNormalizedVoxel(volume,volumeParams,samplePos);
+float getValueVoxelChannel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos,
+                           int channel) {
+    vec4 v = getNormalizedVoxel(volume, volumeParams, samplePos);
     return v[channel];
 }
-
 
 //
 // Fetch texture data using texture indices [0,N]
@@ -104,7 +104,7 @@ vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 s
 vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos) {
 #ifdef GLSL_VERSION_140
     return (texelFetch(volume, samplePos, 0) - volumeParams.texToSignNormalized.offset) *
-          volumeParams.texToSignNormalized.scale;
+           volumeParams.texToSignNormalized.scale;
 #else
     return (texture(volume, samplePos) - volumeParams.texToSignNormalized.offset) *
            volumeParams.texToSignNormalized.scale;
@@ -115,10 +115,12 @@ vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ive
 vec4 getValueVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos) {
 #ifdef GLSL_VERSION_140
     return ((texelFetch(volume, samplePos, 0) - volumeParams.texToValue.inputOffset) *
-            volumeParams.texToValue.scale) + volumeParams.texToValue.outputOffset;
+            volumeParams.texToValue.scale) +
+           volumeParams.texToValue.outputOffset;
 #else
     return ((texture(volume, samplePos) - volumeParams.texToValue.inputOffset) *
-            volumeParams.texToValue.scale) + volumeParams.texToValue.outputOffset;
+            volumeParams.texToValue.scale) +
+           volumeParams.texToValue.outputOffset;
 #endif
 }
 
