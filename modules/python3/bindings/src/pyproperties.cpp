@@ -88,6 +88,10 @@ void exposeProperties(py::module& m) {
         .value("All", PropertySerializationMode::All)
         .value("Nothing", PropertySerializationMode::None);
 
+    py::enum_<util::OverwriteState>(m, "OverwriteState")
+        .value("Yes", util::OverwriteState::Yes)
+        .value("No", util::OverwriteState::No);
+
     auto listPropertyUIFlag = py::enum_<ListPropertyUIFlag>(m, "ListPropertyUIFlag")
                                   .value("Static", ListPropertyUIFlag::Static)
                                   .value("Add", ListPropertyUIFlag::Add)
