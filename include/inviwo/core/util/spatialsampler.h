@@ -46,15 +46,15 @@ public:
                    CoordinateSpace space = CoordinateSpace::Data);
     virtual ~SpatialSampler() = default;
 
-    ReturnType sample(const dvec3& pos) const;
-    ReturnType sample(const vec3& pos) const;
-    ReturnType sample(const dvec2& pos) const;
-    ReturnType sample(const vec2& pos) const;
+    auto sample(const dvec3& pos) const -> ReturnType;
+    auto sample(const vec3& pos) const -> ReturnType;
+    auto sample(const dvec2& pos) const -> ReturnType;
+    auto sample(const vec2& pos) const -> ReturnType;
 
-    ReturnType sample(const dvec3& pos, CoordinateSpace space) const;
-    ReturnType sample(const vec3& pos, CoordinateSpace space) const;
-    ReturnType sample(const dvec2& pos, CoordinateSpace space) const;
-    ReturnType sample(const vec2& pos, CoordinateSpace space) const;
+    auto sample(const dvec3& pos, CoordinateSpace space) const -> ReturnType;
+    auto sample(const vec3& pos, CoordinateSpace space) const -> ReturnType;
+    auto sample(const dvec2& pos, CoordinateSpace space) const -> ReturnType;
+    auto sample(const vec2& pos, CoordinateSpace space) const -> ReturnType;
 
     bool withinBounds(const dvec3& pos) const;
     bool withinBounds(const vec3& pos) const;

@@ -76,11 +76,14 @@ CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
 JAVADOC_AUTOBRIEF      = NO
 QT_AUTOBRIEF           = NO
-FULL_PATH_NAMES        = NO
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        = \"${IVW_ROOT_DIR}\"
+STRIP_FROM_INC_PATH    = ${incpaths}
 SHOW_FILES             = NO
 SOURCE_BROWSER         = NO
 VERBATIM_HEADERS       = NO
 SORT_GROUP_NAMES       = YES
+SORT_BRIEF_DOCS        = YES
 DISTRIBUTE_GROUP_DOC   = YES
 SUBGROUPING            = NO
 EXTRACT_LOCAL_CLASSES  = NO
@@ -108,7 +111,7 @@ EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++ co
 FILE_PATTERNS          = ${ARG_FILE_PATTERNS}
 
 RECURSIVE              = YES
-EXCLUDE                =
+EXCLUDE                = 
 EXCLUDE_PATTERNS       = ${ARG_EXCLUDE_PATTERNS}
 
 EXCLUDE_SYMBOLS        = cl::* \\

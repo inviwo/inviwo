@@ -342,8 +342,8 @@ std::array<std::string_view, numItems> splitIntoArray(std::string_view str, char
 /**
  * @brief Finds the first substring equal to @p s in @p str using case insensitive comparisons.
  *
- * @param str  input string
- * @param s    string to search for
+ * @param str input string
+ * @param substring string to search for
  * @return position of the first character of the found substring, std::string_view::npos otherwise
  */
 constexpr size_t iCaseFind(std::string_view str, std::string_view substring) {
