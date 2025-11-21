@@ -78,14 +78,15 @@ std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
 }
 
 constexpr auto order = [](auto& a, auto& b) {
-    return std::lexicographical_compare(glm::value_ptr(a), glm::value_ptr(a) + 3, glm::value_ptr(b),
-                                        glm::value_ptr(b) + 3);
+    return std::lexicographical_compare(glm::value_ptr(a), glm::value_ptr(a) + a.length(),
+                                        glm::value_ptr(b), glm::value_ptr(b) + b.length());
 };
 
 }  // namespace
 
 TEST(Marchingsquares, empty) {
-    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
+                                       TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(
         util::generateLayer(size2_t{2}, mat3(1.0f), [](const size2_t&) { return 0.0f; }));
@@ -95,7 +96,8 @@ TEST(Marchingsquares, empty) {
 }
 
 TEST(Marchingsquares, full) {
-    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
+                                       TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(
         util::generateLayer(size2_t{2}, mat3(1.0f), [](const size2_t&) { return 1.0f; }));
@@ -105,7 +107,8 @@ TEST(Marchingsquares, full) {
 }
 
 TEST(Marchingsquares, case1) {
-    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
+                                       TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 2}));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
@@ -133,7 +136,8 @@ TEST(Marchingsquares, case1) {
 }
 
 TEST(Marchingsquares, openloop) {
-    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
+                                       TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{2, 3}));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);
@@ -161,7 +165,8 @@ TEST(Marchingsquares, openloop) {
 }
 
 TEST(Marchingsquares, circle) {
-    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}}, TFPrimitiveSetType::Relative};
+    const IsoValueCollection isovalues{{{.pos = 0.5, .color = vec4{1.0f}}},
+                                       TFPrimitiveSetType::Relative};
 
     auto layer = std::shared_ptr<Layer>(util::makeSingleTexelLayer<double>(size2_t{3, 3}));
     auto mesh = util::marchingSquares(layer->getRepresentation<LayerRAM>(), isovalues, 0);

@@ -125,13 +125,9 @@ LorenzSystem::~LorenzSystem() = default;
 void LorenzSystem::process() {
     const size3_t dims{size_.get()};
 
-    velocityVolumes_.setConfig(VolumeConfig{.dimensions = dims, .format = DataVec3Float32::get()});
-    curlVolumes_.setConfig(VolumeConfig{.dimensions = dims, .format = DataVec3Float32::get()});
-    divVolumes_.setConfig(VolumeConfig{.dimensions = dims, .format = DataFloat32::get()});
-
-    auto velocityVolume = velocityVolumes_.get();
-    auto curlVolume = curlVolumes_.get();
-    auto divVolume = divVolumes_.get();
+    auto velocityVolume = velocityVolumes_({.dimensions = dims, .format = DataVec3Float32::get()});
+    auto curlVolume = curlVolumes_({.dimensions = dims, .format = DataVec3Float32::get()});
+    auto divVolume = divVolumes_({.dimensions = dims, .format = DataFloat32::get()});
 
     // Basis and offset
     const std::array<vec3, 4> corners{{{xRange_.get().x, yRange_.get().x, zRange_.get().x},

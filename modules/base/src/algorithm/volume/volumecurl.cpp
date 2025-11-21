@@ -29,6 +29,8 @@
 
 #include <modules/base/algorithm/volume/volumecurl.h>
 
+#include <inviwo/core/algorithm/buildarray.h>
+#include <inviwo/core/algorithm/gridtools.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
 #include <inviwo/core/datastructures/data.h>                            // for noData
 #include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
@@ -40,15 +42,18 @@
 #include <inviwo/core/util/glmutils.h>                                  // for Vector
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, dvec2
 #include <inviwo/core/util/indexmapper.h>                               // for IndexMapper, Inde...
-#include <inviwo/core/util/templatesampler.h>                           // for TemplateVolumeSam...
 #include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxel
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/assertion.h>
 
-#include <stdlib.h>       // for abs
-#include <algorithm>      // for max, min
+#include <cstdlib>    // for abs
+#include <algorithm>  // for max, min
+#include <ranges>
 #include <cmath>          // for abs
 #include <limits>         // for numeric_limits
 #include <type_traits>    // for conditional_t
 #include <unordered_set>  // for unordered_set
+#include <atomic>
 
 #include <glm/common.hpp>  // for mix
 #include <glm/mat4x4.hpp>  // for operator*, mat
@@ -58,69 +63,117 @@
 namespace inviwo {
 namespace util {
 
-std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume) {
-    return curlVolume(*volume);
+namespace {
+
+template <typename T, Wrapping Wx, Wrapping Wy, Wrapping Wz>
+double calcCurlVolume(size3_t dims, std::span<const T> src, std::span<vec3> dst,
+                      const DataMapper& dm, dmat3 g, dmat3 basis,
+                      const std::function<void(double)>& progress,
+                      const std::function<bool()>& stop) {
+
+    const auto im = util::IndexMapper3D(dims);
+    double max = 0.0;
+    const double sqrt_g = std::sqrt(determinant(g));
+    const dmat3 invBasis = glm::inverse(basis);
+    const auto delta = static_cast<dvec3>(dims);
+
+    using grid::next;
+    using grid::prev;
+
+    grid::loop(
+        dims,
+        [&]<grid::Part Px, grid::Part Py, grid::Part Pz>(size_t x, size_t y, size_t z) {
+            std::array<dvec3, 6> samples{
+                src[im(next<Px, Wx>(x, dims.x), y, z)], src[im(prev<Px, Wx>(x, dims.x), y, z)],
+                src[im(x, next<Py, Wy>(y, dims.y), z)], src[im(x, prev<Py, Wy>(y, dims.y), z)],
+                src[im(x, y, next<Pz, Wz>(z, dims.z))], src[im(x, y, prev<Pz, Wz>(z, dims.z))]};
+
+            for (auto& item : samples) {
+                item = g * invBasis * dm.mapFromDataTo<DataMapper::Space::Value>(item);
+            }
+
+            const dvec3 Fx = (samples[0] - samples[1]) * delta.x * grid::invStep<Px, Wx>();
+            const dvec3 Fy = (samples[2] - samples[3]) * delta.y * grid::invStep<Py, Wy>();
+            const dvec3 Fz = (samples[4] - samples[5]) * delta.z * grid::invStep<Pz, Wz>();
+
+            const auto curl = basis * (1.0 / sqrt_g) * dvec3{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
+
+            max = std::max(max, glm::compMax(glm::abs(curl)));
+
+            dst[im(x, y, z)] = static_cast<vec3>(curl);
+        },
+        progress, stop);
+
+    return max;
 }
 
-std::unique_ptr<Volume> curlVolume(const Volume& volume) {
-    auto newVolume = std::make_unique<Volume>(volume, noData);
-    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume.getDimensions());
-    newVolume->addRepresentation(newVolumeRep);
+}  // namespace
 
-    const auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
+std::shared_ptr<Volume> curlVolume(
+    const Volume& srcVolume,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
+    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
+    if (progress) progress(0.0);
 
-    const auto a = m * vec4(0, 0, 0, 1);
-    const auto b = m * vec4(1.0f / vec3(volume.getDimensions() - size3_t(1)), 1);
-    const auto spacing = b - a;
+    if (srcVolume.getDataFormat()->getNumericType() != NumericType::Float ||
+        srcVolume.getDataFormat()->getComponents() != 3) {
 
-    const vec3 ox(spacing.x, 0, 0);
-    const vec3 oy(0, spacing.y, 0);
-    const vec3 oz(0, 0, spacing.z);
+        throw Exception(SourceContext{}, "curlVolume only supports vec3 or dvec3 volumes, got {}",
+                        srcVolume.getDataFormat()->getString());
+    }
 
-    volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
-        [&](auto vol) {
-            using DataType = util::PrecisionValueType<decltype(vol)>;
-            using ComponentType = util::value_type_t<DataType>;
-            using SampleType =
-                typename std::conditional_t<std::is_same<float, ComponentType>::value, vec3, dvec3>;
-            using Sampler = TemplateVolumeSampler<SampleType, DataType>;
+    const auto srcConfig = srcVolume.config();
+    const auto config = VolumeConfig{srcConfig}.updateFrom(
+        {.format = DataVec3Float32::get(),
+         .swizzleMask = swizzlemasks::defaultData(3),
+         .interpolation = InterpolationType::Linear,
+         .valueAxis =
+             Axis{.name = "Curl",
+                  .unit = srcConfig.valueAxis.value_or(VolumeConfig::defaultValueAxis).unit /
+                          srcConfig.xAxis.value_or(VolumeConfig::defaultXAxis).unit}});
 
-            util::IndexMapper3D index(volume.getDimensions());
-            auto data = newVolumeRep->getDataTyped();
-            float minV = std::numeric_limits<float>::max();
-            float maxV = std::numeric_limits<float>::lowest();
+    auto dstVolume = getVolume(config);
+    auto* dstVolumeRep =
+        dynamic_cast<VolumeRAMPrecision<vec3>*>(dstVolume->getEditableRepresentation<VolumeRAM>());
 
-            const Sampler sampler{volume, CoordinateSpace::World};
+    IVW_ASSERT(dstVolumeRep, "should exist");
 
-            util::forEachVoxel(*vol, [&](const size3_t& pos) {
-                const vec3 world{m *
-                                 vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};
+    const auto g = dmat3{dstVolume->getCoordinateTransformer().getMetricTensor()};
+    const auto basis = dstVolume->getCoordinateTransformer().getDataToWorldMatrix();
+    const auto dims = dstVolumeRep->getDimensions();
+    const auto wrapping = srcVolume.getWrapping();
+    const auto* const srcRep = srcVolume.getRepresentation<VolumeRAM>();
 
-                const auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
-                const auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
-                const auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
-                const auto Fym = static_cast<vec3>(sampler.sample(world - oy));
-                const auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
-                const auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
+    const auto max = srcRep->dispatch<double, dispatching::filter::Float3s>(
+        [&]<typename T>(const VolumeRAMPrecision<T>* srcTRep) {
+            static constexpr auto table =
+                build_array_t_nd<3uz, 3uz, 3uz>([&]<size_t x, size_t y, size_t z>() constexpr {
+                    return +[](size3_t dims, std::span<const T> src, std::span<vec3> dst,
+                               const DataMapper& dm, dmat3 g, dmat3 basis,
+                               const std::function<void(double)>& p,
+                               const std::function<bool()>& s) -> double {
+                        constexpr auto Wx = static_cast<Wrapping>(x);
+                        constexpr auto Wy = static_cast<Wrapping>(y);
+                        constexpr auto Wz = static_cast<Wrapping>(z);
+                        return calcCurlVolume<T, Wx, Wy, Wz>(dims, src, dst, dm, g, basis, p, s);
+                    };
+                });
+            const auto& func =
+                table[std::to_underlying(wrapping[0])][std::to_underlying(wrapping[1])]
+                     [std::to_underlying(wrapping[2])];
 
-                const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
-                const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
-                const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
-
-                const vec3 c{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
-
-                minV = std::min({minV, c.x, c.y, c.z});
-                maxV = std::max({maxV, c.x, c.y, c.z});
-
-                data[index(pos)] = c;
-            });
-
-            auto range = std::max(std::abs(minV), std::abs(maxV));
-            newVolume->dataMap.dataRange = dvec2(-range, range);
-            newVolume->dataMap.valueRange = dvec2(minV, maxV);
+            return func(dims, srcTRep->getView(), dstVolumeRep->getView(), srcVolume.dataMap, g,
+                        dmat3{basis}, progress, stop);
         });
 
-    return newVolume;
+    dstVolume->dataMap.dataRange = dvec2(-max, max);
+    dstVolume->dataMap.valueRange = dvec2(-max, max);
+
+    dstVolume->discardHistograms();
+
+    if (progress) progress(1.0);
+
+    return dstVolume;
 }
 
 }  // namespace util

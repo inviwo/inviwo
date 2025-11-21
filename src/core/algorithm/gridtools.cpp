@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/core/algorithm/gridtools.h>
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-
-#include <memory>
-#include <functional>
-
-namespace inviwo {
-
-namespace util {
-
-IVW_MODULE_BASE_API std::shared_ptr<Volume> divergenceVolume(
-    const Volume& volume,
-    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume =
-        [](const VolumeConfig& config) { return std::make_shared<Volume>(config); },
-    const std::function<void(double)>& progress = nullptr,
-    const std::function<bool()>& stop = nullptr);
-
-}  // namespace util
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

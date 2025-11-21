@@ -29,18 +29,22 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
-#include <memory>  // for unique_ptr, shared_ptr
+#include <memory>
+#include <functional>
 
 namespace inviwo {
-class Volume;
 
 namespace util {
 
-IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
-
-IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
+IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(
+    const Volume& volume,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume =
+        [](const VolumeConfig& config) { return std::make_shared<Volume>(config); },
+    const std::function<void(double)>& progress = nullptr,
+    const std::function<bool()>& stop = nullptr);
 
 }  // namespace util
 

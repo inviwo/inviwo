@@ -32,14 +32,20 @@
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
 #include <inviwo/core/ports/volumeport.h>          // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/processor.h>      // for Processor
+#include <inviwo/core/processors/poolprocessor.h>  // for Processor
 #include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <modules/base/datastructures/volumereusecache.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeCurlCPUProcessor : public Processor {
+class IVW_MODULE_BASE_API VolumeCurlCPUProcessor : public PoolProcessor {
 public:
     VolumeCurlCPUProcessor();
+    VolumeCurlCPUProcessor(const VolumeCurlCPUProcessor&) = delete;
+    VolumeCurlCPUProcessor(VolumeCurlCPUProcessor&&) = delete;
+    VolumeCurlCPUProcessor& operator=(const VolumeCurlCPUProcessor&) = delete;
+    VolumeCurlCPUProcessor& operator=(VolumeCurlCPUProcessor&&) = delete;
+
     virtual ~VolumeCurlCPUProcessor() = default;
 
     virtual void process() override;
@@ -50,6 +56,8 @@ public:
 private:
     VolumeInport inport_;
     VolumeOutport outport_;
+
+    VolumeReuseCache cache_;
 };
 
 }  // namespace inviwo

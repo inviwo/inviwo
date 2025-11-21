@@ -146,10 +146,10 @@ void VolumeGLProcessor::process() {
 
     preProcess(cont, shader_, config);
 
-    if (volumes_.setConfig(config) == VolumeReuseCache::Status::ClearedCache) {
+    auto [dstVolume, status] = volumes_.get(config);
+    if (status == VolumeReuseCache::Status::ClearedCache) {
         detachFBOs(fbos_);
     }
-    auto dstVolume = volumes_.get();
 
     const size3_t dims{dstVolume->getDimensions()};
     if (glm::compMin(dims) < 2) {

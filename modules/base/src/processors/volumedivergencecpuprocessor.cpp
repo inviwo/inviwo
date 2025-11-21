@@ -55,13 +55,20 @@ const ProcessorInfo& VolumeDivergenceCPUProcessor::getProcessorInfo() const {
 }
 
 VolumeDivergenceCPUProcessor::VolumeDivergenceCPUProcessor()
-    : Processor(), inport_("inport"), outport_("outport") {
-    addPort(inport_);
-    addPort(outport_);
+    : PoolProcessor(), inport_("inport"), outport_("outport") {
+    addPorts(inport_, outport_);
 }
 
 void VolumeDivergenceCPUProcessor::process() {
-    outport_.setData(util::divergenceVolume(inport_.getData()));
+    const auto calc = [data = inport_.getData(), this](pool::Progress progress, pool::Stop stop) {
+        return util::divergenceVolume(*data, std::ref(cache_), progress, stop);
+    };
+
+    outport_.clear();
+    dispatchOne(calc, [this](const std::shared_ptr<Volume>& result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

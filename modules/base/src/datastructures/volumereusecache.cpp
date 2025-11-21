@@ -33,23 +33,32 @@
 
 namespace inviwo {
 
-VolumeReuseCache::VolumeReuseCache(VolumeConfig config) : config_(std::move(config)) {}
+VolumeReuseCache::VolumeReuseCache() = default;
 
 const VolumeConfig& VolumeReuseCache::getConfig() const { return config_; }
-auto VolumeReuseCache::setConfig(const VolumeConfig& config) -> Status {
-    if (config != config_) {
+
+auto VolumeReuseCache::get(const VolumeConfig& config)
+    -> std::pair<std::shared_ptr<Volume>, Status> {
+
+    const std::scoped_lock lock{mutex_};
+
+    // only check for dim/format
+    auto status = Status::NoChange;
+    if (config.dimensions != config_.dimensions || config.format != config_.format) {
         cache_.clear();
-        config_ = config;
-        return Status::ClearedCache;
-    } else {
-        return Status::NoChange;
+        status = Status::ClearedCache;
     }
-}
-std::shared_ptr<Volume> VolumeReuseCache::get() {
+    config_ = config;
+
     auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
         auto volume = *it;
         volume->getMetaDataMap()->removeAll();
+
+        volume->setSwizzleMask(config_.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
+        volume->setInterpolation(
+            config_.interpolation.value_or(VolumeConfig::defaultInterpolation));
+        volume->setWrapping(config_.wrapping.value_or(VolumeConfig::defaultWrapping));
 
         volume->axes[0] = config_.xAxis.value_or(VolumeConfig::defaultYAxis);
         volume->axes[1] = config_.yAxis.value_or(VolumeConfig::defaultYAxis);
@@ -62,11 +71,11 @@ std::shared_ptr<Volume> VolumeReuseCache::get() {
             throw Exception("Unexpected changes found in cache");
         }
 
-        return volume;
+        return {volume, status};
     } else {
-        auto vol = std::make_shared<Volume>(config_);
-        cache_.push_back(vol);
-        return vol;
+        auto volume = std::make_shared<Volume>(config_);
+        cache_.push_back(volume);
+        return {volume, status};
     }
 }
 
