@@ -35,4 +35,4 @@ namespace inviwo {
 
 void exposeSpatialData(pybind11::module& m);
 
-}
+}  // namespace inviwo
