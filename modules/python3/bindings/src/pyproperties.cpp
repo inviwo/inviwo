@@ -34,6 +34,7 @@
 #include <pybind11/stl/filesystem.h>
 #include <pybind11/numpy.h>
 #include <pybind11/typing.h>
+#include <pybind11/native_enum.h>
 
 #include <inviwopy/pyflags.h>
 #include <inviwopy/util/pypropertyhelper.h>
@@ -66,11 +67,10 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
-namespace py = pybind11;
-
 namespace inviwo {
 
-void exposeProperties(py::module& m) {
+void exposeProperties(pybind11::module& m) {
+    namespace py = pybind11;
 
     py::enum_<ConstraintBehavior>(m, "ConstraintBehavior")
         .value("Editable", ConstraintBehavior::Editable)
@@ -87,6 +87,12 @@ void exposeProperties(py::module& m) {
         .value("Default", PropertySerializationMode::Default)
         .value("All", PropertySerializationMode::All)
         .value("Nothing", PropertySerializationMode::None);
+
+    py::native_enum<util::OverwriteState>(m, "OverwriteState", "enum.Enum")
+        .value("Yes", util::OverwriteState::Yes)
+        .value("No", util::OverwriteState::No)
+        .export_values()
+        .finalize();
 
     auto listPropertyUIFlag = py::enum_<ListPropertyUIFlag>(m, "ListPropertyUIFlag")
                                   .value("Static", ListPropertyUIFlag::Static)

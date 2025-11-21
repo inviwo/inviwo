@@ -93,17 +93,12 @@ void exposeMesh(pybind11::module& m) {
         return list;
     };
 
-    py::classh<Mesh>(m, "Mesh")
+    py::classh<Mesh, SpatialEntity>(m, "Mesh", py::multiple_inheritance{})
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>(), py::arg("dt") = DrawType::Points,
              py::arg("ct") = ConnectivityType::None)
         .def(py::init<Mesh::MeshInfo>(), py::arg("meshInfo"))
         .def_property_readonly("defaultMeshInfo", &Mesh::getDefaultMeshInfo)
-
-        .def_property("modelMatrix", &Mesh::getModelMatrix, &Mesh::setModelMatrix)
-        .def_property("worldMatrix", &Mesh::getWorldMatrix, &Mesh::setWorldMatrix)
-        .def_property("basis", &Mesh::getBasis, &Mesh::setBasis)
-        .def_property("offset", &Mesh::getOffset, &Mesh::setOffset)
 
         .def("addBuffer", [](Mesh* m, Mesh::BufferInfo info,
                              std::shared_ptr<BufferBase> att) { m->addBuffer(info, att); })
