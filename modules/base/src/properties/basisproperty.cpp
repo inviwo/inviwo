@@ -63,12 +63,13 @@ std::string_view BasisProperty::getClassIdentifier() const { return classIdentif
 BasisProperty::BasisProperty(std::string_view identifier, std::string_view displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BasisProperty{identifier, displayName, "Show and modify volume basis data"_help,
-                    invalidationLevel, semantics} {}
+                    invalidationLevel, std::move(semantics)} {}
 
 BasisProperty::BasisProperty(std::string_view identifier, std::string_view displayName,
                              Document help, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics))
     , mode_("mode", "Mode",
             "Select interaction mode. Using the Orthogonal mode presents a simpler interface"_help,
             {{"general", "General Basis", BasisPropertyMode::General},

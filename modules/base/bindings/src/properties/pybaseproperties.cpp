@@ -48,11 +48,10 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-namespace py = pybind11;
-
 namespace inviwo {
 
 void exposeBaseProperties(pybind11::module& m) {
+    namespace py = pybind11;
 
     py::enum_<BasisProperty::BasisPropertyMode>(m, "BasisPropertyMode")
         .value("General", BasisProperty::BasisPropertyMode::General)
@@ -62,14 +61,15 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BasisProperty{identifier, displayName, std::move(help),
-                                          invalidationLevel, semantics};
+                                          invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new BasisProperty{identifier, displayName, invalidationLevel, semantics};
+                 return new BasisProperty{identifier, displayName, invalidationLevel,
+                                          std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -90,7 +90,7 @@ void exposeBaseProperties(pybind11::module& m) {
                          bool customRanges, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new DataRangeProperty{identifier, displayName, customRanges,
-                                              invalidationLevel, semantics};
+                                              invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("customRanges") = true,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -98,8 +98,9 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          VolumeInport& port, bool customRanges, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
-                 return new DataRangeProperty{identifier,   displayName,       port,
-                                              customRanges, invalidationLevel, semantics};
+                 return new DataRangeProperty{
+                     identifier,   displayName,       port,
+                     customRanges, invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("port"),
              py::arg("customRanges") = true,
@@ -108,8 +109,9 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          LayerInport& port, bool customRanges, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
-                 return new DataRangeProperty{identifier,   displayName,       port,
-                                              customRanges, invalidationLevel, semantics};
+                 return new DataRangeProperty{
+                     identifier,   displayName,       port,
+                     customRanges, invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("port"),
              py::arg("customRanges") = true,
@@ -129,7 +131,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool customAxis,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ValueAxisProperty{identifier, displayName, customAxis,
-                                              invalidationLevel, semantics};
+                                              invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("customAxis") = true,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -138,7 +140,7 @@ void exposeBaseProperties(pybind11::module& m) {
                          VolumeInport& port, bool customAxis, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new ValueAxisProperty{identifier, displayName,       port,
-                                              customAxis, invalidationLevel, semantics};
+                                              customAxis, invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("port"),
              py::arg("customAxis") = true,
@@ -148,7 +150,7 @@ void exposeBaseProperties(pybind11::module& m) {
                          LayerInport& port, bool customAxis, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new ValueAxisProperty{identifier, displayName,       port,
-                                              customAxis, invalidationLevel, semantics};
+                                              customAxis, invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("port"),
              py::arg("customAxis") = true,
@@ -168,7 +170,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new LayerInformationProperty{identifier, displayName, invalidationLevel,
-                                                     semantics};
+                                                     std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -180,7 +182,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new VolumeInformationProperty{identifier, displayName, invalidationLevel,
-                                                      semantics};
+                                                      std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -192,7 +194,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ImageInformationProperty{identifier, displayName, invalidationLevel,
-                                                     semantics};
+                                                     std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -203,7 +205,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new MeshInformationProperty{identifier, displayName, invalidationLevel,
-                                                    semantics};
+                                                    std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -214,7 +216,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new TransformListProperty{identifier, displayName, std::move(help),
-                                                  invalidationLevel, semantics};
+                                                  invalidationLevel, std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -222,7 +224,7 @@ void exposeBaseProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new TransformListProperty{identifier, displayName, invalidationLevel,
-                                                  semantics};
+                                                  std::move(semantics)};
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
