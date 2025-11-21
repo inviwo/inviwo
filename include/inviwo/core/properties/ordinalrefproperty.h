@@ -166,12 +166,12 @@ public:
     /**
      * Get component 'index' of the value
      */
-    component_type get(size_t index) const;
+    auto get(size_t index) const -> component_type;
 
     /**
      * Get component 'i,j' of the value
      */
-    component_type get(size_t i, size_t j) const;
+    auto get(size_t i, size_t j) const -> component_type;
 
     /**
      * Set a new value. The value will be clamped according to the current ConstraintBehaviour
@@ -472,13 +472,13 @@ OrdinalRefProperty<T>::operator T() const {
 }
 
 template <typename T>
-auto OrdinalRefProperty<T>::operator*() const -> T {
+T OrdinalRefProperty<T>::operator*() const {
     IVW_ASSERT(get_, "The getter has to be valid");
     return get_();
 }
 
 template <typename T>
-auto OrdinalRefProperty<T>::get() const -> T {
+T OrdinalRefProperty<T>::get() const {
     IVW_ASSERT(get_, "The getter has to be valid");
     return get_();
 }

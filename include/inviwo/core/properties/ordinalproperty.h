@@ -173,12 +173,12 @@ public:
     /**
      * Get component 'index' of the value
      */
-    component_type get(size_t index) const;
+    auto get(size_t index) const -> component_type;
 
     /**
      * Get component 'i,j' of the value
      */
-    component_type get(size_t i, size_t j) const;
+    auto get(size_t i, size_t j) const -> component_type;
 
     /**
      * Set a new value. The value will be clamped according to the current ConstraintBehaviour

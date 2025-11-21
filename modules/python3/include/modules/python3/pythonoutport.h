@@ -30,7 +30,7 @@
 
 #include <modules/python3/python3moduledefine.h>
 
-#include <pybind11/pybind11.h>  /// IWYU pragma: keep
+#include <pybind11/pybind11.h>  // IWYU pragma: keep
 
 #include <inviwo/core/ports/porttraits.h>
 #include <inviwo/core/ports/outport.h>

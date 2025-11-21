@@ -121,7 +121,7 @@ public:
 /**
  * A map of @p Keys and associated @p FactoryObjects.
  *
- * @tparam FactoryObject A factory type for some object. A `LookUpKey getClassIdentifier()´
+ * @tparam FactoryObject A factory type for some object. A `LookUpKey getClassIdentifier()`
  *                       function is required for registration in the map.
  * @tparam Key the key type used in the map
  * @tparam LookUpKey A type used to lookup FactoryObjects in the map
@@ -179,7 +179,7 @@ using factoryKeyType = typename FactoryKeyType<K>::type;
  * @tparam FactoryObject An object with a function `std::unique_ptr<T> create(Args...)` that can
  *                       create objects of type @p T with constructor `T(Args...)`.
  *                       @p FactoryObject would usually be a "factory object".
- *                       A `getClassIdentifier()´ function is also required for registration.
+ *                       A `getClassIdentifier()` function is also required for registration.
  * @tparam Key Models a key used to look up @p T
  * @tparam Args A variadic list of arguments passed to @p T on construction
  */
@@ -202,7 +202,7 @@ public:
 
 /**
  * A factory for cloning object
- * The type @p T needs to have a `clone()` and a `getClassIdentifier()´ function.
+ * The type @p T needs to have a `clone()` and a `getClassIdentifier()` function.
  * @tparam T Models the object created.
  */
 template <typename T>
