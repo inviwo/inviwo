@@ -1,5 +1,7 @@
 var NAVTREEINDEX20 =
 {
+"classinviwo_1_1StructuredCoordinateTransformerImpl.html#a42cdbd4ab70de8f29f96421fcfec1105":[2,0,0,61,8],
+"classinviwo_1_1StructuredCoordinateTransformerImpl.html#a42cdbd4ab70de8f29f96421fcfec1105":[4,0,0,70,8],
 "classinviwo_1_1StructuredCoordinateTransformerImpl.html#a51f994ee7d063282426a2d0102f239e7":[2,0,0,61,3],
 "classinviwo_1_1StructuredCoordinateTransformerImpl.html#a51f994ee7d063282426a2d0102f239e7":[4,0,0,70,3],
 "classinviwo_1_1StructuredCoordinateTransformerImpl.html#a6c903835d4c93495378649defbbc14bd":[2,0,0,61,12],
@@ -247,7 +249,5 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1TextOverlayGL.html":[4,0,0,994],
 "classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806":[2,0,0,985,0],
 "classinviwo_1_1TextOverlayGL.html#acfb36fb35fcf8c986eb72ca473a75806":[4,0,0,994,0],
-"classinviwo_1_1TextOverlayProperty.html":[2,0,0,984],
-"classinviwo_1_1TextOverlayProperty.html":[4,0,0,993],
-"classinviwo_1_1TextOverlayProperty.html#a0ee1816270dc30ea3ba4eebe04c60a35":[2,0,0,984,0]
+"classinviwo_1_1TextOverlayProperty.html":[2,0,0,984]
 };

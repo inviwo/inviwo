@@ -121,8 +121,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeeb3035cdbc2ecde4fec2acee22143c3" id="r_aeeb3035cdbc2ecde4fec2acee22143c3"><td class="memItemLeft" align="right" valign="top">virtual glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeeb3035cdbc2ecde4fec2acee22143c3">getIndexToWorldMatrix</a> () const =0</td></tr>
 <tr class="memitem:a06334799d2c1ad3a8e3f800d5ba47a0c" id="r_a06334799d2c1ad3a8e3f800d5ba47a0c"><td class="memItemLeft" align="right" valign="top">virtual glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06334799d2c1ad3a8e3f800d5ba47a0c">getWorldToTextureMatrix</a> () const =0</td></tr>
 <tr class="memitem:a450bdbf945e8eec67eaf4cf86213171c" id="r_a450bdbf945e8eec67eaf4cf86213171c"><td class="memItemLeft" align="right" valign="top">virtual glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a450bdbf945e8eec67eaf4cf86213171c">getWorldToIndexMatrix</a> () const =0</td></tr>
-<tr class="memitem:a5a9393eca8ae58603d1c35c62b54d95f" id="r_a5a9393eca8ae58603d1c35c62b54d95f"><td class="memItemLeft" align="right" valign="top">glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a9393eca8ae58603d1c35c62b54d95f">getInverseMetricTensor</a> () const</td></tr>
-<tr class="memdesc:a5a9393eca8ae58603d1c35c62b54d95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse metric tensor to be used for gradient computation. Also works for layers with non-orthogonal basis.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SpatialCoordinateTransformer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1SpatialCoordinateTransformer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">inviwo::SpatialCoordinateTransformer</a></td></tr>
 <tr class="memitem:a5aa02e6256aa57f831d2da83f908233d inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a5aa02e6256aa57f831d2da83f908233d"><td class="memItemLeft" align="right" valign="top">virtual glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#a5aa02e6256aa57f831d2da83f908233d">getModelToDataMatrix</a> () const =0</td></tr>
 <tr class="memitem:a9d938bc064fe8eddb43fff6aff4448e0 inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a9d938bc064fe8eddb43fff6aff4448e0"><td class="memItemLeft" align="right" valign="top">virtual glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#a9d938bc064fe8eddb43fff6aff4448e0">getModelToWorldMatrix</a> () const =0</td></tr>
@@ -133,6 +131,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a541d5f2a2077016727e05a789e8190d6 inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a541d5f2a2077016727e05a789e8190d6"><td class="memItemLeft" align="right" valign="top">virtual glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#a541d5f2a2077016727e05a789e8190d6">transformPosition</a> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
 <tr class="memitem:a57b586843c79f3e08bc86883d26fae56 inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a57b586843c79f3e08bc86883d26fae56"><td class="memItemLeft" align="right" valign="top">virtual glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#a57b586843c79f3e08bc86883d26fae56">transformPositionHomogeneous</a> (const vec4 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
 <tr class="memitem:a26e9398c87df3cb23eba881af89ca5c6 inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a26e9398c87df3cb23eba881af89ca5c6"><td class="memItemLeft" align="right" valign="top">virtual glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#a26e9398c87df3cb23eba881af89ca5c6">transformNormal</a> (const vec3 &amp;normal, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
+<tr class="memitem:a00703550f4fc9315435b567ac728ac38 inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a00703550f4fc9315435b567ac728ac38"><td class="memItemLeft" align="right" valign="top">
+glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><b>getMetricTensor</b> () const</td></tr>
+<tr class="memdesc:a00703550f4fc9315435b567ac728ac38 inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor for the dataToWorld basis. <br /></td></tr>
+<tr class="memitem:a83fd085c5cbb30b6e9ae43e18a00c58c inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a83fd085c5cbb30b6e9ae43e18a00c58c"><td class="memItemLeft" align="right" valign="top">glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#a83fd085c5cbb30b6e9ae43e18a00c58c">getInverseMetricTensor</a> () const</td></tr>
+<tr class="memdesc:a83fd085c5cbb30b6e9ae43e18a00c58c inherit pub_methods_classinviwo_1_1SpatialCoordinateTransformer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse metric tensor for the dataToWorld basis. This it useful for gradient computation.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -153,6 +156,12 @@ StructuredCoordinateTransformer &amp;&#160;</td><td class="memItemRight" valign=
 SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const SpatialCoordinateTransformer &amp;)=delete</td></tr>
 <tr class="memitem:a67d44cf77272471772f48d7fc430640a inherit pro_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_a67d44cf77272471772f48d7fc430640a"><td class="memItemLeft" align="right" valign="top">
 SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (SpatialCoordinateTransformer &amp;&amp;)=delete</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classinviwo_1_1SpatialCoordinateTransformer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classinviwo_1_1SpatialCoordinateTransformer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">inviwo::SpatialCoordinateTransformer</a></td></tr>
+<tr class="memitem:ac10b181c8190513a87b13d83076b6736 inherit pub_static_methods_classinviwo_1_1SpatialCoordinateTransformer" id="r_ac10b181c8190513a87b13d83076b6736"><td class="memItemLeft" align="right" valign="top">static glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html#ac10b181c8190513a87b13d83076b6736">getMetricTensor</a> (glm::mat3 basis)</td></tr>
+<tr class="memdesc:ac10b181c8190513a87b13d83076b6736 inherit pub_static_methods_classinviwo_1_1SpatialCoordinateTransformer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor g_ij from a set of basis vectors.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a9665269883a55809e962b726495fc0dc" name="a9665269883a55809e962b726495fc0dc"></a>
@@ -319,27 +328,6 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight" valign="bo
 <p>Returns the matrix transformation mapping from voxel index coordinates to world space coordinates, i.e. from [0, number of voxels) to (-inf, inf) </p>
 
 <p>Implemented in <a class="el" href="classinviwo_1_1StructuredCoordinateTransformerImpl.html#a963089e04a79403dc5c60eb716a949d8">inviwo::StructuredCoordinateTransformerImpl&lt; N &gt;</a>.</p>
-
-</div>
-</div>
-<a id="a5a9393eca8ae58603d1c35c62b54d95f" name="a5a9393eca8ae58603d1c35c62b54d95f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a9393eca8ae58603d1c35c62b54d95f">&#9670;&#160;</a></span>getInverseMetricTensor()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">glm::mat3 inviwo::StructuredCoordinateTransformer::getInverseMetricTensor </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes the inverse metric tensor to be used for gradient computation. Also works for layers with non-orthogonal basis. </p>
-<p>The gradient ∇f in world space is then computed based on the partial derivatives in u and v direction ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2, where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.</p>
-<dl class="section return"><dt>Returns</dt><dd>inverse metric tensor </dd></dl>
 
 </div>
 </div>

@@ -776,6 +776,8 @@ var hierarchy =
           [ "inviwo::ImageDistanceTransform", "classinviwo_1_1ImageDistanceTransform.html", null ],
           [ "inviwo::LayerDistanceTransform", "classinviwo_1_1LayerDistanceTransform.html", null ],
           [ "inviwo::SurfaceExtraction", "classinviwo_1_1SurfaceExtraction.html", null ],
+          [ "inviwo::VolumeCurlCPUProcessor", "classinviwo_1_1VolumeCurlCPUProcessor.html", null ],
+          [ "inviwo::VolumeDivergenceCPUProcessor", "classinviwo_1_1VolumeDivergenceCPUProcessor.html", null ],
           [ "inviwo::VolumeDownsample", "classinviwo_1_1VolumeDownsample.html", null ],
           [ "inviwo::VolumeLaplacianProcessor", "classinviwo_1_1VolumeLaplacianProcessor.html", null ],
           [ "inviwo::VolumeRaycaster", "classinviwo_1_1VolumeRaycaster.html", null ],
@@ -845,8 +847,6 @@ var hierarchy =
         [ "inviwo::VolumeCombiner", "classinviwo_1_1VolumeCombiner.html", null ],
         [ "inviwo::VolumeConverter", "classinviwo_1_1VolumeConverter.html", null ],
         [ "inviwo::VolumeCreator", "classinviwo_1_1VolumeCreator.html", null ],
-        [ "inviwo::VolumeCurlCPUProcessor", "classinviwo_1_1VolumeCurlCPUProcessor.html", null ],
-        [ "inviwo::VolumeDivergenceCPUProcessor", "classinviwo_1_1VolumeDivergenceCPUProcessor.html", null ],
         [ "inviwo::VolumeGLProcessor", "classinviwo_1_1VolumeGLProcessor.html", [
           [ "inviwo::LIC3D", "classinviwo_1_1LIC3D.html", null ],
           [ "inviwo::TornadoGenerator", "classinviwo_1_1TornadoGenerator.html", null ],

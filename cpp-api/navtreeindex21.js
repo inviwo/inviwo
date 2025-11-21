@@ -1,5 +1,7 @@
 var NAVTREEINDEX21 =
 {
+"classinviwo_1_1TextOverlayProperty.html":[4,0,0,993],
+"classinviwo_1_1TextOverlayProperty.html#a0ee1816270dc30ea3ba4eebe04c60a35":[2,0,0,984,0],
 "classinviwo_1_1TextOverlayProperty.html#a0ee1816270dc30ea3ba4eebe04c60a35":[4,0,0,993,0],
 "classinviwo_1_1TextRenderer.html":[2,0,0,989],
 "classinviwo_1_1TextRenderer.html":[4,0,0,998],
@@ -247,7 +249,5 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1TransferFunctionITFWriter.html#a6a7167fea4c1f6bcb6d0e7258db3afdc":[4,0,0,235,0],
 "classinviwo_1_1TransferFunctionLayerReader.html":[2,0,0,227],
 "classinviwo_1_1TransferFunctionLayerReader.html":[4,0,0,236],
-"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[2,0,0,228],
-"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[4,0,0,237],
-"classinviwo_1_1TransferFunctionLayerWriter.html":[2,0,0,229]
+"classinviwo_1_1TransferFunctionLayerReaderWrapper.html":[2,0,0,228]
 };

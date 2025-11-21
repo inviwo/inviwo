@@ -2,7 +2,9 @@ var classinviwo_1_1SpatialCoordinateTransformer =
 [
     [ "getDataToModelMatrix", "classinviwo_1_1SpatialCoordinateTransformer.html#a697750581eba2c12a3628756aac61430", null ],
     [ "getDataToWorldMatrix", "classinviwo_1_1SpatialCoordinateTransformer.html#ae61c68db5deafdb779a13977ed8a6913", null ],
+    [ "getInverseMetricTensor", "classinviwo_1_1SpatialCoordinateTransformer.html#a83fd085c5cbb30b6e9ae43e18a00c58c", null ],
     [ "getMatrix", "classinviwo_1_1SpatialCoordinateTransformer.html#acf235741499508c67af469e48e23925e", null ],
+    [ "getMetricTensor", "classinviwo_1_1SpatialCoordinateTransformer.html#a00703550f4fc9315435b567ac728ac38", null ],
     [ "getModelToDataMatrix", "classinviwo_1_1SpatialCoordinateTransformer.html#a5aa02e6256aa57f831d2da83f908233d", null ],
     [ "getModelToWorldMatrix", "classinviwo_1_1SpatialCoordinateTransformer.html#a9d938bc064fe8eddb43fff6aff4448e0", null ],
     [ "getWorldToDataMatrix", "classinviwo_1_1SpatialCoordinateTransformer.html#a1b2b93e03f3ed49288d6c3572056414a", null ],

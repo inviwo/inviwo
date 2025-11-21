@@ -124,6 +124,16 @@ virtual SpatialCoordinateTransformer *&#160;</td><td class="memItemRight" valign
 <tr class="memitem:a541d5f2a2077016727e05a789e8190d6" id="r_a541d5f2a2077016727e05a789e8190d6"><td class="memItemLeft" align="right" valign="top">virtual glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a541d5f2a2077016727e05a789e8190d6">transformPosition</a> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
 <tr class="memitem:a57b586843c79f3e08bc86883d26fae56" id="r_a57b586843c79f3e08bc86883d26fae56"><td class="memItemLeft" align="right" valign="top">virtual glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57b586843c79f3e08bc86883d26fae56">transformPositionHomogeneous</a> (const vec4 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
 <tr class="memitem:a26e9398c87df3cb23eba881af89ca5c6" id="r_a26e9398c87df3cb23eba881af89ca5c6"><td class="memItemLeft" align="right" valign="top">virtual glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26e9398c87df3cb23eba881af89ca5c6">transformNormal</a> (const vec3 &amp;normal, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> from, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> to) const</td></tr>
+<tr class="memitem:a00703550f4fc9315435b567ac728ac38" id="r_a00703550f4fc9315435b567ac728ac38"><td class="memItemLeft" align="right" valign="top"><a id="a00703550f4fc9315435b567ac728ac38" name="a00703550f4fc9315435b567ac728ac38"></a>
+glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><b>getMetricTensor</b> () const</td></tr>
+<tr class="memdesc:a00703550f4fc9315435b567ac728ac38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor for the dataToWorld basis. <br /></td></tr>
+<tr class="memitem:a83fd085c5cbb30b6e9ae43e18a00c58c" id="r_a83fd085c5cbb30b6e9ae43e18a00c58c"><td class="memItemLeft" align="right" valign="top">glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83fd085c5cbb30b6e9ae43e18a00c58c">getInverseMetricTensor</a> () const</td></tr>
+<tr class="memdesc:a83fd085c5cbb30b6e9ae43e18a00c58c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the inverse metric tensor for the dataToWorld basis. This it useful for gradient computation.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac10b181c8190513a87b13d83076b6736" id="r_ac10b181c8190513a87b13d83076b6736"><td class="memItemLeft" align="right" valign="top">static glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac10b181c8190513a87b13d83076b6736">getMetricTensor</a> (glm::mat3 basis)</td></tr>
+<tr class="memdesc:ac10b181c8190513a87b13d83076b6736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the metric tensor g_ij from a set of basis vectors.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -193,6 +203,27 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight" valign="bo
 
 </div>
 </div>
+<a id="a83fd085c5cbb30b6e9ae43e18a00c58c" name="a83fd085c5cbb30b6e9ae43e18a00c58c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83fd085c5cbb30b6e9ae43e18a00c58c">&#9670;&#160;</a></span>getInverseMetricTensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat3 inviwo::SpatialCoordinateTransformer::getInverseMetricTensor </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the inverse metric tensor for the dataToWorld basis. This it useful for gradient computation. </p>
+<p>The gradient ∇f in world space is then computed based on the partial derivatives in u and v direction ∇f = g_11 ∂f/∂u a_1 + g_12 ∂f/∂u a_2 + g_21 ∂f/∂v a_1 + g_22 ∂f/∂v a_2, where g_ij refers to the inverse metric tensor and a_i to the ith basis vector.</p>
+<dl class="section return"><dt>Returns</dt><dd>inverse metric tensor </dd></dl>
+
+</div>
+</div>
 <a id="acf235741499508c67af469e48e23925e" name="acf235741499508c67af469e48e23925e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acf235741499508c67af469e48e23925e">&#9670;&#160;</a></span>getMatrix()</h2>
 
@@ -222,6 +253,42 @@ SpatialCoordinateTransformer &amp;&#160;</td><td class="memItemRight" valign="bo
 <p>Returns the matrix transformation mapping from <code class="param">from</code> coordinates to <code class="param">to</code> coordinates </p>
 
 <p>Reimplemented in <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html#adab0692795077a8204e98c2dae13aaea">inviwo::SpatialCameraCoordinateTransformer</a>, <a class="el" href="classinviwo_1_1StructuredCameraCoordinateTransformer.html#ac7106182a8701621ad79c2f380cd2894">inviwo::StructuredCameraCoordinateTransformer</a>, and <a class="el" href="classinviwo_1_1StructuredCoordinateTransformer.html#a3e142ba85ad9ecc01953202e4a747628">inviwo::StructuredCoordinateTransformer</a>.</p>
+
+</div>
+</div>
+<a id="ac10b181c8190513a87b13d83076b6736" name="ac10b181c8190513a87b13d83076b6736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac10b181c8190513a87b13d83076b6736">&#9670;&#160;</a></span>getMetricTensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat3 inviwo::SpatialCoordinateTransformer::getMetricTensor </td>
+          <td>(</td>
+          <td class="paramtype">glm::mat3</td>          <td class="paramname"><span class="paramname"><em>basis</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the metric tensor g_ij from a set of basis vectors. </p>
+<p>The metric tensor is defined as: </p><pre class="fragment">g_ij = dot(a_i, a_j)
+</pre><p>where a_i are the basis vectors of the coordinate system.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">basis</td><td>A 3×3 matrix whose columns contain the basis vectors of the coordinate system expressed in Cartesian coordinates.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A 3×3 symmetric matrix containing the metric tensor g_ij. </dd></dl>
 
 </div>
 </div>
