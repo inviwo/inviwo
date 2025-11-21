@@ -94,7 +94,14 @@ $(function(){initNavTree('conceptinviwo_1_1detail_1_1is__transparent.html','',''
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1detail_1_1is__transparent.html">inviwo::detail::is_transparent</a> =  <span class="keyword">requires</span> { <span class="keyword">typename</span> T::key_compare::is_transparent; } ||</div>
+<div class="line">                         <span class="keyword">requires</span> {</div>
+<div class="line">                             <span class="keyword">typename</span> T::hasher::is_transparent;</div>
+<div class="line">                             <span class="keyword">typename</span> T::key_equal::is_transparent;</div>
+<div class="line">                         }</div>
+<div class="ttc" id="aconceptinviwo_1_1detail_1_1is__transparent_html"><div class="ttname"><a href="conceptinviwo_1_1detail_1_1is__transparent.html">inviwo::detail::is_transparent</a></div><div class="ttdef"><b>Definition</b> deserializer.h:68</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

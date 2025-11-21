@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1LogFilter.html','','classinviwo_1_1LogF
 <p>filters log messages based on the verbosity level. Messages below the selected verbosity will be ignored.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;logfilter.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/logfilter.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::LogFilter:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -112,27 +112,27 @@ $(function(){initNavTree('classinviwo_1_1LogFilter.html','','classinviwo_1_1LogF
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4f431f17f6b056dd9c1305dedce853d0" id="r_a4f431f17f6b056dd9c1305dedce853d0"><td class="memItemLeft" align="right" valign="top"><a id="a4f431f17f6b056dd9c1305dedce853d0" name="a4f431f17f6b056dd9c1305dedce853d0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>LogFilter</b> (Logger *logger=LogCentral::getPtr())</td></tr>
-<tr class="memitem:a196261eb82bfc54042a249abf975694d" id="r_a196261eb82bfc54042a249abf975694d"><td class="memItemLeft" align="right" valign="top"><a id="a196261eb82bfc54042a249abf975694d" name="a196261eb82bfc54042a249abf975694d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>LogFilter</b> (Logger *logger, LogVerbosity verbosity)</td></tr>
+<tr class="memitem:a2222b9a4163b41d6cbd659fc54432bbf" id="r_a2222b9a4163b41d6cbd659fc54432bbf"><td class="memItemLeft" align="right" valign="top"><a id="a2222b9a4163b41d6cbd659fc54432bbf" name="a2222b9a4163b41d6cbd659fc54432bbf"></a>
+Logger *&#160;</td><td class="memItemRight" valign="bottom"><b>getLogger</b> () const</td></tr>
+<tr class="memitem:aae477ebd35e66ecc79eaf8a3369195a7" id="r_aae477ebd35e66ecc79eaf8a3369195a7"><td class="memItemLeft" align="right" valign="top"><a id="aae477ebd35e66ecc79eaf8a3369195a7" name="aae477ebd35e66ecc79eaf8a3369195a7"></a>
+LogVerbosity&#160;</td><td class="memItemRight" valign="bottom"><b>getVerbosity</b> ()</td></tr>
+<tr class="memitem:abb222486a753c4e468a955a515066ab6" id="r_abb222486a753c4e468a955a515066ab6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb222486a753c4e468a955a515066ab6">log</a> (std::string_view logSource, LogLevel level, LogAudience audience, std::string_view file, std::string_view function, int line, std::string_view msg) override</td></tr>
 <tr class="memitem:a01c1dbba67f14a503081790992965f34" id="r_a01c1dbba67f14a503081790992965f34"><td class="memItemLeft" align="right" valign="top"><a id="a01c1dbba67f14a503081790992965f34" name="a01c1dbba67f14a503081790992965f34"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>LogFilter</b> (const LogFilter &amp;)=default</td></tr>
 <tr class="memitem:ad6fbc2e2426bb97ecbe3e28e129d0f0d" id="r_ad6fbc2e2426bb97ecbe3e28e129d0f0d"><td class="memItemLeft" align="right" valign="top"><a id="ad6fbc2e2426bb97ecbe3e28e129d0f0d" name="ad6fbc2e2426bb97ecbe3e28e129d0f0d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>LogFilter</b> (LogFilter &amp;&amp;) noexcept=default</td></tr>
+<tr class="memitem:a196261eb82bfc54042a249abf975694d" id="r_a196261eb82bfc54042a249abf975694d"><td class="memItemLeft" align="right" valign="top"><a id="a196261eb82bfc54042a249abf975694d" name="a196261eb82bfc54042a249abf975694d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>LogFilter</b> (Logger *logger, LogVerbosity verbosity)</td></tr>
+<tr class="memitem:a4f431f17f6b056dd9c1305dedce853d0" id="r_a4f431f17f6b056dd9c1305dedce853d0"><td class="memItemLeft" align="right" valign="top"><a id="a4f431f17f6b056dd9c1305dedce853d0" name="a4f431f17f6b056dd9c1305dedce853d0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>LogFilter</b> (Logger *logger=LogCentral::getPtr())</td></tr>
 <tr class="memitem:a30df5b7d70488563fd9156bcea83852b" id="r_a30df5b7d70488563fd9156bcea83852b"><td class="memItemLeft" align="right" valign="top"><a id="a30df5b7d70488563fd9156bcea83852b" name="a30df5b7d70488563fd9156bcea83852b"></a>
 LogFilter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const LogFilter &amp;)=default</td></tr>
 <tr class="memitem:ae537f671c6bed7db75dc8448cc7d4c72" id="r_ae537f671c6bed7db75dc8448cc7d4c72"><td class="memItemLeft" align="right" valign="top"><a id="ae537f671c6bed7db75dc8448cc7d4c72" name="ae537f671c6bed7db75dc8448cc7d4c72"></a>
 LogFilter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (LogFilter &amp;&amp;) noexcept=default</td></tr>
-<tr class="memitem:a012fef0d925a1036226f821fb9e4f102" id="r_a012fef0d925a1036226f821fb9e4f102"><td class="memItemLeft" align="right" valign="top"><a id="a012fef0d925a1036226f821fb9e4f102" name="a012fef0d925a1036226f821fb9e4f102"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setVerbosity</b> (LogVerbosity verbosity)</td></tr>
-<tr class="memitem:aae477ebd35e66ecc79eaf8a3369195a7" id="r_aae477ebd35e66ecc79eaf8a3369195a7"><td class="memItemLeft" align="right" valign="top"><a id="aae477ebd35e66ecc79eaf8a3369195a7" name="aae477ebd35e66ecc79eaf8a3369195a7"></a>
-LogVerbosity&#160;</td><td class="memItemRight" valign="bottom"><b>getVerbosity</b> ()</td></tr>
 <tr class="memitem:a3e555e5db02f29597c8d7a9a35acade3" id="r_a3e555e5db02f29597c8d7a9a35acade3"><td class="memItemLeft" align="right" valign="top"><a id="a3e555e5db02f29597c8d7a9a35acade3" name="a3e555e5db02f29597c8d7a9a35acade3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setLogger</b> (Logger *logger)</td></tr>
-<tr class="memitem:a2222b9a4163b41d6cbd659fc54432bbf" id="r_a2222b9a4163b41d6cbd659fc54432bbf"><td class="memItemLeft" align="right" valign="top"><a id="a2222b9a4163b41d6cbd659fc54432bbf" name="a2222b9a4163b41d6cbd659fc54432bbf"></a>
-Logger *&#160;</td><td class="memItemRight" valign="bottom"><b>getLogger</b> () const</td></tr>
-<tr class="memitem:abb222486a753c4e468a955a515066ab6" id="r_abb222486a753c4e468a955a515066ab6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb222486a753c4e468a955a515066ab6">log</a> (std::string_view logSource, LogLevel level, LogAudience audience, std::string_view file, std::string_view function, int line, std::string_view msg) override</td></tr>
+<tr class="memitem:a012fef0d925a1036226f821fb9e4f102" id="r_a012fef0d925a1036226f821fb9e4f102"><td class="memItemLeft" align="right" valign="top"><a id="a012fef0d925a1036226f821fb9e4f102" name="a012fef0d925a1036226f821fb9e4f102"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setVerbosity</b> (LogVerbosity verbosity)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>filters log messages based on the verbosity level. Messages below the selected verbosity will be ignored. </p>
@@ -194,7 +194,7 @@ Logger *&#160;</td><td class="memItemRight" valign="bottom"><b>getLogger</b> () 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>logfilter.h</b></li>
+<li>include/inviwo/core/util/<b>logfilter.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1NiftiReader.html','','classinviwo_1_1Ni
 <p><a class="el" href="classinviwo_1_1Volume.html">Volume</a> data reader for Nifti-1 files.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;niftireader.h&gt;</code></p>
+<p><code>#include &lt;modules/nifti/niftireader.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::NiftiReader:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -112,35 +112,35 @@ $(function(){initNavTree('classinviwo_1_1NiftiReader.html','','classinviwo_1_1Ni
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a03068c6f09578e3216ca4c7c9cfe619f" id="r_a03068c6f09578e3216ca4c7c9cfe619f"><td class="memItemLeft" align="right" valign="top">virtual NiftiReader *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03068c6f09578e3216ca4c7c9cfe619f">clone</a> () const override</td></tr>
 <tr class="memitem:ad1f5f828fe28d0cd86f762e65e2ea156" id="r_ad1f5f828fe28d0cd86f762e65e2ea156"><td class="memItemLeft" align="right" valign="top"><a id="ad1f5f828fe28d0cd86f762e65e2ea156" name="ad1f5f828fe28d0cd86f762e65e2ea156"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NiftiReader</b> (const NiftiReader &amp;rhs)=default</td></tr>
 <tr class="memitem:a40d344074e5aac5bbf04503c0a10cf5f" id="r_a40d344074e5aac5bbf04503c0a10cf5f"><td class="memItemLeft" align="right" valign="top"><a id="a40d344074e5aac5bbf04503c0a10cf5f" name="a40d344074e5aac5bbf04503c0a10cf5f"></a>
 NiftiReader &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const NiftiReader &amp;that)=default</td></tr>
-<tr class="memitem:a03068c6f09578e3216ca4c7c9cfe619f" id="r_a03068c6f09578e3216ca4c7c9cfe619f"><td class="memItemLeft" align="right" valign="top">virtual NiftiReader *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03068c6f09578e3216ca4c7c9cfe619f">clone</a> () const override</td></tr>
 <tr class="memitem:a3d8eea29640b72a2bce0664a90a35e9a" id="r_a3d8eea29640b72a2bce0664a90a35e9a"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; VolumeSequence &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3d8eea29640b72a2bce0664a90a35e9a">readData</a> (const std::filesystem::path &amp;filePath) override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1DataReaderType"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1DataReaderType')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataReaderType.html">inviwo::DataReaderType&lt; VolumeSequence &gt;</a></td></tr>
 <tr class="memitem:ac0815f266bef7ed64ead9a5b0fa943a6 inherit pub_methods_classinviwo_1_1DataReaderType" id="r_ac0815f266bef7ed64ead9a5b0fa943a6"><td class="memItemLeft" align="right" valign="top">
 DataReaderType &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataReaderType &amp;that)=default</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1DataReader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1DataReader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataReader.html">inviwo::DataReader</a></td></tr>
+<tr class="memitem:af82104a266d676511510804167102068 inherit pub_methods_classinviwo_1_1DataReader" id="r_af82104a266d676511510804167102068"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addExtension</b> (<a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> ext)</td></tr>
 <tr class="memitem:acfff64bb3a438a34d105ac1c46d5bc4a inherit pub_methods_classinviwo_1_1DataReader" id="r_acfff64bb3a438a34d105ac1c46d5bc4a"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataReader</b> (const DataReader &amp;rhs)=default</td></tr>
 <tr class="memitem:a3513553db394195a16ebd88b06170172 inherit pub_methods_classinviwo_1_1DataReader" id="r_a3513553db394195a16ebd88b06170172"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataReader</b> (DataReader &amp;&amp;rhs) noexcept=default</td></tr>
+<tr class="memitem:a9cfd32bc872da4a7934673b8dc69d2e1 inherit pub_methods_classinviwo_1_1DataReader" id="r_a9cfd32bc872da4a7934673b8dc69d2e1"><td class="memItemLeft" align="right" valign="top">
+const std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getExtensions</b> () const</td></tr>
+<tr class="memitem:af1dd2c460dea514384a877eb0ceb6e88 inherit pub_methods_classinviwo_1_1DataReader" id="r_af1dd2c460dea514384a877eb0ceb6e88"><td class="memItemLeft" align="right" valign="top">virtual std::any&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88">getOption</a> (std::string_view key)</td></tr>
+<tr class="memdesc:af1dd2c460dea514384a877eb0ceb6e88 inherit pub_methods_classinviwo_1_1DataReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the value of an reader specific option.  <br /></td></tr>
 <tr class="memitem:a7d4af2a22899751d75d2fecb368d47df inherit pub_methods_classinviwo_1_1DataReader" id="r_a7d4af2a22899751d75d2fecb368d47df"><td class="memItemLeft" align="right" valign="top">
 DataReader &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataReader &amp;that)=default</td></tr>
 <tr class="memitem:a60665ca333c8b953627b1fa44aa98514 inherit pub_methods_classinviwo_1_1DataReader" id="r_a60665ca333c8b953627b1fa44aa98514"><td class="memItemLeft" align="right" valign="top">
 DataReader &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DataReader &amp;&amp;that) noexcept=default</td></tr>
-<tr class="memitem:a9cfd32bc872da4a7934673b8dc69d2e1 inherit pub_methods_classinviwo_1_1DataReader" id="r_a9cfd32bc872da4a7934673b8dc69d2e1"><td class="memItemLeft" align="right" valign="top">
-const std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getExtensions</b> () const</td></tr>
-<tr class="memitem:af82104a266d676511510804167102068 inherit pub_methods_classinviwo_1_1DataReader" id="r_af82104a266d676511510804167102068"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addExtension</b> (<a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> ext)</td></tr>
-<tr class="memitem:a0ac5d98ed2647ec10447661f4f371148 inherit pub_methods_classinviwo_1_1DataReader" id="r_a0ac5d98ed2647ec10447661f4f371148"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148">setOption</a> (std::string_view key, std::any value)</td></tr>
-<tr class="memdesc:a0ac5d98ed2647ec10447661f4f371148 inherit pub_methods_classinviwo_1_1DataReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set reader specific options See the documentation of the specific reader for the available options.  <br /></td></tr>
-<tr class="memitem:af1dd2c460dea514384a877eb0ceb6e88 inherit pub_methods_classinviwo_1_1DataReader" id="r_af1dd2c460dea514384a877eb0ceb6e88"><td class="memItemLeft" align="right" valign="top">virtual std::any&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88">getOption</a> (std::string_view key)</td></tr>
-<tr class="memdesc:af1dd2c460dea514384a877eb0ceb6e88 inherit pub_methods_classinviwo_1_1DataReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the value of an reader specific option.  <br /></td></tr>
 <tr class="memitem:a838fd7f65493c80f249818efe71247d6 inherit pub_methods_classinviwo_1_1DataReader" id="r_a838fd7f65493c80f249818efe71247d6"><td class="memTemplParams" colspan="2">
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a838fd7f65493c80f249818efe71247d6 inherit pub_methods_classinviwo_1_1DataReader template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>readsType</b> () const</td></tr>
+<tr class="memitem:a0ac5d98ed2647ec10447661f4f371148 inherit pub_methods_classinviwo_1_1DataReader" id="r_a0ac5d98ed2647ec10447661f4f371148"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148">setOption</a> (std::string_view key, std::any value)</td></tr>
+<tr class="memdesc:a0ac5d98ed2647ec10447661f4f371148 inherit pub_methods_classinviwo_1_1DataReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set reader specific options See the documentation of the specific reader for the available options.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -148,11 +148,11 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a16888f4742dcf29b9cc0c17c79bed24e inherit pro_methods_classinviwo_1_1DataReaderType" id="r_a16888f4742dcf29b9cc0c17c79bed24e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReaderType.html#a16888f4742dcf29b9cc0c17c79bed24e">canRead</a> (const std::type_index &amp;index) const override</td></tr>
 <tr class="inherit_header pro_static_methods_classinviwo_1_1DataReader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_static_methods_classinviwo_1_1DataReader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Protected Member Functions inherited from <a class="el" href="classinviwo_1_1DataReader.html">inviwo::DataReader</a></td></tr>
 <tr class="memitem:a78af1b14e6fce96d309b5e607eb90a87 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a78af1b14e6fce96d309b5e607eb90a87"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#a78af1b14e6fce96d309b5e607eb90a87">checkExists</a> (const std::filesystem::path &amp;path)</td></tr>
+<tr class="memitem:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memItemLeft" align="right" valign="top">
+static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>downloadAndCacheIfUrl</b> (const std::filesystem::path &amp;url)</td></tr>
 <tr class="memitem:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_af6bcd2fc591b1b70f23ff0a366240631"><td class="memItemLeft" align="right" valign="top">static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#af6bcd2fc591b1b70f23ff0a366240631">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
 <tr class="memitem:ae3152fa04bcbd6b376a946ef2df619d5 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_ae3152fa04bcbd6b376a946ef2df619d5"><td class="memItemLeft" align="right" valign="top">
 static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><b>openAndCacheIfUrl</b> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
-<tr class="memitem:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memItemLeft" align="right" valign="top">
-static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>downloadAndCacheIfUrl</b> (const std::filesystem::path &amp;url)</td></tr>
 <tr class="memitem:adeb68f6d44b7554d74f1d1b8fae56c57 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_adeb68f6d44b7554d74f1d1b8fae56c57"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#adeb68f6d44b7554d74f1d1b8fae56c57">readFileContents</a> (const std::filesystem::path &amp;path)</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1DataReader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1DataReader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1DataReader.html">inviwo::DataReader</a></td></tr>
 <tr class="memitem:a71081c98921bdf342dbf54e43de3f195 inherit pro_attribs_classinviwo_1_1DataReader" id="r_a71081c98921bdf342dbf54e43de3f195"><td class="memItemLeft" align="right" valign="top">
@@ -216,7 +216,7 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>niftireader.h</b></li>
+<li>modules/nifti/include/modules/nifti/<b>niftireader.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

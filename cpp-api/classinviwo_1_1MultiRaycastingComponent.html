@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1MultiRaycastingComponent.html','','clas
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;raycastingcomponent.h&gt;</code></p>
+<p><code>#include &lt;modules/basegl/shadercomponents/raycastingcomponent.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::MultiRaycastingComponent:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -108,18 +108,18 @@ $(function(){initNavTree('classinviwo_1_1MultiRaycastingComponent.html','','clas
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a07bbb456b7a1d010139963dece51b0f8" id="r_a07bbb456b7a1d010139963dece51b0f8"><td class="memItemLeft" align="right" valign="top"><a id="a07bbb456b7a1d010139963dece51b0f8" name="a07bbb456b7a1d010139963dece51b0f8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MultiRaycastingComponent</b> (std::string_view volume, std::array&lt; std::reference_wrapper&lt; <a class="el" href="classinviwo_1_1IsoTFProperty.html">IsoTFProperty</a> &gt;, 4 &gt; isotfs)</td></tr>
 <tr class="memitem:abe161c1e01c93fda149256cf08ae8126" id="r_abe161c1e01c93fda149256cf08ae8126"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe161c1e01c93fda149256cf08ae8126">getName</a> () const override</td></tr>
 <tr class="memdesc:abe161c1e01c93fda149256cf08ae8126"><td class="mdescLeft">&#160;</td><td class="mdescRight">The name of the <a class="el" href="classinviwo_1_1ShaderComponent.html">ShaderComponent</a>. Will show up as the source of the line in the shaderwidget when the file is preprocessed and in error messages.  <br /></td></tr>
-<tr class="memitem:a57ace41f038a88682a67585af20d7309" id="r_a57ace41f038a88682a67585af20d7309"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57ace41f038a88682a67585af20d7309">process</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;) override</td></tr>
-<tr class="memdesc:a57ace41f038a88682a67585af20d7309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="classinviwo_1_1Processor.html#a8aec4f59f1cccfa4f37993958f095359">Processor::process</a> Override to set uniforms, bind textures etc.  <br /></td></tr>
-<tr class="memitem:a2429c7ee90497d005739d2b7472a5168" id="r_a2429c7ee90497d005739d2b7472a5168"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2429c7ee90497d005739d2b7472a5168">initializeResources</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) override</td></tr>
-<tr class="memdesc:a2429c7ee90497d005739d2b7472a5168"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">Processor::initializeResources</a> Override to set defines in the <code class="param">shader</code>. This function will be called before the <code class="param">shader</code> is compiled.  <br /></td></tr>
 <tr class="memitem:adda89050b8e73b3002f8f59d45a3e440" id="r_adda89050b8e73b3002f8f59d45a3e440"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adda89050b8e73b3002f8f59d45a3e440">getProperties</a> () override</td></tr>
 <tr class="memdesc:adda89050b8e73b3002f8f59d45a3e440"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all Properties This gets called in Processor::registerComponents which will add them to the processor.  <br /></td></tr>
 <tr class="memitem:aafcfc30799daa3e09e4ddf2da0939e47" id="r_aafcfc30799daa3e09e4ddf2da0939e47"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="structinviwo_1_1ShaderComponent_1_1Segment.html">Segment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafcfc30799daa3e09e4ddf2da0939e47">getSegments</a> () override</td></tr>
 <tr class="memdesc:aafcfc30799daa3e09e4ddf2da0939e47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all Segments to be injected into the shader. This gets called in <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">VolumeRaycasterBase::initializeResources</a> after the call to RaycasterComponent::initializeResources.  <br /></td></tr>
+<tr class="memitem:a2429c7ee90497d005739d2b7472a5168" id="r_a2429c7ee90497d005739d2b7472a5168"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2429c7ee90497d005739d2b7472a5168">initializeResources</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) override</td></tr>
+<tr class="memdesc:a2429c7ee90497d005739d2b7472a5168"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">Processor::initializeResources</a> Override to set defines in the <code class="param">shader</code>. This function will be called before the <code class="param">shader</code> is compiled.  <br /></td></tr>
+<tr class="memitem:a07bbb456b7a1d010139963dece51b0f8" id="r_a07bbb456b7a1d010139963dece51b0f8"><td class="memItemLeft" align="right" valign="top"><a id="a07bbb456b7a1d010139963dece51b0f8" name="a07bbb456b7a1d010139963dece51b0f8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MultiRaycastingComponent</b> (std::string_view volume, std::array&lt; std::reference_wrapper&lt; <a class="el" href="classinviwo_1_1IsoTFProperty.html">IsoTFProperty</a> &gt;, 4 &gt; isotfs)</td></tr>
+<tr class="memitem:a57ace41f038a88682a67585af20d7309" id="r_a57ace41f038a88682a67585af20d7309"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57ace41f038a88682a67585af20d7309">process</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;) override</td></tr>
+<tr class="memdesc:a57ace41f038a88682a67585af20d7309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from <a class="el" href="classinviwo_1_1Processor.html#a8aec4f59f1cccfa4f37993958f095359">Processor::process</a> Override to set uniforms, bind textures etc.  <br /></td></tr>
 <tr class="memitem:a21c48943b66209163e5da87cdf028a65" id="r_a21c48943b66209163e5da87cdf028a65"><td class="memItemLeft" align="right" valign="top"><a id="a21c48943b66209163e5da87cdf028a65" name="a21c48943b66209163e5da87cdf028a65"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUsedChannels</b> (size_t channels)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1ShaderComponent"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1ShaderComponent')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1ShaderComponent.html">inviwo::ShaderComponent</a></td></tr>
@@ -292,7 +292,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>setUsedChannels</b> (
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>raycastingcomponent.h</b></li>
+<li>modules/basegl/include/modules/basegl/shadercomponents/<b>raycastingcomponent.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

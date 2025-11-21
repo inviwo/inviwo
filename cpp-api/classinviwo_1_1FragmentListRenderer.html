@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1FragmentListRenderer.html','','classinv
 <p>helper class for rendering perfect alpha-blended shapes using fragment lists. Inspiration taken from <a href="http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html">http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html</a>. It requires OpenGL 4.2.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;fragmentlistrenderer.h&gt;</code></p>
+<p><code>#include &lt;modules/oit/rendering/fragmentlistrenderer.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -105,24 +105,24 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aef573f3f43f0a122df84ef166772fc80" id="r_aef573f3f43f0a122df84ef166772fc80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef573f3f43f0a122df84ef166772fc80">prePass</a> (const size2_t &amp;screenSize)</td></tr>
-<tr class="memdesc:aef573f3f43f0a122df84ef166772fc80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the rendering of transparent objects using fragment lists. It resets all counters and allocated the index textures of the given screen size. This has to be called each frame before objects can be rendered with the fragment lists.  <br /></td></tr>
-<tr class="memitem:af9672bc9a6f5f9edcddf5417a2323595" id="r_af9672bc9a6f5f9edcddf5417a2323595"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9672bc9a6f5f9edcddf5417a2323595">setShaderUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) const</td></tr>
-<tr class="memdesc:af9672bc9a6f5f9edcddf5417a2323595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the shader uniforms required by the fragment list renderer. The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>.  <br /></td></tr>
-<tr class="memitem:a91eee23289764776eb8ea13e32ffb3e8" id="r_a91eee23289764776eb8ea13e32ffb3e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91eee23289764776eb8ea13e32ffb3e8">postPass</a> (bool useIllustration, const <a class="el" href="classinviwo_1_1Image.html">Image</a> *background)</td></tr>
-<tr class="memdesc:a91eee23289764776eb8ea13e32ffb3e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finishes the fragment list pass and renders the final result. This sorts the fragment lists per pixel and outputs the blended color.  <br /></td></tr>
 <tr class="memitem:afde003a6f7e8c7c81830cb32b2bc6e3f" id="r_afde003a6f7e8c7c81830cb32b2bc6e3f"><td class="memItemLeft" align="right" valign="top"><a id="afde003a6f7e8c7c81830cb32b2bc6e3f" name="afde003a6f7e8c7c81830cb32b2bc6e3f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>beginCount</b> ()</td></tr>
-<tr class="memitem:a93338b48f93467d4be255bcc5c6adc55" id="r_a93338b48f93467d4be255bcc5c6adc55"><td class="memItemLeft" align="right" valign="top"><a id="a93338b48f93467d4be255bcc5c6adc55" name="a93338b48f93467d4be255bcc5c6adc55"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>endCount</b> ()</td></tr>
-<tr class="memitem:af96d7de12e72756545359255c8c10ae1" id="r_af96d7de12e72756545359255c8c10ae1"><td class="memItemLeft" align="right" valign="top"><a id="af96d7de12e72756545359255c8c10ae1" name="af96d7de12e72756545359255c8c10ae1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setIllustrationSettings</b> (const <a class="el" href="structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html">IllustrationSettings</a> &amp;settings)</td></tr>
-<tr class="memitem:a9684e803084087adca99d57f28afac81" id="r_a9684e803084087adca99d57f28afac81"><td class="memItemLeft" align="right" valign="top"><a id="a9684e803084087adca99d57f28afac81" name="a9684e803084087adca99d57f28afac81"></a>
-DispatcherHandle&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onReload</b> (std::function&lt; void()&gt; callback)</td></tr>
 <tr class="memitem:aaf098634f36b06714358ac2feb372ae6" id="r_aaf098634f36b06714358ac2feb372ae6"><td class="memItemLeft" align="right" valign="top"><a id="aaf098634f36b06714358ac2feb372ae6" name="aaf098634f36b06714358ac2feb372ae6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>debugFragmentLists</b> (std::ostream &amp;oss)</td></tr>
 <tr class="memitem:a1c152d0d87363ab7508959c7e49b40c0" id="r_a1c152d0d87363ab7508959c7e49b40c0"><td class="memItemLeft" align="right" valign="top"><a id="a1c152d0d87363ab7508959c7e49b40c0" name="a1c152d0d87363ab7508959c7e49b40c0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>debugIllustrationBuffer</b> (std::ostream &amp;oss)</td></tr>
+<tr class="memitem:a93338b48f93467d4be255bcc5c6adc55" id="r_a93338b48f93467d4be255bcc5c6adc55"><td class="memItemLeft" align="right" valign="top"><a id="a93338b48f93467d4be255bcc5c6adc55" name="a93338b48f93467d4be255bcc5c6adc55"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>endCount</b> ()</td></tr>
+<tr class="memitem:a9684e803084087adca99d57f28afac81" id="r_a9684e803084087adca99d57f28afac81"><td class="memItemLeft" align="right" valign="top"><a id="a9684e803084087adca99d57f28afac81" name="a9684e803084087adca99d57f28afac81"></a>
+DispatcherHandle&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onReload</b> (std::function&lt; void()&gt; callback)</td></tr>
+<tr class="memitem:a91eee23289764776eb8ea13e32ffb3e8" id="r_a91eee23289764776eb8ea13e32ffb3e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91eee23289764776eb8ea13e32ffb3e8">postPass</a> (bool useIllustration, const <a class="el" href="classinviwo_1_1Image.html">Image</a> *background)</td></tr>
+<tr class="memdesc:a91eee23289764776eb8ea13e32ffb3e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finishes the fragment list pass and renders the final result. This sorts the fragment lists per pixel and outputs the blended color.  <br /></td></tr>
+<tr class="memitem:aef573f3f43f0a122df84ef166772fc80" id="r_aef573f3f43f0a122df84ef166772fc80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef573f3f43f0a122df84ef166772fc80">prePass</a> (const size2_t &amp;screenSize)</td></tr>
+<tr class="memdesc:aef573f3f43f0a122df84ef166772fc80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the rendering of transparent objects using fragment lists. It resets all counters and allocated the index textures of the given screen size. This has to be called each frame before objects can be rendered with the fragment lists.  <br /></td></tr>
+<tr class="memitem:af96d7de12e72756545359255c8c10ae1" id="r_af96d7de12e72756545359255c8c10ae1"><td class="memItemLeft" align="right" valign="top"><a id="af96d7de12e72756545359255c8c10ae1" name="af96d7de12e72756545359255c8c10ae1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setIllustrationSettings</b> (const <a class="el" href="structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html">IllustrationSettings</a> &amp;settings)</td></tr>
+<tr class="memitem:af9672bc9a6f5f9edcddf5417a2323595" id="r_af9672bc9a6f5f9edcddf5417a2323595"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9672bc9a6f5f9edcddf5417a2323595">setShaderUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) const</td></tr>
+<tr class="memdesc:af9672bc9a6f5f9edcddf5417a2323595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the shader uniforms required by the fragment list renderer. The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -278,7 +278,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>fragmentlistrenderer.h</b></li>
+<li>modules/oit/include/modules/oit/rendering/<b>fragmentlistrenderer.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

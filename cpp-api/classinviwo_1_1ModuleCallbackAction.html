@@ -94,29 +94,29 @@ $(function(){initNavTree('classinviwo_1_1ModuleCallbackAction.html','','classinv
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;moduleaction.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/common/moduleaction.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a44a5e16012f286c909af6198d795bc26" id="r_a44a5e16012f286c909af6198d795bc26"><td class="memItemLeft" align="right" valign="top"><a id="a44a5e16012f286c909af6198d795bc26" name="a44a5e16012f286c909af6198d795bc26"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ModuleCallbackAction</b> (const std::string &amp;actionName, <a class="el" href="classinviwo_1_1InviwoModule.html">InviwoModule</a> *module, ModuleCallBackActionState state=ModuleCallBackActionState::Disabled)</td></tr>
 <tr class="memitem:ad04eee488d6ef5ced863dd0af2f82ff6" id="r_ad04eee488d6ef5ced863dd0af2f82ff6"><td class="memItemLeft" align="right" valign="top"><a id="ad04eee488d6ef5ced863dd0af2f82ff6" name="ad04eee488d6ef5ced863dd0af2f82ff6"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getActionName</b> () const</td></tr>
-<tr class="memitem:a7d96e4258ab662689a51764024c84422" id="r_a7d96e4258ab662689a51764024c84422"><td class="memItemLeft" align="right" valign="top"><a id="a7d96e4258ab662689a51764024c84422" name="a7d96e4258ab662689a51764024c84422"></a>
-<a class="el" href="classinviwo_1_1InviwoModule.html">InviwoModule</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getModule</b> () const</td></tr>
+<tr class="memitem:a62308a3ed519a128fc2dfb5e3b0a42b8" id="r_a62308a3ed519a128fc2dfb5e3b0a42b8"><td class="memItemLeft" align="right" valign="top"><a id="a62308a3ed519a128fc2dfb5e3b0a42b8" name="a62308a3ed519a128fc2dfb5e3b0a42b8"></a>
+ModuleCallBackActionState&#160;</td><td class="memItemRight" valign="bottom"><b>getActionState</b> () const</td></tr>
 <tr class="memitem:a660c2319f4d7e0ae4101f624c60ab0fe" id="r_a660c2319f4d7e0ae4101f624c60ab0fe"><td class="memItemLeft" align="right" valign="top"><a id="a660c2319f4d7e0ae4101f624c60ab0fe" name="a660c2319f4d7e0ae4101f624c60ab0fe"></a>
 <a class="el" href="classinviwo_1_1ModuleCallback.html">ModuleCallback</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCallBack</b> ()</td></tr>
 <tr class="memitem:a4b8b6facd20db051fbb8aee0b13f728c" id="r_a4b8b6facd20db051fbb8aee0b13f728c"><td class="memItemLeft" align="right" valign="top"><a id="a4b8b6facd20db051fbb8aee0b13f728c" name="a4b8b6facd20db051fbb8aee0b13f728c"></a>
 const <a class="el" href="classinviwo_1_1ModuleCallback.html">ModuleCallback</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCallBack</b> () const</td></tr>
+<tr class="memitem:a7d96e4258ab662689a51764024c84422" id="r_a7d96e4258ab662689a51764024c84422"><td class="memItemLeft" align="right" valign="top"><a id="a7d96e4258ab662689a51764024c84422" name="a7d96e4258ab662689a51764024c84422"></a>
+<a class="el" href="classinviwo_1_1InviwoModule.html">InviwoModule</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getModule</b> () const</td></tr>
+<tr class="memitem:a44a5e16012f286c909af6198d795bc26" id="r_a44a5e16012f286c909af6198d795bc26"><td class="memItemLeft" align="right" valign="top"><a id="a44a5e16012f286c909af6198d795bc26" name="a44a5e16012f286c909af6198d795bc26"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ModuleCallbackAction</b> (const std::string &amp;actionName, <a class="el" href="classinviwo_1_1InviwoModule.html">InviwoModule</a> *module, ModuleCallBackActionState state=ModuleCallBackActionState::Disabled)</td></tr>
 <tr class="memitem:a0441ce4d3ac2d9e4972b9fa03196fd7c" id="r_a0441ce4d3ac2d9e4972b9fa03196fd7c"><td class="memItemLeft" align="right" valign="top"><a id="a0441ce4d3ac2d9e4972b9fa03196fd7c" name="a0441ce4d3ac2d9e4972b9fa03196fd7c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setActionState</b> (ModuleCallBackActionState state)</td></tr>
-<tr class="memitem:a62308a3ed519a128fc2dfb5e3b0a42b8" id="r_a62308a3ed519a128fc2dfb5e3b0a42b8"><td class="memItemLeft" align="right" valign="top"><a id="a62308a3ed519a128fc2dfb5e3b0a42b8" name="a62308a3ed519a128fc2dfb5e3b0a42b8"></a>
-ModuleCallBackActionState&#160;</td><td class="memItemRight" valign="bottom"><b>getActionState</b> () const</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A Module can register ModuleCallbackActions with the <a class="el" href="classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules.">InviwoApplication</a>. These action will the Be added a some places, for example as property widget context menu options. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>moduleaction.h</b></li>
+<li>include/inviwo/core/common/<b>moduleaction.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

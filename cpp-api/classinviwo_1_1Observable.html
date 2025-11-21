@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1Observable.html','','classinviwo_1_1Obs
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;observer.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/observer.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::Observable&lt; T &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -108,16 +108,16 @@ $(function(){initNavTree('classinviwo_1_1Observable.html','','classinviwo_1_1Obs
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6" id="r_aa342929bb9eb6a886ce783bc59dcf7f6"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6" name="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (T *observer)</td></tr>
+<tr class="memitem:a9c2b6c99bcb2b03e77e2cfe03442406b" id="r_a9c2b6c99bcb2b03e77e2cfe03442406b"><td class="memItemLeft" align="right" valign="top"><a id="a9c2b6c99bcb2b03e77e2cfe03442406b" name="a9c2b6c99bcb2b03e77e2cfe03442406b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isObservedBy</b> (T *observer) const</td></tr>
 <tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8" id="r_a22a72cba8a707ff5bd0e87fdaefdfab8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const Observable&lt; T &gt; &amp;other)</td></tr>
 <tr class="memitem:ada2b69f3049d663bda3c981fed8ad466" id="r_ada2b69f3049d663bda3c981fed8ad466"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada2b69f3049d663bda3c981fed8ad466">Observable</a> (Observable&lt; T &gt; &amp;&amp;other) noexcept</td></tr>
 <tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b" id="r_a0ab0efc8a80e36322a1197e8750e036b"><td class="memItemLeft" align="right" valign="top">Observable&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const Observable&lt; T &gt; &amp;other)</td></tr>
 <tr class="memitem:a295f3811c660e03128e2fceefebf4470" id="r_a295f3811c660e03128e2fceefebf4470"><td class="memItemLeft" align="right" valign="top">Observable&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a295f3811c660e03128e2fceefebf4470">operator=</a> (Observable&lt; T &gt; &amp;&amp;other) noexcept</td></tr>
-<tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6" id="r_aa342929bb9eb6a886ce783bc59dcf7f6"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6" name="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (T *observer)</td></tr>
 <tr class="memitem:acbabbb01670a61065bfb2b58950feea3" id="r_acbabbb01670a61065bfb2b58950feea3"><td class="memItemLeft" align="right" valign="top"><a id="acbabbb01670a61065bfb2b58950feea3" name="acbabbb01670a61065bfb2b58950feea3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (T *observer)</td></tr>
-<tr class="memitem:a9c2b6c99bcb2b03e77e2cfe03442406b" id="r_a9c2b6c99bcb2b03e77e2cfe03442406b"><td class="memItemLeft" align="right" valign="top"><a id="a9c2b6c99bcb2b03e77e2cfe03442406b" name="a9c2b6c99bcb2b03e77e2cfe03442406b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isObservedBy</b> (T *observer) const</td></tr>
 <tr class="memitem:aceded27239088ecdeca8e590770614d9" id="r_aceded27239088ecdeca8e590770614d9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceded27239088ecdeca8e590770614d9">startBlockingNotifications</a> () override final</td></tr>
 <tr class="memitem:a4abfbec3338d1ca97e9c1177337f824f" id="r_a4abfbec3338d1ca97e9c1177337f824f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4abfbec3338d1ca97e9c1177337f824f">stopBlockingNotifications</a> () override final</td></tr>
 </table><table class="memberdecls">
@@ -332,7 +332,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>observer.h</b></li>
+<li>include/inviwo/core/util/<b>observer.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

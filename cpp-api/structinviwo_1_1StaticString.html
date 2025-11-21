@@ -97,41 +97,41 @@ $(function(){initNavTree('structinviwo_1_1StaticString.html','','structinviwo_1_
 <p>A compile time string implementation. Supports compile time string concatenation and conversion to std::string, std::string_view and null terminated const char*. The stored string is null terminated.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;staticstring.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/staticstring.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a5e35f4b74620e055086a9a088d871a5c" id="r_a5e35f4b74620e055086a9a088d871a5c"><td class="memItemLeft" align="right" valign="top"><a id="a5e35f4b74620e055086a9a088d871a5c" name="a5e35f4b74620e055086a9a088d871a5c"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const noexcept</td></tr>
+<tr class="memitem:a4ced528c890ce9d8ba3d91b09591ca56" id="r_a4ced528c890ce9d8ba3d91b09591ca56"><td class="memItemLeft" align="right" valign="top"><a id="a4ced528c890ce9d8ba3d91b09591ca56" name="a4ced528c890ce9d8ba3d91b09591ca56"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () noexcept</td></tr>
+<tr class="memitem:a5dc2e5c65bf4a43066df3c74e678e15d" id="r_a5dc2e5c65bf4a43066df3c74e678e15d"><td class="memItemLeft" align="right" valign="top"><a id="a5dc2e5c65bf4a43066df3c74e678e15d" name="a5dc2e5c65bf4a43066df3c74e678e15d"></a>
+constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>c_str</b> () const</td></tr>
+<tr class="memitem:a5992c75ed2fdf5069a2b326395c194d1" id="r_a5992c75ed2fdf5069a2b326395c194d1"><td class="memItemLeft" align="right" valign="top"><a id="a5992c75ed2fdf5069a2b326395c194d1" name="a5992c75ed2fdf5069a2b326395c194d1"></a>
+constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () const noexcept</td></tr>
+<tr class="memitem:ad0101f2bf3c6f4c76f0cef668f9f3440" id="r_ad0101f2bf3c6f4c76f0cef668f9f3440"><td class="memItemLeft" align="right" valign="top"><a id="ad0101f2bf3c6f4c76f0cef668f9f3440" name="ad0101f2bf3c6f4c76f0cef668f9f3440"></a>
+constexpr char *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () noexcept</td></tr>
+<tr class="memitem:acc730b69faf605baa2772f34b45dee8e" id="r_acc730b69faf605baa2772f34b45dee8e"><td class="memItemLeft" align="right" valign="top"><a id="acc730b69faf605baa2772f34b45dee8e" name="acc730b69faf605baa2772f34b45dee8e"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const noexcept</td></tr>
+<tr class="memitem:aa34ca22a0758288bf4a7375b0b321945" id="r_aa34ca22a0758288bf4a7375b0b321945"><td class="memItemLeft" align="right" valign="top"><a id="aa34ca22a0758288bf4a7375b0b321945" name="aa34ca22a0758288bf4a7375b0b321945"></a>
+constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () noexcept</td></tr>
+<tr class="memitem:a713d26720dd9a8cc7b8cc3d2dac8218c" id="r_a713d26720dd9a8cc7b8cc3d2dac8218c"><td class="memItemLeft" align="right" valign="top"><a id="a713d26720dd9a8cc7b8cc3d2dac8218c" name="a713d26720dd9a8cc7b8cc3d2dac8218c"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>operator fmt::string_view</b> () const noexcept</td></tr>
+<tr class="memitem:a0889938143fb4017bfb0137e8a05e633" id="r_a0889938143fb4017bfb0137e8a05e633"><td class="memItemLeft" align="right" valign="top"><a id="a0889938143fb4017bfb0137e8a05e633" name="a0889938143fb4017bfb0137e8a05e633"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::string</b> () const noexcept</td></tr>
+<tr class="memitem:a37e5c4b0a9849962264fc9d6e39f2f54" id="r_a37e5c4b0a9849962264fc9d6e39f2f54"><td class="memItemLeft" align="right" valign="top"><a id="a37e5c4b0a9849962264fc9d6e39f2f54" name="a37e5c4b0a9849962264fc9d6e39f2f54"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::string_view</b> () const noexcept</td></tr>
+<tr class="memitem:a57170780c43cea09bd1b13094f7592db" id="r_a57170780c43cea09bd1b13094f7592db"><td class="memItemLeft" align="right" valign="top"><a id="a57170780c43cea09bd1b13094f7592db" name="a57170780c43cea09bd1b13094f7592db"></a>
+constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const noexcept</td></tr>
 <tr class="memitem:a2c70680a679994028a91fc71e2a12300" id="r_a2c70680a679994028a91fc71e2a12300"><td class="memItemLeft" align="right" valign="top"><a id="a2c70680a679994028a91fc71e2a12300" name="a2c70680a679994028a91fc71e2a12300"></a>
 constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>StaticString</b> (std::string_view sv) noexcept</td></tr>
 <tr class="memitem:a7374752f2db6533d4829ce089b5f59b2" id="r_a7374752f2db6533d4829ce089b5f59b2"><td class="memTemplParams" colspan="2"><a id="a7374752f2db6533d4829ce089b5f59b2" name="a7374752f2db6533d4829ce089b5f59b2"></a>
 template&lt;typename... Ts&gt; </td></tr>
 <tr class="memitem:a7374752f2db6533d4829ce089b5f59b2 template"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>StaticString</b> (Ts &amp;&amp;... strs)</td></tr>
-<tr class="memitem:a57170780c43cea09bd1b13094f7592db" id="r_a57170780c43cea09bd1b13094f7592db"><td class="memItemLeft" align="right" valign="top"><a id="a57170780c43cea09bd1b13094f7592db" name="a57170780c43cea09bd1b13094f7592db"></a>
-constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const noexcept</td></tr>
-<tr class="memitem:ad0101f2bf3c6f4c76f0cef668f9f3440" id="r_ad0101f2bf3c6f4c76f0cef668f9f3440"><td class="memItemLeft" align="right" valign="top"><a id="ad0101f2bf3c6f4c76f0cef668f9f3440" name="ad0101f2bf3c6f4c76f0cef668f9f3440"></a>
-constexpr char *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () noexcept</td></tr>
-<tr class="memitem:a5992c75ed2fdf5069a2b326395c194d1" id="r_a5992c75ed2fdf5069a2b326395c194d1"><td class="memItemLeft" align="right" valign="top"><a id="a5992c75ed2fdf5069a2b326395c194d1" name="a5992c75ed2fdf5069a2b326395c194d1"></a>
-constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () const noexcept</td></tr>
-<tr class="memitem:a5e35f4b74620e055086a9a088d871a5c" id="r_a5e35f4b74620e055086a9a088d871a5c"><td class="memItemLeft" align="right" valign="top"><a id="a5e35f4b74620e055086a9a088d871a5c" name="a5e35f4b74620e055086a9a088d871a5c"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const noexcept</td></tr>
-<tr class="memitem:a4ced528c890ce9d8ba3d91b09591ca56" id="r_a4ced528c890ce9d8ba3d91b09591ca56"><td class="memItemLeft" align="right" valign="top"><a id="a4ced528c890ce9d8ba3d91b09591ca56" name="a4ced528c890ce9d8ba3d91b09591ca56"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () noexcept</td></tr>
-<tr class="memitem:acc730b69faf605baa2772f34b45dee8e" id="r_acc730b69faf605baa2772f34b45dee8e"><td class="memItemLeft" align="right" valign="top"><a id="acc730b69faf605baa2772f34b45dee8e" name="acc730b69faf605baa2772f34b45dee8e"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const noexcept</td></tr>
-<tr class="memitem:aa34ca22a0758288bf4a7375b0b321945" id="r_aa34ca22a0758288bf4a7375b0b321945"><td class="memItemLeft" align="right" valign="top"><a id="aa34ca22a0758288bf4a7375b0b321945" name="aa34ca22a0758288bf4a7375b0b321945"></a>
-constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () noexcept</td></tr>
-<tr class="memitem:a37e5c4b0a9849962264fc9d6e39f2f54" id="r_a37e5c4b0a9849962264fc9d6e39f2f54"><td class="memItemLeft" align="right" valign="top"><a id="a37e5c4b0a9849962264fc9d6e39f2f54" name="a37e5c4b0a9849962264fc9d6e39f2f54"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::string_view</b> () const noexcept</td></tr>
-<tr class="memitem:a713d26720dd9a8cc7b8cc3d2dac8218c" id="r_a713d26720dd9a8cc7b8cc3d2dac8218c"><td class="memItemLeft" align="right" valign="top"><a id="a713d26720dd9a8cc7b8cc3d2dac8218c" name="a713d26720dd9a8cc7b8cc3d2dac8218c"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>operator fmt::string_view</b> () const noexcept</td></tr>
-<tr class="memitem:ae8a4a11a8929e780fdd024efa5a41a89" id="r_ae8a4a11a8929e780fdd024efa5a41a89"><td class="memItemLeft" align="right" valign="top"><a id="ae8a4a11a8929e780fdd024efa5a41a89" name="ae8a4a11a8929e780fdd024efa5a41a89"></a>
-constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> () const noexcept</td></tr>
 <tr class="memitem:a29ca3783ec0468379be4031a86b36a75" id="r_a29ca3783ec0468379be4031a86b36a75"><td class="memItemLeft" align="right" valign="top"><a id="a29ca3783ec0468379be4031a86b36a75" name="a29ca3783ec0468379be4031a86b36a75"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>string</b> () const</td></tr>
-<tr class="memitem:a0889938143fb4017bfb0137e8a05e633" id="r_a0889938143fb4017bfb0137e8a05e633"><td class="memItemLeft" align="right" valign="top"><a id="a0889938143fb4017bfb0137e8a05e633" name="a0889938143fb4017bfb0137e8a05e633"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::string</b> () const noexcept</td></tr>
-<tr class="memitem:a5dc2e5c65bf4a43066df3c74e678e15d" id="r_a5dc2e5c65bf4a43066df3c74e678e15d"><td class="memItemLeft" align="right" valign="top"><a id="a5dc2e5c65bf4a43066df3c74e678e15d" name="a5dc2e5c65bf4a43066df3c74e678e15d"></a>
-constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>c_str</b> () const</td></tr>
+<tr class="memitem:ae8a4a11a8929e780fdd024efa5a41a89" id="r_ae8a4a11a8929e780fdd024efa5a41a89"><td class="memItemLeft" align="right" valign="top"><a id="ae8a4a11a8929e780fdd024efa5a41a89" name="ae8a4a11a8929e780fdd024efa5a41a89"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>view</b> () const noexcept</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -142,7 +142,7 @@ std::array&lt; char, N+1 &gt;&#160;</td><td class="memItemRight" valign="bottom"
 <div class="textblock"><div class="compoundTemplParams">template&lt;size_t N&gt;<br />
 struct inviwo::StaticString&lt; N &gt;</div><p>A compile time string implementation. Supports compile time string concatenation and conversion to std::string, std::string_view and null terminated const char*. The stored string is null terminated. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>staticstring.h</b></li>
+<li>include/inviwo/core/util/<b>staticstring.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

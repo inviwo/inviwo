@@ -1,43 +1,10 @@
 var group__dataio =
 [
-    [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
-      [ "getOption", "classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88", null ],
-      [ "setOption", "classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148", null ]
-    ] ],
-    [ "inviwo::DataReaderType&lt; T &gt;", "classinviwo_1_1DataReaderType.html", [
-      [ "readData", "classinviwo_1_1DataReaderType.html#ae0105fa2debe3f46d4d90358e7d0f92b", null ]
-    ] ],
-    [ "inviwo::DataWriter", "classinviwo_1_1DataWriter.html", [
-      [ "checkOverwrite", "classinviwo_1_1DataWriter.html#a9a9d1c0ab15b48fdd639b5f504b4c1fd", null ],
-      [ "getOption", "classinviwo_1_1DataWriter.html#a422b42cb09f00ad62a1572f5808e76b0", null ],
-      [ "open", "classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6", null ],
-      [ "setOption", "classinviwo_1_1DataWriter.html#ad2352d071b77129614c1e0d172dd2099", null ]
-    ] ],
-    [ "inviwo::DataWriterType&lt; T &gt;", "classinviwo_1_1DataWriterType.html", [
-      [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
-    ] ],
-    [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
-    [ "inviwo::TextFileReader", "classinviwo_1_1TextFileReader.html", [
-      [ "read", "classinviwo_1_1TextFileReader.html#a5d85a6c7f74a6b75c4faa7b482edf5f5", null ],
-      [ "read", "classinviwo_1_1TextFileReader.html#aaf0c5d25218422413b74567840764bad", null ]
-    ] ],
+    [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
+    [ "inviwo::AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
     [ "inviwo::AssimpReader", "classinviwo_1_1AssimpReader.html", [
       [ "getOption", "classinviwo_1_1AssimpReader.html#a0a5f789b43718c7a29808ad756b46e19", null ],
       [ "setOption", "classinviwo_1_1AssimpReader.html#aed86b7a704398c48d49eeb32c1f9744f", null ]
-    ] ],
-    [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
-    [ "inviwo::AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
-    [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
-    [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", [
-      [ "writeData", "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a", null ]
-    ] ],
-    [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
-    [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],
-    [ "inviwo::IvfVolumeWriter", "classinviwo_1_1IvfVolumeWriter.html", [
-      [ "writeData", "classinviwo_1_1IvfVolumeWriter.html#a10a1e22c28128510beb4be63447fe565", null ]
-    ] ],
-    [ "inviwo::IvfVolumeSequenceWriter", "classinviwo_1_1IvfVolumeSequenceWriter.html", [
-      [ "writeData", "classinviwo_1_1IvfVolumeSequenceWriter.html#a25727791d0797dbb61718b881d2a3678", null ]
     ] ],
     [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
     [ "inviwo::CImgLayerWriter", "classinviwo_1_1CImgLayerWriter.html", [
@@ -66,11 +33,44 @@ var group__dataio =
       [ "setUnitRegexp", "classinviwo_1_1CSVReader.html#a036893742ff73fd0c94ff6048455fedf", null ],
       [ "setUnitsInHeaders", "classinviwo_1_1CSVReader.html#ad55da550d61bc987651f8b2e3fdb0205", null ]
     ] ],
+    [ "inviwo::DataReader", "classinviwo_1_1DataReader.html", [
+      [ "getOption", "classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88", null ],
+      [ "setOption", "classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148", null ]
+    ] ],
+    [ "inviwo::DataReaderType&lt; T &gt;", "classinviwo_1_1DataReaderType.html", [
+      [ "readData", "classinviwo_1_1DataReaderType.html#ae0105fa2debe3f46d4d90358e7d0f92b", null ]
+    ] ],
+    [ "inviwo::DataWriter", "classinviwo_1_1DataWriter.html", [
+      [ "checkOverwrite", "classinviwo_1_1DataWriter.html#a9a9d1c0ab15b48fdd639b5f504b4c1fd", null ],
+      [ "getOption", "classinviwo_1_1DataWriter.html#a422b42cb09f00ad62a1572f5808e76b0", null ],
+      [ "open", "classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6", null ],
+      [ "setOption", "classinviwo_1_1DataWriter.html#ad2352d071b77129614c1e0d172dd2099", null ]
+    ] ],
+    [ "inviwo::DataWriterType&lt; T &gt;", "classinviwo_1_1DataWriterType.html", [
+      [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
+    ] ],
+    [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
+    [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", [
+      [ "writeData", "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a", null ]
+    ] ],
+    [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
+    [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],
+    [ "inviwo::IvfVolumeSequenceWriter", "classinviwo_1_1IvfVolumeSequenceWriter.html", [
+      [ "writeData", "classinviwo_1_1IvfVolumeSequenceWriter.html#a25727791d0797dbb61718b881d2a3678", null ]
+    ] ],
+    [ "inviwo::IvfVolumeWriter", "classinviwo_1_1IvfVolumeWriter.html", [
+      [ "writeData", "classinviwo_1_1IvfVolumeWriter.html#a10a1e22c28128510beb4be63447fe565", null ]
+    ] ],
     [ "inviwo::JSONDataFrameReader", "classinviwo_1_1JSONDataFrameReader.html", [
       [ "readData", "classinviwo_1_1JSONDataFrameReader.html#a82b2db326380ce13f1efa651fd5f2aed", null ],
       [ "readData", "classinviwo_1_1JSONDataFrameReader.html#adf57fe32ab5775206b89c3ade59d0cf8", null ]
     ] ],
     [ "inviwo::JSONDataFrameWriter", "classinviwo_1_1JSONDataFrameWriter.html", [
       [ "writeData", "classinviwo_1_1JSONDataFrameWriter.html#abbaa06d8e0b82d71a58ae10d71a3c30e", null ]
+    ] ],
+    [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
+    [ "inviwo::TextFileReader", "classinviwo_1_1TextFileReader.html", [
+      [ "read", "classinviwo_1_1TextFileReader.html#a5d85a6c7f74a6b75c4faa7b482edf5f5", null ],
+      [ "read", "classinviwo_1_1TextFileReader.html#aaf0c5d25218422413b74567840764bad", null ]
     ] ]
 ];

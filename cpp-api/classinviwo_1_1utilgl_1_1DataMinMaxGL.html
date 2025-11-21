@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1utilgl_1_1DataMinMaxGL.html','','classi
 <p>Utility class for computing min and max values using OpenGL.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;dataminmaxgl.h&gt;</code></p>
+<p><code>#include &lt;modules/basegl/algorithm/dataminmaxgl.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -105,22 +105,22 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataMinMaxGL</b> (const DataMinMaxGL &amp;)=delete</td></tr>
 <tr class="memitem:a61bd8a2ac0f85b63555c6a75ab0ba544" id="r_a61bd8a2ac0f85b63555c6a75ab0ba544"><td class="memItemLeft" align="right" valign="top"><a id="a61bd8a2ac0f85b63555c6a75ab0ba544" name="a61bd8a2ac0f85b63555c6a75ab0ba544"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataMinMaxGL</b> (DataMinMaxGL &amp;&amp;) noexcept=default</td></tr>
-<tr class="memitem:aa679cd2fb9266f62cf5dc7abebf5c9a4" id="r_aa679cd2fb9266f62cf5dc7abebf5c9a4"><td class="memItemLeft" align="right" valign="top"><a id="aa679cd2fb9266f62cf5dc7abebf5c9a4" name="aa679cd2fb9266f62cf5dc7abebf5c9a4"></a>
-DataMinMaxGL &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataMinMaxGL &amp;)=delete</td></tr>
-<tr class="memitem:af87439856730dc7abecf5422a29c0352" id="r_af87439856730dc7abecf5422a29c0352"><td class="memItemLeft" align="right" valign="top"><a id="af87439856730dc7abecf5422a29c0352" name="af87439856730dc7abecf5422a29c0352"></a>
-DataMinMaxGL &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DataMinMaxGL &amp;&amp;) noexcept=default</td></tr>
-<tr class="memitem:a8d197debb793b515fb0b3a962e683203" id="r_a8d197debb793b515fb0b3a962e683203"><td class="memItemLeft" align="right" valign="top"><a id="a8d197debb793b515fb0b3a962e683203" name="a8d197debb793b515fb0b3a962e683203"></a>
-std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume)</td></tr>
-<tr class="memitem:ae6b7a3b7a71690cd461c7ab2c4d11c8e" id="r_ae6b7a3b7a71690cd461c7ab2c4d11c8e"><td class="memItemLeft" align="right" valign="top"><a id="ae6b7a3b7a71690cd461c7ab2c4d11c8e" name="ae6b7a3b7a71690cd461c7ab2c4d11c8e"></a>
-std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1VolumeGL.html">VolumeGL</a> &amp;volumeGL)</td></tr>
-<tr class="memitem:ac1d4660f821052ec1ca341955f63d649" id="r_ac1d4660f821052ec1ca341955f63d649"><td class="memItemLeft" align="right" valign="top"><a id="ac1d4660f821052ec1ca341955f63d649" name="ac1d4660f821052ec1ca341955f63d649"></a>
-std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer)</td></tr>
-<tr class="memitem:ae41b27673a2f9ca56e7f5aca9b6b1dac" id="r_ae41b27673a2f9ca56e7f5aca9b6b1dac"><td class="memItemLeft" align="right" valign="top"><a id="ae41b27673a2f9ca56e7f5aca9b6b1dac" name="ae41b27673a2f9ca56e7f5aca9b6b1dac"></a>
-std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1LayerGL.html">LayerGL</a> &amp;layerGL)</td></tr>
 <tr class="memitem:a1577c795d0b9a84d678b11c0c5054d69" id="r_a1577c795d0b9a84d678b11c0c5054d69"><td class="memItemLeft" align="right" valign="top"><a id="a1577c795d0b9a84d678b11c0c5054d69" name="a1577c795d0b9a84d678b11c0c5054d69"></a>
 std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &amp;buffer)</td></tr>
 <tr class="memitem:ae845127c074958895fa20a5438f4794a" id="r_ae845127c074958895fa20a5438f4794a"><td class="memItemLeft" align="right" valign="top"><a id="ae845127c074958895fa20a5438f4794a" name="ae845127c074958895fa20a5438f4794a"></a>
 std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1BufferGL.html">BufferGL</a> &amp;bufferGL)</td></tr>
+<tr class="memitem:ac1d4660f821052ec1ca341955f63d649" id="r_ac1d4660f821052ec1ca341955f63d649"><td class="memItemLeft" align="right" valign="top"><a id="ac1d4660f821052ec1ca341955f63d649" name="ac1d4660f821052ec1ca341955f63d649"></a>
+std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer)</td></tr>
+<tr class="memitem:ae41b27673a2f9ca56e7f5aca9b6b1dac" id="r_ae41b27673a2f9ca56e7f5aca9b6b1dac"><td class="memItemLeft" align="right" valign="top"><a id="ae41b27673a2f9ca56e7f5aca9b6b1dac" name="ae41b27673a2f9ca56e7f5aca9b6b1dac"></a>
+std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1LayerGL.html">LayerGL</a> &amp;layerGL)</td></tr>
+<tr class="memitem:a8d197debb793b515fb0b3a962e683203" id="r_a8d197debb793b515fb0b3a962e683203"><td class="memItemLeft" align="right" valign="top"><a id="a8d197debb793b515fb0b3a962e683203" name="a8d197debb793b515fb0b3a962e683203"></a>
+std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume)</td></tr>
+<tr class="memitem:ae6b7a3b7a71690cd461c7ab2c4d11c8e" id="r_ae6b7a3b7a71690cd461c7ab2c4d11c8e"><td class="memItemLeft" align="right" valign="top"><a id="ae6b7a3b7a71690cd461c7ab2c4d11c8e" name="ae6b7a3b7a71690cd461c7ab2c4d11c8e"></a>
+std::pair&lt; dvec4, dvec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>minMax</b> (const <a class="el" href="classinviwo_1_1VolumeGL.html">VolumeGL</a> &amp;volumeGL)</td></tr>
+<tr class="memitem:aa679cd2fb9266f62cf5dc7abebf5c9a4" id="r_aa679cd2fb9266f62cf5dc7abebf5c9a4"><td class="memItemLeft" align="right" valign="top"><a id="aa679cd2fb9266f62cf5dc7abebf5c9a4" name="aa679cd2fb9266f62cf5dc7abebf5c9a4"></a>
+DataMinMaxGL &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataMinMaxGL &amp;)=delete</td></tr>
+<tr class="memitem:af87439856730dc7abecf5422a29c0352" id="r_af87439856730dc7abecf5422a29c0352"><td class="memItemLeft" align="right" valign="top"><a id="af87439856730dc7abecf5422a29c0352" name="af87439856730dc7abecf5422a29c0352"></a>
+DataMinMaxGL &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DataMinMaxGL &amp;&amp;) noexcept=default</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -173,7 +173,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>dataminmaxgl.h</b></li>
+<li>modules/basegl/include/modules/basegl/algorithm/<b>dataminmaxgl.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

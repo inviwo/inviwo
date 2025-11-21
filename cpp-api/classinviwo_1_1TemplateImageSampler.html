@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1TemplateImageSampler.html','','classinv
 <p><a class="el" href="classinviwo_1_1TemplateImageSampler.html" title="TemplateImageSampler&lt;T,P&gt; aids sampling of images of a given type (T) using Bi-Linear Interpolation w...">TemplateImageSampler&lt;T,P&gt;</a> aids sampling of images of a given type (T) using Bi-Linear <a class="el" href="classinviwo_1_1Interpolation.html">Interpolation</a> with precision (P).  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;imagesampler.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/imagesampler.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::TemplateImageSampler&lt; ReturnType, DataType &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -111,64 +111,64 @@ $(function(){initNavTree('classinviwo_1_1TemplateImageSampler.html','','classinv
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac160f47de0066eabf83b7a730d1df21f" id="r_ac160f47de0066eabf83b7a730d1df21f"><td class="memItemLeft" align="right" valign="top"><a id="ac160f47de0066eabf83b7a730d1df21f" name="ac160f47de0066eabf83b7a730d1df21f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *layer)</td></tr>
+<tr class="memitem:a315e893e058a5f8e636b82c098f4c804" id="r_a315e893e058a5f8e636b82c098f4c804"><td class="memItemLeft" align="right" valign="top">ReturnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a315e893e058a5f8e636b82c098f4c804">sample</a> (double x, double y) const</td></tr>
+<tr class="memitem:a961c3fb0bac7ef046f0408a5a5c27dc5" id="r_a961c3fb0bac7ef046f0408a5a5c27dc5"><td class="memItemLeft" align="right" valign="top">ReturnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a961c3fb0bac7ef046f0408a5a5c27dc5">sample2D</a> (const dvec2 &amp;pos) const</td></tr>
 <tr class="memitem:a78f563e21949d053fce644598ef7e387" id="r_a78f563e21949d053fce644598ef7e387"><td class="memItemLeft" align="right" valign="top"><a id="a78f563e21949d053fce644598ef7e387" name="a78f563e21949d053fce644598ef7e387"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (const <a class="el" href="classinviwo_1_1Image.html">Image</a> *img)</td></tr>
+<tr class="memitem:ac160f47de0066eabf83b7a730d1df21f" id="r_ac160f47de0066eabf83b7a730d1df21f"><td class="memItemLeft" align="right" valign="top"><a id="ac160f47de0066eabf83b7a730d1df21f" name="ac160f47de0066eabf83b7a730d1df21f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *layer)</td></tr>
 <tr class="memitem:ad3b3fb28ebfd64766fab7fea55d9cdcb" id="r_ad3b3fb28ebfd64766fab7fea55d9cdcb"><td class="memItemLeft" align="right" valign="top"><a id="ad3b3fb28ebfd64766fab7fea55d9cdcb" name="ad3b3fb28ebfd64766fab7fea55d9cdcb"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TemplateImageSampler</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt; sharedImage)</td></tr>
-<tr class="memitem:a961c3fb0bac7ef046f0408a5a5c27dc5" id="r_a961c3fb0bac7ef046f0408a5a5c27dc5"><td class="memItemLeft" align="right" valign="top">ReturnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a961c3fb0bac7ef046f0408a5a5c27dc5">sample2D</a> (const dvec2 &amp;pos) const</td></tr>
-<tr class="memitem:a315e893e058a5f8e636b82c098f4c804" id="r_a315e893e058a5f8e636b82c098f4c804"><td class="memItemLeft" align="right" valign="top">ReturnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a315e893e058a5f8e636b82c098f4c804">sample</a> (double x, double y) const</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SpatialSampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1SpatialSampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1SpatialSampler.html">inviwo::SpatialSampler&lt; ReturnType &gt;</a></td></tr>
-<tr class="memitem:a68bc0a6eabb8920b7416739d2dcdb37f inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a68bc0a6eabb8920b7416739d2dcdb37f"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpatialSampler</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;spatialEntity, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space=CoordinateSpace::Data)</td></tr>
-<tr class="memitem:a9521eccb3dc8f030d3bc0631eafa3c89 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a9521eccb3dc8f030d3bc0631eafa3c89"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec3 &amp;pos) const</td></tr>
-<tr class="memitem:af69761190aecd86e80aaa55af6a6fc9a inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_af69761190aecd86e80aaa55af6a6fc9a"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec3 &amp;pos) const</td></tr>
-<tr class="memitem:a88edb58cb7225f7aed2a418a1fc977e9 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a88edb58cb7225f7aed2a418a1fc977e9"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec2 &amp;pos) const</td></tr>
-<tr class="memitem:a4aae15ac5566212555c069cede881e8f inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a4aae15ac5566212555c069cede881e8f"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec2 &amp;pos) const</td></tr>
-<tr class="memitem:a68ff0a03e0858a1b27cba6f726f0bd04 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a68ff0a03e0858a1b27cba6f726f0bd04"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:a27de22f746e1d0401460eeb6b4c23d01 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a27de22f746e1d0401460eeb6b4c23d01"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:a96fd54f7972bb38c89c9a56221c4683a inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a96fd54f7972bb38c89c9a56221c4683a"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:a5a1f7cbca7b36ddde78b75719b4703b9 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a5a1f7cbca7b36ddde78b75719b4703b9"><td class="memItemLeft" align="right" valign="top">
-ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:a3b87d8ff4932001c3ae0dd497410f843 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a3b87d8ff4932001c3ae0dd497410f843"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec3 &amp;pos) const</td></tr>
-<tr class="memitem:a5663f1dd5b55509b5fddaa432100bb41 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a5663f1dd5b55509b5fddaa432100bb41"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec3 &amp;pos) const</td></tr>
-<tr class="memitem:ae22e4c9c83476ed41dd201aa8d19f84a inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_ae22e4c9c83476ed41dd201aa8d19f84a"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec2 &amp;pos) const</td></tr>
-<tr class="memitem:aa395f44014f4d0f6deabb4033a692b3d inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_aa395f44014f4d0f6deabb4033a692b3d"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec2 &amp;pos) const</td></tr>
-<tr class="memitem:a98918a4a7d60c588a5a784571c97fb31 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a98918a4a7d60c588a5a784571c97fb31"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:afcb72c3e39ba6f235cf7a226eb19bec2 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_afcb72c3e39ba6f235cf7a226eb19bec2"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:ae1bb055705cb83ebf886275dbd0d2fd7 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_ae1bb055705cb83ebf886275dbd0d2fd7"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
-<tr class="memitem:a441edbf5e4773469323cc5faa33782c8 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a441edbf5e4773469323cc5faa33782c8"><td class="memItemLeft" align="right" valign="top">
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
 <tr class="memitem:a3e4134cd49bfb1db8e751e2739ab07a5 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a3e4134cd49bfb1db8e751e2739ab07a5"><td class="memItemLeft" align="right" valign="top">
 mat3&#160;</td><td class="memItemRight" valign="bottom"><b>getBasis</b> () const</td></tr>
+<tr class="memitem:a0af75af14a27c9a8b8aceee29e443679 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a0af75af14a27c9a8b8aceee29e443679"><td class="memItemLeft" align="right" valign="top">
+const <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateTransformer</b> () const</td></tr>
 <tr class="memitem:abb2d984ad70941de6667042a00a6da32 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_abb2d984ad70941de6667042a00a6da32"><td class="memItemLeft" align="right" valign="top">
 mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getModelMatrix</b> () const</td></tr>
 <tr class="memitem:a5cfb6f3cc4b417307ea124760ddce699 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a5cfb6f3cc4b417307ea124760ddce699"><td class="memItemLeft" align="right" valign="top">
 mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getWorldMatrix</b> () const</td></tr>
-<tr class="memitem:a0af75af14a27c9a8b8aceee29e443679 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a0af75af14a27c9a8b8aceee29e443679"><td class="memItemLeft" align="right" valign="top">
-const <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateTransformer</b> () const</td></tr>
+<tr class="memitem:a096e1446c5f4e725eddc85c807711b94 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a096e1446c5f4e725eddc85c807711b94"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec2 &amp;pos) const -&gt; ReturnType</td></tr>
+<tr class="memitem:a54dabc28606c671ff19f63f8e46f465d inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a54dabc28606c671ff19f63f8e46f465d"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const -&gt; ReturnType</td></tr>
+<tr class="memitem:a01df86d4ccfdd412d79550cbd8be9526 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a01df86d4ccfdd412d79550cbd8be9526"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec3 &amp;pos) const -&gt; ReturnType</td></tr>
+<tr class="memitem:a16764cf71c6406ba00fe4c8eac98b5a0 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a16764cf71c6406ba00fe4c8eac98b5a0"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const -&gt; ReturnType</td></tr>
+<tr class="memitem:ae55834d593deb921c15542cd45fc777c inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_ae55834d593deb921c15542cd45fc777c"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec2 &amp;pos) const -&gt; ReturnType</td></tr>
+<tr class="memitem:a90848f59c6e23be53e0d892504c8b38a inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a90848f59c6e23be53e0d892504c8b38a"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const -&gt; ReturnType</td></tr>
+<tr class="memitem:a0f0888ea7d13e5701468acccef3c1a36 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a0f0888ea7d13e5701468acccef3c1a36"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec3 &amp;pos) const -&gt; ReturnType</td></tr>
+<tr class="memitem:ac7483647f79e94fbf2b2780a06d5c0c9 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_ac7483647f79e94fbf2b2780a06d5c0c9"><td class="memItemLeft" align="right" valign="top">
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const -&gt; ReturnType</td></tr>
+<tr class="memitem:a68bc0a6eabb8920b7416739d2dcdb37f inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a68bc0a6eabb8920b7416739d2dcdb37f"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>SpatialSampler</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;spatialEntity, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space=CoordinateSpace::Data)</td></tr>
+<tr class="memitem:ae22e4c9c83476ed41dd201aa8d19f84a inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_ae22e4c9c83476ed41dd201aa8d19f84a"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec2 &amp;pos) const</td></tr>
+<tr class="memitem:ae1bb055705cb83ebf886275dbd0d2fd7 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_ae1bb055705cb83ebf886275dbd0d2fd7"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
+<tr class="memitem:a3b87d8ff4932001c3ae0dd497410f843 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a3b87d8ff4932001c3ae0dd497410f843"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec3 &amp;pos) const</td></tr>
+<tr class="memitem:a98918a4a7d60c588a5a784571c97fb31 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a98918a4a7d60c588a5a784571c97fb31"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const dvec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
+<tr class="memitem:aa395f44014f4d0f6deabb4033a692b3d inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_aa395f44014f4d0f6deabb4033a692b3d"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec2 &amp;pos) const</td></tr>
+<tr class="memitem:a441edbf5e4773469323cc5faa33782c8 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a441edbf5e4773469323cc5faa33782c8"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec2 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
+<tr class="memitem:a5663f1dd5b55509b5fddaa432100bb41 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_a5663f1dd5b55509b5fddaa432100bb41"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec3 &amp;pos) const</td></tr>
+<tr class="memitem:afcb72c3e39ba6f235cf7a226eb19bec2 inherit pub_methods_classinviwo_1_1SpatialSampler" id="r_afcb72c3e39ba6f235cf7a226eb19bec2"><td class="memItemLeft" align="right" valign="top">
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>withinBounds</b> (const vec3 &amp;pos, <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a> space) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a88963538b5d1d3f961ed77e44193b736" id="r_a88963538b5d1d3f961ed77e44193b736"><td class="memItemLeft" align="right" valign="top">virtual ReturnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88963538b5d1d3f961ed77e44193b736">sampleDataSpace</a> (const dvec3 &amp;pos) const override</td></tr>
-<tr class="memitem:a232ef690dc7513d659d5b0587db2cea0" id="r_a232ef690dc7513d659d5b0587db2cea0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a232ef690dc7513d659d5b0587db2cea0">withinBoundsDataSpace</a> (const dvec3 &amp;pos) const override</td></tr>
 <tr class="memitem:a2a08859a70e252033799e100f700c02d" id="r_a2a08859a70e252033799e100f700c02d"><td class="memItemLeft" align="right" valign="top"><a id="a2a08859a70e252033799e100f700c02d" name="a2a08859a70e252033799e100f700c02d"></a>
 ReturnType&#160;</td><td class="memItemRight" valign="bottom"><b>getPixel</b> (const size2_t &amp;pos) const</td></tr>
+<tr class="memitem:a88963538b5d1d3f961ed77e44193b736" id="r_a88963538b5d1d3f961ed77e44193b736"><td class="memItemLeft" align="right" valign="top">virtual ReturnType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88963538b5d1d3f961ed77e44193b736">sampleDataSpace</a> (const dvec3 &amp;pos) const override</td></tr>
+<tr class="memitem:a232ef690dc7513d659d5b0587db2cea0" id="r_a232ef690dc7513d659d5b0587db2cea0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a232ef690dc7513d659d5b0587db2cea0">withinBoundsDataSpace</a> (const dvec3 &amp;pos) const override</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -318,7 +318,7 @@ template&lt;typename ReturnType, typename DataType&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>imagesampler.h</b></li>
+<li>include/inviwo/core/util/<b>imagesampler.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

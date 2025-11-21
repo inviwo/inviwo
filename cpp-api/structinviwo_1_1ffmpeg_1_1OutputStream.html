@@ -110,12 +110,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a03ef8278f9fb82a2f3e07d3f5c3f6950" id="r_a03ef8278f9fb82a2f3e07d3f5c3f6950"><td class="memItemLeft" align="right" valign="top"><a id="a03ef8278f9fb82a2f3e07d3f5c3f6950" name="a03ef8278f9fb82a2f3e07d3f5c3f6950"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>OutputStream</b> (<a class="el" href="classinviwo_1_1ffmpeg_1_1Format.html">Format</a> &amp;format, <a class="el" href="structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html">Options</a> opts)</td></tr>
-<tr class="memitem:a9852b188ac1863daa6170e143c12e7c4" id="r_a9852b188ac1863daa6170e143c12e7c4"><td class="memItemLeft" align="right" valign="top"><a id="a9852b188ac1863daa6170e143c12e7c4" name="a9852b188ac1863daa6170e143c12e7c4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>openVideo</b> (AVDictionary *opt_arg=nullptr)</td></tr>
 <tr class="memitem:a69a1ea706e44fb1bbdd00dfe53e1ba63" id="r_a69a1ea706e44fb1bbdd00dfe53e1ba63"><td class="memItemLeft" align="right" valign="top"><a id="a69a1ea706e44fb1bbdd00dfe53e1ba63" name="a69a1ea706e44fb1bbdd00dfe53e1ba63"></a>
 <a class="el" href="classinviwo_1_1ffmpeg_1_1Frame.html">Frame</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>fillFrame</b> (<a class="el" href="classinviwo_1_1ffmpeg_1_1Frame.html">Frame</a> &amp;dst, std::function&lt; void(AVFrame *pict, int width, int height)&gt; filler)</td></tr>
+<tr class="memitem:a9852b188ac1863daa6170e143c12e7c4" id="r_a9852b188ac1863daa6170e143c12e7c4"><td class="memItemLeft" align="right" valign="top"><a id="a9852b188ac1863daa6170e143c12e7c4" name="a9852b188ac1863daa6170e143c12e7c4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>openVideo</b> (AVDictionary *opt_arg=nullptr)</td></tr>
+<tr class="memitem:a03ef8278f9fb82a2f3e07d3f5c3f6950" id="r_a03ef8278f9fb82a2f3e07d3f5c3f6950"><td class="memItemLeft" align="right" valign="top"><a id="a03ef8278f9fb82a2f3e07d3f5c3f6950" name="a03ef8278f9fb82a2f3e07d3f5c3f6950"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>OutputStream</b> (<a class="el" href="classinviwo_1_1ffmpeg_1_1Format.html">Format</a> &amp;format, <a class="el" href="structinviwo_1_1ffmpeg_1_1OutputStream_1_1Options.html">Options</a> opts)</td></tr>
 <tr class="inherit_header pub_methods_structinviwo_1_1ffmpeg_1_1NoMoveCopy"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structinviwo_1_1ffmpeg_1_1NoMoveCopy')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structinviwo_1_1ffmpeg_1_1NoMoveCopy.html">inviwo::ffmpeg::NoMoveCopy</a></td></tr>
 <tr class="memitem:a968bdfb0cd2144947b3229372a4bfb55 inherit pub_methods_structinviwo_1_1ffmpeg_1_1NoMoveCopy" id="r_a968bdfb0cd2144947b3229372a4bfb55"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>NoMoveCopy</b> (const NoMoveCopy &amp;)=delete</td></tr>
@@ -128,19 +128,19 @@ NoMoveCopy &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a67c2ab1f7afe0471501988143159a00b" id="r_a67c2ab1f7afe0471501988143159a00b"><td class="memItemLeft" align="right" valign="top"><a id="a67c2ab1f7afe0471501988143159a00b" name="a67c2ab1f7afe0471501988143159a00b"></a>
-enum AVPixelFormat&#160;</td><td class="memItemRight" valign="bottom"><b>sourceFormat</b></td></tr>
 <tr class="memitem:a25bd744a4ce903e71541fc2395a483b4" id="r_a25bd744a4ce903e71541fc2395a483b4"><td class="memItemLeft" align="right" valign="top"><a id="a25bd744a4ce903e71541fc2395a483b4" name="a25bd744a4ce903e71541fc2395a483b4"></a>
 <a class="el" href="classinviwo_1_1ffmpeg_1_1Codec.html">Codec</a>&#160;</td><td class="memItemRight" valign="bottom"><b>codec</b></td></tr>
+<tr class="memitem:a714d803122857edc3c905448547b2791" id="r_a714d803122857edc3c905448547b2791"><td class="memItemLeft" align="right" valign="top"><a id="a714d803122857edc3c905448547b2791" name="a714d803122857edc3c905448547b2791"></a>
+std::optional&lt; <a class="el" href="classinviwo_1_1ffmpeg_1_1SwScale.html">SwScale</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>scaler</b></td></tr>
+<tr class="memitem:a67c2ab1f7afe0471501988143159a00b" id="r_a67c2ab1f7afe0471501988143159a00b"><td class="memItemLeft" align="right" valign="top"><a id="a67c2ab1f7afe0471501988143159a00b" name="a67c2ab1f7afe0471501988143159a00b"></a>
+enum AVPixelFormat&#160;</td><td class="memItemRight" valign="bottom"><b>sourceFormat</b></td></tr>
 <tr class="memitem:a0e5db8b844b66ef20641b561ff04e115" id="r_a0e5db8b844b66ef20641b561ff04e115"><td class="memItemLeft" align="right" valign="top"><a id="a0e5db8b844b66ef20641b561ff04e115" name="a0e5db8b844b66ef20641b561ff04e115"></a>
 AVStream *&#160;</td><td class="memItemRight" valign="bottom"><b>stream</b></td></tr>
 <tr class="memitem:ad787376f0693a3c7113d01bd51453a9f" id="r_ad787376f0693a3c7113d01bd51453a9f"><td class="memItemLeft" align="right" valign="top"><a id="ad787376f0693a3c7113d01bd51453a9f" name="ad787376f0693a3c7113d01bd51453a9f"></a>
 std::optional&lt; <a class="el" href="classinviwo_1_1ffmpeg_1_1Frame.html">Frame</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tmpFrame</b></td></tr>
-<tr class="memitem:a714d803122857edc3c905448547b2791" id="r_a714d803122857edc3c905448547b2791"><td class="memItemLeft" align="right" valign="top"><a id="a714d803122857edc3c905448547b2791" name="a714d803122857edc3c905448547b2791"></a>
-std::optional&lt; <a class="el" href="classinviwo_1_1ffmpeg_1_1SwScale.html">SwScale</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>scaler</b></td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>outputstream.h</b></li>
+<li>modules/ffmpeg/include/inviwo/ffmpeg/<b>outputstream.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

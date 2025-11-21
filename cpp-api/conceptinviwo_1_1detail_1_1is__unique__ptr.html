@@ -94,7 +94,14 @@ $(function(){initNavTree('conceptinviwo_1_1detail_1_1is__unique__ptr.html','',''
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1detail_1_1is__unique__ptr.html">inviwo::detail::is_unique_ptr</a> = </div>
+<div class="line">    <span class="keyword">requires</span> {</div>
+<div class="line">        <span class="keyword">typename</span> T::element_type;</div>
+<div class="line">        <span class="keyword">typename</span> T::deleter_type;</div>
+<div class="line">    } &amp;&amp; std::same_as&lt;T, std::unique_ptr&lt;typename T::element_type, typename T::deleter_type&gt;&gt;</div>
+<div class="ttc" id="aconceptinviwo_1_1detail_1_1is__unique__ptr_html"><div class="ttname"><a href="conceptinviwo_1_1detail_1_1is__unique__ptr.html">inviwo::detail::is_unique_ptr</a></div><div class="ttdef"><b>Definition</b> deserializer.h:86</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

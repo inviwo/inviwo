@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1Inport.html','','classinviwo_1_1Inport-
 <p>Abstract base class for all inports An <a class="el" href="classinviwo_1_1Inport.html" title="Abstract base class for all inports An Inport can be connected to an Outport. The approved connection...">Inport</a> can be connected to an <a class="el" href="classinviwo_1_1Outport.html" title="Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports.">Outport</a>. The approved connection can be determined by the canConnectTo function.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;inport.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/ports/inport.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::Inport:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -160,20 +160,14 @@ $(function(){initNavTree('classinviwo_1_1Inport.html','','classinviwo_1_1Inport-
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abda495ce380d4c269f548c2bd4ee58af" id="r_abda495ce380d4c269f548c2bd4ee58af"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abda495ce380d4c269f548c2bd4ee58af">isConnected</a> () const override</td></tr>
-<tr class="memitem:a258de5abc6d26f9d150c6f8de8b2175f" id="r_a258de5abc6d26f9d150c6f8de8b2175f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a258de5abc6d26f9d150c6f8de8b2175f">isReady</a> () const override</td></tr>
-<tr class="memitem:afe1660c34699d0c8dfcd79d4ef8d8495" id="r_afe1660c34699d0c8dfcd79d4ef8d8495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe1660c34699d0c8dfcd79d4ef8d8495">setOptional</a> (bool optional)</td></tr>
-<tr class="memitem:a2c1e6efb917f1f7a00008f6b813239fb" id="r_a2c1e6efb917f1f7a00008f6b813239fb"><td class="memItemLeft" align="right" valign="top"><a id="a2c1e6efb917f1f7a00008f6b813239fb" name="a2c1e6efb917f1f7a00008f6b813239fb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isOptional</b> () const</td></tr>
-<tr class="memitem:a916e2696adc8e4a8dd5f6751602d2554" id="r_a916e2696adc8e4a8dd5f6751602d2554"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a916e2696adc8e4a8dd5f6751602d2554">isChanged</a> () const</td></tr>
 <tr class="memitem:a12f90f66bf1460eac32c7bf14617a27a" id="r_a12f90f66bf1460eac32c7bf14617a27a"><td class="memItemLeft" align="right" valign="top"><a id="a12f90f66bf1460eac32c7bf14617a27a" name="a12f90f66bf1460eac32c7bf14617a27a"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>canConnectTo</b> (const Port *port) const =0</td></tr>
 <tr class="memitem:a7109ffafce3bedf23eb4debfb188bb22" id="r_a7109ffafce3bedf23eb4debfb188bb22"><td class="memItemLeft" align="right" valign="top"><a id="a7109ffafce3bedf23eb4debfb188bb22" name="a7109ffafce3bedf23eb4debfb188bb22"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>connectTo</b> (Outport *outport)</td></tr>
 <tr class="memitem:aae31fb61e9d9159e63fa4d8e93305dec" id="r_aae31fb61e9d9159e63fa4d8e93305dec"><td class="memItemLeft" align="right" valign="top"><a id="aae31fb61e9d9159e63fa4d8e93305dec" name="aae31fb61e9d9159e63fa4d8e93305dec"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>disconnectFrom</b> (Outport *outport)</td></tr>
-<tr class="memitem:a7f8b03c9d68ecd97c3d35578ac81666b" id="r_a7f8b03c9d68ecd97c3d35578ac81666b"><td class="memItemLeft" align="right" valign="top"><a id="a7f8b03c9d68ecd97c3d35578ac81666b" name="a7f8b03c9d68ecd97c3d35578ac81666b"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isConnectedTo</b> (const Outport *outport) const</td></tr>
+<tr class="memitem:aa3751bbfa0fb4af2d91ac105561ea642" id="r_aa3751bbfa0fb4af2d91ac105561ea642"><td class="memItemLeft" align="right" valign="top"><a id="aa3751bbfa0fb4af2d91ac105561ea642" name="aa3751bbfa0fb4af2d91ac105561ea642"></a>
+virtual const std::vector&lt; const Outport * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getChangedOutports</b> () const</td></tr>
 <tr class="memitem:a344af903ebceccefe55720f509f0720e" id="r_a344af903ebceccefe55720f509f0720e"><td class="memItemLeft" align="right" valign="top"><a id="a344af903ebceccefe55720f509f0720e" name="a344af903ebceccefe55720f509f0720e"></a>
 virtual Outport *&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectedOutport</b> () const</td></tr>
 <tr class="memitem:a0c6a34c0b7dce4ce64fdaec3bc4a6cff" id="r_a0c6a34c0b7dce4ce64fdaec3bc4a6cff"><td class="memItemLeft" align="right" valign="top"><a id="a0c6a34c0b7dce4ce64fdaec3bc4a6cff" name="a0c6a34c0b7dce4ce64fdaec3bc4a6cff"></a>
@@ -182,82 +176,88 @@ virtual const std::vector&lt; Outport * &gt; &amp;&#160;</td><td class="memItemR
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getMaxNumberOfConnections</b> () const =0</td></tr>
 <tr class="memitem:a6e136e3b3329d30a1d59fe09e8cf1404" id="r_a6e136e3b3329d30a1d59fe09e8cf1404"><td class="memItemLeft" align="right" valign="top"><a id="a6e136e3b3329d30a1d59fe09e8cf1404" name="a6e136e3b3329d30a1d59fe09e8cf1404"></a>
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumberOfConnections</b> () const</td></tr>
-<tr class="memitem:aa3751bbfa0fb4af2d91ac105561ea642" id="r_aa3751bbfa0fb4af2d91ac105561ea642"><td class="memItemLeft" align="right" valign="top"><a id="aa3751bbfa0fb4af2d91ac105561ea642" name="aa3751bbfa0fb4af2d91ac105561ea642"></a>
-virtual const std::vector&lt; const Outport * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getChangedOutports</b> () const</td></tr>
-<tr class="memitem:a0ad122bd694fbba4e5f304c972371d97" id="r_a0ad122bd694fbba4e5f304c972371d97"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ad122bd694fbba4e5f304c972371d97">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, Outport *target=nullptr)</td></tr>
+<tr class="memitem:a916e2696adc8e4a8dd5f6751602d2554" id="r_a916e2696adc8e4a8dd5f6751602d2554"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a916e2696adc8e4a8dd5f6751602d2554">isChanged</a> () const</td></tr>
+<tr class="memitem:abda495ce380d4c269f548c2bd4ee58af" id="r_abda495ce380d4c269f548c2bd4ee58af"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abda495ce380d4c269f548c2bd4ee58af">isConnected</a> () const override</td></tr>
+<tr class="memitem:a7f8b03c9d68ecd97c3d35578ac81666b" id="r_a7f8b03c9d68ecd97c3d35578ac81666b"><td class="memItemLeft" align="right" valign="top"><a id="a7f8b03c9d68ecd97c3d35578ac81666b" name="a7f8b03c9d68ecd97c3d35578ac81666b"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isConnectedTo</b> (const Outport *outport) const</td></tr>
+<tr class="memitem:a2c1e6efb917f1f7a00008f6b813239fb" id="r_a2c1e6efb917f1f7a00008f6b813239fb"><td class="memItemLeft" align="right" valign="top"><a id="a2c1e6efb917f1f7a00008f6b813239fb" name="a2c1e6efb917f1f7a00008f6b813239fb"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isOptional</b> () const</td></tr>
+<tr class="memitem:a258de5abc6d26f9d150c6f8de8b2175f" id="r_a258de5abc6d26f9d150c6f8de8b2175f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a258de5abc6d26f9d150c6f8de8b2175f">isReady</a> () const override</td></tr>
 <tr class="memitem:a6c83746820fd3520e02e392ef4ce85b9" id="r_a6c83746820fd3520e02e392ef4ce85b9"><td class="memItemLeft" align="right" valign="top">const BaseCallBack *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c83746820fd3520e02e392ef4ce85b9">onChange</a> (std::function&lt; void()&gt; lambda)</td></tr>
 <tr class="memitem:a81341abdc8c94eb34b1b10b188e5c23d" id="r_a81341abdc8c94eb34b1b10b188e5c23d"><td class="memItemLeft" align="right" valign="top"><a id="a81341abdc8c94eb34b1b10b188e5c23d" name="a81341abdc8c94eb34b1b10b188e5c23d"></a>
 std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onChangeScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
+<tr class="memitem:a64a44757987956dcccd344296ac3efce" id="r_a64a44757987956dcccd344296ac3efce"><td class="memItemLeft" align="right" valign="top"><a id="a64a44757987956dcccd344296ac3efce" name="a64a44757987956dcccd344296ac3efce"></a>
+const BaseCallBack *&#160;</td><td class="memItemRight" valign="bottom"><b>onConnect</b> (std::function&lt; void()&gt; lambda)</td></tr>
+<tr class="memitem:a795644d7fe5690c2cc4ca936b6226ca3" id="r_a795644d7fe5690c2cc4ca936b6226ca3"><td class="memItemLeft" align="right" valign="top"><a id="a795644d7fe5690c2cc4ca936b6226ca3" name="a795644d7fe5690c2cc4ca936b6226ca3"></a>
+std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onConnectScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
+<tr class="memitem:a12e298a1cd21036a16789839bed4316a" id="r_a12e298a1cd21036a16789839bed4316a"><td class="memItemLeft" align="right" valign="top"><a id="a12e298a1cd21036a16789839bed4316a" name="a12e298a1cd21036a16789839bed4316a"></a>
+std::shared_ptr&lt; std::function&lt; void(Outport *)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onConnectScoped</b> (std::function&lt; void(Outport *)&gt; lambda)</td></tr>
+<tr class="memitem:a57ee5062964c4c987919ea13053cab7c" id="r_a57ee5062964c4c987919ea13053cab7c"><td class="memItemLeft" align="right" valign="top"><a id="a57ee5062964c4c987919ea13053cab7c" name="a57ee5062964c4c987919ea13053cab7c"></a>
+const BaseCallBack *&#160;</td><td class="memItemRight" valign="bottom"><b>onDisconnect</b> (std::function&lt; void()&gt; lambda)</td></tr>
+<tr class="memitem:aa7e8630ef282129baa0f55e225e67c72" id="r_aa7e8630ef282129baa0f55e225e67c72"><td class="memItemLeft" align="right" valign="top"><a id="aa7e8630ef282129baa0f55e225e67c72" name="aa7e8630ef282129baa0f55e225e67c72"></a>
+std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onDisconnectScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
+<tr class="memitem:a0ff221c041d4c3d2788025cad3362528" id="r_a0ff221c041d4c3d2788025cad3362528"><td class="memItemLeft" align="right" valign="top"><a id="a0ff221c041d4c3d2788025cad3362528" name="a0ff221c041d4c3d2788025cad3362528"></a>
+std::shared_ptr&lt; std::function&lt; void(Outport *)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onDisconnectScoped</b> (std::function&lt; void(Outport *)&gt; lambda)</td></tr>
 <tr class="memitem:a3c51b39d00fbed563de5a30c97a846c5" id="r_a3c51b39d00fbed563de5a30c97a846c5"><td class="memItemLeft" align="right" valign="top">const BaseCallBack *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c51b39d00fbed563de5a30c97a846c5">onInvalid</a> (std::function&lt; void()&gt; lambda)</td></tr>
 <tr class="memitem:ae61ea432e18ecd784d4d06eaf6987b1b" id="r_ae61ea432e18ecd784d4d06eaf6987b1b"><td class="memItemLeft" align="right" valign="top"><a id="ae61ea432e18ecd784d4d06eaf6987b1b" name="ae61ea432e18ecd784d4d06eaf6987b1b"></a>
 std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onInvalidScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
-<tr class="memitem:a64a44757987956dcccd344296ac3efce" id="r_a64a44757987956dcccd344296ac3efce"><td class="memItemLeft" align="right" valign="top"><a id="a64a44757987956dcccd344296ac3efce" name="a64a44757987956dcccd344296ac3efce"></a>
-const BaseCallBack *&#160;</td><td class="memItemRight" valign="bottom"><b>onConnect</b> (std::function&lt; void()&gt; lambda)</td></tr>
-<tr class="memitem:a57ee5062964c4c987919ea13053cab7c" id="r_a57ee5062964c4c987919ea13053cab7c"><td class="memItemLeft" align="right" valign="top"><a id="a57ee5062964c4c987919ea13053cab7c" name="a57ee5062964c4c987919ea13053cab7c"></a>
-const BaseCallBack *&#160;</td><td class="memItemRight" valign="bottom"><b>onDisconnect</b> (std::function&lt; void()&gt; lambda)</td></tr>
-<tr class="memitem:a795644d7fe5690c2cc4ca936b6226ca3" id="r_a795644d7fe5690c2cc4ca936b6226ca3"><td class="memItemLeft" align="right" valign="top"><a id="a795644d7fe5690c2cc4ca936b6226ca3" name="a795644d7fe5690c2cc4ca936b6226ca3"></a>
-std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onConnectScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
-<tr class="memitem:aa7e8630ef282129baa0f55e225e67c72" id="r_aa7e8630ef282129baa0f55e225e67c72"><td class="memItemLeft" align="right" valign="top"><a id="aa7e8630ef282129baa0f55e225e67c72" name="aa7e8630ef282129baa0f55e225e67c72"></a>
-std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onDisconnectScoped</b> (std::function&lt; void()&gt; lambda)</td></tr>
-<tr class="memitem:a12e298a1cd21036a16789839bed4316a" id="r_a12e298a1cd21036a16789839bed4316a"><td class="memItemLeft" align="right" valign="top"><a id="a12e298a1cd21036a16789839bed4316a" name="a12e298a1cd21036a16789839bed4316a"></a>
-std::shared_ptr&lt; std::function&lt; void(Outport *)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onConnectScoped</b> (std::function&lt; void(Outport *)&gt; lambda)</td></tr>
-<tr class="memitem:a0ff221c041d4c3d2788025cad3362528" id="r_a0ff221c041d4c3d2788025cad3362528"><td class="memItemLeft" align="right" valign="top"><a id="a0ff221c041d4c3d2788025cad3362528" name="a0ff221c041d4c3d2788025cad3362528"></a>
-std::shared_ptr&lt; std::function&lt; void(Outport *)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onDisconnectScoped</b> (std::function&lt; void(Outport *)&gt; lambda)</td></tr>
+<tr class="memitem:a0ad122bd694fbba4e5f304c972371d97" id="r_a0ad122bd694fbba4e5f304c972371d97"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ad122bd694fbba4e5f304c972371d97">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, Outport *target=nullptr)</td></tr>
+<tr class="memitem:a1530f461996eb5f8aa085fdacf482b63" id="r_a1530f461996eb5f8aa085fdacf482b63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1530f461996eb5f8aa085fdacf482b63">readyUpdate</a> ()</td></tr>
 <tr class="memitem:a05265e6818022ca821be345c993136b8" id="r_a05265e6818022ca821be345c993136b8"><td class="memItemLeft" align="right" valign="top"><a id="a05265e6818022ca821be345c993136b8" name="a05265e6818022ca821be345c993136b8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOnChange</b> (const BaseCallBack *callback)</td></tr>
-<tr class="memitem:a00aacdf755c700a7dccfc371d3153188" id="r_a00aacdf755c700a7dccfc371d3153188"><td class="memItemLeft" align="right" valign="top"><a id="a00aacdf755c700a7dccfc371d3153188" name="a00aacdf755c700a7dccfc371d3153188"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOnInvalid</b> (const BaseCallBack *callback)</td></tr>
 <tr class="memitem:a5ebe18732ada83ea090d4e27173c6c49" id="r_a5ebe18732ada83ea090d4e27173c6c49"><td class="memItemLeft" align="right" valign="top"><a id="a5ebe18732ada83ea090d4e27173c6c49" name="a5ebe18732ada83ea090d4e27173c6c49"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOnConnect</b> (const BaseCallBack *callback)</td></tr>
 <tr class="memitem:a20fdd0c9ec3546387b522291f9d8fb42" id="r_a20fdd0c9ec3546387b522291f9d8fb42"><td class="memItemLeft" align="right" valign="top"><a id="a20fdd0c9ec3546387b522291f9d8fb42" name="a20fdd0c9ec3546387b522291f9d8fb42"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOnDisconnect</b> (const BaseCallBack *callback)</td></tr>
-<tr class="memitem:a1530f461996eb5f8aa085fdacf482b63" id="r_a1530f461996eb5f8aa085fdacf482b63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1530f461996eb5f8aa085fdacf482b63">readyUpdate</a> ()</td></tr>
+<tr class="memitem:a00aacdf755c700a7dccfc371d3153188" id="r_a00aacdf755c700a7dccfc371d3153188"><td class="memItemLeft" align="right" valign="top"><a id="a00aacdf755c700a7dccfc371d3153188" name="a00aacdf755c700a7dccfc371d3153188"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>removeOnInvalid</b> (const BaseCallBack *callback)</td></tr>
 <tr class="memitem:a27420257dfd80fa2804abfc1bd3af813" id="r_a27420257dfd80fa2804abfc1bd3af813"><td class="memItemLeft" align="right" valign="top"><a id="a27420257dfd80fa2804abfc1bd3af813" name="a27420257dfd80fa2804abfc1bd3af813"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setIsReadyUpdater</b> (std::function&lt; bool()&gt; updater)</td></tr>
+<tr class="memitem:afe1660c34699d0c8dfcd79d4ef8d8495" id="r_afe1660c34699d0c8dfcd79d4ef8d8495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe1660c34699d0c8dfcd79d4ef8d8495">setOptional</a> (bool optional)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Port"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Port')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a></td></tr>
-<tr class="memitem:ad67e50f5681c58c460c5edf00a8c01e2 inherit pub_methods_classinviwo_1_1Port" id="r_ad67e50f5681c58c460c5edf00a8c01e2"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>Port</b> (const Port &amp;)=delete</td></tr>
-<tr class="memitem:a4b2bbbe4bdc27bb2b2344494426290c4 inherit pub_methods_classinviwo_1_1Port" id="r_a4b2bbbe4bdc27bb2b2344494426290c4"><td class="memItemLeft" align="right" valign="top">
-Port &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const Port &amp;)=delete</td></tr>
-<tr class="memitem:a68db4dc2738fba672afc65e7fb9cf23c inherit pub_methods_classinviwo_1_1Port" id="r_a68db4dc2738fba672afc65e7fb9cf23c"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>Port</b> (Port &amp;&amp;)=delete</td></tr>
-<tr class="memitem:a1a1f2e688ea5387ac2611af1f972cc47 inherit pub_methods_classinviwo_1_1Port" id="r_a1a1f2e688ea5387ac2611af1f972cc47"><td class="memItemLeft" align="right" valign="top">
-Port &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (Port &amp;&amp;)=delete</td></tr>
+<tr class="memitem:aca329c931734ab4c68cee7908f0ec2b3 inherit pub_methods_classinviwo_1_1Port" id="r_aca329c931734ab4c68cee7908f0ec2b3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#aca329c931734ab4c68cee7908f0ec2b3">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
+<tr class="memitem:a36829f0f8491169d001b0404c726c7c8 inherit pub_methods_classinviwo_1_1Port" id="r_a36829f0f8491169d001b0404c726c7c8"><td class="memItemLeft" align="right" valign="top">
+virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getClassIdentifier</b> () const =0</td></tr>
+<tr class="memitem:a4a4e1fa8b669dedf737d67442030b58b inherit pub_methods_classinviwo_1_1Port" id="r_a4a4e1fa8b669dedf737d67442030b58b"><td class="memItemLeft" align="right" valign="top">virtual glm::uvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a4a4e1fa8b669dedf737d67442030b58b">getColorCode</a> () const =0</td></tr>
+<tr class="memitem:a555e6bed48c885db4295b03e4d0740e6 inherit pub_methods_classinviwo_1_1Port" id="r_a555e6bed48c885db4295b03e4d0740e6"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Document.html">Document</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getHelp</b> ()</td></tr>
+<tr class="memitem:a4acee1e5e7a61de047021522cc2c1ba0 inherit pub_methods_classinviwo_1_1Port" id="r_a4acee1e5e7a61de047021522cc2c1ba0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classinviwo_1_1Document.html">Document</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a4acee1e5e7a61de047021522cc2c1ba0">getHelp</a> () const</td></tr>
 <tr class="memitem:a22652350a7d1168d993a9ebca173a020 inherit pub_methods_classinviwo_1_1Port" id="r_a22652350a7d1168d993a9ebca173a020"><td class="memItemLeft" align="right" valign="top">
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getIdentifier</b> () const</td></tr>
-<tr class="memitem:a54669aef00f8d39cd8efdd5a0804ea3d inherit pub_methods_classinviwo_1_1Port" id="r_a54669aef00f8d39cd8efdd5a0804ea3d"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setIdentifier</b> (const std::string &amp;name)</td></tr>
-<tr class="memitem:aedeac26bfd012f40983b8575a4e4b72e inherit pub_methods_classinviwo_1_1Port" id="r_aedeac26bfd012f40983b8575a4e4b72e"><td class="memItemLeft" align="right" valign="top">
-Processor *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> () const</td></tr>
+<tr class="memitem:affe6466a156528737afb2029a63b623b inherit pub_methods_classinviwo_1_1Port" id="r_affe6466a156528737afb2029a63b623b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#affe6466a156528737afb2029a63b623b">getInfo</a> () const =0</td></tr>
 <tr class="memitem:a013b5886880e37e693fe988ed10f5348 inherit pub_methods_classinviwo_1_1Port" id="r_a013b5886880e37e693fe988ed10f5348"><td class="memItemLeft" align="right" valign="top">
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getPath</b> () const</td></tr>
 <tr class="memdesc:a013b5886880e37e693fe988ed10f5348 inherit pub_methods_classinviwo_1_1Port"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the port path i.e. <span class="tt">&lt;processor identifier&gt;.&lt;port identifier&gt;</span>. <br /></td></tr>
 <tr class="memitem:a0ed9341b051609465e6eae726b9ab469 inherit pub_methods_classinviwo_1_1Port" id="r_a0ed9341b051609465e6eae726b9ab469"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>getPath</b> (std::pmr::string &amp;out) const</td></tr>
-<tr class="memitem:a36829f0f8491169d001b0404c726c7c8 inherit pub_methods_classinviwo_1_1Port" id="r_a36829f0f8491169d001b0404c726c7c8"><td class="memItemLeft" align="right" valign="top">
-virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getClassIdentifier</b> () const =0</td></tr>
-<tr class="memitem:a4a4e1fa8b669dedf737d67442030b58b inherit pub_methods_classinviwo_1_1Port" id="r_a4a4e1fa8b669dedf737d67442030b58b"><td class="memItemLeft" align="right" valign="top">virtual glm::uvec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a4a4e1fa8b669dedf737d67442030b58b">getColorCode</a> () const =0</td></tr>
-<tr class="memitem:affe6466a156528737afb2029a63b623b inherit pub_methods_classinviwo_1_1Port" id="r_affe6466a156528737afb2029a63b623b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#affe6466a156528737afb2029a63b623b">getInfo</a> () const =0</td></tr>
-<tr class="memitem:a4acee1e5e7a61de047021522cc2c1ba0 inherit pub_methods_classinviwo_1_1Port" id="r_a4acee1e5e7a61de047021522cc2c1ba0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classinviwo_1_1Document.html">Document</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a4acee1e5e7a61de047021522cc2c1ba0">getHelp</a> () const</td></tr>
-<tr class="memitem:a555e6bed48c885db4295b03e4d0740e6 inherit pub_methods_classinviwo_1_1Port" id="r_a555e6bed48c885db4295b03e4d0740e6"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Document.html">Document</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getHelp</b> ()</td></tr>
+<tr class="memitem:aedeac26bfd012f40983b8575a4e4b72e inherit pub_methods_classinviwo_1_1Port" id="r_aedeac26bfd012f40983b8575a4e4b72e"><td class="memItemLeft" align="right" valign="top">
+Processor *&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> () const</td></tr>
+<tr class="memitem:a4b2bbbe4bdc27bb2b2344494426290c4 inherit pub_methods_classinviwo_1_1Port" id="r_a4b2bbbe4bdc27bb2b2344494426290c4"><td class="memItemLeft" align="right" valign="top">
+Port &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const Port &amp;)=delete</td></tr>
+<tr class="memitem:a1a1f2e688ea5387ac2611af1f972cc47 inherit pub_methods_classinviwo_1_1Port" id="r_a1a1f2e688ea5387ac2611af1f972cc47"><td class="memItemLeft" align="right" valign="top">
+Port &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (Port &amp;&amp;)=delete</td></tr>
+<tr class="memitem:ad67e50f5681c58c460c5edf00a8c01e2 inherit pub_methods_classinviwo_1_1Port" id="r_ad67e50f5681c58c460c5edf00a8c01e2"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Port</b> (const Port &amp;)=delete</td></tr>
+<tr class="memitem:a68db4dc2738fba672afc65e7fb9cf23c inherit pub_methods_classinviwo_1_1Port" id="r_a68db4dc2738fba672afc65e7fb9cf23c"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Port</b> (Port &amp;&amp;)=delete</td></tr>
+<tr class="memitem:a04b47bf9b11816330bf2dcc037aa8536 inherit pub_methods_classinviwo_1_1Port" id="r_a04b47bf9b11816330bf2dcc037aa8536"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a04b47bf9b11816330bf2dcc037aa8536">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="memitem:a197de9ecfe6b86493508f5d7a031058f inherit pub_methods_classinviwo_1_1Port" id="r_a197de9ecfe6b86493508f5d7a031058f"><td class="memItemLeft" align="right" valign="top">
 Port &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>setHelp</b> (<a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
-<tr class="memitem:a04b47bf9b11816330bf2dcc037aa8536 inherit pub_methods_classinviwo_1_1Port" id="r_a04b47bf9b11816330bf2dcc037aa8536"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a04b47bf9b11816330bf2dcc037aa8536">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
-<tr class="memitem:aca329c931734ab4c68cee7908f0ec2b3 inherit pub_methods_classinviwo_1_1Port" id="r_aca329c931734ab4c68cee7908f0ec2b3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#aca329c931734ab4c68cee7908f0ec2b3">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
+<tr class="memitem:a54669aef00f8d39cd8efdd5a0804ea3d inherit pub_methods_classinviwo_1_1Port" id="r_a54669aef00f8d39cd8efdd5a0804ea3d"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setIdentifier</b> (const std::string &amp;name)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ad6a2f3d753a1bbc43cc14a814408ea94" id="r_ad6a2f3d753a1bbc43cc14a814408ea94"><td class="memItemLeft" align="right" valign="top"><a id="ad6a2f3d753a1bbc43cc14a814408ea94" name="ad6a2f3d753a1bbc43cc14a814408ea94"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Inport</b> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
-<tr class="memitem:af896ae84aeb42e757f264364f7cdf3a9" id="r_af896ae84aeb42e757f264364f7cdf3a9"><td class="memItemLeft" align="right" valign="top"><a id="af896ae84aeb42e757f264364f7cdf3a9" name="af896ae84aeb42e757f264364f7cdf3a9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>circularConnection</b> (const Port *port) const</td></tr>
-<tr class="memitem:a6a7bcedd5b9248d3e84acffe5fd28291" id="r_a6a7bcedd5b9248d3e84acffe5fd28291"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a7bcedd5b9248d3e84acffe5fd28291">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel)</td></tr>
-<tr class="memitem:a03741026d1ceaf6fd907d3026d57e361" id="r_a03741026d1ceaf6fd907d3026d57e361"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03741026d1ceaf6fd907d3026d57e361">setValid</a> (const Outport *source)</td></tr>
-<tr class="memitem:a435cc390b39389bc1a9fa33e4415a63f" id="r_a435cc390b39389bc1a9fa33e4415a63f"><td class="memItemLeft" align="right" valign="top"><a id="a435cc390b39389bc1a9fa33e4415a63f" name="a435cc390b39389bc1a9fa33e4415a63f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setChanged</b> (bool changed=true, const Outport *source=nullptr)</td></tr>
 <tr class="memitem:abf4733cd738263b8adc1370d1f5f1946" id="r_abf4733cd738263b8adc1370d1f5f1946"><td class="memItemLeft" align="right" valign="top"><a id="abf4733cd738263b8adc1370d1f5f1946" name="abf4733cd738263b8adc1370d1f5f1946"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>callOnChangeIfChanged</b> () const</td></tr>
+<tr class="memitem:af896ae84aeb42e757f264364f7cdf3a9" id="r_af896ae84aeb42e757f264364f7cdf3a9"><td class="memItemLeft" align="right" valign="top"><a id="af896ae84aeb42e757f264364f7cdf3a9" name="af896ae84aeb42e757f264364f7cdf3a9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>circularConnection</b> (const Port *port) const</td></tr>
+<tr class="memitem:ad6a2f3d753a1bbc43cc14a814408ea94" id="r_ad6a2f3d753a1bbc43cc14a814408ea94"><td class="memItemLeft" align="right" valign="top"><a id="ad6a2f3d753a1bbc43cc14a814408ea94" name="ad6a2f3d753a1bbc43cc14a814408ea94"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Inport</b> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
+<tr class="memitem:a6a7bcedd5b9248d3e84acffe5fd28291" id="r_a6a7bcedd5b9248d3e84acffe5fd28291"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a7bcedd5b9248d3e84acffe5fd28291">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel)</td></tr>
+<tr class="memitem:a435cc390b39389bc1a9fa33e4415a63f" id="r_a435cc390b39389bc1a9fa33e4415a63f"><td class="memItemLeft" align="right" valign="top"><a id="a435cc390b39389bc1a9fa33e4415a63f" name="a435cc390b39389bc1a9fa33e4415a63f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setChanged</b> (bool changed=true, const Outport *source=nullptr)</td></tr>
+<tr class="memitem:a03741026d1ceaf6fd907d3026d57e361" id="r_a03741026d1ceaf6fd907d3026d57e361"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03741026d1ceaf6fd907d3026d57e361">setValid</a> (const Outport *source)</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Port"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Port')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a></td></tr>
 <tr class="memitem:ab084e1d8aa0c233598c2eecdaddc59dd inherit pro_methods_classinviwo_1_1Port" id="r_ab084e1d8aa0c233598c2eecdaddc59dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#ab084e1d8aa0c233598c2eecdaddc59dd">Port</a> (std::string_view identifier, <a class="el" href="classinviwo_1_1Document.html">Document</a> help)</td></tr>
 <tr class="memitem:abff33ef934fbf12985fb8ed04d18664a inherit pro_methods_classinviwo_1_1Port" id="r_abff33ef934fbf12985fb8ed04d18664a"><td class="memItemLeft" align="right" valign="top">
@@ -270,19 +270,19 @@ static <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ad7937516d72419143f3c7ac843bc8ed2" id="r_ad7937516d72419143f3c7ac843bc8ed2"><td class="memItemLeft" align="right" valign="top"><a id="ad7937516d72419143f3c7ac843bc8ed2" name="ad7937516d72419143f3c7ac843bc8ed2"></a>
-<a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isReady_</b></td></tr>
-<tr class="memitem:a385f4527d79ed507bc0b774db68a6547" id="r_a385f4527d79ed507bc0b774db68a6547"><td class="memItemLeft" align="right" valign="top"><a id="a385f4527d79ed507bc0b774db68a6547" name="a385f4527d79ed507bc0b774db68a6547"></a>
-<a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isOptional_</b></td></tr>
 <tr class="memitem:ab7420c4e15b2d5a0e797c5db8e16c4f7" id="r_ab7420c4e15b2d5a0e797c5db8e16c4f7"><td class="memItemLeft" align="right" valign="top"><a id="ab7420c4e15b2d5a0e797c5db8e16c4f7" name="ab7420c4e15b2d5a0e797c5db8e16c4f7"></a>
 std::vector&lt; Outport * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>connectedOutports_</b></td></tr>
+<tr class="memitem:a385f4527d79ed507bc0b774db68a6547" id="r_a385f4527d79ed507bc0b774db68a6547"><td class="memItemLeft" align="right" valign="top"><a id="a385f4527d79ed507bc0b774db68a6547" name="a385f4527d79ed507bc0b774db68a6547"></a>
+<a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isOptional_</b></td></tr>
+<tr class="memitem:ad7937516d72419143f3c7ac843bc8ed2" id="r_ad7937516d72419143f3c7ac843bc8ed2"><td class="memItemLeft" align="right" valign="top"><a id="ad7937516d72419143f3c7ac843bc8ed2" name="ad7937516d72419143f3c7ac843bc8ed2"></a>
+<a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isReady_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Port"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Port')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a></td></tr>
+<tr class="memitem:a3d2f8a6e3196dbcc4ed6d85e0f923c6a inherit pro_attribs_classinviwo_1_1Port" id="r_a3d2f8a6e3196dbcc4ed6d85e0f923c6a"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>help_</b></td></tr>
 <tr class="memitem:abcc265aa920a843480368cb8f900b551 inherit pro_attribs_classinviwo_1_1Port" id="r_abcc265aa920a843480368cb8f900b551"><td class="memItemLeft" align="right" valign="top">
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>identifier_</b></td></tr>
 <tr class="memitem:ae12cb4bc120ae114900dacd3a3a99b75 inherit pro_attribs_classinviwo_1_1Port" id="r_ae12cb4bc120ae114900dacd3a3a99b75"><td class="memItemLeft" align="right" valign="top">
 Processor *&#160;</td><td class="memItemRight" valign="bottom"><b>processor_</b></td></tr>
-<tr class="memitem:a3d2f8a6e3196dbcc4ed6d85e0f923c6a inherit pro_attribs_classinviwo_1_1Port" id="r_a3d2f8a6e3196dbcc4ed6d85e0f923c6a"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>help_</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -536,7 +536,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorNetworkEval
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>inport.h</b></li>
+<li>include/inviwo/core/ports/<b>inport.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

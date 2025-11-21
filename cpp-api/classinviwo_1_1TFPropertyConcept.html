@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1TFPropertyConcept.html','','classinviwo
 <p>property interface used by the TF dialog to support different TF properties  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;tfpropertyconcept.h&gt;</code></p>
+<p><code>#include &lt;modules/qtwidgets/tf/tfpropertyconcept.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::TFPropertyConcept:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -111,74 +111,74 @@ $(function(){initNavTree('classinviwo_1_1TFPropertyConcept.html','','classinviwo
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:a87b1b02f114ebb7fb65acd131f2797f1" id="r_a87b1b02f114ebb7fb65acd131f2797f1"><td class="memItemLeft" align="right" valign="top"><a id="a87b1b02f114ebb7fb65acd131f2797f1" name="a87b1b02f114ebb7fb65acd131f2797f1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>HistogramCallback</b> = void(HistogramChange, const std::vector&lt;<a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a>&gt;&amp;)</td></tr>
 <tr class="memitem:a981d543d7cf675d57cda1e2c40f65cda" id="r_a981d543d7cf675d57cda1e2c40f65cda"><td class="memItemLeft" align="right" valign="top"><a id="a981d543d7cf675d57cda1e2c40f65cda" name="a981d543d7cf675d57cda1e2c40f65cda"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HistogramChange</b> { <b>NoData</b>
 , <b>Requested</b>
 , <b>NewData</b>
  }</td></tr>
-<tr class="memitem:a87b1b02f114ebb7fb65acd131f2797f1" id="r_a87b1b02f114ebb7fb65acd131f2797f1"><td class="memItemLeft" align="right" valign="top"><a id="a87b1b02f114ebb7fb65acd131f2797f1" name="a87b1b02f114ebb7fb65acd131f2797f1"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>HistogramCallback</b> = void(HistogramChange, const std::vector&lt;<a class="el" href="structinviwo_1_1Histogram1D.html">Histogram1D</a>&gt;&amp;)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:add526b6fb2c32a3a665eac51b21c01c2" id="r_add526b6fb2c32a3a665eac51b21c01c2"><td class="memItemLeft" align="right" valign="top"><a id="add526b6fb2c32a3a665eac51b21c01c2" name="add526b6fb2c32a3a665eac51b21c01c2"></a>
-virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProperty</b> () const =0</td></tr>
-<tr class="memitem:a9a0c9c566b6d8335f78571e39d3dda69" id="r_a9a0c9c566b6d8335f78571e39d3dda69"><td class="memItemLeft" align="right" valign="top"><a id="a9a0c9c566b6d8335f78571e39d3dda69" name="a9a0c9c566b6d8335f78571e39d3dda69"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasTF</b> () const =0</td></tr>
-<tr class="memitem:a548b2a6db8dc3f2cfb74996fe42934b6" id="r_a548b2a6db8dc3f2cfb74996fe42934b6"><td class="memItemLeft" align="right" valign="top"><a id="a548b2a6db8dc3f2cfb74996fe42934b6" name="a548b2a6db8dc3f2cfb74996fe42934b6"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasIsovalues</b> () const =0</td></tr>
-<tr class="memitem:a64768f906056c97e0372f0f59f76c553" id="r_a64768f906056c97e0372f0f59f76c553"><td class="memItemLeft" align="right" valign="top"><a id="a64768f906056c97e0372f0f59f76c553" name="a64768f906056c97e0372f0f59f76c553"></a>
-virtual <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getTFProperty</b> () const =0</td></tr>
-<tr class="memitem:ac0ba14b37b923969dacdd8a4c1b1a4af" id="r_ac0ba14b37b923969dacdd8a4c1b1a4af"><td class="memItemLeft" align="right" valign="top"><a id="ac0ba14b37b923969dacdd8a4c1b1a4af" name="ac0ba14b37b923969dacdd8a4c1b1a4af"></a>
-virtual <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getIsoValueProperty</b> () const =0</td></tr>
-<tr class="memitem:a56f4c073488ca00eedd9746b3e7ba97f" id="r_a56f4c073488ca00eedd9746b3e7ba97f"><td class="memItemLeft" align="right" valign="top"><a id="a56f4c073488ca00eedd9746b3e7ba97f" name="a56f4c073488ca00eedd9746b3e7ba97f"></a>
-virtual <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getTransferFunction</b> () const =0</td></tr>
-<tr class="memitem:a34dfc7e785a7691e994b5bc461228d5f" id="r_a34dfc7e785a7691e994b5bc461228d5f"><td class="memItemLeft" align="right" valign="top"><a id="a34dfc7e785a7691e994b5bc461228d5f" name="a34dfc7e785a7691e994b5bc461228d5f"></a>
-virtual <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getIsovalues</b> () const =0</td></tr>
-<tr class="memitem:a77fc16eabdcb7ba6b0e5c97a808bb847" id="r_a77fc16eabdcb7ba6b0e5c97a808bb847"><td class="memItemLeft" align="right" valign="top"><a id="a77fc16eabdcb7ba6b0e5c97a808bb847" name="a77fc16eabdcb7ba6b0e5c97a808bb847"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>supportsMask</b> () const =0</td></tr>
-<tr class="memitem:a47019c597eeedca913cb6ec295fe6138" id="r_a47019c597eeedca913cb6ec295fe6138"><td class="memItemLeft" align="right" valign="top"><a id="a47019c597eeedca913cb6ec295fe6138" name="a47019c597eeedca913cb6ec295fe6138"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setMask</b> (double maskMin, double maskMax)=0</td></tr>
-<tr class="memitem:a36a51ff95ea180f1a7178f60ff9675ea" id="r_a36a51ff95ea180f1a7178f60ff9675ea"><td class="memItemLeft" align="right" valign="top"><a id="a36a51ff95ea180f1a7178f60ff9675ea" name="a36a51ff95ea180f1a7178f60ff9675ea"></a>
-virtual const dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getMask</b> () const =0</td></tr>
-<tr class="memitem:a7e44ee4c0a8d2aabe3725f69888df0a4" id="r_a7e44ee4c0a8d2aabe3725f69888df0a4"><td class="memItemLeft" align="right" valign="top"><a id="a7e44ee4c0a8d2aabe3725f69888df0a4" name="a7e44ee4c0a8d2aabe3725f69888df0a4"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMask</b> ()=0</td></tr>
-<tr class="memitem:a0d5ec9d8b29cae347199c5de9d528c63" id="r_a0d5ec9d8b29cae347199c5de9d528c63"><td class="memItemLeft" align="right" valign="top"><a id="a0d5ec9d8b29cae347199c5de9d528c63" name="a0d5ec9d8b29cae347199c5de9d528c63"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setZoomH</b> (double zoomHMin, double zoomHMax)=0</td></tr>
-<tr class="memitem:abbcdb6ff088de479c23037c5d92cccfe" id="r_abbcdb6ff088de479c23037c5d92cccfe"><td class="memItemLeft" align="right" valign="top"><a id="abbcdb6ff088de479c23037c5d92cccfe" name="abbcdb6ff088de479c23037c5d92cccfe"></a>
-virtual const dvec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getZoomH</b> () const =0</td></tr>
-<tr class="memitem:a0ff7ad70e1418af08f0c70e7c8006643" id="r_a0ff7ad70e1418af08f0c70e7c8006643"><td class="memItemLeft" align="right" valign="top"><a id="a0ff7ad70e1418af08f0c70e7c8006643" name="a0ff7ad70e1418af08f0c70e7c8006643"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setZoomV</b> (double zoomVMin, double zoomVMax)=0</td></tr>
-<tr class="memitem:afe9fa9b4649eb7dd11b9e836671dc4b0" id="r_afe9fa9b4649eb7dd11b9e836671dc4b0"><td class="memItemLeft" align="right" valign="top"><a id="afe9fa9b4649eb7dd11b9e836671dc4b0" name="afe9fa9b4649eb7dd11b9e836671dc4b0"></a>
-virtual const dvec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getZoomV</b> () const =0</td></tr>
-<tr class="memitem:abec359ca9a1ad1959df68b189056fae6" id="r_abec359ca9a1ad1959df68b189056fae6"><td class="memItemLeft" align="right" valign="top"><a id="abec359ca9a1ad1959df68b189056fae6" name="abec359ca9a1ad1959df68b189056fae6"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setHistogramMode</b> (HistogramMode type)=0</td></tr>
-<tr class="memitem:ae7651abf1937eb61ab087904caff1d24" id="r_ae7651abf1937eb61ab087904caff1d24"><td class="memItemLeft" align="right" valign="top"><a id="ae7651abf1937eb61ab087904caff1d24" name="ae7651abf1937eb61ab087904caff1d24"></a>
-virtual HistogramMode&#160;</td><td class="memItemRight" valign="bottom"><b>getHistogramMode</b> () const =0</td></tr>
-<tr class="memitem:a65478a2591b111069d9e0e756189b3ee" id="r_a65478a2591b111069d9e0e756189b3ee"><td class="memItemLeft" align="right" valign="top"><a id="a65478a2591b111069d9e0e756189b3ee" name="a65478a2591b111069d9e0e756189b3ee"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setHistogramSelection</b> (HistogramSelection selection)=0</td></tr>
-<tr class="memitem:a301071b21c6596ea3d92e206074ae54e" id="r_a301071b21c6596ea3d92e206074ae54e"><td class="memItemLeft" align="right" valign="top"><a id="a301071b21c6596ea3d92e206074ae54e" name="a301071b21c6596ea3d92e206074ae54e"></a>
-virtual HistogramSelection&#160;</td><td class="memItemRight" valign="bottom"><b>getHistogramSelection</b> () const =0</td></tr>
-<tr class="memitem:af07316e6056db42996b3fa7753484b87" id="r_af07316e6056db42996b3fa7753484b87"><td class="memItemLeft" align="right" valign="top"><a id="af07316e6056db42996b3fa7753484b87" name="af07316e6056db42996b3fa7753484b87"></a>
-virtual const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getDataMap</b> () const =0</td></tr>
 <tr class="memitem:a6eac474224c98ef4eacafc622088a252" id="r_a6eac474224c98ef4eacafc622088a252"><td class="memItemLeft" align="right" valign="top"><a id="a6eac474224c98ef4eacafc622088a252" name="a6eac474224c98ef4eacafc622088a252"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1TFPropertyObserver.html">TFPropertyObserver</a> *observer)=0</td></tr>
-<tr class="memitem:a51dbeeabe82c6e6d685c802e9b478e3a" id="r_a51dbeeabe82c6e6d685c802e9b478e3a"><td class="memItemLeft" align="right" valign="top"><a id="a51dbeeabe82c6e6d685c802e9b478e3a" name="a51dbeeabe82c6e6d685c802e9b478e3a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<a class="el" href="classinviwo_1_1TFPropertyObserver.html">TFPropertyObserver</a> *observer)=0</td></tr>
-<tr class="memitem:a8575f4a1e2dff1a9f73466e3e4312a7d" id="r_a8575f4a1e2dff1a9f73466e3e4312a7d"><td class="memItemLeft" align="right" valign="top"><a id="a8575f4a1e2dff1a9f73466e3e4312a7d" name="a8575f4a1e2dff1a9f73466e3e4312a7d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showExportDialog</b> () const =0</td></tr>
-<tr class="memitem:aa6481f2c975bce07234f9e6a7937a154" id="r_aa6481f2c975bce07234f9e6a7937a154"><td class="memItemLeft" align="right" valign="top"><a id="aa6481f2c975bce07234f9e6a7937a154" name="aa6481f2c975bce07234f9e6a7937a154"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showImportDialog</b> ()=0</td></tr>
-<tr class="memitem:a909898589d08f5f7a3b3ce1c6608879f" id="r_a909898589d08f5f7a3b3ce1c6608879f"><td class="memItemLeft" align="right" valign="top"><a id="a909898589d08f5f7a3b3ce1c6608879f" name="a909898589d08f5f7a3b3ce1c6608879f"></a>
-virtual std::span&lt; <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sets</b> ()=0</td></tr>
+<tr class="memitem:a7e44ee4c0a8d2aabe3725f69888df0a4" id="r_a7e44ee4c0a8d2aabe3725f69888df0a4"><td class="memItemLeft" align="right" valign="top"><a id="a7e44ee4c0a8d2aabe3725f69888df0a4" name="a7e44ee4c0a8d2aabe3725f69888df0a4"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>clearMask</b> ()=0</td></tr>
+<tr class="memitem:af07316e6056db42996b3fa7753484b87" id="r_af07316e6056db42996b3fa7753484b87"><td class="memItemLeft" align="right" valign="top"><a id="af07316e6056db42996b3fa7753484b87" name="af07316e6056db42996b3fa7753484b87"></a>
+virtual const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getDataMap</b> () const =0</td></tr>
+<tr class="memitem:ae7651abf1937eb61ab087904caff1d24" id="r_ae7651abf1937eb61ab087904caff1d24"><td class="memItemLeft" align="right" valign="top"><a id="ae7651abf1937eb61ab087904caff1d24" name="ae7651abf1937eb61ab087904caff1d24"></a>
+virtual HistogramMode&#160;</td><td class="memItemRight" valign="bottom"><b>getHistogramMode</b> () const =0</td></tr>
+<tr class="memitem:a301071b21c6596ea3d92e206074ae54e" id="r_a301071b21c6596ea3d92e206074ae54e"><td class="memItemLeft" align="right" valign="top"><a id="a301071b21c6596ea3d92e206074ae54e" name="a301071b21c6596ea3d92e206074ae54e"></a>
+virtual HistogramSelection&#160;</td><td class="memItemRight" valign="bottom"><b>getHistogramSelection</b> () const =0</td></tr>
+<tr class="memitem:ac0ba14b37b923969dacdd8a4c1b1a4af" id="r_ac0ba14b37b923969dacdd8a4c1b1a4af"><td class="memItemLeft" align="right" valign="top"><a id="ac0ba14b37b923969dacdd8a4c1b1a4af" name="ac0ba14b37b923969dacdd8a4c1b1a4af"></a>
+virtual <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getIsoValueProperty</b> () const =0</td></tr>
+<tr class="memitem:a34dfc7e785a7691e994b5bc461228d5f" id="r_a34dfc7e785a7691e994b5bc461228d5f"><td class="memItemLeft" align="right" valign="top"><a id="a34dfc7e785a7691e994b5bc461228d5f" name="a34dfc7e785a7691e994b5bc461228d5f"></a>
+virtual <a class="el" href="classinviwo_1_1IsoValueCollection.html">IsoValueCollection</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getIsovalues</b> () const =0</td></tr>
+<tr class="memitem:a36a51ff95ea180f1a7178f60ff9675ea" id="r_a36a51ff95ea180f1a7178f60ff9675ea"><td class="memItemLeft" align="right" valign="top"><a id="a36a51ff95ea180f1a7178f60ff9675ea" name="a36a51ff95ea180f1a7178f60ff9675ea"></a>
+virtual const dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getMask</b> () const =0</td></tr>
+<tr class="memitem:add526b6fb2c32a3a665eac51b21c01c2" id="r_add526b6fb2c32a3a665eac51b21c01c2"><td class="memItemLeft" align="right" valign="top"><a id="add526b6fb2c32a3a665eac51b21c01c2" name="add526b6fb2c32a3a665eac51b21c01c2"></a>
+virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getProperty</b> () const =0</td></tr>
+<tr class="memitem:a64768f906056c97e0372f0f59f76c553" id="r_a64768f906056c97e0372f0f59f76c553"><td class="memItemLeft" align="right" valign="top"><a id="a64768f906056c97e0372f0f59f76c553" name="a64768f906056c97e0372f0f59f76c553"></a>
+virtual <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getTFProperty</b> () const =0</td></tr>
+<tr class="memitem:a56f4c073488ca00eedd9746b3e7ba97f" id="r_a56f4c073488ca00eedd9746b3e7ba97f"><td class="memItemLeft" align="right" valign="top"><a id="a56f4c073488ca00eedd9746b3e7ba97f" name="a56f4c073488ca00eedd9746b3e7ba97f"></a>
+virtual <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getTransferFunction</b> () const =0</td></tr>
+<tr class="memitem:abbcdb6ff088de479c23037c5d92cccfe" id="r_abbcdb6ff088de479c23037c5d92cccfe"><td class="memItemLeft" align="right" valign="top"><a id="abbcdb6ff088de479c23037c5d92cccfe" name="abbcdb6ff088de479c23037c5d92cccfe"></a>
+virtual const dvec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getZoomH</b> () const =0</td></tr>
+<tr class="memitem:afe9fa9b4649eb7dd11b9e836671dc4b0" id="r_afe9fa9b4649eb7dd11b9e836671dc4b0"><td class="memItemLeft" align="right" valign="top"><a id="afe9fa9b4649eb7dd11b9e836671dc4b0" name="afe9fa9b4649eb7dd11b9e836671dc4b0"></a>
+virtual const dvec2 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getZoomV</b> () const =0</td></tr>
+<tr class="memitem:a548b2a6db8dc3f2cfb74996fe42934b6" id="r_a548b2a6db8dc3f2cfb74996fe42934b6"><td class="memItemLeft" align="right" valign="top"><a id="a548b2a6db8dc3f2cfb74996fe42934b6" name="a548b2a6db8dc3f2cfb74996fe42934b6"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasIsovalues</b> () const =0</td></tr>
+<tr class="memitem:a9a0c9c566b6d8335f78571e39d3dda69" id="r_a9a0c9c566b6d8335f78571e39d3dda69"><td class="memItemLeft" align="right" valign="top"><a id="a9a0c9c566b6d8335f78571e39d3dda69" name="a9a0c9c566b6d8335f78571e39d3dda69"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasTF</b> () const =0</td></tr>
 <tr class="memitem:a624180c718205b3362b9ac2fcf788c6d" id="r_a624180c718205b3362b9ac2fcf788c6d"><td class="memItemLeft" align="right" valign="top"><a id="a624180c718205b3362b9ac2fcf788c6d" name="a624180c718205b3362b9ac2fcf788c6d"></a>
 virtual DispatcherHandle&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onDataChange</b> (std::function&lt; void()&gt;)=0</td></tr>
 <tr class="memitem:af758f2cc03ca3098ddd9c0fe6fc034cf" id="r_af758f2cc03ca3098ddd9c0fe6fc034cf"><td class="memItemLeft" align="right" valign="top"><a id="af758f2cc03ca3098ddd9c0fe6fc034cf" name="af758f2cc03ca3098ddd9c0fe6fc034cf"></a>
 virtual DispatcherHandle&lt; HistogramCallback &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onHistogramChange</b> (std::function&lt; HistogramCallback &gt;)=0</td></tr>
+<tr class="memitem:a51dbeeabe82c6e6d685c802e9b478e3a" id="r_a51dbeeabe82c6e6d685c802e9b478e3a"><td class="memItemLeft" align="right" valign="top"><a id="a51dbeeabe82c6e6d685c802e9b478e3a" name="a51dbeeabe82c6e6d685c802e9b478e3a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<a class="el" href="classinviwo_1_1TFPropertyObserver.html">TFPropertyObserver</a> *observer)=0</td></tr>
+<tr class="memitem:abec359ca9a1ad1959df68b189056fae6" id="r_abec359ca9a1ad1959df68b189056fae6"><td class="memItemLeft" align="right" valign="top"><a id="abec359ca9a1ad1959df68b189056fae6" name="abec359ca9a1ad1959df68b189056fae6"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setHistogramMode</b> (HistogramMode type)=0</td></tr>
+<tr class="memitem:a65478a2591b111069d9e0e756189b3ee" id="r_a65478a2591b111069d9e0e756189b3ee"><td class="memItemLeft" align="right" valign="top"><a id="a65478a2591b111069d9e0e756189b3ee" name="a65478a2591b111069d9e0e756189b3ee"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setHistogramSelection</b> (HistogramSelection selection)=0</td></tr>
+<tr class="memitem:a47019c597eeedca913cb6ec295fe6138" id="r_a47019c597eeedca913cb6ec295fe6138"><td class="memItemLeft" align="right" valign="top"><a id="a47019c597eeedca913cb6ec295fe6138" name="a47019c597eeedca913cb6ec295fe6138"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setMask</b> (double maskMin, double maskMax)=0</td></tr>
+<tr class="memitem:a909898589d08f5f7a3b3ce1c6608879f" id="r_a909898589d08f5f7a3b3ce1c6608879f"><td class="memItemLeft" align="right" valign="top"><a id="a909898589d08f5f7a3b3ce1c6608879f" name="a909898589d08f5f7a3b3ce1c6608879f"></a>
+virtual std::span&lt; <a class="el" href="classinviwo_1_1TFPrimitiveSet.html">TFPrimitiveSet</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sets</b> ()=0</td></tr>
+<tr class="memitem:a0d5ec9d8b29cae347199c5de9d528c63" id="r_a0d5ec9d8b29cae347199c5de9d528c63"><td class="memItemLeft" align="right" valign="top"><a id="a0d5ec9d8b29cae347199c5de9d528c63" name="a0d5ec9d8b29cae347199c5de9d528c63"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setZoomH</b> (double zoomHMin, double zoomHMax)=0</td></tr>
+<tr class="memitem:a0ff7ad70e1418af08f0c70e7c8006643" id="r_a0ff7ad70e1418af08f0c70e7c8006643"><td class="memItemLeft" align="right" valign="top"><a id="a0ff7ad70e1418af08f0c70e7c8006643" name="a0ff7ad70e1418af08f0c70e7c8006643"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setZoomV</b> (double zoomVMin, double zoomVMax)=0</td></tr>
+<tr class="memitem:a8575f4a1e2dff1a9f73466e3e4312a7d" id="r_a8575f4a1e2dff1a9f73466e3e4312a7d"><td class="memItemLeft" align="right" valign="top"><a id="a8575f4a1e2dff1a9f73466e3e4312a7d" name="a8575f4a1e2dff1a9f73466e3e4312a7d"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showExportDialog</b> () const =0</td></tr>
+<tr class="memitem:aa6481f2c975bce07234f9e6a7937a154" id="r_aa6481f2c975bce07234f9e6a7937a154"><td class="memItemLeft" align="right" valign="top"><a id="aa6481f2c975bce07234f9e6a7937a154" name="aa6481f2c975bce07234f9e6a7937a154"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showImportDialog</b> ()=0</td></tr>
+<tr class="memitem:a77fc16eabdcb7ba6b0e5c97a808bb847" id="r_a77fc16eabdcb7ba6b0e5c97a808bb847"><td class="memItemLeft" align="right" valign="top"><a id="a77fc16eabdcb7ba6b0e5c97a808bb847" name="a77fc16eabdcb7ba6b0e5c97a808bb847"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>supportsMask</b> () const =0</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>property interface used by the TF dialog to support different TF properties </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>tfpropertyconcept.h</b></li>
+<li>modules/qtwidgets/include/modules/qtwidgets/tf/<b>tfpropertyconcept.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

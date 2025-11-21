@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1HalfEdges.html','','classinviwo_1_1Half
 <p>A half edge datastructure of the mesh topology. Note: only the topology is stored, no vertex data.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;halfedges.h&gt;</code></p>
+<p><code>#include &lt;modules/oit/datastructures/halfedges.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -105,24 +105,24 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a368e3f4e509d45285962659b06211ef9" id="r_a368e3f4e509d45285962659b06211ef9"><td class="memItemLeft" align="right" valign="top"><a id="a368e3f4e509d45285962659b06211ef9" name="a368e3f4e509d45285962659b06211ef9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>HalfEdges</b> (<a class="el" href="structinviwo_1_1Mesh_1_1MeshInfo.html">Mesh::MeshInfo</a> info, const IndexBuffer &amp;indexBuffer)</td></tr>
-<tr class="memdesc:a368e3f4e509d45285962659b06211ef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from MeshInfo and index buffer. <br /></td></tr>
-<tr class="memitem:a8efbf180581da7a17659e1e33e3c8047" id="r_a8efbf180581da7a17659e1e33e3c8047"><td class="memItemLeft" align="right" valign="top"><a id="a8efbf180581da7a17659e1e33e3c8047" name="a8efbf180581da7a17659e1e33e3c8047"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>HalfEdges</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
-<tr class="memdesc:a8efbf180581da7a17659e1e33e3c8047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a>, only triangles are considered. <br /></td></tr>
 <tr class="memitem:ad97287d8420799a0baede4469c067bed" id="r_ad97287d8420799a0baede4469c067bed"><td class="memItemLeft" align="right" valign="top"><a id="ad97287d8420799a0baede4469c067bed" name="ad97287d8420799a0baede4469c067bed"></a>
 IndexBuffer&#160;</td><td class="memItemRight" valign="bottom"><b>createIndexBuffer</b> () const</td></tr>
 <tr class="memdesc:ad97287d8420799a0baede4469c067bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a index buffer for triangles with connectivity 'None'. <br /></td></tr>
 <tr class="memitem:a2019b7c52e9e39f179697986d0180512" id="r_a2019b7c52e9e39f179697986d0180512"><td class="memItemLeft" align="right" valign="top"><a id="a2019b7c52e9e39f179697986d0180512" name="a2019b7c52e9e39f179697986d0180512"></a>
 IndexBuffer&#160;</td><td class="memItemRight" valign="bottom"><b>createIndexBufferWithAdjacency</b> () const</td></tr>
 <tr class="memdesc:a2019b7c52e9e39f179697986d0180512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a index buffer for triangles with connectivity 'Adjacency'. <br /></td></tr>
-<tr class="memitem:a397a5160fd4e7849e55fbfc6b49944ca" id="r_a397a5160fd4e7849e55fbfc6b49944ca"><td class="memItemLeft" align="right" valign="top"><a id="a397a5160fd4e7849e55fbfc6b49944ca" name="a397a5160fd4e7849e55fbfc6b49944ca"></a>
-<a class="el" href="classinviwo_1_1HalfEdges_1_1EdgeIter.html">EdgeIter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>faceToEdge</b> (std::uint32_t faceIndex) const</td></tr>
-<tr class="memitem:ad9f26f786e6b1e89f9c504aed89dfc55" id="r_ad9f26f786e6b1e89f9c504aed89dfc55"><td class="memItemLeft" align="right" valign="top"><a id="ad9f26f786e6b1e89f9c504aed89dfc55" name="ad9f26f786e6b1e89f9c504aed89dfc55"></a>
-<a class="el" href="classinviwo_1_1HalfEdges_1_1EdgeIter.html">EdgeIter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>vertexToEdge</b> (std::uint32_t vertexIndex) const</td></tr>
 <tr class="memitem:a53877b28d22a5458d4b400b2a6f62048" id="r_a53877b28d22a5458d4b400b2a6f62048"><td class="memItemLeft" align="right" valign="top"><a id="a53877b28d22a5458d4b400b2a6f62048" name="a53877b28d22a5458d4b400b2a6f62048"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>faces</b> () const</td></tr>
+<tr class="memitem:a397a5160fd4e7849e55fbfc6b49944ca" id="r_a397a5160fd4e7849e55fbfc6b49944ca"><td class="memItemLeft" align="right" valign="top"><a id="a397a5160fd4e7849e55fbfc6b49944ca" name="a397a5160fd4e7849e55fbfc6b49944ca"></a>
+<a class="el" href="classinviwo_1_1HalfEdges_1_1EdgeIter.html">EdgeIter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>faceToEdge</b> (std::uint32_t faceIndex) const</td></tr>
+<tr class="memitem:a8efbf180581da7a17659e1e33e3c8047" id="r_a8efbf180581da7a17659e1e33e3c8047"><td class="memItemLeft" align="right" valign="top"><a id="a8efbf180581da7a17659e1e33e3c8047" name="a8efbf180581da7a17659e1e33e3c8047"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HalfEdges</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
+<tr class="memdesc:a8efbf180581da7a17659e1e33e3c8047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a>, only triangles are considered. <br /></td></tr>
+<tr class="memitem:a368e3f4e509d45285962659b06211ef9" id="r_a368e3f4e509d45285962659b06211ef9"><td class="memItemLeft" align="right" valign="top"><a id="a368e3f4e509d45285962659b06211ef9" name="a368e3f4e509d45285962659b06211ef9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HalfEdges</b> (<a class="el" href="structinviwo_1_1Mesh_1_1MeshInfo.html">Mesh::MeshInfo</a> info, const IndexBuffer &amp;indexBuffer)</td></tr>
+<tr class="memdesc:a368e3f4e509d45285962659b06211ef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct from MeshInfo and index buffer. <br /></td></tr>
+<tr class="memitem:ad9f26f786e6b1e89f9c504aed89dfc55" id="r_ad9f26f786e6b1e89f9c504aed89dfc55"><td class="memItemLeft" align="right" valign="top"><a id="ad9f26f786e6b1e89f9c504aed89dfc55" name="ad9f26f786e6b1e89f9c504aed89dfc55"></a>
+<a class="el" href="classinviwo_1_1HalfEdges_1_1EdgeIter.html">EdgeIter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>vertexToEdge</b> (std::uint32_t vertexIndex) const</td></tr>
 <tr class="memitem:af8869517db61576297c37dbebb4d5830" id="r_af8869517db61576297c37dbebb4d5830"><td class="memItemLeft" align="right" valign="top"><a id="af8869517db61576297c37dbebb4d5830" name="af8869517db61576297c37dbebb4d5830"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>vertices</b> () const</td></tr>
 </table>
@@ -140,7 +140,7 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>vertices</b> () const
 ╱ ▼────e0─────▶ ╲ ╱
 </pre><p> v0────────────────v1 </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>halfedges.h</b></li>
+<li>modules/oit/include/modules/oit/datastructures/<b>halfedges.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

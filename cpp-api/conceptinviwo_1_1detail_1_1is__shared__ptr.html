@@ -94,7 +94,11 @@ $(function(){initNavTree('conceptinviwo_1_1detail_1_1is__shared__ptr.html','',''
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1detail_1_1is__shared__ptr.html">inviwo::detail::is_shared_ptr</a> =  <span class="keyword">requires</span> { <span class="keyword">typename</span> T::element_type; } &amp;&amp;</div>
+<div class="line">                        std::same_as&lt;T, std::shared_ptr&lt;typename T::element_type&gt;&gt;</div>
+<div class="ttc" id="aconceptinviwo_1_1detail_1_1is__shared__ptr_html"><div class="ttname"><a href="conceptinviwo_1_1detail_1_1is__shared__ptr.html">inviwo::detail::is_shared_ptr</a></div><div class="ttdef"><b>Definition</b> deserializer.h:82</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

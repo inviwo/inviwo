@@ -221,9 +221,6 @@ var hierarchy =
       [ "inviwo::ScopedClock< ClockGL, Callback >", "classinviwo_1_1ScopedClock.html", null ]
     ] ],
     [ "inviwo::util::cloneable_ptr&lt; T &gt;", "classinviwo_1_1util_1_1cloneable__ptr.html", null ],
-    [ "CloningFactory", null, [
-      [ "inviwo::MetaDataFactory", "classinviwo_1_1MetaDataFactory.html", null ]
-    ] ],
     [ "inviwo::ffmpeg::CodecID", "classinviwo_1_1ffmpeg_1_1CodecID.html", null ],
     [ "inviwo::detail::ColorConverter&lt; T &gt;", "structinviwo_1_1detail_1_1ColorConverter.html", null ],
     [ "inviwo::detail::ColorConverter&lt; dvec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html", null ],
@@ -912,6 +909,7 @@ var hierarchy =
     [ "inviwo::equalPtr", "structinviwo_1_1equalPtr.html", null ],
     [ "inviwo::utilgl::BlendModeEquationState::Equation", "structinviwo_1_1utilgl_1_1BlendModeEquationState_1_1Equation.html", null ],
     [ "inviwo::ffmpeg::Error", "structinviwo_1_1ffmpeg_1_1Error.html", null ],
+    [ "inviwo::log::error&lt; Args &gt;", "structinviwo_1_1log_1_1error.html", null ],
     [ "inviwo::Event", "classinviwo_1_1Event.html", [
       [ "inviwo::ContextMenuEvent", "classinviwo_1_1ContextMenuEvent.html", null ],
       [ "inviwo::InteractionEvent", "classinviwo_1_1InteractionEvent.html", [
@@ -1091,7 +1089,19 @@ var hierarchy =
       [ "inviwo::DataFrameTable", "classinviwo_1_1DataFrameTable.html", null ]
     ] ],
     [ "inviwo::MeshRasterizer::FaceSettings", "structinviwo_1_1MeshRasterizer_1_1FaceSettings.html", null ],
-    [ "inviwo::Factory&lt; T, K, Args &gt;", "classinviwo_1_1Factory.html", null ],
+    [ "inviwo::Factory&lt; T, K, Args &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Property, PropertyFactoryObject, std::string_view, std::string_view, std::string_view >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::PropertyFactory", "classinviwo_1_1PropertyFactory.html", null ]
+      ] ],
+      [ "inviwo::StandardFactory< Track, TrackFactoryObject, std::string_view, ProcessorNetwork * >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::animation::TrackFactory", "classinviwo_1_1animation_1_1TrackFactory.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; Camera, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Camera, CameraFactoryObject >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::CameraFactory", "classinviwo_1_1CameraFactory.html", null ]
+      ] ]
+    ] ],
     [ "inviwo::Factory&lt; DataReader, const FileExtension &amp; &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::DataReaderFactory", "classinviwo_1_1DataReaderFactory.html", null ]
     ] ],
@@ -1104,14 +1114,49 @@ var hierarchy =
     [ "inviwo::Factory&lt; DataWriter, std::string_view &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::DataWriterFactory", "classinviwo_1_1DataWriterFactory.html", null ]
     ] ],
+    [ "inviwo::Factory&lt; Dialog, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Dialog, DialogFactoryObject >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::DialogFactory", "classinviwo_1_1DialogFactory.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; Element, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Element, WidgetFactoryObject, std::string_view, Property &, Processor &, Renderer & >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::glui::WidgetFactory", "classinviwo_1_1glui_1_1WidgetFactory.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; Inport, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Inport, InportFactoryObject >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::InportFactory", "classinviwo_1_1InportFactory.html", null ]
+      ] ]
+    ] ],
     [ "inviwo::Factory&lt; Inport, std::string_view, std::string_view &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::InportFactory", "classinviwo_1_1InportFactory.html", null ]
+    ] ],
+    [ "inviwo::Factory&lt; Interpolation, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Interpolation, InterpolationFactoryObject >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::animation::InterpolationFactory", "classinviwo_1_1animation_1_1InterpolationFactory.html", null ]
+      ] ]
     ] ],
     [ "inviwo::Factory&lt; MeshDrawer, const Mesh * &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::MeshDrawerFactory", "classinviwo_1_1MeshDrawerFactory.html", null ]
     ] ],
+    [ "inviwo::Factory&lt; MetaData, std::string_view &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::CloningFactory< MetaData >", "classinviwo_1_1CloningFactory.html", [
+        [ "inviwo::MetaDataFactory", "classinviwo_1_1MetaDataFactory.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; Outport, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Outport, OutportFactoryObject >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::OutportFactory", "classinviwo_1_1OutportFactory.html", null ]
+      ] ]
+    ] ],
     [ "inviwo::Factory&lt; Outport, std::string_view, std::string_view &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::OutportFactory", "classinviwo_1_1OutportFactory.html", null ]
+    ] ],
+    [ "inviwo::Factory&lt; PortInspector, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< PortInspector, PortInspectorFactoryObject >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::PortInspectorFactory", "classinviwo_1_1PortInspectorFactory.html", null ]
+      ] ]
     ] ],
     [ "inviwo::Factory&lt; Processor, std::string_view &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
@@ -1122,27 +1167,50 @@ var hierarchy =
     [ "inviwo::Factory&lt; ProcessorWidget, Processor * &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ]
     ] ],
+    [ "inviwo::Factory&lt; ProcessorWidget, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view, Processor * >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ]
+      ] ]
+    ] ],
     [ "inviwo::Factory&lt; Property, std::string_view &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::PropertyFactory", "classinviwo_1_1PropertyFactory.html", null ]
     ] ],
     [ "inviwo::Factory&lt; PropertyWidget, Property * &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::PropertyWidgetFactory", "classinviwo_1_1PropertyWidgetFactory.html", null ]
     ] ],
+    [ "inviwo::Factory&lt; Recorder, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Recorder, RecorderFactory, std::string_view, const RecorderOptions & >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::animation::RecorderFactories", "classinviwo_1_1animation_1_1RecorderFactories.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; Representation, std::type_index, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< Representation, RepresentationFactoryObject< Representation >, std::type_index, const Representation::ReprOwner * >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::RepresentationFactory< Representation >", "classinviwo_1_1RepresentationFactory.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; SequenceEditorWidget, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view, KeyframeSequence &, Track &, AnimationManager & >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::animation::SequenceEditorFactory", "classinviwo_1_1animation_1_1SequenceEditorFactory.html", null ]
+      ] ]
+    ] ],
+    [ "inviwo::Factory&lt; T, std::string_view &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::CloningFactory< T >", "classinviwo_1_1CloningFactory.html", null ]
+    ] ],
     [ "inviwo::Factory&lt; Track &gt;", "classinviwo_1_1Factory.html", [
       [ "inviwo::animation::TrackFactory", "classinviwo_1_1animation_1_1TrackFactory.html", null ]
     ] ],
+    [ "inviwo::Factory&lt; TrackWidgetQt, std::string_view, Args... &gt;", "classinviwo_1_1Factory.html", [
+      [ "inviwo::StandardFactory< TrackWidgetQt, TrackWidgetQtFactoryObject, std::string_view, Track & >", "classinviwo_1_1StandardFactory.html", [
+        [ "inviwo::animation::TrackWidgetQtFactory", "classinviwo_1_1animation_1_1TrackWidgetQtFactory.html", null ]
+      ] ]
+    ] ],
     [ "inviwo::FactoryBase", "classinviwo_1_1FactoryBase.html", [
-      [ "inviwo::Factory< T, std::string_view, Args... >", "classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html", null ]
+      [ "inviwo::Factory< T, std::string_view, Args... >", "classinviwo_1_1Factory_3_01T_00_01std_1_1string__view_00_01Args_8_8_8_01_4.html", [
+        [ "inviwo::StandardFactory< T, FactoryObject, Key, Args >", "classinviwo_1_1StandardFactory.html", null ]
+      ] ]
     ] ],
     [ "inviwo::FactoryKeyType&lt; K &gt;", "structinviwo_1_1FactoryKeyType.html", null ],
     [ "inviwo::FactoryKeyType&lt; std::string_view &gt;", "structinviwo_1_1FactoryKeyType_3_01std_1_1string__view_01_4.html", null ],
-    [ "FactoryRegister", null, [
-      [ "inviwo::JSONConverterRegistry< Inport >", "classinviwo_1_1JSONConverterRegistry.html", null ],
-      [ "inviwo::JSONConverterRegistry< Outport >", "classinviwo_1_1JSONConverterRegistry.html", null ],
-      [ "inviwo::JSONConverterRegistry< Property >", "classinviwo_1_1JSONConverterRegistry.html", null ],
-      [ "inviwo::JSONConverterRegistry< Base >", "classinviwo_1_1JSONConverterRegistry.html", null ],
-      [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
-    ] ],
     [ "std::false_type", null, [
       [ "inviwo::util::detail::is_string< T, std::void_t< typename T::value_type, typename T::traits_type, typename T::allocator_type > >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1value7755dbb39d4055ac2098ae9658d61cc2.html", null ],
       [ "inviwo::util::is_dereferenceable< T, std::void_t< decltype(*std::declval< T >())> >", "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html", null ],
@@ -1303,6 +1371,7 @@ var hierarchy =
     [ "inviwo::util::IndexProduct&lt; T &gt;", "classinviwo_1_1util_1_1IndexProduct.html", null ],
     [ "inviwo::util::IndirectIterator&lt; Iter, PropagateConst &gt;", "structinviwo_1_1util_1_1IndirectIterator.html", null ],
     [ "inviwo::util::ColumnMapper::Info", "structinviwo_1_1util_1_1ColumnMapper_1_1Info.html", null ],
+    [ "inviwo::log::info&lt; Args &gt;", "structinviwo_1_1log_1_1info.html", null ],
     [ "inviwo::InportFactoryObject", "classinviwo_1_1InportFactoryObject.html", [
       [ "inviwo::InportFactoryObjectTemplate< T >", "classinviwo_1_1InportFactoryObjectTemplate.html", null ]
     ] ],
@@ -1614,6 +1683,7 @@ var hierarchy =
     [ "inviwo::Mesh::MeshInfo", "structinviwo_1_1Mesh_1_1MeshInfo.html", null ],
     [ "inviwo::MeshShaderCache", "classinviwo_1_1MeshShaderCache.html", null ],
     [ "inviwo::MeshTexturing", "classinviwo_1_1MeshTexturing.html", null ],
+    [ "inviwo::log::message&lt; Args &gt;", "structinviwo_1_1log_1_1message.html", null ],
     [ "inviwo::hdf5::MetaData", "structinviwo_1_1hdf5_1_1MetaData.html", null ],
     [ "inviwo::MetaDataMap", "classinviwo_1_1MetaDataMap.html", null ],
     [ "inviwo::MetaDataOwner", "classinviwo_1_1MetaDataOwner.html", [
@@ -1854,6 +1924,13 @@ var hierarchy =
       [ "inviwo::Observable< BufferObjectObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::BufferObject", "classinviwo_1_1BufferObject.html", null ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< CameraFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< CameraFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< CameraFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Camera, CameraFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< CompositePropertyObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::CompositePropertyObservable", "classinviwo_1_1CompositePropertyObservable.html", [
           [ "inviwo::CompositeProperty", "classinviwo_1_1CompositeProperty.html", null ]
@@ -1869,16 +1946,79 @@ var hierarchy =
           [ "inviwo::DataWriterFactory", "classinviwo_1_1DataWriterFactory.html", null ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< DialogFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< DialogFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< DialogFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Dialog, DialogFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< FactoryObserver< T > >", "classinviwo_1_1Observable.html", [
-        [ "inviwo::FactoryObservable< T >", "classinviwo_1_1FactoryObservable.html", null ]
+        [ "inviwo::FactoryObservable< T >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< ProcessorFactoryObject, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::ProcessorFactory", "classinviwo_1_1ProcessorFactory.html", null ]
+          ] ],
+          [ "inviwo::FactoryRegister< T, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::CloningFactory< T >", "classinviwo_1_1CloningFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< FactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< FactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< FactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< T, FactoryObject, Key, Args >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ],
+          [ "inviwo::FactoryRegister< FactoryObject, Key, LookUpKey >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::JSONConverterRegistry< Inport >", "classinviwo_1_1JSONConverterRegistry.html", null ],
+            [ "inviwo::JSONConverterRegistry< Outport >", "classinviwo_1_1JSONConverterRegistry.html", null ],
+            [ "inviwo::JSONConverterRegistry< Property >", "classinviwo_1_1JSONConverterRegistry.html", null ],
+            [ "inviwo::StandardFactory< Property, PropertyFactoryObject, std::string_view, std::string_view, std::string_view >", "classinviwo_1_1StandardFactory.html", null ],
+            [ "inviwo::StandardFactory< Track, TrackFactoryObject, std::string_view, ProcessorNetwork * >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< InportFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< InportFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< InportFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Inport, InportFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< JSONConverter< Base > > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< JSONConverter< Base > >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< JSONConverter< Base >, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::JSONConverterRegistry< Base >", "classinviwo_1_1JSONConverterRegistry.html", null ]
+          ] ]
+        ] ]
       ] ],
       [ "inviwo::Observable< LabelGraphicsItemObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::LabelGraphicsItemObservable", "classinviwo_1_1LabelGraphicsItemObservable.html", [
           [ "inviwo::LabelGraphicsItem", "classinviwo_1_1LabelGraphicsItem.html", null ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< MetaData > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< MetaData >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< MetaData, std::string, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::CloningFactory< MetaData >", "classinviwo_1_1CloningFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< NetworkEditorObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::NetworkEditor", "classinviwo_1_1NetworkEditor.html", null ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< OutportFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< OutportFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< OutportFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Outport, OutportFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< PortInspectorFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< PortInspectorFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< PortInspectorFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< PortInspector, PortInspectorFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
       ] ],
       [ "inviwo::Observable< ProcessorMetaDataObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ProcessorMetaData", "classinviwo_1_1ProcessorMetaData.html", null ]
@@ -1896,6 +2036,13 @@ var hierarchy =
       [ "inviwo::Observable< ProcessorObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ProcessorObservable", "classinviwo_1_1ProcessorObservable.html", [
           [ "inviwo::Processor", "classinviwo_1_1Processor.html", null ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< ProcessorWidgetFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< ProcessorWidgetFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< ProcessorWidgetFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< ProcessorWidget, ProcessorWidgetFactoryObject, std::string_view, Processor * >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
         ] ]
       ] ],
       [ "inviwo::Observable< ProcessorWidgetMetaDataObserver >", "classinviwo_1_1Observable.html", [
@@ -1918,6 +2065,13 @@ var hierarchy =
       ] ],
       [ "inviwo::Observable< PythonWorkspaceScriptsObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::PythonWorkspaceScripts", "classinviwo_1_1PythonWorkspaceScripts.html", null ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< RepresentationFactoryObject< Representation > > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< RepresentationFactoryObject< Representation > >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< RepresentationFactoryObject< Representation >, factoryKeyType< std::type_index >, std::type_index >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Representation, RepresentationFactoryObject< Representation >, std::type_index, const Representation::ReprOwner * >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
       ] ],
       [ "inviwo::Observable< ResourceManagerObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::ResourceManagerObservable", "classinviwo_1_1ResourceManagerObservable.html", [
@@ -1965,6 +2119,13 @@ var hierarchy =
           [ "inviwo::animation::DemoController", "classinviwo_1_1animation_1_1DemoController.html", null ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< InterpolationFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< InterpolationFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< InterpolationFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Interpolation, InterpolationFactoryObject >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< KeyframeObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::animation::KeyframeObservable", "classinviwo_1_1animation_1_1KeyframeObservable.html", [
           [ "inviwo::animation::Keyframe", "classinviwo_1_1animation_1_1Keyframe.html", [
@@ -2001,6 +2162,20 @@ var hierarchy =
           ] ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< RecorderFactory > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< RecorderFactory >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< RecorderFactory, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Recorder, RecorderFactory, std::string_view, const RecorderOptions & >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
+      [ "inviwo::Observable< FactoryObserver< SequenceEditorFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< SequenceEditorFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< SequenceEditorFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< SequenceEditorWidget, SequenceEditorFactoryObject, std::string_view, KeyframeSequence &, Track &, AnimationManager & >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< TrackObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::animation::TrackObservable", "classinviwo_1_1animation_1_1TrackObservable.html", [
           [ "inviwo::animation::Track", "classinviwo_1_1animation_1_1Track.html", [
@@ -2023,6 +2198,13 @@ var hierarchy =
           ] ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< TrackWidgetQtFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< TrackWidgetQtFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< TrackWidgetQtFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< TrackWidgetQt, TrackWidgetQtFactoryObject, std::string_view, Track & >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< ValueKeyframeSequenceObserver >", "classinviwo_1_1Observable.html", [
         [ "inviwo::animation::ValueKeyframeSequenceObserverble", "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserverble.html", [
           [ "inviwo::animation::ValueKeyframeSequence", "classinviwo_1_1animation_1_1ValueKeyframeSequence.html", [
@@ -2031,21 +2213,43 @@ var hierarchy =
           ] ]
         ] ]
       ] ],
+      [ "inviwo::Observable< FactoryObserver< WidgetFactoryObject > >", "classinviwo_1_1Observable.html", [
+        [ "inviwo::FactoryObservable< WidgetFactoryObject >", "classinviwo_1_1FactoryObservable.html", [
+          [ "inviwo::FactoryRegister< WidgetFactoryObject, factoryKeyType< std::string_view >, std::string_view >", "classinviwo_1_1FactoryRegister.html", [
+            [ "inviwo::StandardFactory< Element, WidgetFactoryObject, std::string_view, Property &, Processor &, Renderer & >", "classinviwo_1_1StandardFactory.html", null ]
+          ] ]
+        ] ]
+      ] ],
       [ "inviwo::Observable< T >", "classinviwo_1_1Observable.html", null ]
     ] ],
     [ "inviwo::Observer", "classinviwo_1_1Observer.html", [
+      [ "inviwo::FactoryObserver< CameraFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< DataReader >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::TransferFunctionLayerReaderWrapper", "classinviwo_1_1TransferFunctionLayerReaderWrapper.html", null ]
       ] ],
       [ "inviwo::FactoryObserver< DataWriter >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::TransferFunctionLayerWriterWrapper", "classinviwo_1_1TransferFunctionLayerWriterWrapper.html", null ]
       ] ],
+      [ "inviwo::FactoryObserver< DialogFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< FactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< InportFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< JSONConverter< Base > >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< PropertyFactoryObject >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::LinkSettings", "classinviwo_1_1LinkSettings.html", null ]
       ] ],
+      [ "inviwo::FactoryObserver< MetaData >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< OutportFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< PortInspectorFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::FactoryObserver< ProcessorFactoryObject >", "classinviwo_1_1FactoryObserver.html", [
         [ "inviwo::ProcessorTreeWidget", "classinviwo_1_1ProcessorTreeWidget.html", null ]
       ] ],
+      [ "inviwo::FactoryObserver< ProcessorWidgetFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< RepresentationFactoryObject< Representation > >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< InterpolationFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< RecorderFactory >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< SequenceEditorFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< TrackWidgetQtFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
+      [ "inviwo::FactoryObserver< WidgetFactoryObject >", "classinviwo_1_1FactoryObserver.html", null ],
       [ "inviwo::BufferObjectObserver", "classinviwo_1_1BufferObjectObserver.html", null ],
       [ "inviwo::CompositePropertyObserver", "classinviwo_1_1CompositePropertyObserver.html", [
         [ "inviwo::BoolCompositePropertyWidgetQt", "classinviwo_1_1BoolCompositePropertyWidgetQt.html", null ],
@@ -3327,22 +3531,6 @@ var hierarchy =
     ] ],
     [ "inviwo::StandardEvaluationErrorHandler", "structinviwo_1_1StandardEvaluationErrorHandler.html", null ],
     [ "inviwo::StandardExceptionHandler", "structinviwo_1_1StandardExceptionHandler.html", null ],
-    [ "StandardFactory", null, [
-      [ "inviwo::CameraFactory", "classinviwo_1_1CameraFactory.html", null ],
-      [ "inviwo::DialogFactory", "classinviwo_1_1DialogFactory.html", null ],
-      [ "inviwo::InportFactory", "classinviwo_1_1InportFactory.html", null ],
-      [ "inviwo::OutportFactory", "classinviwo_1_1OutportFactory.html", null ],
-      [ "inviwo::PortInspectorFactory", "classinviwo_1_1PortInspectorFactory.html", null ],
-      [ "inviwo::ProcessorWidgetFactory", "classinviwo_1_1ProcessorWidgetFactory.html", null ],
-      [ "inviwo::PropertyFactory", "classinviwo_1_1PropertyFactory.html", null ],
-      [ "inviwo::RepresentationFactory< Representation >", "classinviwo_1_1RepresentationFactory.html", null ],
-      [ "inviwo::animation::InterpolationFactory", "classinviwo_1_1animation_1_1InterpolationFactory.html", null ],
-      [ "inviwo::animation::RecorderFactories", "classinviwo_1_1animation_1_1RecorderFactories.html", null ],
-      [ "inviwo::animation::SequenceEditorFactory", "classinviwo_1_1animation_1_1SequenceEditorFactory.html", null ],
-      [ "inviwo::animation::TrackFactory", "classinviwo_1_1animation_1_1TrackFactory.html", null ],
-      [ "inviwo::animation::TrackWidgetQtFactory", "classinviwo_1_1animation_1_1TrackWidgetQtFactory.html", null ],
-      [ "inviwo::glui::WidgetFactory", "classinviwo_1_1glui_1_1WidgetFactory.html", null ]
-    ] ],
     [ "inviwo::pool::detail::State", "structinviwo_1_1pool_1_1detail_1_1State.html", [
       [ "inviwo::pool::detail::StateTemplate< Result, Done >", "structinviwo_1_1pool_1_1detail_1_1StateTemplate.html", null ]
     ] ],
@@ -3508,6 +3696,7 @@ var hierarchy =
     [ "inviwo::VolumeRAMSubSet", "classinviwo_1_1VolumeRAMSubSet.html", null ],
     [ "inviwo::VolumeReprConfig", "structinviwo_1_1VolumeReprConfig.html", null ],
     [ "inviwo::VolumeReuseCache", "classinviwo_1_1VolumeReuseCache.html", null ],
+    [ "inviwo::log::warn&lt; Args &gt;", "structinviwo_1_1log_1_1warn.html", null ],
     [ "inviwo::glui::WidgetFactoryObject", "classinviwo_1_1glui_1_1WidgetFactoryObject.html", [
       [ "inviwo::glui::WidgetFactoryObjectTemplate< T, P >", "classinviwo_1_1glui_1_1WidgetFactoryObjectTemplate.html", null ]
     ] ],

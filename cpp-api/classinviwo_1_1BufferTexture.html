@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1BufferTexture.html','','classinviwo_1_1
 <p>A texture backed by buffer storage.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;buffertexture.h&gt;</code></p>
+<p><code>#include &lt;modules/opengl/texture/buffertexture.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::BufferTexture&lt; T, InternalFormat &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -111,41 +111,41 @@ $(function(){initNavTree('classinviwo_1_1BufferTexture.html','','classinviwo_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a58c19478c2bdeb7f79e2e0d0b15ec1f8" id="r_a58c19478c2bdeb7f79e2e0d0b15ec1f8"><td class="memItemLeft" align="right" valign="top"><a id="a58c19478c2bdeb7f79e2e0d0b15ec1f8" name="a58c19478c2bdeb7f79e2e0d0b15ec1f8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>BufferTexture</b> (std::uint32_t size)</td></tr>
-<tr class="memitem:a3bd49e5f0c9b732f6c47d0a2ac25d9bb" id="r_a3bd49e5f0c9b732f6c47d0a2ac25d9bb"><td class="memItemLeft" align="right" valign="top"><a id="a3bd49e5f0c9b732f6c47d0a2ac25d9bb" name="a3bd49e5f0c9b732f6c47d0a2ac25d9bb"></a>
-std::span&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>map</b> (GLenum access)</td></tr>
-<tr class="memitem:a4c60380af0b878370705478cb457a7d3" id="r_a4c60380af0b878370705478cb457a7d3"><td class="memItemLeft" align="right" valign="top"><a id="a4c60380af0b878370705478cb457a7d3" name="a4c60380af0b878370705478cb457a7d3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>unmap</b> ()</td></tr>
-<tr class="memitem:a2fd1c701f2defae8324acfcdb75fccfa" id="r_a2fd1c701f2defae8324acfcdb75fccfa"><td class="memItemLeft" align="right" valign="top"><a id="a2fd1c701f2defae8324acfcdb75fccfa" name="a2fd1c701f2defae8324acfcdb75fccfa"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setSize</b> (std::uint32_t size)</td></tr>
-<tr class="memitem:adbb3b69ec65227eb478933e0bfe00b2c" id="r_adbb3b69ec65227eb478933e0bfe00b2c"><td class="memItemLeft" align="right" valign="top"><a id="adbb3b69ec65227eb478933e0bfe00b2c" name="adbb3b69ec65227eb478933e0bfe00b2c"></a>
-std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
-<tr class="memitem:ab0148805383e93ebef220302f8089c2f" id="r_ab0148805383e93ebef220302f8089c2f"><td class="memItemLeft" align="right" valign="top"><a id="ab0148805383e93ebef220302f8089c2f" name="ab0148805383e93ebef220302f8089c2f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>BufferTexture</b> (const BufferTexture &amp;)=delete</td></tr>
 <tr class="memitem:a612572d624f584f983ba8c59197b241f" id="r_a612572d624f584f983ba8c59197b241f"><td class="memItemLeft" align="right" valign="top"><a id="a612572d624f584f983ba8c59197b241f" name="a612572d624f584f983ba8c59197b241f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BufferTexture</b> (BufferTexture &amp;&amp;)=default</td></tr>
-<tr class="memitem:a3489ac6e4fb04540119e6373684d5842" id="r_a3489ac6e4fb04540119e6373684d5842"><td class="memItemLeft" align="right" valign="top"><a id="a3489ac6e4fb04540119e6373684d5842" name="a3489ac6e4fb04540119e6373684d5842"></a>
-BufferTexture &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const BufferTexture &amp;)=delete</td></tr>
+<tr class="memitem:ab0148805383e93ebef220302f8089c2f" id="r_ab0148805383e93ebef220302f8089c2f"><td class="memItemLeft" align="right" valign="top"><a id="ab0148805383e93ebef220302f8089c2f" name="ab0148805383e93ebef220302f8089c2f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>BufferTexture</b> (const BufferTexture &amp;)=delete</td></tr>
+<tr class="memitem:a58c19478c2bdeb7f79e2e0d0b15ec1f8" id="r_a58c19478c2bdeb7f79e2e0d0b15ec1f8"><td class="memItemLeft" align="right" valign="top"><a id="a58c19478c2bdeb7f79e2e0d0b15ec1f8" name="a58c19478c2bdeb7f79e2e0d0b15ec1f8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>BufferTexture</b> (std::uint32_t size)</td></tr>
+<tr class="memitem:adbb3b69ec65227eb478933e0bfe00b2c" id="r_adbb3b69ec65227eb478933e0bfe00b2c"><td class="memItemLeft" align="right" valign="top"><a id="adbb3b69ec65227eb478933e0bfe00b2c" name="adbb3b69ec65227eb478933e0bfe00b2c"></a>
+std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
+<tr class="memitem:a3bd49e5f0c9b732f6c47d0a2ac25d9bb" id="r_a3bd49e5f0c9b732f6c47d0a2ac25d9bb"><td class="memItemLeft" align="right" valign="top"><a id="a3bd49e5f0c9b732f6c47d0a2ac25d9bb" name="a3bd49e5f0c9b732f6c47d0a2ac25d9bb"></a>
+std::span&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>map</b> (GLenum access)</td></tr>
 <tr class="memitem:abbccbba9fb4053e98c766732ceda878f" id="r_abbccbba9fb4053e98c766732ceda878f"><td class="memItemLeft" align="right" valign="top"><a id="abbccbba9fb4053e98c766732ceda878f" name="abbccbba9fb4053e98c766732ceda878f"></a>
 BufferTexture &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (BufferTexture &amp;&amp;)=default</td></tr>
+<tr class="memitem:a3489ac6e4fb04540119e6373684d5842" id="r_a3489ac6e4fb04540119e6373684d5842"><td class="memItemLeft" align="right" valign="top"><a id="a3489ac6e4fb04540119e6373684d5842" name="a3489ac6e4fb04540119e6373684d5842"></a>
+BufferTexture &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const BufferTexture &amp;)=delete</td></tr>
+<tr class="memitem:a2fd1c701f2defae8324acfcdb75fccfa" id="r_a2fd1c701f2defae8324acfcdb75fccfa"><td class="memItemLeft" align="right" valign="top"><a id="a2fd1c701f2defae8324acfcdb75fccfa" name="a2fd1c701f2defae8324acfcdb75fccfa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setSize</b> (std::uint32_t size)</td></tr>
+<tr class="memitem:a4c60380af0b878370705478cb457a7d3" id="r_a4c60380af0b878370705478cb457a7d3"><td class="memItemLeft" align="right" valign="top"><a id="a4c60380af0b878370705478cb457a7d3" name="a4c60380af0b878370705478cb457a7d3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>unmap</b> ()</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1TextureBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1TextureBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1TextureBase.html">inviwo::TextureBase</a></td></tr>
-<tr class="memitem:abae363a40fe30243fff4b3f70ce12735 inherit pub_methods_classinviwo_1_1TextureBase" id="r_abae363a40fe30243fff4b3f70ce12735"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>TextureBase</b> (GLenum target)</td></tr>
-<tr class="memitem:a373e25d5952151994e37051ce5c965cc inherit pub_methods_classinviwo_1_1TextureBase" id="r_a373e25d5952151994e37051ce5c965cc"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>TextureBase</b> (const TextureBase &amp;other)</td></tr>
-<tr class="memitem:a7c58e3763ea6cb37d1133f92daa3e700 inherit pub_methods_classinviwo_1_1TextureBase" id="r_a7c58e3763ea6cb37d1133f92daa3e700"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>TextureBase</b> (TextureBase &amp;&amp;other)</td></tr>
-<tr class="memitem:acdbec7be8a1ea77130e83efedbdd6855 inherit pub_methods_classinviwo_1_1TextureBase" id="r_acdbec7be8a1ea77130e83efedbdd6855"><td class="memItemLeft" align="right" valign="top">
-TextureBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const TextureBase &amp;other)</td></tr>
-<tr class="memitem:a5edadb05a575686c7e8e7ba9fcbf34ef inherit pub_methods_classinviwo_1_1TextureBase" id="r_a5edadb05a575686c7e8e7ba9fcbf34ef"><td class="memItemLeft" align="right" valign="top">
-TextureBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (TextureBase &amp;&amp;other)</td></tr>
+<tr class="memitem:ab150eb28d31ad22246c90a6513980d73 inherit pub_methods_classinviwo_1_1TextureBase" id="r_ab150eb28d31ad22246c90a6513980d73"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> () const</td></tr>
 <tr class="memitem:a79c14ec11e1b3f771ea0b8f294b79e62 inherit pub_methods_classinviwo_1_1TextureBase" id="r_a79c14ec11e1b3f771ea0b8f294b79e62"><td class="memItemLeft" align="right" valign="top">
 GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>getID</b> () const</td></tr>
 <tr class="memitem:a356305bc5878e70ea14760756fe054fa inherit pub_methods_classinviwo_1_1TextureBase" id="r_a356305bc5878e70ea14760756fe054fa"><td class="memItemLeft" align="right" valign="top">
 GLenum&#160;</td><td class="memItemRight" valign="bottom"><b>getTarget</b> () const</td></tr>
-<tr class="memitem:ab150eb28d31ad22246c90a6513980d73 inherit pub_methods_classinviwo_1_1TextureBase" id="r_ab150eb28d31ad22246c90a6513980d73"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> () const</td></tr>
+<tr class="memitem:acdbec7be8a1ea77130e83efedbdd6855 inherit pub_methods_classinviwo_1_1TextureBase" id="r_acdbec7be8a1ea77130e83efedbdd6855"><td class="memItemLeft" align="right" valign="top">
+TextureBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const TextureBase &amp;other)</td></tr>
+<tr class="memitem:a5edadb05a575686c7e8e7ba9fcbf34ef inherit pub_methods_classinviwo_1_1TextureBase" id="r_a5edadb05a575686c7e8e7ba9fcbf34ef"><td class="memItemLeft" align="right" valign="top">
+TextureBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (TextureBase &amp;&amp;other)</td></tr>
+<tr class="memitem:a373e25d5952151994e37051ce5c965cc inherit pub_methods_classinviwo_1_1TextureBase" id="r_a373e25d5952151994e37051ce5c965cc"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>TextureBase</b> (const TextureBase &amp;other)</td></tr>
+<tr class="memitem:abae363a40fe30243fff4b3f70ce12735 inherit pub_methods_classinviwo_1_1TextureBase" id="r_abae363a40fe30243fff4b3f70ce12735"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>TextureBase</b> (GLenum target)</td></tr>
+<tr class="memitem:a7c58e3763ea6cb37d1133f92daa3e700 inherit pub_methods_classinviwo_1_1TextureBase" id="r_a7c58e3763ea6cb37d1133f92daa3e700"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>TextureBase</b> (TextureBase &amp;&amp;other)</td></tr>
 <tr class="memitem:a28d76a970fc808f5b2cd6e6306be3e3f inherit pub_methods_classinviwo_1_1TextureBase" id="r_a28d76a970fc808f5b2cd6e6306be3e3f"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>unbind</b> () const</td></tr>
 </table><table class="memberdecls">
@@ -166,7 +166,7 @@ GLenum&#160;</td><td class="memItemRight" valign="bottom"><b>target_</b></td></t
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T = std::uint8_t, GLenum InternalFormat = GL_R8UI&gt;<br />
 class inviwo::BufferTexture&lt; T, InternalFormat &gt;</div><p>A texture backed by buffer storage. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>buffertexture.h</b></li>
+<li>modules/opengl/include/modules/opengl/texture/<b>buffertexture.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

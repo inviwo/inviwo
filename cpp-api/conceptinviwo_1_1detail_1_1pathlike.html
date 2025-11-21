@@ -94,7 +94,15 @@ $(function(){initNavTree('conceptinviwo_1_1detail_1_1pathlike.html','',''); });
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1detail_1_1pathlike.html">inviwo::detail::pathlike</a> =  <span class="keyword">requires</span>(T t, T b) {</div>
+<div class="line">    t.root_directory();</div>
+<div class="line">    t.lexically_proximate(b);</div>
+<div class="line">    t.generic_string();</div>
+<div class="line">    t / b;</div>
+<div class="line">}</div>
+<div class="ttc" id="aconceptinviwo_1_1detail_1_1pathlike_html"><div class="ttname"><a href="conceptinviwo_1_1detail_1_1pathlike.html">inviwo::detail::pathlike</a></div><div class="ttdef"><b>Definition</b> optionpropertytraits.h:39</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

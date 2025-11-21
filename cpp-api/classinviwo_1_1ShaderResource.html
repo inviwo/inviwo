@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1ShaderResource.html','','classinviwo_1_
 <p>Abstraction for a shader source file.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;shaderresource.h&gt;</code></p>
+<p><code>#include &lt;modules/opengl/shader/shaderresource.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::ShaderResource:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -121,13 +121,13 @@ Public Member Functions</h2></td></tr>
 virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
 <tr class="memitem:aa0519c7532bbfa979c80d2f718c604ac" id="r_aa0519c7532bbfa979c80d2f718c604ac"><td class="memItemLeft" align="right" valign="top"><a id="aa0519c7532bbfa979c80d2f718c604ac" name="aa0519c7532bbfa979c80d2f718c604ac"></a>
 virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>key</b> () const =0</td></tr>
-<tr class="memitem:a32edbb724b2fda804fc2652f8c4cf531" id="r_a32edbb724b2fda804fc2652f8c4cf531"><td class="memItemLeft" align="right" valign="top"><a id="a32edbb724b2fda804fc2652f8c4cf531" name="a32edbb724b2fda804fc2652f8c4cf531"></a>
-virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>source</b> () const =0</td></tr>
-<tr class="memitem:a9aca09d4709b15d89db6a46619f32c3f" id="r_a9aca09d4709b15d89db6a46619f32c3f"><td class="memItemLeft" align="right" valign="top"><a id="a9aca09d4709b15d89db6a46619f32c3f" name="a9aca09d4709b15d89db6a46619f32c3f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setSource</b> (std::string_view source)=0</td></tr>
 <tr class="memitem:a01515c7e5a8936b7bd6c6e2dd73ca00f" id="r_a01515c7e5a8936b7bd6c6e2dd73ca00f"><td class="memTemplParams" colspan="2"><a id="a01515c7e5a8936b7bd6c6e2dd73ca00f" name="a01515c7e5a8936b7bd6c6e2dd73ca00f"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a01515c7e5a8936b7bd6c6e2dd73ca00f template"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; Callback &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onChange</b> (T &amp;&amp;callback) const</td></tr>
+<tr class="memitem:a9aca09d4709b15d89db6a46619f32c3f" id="r_a9aca09d4709b15d89db6a46619f32c3f"><td class="memItemLeft" align="right" valign="top"><a id="a9aca09d4709b15d89db6a46619f32c3f" name="a9aca09d4709b15d89db6a46619f32c3f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setSource</b> (std::string_view source)=0</td></tr>
+<tr class="memitem:a32edbb724b2fda804fc2652f8c4cf531" id="r_a32edbb724b2fda804fc2652f8c4cf531"><td class="memItemLeft" align="right" valign="top"><a id="a32edbb724b2fda804fc2652f8c4cf531" name="a32edbb724b2fda804fc2652f8c4cf531"></a>
+virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>source</b> () const =0</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -137,7 +137,7 @@ Protected Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstraction for a shader source file. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>shaderresource.h</b></li>
+<li>modules/opengl/include/modules/opengl/shader/<b>shaderresource.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

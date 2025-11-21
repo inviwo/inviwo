@@ -96,21 +96,21 @@ $(function(){initNavTree('classinviwo_1_1ImageConvolution.html','','classinviwo_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ab4cb520b04dc27ddba8f941ff417ab16" id="r_ab4cb520b04dc27ddba8f941ff417ab16"><td class="memItemLeft" align="right" valign="top"><a id="ab4cb520b04dc27ddba8f941ff417ab16" name="ab4cb520b04dc27ddba8f941ff417ab16"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convolution</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kw, int kh, const std::vector&lt; float &gt; &amp;kernel, const float &amp;kernelScale)</td></tr>
+<tr class="memitem:a67deb99f205b5668b759f84447de1d92" id="r_a67deb99f205b5668b759f84447de1d92"><td class="memItemLeft" align="right" valign="top"><a id="a67deb99f205b5668b759f84447de1d92" name="a67deb99f205b5668b759f84447de1d92"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convolution</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, std::function&lt; float(vec2)&gt; kernelWeight, const float &amp;kernelScale, ivec2 kernelSize)</td></tr>
+<tr class="memitem:a1eeda78ffbb611754f537da82d3e3854" id="r_a1eeda78ffbb611754f537da82d3e3854"><td class="memItemLeft" align="right" valign="top"><a id="a1eeda78ffbb611754f537da82d3e3854" name="a1eeda78ffbb611754f537da82d3e3854"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convolution_separable</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, std::function&lt; float(float)&gt;, int kernelSize, const float &amp;kernelScale)</td></tr>
+<tr class="memitem:ad643d204a71e0cd01cbf038cc7d9dee9" id="r_ad643d204a71e0cd01cbf038cc7d9dee9"><td class="memItemLeft" align="right" valign="top"><a id="ad643d204a71e0cd01cbf038cc7d9dee9" name="ad643d204a71e0cd01cbf038cc7d9dee9"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaussianLowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, float sigma)</td></tr>
+<tr class="memitem:aaab7a84d087c564b070fb8b59d040346" id="r_aaab7a84d087c564b070fb8b59d040346"><td class="memItemLeft" align="right" valign="top"><a id="aaab7a84d087c564b070fb8b59d040346" name="aaab7a84d087c564b070fb8b59d040346"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaussianLowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kernelSize)</td></tr>
+<tr class="memitem:ab32389ee8be9916dc786bd6f4d56574a" id="r_ab32389ee8be9916dc786bd6f4d56574a"><td class="memItemLeft" align="right" valign="top"><a id="ab32389ee8be9916dc786bd6f4d56574a" name="ab32389ee8be9916dc786bd6f4d56574a"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaussianLowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kernelSize, float sigma)</td></tr>
 <tr class="memitem:abdce693265a845b6f02b6d3f0b117034" id="r_abdce693265a845b6f02b6d3f0b117034"><td class="memTemplParams" colspan="2"><a id="abdce693265a845b6f02b6d3f0b117034" name="abdce693265a845b6f02b6d3f0b117034"></a>
 template&lt;typename Callback&gt; </td></tr>
 <tr class="memitem:abdce693265a845b6f02b6d3f0b117034 template"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><b>ImageConvolution</b> (Callback C)</td></tr>
-<tr class="memitem:a67deb99f205b5668b759f84447de1d92" id="r_a67deb99f205b5668b759f84447de1d92"><td class="memItemLeft" align="right" valign="top"><a id="a67deb99f205b5668b759f84447de1d92" name="a67deb99f205b5668b759f84447de1d92"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convolution</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, std::function&lt; float(vec2)&gt; kernelWeight, const float &amp;kernelScale, ivec2 kernelSize)</td></tr>
-<tr class="memitem:ab4cb520b04dc27ddba8f941ff417ab16" id="r_ab4cb520b04dc27ddba8f941ff417ab16"><td class="memItemLeft" align="right" valign="top"><a id="ab4cb520b04dc27ddba8f941ff417ab16" name="ab4cb520b04dc27ddba8f941ff417ab16"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convolution</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kw, int kh, const std::vector&lt; float &gt; &amp;kernel, const float &amp;kernelScale)</td></tr>
-<tr class="memitem:a1eeda78ffbb611754f537da82d3e3854" id="r_a1eeda78ffbb611754f537da82d3e3854"><td class="memItemLeft" align="right" valign="top"><a id="a1eeda78ffbb611754f537da82d3e3854" name="a1eeda78ffbb611754f537da82d3e3854"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convolution_separable</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, std::function&lt; float(float)&gt;, int kernelSize, const float &amp;kernelScale)</td></tr>
-<tr class="memitem:aaab7a84d087c564b070fb8b59d040346" id="r_aaab7a84d087c564b070fb8b59d040346"><td class="memItemLeft" align="right" valign="top"><a id="aaab7a84d087c564b070fb8b59d040346" name="aaab7a84d087c564b070fb8b59d040346"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaussianLowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kernelSize)</td></tr>
-<tr class="memitem:ad643d204a71e0cd01cbf038cc7d9dee9" id="r_ad643d204a71e0cd01cbf038cc7d9dee9"><td class="memItemLeft" align="right" valign="top"><a id="ad643d204a71e0cd01cbf038cc7d9dee9" name="ad643d204a71e0cd01cbf038cc7d9dee9"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaussianLowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, float sigma)</td></tr>
-<tr class="memitem:ab32389ee8be9916dc786bd6f4d56574a" id="r_ab32389ee8be9916dc786bd6f4d56574a"><td class="memItemLeft" align="right" valign="top"><a id="ab32389ee8be9916dc786bd6f4d56574a" name="ab32389ee8be9916dc786bd6f4d56574a"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaussianLowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kernelSize, float sigma)</td></tr>
 <tr class="memitem:a0a98b4e2e825ff192308122f6a9ad9d7" id="r_a0a98b4e2e825ff192308122f6a9ad9d7"><td class="memItemLeft" align="right" valign="top"><a id="a0a98b4e2e825ff192308122f6a9ad9d7" name="a0a98b4e2e825ff192308122f6a9ad9d7"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lowpass</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, int kernelSize)</td></tr>
 </table><table class="memberdecls">
@@ -120,7 +120,7 @@ Protected Attributes</h2></td></tr>
 <a class="el" href="classinviwo_1_1Shader.html">Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shader_</b></td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>imageconvolution.h</b></li>
+<li>modules/basegl/include/modules/basegl/algorithm/<b>imageconvolution.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -94,7 +94,18 @@ $(function(){initNavTree('conceptinviwo_1_1deserializer_1_1IdentifiableFunctions
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Functions&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1deserializer_1_1IdentifiableFunctions.html">inviwo::deserializer::IdentifiableFunctions</a> =  <span class="keyword">requires</span>(T&amp; t, Functions f, <span class="keywordtype">size_t</span> i, std::string_view s) {</div>
+<div class="line">                                    { std::invoke(f.getID, t) } -&gt; std::same_as&lt;std::string_view&gt;;</div>
+<div class="line">                                    { std::invoke(f.makeNew) } -&gt; std::same_as&lt;T&gt;;</div>
+<div class="line">                                    { std::invoke(f.shouldMakeNew, s, i) } -&gt; std::same_as&lt;bool&gt;;</div>
+<div class="line">                                    { std::invoke(f.canRecreate, s, i) } -&gt; std::same_as&lt;bool&gt;;</div>
+<div class="line">                                    { std::invoke(f.onNew, t, i) };</div>
+<div class="line">                                    { std::invoke(f.onRemove, s) };</div>
+<div class="line">                                    { std::invoke(f.onMove, t, i) };</div>
+<div class="line">                                }</div>
+<div class="ttc" id="aconceptinviwo_1_1deserializer_1_1IdentifiableFunctions_html"><div class="ttname"><a href="conceptinviwo_1_1deserializer_1_1IdentifiableFunctions.html">inviwo::deserializer::IdentifiableFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:147</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

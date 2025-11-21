@@ -97,38 +97,38 @@ $(function(){initNavTree('classinviwo_1_1util_1_1TextureAtlas.html','','classinv
 <p><a class="el" href="classinviwo_1_1Texture.html">Texture</a> atlas for a number of strings rendered with the <a class="el" href="classinviwo_1_1TextRenderer.html" title="Render text using the FreeType font library.">TextRenderer</a>.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;textureatlas.h&gt;</code></p>
+<p><code>#include &lt;modules/fontrendering/util/textureatlas.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a16226fde7427c72f529372fb603c4429" id="r_a16226fde7427c72f529372fb603c4429"><td class="memItemLeft" align="right" valign="top"><a id="a16226fde7427c72f529372fb603c4429" name="a16226fde7427c72f529372fb603c4429"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TextureAtlas</b> (TextureAtlas &amp;&amp;)=default</td></tr>
-<tr class="memitem:abb376dae7feb424bf97f3ffd1ae6a184" id="r_abb376dae7feb424bf97f3ffd1ae6a184"><td class="memItemLeft" align="right" valign="top"><a id="abb376dae7feb424bf97f3ffd1ae6a184" name="abb376dae7feb424bf97f3ffd1ae6a184"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TextureAtlas</b> (const TextureAtlas &amp;)=delete</td></tr>
-<tr class="memitem:aabf23241cdd08504e07638f885ec7d5a" id="r_aabf23241cdd08504e07638f885ec7d5a"><td class="memItemLeft" align="right" valign="top"><a id="aabf23241cdd08504e07638f885ec7d5a" name="aabf23241cdd08504e07638f885ec7d5a"></a>
-TextureAtlas &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (TextureAtlas &amp;&amp;)=default</td></tr>
-<tr class="memitem:a64ff5c8412d2e23c93c2007c4fc50fdf" id="r_a64ff5c8412d2e23c93c2007c4fc50fdf"><td class="memItemLeft" align="right" valign="top"><a id="a64ff5c8412d2e23c93c2007c4fc50fdf" name="a64ff5c8412d2e23c93c2007c4fc50fdf"></a>
-TextureAtlas &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const TextureAtlas &amp;)=delete</td></tr>
-<tr class="memitem:a5b9e78be441479d2a6c92d7fc421b934" id="r_a5b9e78be441479d2a6c92d7fc421b934"><td class="memItemLeft" align="right" valign="top"><a id="a5b9e78be441479d2a6c92d7fc421b934" name="a5b9e78be441479d2a6c92d7fc421b934"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>valid</b> () const</td></tr>
 <tr class="memitem:a139454fb4f4879c0f8f3f32ba341219b" id="r_a139454fb4f4879c0f8f3f32ba341219b"><td class="memItemLeft" align="right" valign="top"><a id="a139454fb4f4879c0f8f3f32ba341219b" name="a139454fb4f4879c0f8f3f32ba341219b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
-<tr class="memitem:a243678382bf326707d6dc5a8474f6250" id="r_a243678382bf326707d6dc5a8474f6250"><td class="memItemLeft" align="right" valign="top"><a id="a243678382bf326707d6dc5a8474f6250" name="a243678382bf326707d6dc5a8474f6250"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fillAtlas</b> (<a class="el" href="classinviwo_1_1TextRenderer.html">TextRenderer</a> &amp;textRenderer, std::vector&lt; <a class="el" href="structinviwo_1_1TexAtlasEntry.html">TexAtlasEntry</a> &gt; &amp;atlas)</td></tr>
 <tr class="memitem:af0f8de04f7194db08496b729609fe13e" id="r_af0f8de04f7194db08496b729609fe13e"><td class="memItemLeft" align="right" valign="top"><a id="af0f8de04f7194db08496b729609fe13e" name="af0f8de04f7194db08496b729609fe13e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fillAtlas</b> (<a class="el" href="classinviwo_1_1TextRenderer.html">TextRenderer</a> &amp;textRenderer, const std::vector&lt; std::string &gt; &amp;strings, vec4 <a class="el" href="namespaceinviwo_1_1color.html">color</a>)</td></tr>
+<tr class="memitem:a243678382bf326707d6dc5a8474f6250" id="r_a243678382bf326707d6dc5a8474f6250"><td class="memItemLeft" align="right" valign="top"><a id="a243678382bf326707d6dc5a8474f6250" name="a243678382bf326707d6dc5a8474f6250"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fillAtlas</b> (<a class="el" href="classinviwo_1_1TextRenderer.html">TextRenderer</a> &amp;textRenderer, std::vector&lt; <a class="el" href="structinviwo_1_1TexAtlasEntry.html">TexAtlasEntry</a> &gt; &amp;atlas)</td></tr>
 <tr class="memitem:adfe2026759973b3146c0edfeaf523473" id="r_adfe2026759973b3146c0edfeaf523473"><td class="memItemLeft" align="right" valign="top"><a id="adfe2026759973b3146c0edfeaf523473" name="adfe2026759973b3146c0edfeaf523473"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fillAtlas</b> (<a class="el" href="classinviwo_1_1TextRenderer.html">TextRenderer</a> &amp;textRenderer, std::vector&lt; <a class="el" href="structinviwo_1_1TexAtlasEntry.html">TexAtlasEntry</a> &gt; &amp;entries, std::vector&lt; <a class="el" href="structinviwo_1_1TextBoundingBox.html">TextBoundingBox</a> &gt; &amp;bboxes)</td></tr>
-<tr class="memitem:a03a5f48132c546937b26d351f02f265a" id="r_a03a5f48132c546937b26d351f02f265a"><td class="memItemLeft" align="right" valign="top"><a id="a03a5f48132c546937b26d351f02f265a" name="a03a5f48132c546937b26d351f02f265a"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getTexture</b> () const</td></tr>
 <tr class="memitem:a06df187f8b1566cdf1329d43f1c9b14c" id="r_a06df187f8b1566cdf1329d43f1c9b14c"><td class="memItemLeft" align="right" valign="top"><a id="a06df187f8b1566cdf1329d43f1c9b14c" name="a06df187f8b1566cdf1329d43f1c9b14c"></a>
 const <a class="el" href="structinviwo_1_1TexAtlasRenderInfo.html">TexAtlasRenderInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getRenderInfo</b> () const</td></tr>
+<tr class="memitem:a03a5f48132c546937b26d351f02f265a" id="r_a03a5f48132c546937b26d351f02f265a"><td class="memItemLeft" align="right" valign="top"><a id="a03a5f48132c546937b26d351f02f265a" name="a03a5f48132c546937b26d351f02f265a"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getTexture</b> () const</td></tr>
+<tr class="memitem:a64ff5c8412d2e23c93c2007c4fc50fdf" id="r_a64ff5c8412d2e23c93c2007c4fc50fdf"><td class="memItemLeft" align="right" valign="top"><a id="a64ff5c8412d2e23c93c2007c4fc50fdf" name="a64ff5c8412d2e23c93c2007c4fc50fdf"></a>
+TextureAtlas &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const TextureAtlas &amp;)=delete</td></tr>
+<tr class="memitem:aabf23241cdd08504e07638f885ec7d5a" id="r_aabf23241cdd08504e07638f885ec7d5a"><td class="memItemLeft" align="right" valign="top"><a id="aabf23241cdd08504e07638f885ec7d5a" name="aabf23241cdd08504e07638f885ec7d5a"></a>
+TextureAtlas &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (TextureAtlas &amp;&amp;)=default</td></tr>
+<tr class="memitem:abb376dae7feb424bf97f3ffd1ae6a184" id="r_abb376dae7feb424bf97f3ffd1ae6a184"><td class="memItemLeft" align="right" valign="top"><a id="abb376dae7feb424bf97f3ffd1ae6a184" name="abb376dae7feb424bf97f3ffd1ae6a184"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TextureAtlas</b> (const TextureAtlas &amp;)=delete</td></tr>
+<tr class="memitem:a16226fde7427c72f529372fb603c4429" id="r_a16226fde7427c72f529372fb603c4429"><td class="memItemLeft" align="right" valign="top"><a id="a16226fde7427c72f529372fb603c4429" name="a16226fde7427c72f529372fb603c4429"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TextureAtlas</b> (TextureAtlas &amp;&amp;)=default</td></tr>
+<tr class="memitem:a5b9e78be441479d2a6c92d7fc421b934" id="r_a5b9e78be441479d2a6c92d7fc421b934"><td class="memItemLeft" align="right" valign="top"><a id="a5b9e78be441479d2a6c92d7fc421b934" name="a5b9e78be441479d2a6c92d7fc421b934"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>valid</b> () const</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classinviwo_1_1Texture.html">Texture</a> atlas for a number of strings rendered with the <a class="el" href="classinviwo_1_1TextRenderer.html" title="Render text using the FreeType font library.">TextRenderer</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1TextRenderer.html" title="Render text using the FreeType font library.">TextRenderer</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>textureatlas.h</b></li>
+<li>modules/fontrendering/include/modules/fontrendering/util/<b>textureatlas.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

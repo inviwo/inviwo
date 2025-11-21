@@ -100,12 +100,12 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dataMap</b> () const</td></tr>
 <tr class="memitem:af714b281b4a2bd6f7eeb87ddb8f7b95f" id="r_af714b281b4a2bd6f7eeb87ddb8f7b95f"><td class="memItemLeft" align="right" valign="top"><a id="af714b281b4a2bd6f7eeb87ddb8f7b95f" name="af714b281b4a2bd6f7eeb87ddb8f7b95f"></a>
 <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dataMap</b> (const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;defaultMapper) const</td></tr>
-<tr class="memitem:a6f4e59044b5ce39f33aa8edbc65f9d3c" id="r_a6f4e59044b5ce39f33aa8edbc65f9d3c"><td class="memItemLeft" align="right" valign="top"><a id="a6f4e59044b5ce39f33aa8edbc65f9d3c" name="a6f4e59044b5ce39f33aa8edbc65f9d3c"></a>
-<a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>updateFrom</b> (const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config)</td></tr>
-<tr class="memitem:af4d630993a33db62bdbefe81e2881e08" id="r_af4d630993a33db62bdbefe81e2881e08"><td class="memItemLeft" align="right" valign="top"><a id="af4d630993a33db62bdbefe81e2881e08" name="af4d630993a33db62bdbefe81e2881e08"></a>
-<a class="el" href="structinviwo_1_1VolumeReprConfig.html">VolumeReprConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>reprConfig</b> () const</td></tr>
 <tr class="memitem:a3748548170ba04cb693a00a961b48796" id="r_a3748548170ba04cb693a00a961b48796"><td class="memItemLeft" align="right" valign="top"><a id="a3748548170ba04cb693a00a961b48796" name="a3748548170ba04cb693a00a961b48796"></a>
 constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;) const =default</td></tr>
+<tr class="memitem:af4d630993a33db62bdbefe81e2881e08" id="r_af4d630993a33db62bdbefe81e2881e08"><td class="memItemLeft" align="right" valign="top"><a id="af4d630993a33db62bdbefe81e2881e08" name="af4d630993a33db62bdbefe81e2881e08"></a>
+<a class="el" href="structinviwo_1_1VolumeReprConfig.html">VolumeReprConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>reprConfig</b> () const</td></tr>
+<tr class="memitem:a6f4e59044b5ce39f33aa8edbc65f9d3c" id="r_a6f4e59044b5ce39f33aa8edbc65f9d3c"><td class="memItemLeft" align="right" valign="top"><a id="a6f4e59044b5ce39f33aa8edbc65f9d3c" name="a6f4e59044b5ce39f33aa8edbc65f9d3c"></a>
+<a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>updateFrom</b> (const <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -116,14 +116,24 @@ static glm::dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>defaultV
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:afede8095109cd9f97ba6e28ba16bd45b" id="r_afede8095109cd9f97ba6e28ba16bd45b"><td class="memItemLeft" align="right" valign="top"><a id="afede8095109cd9f97ba6e28ba16bd45b" name="afede8095109cd9f97ba6e28ba16bd45b"></a>
+std::optional&lt; glm::dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dataRange</b> = std::nullopt</td></tr>
 <tr class="memitem:ae731317d8fd7f350eafc850d8600c760" id="r_ae731317d8fd7f350eafc850d8600c760"><td class="memItemLeft" align="right" valign="top"><a id="ae731317d8fd7f350eafc850d8600c760" name="ae731317d8fd7f350eafc850d8600c760"></a>
 std::optional&lt; size3_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dimensions</b> = std::nullopt</td></tr>
 <tr class="memitem:aaa03b50d67364441d3bc217ec114770b" id="r_aaa03b50d67364441d3bc217ec114770b"><td class="memItemLeft" align="right" valign="top"><a id="aaa03b50d67364441d3bc217ec114770b" name="aaa03b50d67364441d3bc217ec114770b"></a>
 const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>format</b> = nullptr</td></tr>
-<tr class="memitem:a27ebe6d0b4c16d939efe00cba110d6eb" id="r_a27ebe6d0b4c16d939efe00cba110d6eb"><td class="memItemLeft" align="right" valign="top"><a id="a27ebe6d0b4c16d939efe00cba110d6eb" name="a27ebe6d0b4c16d939efe00cba110d6eb"></a>
-std::optional&lt; SwizzleMask &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swizzleMask</b> = std::nullopt</td></tr>
 <tr class="memitem:ad996d63089f3c45605bc9791b99eeced" id="r_ad996d63089f3c45605bc9791b99eeced"><td class="memItemLeft" align="right" valign="top"><a id="ad996d63089f3c45605bc9791b99eeced" name="ad996d63089f3c45605bc9791b99eeced"></a>
 std::optional&lt; InterpolationType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>interpolation</b> = std::nullopt</td></tr>
+<tr class="memitem:a090524b48fa9735d0ae35a4dcd1737b6" id="r_a090524b48fa9735d0ae35a4dcd1737b6"><td class="memItemLeft" align="right" valign="top"><a id="a090524b48fa9735d0ae35a4dcd1737b6" name="a090524b48fa9735d0ae35a4dcd1737b6"></a>
+std::optional&lt; glm::mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>model</b> = std::nullopt</td></tr>
+<tr class="memitem:a27ebe6d0b4c16d939efe00cba110d6eb" id="r_a27ebe6d0b4c16d939efe00cba110d6eb"><td class="memItemLeft" align="right" valign="top"><a id="a27ebe6d0b4c16d939efe00cba110d6eb" name="a27ebe6d0b4c16d939efe00cba110d6eb"></a>
+std::optional&lt; SwizzleMask &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>swizzleMask</b> = std::nullopt</td></tr>
+<tr class="memitem:a0bee77faacd16aba131d1804b76dcf47" id="r_a0bee77faacd16aba131d1804b76dcf47"><td class="memItemLeft" align="right" valign="top"><a id="a0bee77faacd16aba131d1804b76dcf47" name="a0bee77faacd16aba131d1804b76dcf47"></a>
+std::optional&lt; <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>valueAxis</b> = std::nullopt</td></tr>
+<tr class="memitem:a06485f221eb7d5aaa338051cf3ea8ce4" id="r_a06485f221eb7d5aaa338051cf3ea8ce4"><td class="memItemLeft" align="right" valign="top"><a id="a06485f221eb7d5aaa338051cf3ea8ce4" name="a06485f221eb7d5aaa338051cf3ea8ce4"></a>
+std::optional&lt; glm::dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>valueRange</b> = std::nullopt</td></tr>
+<tr class="memitem:aed9a6f2bec07153dec317d4b5c58a392" id="r_aed9a6f2bec07153dec317d4b5c58a392"><td class="memItemLeft" align="right" valign="top"><a id="aed9a6f2bec07153dec317d4b5c58a392" name="aed9a6f2bec07153dec317d4b5c58a392"></a>
+std::optional&lt; glm::mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>world</b> = std::nullopt</td></tr>
 <tr class="memitem:a1dc3baf56ca858290e4237aa157c013c" id="r_a1dc3baf56ca858290e4237aa157c013c"><td class="memItemLeft" align="right" valign="top"><a id="a1dc3baf56ca858290e4237aa157c013c" name="a1dc3baf56ca858290e4237aa157c013c"></a>
 std::optional&lt; Wrapping3D &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>wrapping</b> = std::nullopt</td></tr>
 <tr class="memitem:a5b7fa85c322b60222fbb0ccce7d2ae06" id="r_a5b7fa85c322b60222fbb0ccce7d2ae06"><td class="memItemLeft" align="right" valign="top"><a id="a5b7fa85c322b60222fbb0ccce7d2ae06" name="a5b7fa85c322b60222fbb0ccce7d2ae06"></a>
@@ -132,16 +142,6 @@ std::optional&lt; <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &gt;&#
 std::optional&lt; <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>yAxis</b> = std::nullopt</td></tr>
 <tr class="memitem:a66396fece4057d57c6956b78f15c733a" id="r_a66396fece4057d57c6956b78f15c733a"><td class="memItemLeft" align="right" valign="top"><a id="a66396fece4057d57c6956b78f15c733a" name="a66396fece4057d57c6956b78f15c733a"></a>
 std::optional&lt; <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>zAxis</b> = std::nullopt</td></tr>
-<tr class="memitem:a0bee77faacd16aba131d1804b76dcf47" id="r_a0bee77faacd16aba131d1804b76dcf47"><td class="memItemLeft" align="right" valign="top"><a id="a0bee77faacd16aba131d1804b76dcf47" name="a0bee77faacd16aba131d1804b76dcf47"></a>
-std::optional&lt; <a class="el" href="structinviwo_1_1Axis.html">Axis</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>valueAxis</b> = std::nullopt</td></tr>
-<tr class="memitem:afede8095109cd9f97ba6e28ba16bd45b" id="r_afede8095109cd9f97ba6e28ba16bd45b"><td class="memItemLeft" align="right" valign="top"><a id="afede8095109cd9f97ba6e28ba16bd45b" name="afede8095109cd9f97ba6e28ba16bd45b"></a>
-std::optional&lt; glm::dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dataRange</b> = std::nullopt</td></tr>
-<tr class="memitem:a06485f221eb7d5aaa338051cf3ea8ce4" id="r_a06485f221eb7d5aaa338051cf3ea8ce4"><td class="memItemLeft" align="right" valign="top"><a id="a06485f221eb7d5aaa338051cf3ea8ce4" name="a06485f221eb7d5aaa338051cf3ea8ce4"></a>
-std::optional&lt; glm::dvec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>valueRange</b> = std::nullopt</td></tr>
-<tr class="memitem:a090524b48fa9735d0ae35a4dcd1737b6" id="r_a090524b48fa9735d0ae35a4dcd1737b6"><td class="memItemLeft" align="right" valign="top"><a id="a090524b48fa9735d0ae35a4dcd1737b6" name="a090524b48fa9735d0ae35a4dcd1737b6"></a>
-std::optional&lt; glm::mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>model</b> = std::nullopt</td></tr>
-<tr class="memitem:aed9a6f2bec07153dec317d4b5c58a392" id="r_aed9a6f2bec07153dec317d4b5c58a392"><td class="memItemLeft" align="right" valign="top"><a id="aed9a6f2bec07153dec317d4b5c58a392" name="aed9a6f2bec07153dec317d4b5c58a392"></a>
-std::optional&lt; glm::mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>world</b> = std::nullopt</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -149,10 +149,16 @@ Static Public Attributes</h2></td></tr>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultDimensions</b> = size3_t(128, 128, 128)</td></tr>
 <tr class="memitem:abbe9d7db37f7374bc241641ba4addced" id="r_abbe9d7db37f7374bc241641ba4addced"><td class="memItemLeft" align="right" valign="top"><a id="abbe9d7db37f7374bc241641ba4addced" name="abbe9d7db37f7374bc241641ba4addced"></a>
 static const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>defaultFormat</b> = DataUInt8::get()</td></tr>
-<tr class="memitem:a6bf03aea1cb9957d749be62a996d0bbc" id="r_a6bf03aea1cb9957d749be62a996d0bbc"><td class="memItemLeft" align="right" valign="top"><a id="a6bf03aea1cb9957d749be62a996d0bbc" name="a6bf03aea1cb9957d749be62a996d0bbc"></a>
-static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultSwizzleMask</b> = swizzlemasks::rgba</td></tr>
 <tr class="memitem:aa054c507fe88bd7c504c80673e3548e0" id="r_aa054c507fe88bd7c504c80673e3548e0"><td class="memItemLeft" align="right" valign="top"><a id="aa054c507fe88bd7c504c80673e3548e0" name="aa054c507fe88bd7c504c80673e3548e0"></a>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultInterpolation</b> = InterpolationType::Linear</td></tr>
+<tr class="memitem:a5dffaa8baa1c0ed70f758605f3cd9196" id="r_a5dffaa8baa1c0ed70f758605f3cd9196"><td class="memItemLeft" align="right" valign="top"><a id="a5dffaa8baa1c0ed70f758605f3cd9196" name="a5dffaa8baa1c0ed70f758605f3cd9196"></a>
+static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultModel</b> = glm::mat4{1.0f}</td></tr>
+<tr class="memitem:a6bf03aea1cb9957d749be62a996d0bbc" id="r_a6bf03aea1cb9957d749be62a996d0bbc"><td class="memItemLeft" align="right" valign="top"><a id="a6bf03aea1cb9957d749be62a996d0bbc" name="a6bf03aea1cb9957d749be62a996d0bbc"></a>
+static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultSwizzleMask</b> = swizzlemasks::rgba</td></tr>
+<tr class="memitem:a28679705ae58bde3c0b8ebc2e05d9b3a" id="r_a28679705ae58bde3c0b8ebc2e05d9b3a"><td class="memItemLeft" align="right" valign="top"><a id="a28679705ae58bde3c0b8ebc2e05d9b3a" name="a28679705ae58bde3c0b8ebc2e05d9b3a"></a>
+static const auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultValueAxis</b> = <a class="el" href="structinviwo_1_1Axis.html">Axis</a>{}</td></tr>
+<tr class="memitem:a794032a1149fb7f8706b90fcd6646a0e" id="r_a794032a1149fb7f8706b90fcd6646a0e"><td class="memItemLeft" align="right" valign="top"><a id="a794032a1149fb7f8706b90fcd6646a0e" name="a794032a1149fb7f8706b90fcd6646a0e"></a>
+static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultWorld</b> = glm::mat4{1.0f}</td></tr>
 <tr class="memitem:a8a598707394da46ab1d1572dae66842f" id="r_a8a598707394da46ab1d1572dae66842f"><td class="memItemLeft" align="right" valign="top"><a id="a8a598707394da46ab1d1572dae66842f" name="a8a598707394da46ab1d1572dae66842f"></a>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultWrapping</b> = wrapping3d::clampAll</td></tr>
 <tr class="memitem:a0bf5aa4576d2cfabcb1924980f90fbad" id="r_a0bf5aa4576d2cfabcb1924980f90fbad"><td class="memItemLeft" align="right" valign="top"><a id="a0bf5aa4576d2cfabcb1924980f90fbad" name="a0bf5aa4576d2cfabcb1924980f90fbad"></a>
@@ -161,15 +167,9 @@ static const auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultX
 static const auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultYAxis</b> = <a class="el" href="structinviwo_1_1Axis.html">Axis</a>{&quot;y&quot;, Unit{}}</td></tr>
 <tr class="memitem:a4c8aba262c414875e6f06499ba73cf1a" id="r_a4c8aba262c414875e6f06499ba73cf1a"><td class="memItemLeft" align="right" valign="top"><a id="a4c8aba262c414875e6f06499ba73cf1a" name="a4c8aba262c414875e6f06499ba73cf1a"></a>
 static const auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultZAxis</b> = <a class="el" href="structinviwo_1_1Axis.html">Axis</a>{&quot;z&quot;, Unit{}}</td></tr>
-<tr class="memitem:a28679705ae58bde3c0b8ebc2e05d9b3a" id="r_a28679705ae58bde3c0b8ebc2e05d9b3a"><td class="memItemLeft" align="right" valign="top"><a id="a28679705ae58bde3c0b8ebc2e05d9b3a" name="a28679705ae58bde3c0b8ebc2e05d9b3a"></a>
-static const auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultValueAxis</b> = <a class="el" href="structinviwo_1_1Axis.html">Axis</a>{}</td></tr>
-<tr class="memitem:a5dffaa8baa1c0ed70f758605f3cd9196" id="r_a5dffaa8baa1c0ed70f758605f3cd9196"><td class="memItemLeft" align="right" valign="top"><a id="a5dffaa8baa1c0ed70f758605f3cd9196" name="a5dffaa8baa1c0ed70f758605f3cd9196"></a>
-static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultModel</b> = glm::mat4{1.0f}</td></tr>
-<tr class="memitem:a794032a1149fb7f8706b90fcd6646a0e" id="r_a794032a1149fb7f8706b90fcd6646a0e"><td class="memItemLeft" align="right" valign="top"><a id="a794032a1149fb7f8706b90fcd6646a0e" name="a794032a1149fb7f8706b90fcd6646a0e"></a>
-static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>defaultWorld</b> = glm::mat4{1.0f}</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>volumeconfig.h</b></li>
+<li>include/inviwo/core/datastructures/volume/<b>volumeconfig.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

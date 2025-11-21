@@ -96,36 +96,36 @@ $(function(){initNavTree('classinviwo_1_1Plane.html','','classinviwo_1_1Plane-me
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac39538537f188504a667216d6b1370be" id="r_ac39538537f188504a667216d6b1370be"><td class="memItemLeft" align="right" valign="top"><a id="ac39538537f188504a667216d6b1370be" name="ac39538537f188504a667216d6b1370be"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Plane</b> (vec3 point, vec3 normal) noexcept</td></tr>
-<tr class="memitem:a84c1c3381b3264f6a6cb9b5a19319f87" id="r_a84c1c3381b3264f6a6cb9b5a19319f87"><td class="memItemLeft" align="right" valign="top"><a id="a84c1c3381b3264f6a6cb9b5a19319f87" name="a84c1c3381b3264f6a6cb9b5a19319f87"></a>
-const vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPoint</b> () const noexcept</td></tr>
-<tr class="memitem:a31ab90b8982318acc2e97eeca405d512" id="r_a31ab90b8982318acc2e97eeca405d512"><td class="memItemLeft" align="right" valign="top"><a id="a31ab90b8982318acc2e97eeca405d512" name="a31ab90b8982318acc2e97eeca405d512"></a>
-const vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getNormal</b> () const noexcept</td></tr>
+<tr class="memitem:a7eb7a91f38219050230b666c86398e87" id="r_a7eb7a91f38219050230b666c86398e87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7eb7a91f38219050230b666c86398e87">distance</a> (const vec3 &amp;x) const</td></tr>
+<tr class="memitem:a4c2afd4870dc7d66d8e30f15ca323416" id="r_a4c2afd4870dc7d66d8e30f15ca323416"><td class="memItemLeft" align="right" valign="top"><a id="a4c2afd4870dc7d66d8e30f15ca323416" name="a4c2afd4870dc7d66d8e30f15ca323416"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getDataInfo</b> () const</td></tr>
 <tr class="memitem:af4416034ea32eee2eb5feeb95569a9b6" id="r_af4416034ea32eee2eb5feeb95569a9b6"><td class="memItemLeft" align="right" valign="top">std::optional&lt; vec3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4416034ea32eee2eb5feeb95569a9b6">getIntersection</a> (const vec3 &amp;start, const vec3 &amp;stop) const</td></tr>
 <tr class="memdesc:af4416034ea32eee2eb5feeb95569a9b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get intersection point with plane and line segment. Intersects if plane is in between start and stop. Segement start point will be returned if segment lies in the plane.  <br /></td></tr>
 <tr class="memitem:a149269ae9c97e77fe123dd65c4535613" id="r_a149269ae9c97e77fe123dd65c4535613"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a149269ae9c97e77fe123dd65c4535613">getIntersectionWeight</a> (const vec3 &amp;start, const vec3 &amp;stop) const</td></tr>
-<tr class="memitem:a7eb7a91f38219050230b666c86398e87" id="r_a7eb7a91f38219050230b666c86398e87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7eb7a91f38219050230b666c86398e87">distance</a> (const vec3 &amp;x) const</td></tr>
-<tr class="memitem:ad50c3956e6558d54c7e9a287270090aa" id="r_ad50c3956e6558d54c7e9a287270090aa"><td class="memItemLeft" align="right" valign="top">vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad50c3956e6558d54c7e9a287270090aa">projectPoint</a> (const vec3 &amp;x) const</td></tr>
+<tr class="memitem:a31ab90b8982318acc2e97eeca405d512" id="r_a31ab90b8982318acc2e97eeca405d512"><td class="memItemLeft" align="right" valign="top"><a id="a31ab90b8982318acc2e97eeca405d512" name="a31ab90b8982318acc2e97eeca405d512"></a>
+const vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getNormal</b> () const noexcept</td></tr>
+<tr class="memitem:a84c1c3381b3264f6a6cb9b5a19319f87" id="r_a84c1c3381b3264f6a6cb9b5a19319f87"><td class="memItemLeft" align="right" valign="top"><a id="a84c1c3381b3264f6a6cb9b5a19319f87" name="a84c1c3381b3264f6a6cb9b5a19319f87"></a>
+const vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPoint</b> () const noexcept</td></tr>
+<tr class="memitem:a259d7b94536a27a45294994ccc67aa5d" id="r_a259d7b94536a27a45294994ccc67aa5d"><td class="memItemLeft" align="right" valign="top">mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a259d7b94536a27a45294994ccc67aa5d">inPlaneBasis</a> () const</td></tr>
 <tr class="memitem:a72ba749017a66dc52edc3c3bab3c7cf7" id="r_a72ba749017a66dc52edc3c3bab3c7cf7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72ba749017a66dc52edc3c3bab3c7cf7">isInside</a> (const vec3 &amp;point) const</td></tr>
 <tr class="memitem:aa6c10ba94eaa80cb07b9ec6a97f32fa0" id="r_aa6c10ba94eaa80cb07b9ec6a97f32fa0"><td class="memItemLeft" align="right" valign="top"><a id="aa6c10ba94eaa80cb07b9ec6a97f32fa0" name="aa6c10ba94eaa80cb07b9ec6a97f32fa0"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>perpendicularToPlane</b> (const vec3 &amp;) const</td></tr>
-<tr class="memitem:a259d7b94536a27a45294994ccc67aa5d" id="r_a259d7b94536a27a45294994ccc67aa5d"><td class="memItemLeft" align="right" valign="top">mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a259d7b94536a27a45294994ccc67aa5d">inPlaneBasis</a> () const</td></tr>
-<tr class="memitem:a08583047b70fb8ffe06d14eb6646180f" id="r_a08583047b70fb8ffe06d14eb6646180f"><td class="memItemLeft" align="right" valign="top"><a id="a08583047b70fb8ffe06d14eb6646180f" name="a08583047b70fb8ffe06d14eb6646180f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPoint</b> (const vec3)</td></tr>
+<tr class="memitem:ac39538537f188504a667216d6b1370be" id="r_ac39538537f188504a667216d6b1370be"><td class="memItemLeft" align="right" valign="top"><a id="ac39538537f188504a667216d6b1370be" name="ac39538537f188504a667216d6b1370be"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Plane</b> (vec3 point, vec3 normal) noexcept</td></tr>
+<tr class="memitem:ad50c3956e6558d54c7e9a287270090aa" id="r_ad50c3956e6558d54c7e9a287270090aa"><td class="memItemLeft" align="right" valign="top">vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad50c3956e6558d54c7e9a287270090aa">projectPoint</a> (const vec3 &amp;x) const</td></tr>
 <tr class="memitem:a57a9d19baa7ebdefdac28a4819652528" id="r_a57a9d19baa7ebdefdac28a4819652528"><td class="memItemLeft" align="right" valign="top"><a id="a57a9d19baa7ebdefdac28a4819652528" name="a57a9d19baa7ebdefdac28a4819652528"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setNormal</b> (const vec3 &amp;)</td></tr>
+<tr class="memitem:a08583047b70fb8ffe06d14eb6646180f" id="r_a08583047b70fb8ffe06d14eb6646180f"><td class="memItemLeft" align="right" valign="top"><a id="a08583047b70fb8ffe06d14eb6646180f" name="a08583047b70fb8ffe06d14eb6646180f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setPoint</b> (const vec3)</td></tr>
 <tr class="memitem:ab764032e2c68f6e9fa643f002eba9323" id="r_ab764032e2c68f6e9fa643f002eba9323"><td class="memItemLeft" align="right" valign="top"><a id="ab764032e2c68f6e9fa643f002eba9323" name="ab764032e2c68f6e9fa643f002eba9323"></a>
 Plane&#160;</td><td class="memItemRight" valign="bottom"><b>transform</b> (const mat4 &amp;transform) const</td></tr>
-<tr class="memitem:a4c2afd4870dc7d66d8e30f15ca323416" id="r_a4c2afd4870dc7d66d8e30f15ca323416"><td class="memItemLeft" align="right" valign="top"><a id="a4c2afd4870dc7d66d8e30f15ca323416" name="a4c2afd4870dc7d66d8e30f15ca323416"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getDataInfo</b> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a755518ab19000b5da7c52a7b67408be1" id="r_a755518ab19000b5da7c52a7b67408be1"><td class="memItemLeft" align="right" valign="top"><a id="a755518ab19000b5da7c52a7b67408be1" name="a755518ab19000b5da7c52a7b67408be1"></a>
-static constexpr uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>colorCode</b> {225, 174, 225}</td></tr>
 <tr class="memitem:aecfb32bf8dd1d0788be5b5ccbaa2876e" id="r_aecfb32bf8dd1d0788be5b5ccbaa2876e"><td class="memItemLeft" align="right" valign="top"><a id="aecfb32bf8dd1d0788be5b5ccbaa2876e" name="aecfb32bf8dd1d0788be5b5ccbaa2876e"></a>
 static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> {&quot;org.inviwo.Plane&quot;}</td></tr>
+<tr class="memitem:a755518ab19000b5da7c52a7b67408be1" id="r_a755518ab19000b5da7c52a7b67408be1"><td class="memItemLeft" align="right" valign="top"><a id="a755518ab19000b5da7c52a7b67408be1" name="a755518ab19000b5da7c52a7b67408be1"></a>
+static constexpr uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>colorCode</b> {225, 174, 225}</td></tr>
 <tr class="memitem:a061234eb40c4700ab1363de9fea0f76b" id="r_a061234eb40c4700ab1363de9fea0f76b"><td class="memItemLeft" align="right" valign="top"><a id="a061234eb40c4700ab1363de9fea0f76b" name="a061234eb40c4700ab1363de9fea0f76b"></a>
 static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>dataName</b> {&quot;Plane&quot;}</td></tr>
 </table>
@@ -277,7 +277,7 @@ static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bot
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>plane.h</b></li>
+<li>include/inviwo/core/datastructures/geometry/<b>plane.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

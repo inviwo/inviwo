@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1RenderHandlerGL.html','','classinviwo_1
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;renderhandlergl.h&gt;</code></p>
+<p><code>#include &lt;modules/webbrowser/renderhandlergl.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::RenderHandlerGL:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -105,29 +105,29 @@ $(function(){initNavTree('classinviwo_1_1RenderHandlerGL.html','','classinviwo_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a20b5a2a2445f1390b7b1fa1a831392fa" id="r_a20b5a2a2445f1390b7b1fa1a831392fa"><td class="memItemLeft" align="right" valign="top"><a id="a20b5a2a2445f1390b7b1fa1a831392fa" name="a20b5a2a2445f1390b7b1fa1a831392fa"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateCanvasSize</b> (CefRefPtr&lt; CefBrowser &gt; browser, size2_t newSize)</td></tr>
+<tr class="memitem:ae055bc553922fc3105e676db94b1a1bf" id="r_ae055bc553922fc3105e676db94b1a1bf"><td class="memItemLeft" align="right" valign="top"><a id="ae055bc553922fc3105e676db94b1a1bf" name="ae055bc553922fc3105e676db94b1a1bf"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearPopupRects</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
+<tr class="memitem:aa47e0227791f3c6037455ad2d65456e1" id="r_aa47e0227791f3c6037455ad2d65456e1"><td class="memItemLeft" align="right" valign="top"><a id="aa47e0227791f3c6037455ad2d65456e1" name="aa47e0227791f3c6037455ad2d65456e1"></a>
+<a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getTexture2D</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
 <tr class="memitem:ad7b350d9d6504088d4605dae68037e97" id="r_ad7b350d9d6504088d4605dae68037e97"><td class="memItemLeft" align="right" valign="top"><a id="ad7b350d9d6504088d4605dae68037e97" name="ad7b350d9d6504088d4605dae68037e97"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>GetViewRect</b> (CefRefPtr&lt; CefBrowser &gt; browser, CefRect &amp;rect) override</td></tr>
+<tr class="memitem:acae4fa60cd25de7fac0ce2540150096e" id="r_acae4fa60cd25de7fac0ce2540150096e"><td class="memItemLeft" align="right" valign="top"><a id="acae4fa60cd25de7fac0ce2540150096e" name="acae4fa60cd25de7fac0ce2540150096e"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnAcceleratedPaint</b> (CefRefPtr&lt; CefBrowser &gt; browser, PaintElementType type, const RectList &amp;dirtyRects, const CefAcceleratedPaintInfo &amp;info) override</td></tr>
+<tr class="memitem:a75849e4d7e61ee2dbc2eebc5b9abbc61" id="r_a75849e4d7e61ee2dbc2eebc5b9abbc61"><td class="memItemLeft" align="right" valign="top"><a id="a75849e4d7e61ee2dbc2eebc5b9abbc61" name="a75849e4d7e61ee2dbc2eebc5b9abbc61"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPaint</b> (CefRefPtr&lt; CefBrowser &gt; browser, PaintElementType type, const RectList &amp;dirtyRects, const void *buffer, int width, int height) override</td></tr>
 <tr class="memitem:a6eecf209ca76c946584c1138e820cc38" id="r_a6eecf209ca76c946584c1138e820cc38"><td class="memItemLeft" align="right" valign="top"><a id="a6eecf209ca76c946584c1138e820cc38" name="a6eecf209ca76c946584c1138e820cc38"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPopupShow</b> (CefRefPtr&lt; CefBrowser &gt; browser, bool show) override</td></tr>
 <tr class="memitem:a9e44c38b6d24c49d3cb917182caa1526" id="r_a9e44c38b6d24c49d3cb917182caa1526"><td class="memItemLeft" align="right" valign="top"><a id="a9e44c38b6d24c49d3cb917182caa1526" name="a9e44c38b6d24c49d3cb917182caa1526"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPopupSize</b> (CefRefPtr&lt; CefBrowser &gt; browser, const CefRect &amp;rect) override</td></tr>
-<tr class="memitem:a75849e4d7e61ee2dbc2eebc5b9abbc61" id="r_a75849e4d7e61ee2dbc2eebc5b9abbc61"><td class="memItemLeft" align="right" valign="top"><a id="a75849e4d7e61ee2dbc2eebc5b9abbc61" name="a75849e4d7e61ee2dbc2eebc5b9abbc61"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnPaint</b> (CefRefPtr&lt; CefBrowser &gt; browser, PaintElementType type, const RectList &amp;dirtyRects, const void *buffer, int width, int height) override</td></tr>
-<tr class="memitem:acae4fa60cd25de7fac0ce2540150096e" id="r_acae4fa60cd25de7fac0ce2540150096e"><td class="memItemLeft" align="right" valign="top"><a id="acae4fa60cd25de7fac0ce2540150096e" name="acae4fa60cd25de7fac0ce2540150096e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnAcceleratedPaint</b> (CefRefPtr&lt; CefBrowser &gt; browser, PaintElementType type, const RectList &amp;dirtyRects, const CefAcceleratedPaintInfo &amp;info) override</td></tr>
-<tr class="memitem:aa47e0227791f3c6037455ad2d65456e1" id="r_aa47e0227791f3c6037455ad2d65456e1"><td class="memItemLeft" align="right" valign="top"><a id="aa47e0227791f3c6037455ad2d65456e1" name="aa47e0227791f3c6037455ad2d65456e1"></a>
-<a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getTexture2D</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
-<tr class="memitem:ae055bc553922fc3105e676db94b1a1bf" id="r_ae055bc553922fc3105e676db94b1a1bf"><td class="memItemLeft" align="right" valign="top"><a id="ae055bc553922fc3105e676db94b1a1bf" name="ae055bc553922fc3105e676db94b1a1bf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearPopupRects</b> (CefRefPtr&lt; CefBrowser &gt; browser)</td></tr>
 <tr class="memitem:a915a8b40fc389f331a0e32bba423ed6f" id="r_a915a8b40fc389f331a0e32bba423ed6f"><td class="memItemLeft" align="right" valign="top"><a id="a915a8b40fc389f331a0e32bba423ed6f" name="a915a8b40fc389f331a0e32bba423ed6f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>onRender</b> (CefRefPtr&lt; CefBrowser &gt; browser, std::function&lt; void(<a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> &amp;)&gt; onRender)</td></tr>
+<tr class="memitem:a20b5a2a2445f1390b7b1fa1a831392fa" id="r_a20b5a2a2445f1390b7b1fa1a831392fa"><td class="memItemLeft" align="right" valign="top"><a id="a20b5a2a2445f1390b7b1fa1a831392fa" name="a20b5a2a2445f1390b7b1fa1a831392fa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateCanvasSize</b> (CefRefPtr&lt; CefBrowser &gt; browser, size2_t newSize)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Copies web page into a <a class="el" href="classinviwo_1_1Texture2D.html">Texture2D</a> each time it has been painted by the browser and calls onWebPageCopiedCallback afterwards. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>renderhandlergl.h</b></li>
+<li>modules/webbrowser/include/modules/webbrowser/<b>renderhandlergl.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

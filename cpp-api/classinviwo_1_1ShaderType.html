@@ -97,20 +97,20 @@ $(function(){initNavTree('classinviwo_1_1ShaderType.html','','classinviwo_1_1Sha
 <p>Encapsulate a GLenum shader type, and related information.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;shadertype.h&gt;</code></p>
+<p><code>#include &lt;modules/opengl/shader/shadertype.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0f4542fa1247c6be1de0282769cda747" id="r_a0f4542fa1247c6be1de0282769cda747"><td class="memItemLeft" align="right" valign="top"><a id="a0f4542fa1247c6be1de0282769cda747" name="a0f4542fa1247c6be1de0282769cda747"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>ShaderType</b> (GLenum type)</td></tr>
-<tr class="memitem:aa8d97dc4231077a90c252cf51ba99c0d" id="r_aa8d97dc4231077a90c252cf51ba99c0d"><td class="memItemLeft" align="right" valign="top"><a id="aa8d97dc4231077a90c252cf51ba99c0d" name="aa8d97dc4231077a90c252cf51ba99c0d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>operator GLenum</b> () const</td></tr>
-<tr class="memitem:ae9ac1201541cc128b25696efa5d6c277" id="r_ae9ac1201541cc128b25696efa5d6c277"><td class="memItemLeft" align="right" valign="top"><a id="ae9ac1201541cc128b25696efa5d6c277" name="ae9ac1201541cc128b25696efa5d6c277"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>operator bool</b> () const</td></tr>
 <tr class="memitem:acd4a943457ab7fc55a4af8425cb4855e" id="r_acd4a943457ab7fc55a4af8425cb4855e"><td class="memItemLeft" align="right" valign="top"><a id="acd4a943457ab7fc55a4af8425cb4855e" name="acd4a943457ab7fc55a4af8425cb4855e"></a>
 constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>extension</b> () const</td></tr>
 <tr class="memitem:ae445451fb7fbdb7cdc98f93172a33fb7" id="r_ae445451fb7fbdb7cdc98f93172a33fb7"><td class="memItemLeft" align="right" valign="top"><a id="ae445451fb7fbdb7cdc98f93172a33fb7" name="ae445451fb7fbdb7cdc98f93172a33fb7"></a>
 constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const</td></tr>
+<tr class="memitem:ae9ac1201541cc128b25696efa5d6c277" id="r_ae9ac1201541cc128b25696efa5d6c277"><td class="memItemLeft" align="right" valign="top"><a id="ae9ac1201541cc128b25696efa5d6c277" name="ae9ac1201541cc128b25696efa5d6c277"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator bool</b> () const</td></tr>
+<tr class="memitem:aa8d97dc4231077a90c252cf51ba99c0d" id="r_aa8d97dc4231077a90c252cf51ba99c0d"><td class="memItemLeft" align="right" valign="top"><a id="aa8d97dc4231077a90c252cf51ba99c0d" name="aa8d97dc4231077a90c252cf51ba99c0d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator GLenum</b> () const</td></tr>
+<tr class="memitem:a0f4542fa1247c6be1de0282769cda747" id="r_a0f4542fa1247c6be1de0282769cda747"><td class="memItemLeft" align="right" valign="top"><a id="a0f4542fa1247c6be1de0282769cda747" name="a0f4542fa1247c6be1de0282769cda747"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>ShaderType</b> (GLenum type)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -118,25 +118,25 @@ Static Public Member Functions</h2></td></tr>
 static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>extension</b> (const ShaderType &amp;type)</td></tr>
 <tr class="memitem:a1c0b4c67252dbe5b69571f4006591b7a" id="r_a1c0b4c67252dbe5b69571f4006591b7a"><td class="memItemLeft" align="right" valign="top"><a id="a1c0b4c67252dbe5b69571f4006591b7a" name="a1c0b4c67252dbe5b69571f4006591b7a"></a>
 static ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>typeFromExtension</b> (std::string_view ext)</td></tr>
-<tr class="memitem:a6c2b38dbea8d5ba0d1514592b61026ae" id="r_a6c2b38dbea8d5ba0d1514592b61026ae"><td class="memItemLeft" align="right" valign="top"><a id="a6c2b38dbea8d5ba0d1514592b61026ae" name="a6c2b38dbea8d5ba0d1514592b61026ae"></a>
-static ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>typeFromString</b> (std::string_view str)</td></tr>
 <tr class="memitem:a9c860518f991dc9e1b06bff9739723ef" id="r_a9c860518f991dc9e1b06bff9739723ef"><td class="memItemLeft" align="right" valign="top"><a id="a9c860518f991dc9e1b06bff9739723ef" name="a9c860518f991dc9e1b06bff9739723ef"></a>
 static ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>typeFromFile</b> (const std::filesystem::path &amp;ext)</td></tr>
+<tr class="memitem:a6c2b38dbea8d5ba0d1514592b61026ae" id="r_a6c2b38dbea8d5ba0d1514592b61026ae"><td class="memItemLeft" align="right" valign="top"><a id="a6c2b38dbea8d5ba0d1514592b61026ae" name="a6c2b38dbea8d5ba0d1514592b61026ae"></a>
+static ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>typeFromString</b> (std::string_view str)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a242cc158e4047cfbfd2ed63847eb339f" id="r_a242cc158e4047cfbfd2ed63847eb339f"><td class="memItemLeft" align="right" valign="top"><a id="a242cc158e4047cfbfd2ed63847eb339f" name="a242cc158e4047cfbfd2ed63847eb339f"></a>
-static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Vertex</b></td></tr>
-<tr class="memitem:a54862728bb0e86ecdcf28e942e7fd582" id="r_a54862728bb0e86ecdcf28e942e7fd582"><td class="memItemLeft" align="right" valign="top"><a id="a54862728bb0e86ecdcf28e942e7fd582" name="a54862728bb0e86ecdcf28e942e7fd582"></a>
-static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Geometry</b></td></tr>
+<tr class="memitem:adba177930bf1ee3ee0fc615996d387d0" id="r_adba177930bf1ee3ee0fc615996d387d0"><td class="memItemLeft" align="right" valign="top"><a id="adba177930bf1ee3ee0fc615996d387d0" name="adba177930bf1ee3ee0fc615996d387d0"></a>
+static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Compute</b></td></tr>
 <tr class="memitem:aeb4f3aad847358028d4ee427ebdac95e" id="r_aeb4f3aad847358028d4ee427ebdac95e"><td class="memItemLeft" align="right" valign="top"><a id="aeb4f3aad847358028d4ee427ebdac95e" name="aeb4f3aad847358028d4ee427ebdac95e"></a>
 static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Fragment</b></td></tr>
+<tr class="memitem:a54862728bb0e86ecdcf28e942e7fd582" id="r_a54862728bb0e86ecdcf28e942e7fd582"><td class="memItemLeft" align="right" valign="top"><a id="a54862728bb0e86ecdcf28e942e7fd582" name="a54862728bb0e86ecdcf28e942e7fd582"></a>
+static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Geometry</b></td></tr>
 <tr class="memitem:a645bf438096de8f845af3e852620de20" id="r_a645bf438096de8f845af3e852620de20"><td class="memItemLeft" align="right" valign="top"><a id="a645bf438096de8f845af3e852620de20" name="a645bf438096de8f845af3e852620de20"></a>
 static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>TessellationControl</b></td></tr>
 <tr class="memitem:a3b948b6d358c976c7436dd546c7ee239" id="r_a3b948b6d358c976c7436dd546c7ee239"><td class="memItemLeft" align="right" valign="top"><a id="a3b948b6d358c976c7436dd546c7ee239" name="a3b948b6d358c976c7436dd546c7ee239"></a>
 static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>TessellationEvaluation</b></td></tr>
-<tr class="memitem:adba177930bf1ee3ee0fc615996d387d0" id="r_adba177930bf1ee3ee0fc615996d387d0"><td class="memItemLeft" align="right" valign="top"><a id="adba177930bf1ee3ee0fc615996d387d0" name="adba177930bf1ee3ee0fc615996d387d0"></a>
-static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Compute</b></td></tr>
+<tr class="memitem:a242cc158e4047cfbfd2ed63847eb339f" id="r_a242cc158e4047cfbfd2ed63847eb339f"><td class="memItemLeft" align="right" valign="top"><a id="a242cc158e4047cfbfd2ed63847eb339f" name="a242cc158e4047cfbfd2ed63847eb339f"></a>
+static const ShaderType&#160;</td><td class="memItemRight" valign="bottom"><b>Vertex</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -146,7 +146,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Encapsulate a GLenum shader type, and related information. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>shadertype.h</b></li>
+<li>modules/opengl/include/modules/opengl/shader/<b>shadertype.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

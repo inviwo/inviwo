@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1DataRepresentation.html','','classinviw
 <p>Base class for all DataRepresentations.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;datarepresentation.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/datastructures/datarepresentation.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -108,14 +108,14 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ReprOwner</b> = Owne
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9663ce873a7eae6823bbf14eaa31a24f" id="r_a9663ce873a7eae6823bbf14eaa31a24f"><td class="memItemLeft" align="right" valign="top"><a id="a9663ce873a7eae6823bbf14eaa31a24f" name="a9663ce873a7eae6823bbf14eaa31a24f"></a>
 virtual DataRepresentation *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
-<tr class="memitem:ad4ee4c9158eca9349c3d6b2f172ed655" id="r_ad4ee4c9158eca9349c3d6b2f172ed655"><td class="memItemLeft" align="right" valign="top"><a id="ad4ee4c9158eca9349c3d6b2f172ed655" name="ad4ee4c9158eca9349c3d6b2f172ed655"></a>
-virtual std::type_index&#160;</td><td class="memItemRight" valign="bottom"><b>getTypeIndex</b> () const =0</td></tr>
-<tr class="memitem:a25d9683d4d203173ac3c3f020ea8c866" id="r_a25d9683d4d203173ac3c3f020ea8c866"><td class="memItemLeft" align="right" valign="top"><a id="a25d9683d4d203173ac3c3f020ea8c866" name="a25d9683d4d203173ac3c3f020ea8c866"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setOwner</b> (const Owner *owner)</td></tr>
 <tr class="memitem:a3a4c8f68dd08f749ff41672fd1083b0e" id="r_a3a4c8f68dd08f749ff41672fd1083b0e"><td class="memItemLeft" align="right" valign="top"><a id="a3a4c8f68dd08f749ff41672fd1083b0e" name="a3a4c8f68dd08f749ff41672fd1083b0e"></a>
 const Owner *&#160;</td><td class="memItemRight" valign="bottom"><b>getOwner</b> () const</td></tr>
+<tr class="memitem:ad4ee4c9158eca9349c3d6b2f172ed655" id="r_ad4ee4c9158eca9349c3d6b2f172ed655"><td class="memItemLeft" align="right" valign="top"><a id="ad4ee4c9158eca9349c3d6b2f172ed655" name="ad4ee4c9158eca9349c3d6b2f172ed655"></a>
+virtual std::type_index&#160;</td><td class="memItemRight" valign="bottom"><b>getTypeIndex</b> () const =0</td></tr>
 <tr class="memitem:a1665c81699a263d22e0b9182b182d3c4" id="r_a1665c81699a263d22e0b9182b182d3c4"><td class="memItemLeft" align="right" valign="top"><a id="a1665c81699a263d22e0b9182b182d3c4" name="a1665c81699a263d22e0b9182b182d3c4"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isValid</b> () const</td></tr>
+<tr class="memitem:a25d9683d4d203173ac3c3f020ea8c866" id="r_a25d9683d4d203173ac3c3f020ea8c866"><td class="memItemLeft" align="right" valign="top"><a id="a25d9683d4d203173ac3c3f020ea8c866" name="a25d9683d4d203173ac3c3f020ea8c866"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setOwner</b> (const Owner *owner)</td></tr>
 <tr class="memitem:a392719a31af181a15e691670c723dc52" id="r_a392719a31af181a15e691670c723dc52"><td class="memItemLeft" align="right" valign="top"><a id="a392719a31af181a15e691670c723dc52" name="a392719a31af181a15e691670c723dc52"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setValid</b> (bool valid)</td></tr>
 <tr class="memitem:a478e365527de994f452ffa87181dd101" id="r_a478e365527de994f452ffa87181dd101"><td class="memItemLeft" align="right" valign="top"><a id="a478e365527de994f452ffa87181dd101" name="a478e365527de994f452ffa87181dd101"></a>
@@ -140,7 +140,7 @@ const Owner *&#160;</td><td class="memItemRight" valign="bottom"><b>owner_</b> =
 class inviwo::DataRepresentation&lt; Owner &gt;</div><p>Base class for all DataRepresentations. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>datarepresentation.h</b></li>
+<li>include/inviwo/core/datastructures/<b>datarepresentation.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

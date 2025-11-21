@@ -97,22 +97,22 @@ $(function(){initNavTree('classinviwo_1_1SafeCStr.html','','classinviwo_1_1SafeC
 <p>Safe and efficient conversion of a string_view to a null terminated c-string Uses a internal char buffer of size N to store a null terminated copy of the string_view if string_view is larger than N a char[] will be heap allocated. Note: string_view.data() is <em>not</em> null terminated and can not be passed to functions that expect a c-string.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;safecstr.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/safecstr.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8c1f8996abbf9fcbdd000f832f5fc9df" id="r_a8c1f8996abbf9fcbdd000f832f5fc9df"><td class="memItemLeft" align="right" valign="top"><a id="a8c1f8996abbf9fcbdd000f832f5fc9df" name="a8c1f8996abbf9fcbdd000f832f5fc9df"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SafeCStr</b> (const std::string_view sv)</td></tr>
 <tr class="memitem:a160afd24c00f33d8ce9784527e11642f" id="r_a160afd24c00f33d8ce9784527e11642f"><td class="memItemLeft" align="right" valign="top"><a id="a160afd24c00f33d8ce9784527e11642f" name="a160afd24c00f33d8ce9784527e11642f"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>c_str</b> () const</td></tr>
 <tr class="memitem:a2b1aed40194c3625ecd665483938f35c" id="r_a2b1aed40194c3625ecd665483938f35c"><td class="memItemLeft" align="right" valign="top"><a id="a2b1aed40194c3625ecd665483938f35c" name="a2b1aed40194c3625ecd665483938f35c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>operator const char *</b> () const</td></tr>
+<tr class="memitem:a8c1f8996abbf9fcbdd000f832f5fc9df" id="r_a8c1f8996abbf9fcbdd000f832f5fc9df"><td class="memItemLeft" align="right" valign="top"><a id="a8c1f8996abbf9fcbdd000f832f5fc9df" name="a8c1f8996abbf9fcbdd000f832f5fc9df"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SafeCStr</b> (const std::string_view sv)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;size_t N = 120&gt;<br />
 class inviwo::SafeCStr&lt; N &gt;</div><p>Safe and efficient conversion of a string_view to a null terminated c-string Uses a internal char buffer of size N to store a null terminated copy of the string_view if string_view is larger than N a char[] will be heap allocated. Note: string_view.data() is <em>not</em> null terminated and can not be passed to functions that expect a c-string. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>safecstr.h</b></li>
+<li>include/inviwo/core/util/<b>safecstr.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

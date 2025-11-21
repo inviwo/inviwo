@@ -97,35 +97,35 @@ $(function(){initNavTree('classinviwo_1_1Rasterization.html','','classinviwo_1_1
 <p>A functor class for rendering geometry into a fragment list Will be applied by a renderer containing an A-buffer.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;rasterization.h&gt;</code></p>
+<p><code>#include &lt;modules/oit/datastructures/rasterization.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3d814262008a39cb84660dee69eb74a2" id="r_a3d814262008a39cb84660dee69eb74a2"><td class="memItemLeft" align="right" valign="top"><a id="a3d814262008a39cb84660dee69eb74a2" name="a3d814262008a39cb84660dee69eb74a2"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Rasterization</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Rasterizer.html">Rasterizer</a> &gt; processor)</td></tr>
-<tr class="memitem:a260ef11996fef5c7e97378ea8dae6df8" id="r_a260ef11996fef5c7e97378ea8dae6df8"><td class="memItemLeft" align="right" valign="top"><a id="a260ef11996fef5c7e97378ea8dae6df8" name="a260ef11996fef5c7e97378ea8dae6df8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Rasterization</b> (const Rasterization &amp;)=delete</td></tr>
-<tr class="memitem:a24c070f0627b383644f296591f920315" id="r_a24c070f0627b383644f296591f920315"><td class="memItemLeft" align="right" valign="top"><a id="a24c070f0627b383644f296591f920315" name="a24c070f0627b383644f296591f920315"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Rasterization</b> (Rasterization &amp;&amp;)=delete</td></tr>
+<tr class="memitem:a254be5a108130725bb310a2dd5da771b" id="r_a254be5a108130725bb310a2dd5da771b"><td class="memItemLeft" align="right" valign="top"><a id="a254be5a108130725bb310a2dd5da771b" name="a254be5a108130725bb310a2dd5da771b"></a>
+std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> () const</td></tr>
+<tr class="memdesc:a254be5a108130725bb310a2dd5da771b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the world space bounding box of the rendered geometry. <br /></td></tr>
+<tr class="memitem:a15ab502e75652de2f0fd799421d45832" id="r_a15ab502e75652de2f0fd799421d45832"><td class="memItemLeft" align="right" valign="top"><a id="a15ab502e75652de2f0fd799421d45832" name="a15ab502e75652de2f0fd799421d45832"></a>
+std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getIdentifier</b> () const</td></tr>
+<tr class="memitem:ad0e01a92feab10ab61e333837e4d8ae9" id="r_ad0e01a92feab10ab61e333837e4d8ae9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0e01a92feab10ab61e333837e4d8ae9">getInfo</a> () const</td></tr>
+<tr class="memdesc:ad0e01a92feab10ab61e333837e4d8ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get data description for the network interface.  <br /></td></tr>
+<tr class="memitem:ae7c02c422a6c172f375331c337144047" id="r_ae7c02c422a6c172f375331c337144047"><td class="memItemLeft" align="right" valign="top"><a id="ae7c02c422a6c172f375331c337144047" name="ae7c02c422a6c172f375331c337144047"></a>
+std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Rasterizer.html">Rasterizer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> () const</td></tr>
+<tr class="memitem:a4dd3ba94479801215a4c7b69a5729e40" id="r_a4dd3ba94479801215a4c7b69a5729e40"><td class="memItemLeft" align="right" valign="top"><a id="a4dd3ba94479801215a4c7b69a5729e40" name="a4dd3ba94479801215a4c7b69a5729e40"></a>
+std::optional&lt; <a class="el" href="structinviwo_1_1RaycastingState.html">RaycastingState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getRaycastingState</b> () const</td></tr>
 <tr class="memitem:a1897483fb0f6a91878a909c1fce8c2e0" id="r_a1897483fb0f6a91878a909c1fce8c2e0"><td class="memItemLeft" align="right" valign="top"><a id="a1897483fb0f6a91878a909c1fce8c2e0" name="a1897483fb0f6a91878a909c1fce8c2e0"></a>
 Rasterization &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const Rasterization &amp;)=delete</td></tr>
 <tr class="memitem:a2c9106204cd3b171970d45aacdd60161" id="r_a2c9106204cd3b171970d45aacdd60161"><td class="memItemLeft" align="right" valign="top"><a id="a2c9106204cd3b171970d45aacdd60161" name="a2c9106204cd3b171970d45aacdd60161"></a>
 Rasterization &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (Rasterization &amp;&amp;)=delete</td></tr>
-<tr class="memitem:ae7c02c422a6c172f375331c337144047" id="r_ae7c02c422a6c172f375331c337144047"><td class="memItemLeft" align="right" valign="top"><a id="ae7c02c422a6c172f375331c337144047" name="ae7c02c422a6c172f375331c337144047"></a>
-std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Rasterizer.html">Rasterizer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getProcessor</b> () const</td></tr>
+<tr class="memitem:a260ef11996fef5c7e97378ea8dae6df8" id="r_a260ef11996fef5c7e97378ea8dae6df8"><td class="memItemLeft" align="right" valign="top"><a id="a260ef11996fef5c7e97378ea8dae6df8" name="a260ef11996fef5c7e97378ea8dae6df8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Rasterization</b> (const Rasterization &amp;)=delete</td></tr>
+<tr class="memitem:a24c070f0627b383644f296591f920315" id="r_a24c070f0627b383644f296591f920315"><td class="memItemLeft" align="right" valign="top"><a id="a24c070f0627b383644f296591f920315" name="a24c070f0627b383644f296591f920315"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Rasterization</b> (Rasterization &amp;&amp;)=delete</td></tr>
+<tr class="memitem:a3d814262008a39cb84660dee69eb74a2" id="r_a3d814262008a39cb84660dee69eb74a2"><td class="memItemLeft" align="right" valign="top"><a id="a3d814262008a39cb84660dee69eb74a2" name="a3d814262008a39cb84660dee69eb74a2"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Rasterization</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Rasterizer.html">Rasterizer</a> &gt; processor)</td></tr>
 <tr class="memitem:ab3962ee8782d0746fe333affd435125d" id="r_ab3962ee8782d0746fe333affd435125d"><td class="memItemLeft" align="right" valign="top"><a id="ab3962ee8782d0746fe333affd435125d" name="ab3962ee8782d0746fe333affd435125d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>rasterize</b> (const ivec2 &amp;imageSize, const mat4 &amp;worldMatrixTransform) const</td></tr>
 <tr class="memitem:adf0e25d6aed145f6fc9c3d548e635160" id="r_adf0e25d6aed145f6fc9c3d548e635160"><td class="memItemLeft" align="right" valign="top">UseFragmentList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf0e25d6aed145f6fc9c3d548e635160">usesFragmentLists</a> () const</td></tr>
 <tr class="memdesc:adf0e25d6aed145f6fc9c3d548e635160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query whether fragments will be emitted.  <br /></td></tr>
-<tr class="memitem:ad0e01a92feab10ab61e333837e4d8ae9" id="r_ad0e01a92feab10ab61e333837e4d8ae9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0e01a92feab10ab61e333837e4d8ae9">getInfo</a> () const</td></tr>
-<tr class="memdesc:ad0e01a92feab10ab61e333837e4d8ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get data description for the network interface.  <br /></td></tr>
-<tr class="memitem:a254be5a108130725bb310a2dd5da771b" id="r_a254be5a108130725bb310a2dd5da771b"><td class="memItemLeft" align="right" valign="top"><a id="a254be5a108130725bb310a2dd5da771b" name="a254be5a108130725bb310a2dd5da771b"></a>
-std::optional&lt; mat4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> () const</td></tr>
-<tr class="memdesc:a254be5a108130725bb310a2dd5da771b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the world space bounding box of the rendered geometry. <br /></td></tr>
-<tr class="memitem:a4dd3ba94479801215a4c7b69a5729e40" id="r_a4dd3ba94479801215a4c7b69a5729e40"><td class="memItemLeft" align="right" valign="top"><a id="a4dd3ba94479801215a4c7b69a5729e40" name="a4dd3ba94479801215a4c7b69a5729e40"></a>
-std::optional&lt; <a class="el" href="structinviwo_1_1RaycastingState.html">RaycastingState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getRaycastingState</b> () const</td></tr>
-<tr class="memitem:a15ab502e75652de2f0fd799421d45832" id="r_a15ab502e75652de2f0fd799421d45832"><td class="memItemLeft" align="right" valign="top"><a id="a15ab502e75652de2f0fd799421d45832" name="a15ab502e75652de2f0fd799421d45832"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getIdentifier</b> () const</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A functor class for rendering geometry into a fragment list Will be applied by a renderer containing an A-buffer. </p>
@@ -171,7 +171,7 @@ std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getIdenti
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>rasterization.h</b></li>
+<li>modules/oit/include/modules/oit/datastructures/<b>rasterization.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -111,12 +111,10 @@ $(function(){initNavTree('classinviwo_1_1LayerRAM.html','','classinviwo_1_1Layer
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac4e6d349f0a17a42c81621f27edae9d1" id="r_ac4e6d349f0a17a42c81621f27edae9d1"><td class="memItemLeft" align="right" valign="top">LayerRAM *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4e6d349f0a17a42c81621f27edae9d1">clone</a> () const override=0</td></tr>
 <tr class="memitem:a8d57d1ac0c88d6f10dac9a730f0dca54" id="r_a8d57d1ac0c88d6f10dac9a730f0dca54"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d57d1ac0c88d6f10dac9a730f0dca54">copyRepresentationsTo</a> (LayerRepresentation *) const override</td></tr>
-<tr class="memitem:a4b183d614fa1bb7a8ac392d9323bcef8" id="r_a4b183d614fa1bb7a8ac392d9323bcef8"><td class="memItemLeft" align="right" valign="top"><a id="a4b183d614fa1bb7a8ac392d9323bcef8" name="a4b183d614fa1bb7a8ac392d9323bcef8"></a>
-virtual void *&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> ()=0</td></tr>
-<tr class="memitem:aea859f0e5d6d29e128c5b30c28e03e1c" id="r_aea859f0e5d6d29e128c5b30c28e03e1c"><td class="memItemLeft" align="right" valign="top"><a id="aea859f0e5d6d29e128c5b30c28e03e1c" name="aea859f0e5d6d29e128c5b30c28e03e1c"></a>
-virtual const void *&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> () const =0</td></tr>
-<tr class="memitem:a78e4e090cb6a9c9a4c5935adce0526da" id="r_a78e4e090cb6a9c9a4c5935adce0526da"><td class="memItemLeft" align="right" valign="top"><a id="a78e4e090cb6a9c9a4c5935adce0526da" name="a78e4e090cb6a9c9a4c5935adce0526da"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setData</b> (void *data, size2_t dimensions)=0</td></tr>
+<tr class="memitem:acfb36dd32b7369ec364f4d1cc89d07ca" id="r_acfb36dd32b7369ec364f4d1cc89d07ca"><td class="memTemplParams" colspan="2">template&lt;typename Result, template&lt; class &gt; class Predicate = dispatching::filter::All, typename Callable, typename... Args&gt; </td></tr>
+<tr class="memitem:acfb36dd32b7369ec364f4d1cc89d07ca template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfb36dd32b7369ec364f4d1cc89d07ca">dispatch</a> (Callable &amp;&amp;callable, Args &amp;&amp;... args) -&gt; Result</td></tr>
+<tr class="memitem:a9440d5aab0f084470843663927115e92" id="r_a9440d5aab0f084470843663927115e92"><td class="memTemplParams" colspan="2">template&lt;typename Result, template&lt; class &gt; class Predicate = dispatching::filter::All, typename Callable, typename... Args&gt; </td></tr>
+<tr class="memitem:a9440d5aab0f084470843663927115e92 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9440d5aab0f084470843663927115e92">dispatch</a> (Callable &amp;&amp;callable, Args &amp;&amp;... args) const -&gt; Result</td></tr>
 <tr class="memitem:a67833c3097dd28a18531280bcc16ec8c" id="r_a67833c3097dd28a18531280bcc16ec8c"><td class="memItemLeft" align="right" valign="top"><a id="a67833c3097dd28a18531280bcc16ec8c" name="a67833c3097dd28a18531280bcc16ec8c"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDouble</b> (const size2_t &amp;pos) const =0</td></tr>
 <tr class="memitem:af5cb3c289acf50cded581b45540e4869" id="r_af5cb3c289acf50cded581b45540e4869"><td class="memItemLeft" align="right" valign="top"><a id="af5cb3c289acf50cded581b45540e4869" name="af5cb3c289acf50cded581b45540e4869"></a>
@@ -125,14 +123,6 @@ virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec2</
 virtual dvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec3</b> (const size2_t &amp;pos) const =0</td></tr>
 <tr class="memitem:abe0d4e0ebfa95c418c89438ce6aa3139" id="r_abe0d4e0ebfa95c418c89438ce6aa3139"><td class="memItemLeft" align="right" valign="top"><a id="abe0d4e0ebfa95c418c89438ce6aa3139" name="abe0d4e0ebfa95c418c89438ce6aa3139"></a>
 virtual dvec4&#160;</td><td class="memItemRight" valign="bottom"><b>getAsDVec4</b> (const size2_t &amp;pos) const =0</td></tr>
-<tr class="memitem:ab7ee8867560ef5049bdaec95485dae9a" id="r_ab7ee8867560ef5049bdaec95485dae9a"><td class="memItemLeft" align="right" valign="top"><a id="ab7ee8867560ef5049bdaec95485dae9a" name="ab7ee8867560ef5049bdaec95485dae9a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDouble</b> (const size2_t &amp;pos, double val)=0</td></tr>
-<tr class="memitem:abdc963494946a8b70798128d2d6b91b5" id="r_abdc963494946a8b70798128d2d6b91b5"><td class="memItemLeft" align="right" valign="top"><a id="abdc963494946a8b70798128d2d6b91b5" name="abdc963494946a8b70798128d2d6b91b5"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDVec2</b> (const size2_t &amp;pos, dvec2 val)=0</td></tr>
-<tr class="memitem:a2bd75679887107781e902772bd193664" id="r_a2bd75679887107781e902772bd193664"><td class="memItemLeft" align="right" valign="top"><a id="a2bd75679887107781e902772bd193664" name="a2bd75679887107781e902772bd193664"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDVec3</b> (const size2_t &amp;pos, dvec3 val)=0</td></tr>
-<tr class="memitem:a4e0345170aa50bf8c1dcb8e3a02c510b" id="r_a4e0345170aa50bf8c1dcb8e3a02c510b"><td class="memItemLeft" align="right" valign="top"><a id="a4e0345170aa50bf8c1dcb8e3a02c510b" name="a4e0345170aa50bf8c1dcb8e3a02c510b"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDVec4</b> (const size2_t &amp;pos, dvec4 val)=0</td></tr>
 <tr class="memitem:a114217e250be062e35c1cd6e04cedf22" id="r_a114217e250be062e35c1cd6e04cedf22"><td class="memItemLeft" align="right" valign="top"><a id="a114217e250be062e35c1cd6e04cedf22" name="a114217e250be062e35c1cd6e04cedf22"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getAsNormalizedDouble</b> (const size2_t &amp;pos) const =0</td></tr>
 <tr class="memitem:ada6a321ef28b05824434b71376030560" id="r_ada6a321ef28b05824434b71376030560"><td class="memItemLeft" align="right" valign="top"><a id="ada6a321ef28b05824434b71376030560" name="ada6a321ef28b05824434b71376030560"></a>
@@ -141,6 +131,21 @@ virtual dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getAsNormali
 virtual dvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getAsNormalizedDVec3</b> (const size2_t &amp;pos) const =0</td></tr>
 <tr class="memitem:a71a4f3e922cb6c6c58dd442b5c4b2cd2" id="r_a71a4f3e922cb6c6c58dd442b5c4b2cd2"><td class="memItemLeft" align="right" valign="top"><a id="a71a4f3e922cb6c6c58dd442b5c4b2cd2" name="a71a4f3e922cb6c6c58dd442b5c4b2cd2"></a>
 virtual dvec4&#160;</td><td class="memItemRight" valign="bottom"><b>getAsNormalizedDVec4</b> (const size2_t &amp;pos) const =0</td></tr>
+<tr class="memitem:aea859f0e5d6d29e128c5b30c28e03e1c" id="r_aea859f0e5d6d29e128c5b30c28e03e1c"><td class="memItemLeft" align="right" valign="top"><a id="aea859f0e5d6d29e128c5b30c28e03e1c" name="aea859f0e5d6d29e128c5b30c28e03e1c"></a>
+virtual const void *&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> () const =0</td></tr>
+<tr class="memitem:a4b183d614fa1bb7a8ac392d9323bcef8" id="r_a4b183d614fa1bb7a8ac392d9323bcef8"><td class="memItemLeft" align="right" valign="top"><a id="a4b183d614fa1bb7a8ac392d9323bcef8" name="a4b183d614fa1bb7a8ac392d9323bcef8"></a>
+virtual void *&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> ()=0</td></tr>
+<tr class="memitem:a7334fddee7a1c2c3f8f06872840cfb68" id="r_a7334fddee7a1c2c3f8f06872840cfb68"><td class="memItemLeft" align="right" valign="top">virtual std::type_index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7334fddee7a1c2c3f8f06872840cfb68">getTypeIndex</a> () const override final</td></tr>
+<tr class="memitem:a78e4e090cb6a9c9a4c5935adce0526da" id="r_a78e4e090cb6a9c9a4c5935adce0526da"><td class="memItemLeft" align="right" valign="top"><a id="a78e4e090cb6a9c9a4c5935adce0526da" name="a78e4e090cb6a9c9a4c5935adce0526da"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setData</b> (void *data, size2_t dimensions)=0</td></tr>
+<tr class="memitem:ab7ee8867560ef5049bdaec95485dae9a" id="r_ab7ee8867560ef5049bdaec95485dae9a"><td class="memItemLeft" align="right" valign="top"><a id="ab7ee8867560ef5049bdaec95485dae9a" name="ab7ee8867560ef5049bdaec95485dae9a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDouble</b> (const size2_t &amp;pos, double val)=0</td></tr>
+<tr class="memitem:abdc963494946a8b70798128d2d6b91b5" id="r_abdc963494946a8b70798128d2d6b91b5"><td class="memItemLeft" align="right" valign="top"><a id="abdc963494946a8b70798128d2d6b91b5" name="abdc963494946a8b70798128d2d6b91b5"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDVec2</b> (const size2_t &amp;pos, dvec2 val)=0</td></tr>
+<tr class="memitem:a2bd75679887107781e902772bd193664" id="r_a2bd75679887107781e902772bd193664"><td class="memItemLeft" align="right" valign="top"><a id="a2bd75679887107781e902772bd193664" name="a2bd75679887107781e902772bd193664"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDVec3</b> (const size2_t &amp;pos, dvec3 val)=0</td></tr>
+<tr class="memitem:a4e0345170aa50bf8c1dcb8e3a02c510b" id="r_a4e0345170aa50bf8c1dcb8e3a02c510b"><td class="memItemLeft" align="right" valign="top"><a id="a4e0345170aa50bf8c1dcb8e3a02c510b" name="a4e0345170aa50bf8c1dcb8e3a02c510b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromDVec4</b> (const size2_t &amp;pos, dvec4 val)=0</td></tr>
 <tr class="memitem:aa82259825e58e8ee9bb908bbf17c7935" id="r_aa82259825e58e8ee9bb908bbf17c7935"><td class="memItemLeft" align="right" valign="top"><a id="aa82259825e58e8ee9bb908bbf17c7935" name="aa82259825e58e8ee9bb908bbf17c7935"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromNormalizedDouble</b> (const size2_t &amp;pos, double val)=0</td></tr>
 <tr class="memitem:a27f73a7d82d7f9f23e8752dc9d068277" id="r_a27f73a7d82d7f9f23e8752dc9d068277"><td class="memItemLeft" align="right" valign="top"><a id="a27f73a7d82d7f9f23e8752dc9d068277" name="a27f73a7d82d7f9f23e8752dc9d068277"></a>
@@ -149,44 +154,39 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromNormal
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromNormalizedDVec3</b> (const size2_t &amp;pos, dvec3 val)=0</td></tr>
 <tr class="memitem:acbfa0fc9762316c5701a7ea6161bc9c1" id="r_acbfa0fc9762316c5701a7ea6161bc9c1"><td class="memItemLeft" align="right" valign="top"><a id="acbfa0fc9762316c5701a7ea6161bc9c1" name="acbfa0fc9762316c5701a7ea6161bc9c1"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setFromNormalizedDVec4</b> (const size2_t &amp;pos, dvec4 val)=0</td></tr>
-<tr class="memitem:a7334fddee7a1c2c3f8f06872840cfb68" id="r_a7334fddee7a1c2c3f8f06872840cfb68"><td class="memItemLeft" align="right" valign="top">virtual std::type_index&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7334fddee7a1c2c3f8f06872840cfb68">getTypeIndex</a> () const override final</td></tr>
-<tr class="memitem:acfb36dd32b7369ec364f4d1cc89d07ca" id="r_acfb36dd32b7369ec364f4d1cc89d07ca"><td class="memTemplParams" colspan="2">template&lt;typename Result, template&lt; class &gt; class Predicate = dispatching::filter::All, typename Callable, typename... Args&gt; </td></tr>
-<tr class="memitem:acfb36dd32b7369ec364f4d1cc89d07ca template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfb36dd32b7369ec364f4d1cc89d07ca">dispatch</a> (Callable &amp;&amp;callable, Args &amp;&amp;... args) -&gt; Result</td></tr>
-<tr class="memitem:a9440d5aab0f084470843663927115e92" id="r_a9440d5aab0f084470843663927115e92"><td class="memTemplParams" colspan="2">template&lt;typename Result, template&lt; class &gt; class Predicate = dispatching::filter::All, typename Callable, typename... Args&gt; </td></tr>
-<tr class="memitem:a9440d5aab0f084470843663927115e92 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9440d5aab0f084470843663927115e92">dispatch</a> (Callable &amp;&amp;callable, Args &amp;&amp;... args) const -&gt; Result</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1LayerRepresentation"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1LayerRepresentation')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1LayerRepresentation.html">inviwo::LayerRepresentation</a></td></tr>
-<tr class="memitem:ab9af62b734cb20cfced860054f537041 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_ab9af62b734cb20cfced860054f537041"><td class="memItemLeft" align="right" valign="top">
-LayerType&#160;</td><td class="memItemRight" valign="bottom"><b>getLayerType</b> () const</td></tr>
-<tr class="memitem:a82c017c85385314147985bf17f98d12c inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a82c017c85385314147985bf17f98d12c"><td class="memItemLeft" align="right" valign="top">
-virtual const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormat</b> () const =0</td></tr>
-<tr class="memitem:a8b0c3129008b22198360488c4ef55f9f inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a8b0c3129008b22198360488c4ef55f9f"><td class="memItemLeft" align="right" valign="top">
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatString</b> () const</td></tr>
-<tr class="memitem:a7938cc2a8d679d7bbebeb6c8a4e06a11 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a7938cc2a8d679d7bbebeb6c8a4e06a11"><td class="memItemLeft" align="right" valign="top">
-DataFormatId&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatId</b> () const</td></tr>
-<tr class="memitem:a06dff58e7e282066fda8d97508f45e24 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a06dff58e7e282066fda8d97508f45e24"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a06dff58e7e282066fda8d97508f45e24">setDimensions</a> (size2_t dimensions)=0</td></tr>
-<tr class="memitem:ad84c22214a9a8579ca06b7303c6c24eb inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_ad84c22214a9a8579ca06b7303c6c24eb"><td class="memItemLeft" align="right" valign="top">
-virtual const size2_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getDimensions</b> () const =0</td></tr>
-<tr class="memitem:a96d5afa38680787916a41f72002499d3 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a96d5afa38680787916a41f72002499d3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a96d5afa38680787916a41f72002499d3">setSwizzleMask</a> (const SwizzleMask &amp;mask)=0</td></tr>
-<tr class="memdesc:a96d5afa38680787916a41f72002499d3 inherit pub_methods_classinviwo_1_1LayerRepresentation"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the swizzle mask of the channels for sampling color layers Needs to be overloaded by child classes.  <br /></td></tr>
-<tr class="memitem:a424961d6905ef031f55e06da9854ea60 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a424961d6905ef031f55e06da9854ea60"><td class="memItemLeft" align="right" valign="top">
-virtual SwizzleMask&#160;</td><td class="memItemRight" valign="bottom"><b>getSwizzleMask</b> () const =0</td></tr>
-<tr class="memitem:a1e93725f168be34eb1c593e3847ceafb inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a1e93725f168be34eb1c593e3847ceafb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a1e93725f168be34eb1c593e3847ceafb">setInterpolation</a> (InterpolationType interpolation)=0</td></tr>
-<tr class="memdesc:a1e93725f168be34eb1c593e3847ceafb inherit pub_methods_classinviwo_1_1LayerRepresentation"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the interpolation for sampling layer Needs to be overloaded by child classes.  <br /></td></tr>
-<tr class="memitem:a51cf2f58ca334e40eb6e938c4fda62dc inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a51cf2f58ca334e40eb6e938c4fda62dc"><td class="memItemLeft" align="right" valign="top">
-virtual InterpolationType&#160;</td><td class="memItemRight" valign="bottom"><b>getInterpolation</b> () const =0</td></tr>
-<tr class="memitem:a66e785798aba116e2ea50a0ea6affb7c inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a66e785798aba116e2ea50a0ea6affb7c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a66e785798aba116e2ea50a0ea6affb7c">setWrapping</a> (const Wrapping2D &amp;wrapping)=0</td></tr>
-<tr class="memdesc:a66e785798aba116e2ea50a0ea6affb7c inherit pub_methods_classinviwo_1_1LayerRepresentation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the wrapping type of the layer Needs to be overloaded by child classes.  <br /></td></tr>
-<tr class="memitem:a15cbdda6cd1e68606eb155df014a79fe inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a15cbdda6cd1e68606eb155df014a79fe"><td class="memItemLeft" align="right" valign="top">
-virtual Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b> () const =0</td></tr>
 <tr class="memitem:a97a2490ec3e46fba3630ea1a33c8fcf5 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a97a2490ec3e46fba3630ea1a33c8fcf5"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="structinviwo_1_1LayerReprConfig.html">LayerReprConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config</b> () const</td></tr>
+<tr class="memitem:a82c017c85385314147985bf17f98d12c inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a82c017c85385314147985bf17f98d12c"><td class="memItemLeft" align="right" valign="top">
+virtual const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormat</b> () const =0</td></tr>
+<tr class="memitem:a7938cc2a8d679d7bbebeb6c8a4e06a11 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a7938cc2a8d679d7bbebeb6c8a4e06a11"><td class="memItemLeft" align="right" valign="top">
+DataFormatId&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatId</b> () const</td></tr>
+<tr class="memitem:a8b0c3129008b22198360488c4ef55f9f inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a8b0c3129008b22198360488c4ef55f9f"><td class="memItemLeft" align="right" valign="top">
+std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatString</b> () const</td></tr>
+<tr class="memitem:ad84c22214a9a8579ca06b7303c6c24eb inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_ad84c22214a9a8579ca06b7303c6c24eb"><td class="memItemLeft" align="right" valign="top">
+virtual const size2_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getDimensions</b> () const =0</td></tr>
+<tr class="memitem:a51cf2f58ca334e40eb6e938c4fda62dc inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a51cf2f58ca334e40eb6e938c4fda62dc"><td class="memItemLeft" align="right" valign="top">
+virtual InterpolationType&#160;</td><td class="memItemRight" valign="bottom"><b>getInterpolation</b> () const =0</td></tr>
+<tr class="memitem:ab9af62b734cb20cfced860054f537041 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_ab9af62b734cb20cfced860054f537041"><td class="memItemLeft" align="right" valign="top">
+LayerType&#160;</td><td class="memItemRight" valign="bottom"><b>getLayerType</b> () const</td></tr>
+<tr class="memitem:a424961d6905ef031f55e06da9854ea60 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a424961d6905ef031f55e06da9854ea60"><td class="memItemLeft" align="right" valign="top">
+virtual SwizzleMask&#160;</td><td class="memItemRight" valign="bottom"><b>getSwizzleMask</b> () const =0</td></tr>
+<tr class="memitem:a15cbdda6cd1e68606eb155df014a79fe inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a15cbdda6cd1e68606eb155df014a79fe"><td class="memItemLeft" align="right" valign="top">
+virtual Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b> () const =0</td></tr>
+<tr class="memitem:a06dff58e7e282066fda8d97508f45e24 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a06dff58e7e282066fda8d97508f45e24"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a06dff58e7e282066fda8d97508f45e24">setDimensions</a> (size2_t dimensions)=0</td></tr>
+<tr class="memitem:a1e93725f168be34eb1c593e3847ceafb inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a1e93725f168be34eb1c593e3847ceafb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a1e93725f168be34eb1c593e3847ceafb">setInterpolation</a> (InterpolationType interpolation)=0</td></tr>
+<tr class="memdesc:a1e93725f168be34eb1c593e3847ceafb inherit pub_methods_classinviwo_1_1LayerRepresentation"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the interpolation for sampling layer Needs to be overloaded by child classes.  <br /></td></tr>
+<tr class="memitem:a96d5afa38680787916a41f72002499d3 inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a96d5afa38680787916a41f72002499d3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a96d5afa38680787916a41f72002499d3">setSwizzleMask</a> (const SwizzleMask &amp;mask)=0</td></tr>
+<tr class="memdesc:a96d5afa38680787916a41f72002499d3 inherit pub_methods_classinviwo_1_1LayerRepresentation"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the swizzle mask of the channels for sampling color layers Needs to be overloaded by child classes.  <br /></td></tr>
+<tr class="memitem:a66e785798aba116e2ea50a0ea6affb7c inherit pub_methods_classinviwo_1_1LayerRepresentation" id="r_a66e785798aba116e2ea50a0ea6affb7c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerRepresentation.html#a66e785798aba116e2ea50a0ea6affb7c">setWrapping</a> (const Wrapping2D &amp;wrapping)=0</td></tr>
+<tr class="memdesc:a66e785798aba116e2ea50a0ea6affb7c inherit pub_methods_classinviwo_1_1LayerRepresentation"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the wrapping type of the layer Needs to be overloaded by child classes.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1DataRepresentation"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1DataRepresentation')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataRepresentation.html">inviwo::DataRepresentation&lt; Layer &gt;</a></td></tr>
-<tr class="memitem:a25d9683d4d203173ac3c3f020ea8c866 inherit pub_methods_classinviwo_1_1DataRepresentation" id="r_a25d9683d4d203173ac3c3f020ea8c866"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setOwner</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *owner)</td></tr>
 <tr class="memitem:a3a4c8f68dd08f749ff41672fd1083b0e inherit pub_methods_classinviwo_1_1DataRepresentation" id="r_a3a4c8f68dd08f749ff41672fd1083b0e"><td class="memItemLeft" align="right" valign="top">
 const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getOwner</b> () const</td></tr>
 <tr class="memitem:a1665c81699a263d22e0b9182b182d3c4 inherit pub_methods_classinviwo_1_1DataRepresentation" id="r_a1665c81699a263d22e0b9182b182d3c4"><td class="memItemLeft" align="right" valign="top">
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isValid</b> () const</td></tr>
+<tr class="memitem:a25d9683d4d203173ac3c3f020ea8c866 inherit pub_methods_classinviwo_1_1DataRepresentation" id="r_a25d9683d4d203173ac3c3f020ea8c866"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setOwner</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> *owner)</td></tr>
 <tr class="memitem:a392719a31af181a15e691670c723dc52 inherit pub_methods_classinviwo_1_1DataRepresentation" id="r_a392719a31af181a15e691670c723dc52"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setValid</b> (bool valid)</td></tr>
 <tr class="memitem:a478e365527de994f452ffa87181dd101 inherit pub_methods_classinviwo_1_1DataRepresentation" id="r_a478e365527de994f452ffa87181dd101"><td class="memItemLeft" align="right" valign="top">
@@ -199,17 +199,17 @@ static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>posToIndex</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ad7341ff4a2f25798140446d3ba4772a0" id="r_ad7341ff4a2f25798140446d3ba4772a0"><td class="memItemLeft" align="right" valign="top"><a id="ad7341ff4a2f25798140446d3ba4772a0" name="ad7341ff4a2f25798140446d3ba4772a0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>LayerRAM</b> (LayerType type=LayerType::Color)</td></tr>
 <tr class="memitem:a5d9996cb10b966d5c07c3b137a28ca76" id="r_a5d9996cb10b966d5c07c3b137a28ca76"><td class="memItemLeft" align="right" valign="top"><a id="a5d9996cb10b966d5c07c3b137a28ca76" name="a5d9996cb10b966d5c07c3b137a28ca76"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>LayerRAM</b> (const LayerRAM &amp;rhs)=default</td></tr>
+<tr class="memitem:ad7341ff4a2f25798140446d3ba4772a0" id="r_ad7341ff4a2f25798140446d3ba4772a0"><td class="memItemLeft" align="right" valign="top"><a id="ad7341ff4a2f25798140446d3ba4772a0" name="ad7341ff4a2f25798140446d3ba4772a0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>LayerRAM</b> (LayerType type=LayerType::Color)</td></tr>
 <tr class="memitem:af19c841888baae387bc211162fee8589" id="r_af19c841888baae387bc211162fee8589"><td class="memItemLeft" align="right" valign="top"><a id="af19c841888baae387bc211162fee8589" name="af19c841888baae387bc211162fee8589"></a>
 LayerRAM &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const LayerRAM &amp;that)=default</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1LayerRepresentation"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1LayerRepresentation')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1LayerRepresentation.html">inviwo::LayerRepresentation</a></td></tr>
-<tr class="memitem:ada7066d7f22a0e5f8f06ce507f80be92 inherit pro_methods_classinviwo_1_1LayerRepresentation" id="r_ada7066d7f22a0e5f8f06ce507f80be92"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>LayerRepresentation</b> (LayerType type=LayerType::Color)</td></tr>
 <tr class="memitem:acad8827dac98f96e7f9ebb50a160c5de inherit pro_methods_classinviwo_1_1LayerRepresentation" id="r_acad8827dac98f96e7f9ebb50a160c5de"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>LayerRepresentation</b> (const LayerRepresentation &amp;rhs)=default</td></tr>
+<tr class="memitem:ada7066d7f22a0e5f8f06ce507f80be92 inherit pro_methods_classinviwo_1_1LayerRepresentation" id="r_ada7066d7f22a0e5f8f06ce507f80be92"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>LayerRepresentation</b> (LayerType type=LayerType::Color)</td></tr>
 <tr class="memitem:a1ac93558321775461853f43ed2175c27 inherit pro_methods_classinviwo_1_1LayerRepresentation" id="r_a1ac93558321775461853f43ed2175c27"><td class="memItemLeft" align="right" valign="top">
 LayerRepresentation &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const LayerRepresentation &amp;that)=default</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1DataRepresentation"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1DataRepresentation')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1DataRepresentation.html">inviwo::DataRepresentation&lt; Layer &gt;</a></td></tr>
@@ -405,7 +405,7 @@ template&lt;typename Result, template&lt; class &gt; class Predicate, typename C
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>layerram.h</b></li>
+<li>include/inviwo/core/datastructures/image/<b>layerram.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

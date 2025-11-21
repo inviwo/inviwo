@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1DataVisualizerManager.html','','classin
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;datavisualizermanager.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/rendering/datavisualizermanager.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -102,16 +102,16 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataVisualizerManager</b> (const DataVisualizerManager &amp;)=delete</td></tr>
 <tr class="memitem:a1777af21edbeb335897ca03cc3e667a7" id="r_a1777af21edbeb335897ca03cc3e667a7"><td class="memItemLeft" align="right" valign="top"><a id="a1777af21edbeb335897ca03cc3e667a7" name="a1777af21edbeb335897ca03cc3e667a7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataVisualizerManager</b> (DataVisualizerManager &amp;&amp;)=default</td></tr>
+<tr class="memitem:a49b75d6fe46864d37fccb833b37bdd40" id="r_a49b75d6fe46864d37fccb833b37bdd40"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49b75d6fe46864d37fccb833b37bdd40">getDataVisualizersForFile</a> (const std::filesystem::path &amp;pathOrExtension) const</td></tr>
+<tr class="memdesc:a49b75d6fe46864d37fccb833b37bdd40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Visualizers supporting the file extension of the supplied string.  <br /></td></tr>
+<tr class="memitem:ab53379752e043514032d4c691cfe8776" id="r_ab53379752e043514032d4c691cfe8776"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab53379752e043514032d4c691cfe8776">getDataVisualizersForOutport</a> (const <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *port) const</td></tr>
+<tr class="memitem:a63a54c16d9e6b679cd5723255c58d99c" id="r_a63a54c16d9e6b679cd5723255c58d99c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63a54c16d9e6b679cd5723255c58d99c">getSupportedFileExtensions</a> () const</td></tr>
 <tr class="memitem:a594f32c674c599520ec0d47bd0700efc" id="r_a594f32c674c599520ec0d47bd0700efc"><td class="memItemLeft" align="right" valign="top"><a id="a594f32c674c599520ec0d47bd0700efc" name="a594f32c674c599520ec0d47bd0700efc"></a>
 DataVisualizerManager &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataVisualizerManager &amp;that)=delete</td></tr>
 <tr class="memitem:ad8b6e49729115eabd5d44b4842b0655a" id="r_ad8b6e49729115eabd5d44b4842b0655a"><td class="memItemLeft" align="right" valign="top"><a id="ad8b6e49729115eabd5d44b4842b0655a" name="ad8b6e49729115eabd5d44b4842b0655a"></a>
 DataVisualizerManager &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DataVisualizerManager &amp;&amp;that)=default</td></tr>
 <tr class="memitem:a7a14578f0afc268cd7b6eb3264100b58" id="r_a7a14578f0afc268cd7b6eb3264100b58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a14578f0afc268cd7b6eb3264100b58">registerObject</a> (<a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> *visualizer)</td></tr>
 <tr class="memitem:ad7fcd2db32d6c32a1a340aae69829fc4" id="r_ad7fcd2db32d6c32a1a340aae69829fc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7fcd2db32d6c32a1a340aae69829fc4">unRegisterObject</a> (<a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> *visualizer)</td></tr>
-<tr class="memitem:a63a54c16d9e6b679cd5723255c58d99c" id="r_a63a54c16d9e6b679cd5723255c58d99c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63a54c16d9e6b679cd5723255c58d99c">getSupportedFileExtensions</a> () const</td></tr>
-<tr class="memitem:a49b75d6fe46864d37fccb833b37bdd40" id="r_a49b75d6fe46864d37fccb833b37bdd40"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49b75d6fe46864d37fccb833b37bdd40">getDataVisualizersForFile</a> (const std::filesystem::path &amp;pathOrExtension) const</td></tr>
-<tr class="memdesc:a49b75d6fe46864d37fccb833b37bdd40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Visualizers supporting the file extension of the supplied string.  <br /></td></tr>
-<tr class="memitem:ab53379752e043514032d4c691cfe8776" id="r_ab53379752e043514032d4c691cfe8776"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab53379752e043514032d4c691cfe8776">getDataVisualizersForOutport</a> (const <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *port) const</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Visualizer Manager keeps track of all registered <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Visualizers. One can ask the <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Visualizer Manager for all <a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> Visualizer supporting a file extension or an <a class="el" href="classinviwo_1_1Outport.html" title="Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports.">Outport</a> type. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> </dd></dl>
@@ -214,7 +214,7 @@ DataVisualizerManager &amp;&#160;</td><td class="memItemRight" valign="bottom"><
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>datavisualizermanager.h</b></li>
+<li>include/inviwo/core/rendering/<b>datavisualizermanager.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -109,31 +109,31 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac317775bdd7a6de1ce83cf5f27a4a249" id="r_ac317775bdd7a6de1ce83cf5f27a4a249"><td class="memItemLeft" align="right" valign="top"><a id="ac317775bdd7a6de1ce83cf5f27a4a249" name="ac317775bdd7a6de1ce83cf5f27a4a249"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataFrameModel</b> (QObject *parent=nullptr)</td></tr>
-<tr class="memitem:a1efbf2f07be0ad3b00b0b222564336e9" id="r_a1efbf2f07be0ad3b00b0b222564336e9"><td class="memItemLeft" align="right" valign="top"><a id="a1efbf2f07be0ad3b00b0b222564336e9" name="a1efbf2f07be0ad3b00b0b222564336e9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setManager</b> (<a class="el" href="classinviwo_1_1BrushingAndLinkingManager.html">BrushingAndLinkingManager</a> &amp;manager)</td></tr>
-<tr class="memitem:aec2adbb73b69518ac7c50d37d69e8e3a" id="r_aec2adbb73b69518ac7c50d37d69e8e3a"><td class="memItemLeft" align="right" valign="top"><a id="aec2adbb73b69518ac7c50d37d69e8e3a" name="aec2adbb73b69518ac7c50d37d69e8e3a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDataFrame</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &gt; <a class="el" href="namespaceinviwo_1_1dataframe.html">dataframe</a>, bool categoryIndices=false)</td></tr>
 <tr class="memitem:ac23c3dcfe53fd23e3a9b6a079281c7fc" id="r_ac23c3dcfe53fd23e3a9b6a079281c7fc"><td class="memItemLeft" align="right" valign="top"><a id="ac23c3dcfe53fd23e3a9b6a079281c7fc" name="ac23c3dcfe53fd23e3a9b6a079281c7fc"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>brushingUpdate</b> ()</td></tr>
-<tr class="memitem:ad34930c230f73f9d2425293f7de03b64" id="r_ad34930c230f73f9d2425293f7de03b64"><td class="memItemLeft" align="right" valign="top"><a id="ad34930c230f73f9d2425293f7de03b64" name="ad34930c230f73f9d2425293f7de03b64"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>rowCount</b> (const QModelIndex &amp;parent=QModelIndex()) const override</td></tr>
 <tr class="memitem:a2915e94dae25cf278472127678bbe5dd" id="r_a2915e94dae25cf278472127678bbe5dd"><td class="memItemLeft" align="right" valign="top"><a id="a2915e94dae25cf278472127678bbe5dd" name="a2915e94dae25cf278472127678bbe5dd"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>columnCount</b> (const QModelIndex &amp;parent=QModelIndex()) const override</td></tr>
 <tr class="memitem:ad9358ef77ef703b52054abce4fce8b6c" id="r_ad9358ef77ef703b52054abce4fce8b6c"><td class="memItemLeft" align="right" valign="top"><a id="ad9358ef77ef703b52054abce4fce8b6c" name="ad9358ef77ef703b52054abce4fce8b6c"></a>
 QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> (const QModelIndex &amp;index, int role=Qt::DisplayRole) const override</td></tr>
+<tr class="memitem:ac317775bdd7a6de1ce83cf5f27a4a249" id="r_ac317775bdd7a6de1ce83cf5f27a4a249"><td class="memItemLeft" align="right" valign="top"><a id="ac317775bdd7a6de1ce83cf5f27a4a249" name="ac317775bdd7a6de1ce83cf5f27a4a249"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DataFrameModel</b> (QObject *parent=nullptr)</td></tr>
+<tr class="memitem:a141cffdc1df575428db3677f01611945" id="r_a141cffdc1df575428db3677f01611945"><td class="memItemLeft" align="right" valign="top"><a id="a141cffdc1df575428db3677f01611945" name="a141cffdc1df575428db3677f01611945"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectedRows</b> () const</td></tr>
 <tr class="memitem:a7b67d2725abdeee6de05b4a370798373" id="r_a7b67d2725abdeee6de05b4a370798373"><td class="memItemLeft" align="right" valign="top"><a id="a7b67d2725abdeee6de05b4a370798373" name="a7b67d2725abdeee6de05b4a370798373"></a>
 QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>headerData</b> (int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override</td></tr>
 <tr class="memitem:ab501ce9288d7fb3eb7ba5a53604636ea" id="r_ab501ce9288d7fb3eb7ba5a53604636ea"><td class="memItemLeft" align="right" valign="top"><a id="ab501ce9288d7fb3eb7ba5a53604636ea" name="ab501ce9288d7fb3eb7ba5a53604636ea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>highlightRow</b> (const QModelIndex &amp;index)</td></tr>
+<tr class="memitem:ad34930c230f73f9d2425293f7de03b64" id="r_ad34930c230f73f9d2425293f7de03b64"><td class="memItemLeft" align="right" valign="top"><a id="ad34930c230f73f9d2425293f7de03b64" name="ad34930c230f73f9d2425293f7de03b64"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>rowCount</b> (const QModelIndex &amp;parent=QModelIndex()) const override</td></tr>
 <tr class="memitem:a7601469d79196509abc27e443d94d93f" id="r_a7601469d79196509abc27e443d94d93f"><td class="memItemLeft" align="right" valign="top"><a id="a7601469d79196509abc27e443d94d93f" name="a7601469d79196509abc27e443d94d93f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>selectRows</b> (const QModelIndexList &amp;indices)</td></tr>
-<tr class="memitem:a141cffdc1df575428db3677f01611945" id="r_a141cffdc1df575428db3677f01611945"><td class="memItemLeft" align="right" valign="top"><a id="a141cffdc1df575428db3677f01611945" name="a141cffdc1df575428db3677f01611945"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectedRows</b> () const</td></tr>
+<tr class="memitem:aec2adbb73b69518ac7c50d37d69e8e3a" id="r_aec2adbb73b69518ac7c50d37d69e8e3a"><td class="memItemLeft" align="right" valign="top"><a id="aec2adbb73b69518ac7c50d37d69e8e3a" name="aec2adbb73b69518ac7c50d37d69e8e3a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setDataFrame</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1DataFrame.html">DataFrame</a> &gt; <a class="el" href="namespaceinviwo_1_1dataframe.html">dataframe</a>, bool categoryIndices=false)</td></tr>
+<tr class="memitem:a1efbf2f07be0ad3b00b0b222564336e9" id="r_a1efbf2f07be0ad3b00b0b222564336e9"><td class="memItemLeft" align="right" valign="top"><a id="a1efbf2f07be0ad3b00b0b222564336e9" name="a1efbf2f07be0ad3b00b0b222564336e9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setManager</b> (<a class="el" href="classinviwo_1_1BrushingAndLinkingManager.html">BrushingAndLinkingManager</a> &amp;manager)</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>dataframemodel.h</b></li>
+<li>modules/dataframeqt/include/inviwo/dataframeqt/<b>dataframemodel.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

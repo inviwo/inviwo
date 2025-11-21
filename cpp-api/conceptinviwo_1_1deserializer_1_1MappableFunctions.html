@@ -94,7 +94,17 @@ $(function(){initNavTree('conceptinviwo_1_1deserializer_1_1MappableFunctions.htm
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> T, <span class="keyword">typename</span> Functions&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1deserializer_1_1MappableFunctions.html">inviwo::deserializer::MappableFunctions</a> =  <span class="keyword">requires</span>(<span class="keyword">const</span> K&amp; k, T&amp; t, Functions f, <span class="keywordtype">size_t</span> i, std::string_view s) {</div>
+<div class="line">                                { std::invoke(f.idTransform, s) } -&gt; std::same_as&lt;K&gt;;</div>
+<div class="line">                                { std::invoke(f.makeNew) } -&gt; std::same_as&lt;T&gt;;</div>
+<div class="line">                                { std::invoke(f.shouldMakeNew, k) } -&gt; std::same_as&lt;bool&gt;;</div>
+<div class="line">                                { std::invoke(f.canRecreate, k) } -&gt; std::same_as&lt;bool&gt;;</div>
+<div class="line">                                { std::invoke(f.onNew, k, t) };</div>
+<div class="line">                                { std::invoke(f.onRemove, k) };</div>
+<div class="line">                            }</div>
+<div class="ttc" id="aconceptinviwo_1_1deserializer_1_1MappableFunctions_html"><div class="ttname"><a href="conceptinviwo_1_1deserializer_1_1MappableFunctions.html">inviwo::deserializer::MappableFunctions</a></div><div class="ttdef"><b>Definition</b> deserializer.h:165</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

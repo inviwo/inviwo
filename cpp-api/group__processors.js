@@ -1,5 +1,9 @@
 var group__processors =
 [
+    [ "inviwo::ImageLayoutGL", "classinviwo_1_1ImageLayoutGL.html", [
+      [ "isConnectionActive", "classinviwo_1_1ImageLayoutGL.html#aafc196718198091c7853eb41219ba61e", null ],
+      [ "process", "classinviwo_1_1ImageLayoutGL.html#ae42039a3d67ced931a062d97de7820c5", null ]
+    ] ],
     [ "inviwo::Processor", "classinviwo_1_1Processor.html", [
       [ "Processor", "classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6", null ],
       [ "accept", "classinviwo_1_1Processor.html#a06088cebce8b3d454b56abf70458b62e", null ],
@@ -27,9 +31,5 @@ var group__processors =
       [ "setIdentifier", "classinviwo_1_1Processor.html#a84911c1af44e34f3aa57fababe2b545f", null ],
       [ "setValid", "classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a", null ],
       [ "status", "classinviwo_1_1Processor.html#a1bc3af8dcfabb8599f4ff0f8c769bebf", null ]
-    ] ],
-    [ "inviwo::ImageLayoutGL", "classinviwo_1_1ImageLayoutGL.html", [
-      [ "isConnectionActive", "classinviwo_1_1ImageLayoutGL.html#aafc196718198091c7853eb41219ba61e", null ],
-      [ "process", "classinviwo_1_1ImageLayoutGL.html#ae42039a3d67ced931a062d97de7820c5", null ]
     ] ]
 ];

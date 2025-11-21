@@ -133,6 +133,13 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a05883f6787a51554aa11b04c094df048" id="r_a05883f6787a51554aa11b04c094df048"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05883f6787a51554aa11b04c094df048">draw</a> () override</td></tr>
+<tr class="memdesc:a05883f6787a51554aa11b04c094df048"><td class="mdescLeft">&#160;</td><td class="mdescRight">draws the mesh using its mesh info. If index buffers are present, the mesh will be rendered with glDrawElements() using those index buffers and the associated draw modes. Otherwise, the entire mesh is rendered using glDrawArrays with the default draw mode returned by Mesh::getDefaultMeshInfo().  <br /></td></tr>
+<tr class="memitem:af9ee868adf285db2a5b20131d54904de" id="r_af9ee868adf285db2a5b20131d54904de"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9ee868adf285db2a5b20131d54904de">draw</a> (DrawMode drawMode)</td></tr>
+<tr class="memdesc:af9ee868adf285db2a5b20131d54904de"><td class="mdescLeft">&#160;</td><td class="mdescRight">draws the mesh with the specified draw mode. If index buffers are present, the mesh will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh is rendered using glDrawArrays.  <br /></td></tr>
+<tr class="memitem:ab0ae225541f644bcadc6837fd19d1f03" id="r_ab0ae225541f644bcadc6837fd19d1f03"><td class="memItemLeft" align="right" valign="top"><a id="ab0ae225541f644bcadc6837fd19d1f03" name="ab0ae225541f644bcadc6837fd19d1f03"></a>
+<a class="el" href="classinviwo_1_1MeshDrawerGL_1_1DrawObject.html">DrawObject</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawObject</b> () const</td></tr>
+<tr class="memitem:ae49100ba55882aa71719f4ab8bf7d064" id="r_ae49100ba55882aa71719f4ab8bf7d064"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae49100ba55882aa71719f4ab8bf7d064">getMesh</a> () const override</td></tr>
 <tr class="memitem:a8b027a444acc9a45c56cb58e0e5e68c7" id="r_a8b027a444acc9a45c56cb58e0e5e68c7"><td class="memItemLeft" align="right" valign="top"><a id="a8b027a444acc9a45c56cb58e0e5e68c7" name="a8b027a444acc9a45c56cb58e0e5e68c7"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MeshDrawerGL</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *mesh)</td></tr>
 <tr class="memitem:aa4bec39bb295b19e2033ac9621c128c5" id="r_aa4bec39bb295b19e2033ac9621c128c5"><td class="memItemLeft" align="right" valign="top"><a id="aa4bec39bb295b19e2033ac9621c128c5" name="aa4bec39bb295b19e2033ac9621c128c5"></a>
@@ -143,22 +150,15 @@ Public Member Functions</h2></td></tr>
 MeshDrawerGL &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const MeshDrawerGL &amp;other)=default</td></tr>
 <tr class="memitem:a4ffb9febc5bdaccd38801dc59c9267bc" id="r_a4ffb9febc5bdaccd38801dc59c9267bc"><td class="memItemLeft" align="right" valign="top"><a id="a4ffb9febc5bdaccd38801dc59c9267bc" name="a4ffb9febc5bdaccd38801dc59c9267bc"></a>
 MeshDrawerGL &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (MeshDrawerGL &amp;&amp;rhs)=default</td></tr>
-<tr class="memitem:ab0ae225541f644bcadc6837fd19d1f03" id="r_ab0ae225541f644bcadc6837fd19d1f03"><td class="memItemLeft" align="right" valign="top"><a id="ab0ae225541f644bcadc6837fd19d1f03" name="ab0ae225541f644bcadc6837fd19d1f03"></a>
-<a class="el" href="classinviwo_1_1MeshDrawerGL_1_1DrawObject.html">DrawObject</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawObject</b> () const</td></tr>
-<tr class="memitem:a05883f6787a51554aa11b04c094df048" id="r_a05883f6787a51554aa11b04c094df048"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05883f6787a51554aa11b04c094df048">draw</a> () override</td></tr>
-<tr class="memdesc:a05883f6787a51554aa11b04c094df048"><td class="mdescLeft">&#160;</td><td class="mdescRight">draws the mesh using its mesh info. If index buffers are present, the mesh will be rendered with glDrawElements() using those index buffers and the associated draw modes. Otherwise, the entire mesh is rendered using glDrawArrays with the default draw mode returned by Mesh::getDefaultMeshInfo().  <br /></td></tr>
-<tr class="memitem:af9ee868adf285db2a5b20131d54904de" id="r_af9ee868adf285db2a5b20131d54904de"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9ee868adf285db2a5b20131d54904de">draw</a> (DrawMode drawMode)</td></tr>
-<tr class="memdesc:af9ee868adf285db2a5b20131d54904de"><td class="mdescLeft">&#160;</td><td class="mdescRight">draws the mesh with the specified draw mode. If index buffers are present, the mesh will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh is rendered using glDrawArrays.  <br /></td></tr>
-<tr class="memitem:ae49100ba55882aa71719f4ab8bf7d064" id="r_ae49100ba55882aa71719f4ab8bf7d064"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae49100ba55882aa71719f4ab8bf7d064">getMesh</a> () const override</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae611f29d1826154a8f4583a29d48cc40" id="r_ae611f29d1826154a8f4583a29d48cc40"><td class="memItemLeft" align="right" valign="top"><a id="ae611f29d1826154a8f4583a29d48cc40" name="ae611f29d1826154a8f4583a29d48cc40"></a>
-static <a class="el" href="classinviwo_1_1MeshDrawerGL_1_1DrawObject.html">DrawObject</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawObject</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *mesh)</td></tr>
 <tr class="memitem:a498f173be2ab3b54b7883f887161c2b4" id="r_a498f173be2ab3b54b7883f887161c2b4"><td class="memItemLeft" align="right" valign="top"><a id="a498f173be2ab3b54b7883f887161c2b4" name="a498f173be2ab3b54b7883f887161c2b4"></a>
 static DrawMode&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawMode</b> (DrawType, ConnectivityType)</td></tr>
 <tr class="memitem:a6f52cbb5d5ba68c92128d8a228911693" id="r_a6f52cbb5d5ba68c92128d8a228911693"><td class="memItemLeft" align="right" valign="top"><a id="a6f52cbb5d5ba68c92128d8a228911693" name="a6f52cbb5d5ba68c92128d8a228911693"></a>
 static DrawMode&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawMode</b> (<a class="el" href="structinviwo_1_1Mesh_1_1MeshInfo.html">Mesh::MeshInfo</a> meshInfo)</td></tr>
+<tr class="memitem:ae611f29d1826154a8f4583a29d48cc40" id="r_ae611f29d1826154a8f4583a29d48cc40"><td class="memItemLeft" align="right" valign="top"><a id="ae611f29d1826154a8f4583a29d48cc40" name="ae611f29d1826154a8f4583a29d48cc40"></a>
+static <a class="el" href="classinviwo_1_1MeshDrawerGL_1_1DrawObject.html">DrawObject</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawObject</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *mesh)</td></tr>
 <tr class="memitem:a65a6a5b09dcc282dc1bed88512d484e2" id="r_a65a6a5b09dcc282dc1bed88512d484e2"><td class="memItemLeft" align="right" valign="top"><a id="a65a6a5b09dcc282dc1bed88512d484e2" name="a65a6a5b09dcc282dc1bed88512d484e2"></a>
 static GLenum&#160;</td><td class="memItemRight" valign="bottom"><b>getGLDrawMode</b> (DrawMode)</td></tr>
 <tr class="memitem:a95595d781df8d5c33c59458fa1035d59" id="r_a95595d781df8d5c33c59458fa1035d59"><td class="memItemLeft" align="right" valign="top"><a id="a95595d781df8d5c33c59458fa1035d59" name="a95595d781df8d5c33c59458fa1035d59"></a>
@@ -166,8 +166,8 @@ static GLenum&#160;</td><td class="memItemRight" valign="bottom"><b>getGLDrawMod
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a73db24b13c4197ec8cb5150e067fb3cf" id="r_a73db24b13c4197ec8cb5150e067fb3cf"><td class="memItemLeft" align="right" valign="top">virtual MeshDrawer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73db24b13c4197ec8cb5150e067fb3cf">create</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *geom) const override</td></tr>
 <tr class="memitem:a7e401c5afe37e63c4f2d1ac6260d436c" id="r_a7e401c5afe37e63c4f2d1ac6260d436c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e401c5afe37e63c4f2d1ac6260d436c">canDraw</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *geom) const override</td></tr>
+<tr class="memitem:a73db24b13c4197ec8cb5150e067fb3cf" id="r_a73db24b13c4197ec8cb5150e067fb3cf"><td class="memItemLeft" align="right" valign="top">virtual MeshDrawer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73db24b13c4197ec8cb5150e067fb3cf">create</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *geom) const override</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -340,7 +340,7 @@ const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> *&#160;</td><td cla
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>meshdrawergl.h</b></li>
+<li>modules/opengl/include/modules/opengl/rendering/<b>meshdrawergl.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

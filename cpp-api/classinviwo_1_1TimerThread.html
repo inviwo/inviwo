@@ -94,14 +94,14 @@ $(function(){initNavTree('classinviwo_1_1TimerThread.html','','classinviwo_1_1Ti
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;timer.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/timer.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a7c7ec39731fb5546dd1ddf720885741b" id="r_a7c7ec39731fb5546dd1ddf720885741b"><td class="memItemLeft" align="right" valign="top"><a id="a7c7ec39731fb5546dd1ddf720885741b" name="a7c7ec39731fb5546dd1ddf720885741b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Milliseconds</b> = std::chrono::milliseconds</td></tr>
 <tr class="memitem:a3434240c43114030ace22bad8248d593" id="r_a3434240c43114030ace22bad8248d593"><td class="memItemLeft" align="right" valign="top"><a id="a3434240c43114030ace22bad8248d593" name="a3434240c43114030ace22bad8248d593"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>clock_t</b> = std::chrono::high_resolution_clock</td></tr>
+<tr class="memitem:a7c7ec39731fb5546dd1ddf720885741b" id="r_a7c7ec39731fb5546dd1ddf720885741b"><td class="memItemLeft" align="right" valign="top"><a id="a7c7ec39731fb5546dd1ddf720885741b" name="a7c7ec39731fb5546dd1ddf720885741b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Milliseconds</b> = std::chrono::milliseconds</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -111,7 +111,7 @@ std::optional&lt; clock_t::time_point &gt;&#160;</td><td class="memItemRight" va
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A background thread to be shared by many timers and delays. Hold a queue of TimerInfo object with a time and a callback that will be called using dispatchFront when the time is reached. InviwoApplicaition owns a default <a class="el" href="classinviwo_1_1TimerThread.html">TimerThread</a>. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>timer.h</b></li>
+<li>include/inviwo/core/util/<b>timer.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

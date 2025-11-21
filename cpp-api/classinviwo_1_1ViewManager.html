@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1ViewManager.html','','classinviwo_1_1Vi
 <p>A viewport manager for layout processors like imagelayout. Viewports are added using the following coordinate system:  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;viewmanager.h&gt;</code></p>
+<p><code>#include &lt;modules/basegl/viewmanager.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -107,35 +107,35 @@ Classes</h2></td></tr>
 Public Types</h2></td></tr>
 <tr class="memitem:aa52cb599e17de124da948e94d2fab990" id="r_aa52cb599e17de124da948e94d2fab990"><td class="memItemLeft" align="right" valign="top"><a id="aa52cb599e17de124da948e94d2fab990" name="aa52cb599e17de124da948e94d2fab990"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>Propagator</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1Event.html">Event</a>*, size_t ind)&gt;</td></tr>
-<tr class="memitem:a64985bd9cdc9df196c8e3da5c89d5ed4" id="r_a64985bd9cdc9df196c8e3da5c89d5ed4"><td class="memItemLeft" align="right" valign="top"><a id="a64985bd9cdc9df196c8e3da5c89d5ed4" name="a64985bd9cdc9df196c8e3da5c89d5ed4"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ViewList</b> = std::vector&lt;<a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a>&gt;</td></tr>
 <tr class="memitem:a8659492782eceebcc5063520c4099d8b" id="r_a8659492782eceebcc5063520c4099d8b"><td class="memItemLeft" align="right" valign="top"><a id="a8659492782eceebcc5063520c4099d8b" name="a8659492782eceebcc5063520c4099d8b"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ViewId</b> = size_t</td></tr>
+<tr class="memitem:a64985bd9cdc9df196c8e3da5c89d5ed4" id="r_a64985bd9cdc9df196c8e3da5c89d5ed4"><td class="memItemLeft" align="right" valign="top"><a id="a64985bd9cdc9df196c8e3da5c89d5ed4" name="a64985bd9cdc9df196c8e3da5c89d5ed4"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ViewList</b> = std::vector&lt;<a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a>&gt;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa6837a9a61d4c7bfa039c8fef2fb307a" id="r_aa6837a9a61d4c7bfa039c8fef2fb307a"><td class="memItemLeft" align="right" valign="top"><a id="aa6837a9a61d4c7bfa039c8fef2fb307a" name="aa6837a9a61d4c7bfa039c8fef2fb307a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>propagateEvent</b> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, Propagator propagator)</td></tr>
-<tr class="memdesc:aa6837a9a61d4c7bfa039c8fef2fb307a"><td class="mdescLeft">&#160;</td><td class="mdescRight">maps a propagates event to the selected view return whether the event found a view was found <br /></td></tr>
+<tr class="memitem:abd2332e29affcc10f2dd21259a20fc30" id="r_abd2332e29affcc10f2dd21259a20fc30"><td class="memItemLeft" align="right" valign="top"><a id="abd2332e29affcc10f2dd21259a20fc30" name="abd2332e29affcc10f2dd21259a20fc30"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:a90612d5f1a1ae588b8891da1f92208f8" id="r_a90612d5f1a1ae588b8891da1f92208f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90612d5f1a1ae588b8891da1f92208f8">erase</a> (<a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> view)</td></tr>
+<tr class="memdesc:a90612d5f1a1ae588b8891da1f92208f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase a previously defined viewport (x,y width,height). If the viewport was not added before, nothing happens.  <br /></td></tr>
+<tr class="memitem:a3fdf9811beced9bf29a3389c3599cb44" id="r_a3fdf9811beced9bf29a3389c3599cb44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fdf9811beced9bf29a3389c3599cb44">erase</a> (ViewId ind)</td></tr>
+<tr class="memdesc:a3fdf9811beced9bf29a3389c3599cb44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase a previously defined viewport using index ind.  <br /></td></tr>
 <tr class="memitem:ae8406c73c15eb048d36a45d7f6bc3c2a" id="r_ae8406c73c15eb048d36a45d7f6bc3c2a"><td class="memItemLeft" align="right" valign="top"><a id="ae8406c73c15eb048d36a45d7f6bc3c2a" name="ae8406c73c15eb048d36a45d7f6bc3c2a"></a>
 std::pair&lt; bool, ViewId &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSelectedView</b> () const</td></tr>
 <tr class="memdesc:ae8406c73c15eb048d36a45d7f6bc3c2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pair with a bool of whether a view was found, and the index of the found view. <br /></td></tr>
 <tr class="memitem:ae4776fe163d0059a4c5a3b1b0b7fdfd9" id="r_ae4776fe163d0059a4c5a3b1b0b7fdfd9"><td class="memItemLeft" align="right" valign="top"><a id="ae4776fe163d0059a4c5a3b1b0b7fdfd9" name="ae4776fe163d0059a4c5a3b1b0b7fdfd9"></a>
 const ViewList &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getViews</b> () const</td></tr>
-<tr class="memitem:a03b33d969761141d199e665271cb25f8" id="r_a03b33d969761141d199e665271cb25f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03b33d969761141d199e665271cb25f8">push_back</a> (<a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> view)</td></tr>
-<tr class="memdesc:a03b33d969761141d199e665271cb25f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a viewport (x,y width,height) using the following coordinate system: y ^ | | ------&gt; x.  <br /></td></tr>
-<tr class="memitem:a90612d5f1a1ae588b8891da1f92208f8" id="r_a90612d5f1a1ae588b8891da1f92208f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90612d5f1a1ae588b8891da1f92208f8">erase</a> (<a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> view)</td></tr>
-<tr class="memdesc:a90612d5f1a1ae588b8891da1f92208f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase a previously defined viewport (x,y width,height). If the viewport was not added before, nothing happens.  <br /></td></tr>
-<tr class="memitem:a3fdf9811beced9bf29a3389c3599cb44" id="r_a3fdf9811beced9bf29a3389c3599cb44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fdf9811beced9bf29a3389c3599cb44">erase</a> (ViewId ind)</td></tr>
-<tr class="memdesc:a3fdf9811beced9bf29a3389c3599cb44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase a previously defined viewport using index ind.  <br /></td></tr>
-<tr class="memitem:a7c25b79905f94aa30551e677d8dfbf20" id="r_a7c25b79905f94aa30551e677d8dfbf20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c25b79905f94aa30551e677d8dfbf20">replace</a> (ViewId ind, <a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> view)</td></tr>
-<tr class="memdesc:a7c25b79905f94aa30551e677d8dfbf20"><td class="mdescLeft">&#160;</td><td class="mdescRight">replace a previously defined viewport at index ind with a new viewport using the following coordinate system:  <br /></td></tr>
 <tr class="memitem:ad8ef6f4368971ae2be255dfc211e1748" id="r_ad8ef6f4368971ae2be255dfc211e1748"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8ef6f4368971ae2be255dfc211e1748">operator[]</a> (ViewId ind)</td></tr>
 <tr class="memdesc:ad8ef6f4368971ae2be255dfc211e1748"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return viewport using index ind.  <br /></td></tr>
+<tr class="memitem:aa6837a9a61d4c7bfa039c8fef2fb307a" id="r_aa6837a9a61d4c7bfa039c8fef2fb307a"><td class="memItemLeft" align="right" valign="top"><a id="aa6837a9a61d4c7bfa039c8fef2fb307a" name="aa6837a9a61d4c7bfa039c8fef2fb307a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>propagateEvent</b> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, Propagator propagator)</td></tr>
+<tr class="memdesc:aa6837a9a61d4c7bfa039c8fef2fb307a"><td class="mdescLeft">&#160;</td><td class="mdescRight">maps a propagates event to the selected view return whether the event found a view was found <br /></td></tr>
+<tr class="memitem:a03b33d969761141d199e665271cb25f8" id="r_a03b33d969761141d199e665271cb25f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03b33d969761141d199e665271cb25f8">push_back</a> (<a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> view)</td></tr>
+<tr class="memdesc:a03b33d969761141d199e665271cb25f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a viewport (x,y width,height) using the following coordinate system: y ^ | | ------&gt; x.  <br /></td></tr>
+<tr class="memitem:a7c25b79905f94aa30551e677d8dfbf20" id="r_a7c25b79905f94aa30551e677d8dfbf20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c25b79905f94aa30551e677d8dfbf20">replace</a> (ViewId ind, <a class="el" href="structinviwo_1_1ViewManager_1_1View.html">View</a> view)</td></tr>
+<tr class="memdesc:a7c25b79905f94aa30551e677d8dfbf20"><td class="mdescLeft">&#160;</td><td class="mdescRight">replace a previously defined viewport at index ind with a new viewport using the following coordinate system:  <br /></td></tr>
 <tr class="memitem:afe3b4ef650d01fb70ae707baf3e94101" id="r_afe3b4ef650d01fb70ae707baf3e94101"><td class="memItemLeft" align="right" valign="top"><a id="afe3b4ef650d01fb70ae707baf3e94101" name="afe3b4ef650d01fb70ae707baf3e94101"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
-<tr class="memitem:abd2332e29affcc10f2dd21259a20fc30" id="r_abd2332e29affcc10f2dd21259a20fc30"><td class="memItemLeft" align="right" valign="top"><a id="abd2332e29affcc10f2dd21259a20fc30" name="abd2332e29affcc10f2dd21259a20fc30"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A viewport manager for layout processors like imagelayout. Viewports are added using the following coordinate system: </p>
@@ -268,7 +268,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>viewmanager.h</b></li>
+<li>modules/basegl/include/modules/basegl/<b>viewmanager.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

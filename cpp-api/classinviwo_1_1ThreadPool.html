@@ -96,17 +96,17 @@ $(function(){initNavTree('classinviwo_1_1ThreadPool.html','','classinviwo_1_1Thr
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0159eda9c6c8f61053576afb5608c87f" id="r_a0159eda9c6c8f61053576afb5608c87f"><td class="memItemLeft" align="right" valign="top"><a id="a0159eda9c6c8f61053576afb5608c87f" name="a0159eda9c6c8f61053576afb5608c87f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadPool</b> (size_t threads, std::function&lt; void()&gt; onThreadStart=[]() {}, std::function&lt; void()&gt; onThreadStop=[]() {})</td></tr>
 <tr class="memitem:aa46b9e2268cd5e8d225ed09b3190d8e2" id="r_aa46b9e2268cd5e8d225ed09b3190d8e2"><td class="memTemplParams" colspan="2">template&lt;class F, class... Args&gt; </td></tr>
 <tr class="memitem:aa46b9e2268cd5e8d225ed09b3190d8e2 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa46b9e2268cd5e8d225ed09b3190d8e2">enqueue</a> (F &amp;&amp;f, Args &amp;&amp;... args) -&gt; std::future&lt; std::invoke_result_t&lt; F, Args... &gt; &gt;</td></tr>
 <tr class="memitem:a77b8211f558063fb0a27b823c1b8585e" id="r_a77b8211f558063fb0a27b823c1b8585e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77b8211f558063fb0a27b823c1b8585e">enqueueRaw</a> (std::function&lt; void()&gt; f)</td></tr>
-<tr class="memitem:a009914d5b9b5ab498f827516dfcca0c8" id="r_a009914d5b9b5ab498f827516dfcca0c8"><td class="memItemLeft" align="right" valign="top"><a id="a009914d5b9b5ab498f827516dfcca0c8" name="a009914d5b9b5ab498f827516dfcca0c8"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>trySetSize</b> (size_t size)</td></tr>
-<tr class="memitem:a2fbd57477dcbd33fb1eb400da374570b" id="r_a2fbd57477dcbd33fb1eb400da374570b"><td class="memItemLeft" align="right" valign="top"><a id="a2fbd57477dcbd33fb1eb400da374570b" name="a2fbd57477dcbd33fb1eb400da374570b"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
 <tr class="memitem:a6040cf1330044fd615869abb73c8f276" id="r_a6040cf1330044fd615869abb73c8f276"><td class="memItemLeft" align="right" valign="top"><a id="a6040cf1330044fd615869abb73c8f276" name="a6040cf1330044fd615869abb73c8f276"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getQueueSize</b> ()</td></tr>
+<tr class="memitem:a2fbd57477dcbd33fb1eb400da374570b" id="r_a2fbd57477dcbd33fb1eb400da374570b"><td class="memItemLeft" align="right" valign="top"><a id="a2fbd57477dcbd33fb1eb400da374570b" name="a2fbd57477dcbd33fb1eb400da374570b"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
+<tr class="memitem:a0159eda9c6c8f61053576afb5608c87f" id="r_a0159eda9c6c8f61053576afb5608c87f"><td class="memItemLeft" align="right" valign="top"><a id="a0159eda9c6c8f61053576afb5608c87f" name="a0159eda9c6c8f61053576afb5608c87f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadPool</b> (size_t threads, std::function&lt; void()&gt; onThreadStart=[]() {}, std::function&lt; void()&gt; onThreadStop=[]() {})</td></tr>
+<tr class="memitem:a009914d5b9b5ab498f827516dfcca0c8" id="r_a009914d5b9b5ab498f827516dfcca0c8"><td class="memItemLeft" align="right" valign="top"><a id="a009914d5b9b5ab498f827516dfcca0c8" name="a009914d5b9b5ab498f827516dfcca0c8"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>trySetSize</b> (size_t size)</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aa46b9e2268cd5e8d225ed09b3190d8e2" name="aa46b9e2268cd5e8d225ed09b3190d8e2"></a>
@@ -152,7 +152,7 @@ template&lt;class F, class... Args&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>threadpool.h</b></li>
+<li>include/inviwo/core/util/<b>threadpool.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

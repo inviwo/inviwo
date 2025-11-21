@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1RepresentationConverterType.html','','c
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;representationconverter.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/datastructures/representationconverter.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::RepresentationConverterType&lt; BaseRepr, From, To &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -117,11 +117,11 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ConverterID</b> = st
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7513122c27bc86253f0514a771fe3c04" id="r_a7513122c27bc86253f0514a771fe3c04"><td class="memItemLeft" align="right" valign="top">virtual ConverterID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7513122c27bc86253f0514a771fe3c04">getConverterID</a> () const override</td></tr>
 <tr class="memitem:a5b75a7270cc7e784b70bd9d130c1102c" id="r_a5b75a7270cc7e784b70bd9d130c1102c"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; BaseRepr &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b75a7270cc7e784b70bd9d130c1102c">createFrom</a> (std::shared_ptr&lt; const BaseRepr &gt; source) const override final</td></tr>
-<tr class="memitem:a8d673b7205c49c2608d5befb0ddecc7e" id="r_a8d673b7205c49c2608d5befb0ddecc7e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d673b7205c49c2608d5befb0ddecc7e">update</a> (std::shared_ptr&lt; const BaseRepr &gt; source, std::shared_ptr&lt; BaseRepr &gt; destination) const override final</td></tr>
 <tr class="memitem:a3ae6e00c61efad155da034254121e5d4" id="r_a3ae6e00c61efad155da034254121e5d4"><td class="memItemLeft" align="right" valign="top"><a id="a3ae6e00c61efad155da034254121e5d4" name="a3ae6e00c61efad155da034254121e5d4"></a>
 virtual std::shared_ptr&lt; To &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createFrom</b> (std::shared_ptr&lt; const From &gt; source) const =0</td></tr>
+<tr class="memitem:a7513122c27bc86253f0514a771fe3c04" id="r_a7513122c27bc86253f0514a771fe3c04"><td class="memItemLeft" align="right" valign="top">virtual ConverterID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7513122c27bc86253f0514a771fe3c04">getConverterID</a> () const override</td></tr>
+<tr class="memitem:a8d673b7205c49c2608d5befb0ddecc7e" id="r_a8d673b7205c49c2608d5befb0ddecc7e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d673b7205c49c2608d5befb0ddecc7e">update</a> (std::shared_ptr&lt; const BaseRepr &gt; source, std::shared_ptr&lt; BaseRepr &gt; destination) const override final</td></tr>
 <tr class="memitem:af861a5a39083117ed9496eb7e91eef67" id="r_af861a5a39083117ed9496eb7e91eef67"><td class="memItemLeft" align="right" valign="top"><a id="af861a5a39083117ed9496eb7e91eef67" name="af861a5a39083117ed9496eb7e91eef67"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (std::shared_ptr&lt; const From &gt; source, std::shared_ptr&lt; To &gt; destination) const =0</td></tr>
 </table>
@@ -221,7 +221,7 @@ template&lt;typename BaseRepr, typename From, typename To&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>representationconverter.h</b></li>
+<li>include/inviwo/core/datastructures/<b>representationconverter.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

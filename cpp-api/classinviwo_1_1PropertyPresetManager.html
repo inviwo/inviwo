@@ -97,26 +97,26 @@ $(function(){initNavTree('classinviwo_1_1PropertyPresetManager.html','','classin
 <p>Manage property presets. Has a set of global application presets, a set of workspace presets, and handles property specific presets.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;propertypresetmanager.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/properties/propertypresetmanager.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2296fed2598f77b945e64516f9a6a34b" id="r_a2296fed2598f77b945e64516f9a6a34b"><td class="memItemLeft" align="right" valign="top"><a id="a2296fed2598f77b945e64516f9a6a34b" name="a2296fed2598f77b945e64516f9a6a34b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PropertyPresetManager</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
-<tr class="memitem:a8d3ecb62db9ce59614f55ba4d9658ee0" id="r_a8d3ecb62db9ce59614f55ba4d9658ee0"><td class="memItemLeft" align="right" valign="top"><a id="a8d3ecb62db9ce59614f55ba4d9658ee0" name="a8d3ecb62db9ce59614f55ba4d9658ee0"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>loadPreset</b> (const std::string &amp;name, <a class="el" href="classinviwo_1_1Property.html">Property</a> *property, PropertyPresetType type) const</td></tr>
-<tr class="memitem:afd95cb1c65d78a32c08c6c2f9a10a61e" id="r_afd95cb1c65d78a32c08c6c2f9a10a61e"><td class="memItemLeft" align="right" valign="top"><a id="afd95cb1c65d78a32c08c6c2f9a10a61e" name="afd95cb1c65d78a32c08c6c2f9a10a61e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>savePreset</b> (const std::string &amp;name, <a class="el" href="classinviwo_1_1Property.html">Property</a> *property, PropertyPresetType type)</td></tr>
-<tr class="memitem:a330173d8e9dc06098394fca434cb553c" id="r_a330173d8e9dc06098394fca434cb553c"><td class="memItemLeft" align="right" valign="top"><a id="a330173d8e9dc06098394fca434cb553c" name="a330173d8e9dc06098394fca434cb553c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>removePreset</b> (const std::string &amp;name, PropertyPresetType type, <a class="el" href="classinviwo_1_1Property.html">Property</a> *property=nullptr)</td></tr>
-<tr class="memitem:affca382cc16b141423391a8edd35de98" id="r_affca382cc16b141423391a8edd35de98"><td class="memItemLeft" align="right" valign="top"><a id="affca382cc16b141423391a8edd35de98" name="affca382cc16b141423391a8edd35de98"></a>
-std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getAvailablePresets</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, PropertyPresetTypes types) const</td></tr>
 <tr class="memitem:a24558ff061bafefa1cbb5f0d87bc00be" id="r_a24558ff061bafefa1cbb5f0d87bc00be"><td class="memItemLeft" align="right" valign="top"><a id="a24558ff061bafefa1cbb5f0d87bc00be" name="a24558ff061bafefa1cbb5f0d87bc00be"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clearPropertyPresets</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property)</td></tr>
 <tr class="memitem:af5b5cab5c24759615f0e671db1155997" id="r_af5b5cab5c24759615f0e671db1155997"><td class="memItemLeft" align="right" valign="top"><a id="af5b5cab5c24759615f0e671db1155997" name="af5b5cab5c24759615f0e671db1155997"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clearWorkspacePresets</b> ()</td></tr>
+<tr class="memitem:affca382cc16b141423391a8edd35de98" id="r_affca382cc16b141423391a8edd35de98"><td class="memItemLeft" align="right" valign="top"><a id="affca382cc16b141423391a8edd35de98" name="affca382cc16b141423391a8edd35de98"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getAvailablePresets</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, PropertyPresetTypes types) const</td></tr>
+<tr class="memitem:a8d3ecb62db9ce59614f55ba4d9658ee0" id="r_a8d3ecb62db9ce59614f55ba4d9658ee0"><td class="memItemLeft" align="right" valign="top"><a id="a8d3ecb62db9ce59614f55ba4d9658ee0" name="a8d3ecb62db9ce59614f55ba4d9658ee0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>loadPreset</b> (const std::string &amp;name, <a class="el" href="classinviwo_1_1Property.html">Property</a> *property, PropertyPresetType type) const</td></tr>
 <tr class="memitem:a175b60dfc62c35660bc5ba372aaa410e" id="r_a175b60dfc62c35660bc5ba372aaa410e"><td class="memItemLeft" align="right" valign="top"><a id="a175b60dfc62c35660bc5ba372aaa410e" name="a175b60dfc62c35660bc5ba372aaa410e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>loadWorkspacePresets</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
+<tr class="memitem:a2296fed2598f77b945e64516f9a6a34b" id="r_a2296fed2598f77b945e64516f9a6a34b"><td class="memItemLeft" align="right" valign="top"><a id="a2296fed2598f77b945e64516f9a6a34b" name="a2296fed2598f77b945e64516f9a6a34b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PropertyPresetManager</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
+<tr class="memitem:a330173d8e9dc06098394fca434cb553c" id="r_a330173d8e9dc06098394fca434cb553c"><td class="memItemLeft" align="right" valign="top"><a id="a330173d8e9dc06098394fca434cb553c" name="a330173d8e9dc06098394fca434cb553c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>removePreset</b> (const std::string &amp;name, PropertyPresetType type, <a class="el" href="classinviwo_1_1Property.html">Property</a> *property=nullptr)</td></tr>
+<tr class="memitem:afd95cb1c65d78a32c08c6c2f9a10a61e" id="r_afd95cb1c65d78a32c08c6c2f9a10a61e"><td class="memItemLeft" align="right" valign="top"><a id="afd95cb1c65d78a32c08c6c2f9a10a61e" name="afd95cb1c65d78a32c08c6c2f9a10a61e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>savePreset</b> (const std::string &amp;name, <a class="el" href="classinviwo_1_1Property.html">Property</a> *property, PropertyPresetType type)</td></tr>
 <tr class="memitem:ade3d6b4a50ad10a1d072c9d60a46bfc0" id="r_ade3d6b4a50ad10a1d072c9d60a46bfc0"><td class="memItemLeft" align="right" valign="top"><a id="ade3d6b4a50ad10a1d072c9d60a46bfc0" name="ade3d6b4a50ad10a1d072c9d60a46bfc0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>saveWorkspacePresets</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s)</td></tr>
 </table><table class="memberdecls">
@@ -185,7 +185,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>propertypresetmanager.h</b></li>
+<li>include/inviwo/core/properties/<b>propertypresetmanager.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

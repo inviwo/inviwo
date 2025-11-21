@@ -94,35 +94,35 @@ $(function(){initNavTree('classinviwo_1_1SourceContext.html','','classinviwo_1_1
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;sourcecontext.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/sourcecontext.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a40221aad83fcf8c6b937ef85e0957401" id="r_a40221aad83fcf8c6b937ef85e0957401"><td class="memItemLeft" align="right" valign="top"><a id="a40221aad83fcf8c6b937ef85e0957401" name="a40221aad83fcf8c6b937ef85e0957401"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (<a class="el" href="classinviwo_1_1Literal.html">Literal</a> source, std::string_view file, std::string_view function, std::uint32_t line=0, std::uint32_t column=0)</td></tr>
-<tr class="memitem:a0d3495bc7d4a8d99b7d0b3a147ae4eb7" id="r_a0d3495bc7d4a8d99b7d0b3a147ae4eb7"><td class="memItemLeft" align="right" valign="top"><a id="a0d3495bc7d4a8d99b7d0b3a147ae4eb7" name="a0d3495bc7d4a8d99b7d0b3a147ae4eb7"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (<a class="el" href="classinviwo_1_1Literal.html">Literal</a> source, std::source_location location=std::source_location::current())</td></tr>
+<tr class="memitem:a638fdc8d0706594494514cb172302139" id="r_a638fdc8d0706594494514cb172302139"><td class="memItemLeft" align="right" valign="top"><a id="a638fdc8d0706594494514cb172302139" name="a638fdc8d0706594494514cb172302139"></a>
+std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>column</b> () const</td></tr>
 <tr class="memitem:adca926aa0289664158e1c96ba8b170e5" id="r_adca926aa0289664158e1c96ba8b170e5"><td class="memItemLeft" align="right" valign="top"><a id="adca926aa0289664158e1c96ba8b170e5" name="adca926aa0289664158e1c96ba8b170e5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>explicit</b> (false) const expr SourceContext(<a class="el" href="namespacestd.html">std</a></td></tr>
-<tr class="memitem:aa3f560054d3a3e0f5017d15742e67501" id="r_aa3f560054d3a3e0f5017d15742e67501"><td class="memItemLeft" align="right" valign="top"><a id="aa3f560054d3a3e0f5017d15742e67501" name="aa3f560054d3a3e0f5017d15742e67501"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (const char *)=delete</td></tr>
-<tr class="memitem:a16f2d3a69c730d863665fec0a68a8db3" id="r_a16f2d3a69c730d863665fec0a68a8db3"><td class="memItemLeft" align="right" valign="top"><a id="a16f2d3a69c730d863665fec0a68a8db3" name="a16f2d3a69c730d863665fec0a68a8db3"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (std::string_view)=delete</td></tr>
-<tr class="memitem:a4067749c5c73ab75bc0ec8150620ba55" id="r_a4067749c5c73ab75bc0ec8150620ba55"><td class="memItemLeft" align="right" valign="top"><a id="a4067749c5c73ab75bc0ec8150620ba55" name="a4067749c5c73ab75bc0ec8150620ba55"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>source</b> () const</td></tr>
 <tr class="memitem:aa7c48e46e9be9d36b98cc081a8cf57b2" id="r_aa7c48e46e9be9d36b98cc081a8cf57b2"><td class="memItemLeft" align="right" valign="top"><a id="aa7c48e46e9be9d36b98cc081a8cf57b2" name="aa7c48e46e9be9d36b98cc081a8cf57b2"></a>
 std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>file</b> () const</td></tr>
 <tr class="memitem:a7a00309357fc90674d623865efaec9ba" id="r_a7a00309357fc90674d623865efaec9ba"><td class="memItemLeft" align="right" valign="top"><a id="a7a00309357fc90674d623865efaec9ba" name="a7a00309357fc90674d623865efaec9ba"></a>
 std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>function</b> () const</td></tr>
 <tr class="memitem:abcfd0140cd6820cf5221cad0feadab5e" id="r_abcfd0140cd6820cf5221cad0feadab5e"><td class="memItemLeft" align="right" valign="top"><a id="abcfd0140cd6820cf5221cad0feadab5e" name="abcfd0140cd6820cf5221cad0feadab5e"></a>
 std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>line</b> () const</td></tr>
-<tr class="memitem:a638fdc8d0706594494514cb172302139" id="r_a638fdc8d0706594494514cb172302139"><td class="memItemLeft" align="right" valign="top"><a id="a638fdc8d0706594494514cb172302139" name="a638fdc8d0706594494514cb172302139"></a>
-std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>column</b> () const</td></tr>
+<tr class="memitem:a4067749c5c73ab75bc0ec8150620ba55" id="r_a4067749c5c73ab75bc0ec8150620ba55"><td class="memItemLeft" align="right" valign="top"><a id="a4067749c5c73ab75bc0ec8150620ba55" name="a4067749c5c73ab75bc0ec8150620ba55"></a>
+std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>source</b> () const</td></tr>
+<tr class="memitem:aa3f560054d3a3e0f5017d15742e67501" id="r_aa3f560054d3a3e0f5017d15742e67501"><td class="memItemLeft" align="right" valign="top"><a id="aa3f560054d3a3e0f5017d15742e67501" name="aa3f560054d3a3e0f5017d15742e67501"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (const char *)=delete</td></tr>
+<tr class="memitem:a0d3495bc7d4a8d99b7d0b3a147ae4eb7" id="r_a0d3495bc7d4a8d99b7d0b3a147ae4eb7"><td class="memItemLeft" align="right" valign="top"><a id="a0d3495bc7d4a8d99b7d0b3a147ae4eb7" name="a0d3495bc7d4a8d99b7d0b3a147ae4eb7"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (<a class="el" href="classinviwo_1_1Literal.html">Literal</a> source, std::source_location location=std::source_location::current())</td></tr>
+<tr class="memitem:a40221aad83fcf8c6b937ef85e0957401" id="r_a40221aad83fcf8c6b937ef85e0957401"><td class="memItemLeft" align="right" valign="top"><a id="a40221aad83fcf8c6b937ef85e0957401" name="a40221aad83fcf8c6b937ef85e0957401"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (<a class="el" href="classinviwo_1_1Literal.html">Literal</a> source, std::string_view file, std::string_view function, std::uint32_t line=0, std::uint32_t column=0)</td></tr>
+<tr class="memitem:a16f2d3a69c730d863665fec0a68a8db3" id="r_a16f2d3a69c730d863665fec0a68a8db3"><td class="memItemLeft" align="right" valign="top"><a id="a16f2d3a69c730d863665fec0a68a8db3" name="a16f2d3a69c730d863665fec0a68a8db3"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>SourceContext</b> (std::string_view)=delete</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a location in source code </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>sourcecontext.h</b></li>
+<li>include/inviwo/core/util/<b>sourcecontext.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

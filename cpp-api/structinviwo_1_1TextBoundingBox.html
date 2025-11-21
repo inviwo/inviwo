@@ -97,7 +97,7 @@ $(function(){initNavTree('structinviwo_1_1TextBoundingBox.html','','structinviwo
 <p>struct for holding bounding box information for a specific text  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;textboundingbox.h&gt;</code></p>
+<p><code>#include &lt;modules/fontrendering/datastructures/textboundingbox.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -108,16 +108,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateGlyphPenOffset<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a8d69cfc36036a55249d318c5ca8046be" id="r_a8d69cfc36036a55249d318c5ca8046be"><td class="memItemLeft" align="right" valign="top"><a id="a8d69cfc36036a55249d318c5ca8046be" name="a8d69cfc36036a55249d318c5ca8046be"></a>
-size2_t&#160;</td><td class="memItemRight" valign="bottom"><b>textExtent</b> {0}</td></tr>
-<tr class="memitem:abeb7c48f750ee9347fdf47b4b0f8ddf9" id="r_abeb7c48f750ee9347fdf47b4b0f8ddf9"><td class="memItemLeft" align="right" valign="top"><a id="abeb7c48f750ee9347fdf47b4b0f8ddf9" name="abeb7c48f750ee9347fdf47b4b0f8ddf9"></a>
-ivec2&#160;</td><td class="memItemRight" valign="bottom"><b>glyphsOrigin</b> {0}</td></tr>
-<tr class="memdesc:abeb7c48f750ee9347fdf47b4b0f8ddf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">relative origin of bottom-left most glyph <br /></td></tr>
-<tr class="memitem:a936cf6237f1297cd67c6c585561140e2" id="r_a936cf6237f1297cd67c6c585561140e2"><td class="memItemLeft" align="right" valign="top">size2_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a936cf6237f1297cd67c6c585561140e2">glyphsExtent</a></td></tr>
-<tr class="memdesc:a936cf6237f1297cd67c6c585561140e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">extent of bbox containing all glyphs extending to top right corner  <br /></td></tr>
 <tr class="memitem:a8b56a360f991ac7467aa3c98190ef4f3" id="r_a8b56a360f991ac7467aa3c98190ef4f3"><td class="memItemLeft" align="right" valign="top"><a id="a8b56a360f991ac7467aa3c98190ef4f3" name="a8b56a360f991ac7467aa3c98190ef4f3"></a>
 ivec2&#160;</td><td class="memItemRight" valign="bottom"><b>glyphPenOffset</b> {0}</td></tr>
 <tr class="memdesc:a8b56a360f991ac7467aa3c98190ef4f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">pen offset to align first glyph perfectly on first baseline <br /></td></tr>
+<tr class="memitem:a936cf6237f1297cd67c6c585561140e2" id="r_a936cf6237f1297cd67c6c585561140e2"><td class="memItemLeft" align="right" valign="top">size2_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a936cf6237f1297cd67c6c585561140e2">glyphsExtent</a></td></tr>
+<tr class="memdesc:a936cf6237f1297cd67c6c585561140e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">extent of bbox containing all glyphs extending to top right corner  <br /></td></tr>
+<tr class="memitem:abeb7c48f750ee9347fdf47b4b0f8ddf9" id="r_abeb7c48f750ee9347fdf47b4b0f8ddf9"><td class="memItemLeft" align="right" valign="top"><a id="abeb7c48f750ee9347fdf47b4b0f8ddf9" name="abeb7c48f750ee9347fdf47b4b0f8ddf9"></a>
+ivec2&#160;</td><td class="memItemRight" valign="bottom"><b>glyphsOrigin</b> {0}</td></tr>
+<tr class="memdesc:abeb7c48f750ee9347fdf47b4b0f8ddf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">relative origin of bottom-left most glyph <br /></td></tr>
+<tr class="memitem:a8d69cfc36036a55249d318c5ca8046be" id="r_a8d69cfc36036a55249d318c5ca8046be"><td class="memItemLeft" align="right" valign="top"><a id="a8d69cfc36036a55249d318c5ca8046be" name="a8d69cfc36036a55249d318c5ca8046be"></a>
+size2_t&#160;</td><td class="memItemRight" valign="bottom"><b>textExtent</b> {0}</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>struct for holding bounding box information for a specific text </p>
@@ -135,13 +135,15 @@ ivec2&#160;</td><td class="memItemRight" valign="bottom"><b>glyphPenOffset</b> {
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"></div><!-- fragment -->
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        0}</div>
+</div><!-- fragment -->
 <p>extent of bbox containing all glyphs extending to top right corner </p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>textboundingbox.h</b></li>
+<li>modules/fontrendering/include/modules/fontrendering/datastructures/<b>textboundingbox.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

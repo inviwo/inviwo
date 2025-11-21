@@ -94,26 +94,26 @@ $(function(){initNavTree('classinviwo_1_1DiskRepresentation.html','','classinviw
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;diskrepresentation.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/datastructures/diskrepresentation.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6b69388e6831a8bc119c83e5fd4678cc" id="r_a6b69388e6831a8bc119c83e5fd4678cc"><td class="memItemLeft" align="right" valign="top"><a id="a6b69388e6831a8bc119c83e5fd4678cc" name="a6b69388e6831a8bc119c83e5fd4678cc"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DiskRepresentation</b> (const std::filesystem::path &amp;srcFile, <a class="el" href="classinviwo_1_1DiskRepresentationLoader.html">DiskRepresentationLoader</a>&lt; Repr &gt; *loader=nullptr)</td></tr>
-<tr class="memitem:a5c8d26e9cfcffa3b7399b9502877ff70" id="r_a5c8d26e9cfcffa3b7399b9502877ff70"><td class="memItemLeft" align="right" valign="top"><a id="a5c8d26e9cfcffa3b7399b9502877ff70" name="a5c8d26e9cfcffa3b7399b9502877ff70"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DiskRepresentation</b> (const DiskRepresentation &amp;rhs)=default</td></tr>
-<tr class="memitem:a7d53e1a3747b352a0130370008d982f5" id="r_a7d53e1a3747b352a0130370008d982f5"><td class="memItemLeft" align="right" valign="top"><a id="a7d53e1a3747b352a0130370008d982f5" name="a7d53e1a3747b352a0130370008d982f5"></a>
-DiskRepresentation &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DiskRepresentation &amp;that)=default</td></tr>
 <tr class="memitem:acb970215f9139f7b084469568a252d53" id="r_acb970215f9139f7b084469568a252d53"><td class="memItemLeft" align="right" valign="top"><a id="acb970215f9139f7b084469568a252d53" name="acb970215f9139f7b084469568a252d53"></a>
 virtual DiskRepresentation *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const</td></tr>
+<tr class="memitem:a737af4b7d96b8a64faf73aab85fb1ec3" id="r_a737af4b7d96b8a64faf73aab85fb1ec3"><td class="memItemLeft" align="right" valign="top"><a id="a737af4b7d96b8a64faf73aab85fb1ec3" name="a737af4b7d96b8a64faf73aab85fb1ec3"></a>
+std::shared_ptr&lt; Repr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createRepresentation</b> () const</td></tr>
+<tr class="memitem:a5c8d26e9cfcffa3b7399b9502877ff70" id="r_a5c8d26e9cfcffa3b7399b9502877ff70"><td class="memItemLeft" align="right" valign="top"><a id="a5c8d26e9cfcffa3b7399b9502877ff70" name="a5c8d26e9cfcffa3b7399b9502877ff70"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DiskRepresentation</b> (const DiskRepresentation &amp;rhs)=default</td></tr>
+<tr class="memitem:a6b69388e6831a8bc119c83e5fd4678cc" id="r_a6b69388e6831a8bc119c83e5fd4678cc"><td class="memItemLeft" align="right" valign="top"><a id="a6b69388e6831a8bc119c83e5fd4678cc" name="a6b69388e6831a8bc119c83e5fd4678cc"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DiskRepresentation</b> (const std::filesystem::path &amp;srcFile, <a class="el" href="classinviwo_1_1DiskRepresentationLoader.html">DiskRepresentationLoader</a>&lt; Repr &gt; *loader=nullptr)</td></tr>
 <tr class="memitem:a6b5214b97a51debd1ce3653018849996" id="r_a6b5214b97a51debd1ce3653018849996"><td class="memItemLeft" align="right" valign="top"><a id="a6b5214b97a51debd1ce3653018849996" name="a6b5214b97a51debd1ce3653018849996"></a>
 const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getSourceFile</b> () const</td></tr>
 <tr class="memitem:a1294af9a01373092095c7efb2d3120d3" id="r_a1294af9a01373092095c7efb2d3120d3"><td class="memItemLeft" align="right" valign="top"><a id="a1294af9a01373092095c7efb2d3120d3" name="a1294af9a01373092095c7efb2d3120d3"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSourceFile</b> () const</td></tr>
+<tr class="memitem:a7d53e1a3747b352a0130370008d982f5" id="r_a7d53e1a3747b352a0130370008d982f5"><td class="memItemLeft" align="right" valign="top"><a id="a7d53e1a3747b352a0130370008d982f5" name="a7d53e1a3747b352a0130370008d982f5"></a>
+DiskRepresentation &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DiskRepresentation &amp;that)=default</td></tr>
 <tr class="memitem:a860fb8aee386c314764a052230e79fd8" id="r_a860fb8aee386c314764a052230e79fd8"><td class="memItemLeft" align="right" valign="top"><a id="a860fb8aee386c314764a052230e79fd8" name="a860fb8aee386c314764a052230e79fd8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setLoader</b> (<a class="el" href="classinviwo_1_1DiskRepresentationLoader.html">DiskRepresentationLoader</a>&lt; Repr &gt; *loader)</td></tr>
-<tr class="memitem:a737af4b7d96b8a64faf73aab85fb1ec3" id="r_a737af4b7d96b8a64faf73aab85fb1ec3"><td class="memItemLeft" align="right" valign="top"><a id="a737af4b7d96b8a64faf73aab85fb1ec3" name="a737af4b7d96b8a64faf73aab85fb1ec3"></a>
-std::shared_ptr&lt; Repr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createRepresentation</b> () const</td></tr>
 <tr class="memitem:a823f29a6936ea4535384531dbcbb4d35" id="r_a823f29a6936ea4535384531dbcbb4d35"><td class="memItemLeft" align="right" valign="top"><a id="a823f29a6936ea4535384531dbcbb4d35" name="a823f29a6936ea4535384531dbcbb4d35"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateRepresentation</b> (std::shared_ptr&lt; Repr &gt; dest) const</td></tr>
 </table>
@@ -121,7 +121,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateRepresentation<
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Repr, typename Self&gt;<br />
 class inviwo::DiskRepresentation&lt; Repr, Self &gt;</div><p>Base class for all DiskRepresentations </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a>, <a class="el" href="classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations.">DataRepresentation</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>diskrepresentation.h</b></li>
+<li>include/inviwo/core/datastructures/<b>diskrepresentation.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

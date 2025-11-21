@@ -97,22 +97,22 @@ $(function(){initNavTree('classinviwo_1_1DataGroupRepresentation.html','','class
 <p>The base class for all <a class="el" href="classinviwo_1_1DataGroupRepresentation.html" title="The base class for all DataGroupRepresentation objects.">DataGroupRepresentation</a> objects.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;datagrouprepresentation.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/datastructures/datagrouprepresentation.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adf7f7d7d24afaca5cc1ec75d5fa9e567" id="r_adf7f7d7d24afaca5cc1ec75d5fa9e567"><td class="memItemLeft" align="right" valign="top"><a id="adf7f7d7d24afaca5cc1ec75d5fa9e567" name="adf7f7d7d24afaca5cc1ec75d5fa9e567"></a>
 virtual DataGroupRepresentation *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
-<tr class="memitem:ab9ce86bf9f15dc202d87d899deb40110" id="r_ab9ce86bf9f15dc202d87d899deb40110"><td class="memItemLeft" align="right" valign="top"><a id="ab9ce86bf9f15dc202d87d899deb40110" name="ab9ce86bf9f15dc202d87d899deb40110"></a>
-virtual std::type_index&#160;</td><td class="memItemRight" valign="bottom"><b>getTypeIndex</b> () const =0</td></tr>
-<tr class="memitem:ae6cb9de94ccd9465ce919ac12275804f" id="r_ae6cb9de94ccd9465ce919ac12275804f"><td class="memItemLeft" align="right" valign="top"><a id="ae6cb9de94ccd9465ce919ac12275804f" name="ae6cb9de94ccd9465ce919ac12275804f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setOwner</b> (Owner *)=0</td></tr>
-<tr class="memitem:a82c0e299da8455b16138c8c42a84a902" id="r_a82c0e299da8455b16138c8c42a84a902"><td class="memItemLeft" align="right" valign="top"><a id="a82c0e299da8455b16138c8c42a84a902" name="a82c0e299da8455b16138c8c42a84a902"></a>
-virtual Owner *&#160;</td><td class="memItemRight" valign="bottom"><b>getOwner</b> ()=0</td></tr>
 <tr class="memitem:ab72071de52e8e107423064015f4dbf8e" id="r_ab72071de52e8e107423064015f4dbf8e"><td class="memItemLeft" align="right" valign="top"><a id="ab72071de52e8e107423064015f4dbf8e" name="ab72071de52e8e107423064015f4dbf8e"></a>
 virtual const Owner *&#160;</td><td class="memItemRight" valign="bottom"><b>getOwner</b> () const =0</td></tr>
+<tr class="memitem:a82c0e299da8455b16138c8c42a84a902" id="r_a82c0e299da8455b16138c8c42a84a902"><td class="memItemLeft" align="right" valign="top"><a id="a82c0e299da8455b16138c8c42a84a902" name="a82c0e299da8455b16138c8c42a84a902"></a>
+virtual Owner *&#160;</td><td class="memItemRight" valign="bottom"><b>getOwner</b> ()=0</td></tr>
+<tr class="memitem:ab9ce86bf9f15dc202d87d899deb40110" id="r_ab9ce86bf9f15dc202d87d899deb40110"><td class="memItemLeft" align="right" valign="top"><a id="ab9ce86bf9f15dc202d87d899deb40110" name="ab9ce86bf9f15dc202d87d899deb40110"></a>
+virtual std::type_index&#160;</td><td class="memItemRight" valign="bottom"><b>getTypeIndex</b> () const =0</td></tr>
 <tr class="memitem:aea26a2eeecb7a6b4b518e2ca3a1eb169" id="r_aea26a2eeecb7a6b4b518e2ca3a1eb169"><td class="memItemLeft" align="right" valign="top"><a id="aea26a2eeecb7a6b4b518e2ca3a1eb169" name="aea26a2eeecb7a6b4b518e2ca3a1eb169"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isValid</b> () const =0</td></tr>
+<tr class="memitem:ae6cb9de94ccd9465ce919ac12275804f" id="r_ae6cb9de94ccd9465ce919ac12275804f"><td class="memItemLeft" align="right" valign="top"><a id="ae6cb9de94ccd9465ce919ac12275804f" name="ae6cb9de94ccd9465ce919ac12275804f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>setOwner</b> (Owner *)=0</td></tr>
 <tr class="memitem:a84f919d5791484b0402e461a2ea1a94c" id="r_a84f919d5791484b0402e461a2ea1a94c"><td class="memItemLeft" align="right" valign="top"><a id="a84f919d5791484b0402e461a2ea1a94c" name="a84f919d5791484b0402e461a2ea1a94c"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (bool)=0</td></tr>
 </table><table class="memberdecls">
@@ -132,7 +132,7 @@ class inviwo::DataGroupRepresentation&lt; Owner &gt;</div><p>The base class for 
 <li><a class="el" href="classinviwo_1_1DataGroupRepresentation.html" title="The base class for all DataGroupRepresentation objects.">DataGroupRepresentation</a> becomes invalid when a child <a class="el" href="classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations.">DataRepresentation</a> is invalid. </li>
 </ul>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>datagrouprepresentation.h</b></li>
+<li>include/inviwo/core/datastructures/<b>datagrouprepresentation.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

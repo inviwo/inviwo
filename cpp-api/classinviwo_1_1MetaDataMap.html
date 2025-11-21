@@ -96,6 +96,24 @@ $(function(){initNavTree('classinviwo_1_1MetaDataMap.html','','classinviwo_1_1Me
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:af7d224a0770dc1410cc678fdce5718f3" id="r_af7d224a0770dc1410cc678fdce5718f3"><td class="memItemLeft" align="right" valign="top"><a id="af7d224a0770dc1410cc678fdce5718f3" name="af7d224a0770dc1410cc678fdce5718f3"></a>
+<a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (std::string_view key, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *metaData)</td></tr>
+<tr class="memitem:ad8bf7320d69922e10b9a9c442bab5ffd" id="r_ad8bf7320d69922e10b9a9c442bab5ffd"><td class="memTemplParams" colspan="2"><a id="ad8bf7320d69922e10b9a9c442bab5ffd" name="ad8bf7320d69922e10b9a9c442bab5ffd"></a>
+template&lt;typename T&gt; <br />
+requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
+<tr class="memitem:ad8bf7320d69922e10b9a9c442bab5ffd template"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (std::string_view key, std::unique_ptr&lt; T &gt; metaData)</td></tr>
+<tr class="memitem:aec4d34c8532a34530a890196f51e3d9e" id="r_aec4d34c8532a34530a890196f51e3d9e"><td class="memItemLeft" align="right" valign="top"><a id="aec4d34c8532a34530a890196f51e3d9e" name="aec4d34c8532a34530a890196f51e3d9e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (std::string_view key) const</td></tr>
+<tr class="memitem:ab264f07d7f5eb18b8d16d22dfaa7e7f7" id="r_ab264f07d7f5eb18b8d16d22dfaa7e7f7"><td class="memItemLeft" align="right" valign="top"><a id="ab264f07d7f5eb18b8d16d22dfaa7e7f7" name="ab264f07d7f5eb18b8d16d22dfaa7e7f7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
+<tr class="memitem:a580af9c7990ba5563b95c1c6c110515c" id="r_a580af9c7990ba5563b95c1c6c110515c"><td class="memItemLeft" align="right" valign="top"><a id="a580af9c7990ba5563b95c1c6c110515c" name="a580af9c7990ba5563b95c1c6c110515c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const</td></tr>
+<tr class="memitem:a1440e3a7d149f24a707eea5fb44f22d5" id="r_a1440e3a7d149f24a707eea5fb44f22d5"><td class="memItemLeft" align="right" valign="top"><a id="a1440e3a7d149f24a707eea5fb44f22d5" name="a1440e3a7d149f24a707eea5fb44f22d5"></a>
+<a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (std::string_view key)</td></tr>
+<tr class="memitem:a3ad1236e9a3601dbfc1cbe0933e16e55" id="r_a3ad1236e9a3601dbfc1cbe0933e16e55"><td class="memItemLeft" align="right" valign="top"><a id="a3ad1236e9a3601dbfc1cbe0933e16e55" name="a3ad1236e9a3601dbfc1cbe0933e16e55"></a>
+const <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (std::string_view key) const</td></tr>
+<tr class="memitem:a8695748254276601fad6984d760c2d6a" id="r_a8695748254276601fad6984d760c2d6a"><td class="memItemLeft" align="right" valign="top"><a id="a8695748254276601fad6984d760c2d6a" name="a8695748254276601fad6984d760c2d6a"></a>
+std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getKeys</b> () const</td></tr>
 <tr class="memitem:a7164eb8f62cc291d18c1925676afa34f" id="r_a7164eb8f62cc291d18c1925676afa34f"><td class="memItemLeft" align="right" valign="top"><a id="a7164eb8f62cc291d18c1925676afa34f" name="a7164eb8f62cc291d18c1925676afa34f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataMap</b> (const MetaDataMap &amp;)</td></tr>
 <tr class="memitem:a606af154ed54693611dd38885f677793" id="r_a606af154ed54693611dd38885f677793"><td class="memItemLeft" align="right" valign="top"><a id="a606af154ed54693611dd38885f677793" name="a606af154ed54693611dd38885f677793"></a>
@@ -104,42 +122,24 @@ Public Member Functions</h2></td></tr>
 MetaDataMap &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const MetaDataMap &amp;map)</td></tr>
 <tr class="memitem:a26c48a0418b61df11248b1bf75f3a86f" id="r_a26c48a0418b61df11248b1bf75f3a86f"><td class="memItemLeft" align="right" valign="top"><a id="a26c48a0418b61df11248b1bf75f3a86f" name="a26c48a0418b61df11248b1bf75f3a86f"></a>
 MetaDataMap &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (MetaDataMap &amp;&amp;map)=default</td></tr>
-<tr class="memitem:af7d224a0770dc1410cc678fdce5718f3" id="r_af7d224a0770dc1410cc678fdce5718f3"><td class="memItemLeft" align="right" valign="top"><a id="af7d224a0770dc1410cc678fdce5718f3" name="af7d224a0770dc1410cc678fdce5718f3"></a>
-<a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (std::string_view key, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *metaData)</td></tr>
-<tr class="memitem:ad8bf7320d69922e10b9a9c442bab5ffd" id="r_ad8bf7320d69922e10b9a9c442bab5ffd"><td class="memTemplParams" colspan="2"><a id="ad8bf7320d69922e10b9a9c442bab5ffd" name="ad8bf7320d69922e10b9a9c442bab5ffd"></a>
-template&lt;typename T&gt; <br />
-requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a>&gt;</td></tr>
-<tr class="memitem:ad8bf7320d69922e10b9a9c442bab5ffd template"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (std::string_view key, std::unique_ptr&lt; T &gt; metaData)</td></tr>
 <tr class="memitem:a99adcbdf0535526efe4479a466904bbc" id="r_a99adcbdf0535526efe4479a466904bbc"><td class="memItemLeft" align="right" valign="top"><a id="a99adcbdf0535526efe4479a466904bbc" name="a99adcbdf0535526efe4479a466904bbc"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (std::string_view key)</td></tr>
 <tr class="memitem:a7efa45332b610b19c7734fc4cfee7647" id="r_a7efa45332b610b19c7734fc4cfee7647"><td class="memItemLeft" align="right" valign="top"><a id="a7efa45332b610b19c7734fc4cfee7647" name="a7efa45332b610b19c7734fc4cfee7647"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeAll</b> ()</td></tr>
 <tr class="memitem:a7a16db25dea1b0769ee55cfdc7fbc5b7" id="r_a7a16db25dea1b0769ee55cfdc7fbc5b7"><td class="memItemLeft" align="right" valign="top"><a id="a7a16db25dea1b0769ee55cfdc7fbc5b7" name="a7a16db25dea1b0769ee55cfdc7fbc5b7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>rename</b> (std::string_view newKey, const std::string &amp;oldKey)</td></tr>
-<tr class="memitem:a8695748254276601fad6984d760c2d6a" id="r_a8695748254276601fad6984d760c2d6a"><td class="memItemLeft" align="right" valign="top"><a id="a8695748254276601fad6984d760c2d6a" name="a8695748254276601fad6984d760c2d6a"></a>
-std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getKeys</b> () const</td></tr>
-<tr class="memitem:a1440e3a7d149f24a707eea5fb44f22d5" id="r_a1440e3a7d149f24a707eea5fb44f22d5"><td class="memItemLeft" align="right" valign="top"><a id="a1440e3a7d149f24a707eea5fb44f22d5" name="a1440e3a7d149f24a707eea5fb44f22d5"></a>
-<a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (std::string_view key)</td></tr>
-<tr class="memitem:a3ad1236e9a3601dbfc1cbe0933e16e55" id="r_a3ad1236e9a3601dbfc1cbe0933e16e55"><td class="memItemLeft" align="right" valign="top"><a id="a3ad1236e9a3601dbfc1cbe0933e16e55" name="a3ad1236e9a3601dbfc1cbe0933e16e55"></a>
-const <a class="el" href="classinviwo_1_1MetaData.html">MetaData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (std::string_view key) const</td></tr>
-<tr class="memitem:aec4d34c8532a34530a890196f51e3d9e" id="r_aec4d34c8532a34530a890196f51e3d9e"><td class="memItemLeft" align="right" valign="top"><a id="aec4d34c8532a34530a890196f51e3d9e" name="aec4d34c8532a34530a890196f51e3d9e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (std::string_view key) const</td></tr>
-<tr class="memitem:a580af9c7990ba5563b95c1c6c110515c" id="r_a580af9c7990ba5563b95c1c6c110515c"><td class="memItemLeft" align="right" valign="top"><a id="a580af9c7990ba5563b95c1c6c110515c" name="a580af9c7990ba5563b95c1c6c110515c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const</td></tr>
 <tr class="memitem:ac6007145fa39818df4f3f4784f78da8c" id="r_ac6007145fa39818df4f3f4784f78da8c"><td class="memItemLeft" align="right" valign="top"><a id="ac6007145fa39818df4f3f4784f78da8c" name="ac6007145fa39818df4f3f4784f78da8c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const</td></tr>
-<tr class="memitem:ab264f07d7f5eb18b8d16d22dfaa7e7f7" id="r_ab264f07d7f5eb18b8d16d22dfaa7e7f7"><td class="memItemLeft" align="right" valign="top"><a id="ab264f07d7f5eb18b8d16d22dfaa7e7f7" name="ab264f07d7f5eb18b8d16d22dfaa7e7f7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:acaa49a3d7a866f9fc77793361a024aa7" id="r_acaa49a3d7a866f9fc77793361a024aa7"><td class="memItemLeft" align="right" valign="top"><a id="acaa49a3d7a866f9fc77793361a024aa7" name="acaa49a3d7a866f9fc77793361a024aa7"></a>
-bool IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const MetaDataMap &amp;lhs, const MetaDataMap &amp;rhs)</td></tr>
 <tr class="memitem:a6a02c2ccbcfa32873fade5edb0918188" id="r_a6a02c2ccbcfa32873fade5edb0918188"><td class="memItemLeft" align="right" valign="top"><a id="a6a02c2ccbcfa32873fade5edb0918188" name="a6a02c2ccbcfa32873fade5edb0918188"></a>
 bool IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const MetaDataMap &amp;lhs, const MetaDataMap &amp;rhs)</td></tr>
+<tr class="memitem:acaa49a3d7a866f9fc77793361a024aa7" id="r_acaa49a3d7a866f9fc77793361a024aa7"><td class="memItemLeft" align="right" valign="top"><a id="acaa49a3d7a866f9fc77793361a024aa7" name="acaa49a3d7a866f9fc77793361a024aa7"></a>
+bool IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const MetaDataMap &amp;lhs, const MetaDataMap &amp;rhs)</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>metadatamap.h</b></li>
+<li>include/inviwo/core/metadata/<b>metadatamap.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

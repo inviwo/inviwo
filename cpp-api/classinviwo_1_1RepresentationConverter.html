@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1RepresentationConverter.html','','class
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;representationconverter.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/datastructures/representationconverter.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::RepresentationConverter&lt; BaseRepr &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -114,10 +114,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ConverterID</b> = st
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac5441abe6673d0181add7d56d7755bd9" id="r_ac5441abe6673d0181add7d56d7755bd9"><td class="memItemLeft" align="right" valign="top"><a id="ac5441abe6673d0181add7d56d7755bd9" name="ac5441abe6673d0181add7d56d7755bd9"></a>
-virtual ConverterID&#160;</td><td class="memItemRight" valign="bottom"><b>getConverterID</b> () const =0</td></tr>
 <tr class="memitem:a3ef4582eb6b9283dd0948d52cc5b4d6e" id="r_a3ef4582eb6b9283dd0948d52cc5b4d6e"><td class="memItemLeft" align="right" valign="top"><a id="a3ef4582eb6b9283dd0948d52cc5b4d6e" name="a3ef4582eb6b9283dd0948d52cc5b4d6e"></a>
 virtual std::shared_ptr&lt; BaseRepr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createFrom</b> (std::shared_ptr&lt; const BaseRepr &gt; source) const =0</td></tr>
+<tr class="memitem:ac5441abe6673d0181add7d56d7755bd9" id="r_ac5441abe6673d0181add7d56d7755bd9"><td class="memItemLeft" align="right" valign="top"><a id="ac5441abe6673d0181add7d56d7755bd9" name="ac5441abe6673d0181add7d56d7755bd9"></a>
+virtual ConverterID&#160;</td><td class="memItemRight" valign="bottom"><b>getConverterID</b> () const =0</td></tr>
 <tr class="memitem:a3338cfb9034ce5d0ebe0bf30c3f9d4d3" id="r_a3338cfb9034ce5d0ebe0bf30c3f9d4d3"><td class="memItemLeft" align="right" valign="top"><a id="a3338cfb9034ce5d0ebe0bf30c3f9d4d3" name="a3338cfb9034ce5d0ebe0bf30c3f9d4d3"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (std::shared_ptr&lt; const BaseRepr &gt; source, std::shared_ptr&lt; BaseRepr &gt; destination) const =0</td></tr>
 </table>
@@ -131,7 +131,7 @@ class inviwo::RepresentationConverter&lt; BaseRepr &gt;</div><p>A <a class="el" 
 <dd>
 <a class="el" href="classinviwo_1_1InviwoModule.html#a02c43f9fa03d3aae04554b3672997e02">InviwoModule::registerRepresentationConverter()</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>representationconverter.h</b></li>
+<li>include/inviwo/core/datastructures/<b>representationconverter.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

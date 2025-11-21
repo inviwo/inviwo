@@ -94,97 +94,97 @@ $(function(){initNavTree('structinviwo_1_1util_1_1IndirectIterator.html','','str
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;indirectiterator.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/indirectiterator.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
+<tr class="memitem:aa4b45cfca1ef548fe4ff40151c500c87" id="r_aa4b45cfca1ef548fe4ff40151c500c87"><td class="memItemLeft" align="right" valign="top"><a id="aa4b45cfca1ef548fe4ff40151c500c87" name="aa4b45cfca1ef548fe4ff40151c500c87"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>base_pointer</b> = typename std::iterator_traits&lt;Iter&gt;::pointer</td></tr>
+<tr class="memitem:acddc9db91b9ba2acd241eb79329169a6" id="r_acddc9db91b9ba2acd241eb79329169a6"><td class="memItemLeft" align="right" valign="top"><a id="acddc9db91b9ba2acd241eb79329169a6" name="acddc9db91b9ba2acd241eb79329169a6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>base_reference</b> = typename std::iterator_traits&lt;Iter&gt;::reference</td></tr>
+<tr class="memitem:ad2deb31f7ec85ca4fc1b97e41e9592ca" id="r_ad2deb31f7ec85ca4fc1b97e41e9592ca"><td class="memItemLeft" align="right" valign="top"><a id="ad2deb31f7ec85ca4fc1b97e41e9592ca" name="ad2deb31f7ec85ca4fc1b97e41e9592ca"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>base_value</b> = typename std::iterator_traits&lt;Iter&gt;::value_type</td></tr>
 <tr class="memitem:a0616e3643347775d06df4c38028c9ebb" id="r_a0616e3643347775d06df4c38028c9ebb"><td class="memItemLeft" align="right" valign="top"><a id="a0616e3643347775d06df4c38028c9ebb" name="a0616e3643347775d06df4c38028c9ebb"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>difference_type</b> = typename std::iterator_traits&lt;Iter&gt;::difference_type</td></tr>
 <tr class="memitem:a21f8e23f2f87240532f8d5258cfc72ce" id="r_a21f8e23f2f87240532f8d5258cfc72ce"><td class="memItemLeft" align="right" valign="top"><a id="a21f8e23f2f87240532f8d5258cfc72ce" name="a21f8e23f2f87240532f8d5258cfc72ce"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_category</b> = typename std::iterator_traits&lt;Iter&gt;::iterator_category</td></tr>
-<tr class="memitem:ad2deb31f7ec85ca4fc1b97e41e9592ca" id="r_ad2deb31f7ec85ca4fc1b97e41e9592ca"><td class="memItemLeft" align="right" valign="top"><a id="ad2deb31f7ec85ca4fc1b97e41e9592ca" name="ad2deb31f7ec85ca4fc1b97e41e9592ca"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>base_value</b> = typename std::iterator_traits&lt;Iter&gt;::value_type</td></tr>
-<tr class="memitem:aec2d3587404615cb7ca98564df330353" id="r_aec2d3587404615cb7ca98564df330353"><td class="memItemLeft" align="right" valign="top"><a id="aec2d3587404615cb7ca98564df330353" name="aec2d3587404615cb7ca98564df330353"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = std::remove_reference_t&lt;decltype(*std::declval&lt;base_value&gt;())&gt;</td></tr>
-<tr class="memitem:aa4b45cfca1ef548fe4ff40151c500c87" id="r_aa4b45cfca1ef548fe4ff40151c500c87"><td class="memItemLeft" align="right" valign="top"><a id="aa4b45cfca1ef548fe4ff40151c500c87" name="aa4b45cfca1ef548fe4ff40151c500c87"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>base_pointer</b> = typename std::iterator_traits&lt;Iter&gt;::pointer</td></tr>
 <tr class="memitem:ad4b13c1ae55feb4191f11dacf3485192" id="r_ad4b13c1ae55feb4191f11dacf3485192"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4b13c1ae55feb4191f11dacf3485192">pointer</a></td></tr>
-<tr class="memitem:acddc9db91b9ba2acd241eb79329169a6" id="r_acddc9db91b9ba2acd241eb79329169a6"><td class="memItemLeft" align="right" valign="top"><a id="acddc9db91b9ba2acd241eb79329169a6" name="acddc9db91b9ba2acd241eb79329169a6"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>base_reference</b> = typename std::iterator_traits&lt;Iter&gt;::reference</td></tr>
 <tr class="memitem:ae33faa1e6430dacba5cceecc65d27855" id="r_ae33faa1e6430dacba5cceecc65d27855"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae33faa1e6430dacba5cceecc65d27855">reference</a></td></tr>
 <tr class="memitem:a3eec283ff76234a781edc24eda0e36d8" id="r_a3eec283ff76234a781edc24eda0e36d8"><td class="memTemplParams" colspan="2"><a id="a3eec283ff76234a781edc24eda0e36d8" name="a3eec283ff76234a781edc24eda0e36d8"></a>
 template&lt;typename <a class="el" href="classinviwo_1_1Tag.html">Tag</a>, typename Iterables&gt; </td></tr>
 <tr class="memitem:a3eec283ff76234a781edc24eda0e36d8 template"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><b>require_t</b> = detail_indirect::require_t&lt;<a class="el" href="classinviwo_1_1Tag.html">Tag</a>, Iter&gt;</td></tr>
+<tr class="memitem:aec2d3587404615cb7ca98564df330353" id="r_aec2d3587404615cb7ca98564df330353"><td class="memItemLeft" align="right" valign="top"><a id="aec2d3587404615cb7ca98564df330353" name="aec2d3587404615cb7ca98564df330353"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = std::remove_reference_t&lt;decltype(*std::declval&lt;base_value&gt;())&gt;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a26522a7387a49bc14470ef9776da1017" id="r_a26522a7387a49bc14470ef9776da1017"><td class="memItemLeft" align="right" valign="top"><a id="a26522a7387a49bc14470ef9776da1017" name="a26522a7387a49bc14470ef9776da1017"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (Iter iterator) noexcept(std::is_nothrow_move_constructible_v&lt; Iter &gt;)</td></tr>
+<tr class="memitem:af9f646eb4e706742065b0343ef6651c0" id="r_af9f646eb4e706742065b0343ef6651c0"><td class="memItemLeft" align="right" valign="top"><a id="af9f646eb4e706742065b0343ef6651c0" name="af9f646eb4e706742065b0343ef6651c0"></a>
+constexpr Iter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>base</b> () &amp;</td></tr>
+<tr class="memitem:a6d08a793fe3fc006ed400f905eeb70c3" id="r_a6d08a793fe3fc006ed400f905eeb70c3"><td class="memItemLeft" align="right" valign="top"><a id="a6d08a793fe3fc006ed400f905eeb70c3" name="a6d08a793fe3fc006ed400f905eeb70c3"></a>
+constexpr Iter&#160;</td><td class="memItemRight" valign="bottom"><b>base</b> () &amp;&amp;</td></tr>
+<tr class="memitem:a58a923e518b4e29b72409e2be61341b9" id="r_a58a923e518b4e29b72409e2be61341b9"><td class="memItemLeft" align="right" valign="top"><a id="a58a923e518b4e29b72409e2be61341b9" name="a58a923e518b4e29b72409e2be61341b9"></a>
+constexpr const Iter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>base</b> () const &amp;</td></tr>
+<tr class="memitem:ae599ea50a34a364e9097680bc64265b8" id="r_ae599ea50a34a364e9097680bc64265b8"><td class="memItemLeft" align="right" valign="top"><a id="ae599ea50a34a364e9097680bc64265b8" name="ae599ea50a34a364e9097680bc64265b8"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (const IndirectIterator &amp;) noexcept(std::is_nothrow_copy_constructible_v&lt; Iter &gt;)=default</td></tr>
+<tr class="memitem:a49bc703fb2ee7ffa96e7a569a79aaadc" id="r_a49bc703fb2ee7ffa96e7a569a79aaadc"><td class="memItemLeft" align="right" valign="top"><a id="a49bc703fb2ee7ffa96e7a569a79aaadc" name="a49bc703fb2ee7ffa96e7a569a79aaadc"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (IndirectIterator &amp;&amp;) noexcept(std::is_nothrow_move_constructible_v&lt; Iter &gt;)=default</td></tr>
 <tr class="memitem:a069788f61b560b3bf58b4c066db1b668" id="r_a069788f61b560b3bf58b4c066db1b668"><td class="memTemplParams" colspan="2"><a id="a069788f61b560b3bf58b4c066db1b668" name="a069788f61b560b3bf58b4c066db1b668"></a>
 template&lt;typename OtherIter, typename = std::enable_if_t&lt;std::is_convertible_v&lt;OtherIter, Iter&gt;&gt;&gt; </td></tr>
 <tr class="memitem:a069788f61b560b3bf58b4c066db1b668 template"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (IndirectIterator&lt; OtherIter &gt; iterator) noexcept(std::is_nothrow_move_constructible_v&lt; Iter &gt;)</td></tr>
-<tr class="memitem:ae599ea50a34a364e9097680bc64265b8" id="r_ae599ea50a34a364e9097680bc64265b8"><td class="memItemLeft" align="right" valign="top"><a id="ae599ea50a34a364e9097680bc64265b8" name="ae599ea50a34a364e9097680bc64265b8"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (const IndirectIterator &amp;) noexcept(std::is_nothrow_copy_constructible_v&lt; Iter &gt;)=default</td></tr>
-<tr class="memitem:a93cc0764e835e5a8b1fe3686bc4c2551" id="r_a93cc0764e835e5a8b1fe3686bc4c2551"><td class="memItemLeft" align="right" valign="top"><a id="a93cc0764e835e5a8b1fe3686bc4c2551" name="a93cc0764e835e5a8b1fe3686bc4c2551"></a>
-constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const IndirectIterator &amp;) noexcept(std::is_nothrow_assignable_v&lt; Iter, Iter &gt;)=default</td></tr>
-<tr class="memitem:a49bc703fb2ee7ffa96e7a569a79aaadc" id="r_a49bc703fb2ee7ffa96e7a569a79aaadc"><td class="memItemLeft" align="right" valign="top"><a id="a49bc703fb2ee7ffa96e7a569a79aaadc" name="a49bc703fb2ee7ffa96e7a569a79aaadc"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (IndirectIterator &amp;&amp;) noexcept(std::is_nothrow_move_constructible_v&lt; Iter &gt;)=default</td></tr>
-<tr class="memitem:aba1e2653982383aadead44189ce1b0bd" id="r_aba1e2653982383aadead44189ce1b0bd"><td class="memItemLeft" align="right" valign="top"><a id="aba1e2653982383aadead44189ce1b0bd" name="aba1e2653982383aadead44189ce1b0bd"></a>
-constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (IndirectIterator &amp;&amp;) noexcept(std::is_nothrow_move_assignable_v&lt; Iter &gt;)=default</td></tr>
+<tr class="memitem:a26522a7387a49bc14470ef9776da1017" id="r_a26522a7387a49bc14470ef9776da1017"><td class="memItemLeft" align="right" valign="top"><a id="a26522a7387a49bc14470ef9776da1017" name="a26522a7387a49bc14470ef9776da1017"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>IndirectIterator</b> (Iter iterator) noexcept(std::is_nothrow_move_constructible_v&lt; Iter &gt;)</td></tr>
+<tr class="memitem:ad5e78e3757d4d6ef775595896e98266f" id="r_ad5e78e3757d4d6ef775595896e98266f"><td class="memItemLeft" align="right" valign="top"><a id="ad5e78e3757d4d6ef775595896e98266f" name="ad5e78e3757d4d6ef775595896e98266f"></a>
+constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const IndirectIterator &amp;rhs) const</td></tr>
+<tr class="memitem:a6380190fe9d8158d5c245dad8cecc218" id="r_a6380190fe9d8158d5c245dad8cecc218"><td class="memItemLeft" align="right" valign="top"><a id="a6380190fe9d8158d5c245dad8cecc218" name="a6380190fe9d8158d5c245dad8cecc218"></a>
+constexpr reference&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> () const</td></tr>
+<tr class="memitem:a687fb13c4c18246212fa2def2f175b50" id="r_a687fb13c4c18246212fa2def2f175b50"><td class="memTemplParams" colspan="2"><a id="a687fb13c4c18246212fa2def2f175b50" name="a687fb13c4c18246212fa2def2f175b50"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:a687fb13c4c18246212fa2def2f175b50 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (difference_type i) const</td></tr>
 <tr class="memitem:aabe7170d7a71a6ee7c74bc2aa9a65195" id="r_aabe7170d7a71a6ee7c74bc2aa9a65195"><td class="memItemLeft" align="right" valign="top"><a id="aabe7170d7a71a6ee7c74bc2aa9a65195" name="aabe7170d7a71a6ee7c74bc2aa9a65195"></a>
 constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator++</b> ()</td></tr>
 <tr class="memitem:a17b282a0621ce341ef94e707d908c45c" id="r_a17b282a0621ce341ef94e707d908c45c"><td class="memItemLeft" align="right" valign="top"><a id="a17b282a0621ce341ef94e707d908c45c" name="a17b282a0621ce341ef94e707d908c45c"></a>
 constexpr IndirectIterator&#160;</td><td class="memItemRight" valign="bottom"><b>operator++</b> (int)</td></tr>
+<tr class="memitem:ae85551b8479c57efaaf2ea94276545e9" id="r_ae85551b8479c57efaaf2ea94276545e9"><td class="memTemplParams" colspan="2"><a id="ae85551b8479c57efaaf2ea94276545e9" name="ae85551b8479c57efaaf2ea94276545e9"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:ae85551b8479c57efaaf2ea94276545e9 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator+=</b> (difference_type rhs)</td></tr>
+<tr class="memitem:ac21c8b140fbf0f6ac6e987fe871b05cf" id="r_ac21c8b140fbf0f6ac6e987fe871b05cf"><td class="memTemplParams" colspan="2"><a id="ac21c8b140fbf0f6ac6e987fe871b05cf" name="ac21c8b140fbf0f6ac6e987fe871b05cf"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:ac21c8b140fbf0f6ac6e987fe871b05cf template"><td class="memItemLeft" align="right" valign="top">constexpr difference_type&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const IndirectIterator &amp;rhs) const</td></tr>
+<tr class="memitem:a65b5ccd1db218894f035050151738d29" id="r_a65b5ccd1db218894f035050151738d29"><td class="memTemplParams" colspan="2"><a id="a65b5ccd1db218894f035050151738d29" name="a65b5ccd1db218894f035050151738d29"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:a65b5ccd1db218894f035050151738d29 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (difference_type i) const</td></tr>
 <tr class="memitem:a68eb4e9c880da73c13f73071708c73ff" id="r_a68eb4e9c880da73c13f73071708c73ff"><td class="memTemplParams" colspan="2"><a id="a68eb4e9c880da73c13f73071708c73ff" name="a68eb4e9c880da73c13f73071708c73ff"></a>
 template&lt;typename I = Iter, typename = require_t&lt;std::bidirectional_iterator_tag, I&gt;&gt; </td></tr>
 <tr class="memitem:a68eb4e9c880da73c13f73071708c73ff template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator--</b> ()</td></tr>
 <tr class="memitem:a9d498aa0b1aa54ca02bb9e085a214b19" id="r_a9d498aa0b1aa54ca02bb9e085a214b19"><td class="memTemplParams" colspan="2"><a id="a9d498aa0b1aa54ca02bb9e085a214b19" name="a9d498aa0b1aa54ca02bb9e085a214b19"></a>
 template&lt;typename I = Iter, typename = require_t&lt;std::bidirectional_iterator_tag, I&gt;&gt; </td></tr>
 <tr class="memitem:a9d498aa0b1aa54ca02bb9e085a214b19 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator&#160;</td><td class="memItemRight" valign="bottom"><b>operator--</b> (int)</td></tr>
-<tr class="memitem:ae85551b8479c57efaaf2ea94276545e9" id="r_ae85551b8479c57efaaf2ea94276545e9"><td class="memTemplParams" colspan="2"><a id="ae85551b8479c57efaaf2ea94276545e9" name="ae85551b8479c57efaaf2ea94276545e9"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:ae85551b8479c57efaaf2ea94276545e9 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator+=</b> (difference_type rhs)</td></tr>
 <tr class="memitem:a650ada497ec988c4bf976181206dad28" id="r_a650ada497ec988c4bf976181206dad28"><td class="memTemplParams" colspan="2"><a id="a650ada497ec988c4bf976181206dad28" name="a650ada497ec988c4bf976181206dad28"></a>
 template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
 <tr class="memitem:a650ada497ec988c4bf976181206dad28 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator-=</b> (difference_type rhs)</td></tr>
-<tr class="memitem:ac21c8b140fbf0f6ac6e987fe871b05cf" id="r_ac21c8b140fbf0f6ac6e987fe871b05cf"><td class="memTemplParams" colspan="2"><a id="ac21c8b140fbf0f6ac6e987fe871b05cf" name="ac21c8b140fbf0f6ac6e987fe871b05cf"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:ac21c8b140fbf0f6ac6e987fe871b05cf template"><td class="memItemLeft" align="right" valign="top">constexpr difference_type&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const IndirectIterator &amp;rhs) const</td></tr>
-<tr class="memitem:a687fb13c4c18246212fa2def2f175b50" id="r_a687fb13c4c18246212fa2def2f175b50"><td class="memTemplParams" colspan="2"><a id="a687fb13c4c18246212fa2def2f175b50" name="a687fb13c4c18246212fa2def2f175b50"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:a687fb13c4c18246212fa2def2f175b50 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (difference_type i) const</td></tr>
-<tr class="memitem:a65b5ccd1db218894f035050151738d29" id="r_a65b5ccd1db218894f035050151738d29"><td class="memTemplParams" colspan="2"><a id="a65b5ccd1db218894f035050151738d29" name="a65b5ccd1db218894f035050151738d29"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:a65b5ccd1db218894f035050151738d29 template"><td class="memItemLeft" align="right" valign="top">constexpr IndirectIterator&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (difference_type i) const</td></tr>
-<tr class="memitem:addb5a858667de01b1831d386537f9e54" id="r_addb5a858667de01b1831d386537f9e54"><td class="memTemplParams" colspan="2"><a id="addb5a858667de01b1831d386537f9e54" name="addb5a858667de01b1831d386537f9e54"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:addb5a858667de01b1831d386537f9e54 template"><td class="memItemLeft" align="right" valign="top">constexpr reference&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (difference_type i) const</td></tr>
-<tr class="memitem:a6380190fe9d8158d5c245dad8cecc218" id="r_a6380190fe9d8158d5c245dad8cecc218"><td class="memItemLeft" align="right" valign="top"><a id="a6380190fe9d8158d5c245dad8cecc218" name="a6380190fe9d8158d5c245dad8cecc218"></a>
-constexpr reference&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> () const</td></tr>
 <tr class="memitem:a26de1fc7aa0fe9db09143264e97bac61" id="r_a26de1fc7aa0fe9db09143264e97bac61"><td class="memItemLeft" align="right" valign="top"><a id="a26de1fc7aa0fe9db09143264e97bac61" name="a26de1fc7aa0fe9db09143264e97bac61"></a>
 constexpr pointer&#160;</td><td class="memItemRight" valign="bottom"><b>operator-&gt;</b> () const</td></tr>
-<tr class="memitem:a58a923e518b4e29b72409e2be61341b9" id="r_a58a923e518b4e29b72409e2be61341b9"><td class="memItemLeft" align="right" valign="top"><a id="a58a923e518b4e29b72409e2be61341b9" name="a58a923e518b4e29b72409e2be61341b9"></a>
-constexpr const Iter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>base</b> () const &amp;</td></tr>
-<tr class="memitem:af9f646eb4e706742065b0343ef6651c0" id="r_af9f646eb4e706742065b0343ef6651c0"><td class="memItemLeft" align="right" valign="top"><a id="af9f646eb4e706742065b0343ef6651c0" name="af9f646eb4e706742065b0343ef6651c0"></a>
-constexpr Iter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>base</b> () &amp;</td></tr>
-<tr class="memitem:a6d08a793fe3fc006ed400f905eeb70c3" id="r_a6d08a793fe3fc006ed400f905eeb70c3"><td class="memItemLeft" align="right" valign="top"><a id="a6d08a793fe3fc006ed400f905eeb70c3" name="a6d08a793fe3fc006ed400f905eeb70c3"></a>
-constexpr Iter&#160;</td><td class="memItemRight" valign="bottom"><b>base</b> () &amp;&amp;</td></tr>
-<tr class="memitem:a5421d2e1af018dc3eef042f570e3cac4" id="r_a5421d2e1af018dc3eef042f570e3cac4"><td class="memItemLeft" align="right" valign="top"><a id="a5421d2e1af018dc3eef042f570e3cac4" name="a5421d2e1af018dc3eef042f570e3cac4"></a>
-constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const IndirectIterator &amp;rhs) const</td></tr>
-<tr class="memitem:ad5e78e3757d4d6ef775595896e98266f" id="r_ad5e78e3757d4d6ef775595896e98266f"><td class="memItemLeft" align="right" valign="top"><a id="ad5e78e3757d4d6ef775595896e98266f" name="ad5e78e3757d4d6ef775595896e98266f"></a>
-constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const IndirectIterator &amp;rhs) const</td></tr>
-<tr class="memitem:abe7c65f7acaf414aae6d33cb6a6b3ab5" id="r_abe7c65f7acaf414aae6d33cb6a6b3ab5"><td class="memTemplParams" colspan="2"><a id="abe7c65f7acaf414aae6d33cb6a6b3ab5" name="abe7c65f7acaf414aae6d33cb6a6b3ab5"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:abe7c65f7acaf414aae6d33cb6a6b3ab5 template"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;</b> (const IndirectIterator &amp;rhs) const</td></tr>
 <tr class="memitem:aa11510a43e37180d581687b0fe67f69e" id="r_aa11510a43e37180d581687b0fe67f69e"><td class="memTemplParams" colspan="2"><a id="aa11510a43e37180d581687b0fe67f69e" name="aa11510a43e37180d581687b0fe67f69e"></a>
 template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
 <tr class="memitem:aa11510a43e37180d581687b0fe67f69e template"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const IndirectIterator &amp;rhs) const</td></tr>
-<tr class="memitem:af729758a127f41f72957093044fff383" id="r_af729758a127f41f72957093044fff383"><td class="memTemplParams" colspan="2"><a id="af729758a127f41f72957093044fff383" name="af729758a127f41f72957093044fff383"></a>
-template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
-<tr class="memitem:af729758a127f41f72957093044fff383 template"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;=</b> (const IndirectIterator &amp;rhs) const</td></tr>
 <tr class="memitem:a206d44b612c0ee6fd46849bbc04664a6" id="r_a206d44b612c0ee6fd46849bbc04664a6"><td class="memTemplParams" colspan="2"><a id="a206d44b612c0ee6fd46849bbc04664a6" name="a206d44b612c0ee6fd46849bbc04664a6"></a>
 template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
 <tr class="memitem:a206d44b612c0ee6fd46849bbc04664a6 template"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=</b> (const IndirectIterator &amp;rhs) const</td></tr>
+<tr class="memitem:a93cc0764e835e5a8b1fe3686bc4c2551" id="r_a93cc0764e835e5a8b1fe3686bc4c2551"><td class="memItemLeft" align="right" valign="top"><a id="a93cc0764e835e5a8b1fe3686bc4c2551" name="a93cc0764e835e5a8b1fe3686bc4c2551"></a>
+constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const IndirectIterator &amp;) noexcept(std::is_nothrow_assignable_v&lt; Iter, Iter &gt;)=default</td></tr>
+<tr class="memitem:aba1e2653982383aadead44189ce1b0bd" id="r_aba1e2653982383aadead44189ce1b0bd"><td class="memItemLeft" align="right" valign="top"><a id="aba1e2653982383aadead44189ce1b0bd" name="aba1e2653982383aadead44189ce1b0bd"></a>
+constexpr IndirectIterator &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (IndirectIterator &amp;&amp;) noexcept(std::is_nothrow_move_assignable_v&lt; Iter &gt;)=default</td></tr>
+<tr class="memitem:a5421d2e1af018dc3eef042f570e3cac4" id="r_a5421d2e1af018dc3eef042f570e3cac4"><td class="memItemLeft" align="right" valign="top"><a id="a5421d2e1af018dc3eef042f570e3cac4" name="a5421d2e1af018dc3eef042f570e3cac4"></a>
+constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const IndirectIterator &amp;rhs) const</td></tr>
+<tr class="memitem:abe7c65f7acaf414aae6d33cb6a6b3ab5" id="r_abe7c65f7acaf414aae6d33cb6a6b3ab5"><td class="memTemplParams" colspan="2"><a id="abe7c65f7acaf414aae6d33cb6a6b3ab5" name="abe7c65f7acaf414aae6d33cb6a6b3ab5"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:abe7c65f7acaf414aae6d33cb6a6b3ab5 template"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;</b> (const IndirectIterator &amp;rhs) const</td></tr>
+<tr class="memitem:af729758a127f41f72957093044fff383" id="r_af729758a127f41f72957093044fff383"><td class="memTemplParams" colspan="2"><a id="af729758a127f41f72957093044fff383" name="af729758a127f41f72957093044fff383"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:af729758a127f41f72957093044fff383 template"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;=</b> (const IndirectIterator &amp;rhs) const</td></tr>
+<tr class="memitem:addb5a858667de01b1831d386537f9e54" id="r_addb5a858667de01b1831d386537f9e54"><td class="memTemplParams" colspan="2"><a id="addb5a858667de01b1831d386537f9e54" name="addb5a858667de01b1831d386537f9e54"></a>
+template&lt;typename I = Iter, typename = require_t&lt;std::random_access_iterator_tag, I&gt;&gt; </td></tr>
+<tr class="memitem:addb5a858667de01b1831d386537f9e54 template"><td class="memItemLeft" align="right" valign="top">constexpr reference&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (difference_type i) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -278,7 +278,7 @@ template&lt;typename Iter, bool PropagateConst = true&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>indirectiterator.h</b></li>
+<li>include/inviwo/core/util/<b>indirectiterator.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

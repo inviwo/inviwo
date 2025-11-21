@@ -97,42 +97,42 @@ $(function(){initNavTree('classinviwo_1_1CommandLineParser.html','','classinviwo
 <p>Wrapper class to handle command line parsing.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;commandlineparser.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/commandlineparser.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a5a2e26cbaab6f859a96fa9850dada9f9" id="r_a5a2e26cbaab6f859a96fa9850dada9f9"><td class="memItemLeft" align="right" valign="top"><a id="a5a2e26cbaab6f859a96fa9850dada9f9" name="a5a2e26cbaab6f859a96fa9850dada9f9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (TCLAP::Arg *arg, std::function&lt; void()&gt; callback=nullptr, int priority=0)</td></tr>
 <tr class="memitem:aed7d7e45a79e11192c5338f9ad420ac1" id="r_aed7d7e45a79e11192c5338f9ad420ac1"><td class="memItemLeft" align="right" valign="top"><a id="aed7d7e45a79e11192c5338f9ad420ac1" name="aed7d7e45a79e11192c5338f9ad420ac1"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CommandLineParser</b> (int argc, char **argv)</td></tr>
-<tr class="memitem:a1908619f63fc06cfffdf5bebbc327863" id="r_a1908619f63fc06cfffdf5bebbc327863"><td class="memItemLeft" align="right" valign="top"><a id="a1908619f63fc06cfffdf5bebbc327863" name="a1908619f63fc06cfffdf5bebbc327863"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> (int argc, char **argv)</td></tr>
-<tr class="memitem:a8e59e825be88410d265d1a1295c20f4d" id="r_a8e59e825be88410d265d1a1295c20f4d"><td class="memItemLeft" align="right" valign="top"><a id="a8e59e825be88410d265d1a1295c20f4d" name="a8e59e825be88410d265d1a1295c20f4d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> ()</td></tr>
-<tr class="memitem:affb1e06190a4ab8b91c372185e606e09" id="r_affb1e06190a4ab8b91c372185e606e09"><td class="memItemLeft" align="right" valign="top"><a id="affb1e06190a4ab8b91c372185e606e09" name="affb1e06190a4ab8b91c372185e606e09"></a>
-std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>getOutputPath</b> () const</td></tr>
-<tr class="memitem:a367eb9e2476668ed8d3f815d634f1194" id="r_a367eb9e2476668ed8d3f815d634f1194"><td class="memItemLeft" align="right" valign="top"><a id="a367eb9e2476668ed8d3f815d634f1194" name="a367eb9e2476668ed8d3f815d634f1194"></a>
-std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>getWorkspacePath</b> () const</td></tr>
-<tr class="memitem:ad9bd8a6bb8228720f83e097f5d23a657" id="r_ad9bd8a6bb8228720f83e097f5d23a657"><td class="memItemLeft" align="right" valign="top"><a id="ad9bd8a6bb8228720f83e097f5d23a657" name="ad9bd8a6bb8228720f83e097f5d23a657"></a>
-std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>getLogToFileFileName</b> () const</td></tr>
-<tr class="memitem:aeb3641aebb2008f4499bd779c1e007c7" id="r_aeb3641aebb2008f4499bd779c1e007c7"><td class="memItemLeft" align="right" valign="top"><a id="aeb3641aebb2008f4499bd779c1e007c7" name="aeb3641aebb2008f4499bd779c1e007c7"></a>
-std::vector&lt; std::filesystem::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getModuleSearchPaths</b> () const</td></tr>
-<tr class="memitem:a4ba24912b90ee4d6e09b56dbfb07d8df" id="r_a4ba24912b90ee4d6e09b56dbfb07d8df"><td class="memItemLeft" align="right" valign="top"><a id="a4ba24912b90ee4d6e09b56dbfb07d8df" name="a4ba24912b90ee4d6e09b56dbfb07d8df"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getQuitApplicationAfterStartup</b> () const</td></tr>
-<tr class="memitem:a3bbd8689ac2112dc5169964a282bf354" id="r_a3bbd8689ac2112dc5169964a282bf354"><td class="memItemLeft" align="right" valign="top"><a id="a3bbd8689ac2112dc5169964a282bf354" name="a3bbd8689ac2112dc5169964a282bf354"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLoadWorkspaceFromArg</b> () const</td></tr>
-<tr class="memitem:af3d4baa6172b3907c9c91845861dfb0d" id="r_af3d4baa6172b3907c9c91845861dfb0d"><td class="memItemLeft" align="right" valign="top"><a id="af3d4baa6172b3907c9c91845861dfb0d" name="af3d4baa6172b3907c9c91845861dfb0d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getShowSplashScreen</b> () const</td></tr>
-<tr class="memitem:a255c87ca18b6d87594f834d47965f408" id="r_a255c87ca18b6d87594f834d47965f408"><td class="memItemLeft" align="right" valign="top"><a id="a255c87ca18b6d87594f834d47965f408" name="a255c87ca18b6d87594f834d47965f408"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLogToFile</b> () const</td></tr>
-<tr class="memitem:a8d5968e30505c0010ca105ee1ee0fbe6" id="r_a8d5968e30505c0010ca105ee1ee0fbe6"><td class="memItemLeft" align="right" valign="top"><a id="a8d5968e30505c0010ca105ee1ee0fbe6" name="a8d5968e30505c0010ca105ee1ee0fbe6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLogToConsole</b> () const</td></tr>
 <tr class="memitem:af9fee08038d99bd20f3b50f46a08d57b" id="r_af9fee08038d99bd20f3b50f46a08d57b"><td class="memItemLeft" align="right" valign="top"><a id="af9fee08038d99bd20f3b50f46a08d57b" name="af9fee08038d99bd20f3b50f46a08d57b"></a>
 const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getArgs</b> () const</td></tr>
 <tr class="memitem:ac45b7cf541caa8ad22b43a443e51c8ff" id="r_ac45b7cf541caa8ad22b43a443e51c8ff"><td class="memItemLeft" align="right" valign="top"><a id="ac45b7cf541caa8ad22b43a443e51c8ff" name="ac45b7cf541caa8ad22b43a443e51c8ff"></a>
 const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getIgnoredArgs</b> () const</td></tr>
+<tr class="memitem:a3bbd8689ac2112dc5169964a282bf354" id="r_a3bbd8689ac2112dc5169964a282bf354"><td class="memItemLeft" align="right" valign="top"><a id="a3bbd8689ac2112dc5169964a282bf354" name="a3bbd8689ac2112dc5169964a282bf354"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLoadWorkspaceFromArg</b> () const</td></tr>
+<tr class="memitem:a8d5968e30505c0010ca105ee1ee0fbe6" id="r_a8d5968e30505c0010ca105ee1ee0fbe6"><td class="memItemLeft" align="right" valign="top"><a id="a8d5968e30505c0010ca105ee1ee0fbe6" name="a8d5968e30505c0010ca105ee1ee0fbe6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLogToConsole</b> () const</td></tr>
+<tr class="memitem:a255c87ca18b6d87594f834d47965f408" id="r_a255c87ca18b6d87594f834d47965f408"><td class="memItemLeft" align="right" valign="top"><a id="a255c87ca18b6d87594f834d47965f408" name="a255c87ca18b6d87594f834d47965f408"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>getLogToFile</b> () const</td></tr>
+<tr class="memitem:ad9bd8a6bb8228720f83e097f5d23a657" id="r_ad9bd8a6bb8228720f83e097f5d23a657"><td class="memItemLeft" align="right" valign="top"><a id="ad9bd8a6bb8228720f83e097f5d23a657" name="ad9bd8a6bb8228720f83e097f5d23a657"></a>
+std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>getLogToFileFileName</b> () const</td></tr>
+<tr class="memitem:aeb3641aebb2008f4499bd779c1e007c7" id="r_aeb3641aebb2008f4499bd779c1e007c7"><td class="memItemLeft" align="right" valign="top"><a id="aeb3641aebb2008f4499bd779c1e007c7" name="aeb3641aebb2008f4499bd779c1e007c7"></a>
+std::vector&lt; std::filesystem::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getModuleSearchPaths</b> () const</td></tr>
+<tr class="memitem:affb1e06190a4ab8b91c372185e606e09" id="r_affb1e06190a4ab8b91c372185e606e09"><td class="memItemLeft" align="right" valign="top"><a id="affb1e06190a4ab8b91c372185e606e09" name="affb1e06190a4ab8b91c372185e606e09"></a>
+std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>getOutputPath</b> () const</td></tr>
+<tr class="memitem:a4ba24912b90ee4d6e09b56dbfb07d8df" id="r_a4ba24912b90ee4d6e09b56dbfb07d8df"><td class="memItemLeft" align="right" valign="top"><a id="a4ba24912b90ee4d6e09b56dbfb07d8df" name="a4ba24912b90ee4d6e09b56dbfb07d8df"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>getQuitApplicationAfterStartup</b> () const</td></tr>
+<tr class="memitem:af3d4baa6172b3907c9c91845861dfb0d" id="r_af3d4baa6172b3907c9c91845861dfb0d"><td class="memItemLeft" align="right" valign="top"><a id="af3d4baa6172b3907c9c91845861dfb0d" name="af3d4baa6172b3907c9c91845861dfb0d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>getShowSplashScreen</b> () const</td></tr>
+<tr class="memitem:a367eb9e2476668ed8d3f815d634f1194" id="r_a367eb9e2476668ed8d3f815d634f1194"><td class="memItemLeft" align="right" valign="top"><a id="a367eb9e2476668ed8d3f815d634f1194" name="a367eb9e2476668ed8d3f815d634f1194"></a>
+std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>getWorkspacePath</b> () const</td></tr>
+<tr class="memitem:a8e59e825be88410d265d1a1295c20f4d" id="r_a8e59e825be88410d265d1a1295c20f4d"><td class="memItemLeft" align="right" valign="top"><a id="a8e59e825be88410d265d1a1295c20f4d" name="a8e59e825be88410d265d1a1295c20f4d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> ()</td></tr>
+<tr class="memitem:a1908619f63fc06cfffdf5bebbc327863" id="r_a1908619f63fc06cfffdf5bebbc327863"><td class="memItemLeft" align="right" valign="top"><a id="a1908619f63fc06cfffdf5bebbc327863" name="a1908619f63fc06cfffdf5bebbc327863"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>parse</b> (int argc, char **argv)</td></tr>
 <tr class="memitem:ab7a07c6ac36a0f85d9c1333d8e553159" id="r_ab7a07c6ac36a0f85d9c1333d8e553159"><td class="memItemLeft" align="right" valign="top"><a id="ab7a07c6ac36a0f85d9c1333d8e553159" name="ab7a07c6ac36a0f85d9c1333d8e553159"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>processCallbacks</b> ()</td></tr>
-<tr class="memitem:a5a2e26cbaab6f859a96fa9850dada9f9" id="r_a5a2e26cbaab6f859a96fa9850dada9f9"><td class="memItemLeft" align="right" valign="top"><a id="a5a2e26cbaab6f859a96fa9850dada9f9" name="a5a2e26cbaab6f859a96fa9850dada9f9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (TCLAP::Arg *arg, std::function&lt; void()&gt; callback=nullptr, int priority=0)</td></tr>
 <tr class="memitem:a73d01ea1bd9ae6d1e62d77b41337501e" id="r_a73d01ea1bd9ae6d1e62d77b41337501e"><td class="memItemLeft" align="right" valign="top"><a id="a73d01ea1bd9ae6d1e62d77b41337501e" name="a73d01ea1bd9ae6d1e62d77b41337501e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (TCLAP::Arg *arg)</td></tr>
 </table>
@@ -140,7 +140,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (TCLAP::Ar
 <div class="textblock"><p>Wrapper class to handle command line parsing. </p>
 <p>Wraps around TCLAP to provide command line argument parsing. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>commandlineparser.h</b></li>
+<li>include/inviwo/core/util/<b>commandlineparser.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

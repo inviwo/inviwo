@@ -97,17 +97,12 @@ $(function(){initNavTree('classinviwo_1_1Version.html','','classinviwo_1_1Versio
 <p>Parses a version string "Major.Minor.Patch-PreRelease+Build" and allow versions to be compared. Try to follow semantic versioning: <a href="http://semver.org/">http://semver.org/</a> A nuanced picture, i.e. reasons why you do not necessarily need to follow semantic versioning: "Why Semantic Versioning Isn't": <a href="https://gist.github.com/jashkenas/cbd2b088e20279ae2c8e">https://gist.github.com/jashkenas/cbd2b088e20279ae2c8e</a>.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;version.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/common/version.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a79f2f1a270b5bb963b74cb291deddafc" id="r_a79f2f1a270b5bb963b74cb291deddafc"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79f2f1a270b5bb963b74cb291deddafc">Version</a> (std::string_view version)</td></tr>
-<tr class="memdesc:a79f2f1a270b5bb963b74cb291deddafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the version.  <br /></td></tr>
-<tr class="memitem:ad50ef2227776e29e40120122607e5409" id="r_ad50ef2227776e29e40120122607e5409"><td class="memItemLeft" align="right" valign="top"><a id="ad50ef2227776e29e40120122607e5409" name="ad50ef2227776e29e40120122607e5409"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Version</b> (const char *version)</td></tr>
-<tr class="memitem:a70d4d354acf95c21e3880ad2db5f11de" id="r_a70d4d354acf95c21e3880ad2db5f11de"><td class="memItemLeft" align="right" valign="top"><a id="a70d4d354acf95c21e3880ad2db5f11de" name="a70d4d354acf95c21e3880ad2db5f11de"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Version</b> (unsigned int <a class="el" href="#a2b4be0b616c11498bc2ca11e8bba39e1">major</a>=1, unsigned int <a class="el" href="#a4bf98c07aa8b010aab4eb2c3f68d078b">minor</a>=0, unsigned int <a class="el" href="#a061599d3b0015b25f0786a03a10fe56c">patch</a>=0, std::string_view preRelease=&quot;&quot;, std::string_view build=&quot;&quot;)</td></tr>
-<tr class="memitem:a0042ace8e97cb8dc7600afcd840c155e" id="r_a0042ace8e97cb8dc7600afcd840c155e"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0042ace8e97cb8dc7600afcd840c155e">semanticVersionEqual</a> (const <a class="el" href="#a79f2f1a270b5bb963b74cb291deddafc">Version</a> &amp;other) const</td></tr>
+<tr class="memitem:a390b0e77f139d6bac6485336019b7c55" id="r_a390b0e77f139d6bac6485336019b7c55"><td class="memItemLeft" align="right" valign="top"><a id="a390b0e77f139d6bac6485336019b7c55" name="a390b0e77f139d6bac6485336019b7c55"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>build</b> () const</td></tr>
 <tr class="memitem:a8f80b76998d6c79d3e9b47db659077c6" id="r_a8f80b76998d6c79d3e9b47db659077c6"><td class="memItemLeft" align="right" valign="top"><a id="a8f80b76998d6c79d3e9b47db659077c6" name="a8f80b76998d6c79d3e9b47db659077c6"></a>
 constexpr std::strong_ordering&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=&gt;</b> (const <a class="el" href="#a79f2f1a270b5bb963b74cb291deddafc">Version</a> &amp;rhs) const</td></tr>
 <tr class="memdesc:a8f80b76998d6c79d3e9b47db659077c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares major, minor, patch and prerelease versions in order. <br /></td></tr>
@@ -115,8 +110,13 @@ constexpr std::strong_ordering&#160;</td><td class="memItemRight" valign="bottom
 constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="#a79f2f1a270b5bb963b74cb291deddafc">Version</a> &amp;rhs) const</td></tr>
 <tr class="memitem:a5da41155a74a22301c0bb9ff3bc6206d" id="r_a5da41155a74a22301c0bb9ff3bc6206d"><td class="memItemLeft" align="right" valign="top"><a id="a5da41155a74a22301c0bb9ff3bc6206d" name="a5da41155a74a22301c0bb9ff3bc6206d"></a>
 constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>preRelease</b> () const</td></tr>
-<tr class="memitem:a390b0e77f139d6bac6485336019b7c55" id="r_a390b0e77f139d6bac6485336019b7c55"><td class="memItemLeft" align="right" valign="top"><a id="a390b0e77f139d6bac6485336019b7c55" name="a390b0e77f139d6bac6485336019b7c55"></a>
-constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>build</b> () const</td></tr>
+<tr class="memitem:a0042ace8e97cb8dc7600afcd840c155e" id="r_a0042ace8e97cb8dc7600afcd840c155e"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0042ace8e97cb8dc7600afcd840c155e">semanticVersionEqual</a> (const <a class="el" href="#a79f2f1a270b5bb963b74cb291deddafc">Version</a> &amp;other) const</td></tr>
+<tr class="memitem:ad50ef2227776e29e40120122607e5409" id="r_ad50ef2227776e29e40120122607e5409"><td class="memItemLeft" align="right" valign="top"><a id="ad50ef2227776e29e40120122607e5409" name="ad50ef2227776e29e40120122607e5409"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Version</b> (const char *version)</td></tr>
+<tr class="memitem:a79f2f1a270b5bb963b74cb291deddafc" id="r_a79f2f1a270b5bb963b74cb291deddafc"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79f2f1a270b5bb963b74cb291deddafc">Version</a> (std::string_view version)</td></tr>
+<tr class="memdesc:a79f2f1a270b5bb963b74cb291deddafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the version.  <br /></td></tr>
+<tr class="memitem:a70d4d354acf95c21e3880ad2db5f11de" id="r_a70d4d354acf95c21e3880ad2db5f11de"><td class="memItemLeft" align="right" valign="top"><a id="a70d4d354acf95c21e3880ad2db5f11de" name="a70d4d354acf95c21e3880ad2db5f11de"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>Version</b> (unsigned int <a class="el" href="#a2b4be0b616c11498bc2ca11e8bba39e1">major</a>=1, unsigned int <a class="el" href="#a4bf98c07aa8b010aab4eb2c3f68d078b">minor</a>=0, unsigned int <a class="el" href="#a061599d3b0015b25f0786a03a10fe56c">patch</a>=0, std::string_view preRelease=&quot;&quot;, std::string_view build=&quot;&quot;)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -227,7 +227,7 @@ IVW_CORE_API friend std::ostream &amp;&#160;</td><td class="memItemRight" valign
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>version.h</b></li>
+<li>include/inviwo/core/common/<b>version.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -4,6 +4,11 @@ var group__properties =
       [ "clone", "classinviwo_1_1AdvancedMaterialProperty.html#a4711821b8b316bab710899d6136dc74d", null ],
       [ "getIndexOfRefractionTerm", "classinviwo_1_1AdvancedMaterialProperty.html#a52bb4237c9d1c49119c2d054d61b5f8a", null ]
     ] ],
+    [ "inviwo::BasisProperty", "classinviwo_1_1BasisProperty.html", [
+      [ "clone", "classinviwo_1_1BasisProperty.html#a8163a2f51dbeaf6c7e585f1657d5cccd", null ],
+      [ "resetToDefaultState", "classinviwo_1_1BasisProperty.html#a20ddcea22e510f22c47a77fac3849b09", null ],
+      [ "setCurrentStateAsDefault", "classinviwo_1_1BasisProperty.html#a7e11038b036a569e80c2cc3a634dc47c", null ]
+    ] ],
     [ "inviwo::BoolCompositeProperty", "classinviwo_1_1BoolCompositeProperty.html", [
       [ "clone", "classinviwo_1_1BoolCompositeProperty.html#a7bf54b1bc0e565b71726b0f582a85808", null ],
       [ "getClassIdentifierForWidget", "classinviwo_1_1BoolCompositeProperty.html#a1a7235ba1866c8d34d9c6c7856b73d66", null ]
@@ -11,6 +16,9 @@ var group__properties =
     [ "inviwo::BoolProperty", "classinviwo_1_1BoolProperty.html", [
       [ "clone", "classinviwo_1_1BoolProperty.html#a7df201a9a22ad1739c8de24fc17d817c", null ],
       [ "getDescription", "classinviwo_1_1BoolProperty.html#a93429c56a14b1cbd88c3d0f108edf372", null ]
+    ] ],
+    [ "inviwo::BufferInformationProperty", "classinviwo_1_1BufferInformationProperty.html", [
+      [ "clone", "classinviwo_1_1BufferInformationProperty.html#ab4d5f24872276fdf8dca04df7706cc78", null ]
     ] ],
     [ "inviwo::ButtonGroupProperty", "classinviwo_1_1ButtonGroupProperty.html", [
       [ "Button", "structinviwo_1_1ButtonGroupProperty_1_1Button.html", null ],
@@ -43,6 +51,13 @@ var group__properties =
       [ "setNearFarPlaneDist", "classinviwo_1_1CameraProperty.html#a987b553f2b0deb651b21ec9fe8f80e46", null ],
       [ "setView", "classinviwo_1_1CameraProperty.html#a494852cd33696b1cd0994467e8615368", null ]
     ] ],
+    [ "inviwo::ColumnMetaDataListProperty", "classinviwo_1_1ColumnMetaDataListProperty.html", [
+      [ "clone", "classinviwo_1_1ColumnMetaDataListProperty.html#afeb3a71b2c7c6aa701bd60d0b2928591", null ],
+      [ "setPort", "classinviwo_1_1ColumnMetaDataListProperty.html#ad10f1c17e99f45a29f951927d5a6081f", null ]
+    ] ],
+    [ "inviwo::ColumnMetaDataProperty", "classinviwo_1_1ColumnMetaDataProperty.html", [
+      [ "clone", "classinviwo_1_1ColumnMetaDataProperty.html#a01f8f7ec5d94e2a4b290c9123a79792a", null ]
+    ] ],
     [ "inviwo::CompositeProperty", "classinviwo_1_1CompositeProperty.html", [
       [ "accept", "classinviwo_1_1CompositeProperty.html#a2a08ae47c1464cddec0a932ba95da711", null ],
       [ "clone", "classinviwo_1_1CompositeProperty.html#a1dcf19992aecd328eb5234f90e2623f9", null ],
@@ -53,6 +68,15 @@ var group__properties =
       [ "set", "classinviwo_1_1CompositeProperty.html#a8c125ccc65d07d1559c59e8e0ebb7f7a", null ],
       [ "setCurrentStateAsDefault", "classinviwo_1_1CompositeProperty.html#a9a4ee79afb6f4cdc73b8b4be990e1186", null ],
       [ "setReadOnly", "classinviwo_1_1CompositeProperty.html#ac05e59a06cbc593ff2d9b515cb921cc5", null ]
+    ] ],
+    [ "inviwo::DataRangeProperty", "classinviwo_1_1DataRangeProperty.html", [
+      [ "clone", "classinviwo_1_1DataRangeProperty.html#a5ce51a27c20806b891fafbce4e7d16ab", null ],
+      [ "getDataRange", "classinviwo_1_1DataRangeProperty.html#ab7826996d36da31f1a48c8ff34a8e761", null ],
+      [ "getValueRange", "classinviwo_1_1DataRangeProperty.html#a8fbd4ece7e51cdbaf3fa25289a8205d0", null ],
+      [ "setDataRange", "classinviwo_1_1DataRangeProperty.html#ae362b4150604f4ab18e5d89e50373142", null ],
+      [ "setValueRange", "classinviwo_1_1DataRangeProperty.html#a1fa5e87b294938eb153e458d8a23ecae", null ],
+      [ "updateFromLayer", "classinviwo_1_1DataRangeProperty.html#a8423daae1a67d042b956c07393dd454d", null ],
+      [ "updateFromVolume", "classinviwo_1_1DataRangeProperty.html#a40bed184b875b046e70832b1676dfd2f", null ]
     ] ],
     [ "inviwo::DirectoryProperty", "classinviwo_1_1DirectoryProperty.html", [
       [ "clone", "classinviwo_1_1DirectoryProperty.html#a6496405b7efad8131f7915bee35ce128", null ],
@@ -80,13 +104,48 @@ var group__properties =
       [ "set", "classinviwo_1_1FileProperty.html#acd55b021cfe30742fb686f0033b55d45", null ],
       [ "setCurrentStateAsDefault", "classinviwo_1_1FileProperty.html#a73edb4c13c2380619188178e41233ac9", null ]
     ] ],
+    [ "inviwo::FontFaceOptionProperty", "classinviwo_1_1FontFaceOptionProperty.html", [
+      [ "clone", "classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00", null ]
+    ] ],
+    [ "inviwo::FontProperty", "classinviwo_1_1FontProperty.html", [
+      [ "clone", "classinviwo_1_1FontProperty.html#a9039e6e644dac4a5a781640da2b457fd", null ]
+    ] ],
+    [ "inviwo::GaussianProperty&lt; T &gt;", "classinviwo_1_1GaussianProperty.html", [
+      [ "clone", "classinviwo_1_1GaussianProperty.html#aeb73015f05061870caa3b5b2769bfff5", null ]
+    ] ],
     [ "inviwo::ImageEditorProperty", "classinviwo_1_1ImageEditorProperty.html", [
       [ "clone", "classinviwo_1_1ImageEditorProperty.html#ae7d25c4b0d7b2ffcf6a0a70d8977f3b1", null ]
+    ] ],
+    [ "inviwo::ImageInformationProperty", "classinviwo_1_1ImageInformationProperty.html", [
+      [ "clone", "classinviwo_1_1ImageInformationProperty.html#a2b40a019fb09032fe30bb9ecef0c2e0c", null ]
+    ] ],
+    [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", [
+      [ "clone", "classinviwo_1_1IsoTFProperty.html#af4d1eb69c443e143d4eb78b178e7b69c", null ],
+      [ "getClassIdentifierForWidget", "classinviwo_1_1IsoTFProperty.html#a77395678e37f46f37b42219d6893db6e", null ],
+      [ "set", "classinviwo_1_1IsoTFProperty.html#a92f5bd0805695656757063f523778ea6", null ],
+      [ "set", "classinviwo_1_1IsoTFProperty.html#ac65ddceffb8f945e6ee464da18e821eb", null ],
+      [ "set", "classinviwo_1_1IsoTFProperty.html#acf004dc472c8137878e643e2b0801b0c", null ],
+      [ "setHistogramMode", "classinviwo_1_1IsoTFProperty.html#a36f940a1987821715c693b3376fae724", null ],
+      [ "setHistogramSelection", "classinviwo_1_1IsoTFProperty.html#a90c49b37f80983a0e5075c38f80ad5cc", null ]
+    ] ],
+    [ "inviwo::IsoValueProperty", "classinviwo_1_1IsoValueProperty.html", [
+      [ "clone", "classinviwo_1_1IsoValueProperty.html#ae583b216b10ac5ce89314451c5bffb58", null ],
+      [ "resetToDefaultState", "classinviwo_1_1IsoValueProperty.html#ace133f4a92906c324904de4fc5a745b8", null ],
+      [ "set", "classinviwo_1_1IsoValueProperty.html#a25186c7a37cc41e25366c13cb2511e74", null ],
+      [ "setCurrentStateAsDefault", "classinviwo_1_1IsoValueProperty.html#a0b1310668e91ac180cd2c6631fbc3acd", null ],
+      [ "setHistogramMode", "classinviwo_1_1IsoValueProperty.html#a72ad95eaabd24dba12a517653a56eea7", null ],
+      [ "setHistogramSelection", "classinviwo_1_1IsoValueProperty.html#ab224e38db02a135de90f6d31cf6193bb", null ]
+    ] ],
+    [ "inviwo::LayerInformationProperty", "classinviwo_1_1LayerInformationProperty.html", [
+      [ "clone", "classinviwo_1_1LayerInformationProperty.html#a7e6171d0982919311e9d00bf2a2bd662", null ]
     ] ],
     [ "inviwo::MarginProperty", "classinviwo_1_1MarginProperty.html", [
       [ "clone", "classinviwo_1_1MarginProperty.html#a9c3f3b635d74ad47b1edd8170477cc13", null ],
       [ "getRect", "classinviwo_1_1MarginProperty.html#a500f96ad052ba3b74073c36ecdb7801a", null ],
       [ "getSize", "classinviwo_1_1MarginProperty.html#a3c3bebc58a242ef17f668864048ebb30", null ]
+    ] ],
+    [ "inviwo::MeshInformationProperty", "classinviwo_1_1MeshInformationProperty.html", [
+      [ "clone", "classinviwo_1_1MeshInformationProperty.html#aa58707f9614a03fd3eedb1cda2bf3a97", null ]
     ] ],
     [ "inviwo::MinMaxProperty&lt; T &gt;", "classinviwo_1_1MinMaxProperty.html", [
       [ "clamp", "classinviwo_1_1MinMaxProperty.html#ac85c324e213f12ec51adbaab241d1ab6", null ],
@@ -117,8 +176,8 @@ var group__properties =
       [ "clamp", "classinviwo_1_1OrdinalProperty.html#a3bae4ac9f62f21c0e9eadf6710937651", null ],
       [ "clone", "classinviwo_1_1OrdinalProperty.html#abe2097329033f1289f2f3293cb25ef0c", null ],
       [ "get", "classinviwo_1_1OrdinalProperty.html#a2632b3b30d3c1ef50eed57390bb70833", null ],
-      [ "get", "classinviwo_1_1OrdinalProperty.html#a296d310c0b6e03133bf35c76beea1dc3", null ],
-      [ "get", "classinviwo_1_1OrdinalProperty.html#ab56918e2154274904fa3413abf454ea9", null ],
+      [ "get", "classinviwo_1_1OrdinalProperty.html#a3cd252f7f9ac2ca9b69c4997f22958e1", null ],
+      [ "get", "classinviwo_1_1OrdinalProperty.html#afa097031e8e619639cf7eb2b662e5e74", null ],
       [ "getDescription", "classinviwo_1_1OrdinalProperty.html#a51041d4776b60abe577bb0975db51cfc", null ],
       [ "isDefaultState", "classinviwo_1_1OrdinalProperty.html#a25136ba846aa02ddd9ca0f8645b7c4ef", null ],
       [ "resetToDefaultState", "classinviwo_1_1OrdinalProperty.html#adb5fbd024756f2dc0027adff778309a6", null ],
@@ -133,8 +192,8 @@ var group__properties =
       [ "clamp", "classinviwo_1_1OrdinalRefProperty.html#a300499428d6e5e37338bfabd43b249da", null ],
       [ "clone", "classinviwo_1_1OrdinalRefProperty.html#a72a009950e8cc5f11fbbfcb83d696837", null ],
       [ "get", "classinviwo_1_1OrdinalRefProperty.html#a22702515887a4f902ec15cc1c46078bf", null ],
-      [ "get", "classinviwo_1_1OrdinalRefProperty.html#a376d43e1d6254148b4688a5f22caaa88", null ],
-      [ "get", "classinviwo_1_1OrdinalRefProperty.html#a69be3d522b5248960513aa035c00eb88", null ],
+      [ "get", "classinviwo_1_1OrdinalRefProperty.html#a09570b5722a4cde9ea00171b7a5e60a8", null ],
+      [ "get", "classinviwo_1_1OrdinalRefProperty.html#aa2dbe59258d675b381579b91e4b60dee", null ],
       [ "getDescription", "classinviwo_1_1OrdinalRefProperty.html#a80c6e2a76e17cf93b2f2884535e903f2", null ],
       [ "isDefaultState", "classinviwo_1_1OrdinalRefProperty.html#ada0749f43b849a6ddc518cbdd45db495", null ],
       [ "resetToDefaultState", "classinviwo_1_1OrdinalRefProperty.html#a0626535fd4d786911a8f7f0bf56e9a24", null ],
@@ -188,15 +247,24 @@ var group__properties =
       [ "setReadOnly", "classinviwo_1_1Property.html#ac12a9e03b48fd44531a8e862c43a8d8f", null ],
       [ "updateWidgets", "classinviwo_1_1Property.html#a131cc525cef66f46ea838f4093fecc4f", null ]
     ] ],
+    [ "inviwo::RaycastingProperty", "classinviwo_1_1RaycastingProperty.html", [
+      [ "clone", "classinviwo_1_1RaycastingProperty.html#af3f2651d919b32b073e91b221851ebc8", null ]
+    ] ],
     [ "inviwo::SelectionColorProperty", "classinviwo_1_1SelectionColorProperty.html", [
       [ "clone", "classinviwo_1_1SelectionColorProperty.html#a092344b063b26fdf81be656674e25bcc", null ],
       [ "getMixIntensity", "classinviwo_1_1SelectionColorProperty.html#a0e285f9c3561bb4d2487b67fc4119026", null ]
+    ] ],
+    [ "inviwo::SequenceTimerProperty", "classinviwo_1_1SequenceTimerProperty.html", [
+      [ "clone", "classinviwo_1_1SequenceTimerProperty.html#a7df02e67f52fee8ae2530f7b38245409", null ]
     ] ],
     [ "inviwo::SimpleLightingProperty", "classinviwo_1_1SimpleLightingProperty.html", [
       [ "clone", "classinviwo_1_1SimpleLightingProperty.html#aeec535cfa831240681968c44158d03ab", null ]
     ] ],
     [ "inviwo::SimpleRaycastingProperty", "classinviwo_1_1SimpleRaycastingProperty.html", [
       [ "clone", "classinviwo_1_1SimpleRaycastingProperty.html#add87a8dc848c3298b4ca2bf859e6cdd8", null ]
+    ] ],
+    [ "inviwo::SplitterProperty", "classinviwo_1_1SplitterProperty.html", [
+      [ "clone", "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf", null ]
     ] ],
     [ "inviwo::StringProperty", "classinviwo_1_1StringProperty.html", [
       [ "StringProperty", "classinviwo_1_1StringProperty.html#a888fcba5c711383de9ab1865609afa90", null ],
@@ -219,41 +287,6 @@ var group__properties =
       [ "setHistogramMode", "classinviwo_1_1TransferFunctionProperty.html#a197e1364cdb4450c941ad5528cf97d66", null ],
       [ "setHistogramSelection", "classinviwo_1_1TransferFunctionProperty.html#aacc0d44e59b42492a84d7624ab389c30", null ]
     ] ],
-    [ "inviwo::VolumeIndicatorProperty", "classinviwo_1_1VolumeIndicatorProperty.html", [
-      [ "clone", "classinviwo_1_1VolumeIndicatorProperty.html#acbbb5af5a741742ac1e95ea3139b91ea", null ]
-    ] ],
-    [ "inviwo::BasisProperty", "classinviwo_1_1BasisProperty.html", [
-      [ "clone", "classinviwo_1_1BasisProperty.html#a8163a2f51dbeaf6c7e585f1657d5cccd", null ],
-      [ "resetToDefaultState", "classinviwo_1_1BasisProperty.html#a20ddcea22e510f22c47a77fac3849b09", null ],
-      [ "setCurrentStateAsDefault", "classinviwo_1_1BasisProperty.html#a7e11038b036a569e80c2cc3a634dc47c", null ]
-    ] ],
-    [ "inviwo::BufferInformationProperty", "classinviwo_1_1BufferInformationProperty.html", [
-      [ "clone", "classinviwo_1_1BufferInformationProperty.html#ab4d5f24872276fdf8dca04df7706cc78", null ]
-    ] ],
-    [ "inviwo::DataRangeProperty", "classinviwo_1_1DataRangeProperty.html", [
-      [ "clone", "classinviwo_1_1DataRangeProperty.html#a5ce51a27c20806b891fafbce4e7d16ab", null ],
-      [ "getDataRange", "classinviwo_1_1DataRangeProperty.html#ab7826996d36da31f1a48c8ff34a8e761", null ],
-      [ "getValueRange", "classinviwo_1_1DataRangeProperty.html#a8fbd4ece7e51cdbaf3fa25289a8205d0", null ],
-      [ "setDataRange", "classinviwo_1_1DataRangeProperty.html#ae362b4150604f4ab18e5d89e50373142", null ],
-      [ "setValueRange", "classinviwo_1_1DataRangeProperty.html#a1fa5e87b294938eb153e458d8a23ecae", null ],
-      [ "updateFromLayer", "classinviwo_1_1DataRangeProperty.html#a8423daae1a67d042b956c07393dd454d", null ],
-      [ "updateFromVolume", "classinviwo_1_1DataRangeProperty.html#a40bed184b875b046e70832b1676dfd2f", null ]
-    ] ],
-    [ "inviwo::GaussianProperty&lt; T &gt;", "classinviwo_1_1GaussianProperty.html", [
-      [ "clone", "classinviwo_1_1GaussianProperty.html#aeb73015f05061870caa3b5b2769bfff5", null ]
-    ] ],
-    [ "inviwo::ImageInformationProperty", "classinviwo_1_1ImageInformationProperty.html", [
-      [ "clone", "classinviwo_1_1ImageInformationProperty.html#a2b40a019fb09032fe30bb9ecef0c2e0c", null ]
-    ] ],
-    [ "inviwo::LayerInformationProperty", "classinviwo_1_1LayerInformationProperty.html", [
-      [ "clone", "classinviwo_1_1LayerInformationProperty.html#a7e6171d0982919311e9d00bf2a2bd662", null ]
-    ] ],
-    [ "inviwo::MeshInformationProperty", "classinviwo_1_1MeshInformationProperty.html", [
-      [ "clone", "classinviwo_1_1MeshInformationProperty.html#aa58707f9614a03fd3eedb1cda2bf3a97", null ]
-    ] ],
-    [ "inviwo::SequenceTimerProperty", "classinviwo_1_1SequenceTimerProperty.html", [
-      [ "clone", "classinviwo_1_1SequenceTimerProperty.html#a7df02e67f52fee8ae2530f7b38245409", null ]
-    ] ],
     [ "inviwo::ValueAxisProperty", "classinviwo_1_1ValueAxisProperty.html", [
       [ "clone", "classinviwo_1_1ValueAxisProperty.html#abe3243c2aca7df75477c8cb261517e7f", null ],
       [ "getValueName", "classinviwo_1_1ValueAxisProperty.html#aa1cd66be18f21a801fadb9a6842ef80c", null ],
@@ -263,43 +296,10 @@ var group__properties =
       [ "updateFromLayer", "classinviwo_1_1ValueAxisProperty.html#a4dbff83c3f4f7618db6f7c0edb2ceb6c", null ],
       [ "updateFromVolume", "classinviwo_1_1ValueAxisProperty.html#a3d4fff999a9ebc24a3c746261614b0e4", null ]
     ] ],
+    [ "inviwo::VolumeIndicatorProperty", "classinviwo_1_1VolumeIndicatorProperty.html", [
+      [ "clone", "classinviwo_1_1VolumeIndicatorProperty.html#acbbb5af5a741742ac1e95ea3139b91ea", null ]
+    ] ],
     [ "inviwo::VolumeInformationProperty", "classinviwo_1_1VolumeInformationProperty.html", [
       [ "clone", "classinviwo_1_1VolumeInformationProperty.html#adf965a40daa1fd309d74624e7f717703", null ]
-    ] ],
-    [ "inviwo::SplitterProperty", "classinviwo_1_1SplitterProperty.html", [
-      [ "clone", "classinviwo_1_1SplitterProperty.html#a82441a3819e8497587a45a2e9f0dddcf", null ]
-    ] ],
-    [ "inviwo::ColumnMetaDataListProperty", "classinviwo_1_1ColumnMetaDataListProperty.html", [
-      [ "clone", "classinviwo_1_1ColumnMetaDataListProperty.html#afeb3a71b2c7c6aa701bd60d0b2928591", null ],
-      [ "setPort", "classinviwo_1_1ColumnMetaDataListProperty.html#ad10f1c17e99f45a29f951927d5a6081f", null ]
-    ] ],
-    [ "inviwo::ColumnMetaDataProperty", "classinviwo_1_1ColumnMetaDataProperty.html", [
-      [ "clone", "classinviwo_1_1ColumnMetaDataProperty.html#a01f8f7ec5d94e2a4b290c9123a79792a", null ]
-    ] ],
-    [ "inviwo::FontFaceOptionProperty", "classinviwo_1_1FontFaceOptionProperty.html", [
-      [ "clone", "classinviwo_1_1FontFaceOptionProperty.html#aa200414f61972f6d95f5be638e9a7d00", null ]
-    ] ],
-    [ "inviwo::FontProperty", "classinviwo_1_1FontProperty.html", [
-      [ "clone", "classinviwo_1_1FontProperty.html#a9039e6e644dac4a5a781640da2b457fd", null ]
-    ] ],
-    [ "inviwo::IsoTFProperty", "classinviwo_1_1IsoTFProperty.html", [
-      [ "clone", "classinviwo_1_1IsoTFProperty.html#af4d1eb69c443e143d4eb78b178e7b69c", null ],
-      [ "getClassIdentifierForWidget", "classinviwo_1_1IsoTFProperty.html#a77395678e37f46f37b42219d6893db6e", null ],
-      [ "set", "classinviwo_1_1IsoTFProperty.html#a92f5bd0805695656757063f523778ea6", null ],
-      [ "set", "classinviwo_1_1IsoTFProperty.html#ac65ddceffb8f945e6ee464da18e821eb", null ],
-      [ "set", "classinviwo_1_1IsoTFProperty.html#acf004dc472c8137878e643e2b0801b0c", null ],
-      [ "setHistogramMode", "classinviwo_1_1IsoTFProperty.html#a36f940a1987821715c693b3376fae724", null ],
-      [ "setHistogramSelection", "classinviwo_1_1IsoTFProperty.html#a90c49b37f80983a0e5075c38f80ad5cc", null ]
-    ] ],
-    [ "inviwo::IsoValueProperty", "classinviwo_1_1IsoValueProperty.html", [
-      [ "clone", "classinviwo_1_1IsoValueProperty.html#ae583b216b10ac5ce89314451c5bffb58", null ],
-      [ "resetToDefaultState", "classinviwo_1_1IsoValueProperty.html#ace133f4a92906c324904de4fc5a745b8", null ],
-      [ "set", "classinviwo_1_1IsoValueProperty.html#a25186c7a37cc41e25366c13cb2511e74", null ],
-      [ "setCurrentStateAsDefault", "classinviwo_1_1IsoValueProperty.html#a0b1310668e91ac180cd2c6631fbc3acd", null ],
-      [ "setHistogramMode", "classinviwo_1_1IsoValueProperty.html#a72ad95eaabd24dba12a517653a56eea7", null ],
-      [ "setHistogramSelection", "classinviwo_1_1IsoValueProperty.html#ab224e38db02a135de90f6d31cf6193bb", null ]
-    ] ],
-    [ "inviwo::RaycastingProperty", "classinviwo_1_1RaycastingProperty.html", [
-      [ "clone", "classinviwo_1_1RaycastingProperty.html#af3f2651d919b32b073e91b221851ebc8", null ]
     ] ]
 ];

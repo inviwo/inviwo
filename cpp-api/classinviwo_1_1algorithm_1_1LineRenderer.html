@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1algorithm_1_1LineRenderer.html','','cla
 <p>Helper class for rendering a mesh as lines. Only renders <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> with DrawType::Lines.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;linerenderer.h&gt;</code></p>
+<p><code>#include &lt;modules/basegl/rendering/linerenderer.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -111,22 +111,22 @@ template&lt;typename... T&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ac61d2f16c928c28b1f76897f89659bbc" id="r_ac61d2f16c928c28b1f76897f89659bbc"><td class="memItemLeft" align="right" valign="top"><a id="ac61d2f16c928c28b1f76897f89659bbc" name="ac61d2f16c928c28b1f76897f89659bbc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>render</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh, const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera, size2_t screenDim, const <a class="el" href="classinviwo_1_1LineSettingsInterface.html">LineSettingsInterface</a> &amp;settings, const std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;)&gt; &amp;func)</td></tr>
-<tr class="memitem:a41a065d188c8da1cd8c596bcadc66c1d" id="r_a41a065d188c8da1cd8c596bcadc66c1d"><td class="memItemLeft" align="right" valign="top"><a id="a41a065d188c8da1cd8c596bcadc66c1d" name="a41a065d188c8da1cd8c596bcadc66c1d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>configureShaders</b> ()</td></tr>
-<tr class="memitem:a465e3735d63b5bea7a1818df9d7bcf7b" id="r_a465e3735d63b5bea7a1818df9d7bcf7b"><td class="memItemLeft" align="right" valign="top"><a id="a465e3735d63b5bea7a1818df9d7bcf7b" name="a465e3735d63b5bea7a1818df9d7bcf7b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh, const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera, size2_t screenDim, const std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;)&gt; &amp;func)</td></tr>
 <tr class="memitem:a5e41f2aa4ac6cec899b5001187ff988b" id="r_a5e41f2aa4ac6cec899b5001187ff988b"><td class="memItemLeft" align="right" valign="top"><a id="a5e41f2aa4ac6cec899b5001187ff988b" name="a5e41f2aa4ac6cec899b5001187ff988b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>configureShader</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader)</td></tr>
+<tr class="memitem:a41a065d188c8da1cd8c596bcadc66c1d" id="r_a41a065d188c8da1cd8c596bcadc66c1d"><td class="memItemLeft" align="right" valign="top"><a id="a41a065d188c8da1cd8c596bcadc66c1d" name="a41a065d188c8da1cd8c596bcadc66c1d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>configureShaders</b> ()</td></tr>
+<tr class="memitem:ac61d2f16c928c28b1f76897f89659bbc" id="r_ac61d2f16c928c28b1f76897f89659bbc"><td class="memItemLeft" align="right" valign="top"><a id="ac61d2f16c928c28b1f76897f89659bbc" name="ac61d2f16c928c28b1f76897f89659bbc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>render</b> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh, const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera, size2_t screenDim, const <a class="el" href="classinviwo_1_1LineSettingsInterface.html">LineSettingsInterface</a> &amp;settings, const std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;)&gt; &amp;func)</td></tr>
+<tr class="memitem:a465e3735d63b5bea7a1818df9d7bcf7b" id="r_a465e3735d63b5bea7a1818df9d7bcf7b"><td class="memItemLeft" align="right" valign="top"><a id="a465e3735d63b5bea7a1818df9d7bcf7b" name="a465e3735d63b5bea7a1818df9d7bcf7b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh, const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera, size2_t screenDim, const std::function&lt; void(<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;)&gt; &amp;func)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:a5e7eedc5dc595113d31530047691df19" id="r_a5e7eedc5dc595113d31530047691df19"><td class="memItemLeft" align="right" valign="top"><a id="a5e7eedc5dc595113d31530047691df19" name="a5e7eedc5dc595113d31530047691df19"></a>
+<a class="el" href="classinviwo_1_1MeshShaderCache.html">MeshShaderCache</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lineShaders_</b></td></tr>
 <tr class="memitem:a187dbd9571116cf3ee4389723fd9e14b" id="r_a187dbd9571116cf3ee4389723fd9e14b"><td class="memItemLeft" align="right" valign="top"><a id="a187dbd9571116cf3ee4389723fd9e14b" name="a187dbd9571116cf3ee4389723fd9e14b"></a>
 <a class="el" href="classinviwo_1_1LineSettings.html">LineSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><b>settings_</b></td></tr>
 <tr class="memdesc:a187dbd9571116cf3ee4389723fd9e14b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local cache. <br /></td></tr>
-<tr class="memitem:a5e7eedc5dc595113d31530047691df19" id="r_a5e7eedc5dc595113d31530047691df19"><td class="memItemLeft" align="right" valign="top"><a id="a5e7eedc5dc595113d31530047691df19" name="a5e7eedc5dc595113d31530047691df19"></a>
-<a class="el" href="classinviwo_1_1MeshShaderCache.html">MeshShaderCache</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lineShaders_</b></td></tr>
 <tr class="memitem:a9a9f3917f108ffed3fd3081a238b49fa" id="r_a9a9f3917f108ffed3fd3081a238b49fa"><td class="memItemLeft" align="right" valign="top"><a id="a9a9f3917f108ffed3fd3081a238b49fa" name="a9a9f3917f108ffed3fd3081a238b49fa"></a>
 <a class="el" href="classinviwo_1_1TFLookupTable.html">TFLookupTable</a>&#160;</td><td class="memItemRight" valign="bottom"><b>tfLookup_</b></td></tr>
 </table>
@@ -177,7 +177,7 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>linerenderer.h</b></li>
+<li>modules/basegl/include/modules/basegl/rendering/<b>linerenderer.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

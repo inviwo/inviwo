@@ -105,6 +105,9 @@ Public Types</h2></td></tr>
 &#160;&#160;<b>Custom</b>
 <br />
  }</td></tr>
+<tr class="memitem:ae05d2e93ee3432a0d366c400616287c3" id="r_ae05d2e93ee3432a0d366c400616287c3"><td class="memItemLeft" align="right" valign="top"><a id="ae05d2e93ee3432a0d366c400616287c3" name="ae05d2e93ee3432a0d366c400616287c3"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>DimsRangeMode</b> { <b>No</b>
+, <b>Yes</b>
+ }</td></tr>
 <tr class="memitem:a2b4d43377c1cedef3158e34f8cab7691" id="r_a2b4d43377c1cedef3158e34f8cab7691"><td class="memItemLeft" align="right" valign="top"><a id="a2b4d43377c1cedef3158e34f8cab7691" name="a2b4d43377c1cedef3158e34f8cab7691"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>OffsetScaling</b> { <br />
 &#160;&#160;<b>None</b>
 , <b>MinExtent</b>
@@ -114,57 +117,54 @@ Public Types</h2></td></tr>
 &#160;&#160;<b>Diagonal</b>
 <br />
  }</td></tr>
-<tr class="memitem:ae05d2e93ee3432a0d366c400616287c3" id="r_ae05d2e93ee3432a0d366c400616287c3"><td class="memItemLeft" align="right" valign="top"><a id="ae05d2e93ee3432a0d366c400616287c3" name="ae05d2e93ee3432a0d366c400616287c3"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>DimsRangeMode</b> { <b>No</b>
-, <b>Yes</b>
- }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad6406756ef6903eaaa86a2ac3d4a6c11" id="r_ad6406756ef6903eaaa86a2ac3d4a6c11"><td class="memItemLeft" align="right" valign="top"><a id="ad6406756ef6903eaaa86a2ac3d4a6c11" name="ad6406756ef6903eaaa86a2ac3d4a6c11"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Axis2DProcessorHelper</b> (std::function&lt; std::optional&lt; mat4 &gt;()&gt; getBoundingBox, DimsRangeMode useDimsRange=DimsRangeMode::No)</td></tr>
-<tr class="memitem:a589adfaba296ee2fbf1c616af50b5fa1" id="r_a589adfaba296ee2fbf1c616af50b5fa1"><td class="memItemLeft" align="right" valign="top"><a id="a589adfaba296ee2fbf1c616af50b5fa1" name="a589adfaba296ee2fbf1c616af50b5fa1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>renderAxes</b> (size2_t outputDims, const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;entity)</td></tr>
-<tr class="memitem:a893be214bcd351f5024f2c0fc870e5d4" id="r_a893be214bcd351f5024f2c0fc870e5d4"><td class="memItemLeft" align="right" valign="top"><a id="a893be214bcd351f5024f2c0fc870e5d4" name="a893be214bcd351f5024f2c0fc870e5d4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>adjustScalingFactor</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> *entity=nullptr)</td></tr>
 <tr class="memitem:abef6150a7609e14990373ea333a590c1" id="r_abef6150a7609e14990373ea333a590c1"><td class="memItemLeft" align="right" valign="top"><a id="abef6150a7609e14990373ea333a590c1" name="abef6150a7609e14990373ea333a590c1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>adjustRanges</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> *entity)</td></tr>
+<tr class="memitem:a893be214bcd351f5024f2c0fc870e5d4" id="r_a893be214bcd351f5024f2c0fc870e5d4"><td class="memItemLeft" align="right" valign="top"><a id="a893be214bcd351f5024f2c0fc870e5d4" name="a893be214bcd351f5024f2c0fc870e5d4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>adjustScalingFactor</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> *entity=nullptr)</td></tr>
+<tr class="memitem:ad6406756ef6903eaaa86a2ac3d4a6c11" id="r_ad6406756ef6903eaaa86a2ac3d4a6c11"><td class="memItemLeft" align="right" valign="top"><a id="ad6406756ef6903eaaa86a2ac3d4a6c11" name="ad6406756ef6903eaaa86a2ac3d4a6c11"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Axis2DProcessorHelper</b> (std::function&lt; std::optional&lt; mat4 &gt;()&gt; getBoundingBox, DimsRangeMode useDimsRange=DimsRangeMode::No)</td></tr>
 <tr class="memitem:a14ef5504a160b2b523c4af0bdebc49b3" id="r_a14ef5504a160b2b523c4af0bdebc49b3"><td class="memItemLeft" align="right" valign="top"><a id="a14ef5504a160b2b523c4af0bdebc49b3" name="a14ef5504a160b2b523c4af0bdebc49b3"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>props</b> ()</td></tr>
 <tr class="memitem:a25a6ef40a1212e9c28ea9c441fa2ae02" id="r_a25a6ef40a1212e9c28ea9c441fa2ae02"><td class="memItemLeft" align="right" valign="top"><a id="a25a6ef40a1212e9c28ea9c441fa2ae02" name="a25a6ef40a1212e9c28ea9c441fa2ae02"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>props</b> () const</td></tr>
+<tr class="memitem:a589adfaba296ee2fbf1c616af50b5fa1" id="r_a589adfaba296ee2fbf1c616af50b5fa1"><td class="memItemLeft" align="right" valign="top"><a id="a589adfaba296ee2fbf1c616af50b5fa1" name="a589adfaba296ee2fbf1c616af50b5fa1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>renderAxes</b> (size2_t outputDims, const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;entity)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a7f49c6dce03125633d4153bad70fd8f1" id="r_a7f49c6dce03125633d4153bad70fd8f1"><td class="memItemLeft" align="right" valign="top"><a id="a7f49c6dce03125633d4153bad70fd8f1" name="a7f49c6dce03125633d4153bad70fd8f1"></a>
-<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; OffsetScaling &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>offsetScaling_</b></td></tr>
 <tr class="memitem:a0d8d02616ea589e3f3dfdf362571438d" id="r_a0d8d02616ea589e3f3dfdf362571438d"><td class="memItemLeft" align="right" valign="top"><a id="a0d8d02616ea589e3f3dfdf362571438d" name="a0d8d02616ea589e3f3dfdf362571438d"></a>
 FloatProperty&#160;</td><td class="memItemRight" valign="bottom"><b>axisOffset_</b></td></tr>
-<tr class="memitem:a10fec9112c12b41e4171254badbef5be" id="r_a10fec9112c12b41e4171254badbef5be"><td class="memItemLeft" align="right" valign="top"><a id="a10fec9112c12b41e4171254badbef5be" name="a10fec9112c12b41e4171254badbef5be"></a>
-<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; AxisRangeMode &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rangeMode_</b></td></tr>
+<tr class="memitem:a8bbc3a9e923eb34878da2f8112997321" id="r_a8bbc3a9e923eb34878da2f8112997321"><td class="memItemLeft" align="right" valign="top"><a id="a8bbc3a9e923eb34878da2f8112997321" name="a8bbc3a9e923eb34878da2f8112997321"></a>
+std::array&lt; <a class="el" href="classinviwo_1_1plot_1_1AxisRenderer3D.html">AxisRenderer3D</a>, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>axisRenderers_</b></td></tr>
+<tr class="memitem:a5e3a573910f28efca5d5488659a9bb67" id="r_a5e3a573910f28efca5d5488659a9bb67"><td class="memItemLeft" align="right" valign="top"><a id="a5e3a573910f28efca5d5488659a9bb67" name="a5e3a573910f28efca5d5488659a9bb67"></a>
+<a class="el" href="classinviwo_1_1plot_1_1AxisStyleProperty.html">AxisStyleProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>axisStyle_</b></td></tr>
+<tr class="memitem:a6b80a7eda742fcd06ff67c4abdf6c463" id="r_a6b80a7eda742fcd06ff67c4abdf6c463"><td class="memItemLeft" align="right" valign="top"><a id="a6b80a7eda742fcd06ff67c4abdf6c463" name="a6b80a7eda742fcd06ff67c4abdf6c463"></a>
+<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>camera_</b></td></tr>
 <tr class="memitem:ae2b42cbb08420927d010e3a51d2dccfa" id="r_ae2b42cbb08420927d010e3a51d2dccfa"><td class="memItemLeft" align="right" valign="top"><a id="ae2b42cbb08420927d010e3a51d2dccfa" name="ae2b42cbb08420927d010e3a51d2dccfa"></a>
 <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>customRanges_</b></td></tr>
+<tr class="memitem:a7f49c6dce03125633d4153bad70fd8f1" id="r_a7f49c6dce03125633d4153bad70fd8f1"><td class="memItemLeft" align="right" valign="top"><a id="a7f49c6dce03125633d4153bad70fd8f1" name="a7f49c6dce03125633d4153bad70fd8f1"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; OffsetScaling &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>offsetScaling_</b></td></tr>
+<tr class="memitem:a29a5383cc4aaa648570f6c46651de07e" id="r_a29a5383cc4aaa648570f6c46651de07e"><td class="memItemLeft" align="right" valign="top"><a id="a29a5383cc4aaa648570f6c46651de07e" name="a29a5383cc4aaa648570f6c46651de07e"></a>
+OptionPropertyString&#160;</td><td class="memItemRight" valign="bottom"><b>presets_</b></td></tr>
+<tr class="memitem:a10fec9112c12b41e4171254badbef5be" id="r_a10fec9112c12b41e4171254badbef5be"><td class="memItemLeft" align="right" valign="top"><a id="a10fec9112c12b41e4171254badbef5be" name="a10fec9112c12b41e4171254badbef5be"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; AxisRangeMode &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rangeMode_</b></td></tr>
 <tr class="memitem:ab148bf69bce5a05a2ef73788187c96c8" id="r_ab148bf69bce5a05a2ef73788187c96c8"><td class="memItemLeft" align="right" valign="top"><a id="ab148bf69bce5a05a2ef73788187c96c8" name="ab148bf69bce5a05a2ef73788187c96c8"></a>
 DoubleMinMaxProperty&#160;</td><td class="memItemRight" valign="bottom"><b>rangeXaxis_</b></td></tr>
 <tr class="memitem:ac7c9fd40f9399e7a7e0a31b4c090beb8" id="r_ac7c9fd40f9399e7a7e0a31b4c090beb8"><td class="memItemLeft" align="right" valign="top"><a id="ac7c9fd40f9399e7a7e0a31b4c090beb8" name="ac7c9fd40f9399e7a7e0a31b4c090beb8"></a>
 DoubleMinMaxProperty&#160;</td><td class="memItemRight" valign="bottom"><b>rangeYaxis_</b></td></tr>
+<tr class="memitem:a6abe173ce3b1c2e194e7d0f42c47b410" id="r_a6abe173ce3b1c2e194e7d0f42c47b410"><td class="memItemLeft" align="right" valign="top"><a id="a6abe173ce3b1c2e194e7d0f42c47b410" name="a6abe173ce3b1c2e194e7d0f42c47b410"></a>
+<a class="el" href="classinviwo_1_1CameraTrackball.html">CameraTrackball</a>&#160;</td><td class="memItemRight" valign="bottom"><b>trackball_</b></td></tr>
 <tr class="memitem:ad21616b853d7011d904fcc142d86e7f4" id="r_ad21616b853d7011d904fcc142d86e7f4"><td class="memItemLeft" align="right" valign="top"><a id="ad21616b853d7011d904fcc142d86e7f4" name="ad21616b853d7011d904fcc142d86e7f4"></a>
 <a class="el" href="classinviwo_1_1BoolCompositeProperty.html">BoolCompositeProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>visibility_</b></td></tr>
-<tr class="memitem:a29a5383cc4aaa648570f6c46651de07e" id="r_a29a5383cc4aaa648570f6c46651de07e"><td class="memItemLeft" align="right" valign="top"><a id="a29a5383cc4aaa648570f6c46651de07e" name="a29a5383cc4aaa648570f6c46651de07e"></a>
-OptionPropertyString&#160;</td><td class="memItemRight" valign="bottom"><b>presets_</b></td></tr>
 <tr class="memitem:a04b8e2af626beaf371e64a7cfb4d9733" id="r_a04b8e2af626beaf371e64a7cfb4d9733"><td class="memItemLeft" align="right" valign="top"><a id="a04b8e2af626beaf371e64a7cfb4d9733" name="a04b8e2af626beaf371e64a7cfb4d9733"></a>
 std::array&lt; <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>visibleAxes_</b></td></tr>
-<tr class="memitem:a5e3a573910f28efca5d5488659a9bb67" id="r_a5e3a573910f28efca5d5488659a9bb67"><td class="memItemLeft" align="right" valign="top"><a id="a5e3a573910f28efca5d5488659a9bb67" name="a5e3a573910f28efca5d5488659a9bb67"></a>
-<a class="el" href="classinviwo_1_1plot_1_1AxisStyleProperty.html">AxisStyleProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>axisStyle_</b></td></tr>
 <tr class="memitem:a22c65c964761a1823bc54d29023e0b2b" id="r_a22c65c964761a1823bc54d29023e0b2b"><td class="memItemLeft" align="right" valign="top"><a id="a22c65c964761a1823bc54d29023e0b2b" name="a22c65c964761a1823bc54d29023e0b2b"></a>
 <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>xAxis_</b></td></tr>
 <tr class="memitem:a0e2fc647b6eae941fc34e378c19633bb" id="r_a0e2fc647b6eae941fc34e378c19633bb"><td class="memItemLeft" align="right" valign="top"><a id="a0e2fc647b6eae941fc34e378c19633bb" name="a0e2fc647b6eae941fc34e378c19633bb"></a>
 <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>yAxis_</b></td></tr>
-<tr class="memitem:a6b80a7eda742fcd06ff67c4abdf6c463" id="r_a6b80a7eda742fcd06ff67c4abdf6c463"><td class="memItemLeft" align="right" valign="top"><a id="a6b80a7eda742fcd06ff67c4abdf6c463" name="a6b80a7eda742fcd06ff67c4abdf6c463"></a>
-<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>camera_</b></td></tr>
-<tr class="memitem:a6abe173ce3b1c2e194e7d0f42c47b410" id="r_a6abe173ce3b1c2e194e7d0f42c47b410"><td class="memItemLeft" align="right" valign="top"><a id="a6abe173ce3b1c2e194e7d0f42c47b410" name="a6abe173ce3b1c2e194e7d0f42c47b410"></a>
-<a class="el" href="classinviwo_1_1CameraTrackball.html">CameraTrackball</a>&#160;</td><td class="memItemRight" valign="bottom"><b>trackball_</b></td></tr>
-<tr class="memitem:a8bbc3a9e923eb34878da2f8112997321" id="r_a8bbc3a9e923eb34878da2f8112997321"><td class="memItemLeft" align="right" valign="top"><a id="a8bbc3a9e923eb34878da2f8112997321" name="a8bbc3a9e923eb34878da2f8112997321"></a>
-std::array&lt; <a class="el" href="classinviwo_1_1plot_1_1AxisRenderer3D.html">AxisRenderer3D</a>, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>axisRenderers_</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -172,7 +172,7 @@ Protected Attributes</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>propertyUpdate_</b></td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>axis2dprocessorhelper.h</b></li>
+<li>modules/plottinggl/include/modules/plottinggl/utils/<b>axis2dprocessorhelper.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

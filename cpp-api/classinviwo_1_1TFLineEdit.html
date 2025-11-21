@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1TFLineEdit.html','','classinviwo_1_1TFL
 <p>widget for entering double values within certain bounds and optional range mapping  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;tflineedit.h&gt;</code></p>
+<p><code>#include &lt;modules/qtwidgets/tf/tflineedit.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::TFLineEdit:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -112,15 +112,15 @@ Signals</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a894d843fe48c63a2894a1d433bb57dbb" id="r_a894d843fe48c63a2894a1d433bb57dbb"><td class="memItemLeft" align="right" valign="top"><a id="a894d843fe48c63a2894a1d433bb57dbb" name="a894d843fe48c63a2894a1d433bb57dbb"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TFLineEdit</b> (QWidget *parent=nullptr)</td></tr>
-<tr class="memitem:a49816030f1ac9fab8a5236ee2a807fb6" id="r_a49816030f1ac9fab8a5236ee2a807fb6"><td class="memItemLeft" align="right" valign="top"><a id="a49816030f1ac9fab8a5236ee2a807fb6" name="a49816030f1ac9fab8a5236ee2a807fb6"></a>
-virtual QSize&#160;</td><td class="memItemRight" valign="bottom"><b>sizeHint</b> () const override</td></tr>
-<tr class="memitem:ab2050903d6820293ac59f3af9441e7f5" id="r_ab2050903d6820293ac59f3af9441e7f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2050903d6820293ac59f3af9441e7f5">setValidRange</a> (const dvec2 &amp;range, double inc=0.01)</td></tr>
 <tr class="memitem:a289f802f3100c23e86f5db7e71cd2e0f" id="r_a289f802f3100c23e86f5db7e71cd2e0f"><td class="memItemLeft" align="right" valign="top"><a id="a289f802f3100c23e86f5db7e71cd2e0f" name="a289f802f3100c23e86f5db7e71cd2e0f"></a>
 dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getValidRange</b> () const</td></tr>
-<tr class="memitem:a2afe6d6630c217295c8ebd324fdeeb6c" id="r_a2afe6d6630c217295c8ebd324fdeeb6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2afe6d6630c217295c8ebd324fdeeb6c">setValueMapping</a> (bool enable, const dvec2 &amp;range=dvec2(0.0, 1.0), double inc=0.01)</td></tr>
+<tr class="memitem:ab2050903d6820293ac59f3af9441e7f5" id="r_ab2050903d6820293ac59f3af9441e7f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2050903d6820293ac59f3af9441e7f5">setValidRange</a> (const dvec2 &amp;range, double inc=0.01)</td></tr>
 <tr class="memitem:a3f0ce446d1e5dcbb103b259ece21967b" id="r_a3f0ce446d1e5dcbb103b259ece21967b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f0ce446d1e5dcbb103b259ece21967b">setValue</a> (double value, bool ambiguous)</td></tr>
+<tr class="memitem:a2afe6d6630c217295c8ebd324fdeeb6c" id="r_a2afe6d6630c217295c8ebd324fdeeb6c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2afe6d6630c217295c8ebd324fdeeb6c">setValueMapping</a> (bool enable, const dvec2 &amp;range=dvec2(0.0, 1.0), double inc=0.01)</td></tr>
+<tr class="memitem:a49816030f1ac9fab8a5236ee2a807fb6" id="r_a49816030f1ac9fab8a5236ee2a807fb6"><td class="memItemLeft" align="right" valign="top"><a id="a49816030f1ac9fab8a5236ee2a807fb6" name="a49816030f1ac9fab8a5236ee2a807fb6"></a>
+virtual QSize&#160;</td><td class="memItemRight" valign="bottom"><b>sizeHint</b> () const override</td></tr>
+<tr class="memitem:a894d843fe48c63a2894a1d433bb57dbb" id="r_a894d843fe48c63a2894a1d433bb57dbb"><td class="memItemLeft" align="right" valign="top"><a id="a894d843fe48c63a2894a1d433bb57dbb" name="a894d843fe48c63a2894a1d433bb57dbb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TFLineEdit</b> (QWidget *parent=nullptr)</td></tr>
 <tr class="memitem:a6423c6779094168af6eef3aea1175188" id="r_a6423c6779094168af6eef3aea1175188"><td class="memItemLeft" align="right" valign="top"><a id="a6423c6779094168af6eef3aea1175188" name="a6423c6779094168af6eef3aea1175188"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> () const</td></tr>
 </table>
@@ -240,7 +240,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> () const<
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>tflineedit.h</b></li>
+<li>modules/qtwidgets/include/modules/qtwidgets/tf/<b>tflineedit.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -112,26 +112,26 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> =
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abda1f8b683a78fb35b2ae64f5c22735f" id="r_abda1f8b683a78fb35b2ae64f5c22735f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abda1f8b683a78fb35b2ae64f5c22735f">SerializeBase</a> (const std::filesystem::path &amp;fileName, allocator_type alloc={})</td></tr>
-<tr class="memdesc:abda1f8b683a78fb35b2ae64f5c22735f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for <a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> and <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>.  <br /></td></tr>
-<tr class="memitem:a1fae766ef5dd554372b7a680951ef942" id="r_a1fae766ef5dd554372b7a680951ef942"><td class="memItemLeft" align="right" valign="top"><a id="a1fae766ef5dd554372b7a680951ef942" name="a1fae766ef5dd554372b7a680951ef942"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SerializeBase</b> (const SerializeBase &amp;rhs)=delete</td></tr>
-<tr class="memitem:acfad52ef811f45f3a839e2e3ee9d693c" id="r_acfad52ef811f45f3a839e2e3ee9d693c"><td class="memItemLeft" align="right" valign="top"><a id="acfad52ef811f45f3a839e2e3ee9d693c" name="acfad52ef811f45f3a839e2e3ee9d693c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SerializeBase</b> (SerializeBase &amp;&amp;rhs) noexcept</td></tr>
+<tr class="memitem:ad526bf2c908d69e3f52f02a97d03b0ce" id="r_ad526bf2c908d69e3f52f02a97d03b0ce"><td class="memItemLeft" align="right" valign="top"><a id="ad526bf2c908d69e3f52f02a97d03b0ce" name="ad526bf2c908d69e3f52f02a97d03b0ce"></a>
+TiXmlDocument &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>doc</b> ()</td></tr>
+<tr class="memitem:a20d6dba48d3232681b851ea22e009be6" id="r_a20d6dba48d3232681b851ea22e009be6"><td class="memItemLeft" align="right" valign="top"><a id="a20d6dba48d3232681b851ea22e009be6" name="a20d6dba48d3232681b851ea22e009be6"></a>
+allocator_type&#160;</td><td class="memItemRight" valign="bottom"><b>getAllocator</b> () const</td></tr>
+<tr class="memitem:aef0be39d28b2e2c730a2b80b431f12bb" id="r_aef0be39d28b2e2c730a2b80b431f12bb"><td class="memItemLeft" align="right" valign="top"><a id="aef0be39d28b2e2c730a2b80b431f12bb" name="aef0be39d28b2e2c730a2b80b431f12bb"></a>
+const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDir</b> () const</td></tr>
+<tr class="memdesc:aef0be39d28b2e2c730a2b80b431f12bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the workspace file directory. <br /></td></tr>
+<tr class="memitem:ab6a3ad4e51edec80ec9e3042f2313bd2" id="r_ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="memItemLeft" align="right" valign="top"><a id="ab6a3ad4e51edec80ec9e3042f2313bd2" name="ab6a3ad4e51edec80ec9e3042f2313bd2"></a>
+const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileName</b> () const</td></tr>
+<tr class="memdesc:ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the workspace file name. <br /></td></tr>
 <tr class="memitem:a6e1c4e3623dd17827d713d126f60087c" id="r_a6e1c4e3623dd17827d713d126f60087c"><td class="memItemLeft" align="right" valign="top"><a id="a6e1c4e3623dd17827d713d126f60087c" name="a6e1c4e3623dd17827d713d126f60087c"></a>
 <a class="el" href="#abda1f8b683a78fb35b2ae64f5c22735f">SerializeBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="#abda1f8b683a78fb35b2ae64f5c22735f">SerializeBase</a> &amp;)=delete</td></tr>
 <tr class="memitem:a9e4fbe726d32ac3f3c82682b0ae7158c" id="r_a9e4fbe726d32ac3f3c82682b0ae7158c"><td class="memItemLeft" align="right" valign="top"><a id="a9e4fbe726d32ac3f3c82682b0ae7158c" name="a9e4fbe726d32ac3f3c82682b0ae7158c"></a>
 <a class="el" href="#abda1f8b683a78fb35b2ae64f5c22735f">SerializeBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="#abda1f8b683a78fb35b2ae64f5c22735f">SerializeBase</a> &amp;&amp;) noexcept</td></tr>
-<tr class="memitem:ab6a3ad4e51edec80ec9e3042f2313bd2" id="r_ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="memItemLeft" align="right" valign="top"><a id="ab6a3ad4e51edec80ec9e3042f2313bd2" name="ab6a3ad4e51edec80ec9e3042f2313bd2"></a>
-const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileName</b> () const</td></tr>
-<tr class="memdesc:ab6a3ad4e51edec80ec9e3042f2313bd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the workspace file name. <br /></td></tr>
-<tr class="memitem:aef0be39d28b2e2c730a2b80b431f12bb" id="r_aef0be39d28b2e2c730a2b80b431f12bb"><td class="memItemLeft" align="right" valign="top"><a id="aef0be39d28b2e2c730a2b80b431f12bb" name="aef0be39d28b2e2c730a2b80b431f12bb"></a>
-const std::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFileDir</b> () const</td></tr>
-<tr class="memdesc:aef0be39d28b2e2c730a2b80b431f12bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the workspace file directory. <br /></td></tr>
-<tr class="memitem:a20d6dba48d3232681b851ea22e009be6" id="r_a20d6dba48d3232681b851ea22e009be6"><td class="memItemLeft" align="right" valign="top"><a id="a20d6dba48d3232681b851ea22e009be6" name="a20d6dba48d3232681b851ea22e009be6"></a>
-allocator_type&#160;</td><td class="memItemRight" valign="bottom"><b>getAllocator</b> () const</td></tr>
-<tr class="memitem:ad526bf2c908d69e3f52f02a97d03b0ce" id="r_ad526bf2c908d69e3f52f02a97d03b0ce"><td class="memItemLeft" align="right" valign="top"><a id="ad526bf2c908d69e3f52f02a97d03b0ce" name="ad526bf2c908d69e3f52f02a97d03b0ce"></a>
-TiXmlDocument &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>doc</b> ()</td></tr>
+<tr class="memitem:a1fae766ef5dd554372b7a680951ef942" id="r_a1fae766ef5dd554372b7a680951ef942"><td class="memItemLeft" align="right" valign="top"><a id="a1fae766ef5dd554372b7a680951ef942" name="a1fae766ef5dd554372b7a680951ef942"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerializeBase</b> (const SerializeBase &amp;rhs)=delete</td></tr>
+<tr class="memitem:abda1f8b683a78fb35b2ae64f5c22735f" id="r_abda1f8b683a78fb35b2ae64f5c22735f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abda1f8b683a78fb35b2ae64f5c22735f">SerializeBase</a> (const std::filesystem::path &amp;fileName, allocator_type alloc={})</td></tr>
+<tr class="memdesc:abda1f8b683a78fb35b2ae64f5c22735f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for <a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> and <a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>.  <br /></td></tr>
+<tr class="memitem:acfad52ef811f45f3a839e2e3ee9d693c" id="r_acfad52ef811f45f3a839e2e3ee9d693c"><td class="memItemLeft" align="right" valign="top"><a id="acfad52ef811f45f3a839e2e3ee9d693c" name="acfad52ef811f45f3a839e2e3ee9d693c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SerializeBase</b> (SerializeBase &amp;&amp;rhs) noexcept</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -141,16 +141,16 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ad394379046894405947dde748910aade" id="r_ad394379046894405947dde748910aade"><td class="memItemLeft" align="right" valign="top"><a id="ad394379046894405947dde748910aade" name="ad394379046894405947dde748910aade"></a>
-std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileName_</b></td></tr>
-<tr class="memitem:a52ae84eabb7644baceddc3ad18d13c07" id="r_a52ae84eabb7644baceddc3ad18d13c07"><td class="memItemLeft" align="right" valign="top"><a id="a52ae84eabb7644baceddc3ad18d13c07" name="a52ae84eabb7644baceddc3ad18d13c07"></a>
-std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileDir_</b></td></tr>
 <tr class="memitem:a8d57cd783b62751e43768ba42ba5de9a" id="r_a8d57cd783b62751e43768ba42ba5de9a"><td class="memItemLeft" align="right" valign="top"><a id="a8d57cd783b62751e43768ba42ba5de9a" name="a8d57cd783b62751e43768ba42ba5de9a"></a>
 std::unique_ptr&lt; TiXmlDocument &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>doc_</b></td></tr>
-<tr class="memitem:a99c6516e62730ea05e8cf16736da04c2" id="r_a99c6516e62730ea05e8cf16736da04c2"><td class="memItemLeft" align="right" valign="top"><a id="a99c6516e62730ea05e8cf16736da04c2" name="a99c6516e62730ea05e8cf16736da04c2"></a>
-TiXmlElement *&#160;</td><td class="memItemRight" valign="bottom"><b>rootElement_</b></td></tr>
+<tr class="memitem:a52ae84eabb7644baceddc3ad18d13c07" id="r_a52ae84eabb7644baceddc3ad18d13c07"><td class="memItemLeft" align="right" valign="top"><a id="a52ae84eabb7644baceddc3ad18d13c07" name="a52ae84eabb7644baceddc3ad18d13c07"></a>
+std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileDir_</b></td></tr>
+<tr class="memitem:ad394379046894405947dde748910aade" id="r_ad394379046894405947dde748910aade"><td class="memItemLeft" align="right" valign="top"><a id="ad394379046894405947dde748910aade" name="ad394379046894405947dde748910aade"></a>
+std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>fileName_</b></td></tr>
 <tr class="memitem:a2740287cd504cbc7ddcc3db11486bf76" id="r_a2740287cd504cbc7ddcc3db11486bf76"><td class="memItemLeft" align="right" valign="top"><a id="a2740287cd504cbc7ddcc3db11486bf76" name="a2740287cd504cbc7ddcc3db11486bf76"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>retrieveChild_</b></td></tr>
+<tr class="memitem:a99c6516e62730ea05e8cf16736da04c2" id="r_a99c6516e62730ea05e8cf16736da04c2"><td class="memItemLeft" align="right" valign="top"><a id="a99c6516e62730ea05e8cf16736da04c2" name="a99c6516e62730ea05e8cf16736da04c2"></a>
+TiXmlElement *&#160;</td><td class="memItemRight" valign="bottom"><b>rootElement_</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -236,7 +236,7 @@ template&lt;typename U&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>serializebase.h</b></li>
+<li>include/inviwo/core/io/serialization/<b>serializebase.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

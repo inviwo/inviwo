@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1InviwoDockWidget.html','','classinviwo_
 <p>dock widget with a custom title bar and sticky status. Docking while dragging the widget is prevented if the sticky flag is false. In case the window title of the dock widget contains the string "[*]", this string will be replaced with either "*" or nothing based on the isWindowModified() state of the widget.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;inviwodockwidget.h&gt;</code></p>
+<p><code>#include &lt;modules/qtwidgets/inviwodockwidget.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::InviwoDockWidget:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -136,20 +136,20 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>InviwoDockWidget</b> (QString title, QWidget *parent)</td></tr>
 <tr class="memitem:ad01118dd155a835643feba11de80fafa" id="r_ad01118dd155a835643feba11de80fafa"><td class="memItemLeft" align="right" valign="top"><a id="ad01118dd155a835643feba11de80fafa" name="ad01118dd155a835643feba11de80fafa"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>InviwoDockWidget</b> (QString title, QWidget *parent, QString objname)</td></tr>
-<tr class="memitem:a9a06d42bb5b392db4fae5d1100099442" id="r_a9a06d42bb5b392db4fae5d1100099442"><td class="memItemLeft" align="right" valign="top"><a id="a9a06d42bb5b392db4fae5d1100099442" name="a9a06d42bb5b392db4fae5d1100099442"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showEvent</b> (QShowEvent *showEvent) override</td></tr>
-<tr class="memitem:ac753d64a00c648f7921c1f4131d5cdd8" id="r_ac753d64a00c648f7921c1f4131d5cdd8"><td class="memItemLeft" align="right" valign="top"><a id="ac753d64a00c648f7921c1f4131d5cdd8" name="ac753d64a00c648f7921c1f4131d5cdd8"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>keyPressEvent</b> (QKeyEvent *keyEvent) override</td></tr>
-<tr class="memitem:a1516c20d795e7faab094fc74ab77bcbf" id="r_a1516c20d795e7faab094fc74ab77bcbf"><td class="memItemLeft" align="right" valign="top"><a id="a1516c20d795e7faab094fc74ab77bcbf" name="a1516c20d795e7faab094fc74ab77bcbf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setSticky</b> (bool sticky)</td></tr>
 <tr class="memitem:adc319eed03ddfd73ffb880f44ddf2e00" id="r_adc319eed03ddfd73ffb880f44ddf2e00"><td class="memItemLeft" align="right" valign="top"><a id="adc319eed03ddfd73ffb880f44ddf2e00" name="adc319eed03ddfd73ffb880f44ddf2e00"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSticky</b> () const</td></tr>
-<tr class="memitem:ac976f99c553004fc3f58ae0687b47a62" id="r_ac976f99c553004fc3f58ae0687b47a62"><td class="memItemLeft" align="right" valign="top"><a id="ac976f99c553004fc3f58ae0687b47a62" name="ac976f99c553004fc3f58ae0687b47a62"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setContents</b> (QWidget *widget)</td></tr>
+<tr class="memitem:ac753d64a00c648f7921c1f4131d5cdd8" id="r_ac753d64a00c648f7921c1f4131d5cdd8"><td class="memItemLeft" align="right" valign="top"><a id="ac753d64a00c648f7921c1f4131d5cdd8" name="ac753d64a00c648f7921c1f4131d5cdd8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>keyPressEvent</b> (QKeyEvent *keyEvent) override</td></tr>
+<tr class="memitem:a1fdfd845cc0c62166a36ebac987d6e8e" id="r_a1fdfd845cc0c62166a36ebac987d6e8e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fdfd845cc0c62166a36ebac987d6e8e">loadState</a> ()</td></tr>
+<tr class="memitem:af17dbdcabc4ba18dffc0e4119349cd2f" id="r_af17dbdcabc4ba18dffc0e4119349cd2f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af17dbdcabc4ba18dffc0e4119349cd2f">saveState</a> ()</td></tr>
 <tr class="memitem:adf9c1d3ec5656cd76fac16f88312f438" id="r_adf9c1d3ec5656cd76fac16f88312f438"><td class="memItemLeft" align="right" valign="top"><a id="adf9c1d3ec5656cd76fac16f88312f438" name="adf9c1d3ec5656cd76fac16f88312f438"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setContents</b> (QLayout *layout)</td></tr>
-<tr class="memitem:af17dbdcabc4ba18dffc0e4119349cd2f" id="r_af17dbdcabc4ba18dffc0e4119349cd2f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af17dbdcabc4ba18dffc0e4119349cd2f">saveState</a> ()</td></tr>
-<tr class="memitem:a1fdfd845cc0c62166a36ebac987d6e8e" id="r_a1fdfd845cc0c62166a36ebac987d6e8e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fdfd845cc0c62166a36ebac987d6e8e">loadState</a> ()</td></tr>
+<tr class="memitem:ac976f99c553004fc3f58ae0687b47a62" id="r_ac976f99c553004fc3f58ae0687b47a62"><td class="memItemLeft" align="right" valign="top"><a id="ac976f99c553004fc3f58ae0687b47a62" name="ac976f99c553004fc3f58ae0687b47a62"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setContents</b> (QWidget *widget)</td></tr>
+<tr class="memitem:a1516c20d795e7faab094fc74ab77bcbf" id="r_a1516c20d795e7faab094fc74ab77bcbf"><td class="memItemLeft" align="right" valign="top"><a id="a1516c20d795e7faab094fc74ab77bcbf" name="a1516c20d795e7faab094fc74ab77bcbf"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setSticky</b> (bool sticky)</td></tr>
+<tr class="memitem:a9a06d42bb5b392db4fae5d1100099442" id="r_a9a06d42bb5b392db4fae5d1100099442"><td class="memItemLeft" align="right" valign="top"><a id="a9a06d42bb5b392db4fae5d1100099442" name="a9a06d42bb5b392db4fae5d1100099442"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>showEvent</b> (QShowEvent *showEvent) override</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -217,7 +217,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>closeEvent</b
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>inviwodockwidget.h</b></li>
+<li>modules/qtwidgets/include/modules/qtwidgets/<b>inviwodockwidget.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

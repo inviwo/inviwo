@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1animation_1_1Interpolation.html','','cl
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;interpolation.h&gt;</code></p>
+<p><code>#include &lt;modules/animation/interpolation/interpolation.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::animation::Interpolation:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -117,14 +117,14 @@ $(function(){initNavTree('classinviwo_1_1animation_1_1Interpolation.html','','cl
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad88f5dfe8c984db0ce47bcc8f902d155" id="r_ad88f5dfe8c984db0ce47bcc8f902d155"><td class="memItemLeft" align="right" valign="top"><a id="ad88f5dfe8c984db0ce47bcc8f902d155" name="ad88f5dfe8c984db0ce47bcc8f902d155"></a>
 virtual Interpolation *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
-<tr class="memitem:a118a5255534271b1165f27523583d3d8" id="r_a118a5255534271b1165f27523583d3d8"><td class="memItemLeft" align="right" valign="top"><a id="a118a5255534271b1165f27523583d3d8" name="a118a5255534271b1165f27523583d3d8"></a>
-virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getName</b> () const =0</td></tr>
-<tr class="memitem:aaed10b09d78cc4a748414ec4d796780e" id="r_aaed10b09d78cc4a748414ec4d796780e"><td class="memItemLeft" align="right" valign="top"><a id="aaed10b09d78cc4a748414ec4d796780e" name="aaed10b09d78cc4a748414ec4d796780e"></a>
-virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getClassIdentifier</b> () const =0</td></tr>
+<tr class="memitem:ae69014108538e10df365546ab6f289b0" id="r_ae69014108538e10df365546ab6f289b0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae69014108538e10df365546ab6f289b0">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override=0</td></tr>
 <tr class="memitem:a968e2c7575cf2d0789dcd154af79305a" id="r_a968e2c7575cf2d0789dcd154af79305a"><td class="memItemLeft" align="right" valign="top"><a id="a968e2c7575cf2d0789dcd154af79305a" name="a968e2c7575cf2d0789dcd154af79305a"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>equal</b> (const Interpolation &amp;other) const =0</td></tr>
+<tr class="memitem:aaed10b09d78cc4a748414ec4d796780e" id="r_aaed10b09d78cc4a748414ec4d796780e"><td class="memItemLeft" align="right" valign="top"><a id="aaed10b09d78cc4a748414ec4d796780e" name="aaed10b09d78cc4a748414ec4d796780e"></a>
+virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>getClassIdentifier</b> () const =0</td></tr>
+<tr class="memitem:a118a5255534271b1165f27523583d3d8" id="r_a118a5255534271b1165f27523583d3d8"><td class="memItemLeft" align="right" valign="top"><a id="a118a5255534271b1165f27523583d3d8" name="a118a5255534271b1165f27523583d3d8"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getName</b> () const =0</td></tr>
 <tr class="memitem:a1771bf5e8e967bad885d2ffb0b1e8a08" id="r_a1771bf5e8e967bad885d2ffb0b1e8a08"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1771bf5e8e967bad885d2ffb0b1e8a08">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override=0</td></tr>
-<tr class="memitem:ae69014108538e10df365546ab6f289b0" id="r_ae69014108538e10df365546ab6f289b0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae69014108538e10df365546ab6f289b0">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override=0</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for keyframe interpolations. </p>
@@ -184,7 +184,7 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>equal</b> (co
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>modules/animation/include/modules/animation/interpolation/interpolation.h</b></li>
+<li>modules/animation/include/modules/animation/interpolation/<b>interpolation.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

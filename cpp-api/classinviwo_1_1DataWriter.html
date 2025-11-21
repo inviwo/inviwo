@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1DataWriter.html','','classinviwo_1_1Dat
 <p>A abstract base class for all file writers.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;datawriter.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/io/datawriter.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::DataWriter:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -120,29 +120,29 @@ $(function(){initNavTree('classinviwo_1_1DataWriter.html','','classinviwo_1_1Dat
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5f55f05157f14d1e62ae674409d2eea9" id="r_a5f55f05157f14d1e62ae674409d2eea9"><td class="memItemLeft" align="right" valign="top"><a id="a5f55f05157f14d1e62ae674409d2eea9" name="a5f55f05157f14d1e62ae674409d2eea9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataWriter</b> (const DataWriter &amp;rhs)</td></tr>
-<tr class="memitem:a8fac8613b04d65fb0821b357e833879c" id="r_a8fac8613b04d65fb0821b357e833879c"><td class="memItemLeft" align="right" valign="top"><a id="a8fac8613b04d65fb0821b357e833879c" name="a8fac8613b04d65fb0821b357e833879c"></a>
-DataWriter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataWriter &amp;that)</td></tr>
-<tr class="memitem:a5728f5e1f08ab7ee2ce2619cda05d8ca" id="r_a5728f5e1f08ab7ee2ce2619cda05d8ca"><td class="memItemLeft" align="right" valign="top"><a id="a5728f5e1f08ab7ee2ce2619cda05d8ca" name="a5728f5e1f08ab7ee2ce2619cda05d8ca"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataWriter</b> (DataWriter &amp;&amp;rhs) noexcept=default</td></tr>
-<tr class="memitem:adca94fd4a8f80dce8dc8bc705f829c76" id="r_adca94fd4a8f80dce8dc8bc705f829c76"><td class="memItemLeft" align="right" valign="top"><a id="adca94fd4a8f80dce8dc8bc705f829c76" name="adca94fd4a8f80dce8dc8bc705f829c76"></a>
-DataWriter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DataWriter &amp;&amp;that) noexcept=default</td></tr>
-<tr class="memitem:a25246d2af78c061aa74a236b1791d411" id="r_a25246d2af78c061aa74a236b1791d411"><td class="memItemLeft" align="right" valign="top"><a id="a25246d2af78c061aa74a236b1791d411" name="a25246d2af78c061aa74a236b1791d411"></a>
-virtual DataWriter *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
-<tr class="memitem:a1ef5f8947e4438caf8cad5513ace70b0" id="r_a1ef5f8947e4438caf8cad5513ace70b0"><td class="memItemLeft" align="right" valign="top"><a id="a1ef5f8947e4438caf8cad5513ace70b0" name="a1ef5f8947e4438caf8cad5513ace70b0"></a>
-const std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getExtensions</b> () const</td></tr>
 <tr class="memitem:aaae7af89ee365569ea02963e8fec2ae1" id="r_aaae7af89ee365569ea02963e8fec2ae1"><td class="memItemLeft" align="right" valign="top"><a id="aaae7af89ee365569ea02963e8fec2ae1" name="aaae7af89ee365569ea02963e8fec2ae1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addExtension</b> (<a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> ext)</td></tr>
-<tr class="memitem:ab8f0a4c87e44a7d486b90bd47cc45473" id="r_ab8f0a4c87e44a7d486b90bd47cc45473"><td class="memItemLeft" align="right" valign="top"><a id="ab8f0a4c87e44a7d486b90bd47cc45473" name="ab8f0a4c87e44a7d486b90bd47cc45473"></a>
-Overwrite&#160;</td><td class="memItemRight" valign="bottom"><b>getOverwrite</b> () const</td></tr>
-<tr class="memitem:a36fa1519dca85e288607c165844d9cb7" id="r_a36fa1519dca85e288607c165844d9cb7"><td class="memItemLeft" align="right" valign="top"><a id="a36fa1519dca85e288607c165844d9cb7" name="a36fa1519dca85e288607c165844d9cb7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setOverwrite</b> (Overwrite val)</td></tr>
 <tr class="memitem:a9a9d1c0ab15b48fdd639b5f504b4c1fd" id="r_a9a9d1c0ab15b48fdd639b5f504b4c1fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a9d1c0ab15b48fdd639b5f504b4c1fd">checkOverwrite</a> (const std::filesystem::path &amp;path) const</td></tr>
-<tr class="memitem:ad2352d071b77129614c1e0d172dd2099" id="r_ad2352d071b77129614c1e0d172dd2099"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2352d071b77129614c1e0d172dd2099">setOption</a> (std::string_view key, std::any value)</td></tr>
-<tr class="memdesc:ad2352d071b77129614c1e0d172dd2099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set writer specific options See the documentation of the specific writer for the available options.  <br /></td></tr>
+<tr class="memitem:a25246d2af78c061aa74a236b1791d411" id="r_a25246d2af78c061aa74a236b1791d411"><td class="memItemLeft" align="right" valign="top"><a id="a25246d2af78c061aa74a236b1791d411" name="a25246d2af78c061aa74a236b1791d411"></a>
+virtual DataWriter *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
+<tr class="memitem:a5f55f05157f14d1e62ae674409d2eea9" id="r_a5f55f05157f14d1e62ae674409d2eea9"><td class="memItemLeft" align="right" valign="top"><a id="a5f55f05157f14d1e62ae674409d2eea9" name="a5f55f05157f14d1e62ae674409d2eea9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DataWriter</b> (const DataWriter &amp;rhs)</td></tr>
+<tr class="memitem:a5728f5e1f08ab7ee2ce2619cda05d8ca" id="r_a5728f5e1f08ab7ee2ce2619cda05d8ca"><td class="memItemLeft" align="right" valign="top"><a id="a5728f5e1f08ab7ee2ce2619cda05d8ca" name="a5728f5e1f08ab7ee2ce2619cda05d8ca"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DataWriter</b> (DataWriter &amp;&amp;rhs) noexcept=default</td></tr>
+<tr class="memitem:a1ef5f8947e4438caf8cad5513ace70b0" id="r_a1ef5f8947e4438caf8cad5513ace70b0"><td class="memItemLeft" align="right" valign="top"><a id="a1ef5f8947e4438caf8cad5513ace70b0" name="a1ef5f8947e4438caf8cad5513ace70b0"></a>
+const std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getExtensions</b> () const</td></tr>
 <tr class="memitem:a422b42cb09f00ad62a1572f5808e76b0" id="r_a422b42cb09f00ad62a1572f5808e76b0"><td class="memItemLeft" align="right" valign="top">virtual std::any&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a422b42cb09f00ad62a1572f5808e76b0">getOption</a> (std::string_view key) const</td></tr>
 <tr class="memdesc:a422b42cb09f00ad62a1572f5808e76b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the value of a writer specific option.  <br /></td></tr>
+<tr class="memitem:ab8f0a4c87e44a7d486b90bd47cc45473" id="r_ab8f0a4c87e44a7d486b90bd47cc45473"><td class="memItemLeft" align="right" valign="top"><a id="ab8f0a4c87e44a7d486b90bd47cc45473" name="ab8f0a4c87e44a7d486b90bd47cc45473"></a>
+Overwrite&#160;</td><td class="memItemRight" valign="bottom"><b>getOverwrite</b> () const</td></tr>
+<tr class="memitem:a8fac8613b04d65fb0821b357e833879c" id="r_a8fac8613b04d65fb0821b357e833879c"><td class="memItemLeft" align="right" valign="top"><a id="a8fac8613b04d65fb0821b357e833879c" name="a8fac8613b04d65fb0821b357e833879c"></a>
+DataWriter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const DataWriter &amp;that)</td></tr>
+<tr class="memitem:adca94fd4a8f80dce8dc8bc705f829c76" id="r_adca94fd4a8f80dce8dc8bc705f829c76"><td class="memItemLeft" align="right" valign="top"><a id="adca94fd4a8f80dce8dc8bc705f829c76" name="adca94fd4a8f80dce8dc8bc705f829c76"></a>
+DataWriter &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (DataWriter &amp;&amp;that) noexcept=default</td></tr>
+<tr class="memitem:ad2352d071b77129614c1e0d172dd2099" id="r_ad2352d071b77129614c1e0d172dd2099"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2352d071b77129614c1e0d172dd2099">setOption</a> (std::string_view key, std::any value)</td></tr>
+<tr class="memdesc:ad2352d071b77129614c1e0d172dd2099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set writer specific options See the documentation of the specific writer for the available options.  <br /></td></tr>
+<tr class="memitem:a36fa1519dca85e288607c165844d9cb7" id="r_a36fa1519dca85e288607c165844d9cb7"><td class="memItemLeft" align="right" valign="top"><a id="a36fa1519dca85e288607c165844d9cb7" name="a36fa1519dca85e288607c165844d9cb7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setOverwrite</b> (Overwrite val)</td></tr>
 <tr class="memitem:adad7b7d67bb4ce4f6794d2ef8572a274" id="r_adad7b7d67bb4ce4f6794d2ef8572a274"><td class="memTemplParams" colspan="2"><a id="adad7b7d67bb4ce4f6794d2ef8572a274" name="adad7b7d67bb4ce4f6794d2ef8572a274"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:adad7b7d67bb4ce4f6794d2ef8572a274 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>writesType</b> () const</td></tr>
@@ -153,16 +153,16 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:af933bbb0c4c4fe85cd94e41f332cb8f6" id="r_af933bbb0c4c4fe85cd94e41f332cb8f6"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af933bbb0c4c4fe85cd94e41f332cb8f6">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::out) const</td></tr>
 <tr class="memitem:af20908f2e93a1f7820eec496a47a2ece" id="r_af20908f2e93a1f7820eec496a47a2ece"><td class="memItemLeft" align="right" valign="top"><a id="af20908f2e93a1f7820eec496a47a2ece" name="af20908f2e93a1f7820eec496a47a2ece"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>canWrite</b> (const std::type_index &amp;index) const =0</td></tr>
+<tr class="memitem:af933bbb0c4c4fe85cd94e41f332cb8f6" id="r_af933bbb0c4c4fe85cd94e41f332cb8f6"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af933bbb0c4c4fe85cd94e41f332cb8f6">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::out) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a24b477e19e766b556ea9e7e134130ef4" id="r_a24b477e19e766b556ea9e7e134130ef4"><td class="memItemLeft" align="right" valign="top"><a id="a24b477e19e766b556ea9e7e134130ef4" name="a24b477e19e766b556ea9e7e134130ef4"></a>
-Overwrite&#160;</td><td class="memItemRight" valign="bottom"><b>overwrite_</b></td></tr>
 <tr class="memitem:a62d340b19550bb20b92fb66501cf6e82" id="r_a62d340b19550bb20b92fb66501cf6e82"><td class="memItemLeft" align="right" valign="top"><a id="a62d340b19550bb20b92fb66501cf6e82" name="a62d340b19550bb20b92fb66501cf6e82"></a>
 std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>extensions_</b></td></tr>
+<tr class="memitem:a24b477e19e766b556ea9e7e134130ef4" id="r_a24b477e19e766b556ea9e7e134130ef4"><td class="memItemLeft" align="right" valign="top"><a id="a24b477e19e766b556ea9e7e134130ef4" name="a24b477e19e766b556ea9e7e134130ef4"></a>
+Overwrite&#160;</td><td class="memItemRight" valign="bottom"><b>overwrite_</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A abstract base class for all file writers. </p>
@@ -335,7 +335,7 @@ std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExten
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>datawriter.h</b></li>
+<li>include/inviwo/core/io/<b>datawriter.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

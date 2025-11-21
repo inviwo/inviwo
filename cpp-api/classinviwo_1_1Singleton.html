@@ -94,25 +94,25 @@ $(function(){initNavTree('classinviwo_1_1Singleton.html','','classinviwo_1_1Sing
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;singleton.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/util/singleton.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2546aae31ce582abee7a490f10de913c" id="r_a2546aae31ce582abee7a490f10de913c"><td class="memItemLeft" align="right" valign="top"><a id="a2546aae31ce582abee7a490f10de913c" name="a2546aae31ce582abee7a490f10de913c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Singleton</b> (const Singleton &amp;)=delete</td></tr>
 <tr class="memitem:a87e9b13c5bd41cc6bc99b56dc624fbe7" id="r_a87e9b13c5bd41cc6bc99b56dc624fbe7"><td class="memItemLeft" align="right" valign="top"><a id="a87e9b13c5bd41cc6bc99b56dc624fbe7" name="a87e9b13c5bd41cc6bc99b56dc624fbe7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const Singleton &amp;)=delete</td></tr>
+<tr class="memitem:a2546aae31ce582abee7a490f10de913c" id="r_a2546aae31ce582abee7a490f10de913c"><td class="memItemLeft" align="right" valign="top"><a id="a2546aae31ce582abee7a490f10de913c" name="a2546aae31ce582abee7a490f10de913c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Singleton</b> (const Singleton &amp;)=delete</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a63e430e61d8a718cb4592799378b08cf" id="r_a63e430e61d8a718cb4592799378b08cf"><td class="memItemLeft" align="right" valign="top"><a id="a63e430e61d8a718cb4592799378b08cf" name="a63e430e61d8a718cb4592799378b08cf"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>deleteInstance</b> ()</td></tr>
+<tr class="memitem:a258f12ada5b8accc5f813aebe7087501" id="r_a258f12ada5b8accc5f813aebe7087501"><td class="memItemLeft" align="right" valign="top"><a id="a258f12ada5b8accc5f813aebe7087501" name="a258f12ada5b8accc5f813aebe7087501"></a>
+static T *&#160;</td><td class="memItemRight" valign="bottom"><b>getPtr</b> ()</td></tr>
 <tr class="memitem:a433c86ed2a8c9a6d70f85a544e88ade5" id="r_a433c86ed2a8c9a6d70f85a544e88ade5"><td class="memItemLeft" align="right" valign="top"><a id="a433c86ed2a8c9a6d70f85a544e88ade5" name="a433c86ed2a8c9a6d70f85a544e88ade5"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
 <tr class="memitem:a3750242bacfb8e43614671baf984c0ea" id="r_a3750242bacfb8e43614671baf984c0ea"><td class="memItemLeft" align="right" valign="top"><a id="a3750242bacfb8e43614671baf984c0ea" name="a3750242bacfb8e43614671baf984c0ea"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (T *instance)</td></tr>
-<tr class="memitem:a258f12ada5b8accc5f813aebe7087501" id="r_a258f12ada5b8accc5f813aebe7087501"><td class="memItemLeft" align="right" valign="top"><a id="a258f12ada5b8accc5f813aebe7087501" name="a258f12ada5b8accc5f813aebe7087501"></a>
-static T *&#160;</td><td class="memItemRight" valign="bottom"><b>getPtr</b> ()</td></tr>
-<tr class="memitem:a63e430e61d8a718cb4592799378b08cf" id="r_a63e430e61d8a718cb4592799378b08cf"><td class="memItemLeft" align="right" valign="top"><a id="a63e430e61d8a718cb4592799378b08cf" name="a63e430e61d8a718cb4592799378b08cf"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>deleteInstance</b> ()</td></tr>
 <tr class="memitem:a2db9bfbbca87b1caea8b12d7c1284284" id="r_a2db9bfbbca87b1caea8b12d7c1284284"><td class="memItemLeft" align="right" valign="top"><a id="a2db9bfbbca87b1caea8b12d7c1284284" name="a2db9bfbbca87b1caea8b12d7c1284284"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInitialized</b> ()</td></tr>
 </table>
@@ -120,7 +120,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInitialized<
 <div class="textblock"><div class="compoundTemplParams">template&lt;class T&gt;<br />
 class inviwo::Singleton&lt; T &gt;</div><p>T must have a static T* instance_ member variable. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>singleton.h</b></li>
+<li>include/inviwo/core/util/<b>singleton.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

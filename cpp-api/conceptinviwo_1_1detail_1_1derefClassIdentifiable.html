@@ -94,7 +94,14 @@ $(function(){initNavTree('conceptinviwo_1_1detail_1_1derefClassIdentifiable.html
 </div><!--header-->
 <div class="contents">
 <h2 id="header-conceptdef" class="groupheader">Concept definition</h2>
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="conceptinviwo_1_1detail_1_1derefClassIdentifiable.html">inviwo::detail::derefClassIdentifiable</a> =  <span class="keyword">requires</span>(<span class="keyword">const</span> T&amp; t) {</div>
+<div class="line">                                     {</div>
+<div class="line">                                         t-&gt;getClassIdentifier()</div>
+<div class="line">                                         } -&gt; std::equality_comparable_with&lt;std::string_view&gt;;</div>
+<div class="line">                                 }</div>
+<div class="ttc" id="aconceptinviwo_1_1detail_1_1derefClassIdentifiable_html"><div class="ttname"><a href="conceptinviwo_1_1detail_1_1derefClassIdentifiable.html">inviwo::detail::derefClassIdentifiable</a></div><div class="ttdef"><b>Definition</b> deserializer.h:75</div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->

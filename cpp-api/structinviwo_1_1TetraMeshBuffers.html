@@ -94,19 +94,19 @@ $(function(){initNavTree('structinviwo_1_1TetraMeshBuffers.html','','structinviw
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;tetrameshbuffers.h&gt;</code></p>
+<p><code>#include &lt;inviwo/tetramesh/datastructures/tetrameshbuffers.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2adbb58bdbcdd199ec504b5393e9d963" id="r_a2adbb58bdbcdd199ec504b5393e9d963"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2adbb58bdbcdd199ec504b5393e9d963">bind</a> () const</td></tr>
 <tr class="memitem:a915eb2da5c2a15f97f330346a0c96bc9" id="r_a915eb2da5c2a15f97f330346a0c96bc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a915eb2da5c2a15f97f330346a0c96bc9">unbind</a> () const</td></tr>
-<tr class="memitem:a4c78a05652a5d567f86c0dd06507378a" id="r_a4c78a05652a5d567f86c0dd06507378a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c78a05652a5d567f86c0dd06507378a">upload</a> (const <a class="el" href="classinviwo_1_1TetraMesh.html">TetraMesh</a> &amp;mesh)</td></tr>
 <tr class="memitem:a2fad7cac355a9283a0e071ce11999092" id="r_a2fad7cac355a9283a0e071ce11999092"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fad7cac355a9283a0e071ce11999092">upload</a> (const std::vector&lt; vec4 &gt; &amp;nodes, const std::vector&lt; ivec4 &gt; &amp;nodeIds, const std::vector&lt; ivec4 &gt; &amp;opposingFaces)</td></tr>
+<tr class="memitem:a4c78a05652a5d567f86c0dd06507378a" id="r_a4c78a05652a5d567f86c0dd06507378a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c78a05652a5d567f86c0dd06507378a">upload</a> (const <a class="el" href="classinviwo_1_1TetraMesh.html">TetraMesh</a> &amp;mesh)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad523c12ec0b0ad4b057e2913b23ee1e5" id="r_ad523c12ec0b0ad4b057e2913b23ee1e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad523c12ec0b0ad4b057e2913b23ee1e5">nodesBuffer</a></td></tr>
 <tr class="memitem:a253aa678ba558bb3365bf90a1312daaf" id="r_a253aa678ba558bb3365bf90a1312daaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a253aa678ba558bb3365bf90a1312daaf">nodeIdsBuffer</a></td></tr>
+<tr class="memitem:ad523c12ec0b0ad4b057e2913b23ee1e5" id="r_ad523c12ec0b0ad4b057e2913b23ee1e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad523c12ec0b0ad4b057e2913b23ee1e5">nodesBuffer</a></td></tr>
 <tr class="memitem:a5302f9520398c6f31bc18eaf62cd1ced" id="r_a5302f9520398c6f31bc18eaf62cd1ced"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5302f9520398c6f31bc18eaf62cd1ced">opposingFaceIdsBuffer</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
@@ -127,7 +127,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Bind the <a class="el" href="classinviwo_1_1Shader.html">Shader</a> Storage Buffers and tie them to specific layout locations. They can then be accessed in the shader as follows:</p>
-<div class="fragment"></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd>glBindBufferBase </dd></dl>
+<div class="fragment"><div class="line"><span class="keyword">struct </span>VertexPosition {</div>
+<div class="line">    vec3 pos;</div>
+<div class="line">    <span class="keywordtype">float</span> scalar;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">layout(std430, binding=0) readonly buffer nodeBuffer {</div>
+<div class="line">  VertexPosition vertexPositions[];</div>
+<div class="line">};</div>
+<div class="line">layout(std430, binding=1) readonly buffer <a class="code hl_variable" href="#a253aa678ba558bb3365bf90a1312daaf">nodeIdsBuffer</a> {</div>
+<div class="line">   ivec4 vertexIds[];</div>
+<div class="line">};</div>
+<div class="line">layout(std430, binding=2) readonly buffer <a class="code hl_variable" href="#a5302f9520398c6f31bc18eaf62cd1ced">opposingFaceIdsBuffer</a> {</div>
+<div class="line">    ivec4 faceIds[];</div>
+<div class="line">};</div>
+<div class="ttc" id="astructinviwo_1_1TetraMeshBuffers_html_a253aa678ba558bb3365bf90a1312daaf"><div class="ttname"><a href="#a253aa678ba558bb3365bf90a1312daaf">inviwo::TetraMeshBuffers::nodeIdsBuffer</a></div><div class="ttdeci">BufferObject nodeIdsBuffer</div><div class="ttdef"><b>Definition</b> tetrameshbuffers.h:99</div></div>
+<div class="ttc" id="astructinviwo_1_1TetraMeshBuffers_html_a5302f9520398c6f31bc18eaf62cd1ced"><div class="ttname"><a href="#a5302f9520398c6f31bc18eaf62cd1ced">inviwo::TetraMeshBuffers::opposingFaceIdsBuffer</a></div><div class="ttdeci">BufferObject opposingFaceIdsBuffer</div><div class="ttdef"><b>Definition</b> tetrameshbuffers.h:105</div></div>
+</div><!-- fragment --><dl class="section see"><dt>See also</dt><dd>glBindBufferBase </dd></dl>
 
 </div>
 </div>
@@ -243,7 +259,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>tetrameshbuffers.h</b></li>
+<li>modules/tetramesh/include/inviwo/tetramesh/datastructures/<b>tetrameshbuffers.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

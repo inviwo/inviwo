@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1NetworkVisitor.html','','classinviwo_1_
 <p>Visitor pattern base for visiting an Inviwo <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a>.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;networkvisitor.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/network/networkvisitor.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::NetworkVisitor:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -111,14 +111,14 @@ $(function(){initNavTree('classinviwo_1_1NetworkVisitor.html','','classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a50d6e2a8f14a47c88888d8ad5be6cf36" id="r_a50d6e2a8f14a47c88888d8ad5be6cf36"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50d6e2a8f14a47c88888d8ad5be6cf36">enter</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;)</td></tr>
-<tr class="memdesc:a50d6e2a8f14a47c88888d8ad5be6cf36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a> Adding or removing processors while visiting is not supported Called before visiting children.  <br /></td></tr>
-<tr class="memitem:a8b30b7b3b8038a64ce7bfe97bfb6d467" id="r_a8b30b7b3b8038a64ce7bfe97bfb6d467"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b30b7b3b8038a64ce7bfe97bfb6d467">exit</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;)</td></tr>
-<tr class="memdesc:a8b30b7b3b8038a64ce7bfe97bfb6d467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a> Adding and removing processors while visiting are not supported Called after visiting children.  <br /></td></tr>
 <tr class="memitem:a4668de256f21db90320a1a8e150b82e8" id="r_a4668de256f21db90320a1a8e150b82e8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4668de256f21db90320a1a8e150b82e8">enter</a> (<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> &amp;)</td></tr>
 <tr class="memdesc:a4668de256f21db90320a1a8e150b82e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> Adding or removing properties while visiting is not supported Called before visiting children.  <br /></td></tr>
+<tr class="memitem:a50d6e2a8f14a47c88888d8ad5be6cf36" id="r_a50d6e2a8f14a47c88888d8ad5be6cf36"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50d6e2a8f14a47c88888d8ad5be6cf36">enter</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;)</td></tr>
+<tr class="memdesc:a50d6e2a8f14a47c88888d8ad5be6cf36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a> Adding or removing processors while visiting is not supported Called before visiting children.  <br /></td></tr>
 <tr class="memitem:a9addc02620953184a07f59d82510cdb8" id="r_a9addc02620953184a07f59d82510cdb8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9addc02620953184a07f59d82510cdb8">exit</a> (<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> &amp;)</td></tr>
 <tr class="memdesc:a9addc02620953184a07f59d82510cdb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> Adding and removing properties while visiting are not supported Called after visiting children.  <br /></td></tr>
+<tr class="memitem:a8b30b7b3b8038a64ce7bfe97bfb6d467" id="r_a8b30b7b3b8038a64ce7bfe97bfb6d467"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b30b7b3b8038a64ce7bfe97bfb6d467">exit</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;)</td></tr>
+<tr class="memdesc:a8b30b7b3b8038a64ce7bfe97bfb6d467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result.">Processor</a> Adding and removing processors while visiting are not supported Called after visiting children.  <br /></td></tr>
 <tr class="memitem:a85c1d33ca1a5e79e2b81c00a94b46de8" id="r_a85c1d33ca1a5e79e2b81c00a94b46de8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85c1d33ca1a5e79e2b81c00a94b46de8">visit</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;)</td></tr>
 <tr class="memdesc:a85c1d33ca1a5e79e2b81c00a94b46de8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visit a <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a> Adding and removing properties while visiting are not supported.  <br /></td></tr>
 </table>
@@ -273,7 +273,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>networkvisitor.h</b></li>
+<li>include/inviwo/core/network/<b>networkvisitor.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

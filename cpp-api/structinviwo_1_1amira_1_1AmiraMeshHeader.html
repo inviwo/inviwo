@@ -94,36 +94,36 @@ $(function(){initNavTree('structinviwo_1_1amira_1_1AmiraMeshHeader.html','','str
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;amirameshutils.h&gt;</code></p>
+<p><code>#include &lt;modules/base/io/amirameshutils.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad4c18fa60f89a4a4a0cab42f665076c0" id="r_ad4c18fa60f89a4a4a0cab42f665076c0"><td class="memItemLeft" align="right" valign="top"><a id="ad4c18fa60f89a4a4a0cab42f665076c0" name="ad4c18fa60f89a4a4a0cab42f665076c0"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>fileDescriptor</b></td></tr>
-<tr class="memdesc:ad4c18fa60f89a4a4a0cab42f665076c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains the first line, e.g. "# AmiraMesh 3D ASCII 2.0" <br /></td></tr>
-<tr class="memitem:a2c03198f272e4ba36430457746ccf283" id="r_a2c03198f272e4ba36430457746ccf283"><td class="memItemLeft" align="right" valign="top"><a id="a2c03198f272e4ba36430457746ccf283" name="a2c03198f272e4ba36430457746ccf283"></a>
-AmiraDict&#160;</td><td class="memItemRight" valign="bottom"><b>defines</b></td></tr>
-<tr class="memitem:a25e196c4b47ed7bf46f17946e6beef66" id="r_a25e196c4b47ed7bf46f17946e6beef66"><td class="memItemLeft" align="right" valign="top"><a id="a25e196c4b47ed7bf46f17946e6beef66" name="a25e196c4b47ed7bf46f17946e6beef66"></a>
-AmiraDict&#160;</td><td class="memItemRight" valign="bottom"><b>parameters</b></td></tr>
-<tr class="memitem:abb890762b7be63e444515f3ac380cfba" id="r_abb890762b7be63e444515f3ac380cfba"><td class="memItemLeft" align="right" valign="top"><a id="abb890762b7be63e444515f3ac380cfba" name="abb890762b7be63e444515f3ac380cfba"></a>
-std::vector&lt; AmiraDict &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>materials</b></td></tr>
-<tr class="memdesc:abb890762b7be63e444515f3ac380cfba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Note: materials are assigned per primitive. <br /></td></tr>
+<tr class="memitem:a8755a1b390eac14997549d873d153788" id="r_a8755a1b390eac14997549d873d153788"><td class="memItemLeft" align="right" valign="top"><a id="a8755a1b390eac14997549d873d153788" name="a8755a1b390eac14997549d873d153788"></a>
+ByteOrder&#160;</td><td class="memItemRight" valign="bottom"><b>byteOrder</b> = ByteOrder::LittleEndian</td></tr>
 <tr class="memitem:a4b9dd1fe054cbe986fd82b4d7354bfaf" id="r_a4b9dd1fe054cbe986fd82b4d7354bfaf"><td class="memItemLeft" align="right" valign="top"><a id="a4b9dd1fe054cbe986fd82b4d7354bfaf" name="a4b9dd1fe054cbe986fd82b4d7354bfaf"></a>
 std::unordered_map&lt; std::string_view, <a class="el" href="structinviwo_1_1amira_1_1DataSpec.html">DataSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dataSpecs</b></td></tr>
 <tr class="memdesc:a4b9dd1fe054cbe986fd82b4d7354bfaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">key: type descriptor of the data, e.g. "Data", "Coordinates", "LineIdx" <br /></td></tr>
+<tr class="memitem:a2c03198f272e4ba36430457746ccf283" id="r_a2c03198f272e4ba36430457746ccf283"><td class="memItemLeft" align="right" valign="top"><a id="a2c03198f272e4ba36430457746ccf283" name="a2c03198f272e4ba36430457746ccf283"></a>
+AmiraDict&#160;</td><td class="memItemRight" valign="bottom"><b>defines</b></td></tr>
 <tr class="memitem:a800050598839a26d3854aca342b25803" id="r_a800050598839a26d3854aca342b25803"><td class="memItemLeft" align="right" valign="top"><a id="a800050598839a26d3854aca342b25803" name="a800050598839a26d3854aca342b25803"></a>
 std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dimension</b></td></tr>
+<tr class="memitem:ad4c18fa60f89a4a4a0cab42f665076c0" id="r_ad4c18fa60f89a4a4a0cab42f665076c0"><td class="memItemLeft" align="right" valign="top"><a id="ad4c18fa60f89a4a4a0cab42f665076c0" name="ad4c18fa60f89a4a4a0cab42f665076c0"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>fileDescriptor</b></td></tr>
+<tr class="memdesc:ad4c18fa60f89a4a4a0cab42f665076c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains the first line, e.g. "# AmiraMesh 3D ASCII 2.0" <br /></td></tr>
 <tr class="memitem:add2be9f00e785dfff191859f5ed74426" id="r_add2be9f00e785dfff191859f5ed74426"><td class="memItemLeft" align="right" valign="top"><a id="add2be9f00e785dfff191859f5ed74426" name="add2be9f00e785dfff191859f5ed74426"></a>
 DataSectionFormat&#160;</td><td class="memItemRight" valign="bottom"><b>format</b> = DataSectionFormat::Unspecified</td></tr>
-<tr class="memitem:a8755a1b390eac14997549d873d153788" id="r_a8755a1b390eac14997549d873d153788"><td class="memItemLeft" align="right" valign="top"><a id="a8755a1b390eac14997549d873d153788" name="a8755a1b390eac14997549d873d153788"></a>
-ByteOrder&#160;</td><td class="memItemRight" valign="bottom"><b>byteOrder</b> = ByteOrder::LittleEndian</td></tr>
+<tr class="memitem:abb890762b7be63e444515f3ac380cfba" id="r_abb890762b7be63e444515f3ac380cfba"><td class="memItemLeft" align="right" valign="top"><a id="abb890762b7be63e444515f3ac380cfba" name="abb890762b7be63e444515f3ac380cfba"></a>
+std::vector&lt; AmiraDict &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>materials</b></td></tr>
+<tr class="memdesc:abb890762b7be63e444515f3ac380cfba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Note: materials are assigned per primitive. <br /></td></tr>
+<tr class="memitem:a25e196c4b47ed7bf46f17946e6beef66" id="r_a25e196c4b47ed7bf46f17946e6beef66"><td class="memItemLeft" align="right" valign="top"><a id="a25e196c4b47ed7bf46f17946e6beef66" name="a25e196c4b47ed7bf46f17946e6beef66"></a>
+AmiraDict&#160;</td><td class="memItemRight" valign="bottom"><b>parameters</b></td></tr>
 <tr class="memitem:acbc4704bd3b8f97513a397b9c279584d" id="r_acbc4704bd3b8f97513a397b9c279584d"><td class="memItemLeft" align="right" valign="top"><a id="acbc4704bd3b8f97513a397b9c279584d" name="acbc4704bd3b8f97513a397b9c279584d"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>version</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Header information from an AmiraMesh file. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>amirameshutils.h</b></li>
+<li>modules/base/include/modules/base/io/<b>amirameshutils.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

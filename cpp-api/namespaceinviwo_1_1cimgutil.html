@@ -100,6 +100,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:a5ac1750e1018ba8a25e30e0bd238c6ed" id="r_a5ac1750e1018ba8a25e30e0bd238c6ed"><td class="memItemLeft" align="right" valign="top"><a id="a5ac1750e1018ba8a25e30e0bd238c6ed" name="a5ac1750e1018ba8a25e30e0bd238c6ed"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ConsiderAspectRatio</b> { <b>No</b>
+, <b>Yes</b>
+ }</td></tr>
 <tr class="memitem:a1b2e1dba31f2eef78beaeb9abf6deb72" id="r_a1b2e1dba31f2eef78beaeb9abf6deb72"><td class="memItemLeft" align="right" valign="top"><a id="a1b2e1dba31f2eef78beaeb9abf6deb72" name="a1b2e1dba31f2eef78beaeb9abf6deb72"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>InterpolationType</b> : int { <br />
 &#160;&#160;<b>RawMemory</b> = -1
 , <b>NoInterpolation</b> = 0
@@ -112,9 +115,6 @@ Enumerations</h2></td></tr>
 , <b>Lanczos</b> = 6
 <br />
  }</td></tr>
-<tr class="memitem:a5ac1750e1018ba8a25e30e0bd238c6ed" id="r_a5ac1750e1018ba8a25e30e0bd238c6ed"><td class="memItemLeft" align="right" valign="top"><a id="a5ac1750e1018ba8a25e30e0bd238c6ed" name="a5ac1750e1018ba8a25e30e0bd238c6ed"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ConsiderAspectRatio</b> { <b>No</b>
-, <b>Yes</b>
- }</td></tr>
 <tr class="memitem:a16702860c6e7a3056f1006f8f364496d" id="r_a16702860c6e7a3056f1006f8f364496d"><td class="memItemLeft" align="right" valign="top"><a id="a16702860c6e7a3056f1006f8f364496d" name="a16702860c6e7a3056f1006f8f364496d"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>TIFFResolutionUnit</b> { <b>None</b>
 , <b>Inch</b>
 , <b>Centimeter</b>
@@ -122,15 +122,10 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac4a65e2aecdc3b3a48a20317a0081feb" id="r_ac4a65e2aecdc3b3a48a20317a0081feb"><td class="memTemplParams" colspan="2"><a id="ac4a65e2aecdc3b3a48a20317a0081feb" name="ac4a65e2aecdc3b3a48a20317a0081feb"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:ac4a65e2aecdc3b3a48a20317a0081feb template"><td class="memItemLeft" align="right" valign="top">const cimg_library::CImg&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>saveCImgToFileStream</b> (FILE *handle, const cimg_library::CImg&lt; T &gt; &amp;img, std::string_view extension)</td></tr>
-<tr class="memitem:a70d0600aef027bd271a72a8e3d0cb395" id="r_a70d0600aef027bd271a72a8e3d0cb395"><td class="memTemplParams" colspan="2"><a id="a70d0600aef027bd271a72a8e3d0cb395" name="a70d0600aef027bd271a72a8e3d0cb395"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a70d0600aef027bd271a72a8e3d0cb395 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>saveCImgToBuffer</b> (const cimg_library::CImg&lt; T &gt; &amp;img, std::string_view ext, std::vector&lt; unsigned char &gt; &amp;buff)</td></tr>
-<tr class="memitem:afca556bd774d0baca04303e5974cc36f" id="r_afca556bd774d0baca04303e5974cc36f"><td class="memTemplParams" colspan="2"><a id="afca556bd774d0baca04303e5974cc36f" name="afca556bd774d0baca04303e5974cc36f"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:afca556bd774d0baca04303e5974cc36f template"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>saveCImgToBuffer</b> (const cimg_library::CImg&lt; T &gt; &amp;img, std::string_view ext)</td></tr>
+<tr class="memitem:ae96abb90a3f9b565da82fee4d9d223af" id="r_ae96abb90a3f9b565da82fee4d9d223af"><td class="memItemLeft" align="right" valign="top"><a id="ae96abb90a3f9b565da82fee4d9d223af" name="ae96abb90a3f9b565da82fee4d9d223af"></a>
+IVW_MODULE_CIMG_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getLibJPGVersion</b> ()</td></tr>
+<tr class="memitem:a0826bae9249f79e67ab7648f2b5527b7" id="r_a0826bae9249f79e67ab7648f2b5527b7"><td class="memItemLeft" align="right" valign="top"><a id="a0826bae9249f79e67ab7648f2b5527b7" name="a0826bae9249f79e67ab7648f2b5527b7"></a>
+IVW_MODULE_CIMG_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getOpenEXRVersion</b> ()</td></tr>
 <tr class="memitem:a1d23c207d4636ecd5babae24f7f16fd1" id="r_a1d23c207d4636ecd5babae24f7f16fd1"><td class="memItemLeft" align="right" valign="top"><a id="a1d23c207d4636ecd5babae24f7f16fd1" name="a1d23c207d4636ecd5babae24f7f16fd1"></a>
 IVW_MODULE_CIMG_API <a class="el" href="structinviwo_1_1cimgutil_1_1TIFFHeader.html">TIFFHeader</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getTIFFHeader</b> (const std::filesystem::path &amp;filename)</td></tr>
 <tr class="memitem:a9e673cd7cffad50ba3eb54cf5386a395" id="r_a9e673cd7cffad50ba3eb54cf5386a395"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_CIMG_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e673cd7cffad50ba3eb54cf5386a395">loadLayer</a> (const std::filesystem::path &amp;filePath)</td></tr>
@@ -139,20 +134,25 @@ IVW_MODULE_CIMG_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer
 <tr class="memitem:aadf2e63ccba4cb446848d6c5a0e70ccc" id="r_aadf2e63ccba4cb446848d6c5a0e70ccc"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_CIMG_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadf2e63ccba4cb446848d6c5a0e70ccc">loadVolume</a> (const std::filesystem::path &amp;filePath)</td></tr>
 <tr class="memitem:a91fc96ceba16f32655e882a507d12a10" id="r_a91fc96ceba16f32655e882a507d12a10"><td class="memItemLeft" align="right" valign="top"><a id="a91fc96ceba16f32655e882a507d12a10" name="a91fc96ceba16f32655e882a507d12a10"></a>
 IVW_MODULE_CIMG_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>loadVolume</b> (const std::filesystem::path &amp;filePath, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, size3_t dims)</td></tr>
-<tr class="memitem:a5e1a9f79122c50dab9ac2243eb590b2c" id="r_a5e1a9f79122c50dab9ac2243eb590b2c"><td class="memItemLeft" align="right" valign="top"><a id="a5e1a9f79122c50dab9ac2243eb590b2c" name="a5e1a9f79122c50dab9ac2243eb590b2c"></a>
-IVW_MODULE_CIMG_API void&#160;</td><td class="memItemRight" valign="bottom"><b>updateVolume</b> (<a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &amp;volume, const std::filesystem::path &amp;filePath)</td></tr>
-<tr class="memitem:aa78596c404f7934993ff3dea8de209b8" id="r_aa78596c404f7934993ff3dea8de209b8"><td class="memItemLeft" align="right" valign="top"><a id="aa78596c404f7934993ff3dea8de209b8" name="aa78596c404f7934993ff3dea8de209b8"></a>
-IVW_MODULE_CIMG_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &amp;layer, const std::filesystem::path &amp;filePath)</td></tr>
-<tr class="memitem:ae000869cf5c423427ac54027203e79f3" id="r_ae000869cf5c423427ac54027203e79f3"><td class="memItemLeft" align="right" valign="top"><a id="ae000869cf5c423427ac54027203e79f3" name="ae000869cf5c423427ac54027203e79f3"></a>
-IVW_MODULE_CIMG_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &amp;layer, std::vector&lt; unsigned char &gt; &amp;dst, std::string_view extension)</td></tr>
 <tr class="memitem:a8df32a03c5d28f8963ef35ea9950fb42" id="r_a8df32a03c5d28f8963ef35ea9950fb42"><td class="memItemLeft" align="right" valign="top"><a id="a8df32a03c5d28f8963ef35ea9950fb42" name="a8df32a03c5d28f8963ef35ea9950fb42"></a>
 IVW_MODULE_CIMG_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>rescaleLayerRamToLayerRam</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *source, <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *target)</td></tr>
 <tr class="memitem:ae718b3ed6a56511e0d21a5e483652937" id="r_ae718b3ed6a56511e0d21a5e483652937"><td class="memItemLeft" align="right" valign="top"><a id="ae718b3ed6a56511e0d21a5e483652937" name="ae718b3ed6a56511e0d21a5e483652937"></a>
 IVW_MODULE_CIMG_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>rescaleLayerRamToLayerRam</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *source, <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> *target, cimgutil::InterpolationType interpolation, cimgutil::ConsiderAspectRatio aspectRatio=cimgutil::ConsiderAspectRatio::Yes)</td></tr>
-<tr class="memitem:ae96abb90a3f9b565da82fee4d9d223af" id="r_ae96abb90a3f9b565da82fee4d9d223af"><td class="memItemLeft" align="right" valign="top"><a id="ae96abb90a3f9b565da82fee4d9d223af" name="ae96abb90a3f9b565da82fee4d9d223af"></a>
-IVW_MODULE_CIMG_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getLibJPGVersion</b> ()</td></tr>
-<tr class="memitem:a0826bae9249f79e67ab7648f2b5527b7" id="r_a0826bae9249f79e67ab7648f2b5527b7"><td class="memItemLeft" align="right" valign="top"><a id="a0826bae9249f79e67ab7648f2b5527b7" name="a0826bae9249f79e67ab7648f2b5527b7"></a>
-IVW_MODULE_CIMG_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getOpenEXRVersion</b> ()</td></tr>
+<tr class="memitem:afca556bd774d0baca04303e5974cc36f" id="r_afca556bd774d0baca04303e5974cc36f"><td class="memTemplParams" colspan="2"><a id="afca556bd774d0baca04303e5974cc36f" name="afca556bd774d0baca04303e5974cc36f"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:afca556bd774d0baca04303e5974cc36f template"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>saveCImgToBuffer</b> (const cimg_library::CImg&lt; T &gt; &amp;img, std::string_view ext)</td></tr>
+<tr class="memitem:a70d0600aef027bd271a72a8e3d0cb395" id="r_a70d0600aef027bd271a72a8e3d0cb395"><td class="memTemplParams" colspan="2"><a id="a70d0600aef027bd271a72a8e3d0cb395" name="a70d0600aef027bd271a72a8e3d0cb395"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a70d0600aef027bd271a72a8e3d0cb395 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>saveCImgToBuffer</b> (const cimg_library::CImg&lt; T &gt; &amp;img, std::string_view ext, std::vector&lt; unsigned char &gt; &amp;buff)</td></tr>
+<tr class="memitem:ac4a65e2aecdc3b3a48a20317a0081feb" id="r_ac4a65e2aecdc3b3a48a20317a0081feb"><td class="memTemplParams" colspan="2"><a id="ac4a65e2aecdc3b3a48a20317a0081feb" name="ac4a65e2aecdc3b3a48a20317a0081feb"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ac4a65e2aecdc3b3a48a20317a0081feb template"><td class="memItemLeft" align="right" valign="top">const cimg_library::CImg&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>saveCImgToFileStream</b> (FILE *handle, const cimg_library::CImg&lt; T &gt; &amp;img, std::string_view extension)</td></tr>
+<tr class="memitem:aa78596c404f7934993ff3dea8de209b8" id="r_aa78596c404f7934993ff3dea8de209b8"><td class="memItemLeft" align="right" valign="top"><a id="aa78596c404f7934993ff3dea8de209b8" name="aa78596c404f7934993ff3dea8de209b8"></a>
+IVW_MODULE_CIMG_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &amp;layer, const std::filesystem::path &amp;filePath)</td></tr>
+<tr class="memitem:ae000869cf5c423427ac54027203e79f3" id="r_ae000869cf5c423427ac54027203e79f3"><td class="memItemLeft" align="right" valign="top"><a id="ae000869cf5c423427ac54027203e79f3" name="ae000869cf5c423427ac54027203e79f3"></a>
+IVW_MODULE_CIMG_API void&#160;</td><td class="memItemRight" valign="bottom"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1LayerRAM.html">LayerRAM</a> &amp;layer, std::vector&lt; unsigned char &gt; &amp;dst, std::string_view extension)</td></tr>
+<tr class="memitem:a5e1a9f79122c50dab9ac2243eb590b2c" id="r_a5e1a9f79122c50dab9ac2243eb590b2c"><td class="memItemLeft" align="right" valign="top"><a id="a5e1a9f79122c50dab9ac2243eb590b2c" name="a5e1a9f79122c50dab9ac2243eb590b2c"></a>
+IVW_MODULE_CIMG_API void&#160;</td><td class="memItemRight" valign="bottom"><b>updateVolume</b> (<a class="el" href="classinviwo_1_1VolumeRAM.html">VolumeRAM</a> &amp;volume, const std::filesystem::path &amp;filePath)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>cimgutil </p>

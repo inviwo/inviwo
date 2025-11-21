@@ -94,7 +94,7 @@ $(function(){initNavTree('classinviwo_1_1PickingManager.html','','classinviwo_1_
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;pickingmanager.h&gt;</code></p>
+<p><code>#include &lt;inviwo/core/interaction/pickingmanager.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::PickingManager:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -108,42 +108,42 @@ $(function(){initNavTree('classinviwo_1_1PickingManager.html','','classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3080f1e2f9edb802038ec04a2f9a9848" id="r_a3080f1e2f9edb802038ec04a2f9a9848"><td class="memItemLeft" align="right" valign="top"><a id="a3080f1e2f9edb802038ec04a2f9a9848" name="a3080f1e2f9edb802038ec04a2f9a9848"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PickingManager</b> (const PickingManager &amp;)=delete</td></tr>
-<tr class="memitem:a7e7e53ec017f343415252653a993edc2" id="r_a7e7e53ec017f343415252653a993edc2"><td class="memItemLeft" align="right" valign="top"><a id="a7e7e53ec017f343415252653a993edc2" name="a7e7e53ec017f343415252653a993edc2"></a>
-PickingManager &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const PickingManager &amp;)=delete</td></tr>
-<tr class="memitem:adaba3ce9ff179e5cbdfa35ae43892b4b" id="r_adaba3ce9ff179e5cbdfa35ae43892b4b"><td class="memTemplParams" colspan="2"><a id="adaba3ce9ff179e5cbdfa35ae43892b4b" name="adaba3ce9ff179e5cbdfa35ae43892b4b"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:adaba3ce9ff179e5cbdfa35ae43892b4b template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>registerPickingAction</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, T *o, void(T::*m)(<a class="el" href="classinviwo_1_1PickingEvent.html">PickingEvent</a> *), size_t size=1)</td></tr>
-<tr class="memitem:a6d97a86bdab8b47d783f36e3b387ec96" id="r_a6d97a86bdab8b47d783f36e3b387ec96"><td class="memItemLeft" align="right" valign="top"><a id="a6d97a86bdab8b47d783f36e3b387ec96" name="a6d97a86bdab8b47d783f36e3b387ec96"></a>
-<a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>registerPickingAction</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, PickingAction::Callback callback, size_t size=1)</td></tr>
-<tr class="memitem:aaa0fcbe85d21e4d3054dbd223db3561e" id="r_aaa0fcbe85d21e4d3054dbd223db3561e"><td class="memItemLeft" align="right" valign="top"><a id="aaa0fcbe85d21e4d3054dbd223db3561e" name="aaa0fcbe85d21e4d3054dbd223db3561e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>unregisterPickingAction</b> (const <a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *)</td></tr>
-<tr class="memitem:a0f7ab9b340cdc44bc79e50d4f6d55bac" id="r_a0f7ab9b340cdc44bc79e50d4f6d55bac"><td class="memItemLeft" align="right" valign="top"><a id="a0f7ab9b340cdc44bc79e50d4f6d55bac" name="a0f7ab9b340cdc44bc79e50d4f6d55bac"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>pickingEnabled</b> ()</td></tr>
 <tr class="memitem:a16a9e4086dacf0398015ef471b87874f" id="r_a16a9e4086dacf0398015ef471b87874f"><td class="memItemLeft" align="right" valign="top"><a id="a16a9e4086dacf0398015ef471b87874f" name="a16a9e4086dacf0398015ef471b87874f"></a>
 const <a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPickingActionFromColor</b> (const uvec3 &amp;<a class="el" href="namespaceinviwo_1_1color.html">color</a>) const</td></tr>
 <tr class="memitem:af4e25bf39c39facde8ad347829d4b6cb" id="r_af4e25bf39c39facde8ad347829d4b6cb"><td class="memItemLeft" align="right" valign="top"><a id="af4e25bf39c39facde8ad347829d4b6cb" name="af4e25bf39c39facde8ad347829d4b6cb"></a>
 const <a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPickingActionFromIndex</b> (size_t index) const</td></tr>
 <tr class="memitem:ad3c078d059a072827fe1c4567adf3cd1" id="r_ad3c078d059a072827fe1c4567adf3cd1"><td class="memItemLeft" align="right" valign="top"><a id="ad3c078d059a072827fe1c4567adf3cd1" name="ad3c078d059a072827fe1c4567adf3cd1"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isPickingActionRegistered</b> (const <a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *action) const</td></tr>
+<tr class="memitem:a7e7e53ec017f343415252653a993edc2" id="r_a7e7e53ec017f343415252653a993edc2"><td class="memItemLeft" align="right" valign="top"><a id="a7e7e53ec017f343415252653a993edc2" name="a7e7e53ec017f343415252653a993edc2"></a>
+PickingManager &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const PickingManager &amp;)=delete</td></tr>
+<tr class="memitem:a0f7ab9b340cdc44bc79e50d4f6d55bac" id="r_a0f7ab9b340cdc44bc79e50d4f6d55bac"><td class="memItemLeft" align="right" valign="top"><a id="a0f7ab9b340cdc44bc79e50d4f6d55bac" name="a0f7ab9b340cdc44bc79e50d4f6d55bac"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>pickingEnabled</b> ()</td></tr>
+<tr class="memitem:a3080f1e2f9edb802038ec04a2f9a9848" id="r_a3080f1e2f9edb802038ec04a2f9a9848"><td class="memItemLeft" align="right" valign="top"><a id="a3080f1e2f9edb802038ec04a2f9a9848" name="a3080f1e2f9edb802038ec04a2f9a9848"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PickingManager</b> (const PickingManager &amp;)=delete</td></tr>
+<tr class="memitem:a6d97a86bdab8b47d783f36e3b387ec96" id="r_a6d97a86bdab8b47d783f36e3b387ec96"><td class="memItemLeft" align="right" valign="top"><a id="a6d97a86bdab8b47d783f36e3b387ec96" name="a6d97a86bdab8b47d783f36e3b387ec96"></a>
+<a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>registerPickingAction</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, PickingAction::Callback callback, size_t size=1)</td></tr>
+<tr class="memitem:adaba3ce9ff179e5cbdfa35ae43892b4b" id="r_adaba3ce9ff179e5cbdfa35ae43892b4b"><td class="memTemplParams" colspan="2"><a id="adaba3ce9ff179e5cbdfa35ae43892b4b" name="adaba3ce9ff179e5cbdfa35ae43892b4b"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:adaba3ce9ff179e5cbdfa35ae43892b4b template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>registerPickingAction</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, T *o, void(T::*m)(<a class="el" href="classinviwo_1_1PickingEvent.html">PickingEvent</a> *), size_t size=1)</td></tr>
+<tr class="memitem:aaa0fcbe85d21e4d3054dbd223db3561e" id="r_aaa0fcbe85d21e4d3054dbd223db3561e"><td class="memItemLeft" align="right" valign="top"><a id="aaa0fcbe85d21e4d3054dbd223db3561e" name="aaa0fcbe85d21e4d3054dbd223db3561e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>unregisterPickingAction</b> (const <a class="el" href="classinviwo_1_1PickingAction.html">PickingAction</a> *)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Singleton"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Singleton')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Singleton.html">inviwo::Singleton&lt; PickingManager &gt;</a></td></tr>
 <tr class="memitem:a87e9b13c5bd41cc6bc99b56dc624fbe7 inherit pub_methods_classinviwo_1_1Singleton" id="r_a87e9b13c5bd41cc6bc99b56dc624fbe7"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const Singleton &amp;)=delete</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a4debff90434caf6901df64daf7cbf65c" id="r_a4debff90434caf6901df64daf7cbf65c"><td class="memItemLeft" align="right" valign="top"><a id="a4debff90434caf6901df64daf7cbf65c" name="a4debff90434caf6901df64daf7cbf65c"></a>
-static uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>indexToColor</b> (size_t index)</td></tr>
 <tr class="memitem:a9722f2dccb57abf2cb1a1d0d19b7fac1" id="r_a9722f2dccb57abf2cb1a1d0d19b7fac1"><td class="memItemLeft" align="right" valign="top"><a id="a9722f2dccb57abf2cb1a1d0d19b7fac1" name="a9722f2dccb57abf2cb1a1d0d19b7fac1"></a>
 static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>colorToIndex</b> (uvec3 <a class="el" href="namespaceinviwo_1_1color.html">color</a>)</td></tr>
+<tr class="memitem:a4debff90434caf6901df64daf7cbf65c" id="r_a4debff90434caf6901df64daf7cbf65c"><td class="memItemLeft" align="right" valign="top"><a id="a4debff90434caf6901df64daf7cbf65c" name="a4debff90434caf6901df64daf7cbf65c"></a>
+static uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>indexToColor</b> (size_t index)</td></tr>
 <tr class="inherit_header pub_static_methods_classinviwo_1_1Singleton"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classinviwo_1_1Singleton')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classinviwo_1_1Singleton.html">inviwo::Singleton&lt; PickingManager &gt;</a></td></tr>
-<tr class="memitem:a433c86ed2a8c9a6d70f85a544e88ade5 inherit pub_static_methods_classinviwo_1_1Singleton" id="r_a433c86ed2a8c9a6d70f85a544e88ade5"><td class="memItemLeft" align="right" valign="top">
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
-<tr class="memitem:a258f12ada5b8accc5f813aebe7087501 inherit pub_static_methods_classinviwo_1_1Singleton" id="r_a258f12ada5b8accc5f813aebe7087501"><td class="memItemLeft" align="right" valign="top">
-static <a class="el" href="classinviwo_1_1PickingManager.html">PickingManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPtr</b> ()</td></tr>
 <tr class="memitem:a63e430e61d8a718cb4592799378b08cf inherit pub_static_methods_classinviwo_1_1Singleton" id="r_a63e430e61d8a718cb4592799378b08cf"><td class="memItemLeft" align="right" valign="top">
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>deleteInstance</b> ()</td></tr>
+<tr class="memitem:a258f12ada5b8accc5f813aebe7087501 inherit pub_static_methods_classinviwo_1_1Singleton" id="r_a258f12ada5b8accc5f813aebe7087501"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1PickingManager.html">PickingManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPtr</b> ()</td></tr>
+<tr class="memitem:a433c86ed2a8c9a6d70f85a544e88ade5 inherit pub_static_methods_classinviwo_1_1Singleton" id="r_a433c86ed2a8c9a6d70f85a544e88ade5"><td class="memItemLeft" align="right" valign="top">
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
 <tr class="memitem:a2db9bfbbca87b1caea8b12d7c1284284 inherit pub_static_methods_classinviwo_1_1Singleton" id="r_a2db9bfbbca87b1caea8b12d7c1284284"><td class="memItemLeft" align="right" valign="top">
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInitialized</b> ()</td></tr>
 </table><table class="memberdecls">
@@ -156,7 +156,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>VoidId
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manager for picking objects. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>pickingmanager.h</b></li>
+<li>include/inviwo/core/interaction/<b>pickingmanager.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

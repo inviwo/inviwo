@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1TFSelectionWatcher.html','','classinviw
 <p>observes a selection of primitives in a particular TF and sends signals to inform on position, alpha, and color changes  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;tfselectionwatcher.h&gt;</code></p>
+<p><code>#include &lt;modules/qtwidgets/tf/tfselectionwatcher.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::TFSelectionWatcher:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -112,19 +112,19 @@ $(function(){initNavTree('classinviwo_1_1TFSelectionWatcher.html','','classinviw
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-slots" class="groupheader"><a id="pub-slots" name="pub-slots"></a>
 Public Slots</h2></td></tr>
-<tr class="memitem:ae25b2e5ed93ed68856ed124e81c26c35" id="r_ae25b2e5ed93ed68856ed124e81c26c35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae25b2e5ed93ed68856ed124e81c26c35">setPosition</a> (double pos)</td></tr>
 <tr class="memitem:abcdff5ac0df4d6a1565c154e11dcf534" id="r_abcdff5ac0df4d6a1565c154e11dcf534"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abcdff5ac0df4d6a1565c154e11dcf534">setAlpha</a> (double alpha)</td></tr>
 <tr class="memitem:a9e9921c83b639ac93cf53adb99e22fac" id="r_a9e9921c83b639ac93cf53adb99e22fac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e9921c83b639ac93cf53adb99e22fac">setColor</a> (const QColor &amp;c)</td></tr>
+<tr class="memitem:ae25b2e5ed93ed68856ed124e81c26c35" id="r_ae25b2e5ed93ed68856ed124e81c26c35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae25b2e5ed93ed68856ed124e81c26c35">setPosition</a> (double pos)</td></tr>
 <tr class="memitem:a35a3ce1ad4cb2956c4e090e37f27b650" id="r_a35a3ce1ad4cb2956c4e090e37f27b650"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35a3ce1ad4cb2956c4e090e37f27b650">updateSelection</a> (std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; selection)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-signals" class="groupheader"><a id="signals" name="signals"></a>
 Signals</h2></td></tr>
-<tr class="memitem:a9c64685c569fbf7a85d7a216b4e11806" id="r_a9c64685c569fbf7a85d7a216b4e11806"><td class="memItemLeft" align="right" valign="top"><a id="a9c64685c569fbf7a85d7a216b4e11806" name="a9c64685c569fbf7a85d7a216b4e11806"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateWidgetPosition</b> (double pos, bool ambiguous=false)</td></tr>
 <tr class="memitem:aa4775b0e3351279aabeba6f41c7ebd8a" id="r_aa4775b0e3351279aabeba6f41c7ebd8a"><td class="memItemLeft" align="right" valign="top"><a id="aa4775b0e3351279aabeba6f41c7ebd8a" name="aa4775b0e3351279aabeba6f41c7ebd8a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateWidgetAlpha</b> (double alpha, bool ambiguous=false)</td></tr>
 <tr class="memitem:ade7be7f01e70d73adb1a38370709114d" id="r_ade7be7f01e70d73adb1a38370709114d"><td class="memItemLeft" align="right" valign="top"><a id="ade7be7f01e70d73adb1a38370709114d" name="ade7be7f01e70d73adb1a38370709114d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateWidgetColor</b> (const QColor &amp;c, bool ambiguous=false)</td></tr>
+<tr class="memitem:a9c64685c569fbf7a85d7a216b4e11806" id="r_a9c64685c569fbf7a85d7a216b4e11806"><td class="memItemLeft" align="right" valign="top"><a id="a9c64685c569fbf7a85d7a216b4e11806" name="a9c64685c569fbf7a85d7a216b4e11806"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateWidgetPosition</b> (double pos, bool ambiguous=false)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -135,14 +135,14 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Observer</b> (const Observer &amp;other)</td></tr>
 <tr class="memitem:a885fe7ea1bb40c91f35fa8a2c6d5f9dc inherit pub_methods_classinviwo_1_1Observer" id="r_a885fe7ea1bb40c91f35fa8a2c6d5f9dc"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Observer</b> (Observer &amp;&amp;other)</td></tr>
-<tr class="memitem:a1866aed7a921b73852227f5425caea17 inherit pub_methods_classinviwo_1_1Observer" id="r_a1866aed7a921b73852227f5425caea17"><td class="memItemLeft" align="right" valign="top">
-Observer &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (Observer &amp;&amp;other)</td></tr>
 <tr class="memitem:a3f424a815b415bfbf2f7000bde2325f7 inherit pub_methods_classinviwo_1_1Observer" id="r_a3f424a815b415bfbf2f7000bde2325f7"><td class="memItemLeft" align="right" valign="top">
 Observer &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const Observer &amp;other)</td></tr>
-<tr class="memitem:af03fb7de020a1084d2aa064206315a9d inherit pub_methods_classinviwo_1_1Observer" id="r_af03fb7de020a1084d2aa064206315a9d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d">~Observer</a> ()</td></tr>
+<tr class="memitem:a1866aed7a921b73852227f5425caea17 inherit pub_methods_classinviwo_1_1Observer" id="r_a1866aed7a921b73852227f5425caea17"><td class="memItemLeft" align="right" valign="top">
+Observer &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (Observer &amp;&amp;other)</td></tr>
 <tr class="memitem:a89a511d1efc3db5e2ce1fe8fd53043a4 inherit pub_methods_classinviwo_1_1Observer" id="r_a89a511d1efc3db5e2ce1fe8fd53043a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4">removeObservation</a> (ObservableInterface *observable)</td></tr>
 <tr class="memitem:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer" id="r_a73d692ac9fc055d97af7e7ce6f8f14b1"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservations</b> ()</td></tr>
+<tr class="memitem:af03fb7de020a1084d2aa064206315a9d inherit pub_methods_classinviwo_1_1Observer" id="r_af03fb7de020a1084d2aa064206315a9d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observer.html#af03fb7de020a1084d2aa064206315a9d">~Observer</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -278,7 +278,7 @@ std::unordered_set&lt; ObservableInterface * &gt;&#160;</td><td class="memItemRi
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>tfselectionwatcher.h</b></li>
+<li>modules/qtwidgets/include/modules/qtwidgets/tf/<b>tfselectionwatcher.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

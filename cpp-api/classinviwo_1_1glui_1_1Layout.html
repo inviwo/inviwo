@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1glui_1_1Layout.html','','classinviwo_1_
 <p>base class for layouting glui::Elements  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;layout.h&gt;</code></p>
+<p><code>#include &lt;modules/userinterfacegl/glui/layout/layout.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::glui::Layout:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -113,22 +113,22 @@ $(function(){initNavTree('classinviwo_1_1glui_1_1Layout.html','','classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aee11b4c827934955a1ee8515210e96ee" id="r_aee11b4c827934955a1ee8515210e96ee"><td class="memItemLeft" align="right" valign="top"><a id="aee11b4c827934955a1ee8515210e96ee" name="aee11b4c827934955a1ee8515210e96ee"></a>
-virtual ivec2&#160;</td><td class="memItemRight" valign="bottom"><b>getExtent</b> () const =0</td></tr>
-<tr class="memitem:a3f4522daf5ea98a2575d6e7417df3a1a" id="r_a3f4522daf5ea98a2575d6e7417df3a1a"><td class="memItemLeft" align="right" valign="top"><a id="a3f4522daf5ea98a2575d6e7417df3a1a" name="a3f4522daf5ea98a2575d6e7417df3a1a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setMargins</b> (int top, int left, int bottom, int right)</td></tr>
-<tr class="memitem:aba597b5896147291e10869ee7e3fa7eb" id="r_aba597b5896147291e10869ee7e3fa7eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba597b5896147291e10869ee7e3fa7eb">setMargins</a> (const ivec4 &amp;margins)</td></tr>
-<tr class="memdesc:aba597b5896147291e10869ee7e3fa7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">set layout margins. <code class="param">margins</code> correspond to margins in the order: top, left, bottom, and right.  <br /></td></tr>
-<tr class="memitem:a911c7ebbb94d6ddb1160e18819abd211" id="r_a911c7ebbb94d6ddb1160e18819abd211"><td class="memItemLeft" align="right" valign="top"><a id="a911c7ebbb94d6ddb1160e18819abd211" name="a911c7ebbb94d6ddb1160e18819abd211"></a>
-const ivec4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMargins</b> () const</td></tr>
-<tr class="memitem:a3ee31e729b24f8c1cf345f9c983f9d18" id="r_a3ee31e729b24f8c1cf345f9c983f9d18"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ee31e729b24f8c1cf345f9c983f9d18">setScalingFactor</a> (double factor)=0</td></tr>
-<tr class="memdesc:a3ee31e729b24f8c1cf345f9c983f9d18"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply the given scaling factor to all widgets  <br /></td></tr>
-<tr class="memitem:a1eb8c52e49c7a57eb0a5781fbc3ad1f7" id="r_a1eb8c52e49c7a57eb0a5781fbc3ad1f7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1eb8c52e49c7a57eb0a5781fbc3ad1f7">render</a> (const ivec2 &amp;topLeft, const size2_t &amp;canvasDim)=0</td></tr>
-<tr class="memdesc:a1eb8c52e49c7a57eb0a5781fbc3ad1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">render the layout and all its UI elements at the given position  <br /></td></tr>
 <tr class="memitem:a22a462b19dd887b494a732f508152bd4" id="r_a22a462b19dd887b494a732f508152bd4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22a462b19dd887b494a732f508152bd4">addElement</a> (<a class="el" href="classinviwo_1_1glui_1_1Element.html">Element</a> &amp;element)=0</td></tr>
 <tr class="memdesc:a22a462b19dd887b494a732f508152bd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">add a UI element to the layout at the end of the layout  <br /></td></tr>
+<tr class="memitem:aee11b4c827934955a1ee8515210e96ee" id="r_aee11b4c827934955a1ee8515210e96ee"><td class="memItemLeft" align="right" valign="top"><a id="aee11b4c827934955a1ee8515210e96ee" name="aee11b4c827934955a1ee8515210e96ee"></a>
+virtual ivec2&#160;</td><td class="memItemRight" valign="bottom"><b>getExtent</b> () const =0</td></tr>
+<tr class="memitem:a911c7ebbb94d6ddb1160e18819abd211" id="r_a911c7ebbb94d6ddb1160e18819abd211"><td class="memItemLeft" align="right" valign="top"><a id="a911c7ebbb94d6ddb1160e18819abd211" name="a911c7ebbb94d6ddb1160e18819abd211"></a>
+const ivec4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMargins</b> () const</td></tr>
 <tr class="memitem:af58aa1a0447a712864d76f692b6c381f" id="r_af58aa1a0447a712864d76f692b6c381f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af58aa1a0447a712864d76f692b6c381f">removeElement</a> (<a class="el" href="classinviwo_1_1glui_1_1Element.html">Element</a> &amp;element)=0</td></tr>
 <tr class="memdesc:af58aa1a0447a712864d76f692b6c381f"><td class="mdescLeft">&#160;</td><td class="mdescRight">remove the given UI element from the layout  <br /></td></tr>
+<tr class="memitem:a1eb8c52e49c7a57eb0a5781fbc3ad1f7" id="r_a1eb8c52e49c7a57eb0a5781fbc3ad1f7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1eb8c52e49c7a57eb0a5781fbc3ad1f7">render</a> (const ivec2 &amp;topLeft, const size2_t &amp;canvasDim)=0</td></tr>
+<tr class="memdesc:a1eb8c52e49c7a57eb0a5781fbc3ad1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">render the layout and all its UI elements at the given position  <br /></td></tr>
+<tr class="memitem:aba597b5896147291e10869ee7e3fa7eb" id="r_aba597b5896147291e10869ee7e3fa7eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba597b5896147291e10869ee7e3fa7eb">setMargins</a> (const ivec4 &amp;margins)</td></tr>
+<tr class="memdesc:aba597b5896147291e10869ee7e3fa7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">set layout margins. <code class="param">margins</code> correspond to margins in the order: top, left, bottom, and right.  <br /></td></tr>
+<tr class="memitem:a3f4522daf5ea98a2575d6e7417df3a1a" id="r_a3f4522daf5ea98a2575d6e7417df3a1a"><td class="memItemLeft" align="right" valign="top"><a id="a3f4522daf5ea98a2575d6e7417df3a1a" name="a3f4522daf5ea98a2575d6e7417df3a1a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setMargins</b> (int top, int left, int bottom, int right)</td></tr>
+<tr class="memitem:a3ee31e729b24f8c1cf345f9c983f9d18" id="r_a3ee31e729b24f8c1cf345f9c983f9d18"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ee31e729b24f8c1cf345f9c983f9d18">setScalingFactor</a> (double factor)=0</td></tr>
+<tr class="memdesc:a3ee31e729b24f8c1cf345f9c983f9d18"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply the given scaling factor to all widgets  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -314,7 +314,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>scaling_</b> = 1.0<
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>layout.h</b></li>
+<li>modules/userinterfacegl/include/modules/userinterfacegl/glui/layout/<b>layout.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
