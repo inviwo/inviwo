@@ -155,7 +155,6 @@ private:
     MessageBreakLevel breakLevel_ = MessageBreakLevel::Off;
 };
 
-
 /**
  * All log functions either take an explicit SourceContext argument,
  * or automatically extract one from the call site.
@@ -240,7 +239,7 @@ inline void exception(const Exception& e) {
 }
 template <typename... Args>
 inline void exception(const Exception& e, fmt::format_string<Args...> format, Args&&... args) {
-    ::inviwo::log::detail::report(LogLevel::Warn, e.getContext(), format,
+    ::inviwo::log::detail::report(LogLevel::Error, e.getContext(), format,
                                   fmt::make_format_args(args...));
 }
 inline void exception(const std::exception& e,
