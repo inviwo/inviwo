@@ -149,7 +149,7 @@ function(ivw_define_standard_properties)
                 list(APPEND comp_opts "/wd4459") # declaration of 'identifier' hides global declaration
             endif()
             target_link_options(${target} PRIVATE 
-                $<$<CONFIG:Debug,RelWithDebInfo>:/debug:fastlink>
+                $<$<CONFIG:Debug,RelWithDebInfo>:/debug:full>
             )
 
             option(IVW_CFG_MSVC_ADDRESS_SANITIZER "Enable Visual Studio Address Sanitizer" OFF)
