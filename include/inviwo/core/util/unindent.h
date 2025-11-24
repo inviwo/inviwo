@@ -170,7 +170,7 @@ inline std::string unindent(std::string_view str) {
  * ```
  * str will become an std::string
  */
-inline std::string operator"" _unindent(const char* str, size_t len) {
+inline std::string operator""_unindent(const char* str, size_t len) {
     const auto newlen = indent::length(str, str + len);
     std::string res(newlen, char{});
     indent::copy(str, str + len, res.begin());
