@@ -49,7 +49,13 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , defaultSwizzleMask_{defaultSwizzleMask}
     , defaultInterpolation_{interpolation}
     , defaultWrapping_{wrapping}
-    , histograms_{} {}
+    , histograms_{} {
+
+    if (glm::any(glm::equal(defaultDimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+                        defaultDimensions_};
+    }
+}
 
 Volume::Volume(const VolumeConfig& config)
     : Data<Volume, VolumeRepresentation>{}
@@ -65,7 +71,12 @@ Volume::Volume(const VolumeConfig& config)
     , defaultSwizzleMask_{config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(VolumeConfig::defaultInterpolation)}
     , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)}
-    , histograms_{} {}
+    , histograms_{} {
+    if (glm::any(glm::equal(defaultDimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+                        defaultDimensions_};
+    }
+}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
@@ -96,7 +107,13 @@ Volume::Volume(const Volume& rhs, NoData, const VolumeConfig& config)
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
     , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
-    , histograms_{} {}
+    , histograms_{} {
+
+    if (glm::any(glm::equal(defaultDimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+                        defaultDimensions_};
+    }
+}
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;

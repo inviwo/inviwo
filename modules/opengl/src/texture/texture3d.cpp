@@ -31,6 +31,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>  // for SwizzleMask
 #include <inviwo/core/util/glmvec.h>                      // for size3_t
+#include <inviwo/core/util/glmfmt.h>
 #include <modules/opengl/glformats.h>                     // for GLFormat
 #include <modules/opengl/inviwoopengl.h>                  // for GLenum, GLsizei, glPixelStorei
 #include <modules/opengl/openglcapabilities.h>            // for OpenGLCapabilities
@@ -50,14 +51,26 @@ Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
                      const SwizzleMask& swizzleMask, const std::array<GLenum, 3>& wrapping,
                      GLint level)
     : Texture(GL_TEXTURE_3D, glFormat, filtering, swizzleMask, std::span(wrapping), level)
-    , dimensions_(dimensions) {}
+    , dimensions_(dimensions) {
+
+    if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All texture dimensions has to be greater than 0, got {}",
+                        dimensions_};
+    }
+}
 
 Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, const SwizzleMask& swizzleMask,
                      const std::array<GLenum, 3>& wrapping, GLint level)
     : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, swizzleMask,
               std::span(wrapping), level)
-    , dimensions_(dimensions) {}
+    , dimensions_(dimensions) {
+
+    if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All texture dimensions has to be greater than 0, got {}",
+                        dimensions_};
+    }
+}
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
     initialize(nullptr);
