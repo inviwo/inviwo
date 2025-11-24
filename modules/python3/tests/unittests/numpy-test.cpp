@@ -68,6 +68,10 @@ std::filesystem::path getPath() {
 }
 }  // namespace
 
+}  // namespace inviwo
+
+namespace inviwo {
+
 TEST(Python3Scripts, SimpleBufferTest) {
     auto script = PythonScript::fromFile(getPath() / "simple_buffer_test.py");
 
