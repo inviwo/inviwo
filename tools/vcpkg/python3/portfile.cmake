@@ -251,7 +251,7 @@ else()
         "--with-system-expat"
         "--disable-test-modules"
     )
-    if(VCPKG_TARGET_IS_OSX)
+    if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_BSD)
         list(APPEND OPTIONS "LIBS=-liconv -lintl")
     endif()
 
