@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwopy/pylayer.h>
+#include <inviwopy/pyimagetypes.h>
 #include <inviwopy/pyglmtypes.h>
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
@@ -61,13 +61,13 @@ void exposeImageTypes(pybind11::module& m) {
              }),
              py::arg("red"), py::arg("green"), py::arg("blue"), py::arg("alpha"))
         // clang-format off
-        .def_property_readonly_static("rgb", [](py::object) { return swizzlemasks::rgb; })
-        .def_property_readonly_static("rgba", [](py::object) { return swizzlemasks::rgba; })
-        .def_property_readonly_static("rgbZeroAlpha", [](py::object) { return swizzlemasks::rgbZeroAlpha; })
-        .def_property_readonly_static("luminance", [](py::object) { return swizzlemasks::luminance; })
-        .def_property_readonly_static("luminanceAlpha", [](py::object) { return swizzlemasks::luminanceAlpha; })
-        .def_property_readonly_static("redGreen", [](py::object) { return swizzlemasks::redGreen; })
-        .def_property_readonly_static("depth", [](py::object) { return swizzlemasks::depth; })
+        .def_property_readonly_static("rgb", [](const py::object&) { return swizzlemasks::rgb; })
+        .def_property_readonly_static("rgba", [](const py::object&) { return swizzlemasks::rgba; })
+        .def_property_readonly_static("rgbZeroAlpha", [](const py::object&) { return swizzlemasks::rgbZeroAlpha; })
+        .def_property_readonly_static("luminance", [](const py::object&) { return swizzlemasks::luminance; })
+        .def_property_readonly_static("luminanceAlpha", [](const py::object&) { return swizzlemasks::luminanceAlpha; })
+        .def_property_readonly_static("redGreen", [](const py::object&) { return swizzlemasks::redGreen; })
+        .def_property_readonly_static("depth", [](const py::object&) { return swizzlemasks::depth; })
         // clang-format on
         .def_static("defaultColor",
                     [](int components) { return swizzlemasks::defaultColor(components); })

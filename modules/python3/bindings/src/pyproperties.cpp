@@ -105,16 +105,16 @@ void exposeProperties(pybind11::module& m) {
         .def(py::init<std::string>(), py::arg("semantic"))
         .def("getString", &PropertySemantics::getString)
         // clang-format off
-        .def_property_readonly_static("Default", [](py::object) { return PropertySemantics::Default; })
-        .def_property_readonly_static("Text", [](py::object) { return PropertySemantics::Text; })
-        .def_property_readonly_static("SpinBox", [](py::object) { return PropertySemantics::SpinBox; })
-        .def_property_readonly_static("Color", [](py::object) { return PropertySemantics::Color; })
-        .def_property_readonly_static("LightPosition", [](py::object) { return PropertySemantics::LightPosition; })
-        .def_property_readonly_static("TextEditor", [](py::object) { return PropertySemantics::TextEditor; })
-        .def_property_readonly_static("Multiline", [](py::object) { return PropertySemantics::Multiline; })
-        .def_property_readonly_static("ImageEditor", [](py::object) { return PropertySemantics::ImageEditor; })
-        .def_property_readonly_static("ShaderEditor", [](py::object) { return PropertySemantics::ShaderEditor; })
-        .def_property_readonly_static("PythonEditor", [](py::object) { return PropertySemantics::PythonEditor; })
+        .def_property_readonly_static("Default", [](const py::object&) { return PropertySemantics::Default; })
+        .def_property_readonly_static("Text", [](const py::object&) { return PropertySemantics::Text; })
+        .def_property_readonly_static("SpinBox", [](const py::object&) { return PropertySemantics::SpinBox; })
+        .def_property_readonly_static("Color", [](const py::object&) { return PropertySemantics::Color; })
+        .def_property_readonly_static("LightPosition", [](const py::object&) { return PropertySemantics::LightPosition; })
+        .def_property_readonly_static("TextEditor", [](const py::object&) { return PropertySemantics::TextEditor; })
+        .def_property_readonly_static("Multiline", [](const py::object&) { return PropertySemantics::Multiline; })
+        .def_property_readonly_static("ImageEditor", [](const py::object&) { return PropertySemantics::ImageEditor; })
+        .def_property_readonly_static("ShaderEditor", [](const py::object&) { return PropertySemantics::ShaderEditor; })
+        .def_property_readonly_static("PythonEditor", [](const py::object&) { return PropertySemantics::PythonEditor; })
         // clang-format on
         .def("__repr__", [](const PropertySemantics& s) {
             return fmt::format("<PropertySemantics: '{}'>", s.getString());

@@ -88,8 +88,9 @@ void exposeBnL(py::module& m) {
         .def(py::self >= py::self)
         .def(py::self <= py::self)
         .def("__str__", &BrushingTarget::getString)
-        .def_property_readonly_static("Row", [](py::object) { return BrushingTarget::Row; })
-        .def_property_readonly_static("Column", [](py::object) { return BrushingTarget::Column; });
+        .def_property_readonly_static("Row", [](const py::object&) { return BrushingTarget::Row; })
+        .def_property_readonly_static("Column",
+                                      [](const py::object&) { return BrushingTarget::Column; });
 
     py::classh<IndexList>(m, "IndexList")
         .def(py::init<>())
