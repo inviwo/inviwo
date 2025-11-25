@@ -794,7 +794,7 @@ std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     if (enableBoundingBoxCalc) {
         const auto nVertices = nInstances * numberOfVertices(meshGL);
         BufferObject feedbackBuffer{nVertices * sizeof(vec4), GLFormats::get(DataVec4Float32::id()),
-                                    GL_STATIC_READ, GL_TRANSFORM_FEEDBACK_BUFFER};
+                                    GL_STATIC_COPY, GL_TRANSFORM_FEEDBACK_BUFFER};
         size_t byteOffset = 0;
         forEach(meshGL, shader_, vecPorts_, nInstances,
                 [&](size_t size, Mesh::MeshInfo mi, const auto& draw) {
