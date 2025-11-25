@@ -327,15 +327,7 @@ vec3 CameraProperty::getLookToMinValue() const { return lookTo_.getMinValue(); }
 
 vec3 CameraProperty::getLookToMaxValue() const { return lookTo_.getMaxValue(); }
 
-void CameraProperty::zoom(const ZoomOptions& opts) {
-    if (getBoundingBox_ && !opts.boundingBox) {
-        ZoomOptions updatedOpts{opts};
-        updatedOpts.boundingBox = getBoundingBox_();
-        camera_->zoom(updatedOpts);
-    } else {
-        camera_->zoom(opts);
-    }
-}
+void CameraProperty::zoom(const ZoomOptions& opts) { camera_->zoom(opts); }
 
 // XYZ between -1 -> 1
 vec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
