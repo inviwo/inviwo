@@ -61,21 +61,21 @@ IVW_CORE_API Document unindentMd2doc(std::string_view markdown);
 /**
  * Parse a markdown string and convert to an inviwo document.
  */
-inline Document operator"" _md(const char* str, size_t len) {
+inline Document operator""_md(const char* str, size_t len) {
     return util::md2doc(std::string_view(str, len));
 }
 
 /**
  * Parse a markdown string and convert to an inviwo document.
  */
-inline Document operator"" _help(const char* str, size_t len) {
+inline Document operator""_help(const char* str, size_t len) {
     return util::md2doc(std::string_view(str, len));
 }
 
 /**
  * Unindent and parse a markdown string and convert to an inviwo document.
  */
-inline Document operator"" _unindentHelp(const char* str, size_t len) {
+inline Document operator""_unindentHelp(const char* str, size_t len) {
     return util::unindentMd2doc(std::string_view(str, len));
 }
 
