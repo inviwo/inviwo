@@ -51,8 +51,6 @@
 
 #include <inviwo/core/util/defaultvalues.h>
 
-
-
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -92,6 +90,10 @@ col = ivwdataframe.{0}Column('{0}Col')
 };
 
 }  // namespace
+
+}  // namespace inviwo
+
+namespace inviwo {
 
 TEST(ColumnTests, Create) {
     const pybind11::gil_scoped_acquire guard{};

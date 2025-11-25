@@ -87,6 +87,10 @@ d.add{0}Column('{0}Col')
 
 }  // namespace
 
+}  // namespace inviwo
+
+namespace inviwo {
+
 TEST(DataFrameTests, Create) {
     const pybind11::gil_scoped_acquire guard{};
 

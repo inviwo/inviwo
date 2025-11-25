@@ -58,7 +58,7 @@ namespace inviwo {
 void exposeVolume(pybind11::module& m) {
     namespace py = pybind11;
 
-    py::classh<Volume>(m, "Volume")
+    py::classh<Volume, StructuredGridEntity<3>>(m, "Volume", py::multiple_inheritance{})
         .def(py::init<std::shared_ptr<VolumeRepresentation>>())
         .def(py::init<size3_t, const DataFormatBase*, const SwizzleMask&, InterpolationType,
                       const Wrapping3D&>(),
@@ -67,13 +67,8 @@ void exposeVolume(pybind11::module& m) {
              py::arg("wrapping") = wrapping3d::clampAll)
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
         .def("clone", [](Volume& self) { return self.clone(); })
-        .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
-        .def_property("worldMatrix", &Volume::getWorldMatrix, &Volume::setWorldMatrix)
-        .def_property("basis", &Volume::getBasis, &Volume::setBasis)
-        .def_property("offset", &Volume::getOffset, &Volume::setOffset)
         .def("copyMetaDataFrom", [](Volume& self, Volume& other) { self.copyMetaDataFrom(other); })
         .def("copyMetaDataTo", [](Volume& self, Volume& other) { self.copyMetaDataTo(other); })
-        .def_property_readonly("dimensions", &Volume::getDimensions)
         .def_property("swizzlemask", &Volume::getSwizzleMask, &Volume::setSwizzleMask)
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)

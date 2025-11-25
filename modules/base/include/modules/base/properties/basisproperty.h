@@ -76,6 +76,10 @@ public:
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
+    BasisProperty(std::string_view identifier, std::string_view displayName, Document help,
+                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                  PropertySemantics semantics = PropertySemantics::Default);
+
     void onResetOverride();
 
     BasisProperty(const BasisProperty& rhs);
