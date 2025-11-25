@@ -148,7 +148,7 @@ function(ivw_define_standard_properties)
                 # Qt adds uint ushort to the global namespace which creatas many of these warnings.
                 list(APPEND comp_opts "/wd4459") # declaration of 'identifier' hides global declaration
             endif()
-            target_link_options(${target} PRIVATE 
+            target_link_options(${target} PRIVATE
                 $<$<CONFIG:Debug,RelWithDebInfo>:/debug:full>
             )
 
@@ -156,6 +156,13 @@ function(ivw_define_standard_properties)
             if(IVW_CFG_MSVC_ADDRESS_SANITIZER)
                 list(APPEND comp_opts "/fsanitize=address")
             endif()
+
+            set_target_properties(${target}
+                PROPERTIES
+                    VS_GLOBAL_EnableClangTidyCodeAnalysis "true"
+                    VS_GLOBAL_ClangTidyExtraArgs "--config-file=${IVW_ROOT_DIR}/.clang-tidy"
+            )
+
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
