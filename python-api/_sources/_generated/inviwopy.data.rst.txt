@@ -136,7 +136,11 @@ inviwopy.data
       PerspectiveCamera
       PosTexColorMesh
       SkewedPerspectiveCamera
+      SpatialEntity
+      SpatialIdentity
       SphereMesh
+      StructuredGridEntity2D
+      StructuredGridEntity3D
       SwizzleMask
       TFPrimitive
       TFPrimitiveData

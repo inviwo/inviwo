@@ -85,6 +85,7 @@ inviwopy.properties
       OptionPropertyFloat
       OptionPropertyInt
       OptionPropertyString
+      OverwriteState
       Property
       PropertyEditorWidget
       PropertyFactory
