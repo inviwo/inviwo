@@ -132,56 +132,47 @@ float widthToViewDist(float width, float fov, float aspect) {
 
 namespace {
 
-constexpr bool overlap(vec2 r1, vec2 r2) { return !(r1.y < r2.x || r2.y < r1.x); };
+constexpr bool overlap(vec2 r1, vec2 r2) { return r1.y >= r2.x && r2.y >= r1.x; };
+
+constexpr std::array<vec3, 8> corners{
+    {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
+
+constexpr std::array<std::pair<int, int>, 12> edges{{{0, 1},
+                                                     {1, 2},
+                                                     {2, 3},
+                                                     {3, 1},
+                                                     {4, 5},
+                                                     {5, 6},
+                                                     {6, 7},
+                                                     {7, 4},
+                                                     {0, 4},
+                                                     {1, 5},
+                                                     {2, 6},
+                                                     {3, 7}}};
 
 }  // namespace
 
-FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::vec3& lookFrom,
-                             const glm::vec3& lookTo, const glm::vec3& lookUp, float nearPlane,
-                             float farPlane) {
-
-    // Generate the 8 corners
-    std::array<glm::vec3, 8> corners;
-    int idx = 0;
-    for (int sx = 0; sx <= 1; ++sx) {
-        for (int sy = 0; sy <= 1; ++sy) {
-            for (int sz = 0; sz <= 1; ++sz) {
-                corners[idx++] = vec3{boundingBox * vec4{sx, sy, sz, 1}};
-            }
-        }
-    }
+FovBounds calculateFovBounds(const mat4& boundingBox, const vec3& lookFrom, const vec3& lookTo,
+                             const vec3& lookUp, float nearPlane, float farPlane) {
 
     // Camera basis
-    glm::vec3 forward = glm::normalize(lookTo - lookFrom);
-    glm::vec3 right = glm::normalize(glm::cross(forward, lookUp));
-    glm::vec3 up = glm::cross(right, forward);
+    const vec3 forward = glm::normalize(lookTo - lookFrom);
+    const vec3 right = glm::normalize(glm::cross(forward, lookUp));
+    const vec3 up = glm::cross(right, forward);
 
-    std::array<glm::vec3, 8> camPts;
-    for (int i = 0; i < 8; i++) {
-        const auto v = corners[i] - lookFrom;
-        camPts[i] = {glm::dot(v, right), glm::dot(v, up), glm::dot(v, forward)};
-    }
-
-    // Define the 12 edges of a box
-    static constexpr std::array<std::pair<int, int>, 12> edges = {{{0, 1},
-                                                                   {1, 3},
-                                                                   {3, 2},
-                                                                   {2, 0},
-                                                                   {4, 5},
-                                                                   {5, 7},
-                                                                   {7, 6},
-                                                                   {6, 4},
-                                                                   {0, 4},
-                                                                   {1, 5},
-                                                                   {2, 6},
-                                                                   {3, 7}}};
+    std::array<vec3, 8> camPts{};
+    std::ranges::transform(corners, camPts.begin(), [&](const vec3& unitCorner) {
+        const auto corner = vec3{boundingBox * vec4{unitCorner, 1.0}};
+        const auto v = corner - lookFrom;
+        return vec3{glm::dot(v, right), glm::dot(v, up), glm::dot(v, forward)};
+    });
 
     std::array<vec3, camPts.size() + 2 * edges.size()> finalPts{};
     size_t finalPtsCount = 0;
     bool nearPlaneClipped = false;
-    bool farPlaneClipped = true;
+    bool farPlaneClipped = false;
     // Keep points in front of nearPlane
-    for (auto& p : camPts) {
+    for (const auto& p : camPts) {
         if (p.z >= nearPlane && p.z <= farPlane) {
             finalPts[finalPtsCount++] = p;
         } else if (p.z < nearPlane) {
@@ -203,25 +194,22 @@ FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::vec3& look
         if (std::fabs(dz) < 1e-8f) continue;
 
         if (a.z < nearPlane || b.z < nearPlane) {
-            float t = (nearPlane - a.z) / dz;
-            if (t >= 0.f && t <= 1.f) {
-                const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
-                finalPts[finalPtsCount++] = ip;
-            }
+            const float t = (nearPlane - a.z) / dz;
+            const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
+            finalPts[finalPtsCount++] = ip;
         }
         if (a.z > farPlane || b.z > farPlane) {
-            float t = (farPlane - a.z) / dz;
-            if (t >= 0.f && t <= 1.f) {
-                const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
-                finalPts[finalPtsCount++] = ip;
-            }
+            const float t = (farPlane - a.z) / dz;
+            const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
+            finalPts[finalPtsCount++] = ip;
         }
     }
 
-    if (finalPtsCount == 0)
+    if (finalPtsCount == 0) {
         return {.bounds = std::nullopt,
                 .nearPlaneClipped = nearPlaneClipped,
                 .farPlaneClipped = farPlaneClipped};
+    }
 
     const std::span<vec3> pts{finalPts.data(), finalPtsCount};
 

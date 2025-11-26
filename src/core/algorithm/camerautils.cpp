@@ -45,44 +45,43 @@ namespace {
 vec3 getViewDir(Side side) {
     switch (side) {
         case Side::XNegative:
-            return vec3(1, 0, 0);
+            return {1, 0, 0};
         case Side::XPositive:
-            return vec3(-1, 0, 0);
+            return {-1, 0, 0};
         case Side::YNegative:
-            return vec3(0, 1, 0);
+            return {0, 1, 0};
         case Side::YPositive:
-            return vec3(0, -1, 0);
+            return {0, -1, 0};
         case Side::ZNegative:
-            return vec3(0, 0, 1);
+            return {0, 0, 1};
         case Side::ZPositive:
-            return vec3(0, 0, -1);
+            return {0, 0, -1};
         default:
-            return vec3(0, 0, -1);
+            return {0, 0, -1};
     }
 }
 
 vec3 getLookUp(Side side) {
     switch (side) {
         case Side::XNegative:
-            return vec3(0, 1, 0);
+            return {0, 1, 0};
         case Side::XPositive:
-            return vec3(0, 1, 0);
+            return {0, 1, 0};
         case Side::YNegative:
-            return vec3(0, 0, 1);
+            return {0, 0, 1};
         case Side::YPositive:
-            return vec3(0, 0, 1);
+            return {0, 0, 1};
         case Side::ZNegative:
-            return vec3(0, 1, 0);
+            return {0, 1, 0};
         case Side::ZPositive:
-            return vec3(0, 1, 0);
+            return {0, 1, 0};
         default:
-            return vec3(0, 1, 0);
+            return {0, 1, 0};
     }
 }
 
-static constexpr std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
-                                                vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
-                                                vec3{1, 1, 1}, vec3{0, 1, 1}};
+constexpr std::array<vec3, 8> corners{
+    {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
 
 std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundingBox,
                                                              vec3 inViewDir, vec3 inLookUp) {
@@ -95,21 +94,19 @@ std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundin
     const glm::vec3 right = glm::normalize(glm::cross(forward, inLookUp));
     const glm::vec3 up = glm::cross(right, forward);
 
-    const auto cb = mat3{right, up, forward};
+    const auto cb = glm::transpose(mat3{right, up, forward});
 
     const auto viewPoints = corners | std::views::transform([&](const vec3 corner) {
                                 const auto point = vec3(boundingBox * vec4(corner, 1.f));
-                                const auto camPoint = cb * point;
-                                return vec2{camPoint};
+                                const auto camPoint = mat4{cb} * vec4{point, 1.f};
+                                return vec3{camPoint};
                             });
 
-    const auto xmax = std::ranges::max(
-        viewPoints | std::views::transform([](const vec2& p) { return std::abs(p.x); }));
+    const auto max = std::ranges::fold_left(
+        viewPoints, vec3{0},
+        [](const vec3& a, const vec3& b) { return glm::max(glm::abs(a), glm::abs(b)); });
 
-    const auto ymax = std::ranges::max(
-        viewPoints | std::views::transform([](const vec2& p) { return std::abs(p.y); }));
-
-    return {lookTo + forward * 10, lookTo, up, vec2{xmax, ymax}};
+    return {lookTo + forward * max.z * 5.0f, lookTo, up, vec2{max}};
 }
 
 template <typename CamType>
@@ -163,12 +160,12 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
     if (updateLookRanges == UpdateLookRanges::Yes) {
         setCameraLookRanges(cam, fixedBBox, maxZoomFactor);
     }
-    if (auto perspectiveCamera = dynamic_cast<PerspectiveCamera*>(&cam.get())) {
+    if (auto* perspectiveCamera = dynamic_cast<PerspectiveCamera*>(&cam.get())) {
 
         auto [lookFrom, lookTo, lookUp] =
             fitPerspectiveCameraView(*perspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
         cam.setLook(lookFrom, lookTo, lookUp);
-    } else if (auto orthographicCamera = dynamic_cast<OrthographicCamera*>(&cam.get())) {
+    } else if (auto* orthographicCamera = dynamic_cast<OrthographicCamera*>(&cam.get())) {
         auto [lookFrom, lookTo, lookUp, range] =
             fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp);
 
@@ -179,12 +176,12 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
         } else {
             orthographicCamera->setWidth(range.x * 2 * fitRatio);
         }
-    } else if (auto plotCamera = dynamic_cast<PlotCamera*>(&cam.get())) {
+    } else if (auto* plotCamera = dynamic_cast<PlotCamera*>(&cam.get())) {
         auto [lookFrom, lookTo, lookUp, range] =
             fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp);
         plotCamera->setLook(lookFrom, lookTo, lookUp);
         plotCamera->setSize(2 * range * fitRatio);
-    } else if (auto skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
+    } else if (auto* skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
 
         auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(
             *skewedPerspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
@@ -214,11 +211,11 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side, floa
 void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox, float zoomRange) {
     const NetworkLock lock(&cam);
 
-    vec3 lookTo(boundingBox * vec4(vec3(.5f), 1.f));
+    const vec3 lookTo(boundingBox * vec4(vec3(.5f), 1.f));
 
-    vec3 dx(boundingBox[0]);
-    vec3 dy(boundingBox[1]);
-    vec3 dz(boundingBox[2]);
+    const vec3 dx(boundingBox[0]);
+    const vec3 dy(boundingBox[1]);
+    const vec3 dz(boundingBox[2]);
 
     auto p0 = lookTo + (dx + dy + dz) * zoomRange;
     auto p1 = lookTo - (dx + dy + dz) * zoomRange;
@@ -232,18 +229,18 @@ void setCameraLookRanges(CameraProperty& cam, const mat4& boundingBox, float zoo
 
 std::pair<float, float> computeCameraNearFar(const mat4& boundingBox, float zoomRange,
                                              float farNearRatio) {
-    vec3 bx(boundingBox[0]);
-    vec3 by(boundingBox[1]);
-    vec3 bz(boundingBox[2]);
+    const vec3 bx(boundingBox[0]);
+    const vec3 by(boundingBox[1]);
+    const vec3 bz(boundingBox[2]);
 
-    float dx = glm::length(bx);
-    float dy = glm::length(by);
-    float dz = glm::length(bz);
+    const float dx = glm::length(bx);
+    const float dy = glm::length(by);
+    const float dz = glm::length(bz);
 
-    auto d = std::max({dx, dy, dz});
+    const auto d = std::max({dx, dy, dz});
 
-    auto newFar = d * (zoomRange + 1);
-    auto newNear = newFar / farNearRatio;
+    const auto newFar = d * (zoomRange + 1);
+    const auto newNear = newFar / farNearRatio;
     return {newNear, newFar};
 }
 
