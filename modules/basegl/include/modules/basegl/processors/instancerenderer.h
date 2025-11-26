@@ -124,7 +124,7 @@ private:
 
     CameraProperty camera_;
     CameraTrackball trackball_;
-    SimpleLightingProperty lightingProperty_;
+    SimpleLightingProperty light_;
 
     StringProperty setupVert_;
     StringProperty commonCode_;
@@ -133,5 +133,7 @@ private:
     std::shared_ptr<StringShaderResource> vert_;
     std::shared_ptr<StringShaderResource> frag_;
     Shader shader_;
+
+    std::optional<mat4> boundingBox_;
 };
 }  // namespace inviwo

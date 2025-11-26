@@ -130,4 +130,144 @@ float widthToViewDist(float width, float fov, float aspect) {
     return width / (2.0f * aspect * std::tan(0.5f * glm::radians(fov)));
 }
 
+namespace {
+
+constexpr bool overlap(vec2 r1, vec2 r2) { return !(r1.y < r2.x || r2.y < r1.x); };
+
+}  // namespace
+
+FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::vec3& lookFrom,
+                             const glm::vec3& lookTo, const glm::vec3& lookUp, float nearPlane,
+                             float farPlane) {
+
+    // Generate the 8 corners
+    std::array<glm::vec3, 8> corners;
+    int idx = 0;
+    for (int sx = 0; sx <= 1; ++sx) {
+        for (int sy = 0; sy <= 1; ++sy) {
+            for (int sz = 0; sz <= 1; ++sz) {
+                corners[idx++] = vec3{boundingBox * vec4{sx, sy, sz, 1}};
+            }
+        }
+    }
+
+    // Camera basis
+    glm::vec3 forward = glm::normalize(lookTo - lookFrom);
+    glm::vec3 right = glm::normalize(glm::cross(forward, lookUp));
+    glm::vec3 up = glm::cross(right, forward);
+
+    std::array<glm::vec3, 8> camPts;
+    for (int i = 0; i < 8; i++) {
+        const auto v = corners[i] - lookFrom;
+        camPts[i] = {glm::dot(v, right), glm::dot(v, up), glm::dot(v, forward)};
+    }
+
+    // Define the 12 edges of a box
+    static constexpr std::array<std::pair<int, int>, 12> edges = {{{0, 1},
+                                                                   {1, 3},
+                                                                   {3, 2},
+                                                                   {2, 0},
+                                                                   {4, 5},
+                                                                   {5, 7},
+                                                                   {7, 6},
+                                                                   {6, 4},
+                                                                   {0, 4},
+                                                                   {1, 5},
+                                                                   {2, 6},
+                                                                   {3, 7}}};
+
+    std::array<vec3, camPts.size() + 2 * edges.size()> finalPts{};
+    size_t finalPtsCount = 0;
+    bool nearPlaneClipped = false;
+    bool farPlaneClipped = true;
+    // Keep points in front of nearPlane
+    for (auto& p : camPts) {
+        if (p.z >= nearPlane && p.z <= farPlane) {
+            finalPts[finalPtsCount++] = p;
+        } else if (p.z < nearPlane) {
+            nearPlaneClipped = true;
+        } else {
+            farPlaneClipped = true;
+        }
+    }
+
+    // Clip edges against near and far plane
+    for (auto& e : edges) {
+        const vec3 a = camPts[e.first];
+        const vec3 b = camPts[e.second];
+
+        if (a.z < nearPlane && b.z < nearPlane) continue;
+        if (a.z > farPlane && b.z > farPlane) continue;
+
+        const float dz = b.z - a.z;
+        if (std::fabs(dz) < 1e-8f) continue;
+
+        if (a.z < nearPlane || b.z < nearPlane) {
+            float t = (nearPlane - a.z) / dz;
+            if (t >= 0.f && t <= 1.f) {
+                const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
+                finalPts[finalPtsCount++] = ip;
+            }
+        }
+        if (a.z > farPlane || b.z > farPlane) {
+            float t = (farPlane - a.z) / dz;
+            if (t >= 0.f && t <= 1.f) {
+                const vec3 ip = {glm::mix(vec2{a}, vec2{b}, t), nearPlane};
+                finalPts[finalPtsCount++] = ip;
+            }
+        }
+    }
+
+    if (finalPtsCount == 0)
+        return {.bounds = std::nullopt,
+                .nearPlaneClipped = nearPlaneClipped,
+                .farPlaneClipped = farPlaneClipped};
+
+    const std::span<vec3> pts{finalPts.data(), finalPtsCount};
+
+    const auto [xmin, xmax] = std::ranges::minmax(
+        pts | std::views::transform([](const vec3& p) { return std::atan2(p.x, p.z); }));
+
+    const auto [ymin, ymax] = std::ranges::minmax(
+        pts | std::views::transform([](const vec3& p) { return std::atan2(p.y, p.z); }));
+
+    return {.bounds = std::pair{vec2{xmin, xmax}, vec2{ymin, ymax}},
+            .nearPlaneClipped = nearPlaneClipped,
+            .farPlaneClipped = farPlaneClipped};
+}
+
+bool zoomBounded(const FovBounds& fovBounds, float fovyDegrees, float aspect, float factor) {
+
+    if (!fovBounds.bounds) {  // we have zoomed in to far
+        if (fovBounds.nearPlaneClipped) {
+            return factor < 0.0f;
+        } else {
+            return factor > 0.0f;
+        }
+    }
+
+    const auto [fovxBounds, fovyBounds] = fovBounds.bounds.value();
+    const auto fovy = glm::radians(fovyDegrees);
+    const auto fovx = 2 * std::atan(std::tan(fovy / 2.0f) * aspect);
+
+    if (!overlap(fovxBounds, vec2{-fovx / 2.0, fovx / 2.0}) ||
+        !overlap(fovyBounds, vec2{-fovy / 2.0, fovy / 2.0})) {
+        // Bounding box is outside of the field of view
+        return factor < 0.0f;
+    }
+
+    const auto fractFovy = (fovyBounds.y - fovyBounds.x) / fovy;
+    const auto fractFovx = (fovxBounds.y - fovxBounds.x) / fovx;
+
+    if (fractFovx < 0.05 || fractFovy < 0.05) {
+        if (fovBounds.nearPlaneClipped) {
+            return factor < 0.0f;
+        } else {
+            // we don't want to zoom out any further
+            return factor > 0.0f;
+        }
+    }
+    return true;
+}
+
 }  // namespace inviwo::util

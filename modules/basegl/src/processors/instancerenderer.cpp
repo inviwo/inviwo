@@ -297,11 +297,13 @@ InstanceRenderer::InstanceRenderer()
     , camera_("camera", "Camera",
               [this]() -> std::optional<mat4> {
                   if (!isReady()) return std::nullopt;
+                  if (boundingBox_) return boundingBox_;
                   rendercontext::activateDefault();
-                  return render(true);
+                  boundingBox_ = render(true);
+                  return boundingBox_;
               })
     , trackball_(&camera_)
-    , lightingProperty_("lighting", "Lighting", &camera_)
+    , light_("lighting", "Lighting", &camera_)
 
     , setupVert_{"setupVert",
                  "Setup Vertex Shader",
@@ -353,7 +355,7 @@ InstanceRenderer::InstanceRenderer()
     for (auto& transform : transforms_) {
         addProperty(transform);
     }
-    addProperties(camera_, lightingProperty_, trackball_);
+    addProperties(camera_, light_, trackball_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     uniforms_.PropertyOwnerObservable::addObserver(this);
@@ -638,7 +640,7 @@ void InstanceRenderer::onDidRemovePort(Property* /*property*/, size_t index) {
 }
 
 void InstanceRenderer::initializeResources() {
-    utilgl::addShaderDefines(shader_, lightingProperty_);
+    utilgl::addShaderDefines(shader_, light_);
 
     auto* vso = shader_.getVertexShaderObject();
     vso->clearSegments();
@@ -763,7 +765,18 @@ mat4 calculateBoundingBox(std::span<const vec4> data) {
 
 }  // namespace
 
-void InstanceRenderer::process() { render(false); }
+void InstanceRenderer::process() {
+    if (std::ranges::any_of(getInports(), [](Inport* port) { return port->isChanged(); })) {
+        boundingBox_.reset();
+    }
+    if (std::ranges::any_of(getProperties(), [this](Property* prop) {
+            return prop != &camera_ && prop != &light_ && prop != &trackball_ && prop->isModified();
+        })) {
+        boundingBox_.reset();
+    }
+
+    render(false);
+}
 
 std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
@@ -778,7 +791,7 @@ std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::Activate activate{&shader_};
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::setUniforms(shader_, camera_, lightingProperty_);
+    utilgl::setUniforms(shader_, camera_, light_);
     utilgl::setShaderUniforms(shader_, mesh, "geometry");
     utilgl::Enable<MeshGL> enable{&meshGL};
 
