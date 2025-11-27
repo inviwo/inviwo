@@ -86,7 +86,8 @@ constexpr std::array<vec3, 8> corners{
     {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
 
 std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundingBox,
-                                                             vec3 inViewDir, vec3 inLookUp) {
+                                                             vec3 inViewDir, vec3 inLookUp,
+                                                             vec2 nearFar) {
 
     const auto unitCenter = vec3{.5f};
     const auto lookTo = vec3(boundingBox * vec4(unitCenter, 1.f));
@@ -104,10 +105,16 @@ std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundin
                             });
 
     const auto max = std::ranges::fold_left(viewPoints, vec3{0}, [](const vec3& a, const vec3& b) {
-        return glm::max(glm::abs(a), glm::abs(b));
+        return glm::max(a, b);
     });
+    const auto min = std::ranges::fold_left(viewPoints, vec3{0}, [](const vec3& a, const vec3& b) {
+        return glm::min(a, b);
+    });
+    const auto size = max - min;
 
-    return {lookTo - forward * max.z * 5.0f, lookTo, up, vec2{max}};
+    const auto dist = std::clamp(size.z * 5.0f, nearFar.x * 5.0f, nearFar.y * 0.5f);
+
+    return {lookTo - forward * dist, lookTo, up, vec2{size}};
 }
 
 template <typename CamType>
@@ -164,22 +171,24 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
         auto [lookFrom, lookTo, lookUp] =
             fitPerspectiveCameraView(*perspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
         cam.setLook(lookFrom, lookTo, lookUp);
-    } else if (auto* orthographicCamera = dynamic_cast<OrthographicCamera*>(&cam.get())) {
-        auto [lookFrom, lookTo, lookUp, range] =
-            fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp);
+    } else if (auto* orthoCamera = dynamic_cast<OrthographicCamera*>(&cam.get())) {
+        const auto nearFar = vec2{orthoCamera->getNearPlaneDist(), orthoCamera->getFarPlaneDist()};
+        auto [lookFrom, lookTo, lookUp, size] =
+            fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp, nearFar);
 
-        orthographicCamera->setLook(lookFrom, lookTo, lookUp);
-        const auto aspect = orthographicCamera->getAspectRatio();
-        if (range.y * aspect > range.x) {
-            orthographicCamera->setWidth(range.y * aspect * 2 * fitRatio);
+        orthoCamera->setLook(lookFrom, lookTo, lookUp);
+        const auto aspect = orthoCamera->getAspectRatio();
+        if (size.y * aspect > size.x) {
+            orthoCamera->setWidth(size.y * aspect * fitRatio);
         } else {
-            orthographicCamera->setWidth(range.x * 2 * fitRatio);
+            orthoCamera->setWidth(size.x * fitRatio);
         }
     } else if (auto* plotCamera = dynamic_cast<PlotCamera*>(&cam.get())) {
-        auto [lookFrom, lookTo, lookUp, range] =
-            fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp);
+        const auto nearFar = vec2{plotCamera->getNearPlaneDist(), plotCamera->getFarPlaneDist()};
+        auto [lookFrom, lookTo, lookUp, size] =
+            fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp, nearFar);
         plotCamera->setLook(lookFrom, lookTo, lookUp);
-        plotCamera->setSize(2 * range * fitRatio);
+        plotCamera->setSize(size * fitRatio);
     } else if (auto* skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
 
         auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(
