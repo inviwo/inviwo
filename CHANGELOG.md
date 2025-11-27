@@ -9,10 +9,7 @@ Similarly, `mapFromValueToGLOutput()` (`utils/conversion.glsl`) was added to con
 The Processor `ProgressBar` and `ActivityIndicator` and related `Owner` and `Observer` classes have been removed. The new `Processor::notifyObserversProgressChanged` and `ProcessorObserver::onProcessorProgressChanged` functions replaces them. Most processor using background work, should use the `PoolProcessor`, and are not affected by this change. 
 
 ## 2025-10-24 `LayerCreator` and `VolumeSliceToLayer` processors
-Added a `Layer Creator` processor for creating various 2D Layers similar to `Volume Creator`. The `Volume Slice To Layer` processor extracts an axis-aligned slice from a Volume and places the resulting layer into the same spatial location in contrast to `VolumeSliceExtractor` and `VolumeSliceGL` which output an Image. 
-
-## 2023-01-26 `MeshAxis` and `LayerAxis` processors
-Added a `Mesh Axis` processor for adding 3D axes to a mesh and `Layer Axis` for 2D axes next to a layer. These processor share most of their functionality with the `Volume Axis` processor. The axes are either based on the basis and offset (corresponding to the model matrix) or the combination of model and world matrix.
+Added a `Layer Creator` processor for creating various 2D Layers similar to `Volume Creator`. The `Volume Slice To Layer` processor extracts an axis-aligned slice from a Volume and places the resulting layer into the same spatial location in contrast to `VolumeSliceExtractor` and `VolumeSliceGL` which output an Image.
 
 ## 2025-09-23 Updated Inviwo Python bindings
 The explicit `Vector` types for both scalar and glm vectors were moved from `inviwopy` to the `inviwopy.glm` module. 
