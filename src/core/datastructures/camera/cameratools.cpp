@@ -183,7 +183,7 @@ FovBounds calculateFovBounds(const mat4& boundingBox, const vec3& lookFrom, cons
     }
 
     // Clip edges against near and far plane
-    for (auto& e : edges) {
+    for (const auto& e : edges) {
         const vec3 a = camPts[e.first];
         const vec3 b = camPts[e.second];
 
@@ -211,7 +211,7 @@ FovBounds calculateFovBounds(const mat4& boundingBox, const vec3& lookFrom, cons
                 .farPlaneClipped = farPlaneClipped};
     }
 
-    const std::span<vec3> pts{finalPts.data(), finalPtsCount};
+    const std::span<const vec3> pts{finalPts.data(), finalPtsCount};
 
     const auto [xmin, xmax] = std::ranges::minmax(
         pts | std::views::transform([](const vec3& p) { return std::atan2(p.x, p.z); }));
@@ -224,35 +224,33 @@ FovBounds calculateFovBounds(const mat4& boundingBox, const vec3& lookFrom, cons
             .farPlaneClipped = farPlaneClipped};
 }
 
-bool zoomBounded(const FovBounds& fovBounds, float fovyDegrees, float aspect, float factor) {
+bool canZoomBounded(const FovBounds& fovBounds, vec2 fov, float zoomFactor) {
 
     if (!fovBounds.bounds) {  // we have zoomed in to far
         if (fovBounds.nearPlaneClipped) {
-            return factor < 0.0f;
+            return zoomFactor < 0.0f;
         } else {
-            return factor > 0.0f;
+            return zoomFactor > 0.0f;
         }
     }
 
     const auto [fovxBounds, fovyBounds] = fovBounds.bounds.value();
-    const auto fovy = glm::radians(fovyDegrees);
-    const auto fovx = 2 * std::atan(std::tan(fovy / 2.0f) * aspect);
 
-    if (!overlap(fovxBounds, vec2{-fovx / 2.0, fovx / 2.0}) ||
-        !overlap(fovyBounds, vec2{-fovy / 2.0, fovy / 2.0})) {
+    if (!overlap(fovxBounds, vec2{-fov.x / 2.0, fov.x / 2.0}) ||
+        !overlap(fovyBounds, vec2{-fov.y / 2.0, fov.y / 2.0})) {
         // Bounding box is outside of the field of view
-        return factor < 0.0f;
+        return zoomFactor < 0.0f;
     }
 
-    const auto fractFovy = (fovyBounds.y - fovyBounds.x) / fovy;
-    const auto fractFovx = (fovxBounds.y - fovxBounds.x) / fovx;
+    const auto fractFovx = (fovxBounds.y - fovxBounds.x) / fov.x;
+    const auto fractFovy = (fovyBounds.y - fovyBounds.x) / fov.y;
 
     if (fractFovx < 0.05 || fractFovy < 0.05) {
         if (fovBounds.nearPlaneClipped) {
-            return factor < 0.0f;
+            return zoomFactor < 0.0f;
         } else {
             // we don't want to zoom out any further
-            return factor > 0.0f;
+            return zoomFactor > 0.0f;
         }
     }
     return true;

@@ -132,7 +132,7 @@ IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const gl
                                           const glm::vec3& lookTo, const glm::vec3& lookUp,
                                           float nearPlane, float farPlane);
 
-IVW_CORE_API bool zoomBounded(const FovBounds& bounds, float fovy, float aspect, float factor);
+IVW_CORE_API bool canZoomBounded(const FovBounds& bounds, vec2 fov, float zoomFactor);
 
 template <typename CamType>
 void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
@@ -163,7 +163,9 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
                          calculateFovBounds(bb, newFrom, cam.getLookTo(), cam.getLookUp(),
                                             cam.getNearPlaneDist(), cam.getFarPlaneDist());
 
-                     return zoomBounded(bounds, cam.getFovy(), cam.getAspectRatio(), opts.factor.y);
+                     const auto fovy = glm::radians(cam.getFovy());
+                     const auto fovx = 2 * std::atan(std::tan(fovy / 2.0f) * cam.getAspectRatio());
+                     return canZoomBounded(bounds, vec2{fovx, fovy}, opts.factor.y);
                  })
                  .value_or(true)) {
             return;

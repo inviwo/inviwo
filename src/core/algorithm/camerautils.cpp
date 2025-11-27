@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -64,17 +65,19 @@ vec3 getViewDir(Side side) {
 vec3 getLookUp(Side side) {
     switch (side) {
         case Side::XNegative:
-            return {0, 1, 0};
+            [[fallthrough]];
         case Side::XPositive:
             return {0, 1, 0};
+
         case Side::YNegative:
-            return {0, 0, 1};
+            [[fallthrough]];
         case Side::YPositive:
             return {0, 0, 1};
+
         case Side::ZNegative:
-            return {0, 1, 0};
+            [[fallthrough]];
         case Side::ZPositive:
-            return {0, 1, 0};
+            [[fallthrough]];
         default:
             return {0, 1, 0};
     }
@@ -102,9 +105,9 @@ std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundin
                                 return vec3{camPoint};
                             });
 
-    const auto max = std::ranges::fold_left(
-        viewPoints, vec3{0},
-        [](const vec3& a, const vec3& b) { return glm::max(glm::abs(a), glm::abs(b)); });
+    const auto max = std::ranges::fold_left(viewPoints, vec3{0}, [](const vec3& a, const vec3& b) {
+        return glm::max(glm::abs(a), glm::abs(b));
+    });
 
     return {lookTo + forward * max.z * 5.0f, lookTo, up, vec2{max}};
 }
