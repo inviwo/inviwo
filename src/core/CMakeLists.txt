@@ -392,6 +392,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/safecstr.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/camerasettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/linksettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
@@ -765,6 +766,7 @@ set(SOURCE_FILES
     util/pmrutils.cpp
     util/rendercontext.cpp
     util/safecstr.cpp
+    util/settings/camerasettings.cpp
     util/settings/linksettings.cpp
     util/settings/settings.cpp
     util/settings/systemsettings.cpp

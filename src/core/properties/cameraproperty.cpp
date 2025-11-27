@@ -38,6 +38,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/viewevent.h>
 #include <inviwo/core/util/foreach.h>
+#include <inviwo/core/util/settings/camerasettings.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -103,28 +104,12 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
           [](const float&) {}, {1.0f, ConstraintBehavior::Ignore},
           {1000.0f, ConstraintBehavior::Ignore}, 1.0f)
 
-    , settings_("settings", "Settings", "Configure specific camera behaviors"_help)
-    , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
-    , updateLookRanges_("updateLookRanges", "Update Look-to/-from Ranges", true)
-    , fittingRatio_("fittingRatio", "Fitting Ratio", 1.05f, 0, 2, 0.01f)
-
-    , setNearFarButton_("setNearFarButton", "Set Near/Far Distances", [this] { setNearFar(); })
-    , setLookRangesButton_("setLookRangesButton", "Set Look-to/-from Ranges",
-                           [this] { setLookRange(); })
-
     , getBoundingBox_{std::move(getBoundingBox)} {
 
     aspectRatio_.setReadOnly(true).setCurrentStateAsDefault();
 
-    setNearFarButton_.setSerializationMode(PropertySerializationMode::None);
-    setLookRangesButton_.setSerializationMode(PropertySerializationMode::None);
-
-    settings_.setCollapsed(true).addProperties(setNearFarButton_, setLookRangesButton_,
-                                               updateNearFar_, updateLookRanges_, fittingRatio_);
-    settings_.setCurrentStateAsDefault();
-
     addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
-                  nearPlane_, farPlane_, settings_);
+                  nearPlane_, farPlane_);
     util::for_each_argument([this](auto& arg) { cameraProperties_.push_back(&arg); }, lookFrom_,
                             lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
 
@@ -175,18 +160,10 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
-    , settings_{rhs.settings_}
-    , updateNearFar_{rhs.updateNearFar_}
-    , updateLookRanges_{rhs.updateLookRanges_}
-    , fittingRatio_{rhs.fittingRatio_}
-    , setNearFarButton_{rhs.setNearFarButton_, [this] { setNearFar(); }}
-    , setLookRangesButton_{rhs.setLookRangesButton_, [this] { setLookRange(); }}
     , getBoundingBox_(rhs.getBoundingBox_) {
 
-    settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
-                            updateLookRanges_, fittingRatio_);
     addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
-                  nearPlane_, farPlane_, settings_);
+                  nearPlane_, farPlane_);
     util::for_each_argument([this](auto& arg) { cameraProperties_.push_back(&arg); }, lookFrom_,
                             lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
 
@@ -330,7 +307,7 @@ vec3 CameraProperty::getLookToMaxValue() const { return lookTo_.getMaxValue(); }
 void CameraProperty::zoom(const ZoomOptions& opts) {
     if (getBoundingBox_ && !opts.boundingBox) {
         ZoomOptions updatedOpts{opts};
-        updatedOpts.boundingBox = getBoundingBox_();
+        updatedOpts.boundingBox = getBoundingBox_;
         camera_->zoom(updatedOpts);
     } else {
         camera_->zoom(opts);
@@ -385,7 +362,7 @@ Property* CameraProperty::getCameraProperty(const std::string& identifier) const
 
 void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
     cameraProperties_.push_back(camprop.get());
-    insertProperty(size() - 1, camprop.get(), false);
+    insertProperty(size(), camprop.get(), false);
     ownedCameraProperties_.emplace_back(std::move(camprop));
 }
 
@@ -461,41 +438,65 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
 }
 
 std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
-    return {
-        {{std::nullopt, ":svgicons/view-fit-to-data.svg", "Fit data in view",
-          [this] { fitData(); }},
-         {std::nullopt, ":svgicons/view-x-m.svg", "View data from X-",
-          [this] { setView(camerautil::Side::XNegative); }},
-         {std::nullopt, ":svgicons/view-x-p.svg", "View data from X+",
-          [this] { setView(camerautil::Side::XPositive); }},
-         {std::nullopt, ":svgicons/view-y-m.svg", "View data from Y-",
-          [this] { setView(camerautil::Side::YNegative); }},
-         {std::nullopt, ":svgicons/view-y-p.svg", "View data from Y+",
-          [this] { setView(camerautil::Side::YPositive); }},
-         {std::nullopt, ":svgicons/view-z-m.svg", "View data from Z-",
-          [this] { setView(camerautil::Side::ZNegative); }},
-         {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
-          [this] { setView(camerautil::Side::ZPositive); }},
-         {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}}};
+    return {{{.name = std::nullopt,
+              .icon = ":svgicons/view-fit-to-data.svg",
+              .tooltip = "Fit data in view",
+              .action = [this] { fitData(); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-x-m.svg",
+              .tooltip = "View data from X-",
+              .action = [this] { setView(camerautil::Side::XNegative); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-x-p.svg",
+              .tooltip = "View data from X+",
+              .action = [this] { setView(camerautil::Side::XPositive); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-y-m.svg",
+              .tooltip = "View data from Y-",
+              .action = [this] { setView(camerautil::Side::YNegative); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-y-p.svg",
+              .tooltip = "View data from Y+",
+              .action = [this] { setView(camerautil::Side::YPositive); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-z-m.svg",
+              .tooltip = "View data from Z-",
+              .action = [this] { setView(camerautil::Side::ZNegative); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-z-p.svg",
+              .tooltip = "View data from Z+",
+              .action = [this] { setView(camerautil::Side::ZPositive); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-flip.svg",
+              .tooltip = "Flip the up vector",
+              .action = [this] { flipUp(); }},
+             {.name = "NF",
+              .icon = std::nullopt,
+              .tooltip = "Set near/far distances from bounding box",
+              .action = [this] { setNearFar(); }},
+             {.name = "SR",
+              .icon = std::nullopt,
+              .tooltip = "Set look-to/-from ranges from bounding box",
+              .action = [this] { setLookRange(); }}}};
 }
 
 void CameraProperty::updateFittingVisibility() {
     util::for_each_argument(
         [&](auto& p) {
-            p.setVisible(getBoundingBox_ && cameraType_ == "PerspectiveCamera");
+            p.setVisible(!!getBoundingBox_);
             p.setCurrentStateAsDefault();
         },
-        cameraActions_, settings_, setNearFarButton_, setLookRangesButton_, updateNearFar_,
-        updateLookRanges_, fittingRatio_);
+        cameraActions_);
 }
 
 void CameraProperty::setView(camerautil::Side side) {
     if (getBoundingBox_) {
         if (auto bb = getBoundingBox_()) {
-            using namespace camerautil;
-            setCameraView(*this, *bb, side, fittingRatio_,
-                          updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
-                          updateLookRanges_ ? UpdateLookRanges::Yes : UpdateLookRanges::No);
+            if (const auto* cs = getInviwoApplication()->getSettingsByType<CameraSettings>()) {
+                setCameraView(*this, *bb, side, cs->fittingRatio, cs->getUpdateNearFar(),
+                              cs->getUpdateLookRanges(), cs->zoomFactor.get(),
+                              cs->farNearRatio.get());
+            }
         }
     }
 }
@@ -503,10 +504,11 @@ void CameraProperty::setView(camerautil::Side side) {
 void CameraProperty::fitData() {
     if (getBoundingBox_) {
         if (auto bb = getBoundingBox_()) {
-            using namespace camerautil;
-            setCameraView(*this, *bb, fittingRatio_,
-                          updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
-                          updateLookRanges_ ? UpdateLookRanges::Yes : UpdateLookRanges::No);
+            if (const auto* cs = getInviwoApplication()->getSettingsByType<CameraSettings>()) {
+                setCameraView(*this, *bb, cs->fittingRatio, cs->getUpdateNearFar(),
+                              cs->getUpdateLookRanges(), cs->zoomFactor.get(),
+                              cs->farNearRatio.get());
+            }
         }
     }
 }
@@ -516,7 +518,10 @@ void CameraProperty::flipUp() { setLookUp(-getLookUp()); }
 void CameraProperty::setNearFar() {
     if (getBoundingBox_) {
         if (auto bb = getBoundingBox_()) {
-            camerautil::setCameraNearFar(*this, *bb);
+            if (const auto* cs = getInviwoApplication()->getSettingsByType<CameraSettings>()) {
+                camerautil::setCameraNearFar(*this, *bb, cs->zoomFactor.get(),
+                                             cs->farNearRatio.get());
+            }
         }
     }
 }
@@ -524,7 +529,9 @@ void CameraProperty::setNearFar() {
 void CameraProperty::setLookRange() {
     if (getBoundingBox_) {
         if (auto bb = getBoundingBox_()) {
-            camerautil::setCameraLookRanges(*this, *bb);
+            if (const auto* cs = getInviwoApplication()->getSettingsByType<CameraSettings>()) {
+                camerautil::setCameraLookRanges(*this, *bb, cs->zoomFactor.get());
+            }
         }
     }
 }

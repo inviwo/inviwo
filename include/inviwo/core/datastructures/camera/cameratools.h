@@ -122,6 +122,18 @@ IVW_CORE_API float fovyToWidth(float fovy, float distance, float aspect);
 IVW_CORE_API float widthToFovy(float width, float distance, float aspect);
 IVW_CORE_API float widthToViewDist(float width, float fov, float aspect);
 
+struct IVW_CORE_API FovBounds {
+    std::optional<std::pair<vec2, vec2>> bounds;
+    bool nearPlaneClipped;
+    bool farPlaneClipped;
+};
+
+IVW_CORE_API FovBounds calculateFovBounds(const glm::mat4& boundingBox, const glm::vec3& lookFrom,
+                                          const glm::vec3& lookTo, const glm::vec3& lookUp,
+                                          float nearPlane, float farPlane);
+
+IVW_CORE_API bool canZoomBounded(const FovBounds& bounds, vec2 fov, float zoomFactor);
+
 template <typename CamType>
 void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
     const auto direction = cam.getLookFrom() - cam.getLookTo();
@@ -142,7 +154,24 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
         cam.setLook(cam.getLookFrom() + offset - direction * opts.factor.y,
                     cam.getLookTo() + offset, cam.getLookUp());
     } else {
-        cam.setLookFrom(cam.getLookFrom() - direction * opts.factor.y);
+        const auto newFrom = cam.getLookFrom() - direction * opts.factor.y;
+
+        if (opts.bounded == ZoomOptions::Bounded::Yes && opts.boundingBox &&
+            !opts.boundingBox()
+                 .transform([&](const mat4& bb) {
+                     const auto bounds =
+                         calculateFovBounds(bb, newFrom, cam.getLookTo(), cam.getLookUp(),
+                                            cam.getNearPlaneDist(), cam.getFarPlaneDist());
+
+                     const auto fovy = glm::radians(cam.getFovy());
+                     const auto fovx = 2 * std::atan(std::tan(fovy / 2.0f) * cam.getAspectRatio());
+                     return canZoomBounded(bounds, vec2{fovx, fovy}, opts.factor.y);
+                 })
+                 .value_or(true)) {
+            return;
+        }
+
+        cam.setLookFrom(newFrom);
     }
 }
 

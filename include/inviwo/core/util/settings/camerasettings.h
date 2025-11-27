@@ -29,22 +29,29 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <glm/mat4x4.hpp>
-#include <glm/vec2.hpp>
-
-#include <optional>
-#include <cstdint>
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/algorithm/camerautils.h>
 
 namespace inviwo {
 
-struct IVW_CORE_API ZoomOptions {
-    enum class Bounded : std::uint8_t { Yes, No };
+/**
+ * @brief Application-wide Settings for cameras. Mostly related to how to fit data into view
+ */
+class IVW_CORE_API CameraSettings : public Settings {
+public:
+    CameraSettings();
 
-    glm::vec2 factor = glm::vec2{1.0f, 1.0f};
-    std::optional<glm::vec2> origin = std::nullopt;
-    Bounded bounded = Bounded::No;
-    std::function<std::optional<glm::mat4>()> boundingBox = nullptr;
+    BoolProperty updateNearFar;
+    BoolProperty updateLookRanges;
+    FloatProperty fittingRatio;
+
+    FloatProperty zoomFactor;
+    FloatProperty farNearRatio;
+
+    camerautil::UpdateNearFar getUpdateNearFar() const;
+    camerautil::UpdateLookRanges getUpdateLookRanges() const;
 };
 
 }  // namespace inviwo

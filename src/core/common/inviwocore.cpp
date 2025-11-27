@@ -47,6 +47,7 @@
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 
 // Utilizes
+#include <inviwo/core/util/settings/camerasettings.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/settings/unitsettings.h>
 
@@ -393,6 +394,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // Do this after the property registration since the settings use properties.
     registerSettings(std::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
     registerSettings(std::make_unique<UnitSettings>());
+    registerSettings(std::make_unique<CameraSettings>());
 }
 
 const std::filesystem::path& InviwoCore::getPath() const { return filesystem::findBasePath(); }

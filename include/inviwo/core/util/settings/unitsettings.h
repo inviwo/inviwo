@@ -36,7 +36,7 @@
 namespace inviwo {
 
 /**
- * \brief Application-wide Settings for axis units, e.g. the SI unit meter.
+ * @brief Application-wide Settings for axis units, e.g. the SI unit meter.
  * @see unitgroups for available units.
  */
 class IVW_CORE_API UnitSettings : public Settings {

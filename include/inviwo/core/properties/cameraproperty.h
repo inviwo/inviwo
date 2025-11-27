@@ -236,13 +236,6 @@ private:
     std::vector<ButtonGroupProperty::Button> buttons();
     void updateFittingVisibility();
 
-    CompositeProperty settings_;
-    BoolProperty updateNearFar_;
-    BoolProperty updateLookRanges_;
-    FloatProperty fittingRatio_;
-    ButtonProperty setNearFarButton_;
-    ButtonProperty setLookRangesButton_;
-
     std::function<std::optional<mat4>()> getBoundingBox_;
     bool aspectSupplier_ = false;
 };
