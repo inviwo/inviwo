@@ -206,6 +206,7 @@ var namespaceinviwo =
     [ "CameraFactoryObjectTemplate", "classinviwo_1_1CameraFactoryObjectTemplate.html", null ],
     [ "CameraFrustum", "classinviwo_1_1CameraFrustum.html", "classinviwo_1_1CameraFrustum" ],
     [ "CameraProperty", "classinviwo_1_1CameraProperty.html", "classinviwo_1_1CameraProperty" ],
+    [ "CameraSettings", "classinviwo_1_1CameraSettings.html", null ],
     [ "CameraTrackball", "classinviwo_1_1CameraTrackball.html", "classinviwo_1_1CameraTrackball" ],
     [ "CameraWidget", "classinviwo_1_1CameraWidget.html", "classinviwo_1_1CameraWidget" ],
     [ "Canvas", "classinviwo_1_1Canvas.html", null ],

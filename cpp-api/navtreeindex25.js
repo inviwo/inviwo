@@ -1,5 +1,7 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationController.html#ae1ef38e74a4948f380b7f721c52650b0":[2,0,0,0,1,1],
+"classinviwo_1_1animation_1_1AnimationController.html#ae1ef38e74a4948f380b7f721c52650b0":[4,0,0,2,2,1],
 "classinviwo_1_1animation_1_1AnimationControllerObservable.html":[2,0,0,0,2],
 "classinviwo_1_1animation_1_1AnimationControllerObservable.html":[4,0,0,2,3],
 "classinviwo_1_1animation_1_1AnimationControllerObserver.html":[2,0,0,0,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1TrackFactoryObject.html":[2,0,0,0,77],
 "classinviwo_1_1animation_1_1TrackFactoryObject.html":[4,0,0,2,78],
 "classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html":[2,0,0,0,78],
-"classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html":[4,0,0,2,79],
-"classinviwo_1_1animation_1_1TrackObservable.html":[2,0,0,0,79],
-"classinviwo_1_1animation_1_1TrackObservable.html":[4,0,0,2,80]
+"classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html":[4,0,0,2,79]
 };

@@ -1022,6 +1022,7 @@ var hierarchy =
         ] ],
         [ "inviwo::Processor", "classinviwo_1_1Processor.html", null ],
         [ "inviwo::Settings", "classinviwo_1_1Settings.html", [
+          [ "inviwo::CameraSettings", "classinviwo_1_1CameraSettings.html", null ],
           [ "inviwo::EditorSettings", "classinviwo_1_1EditorSettings.html", null ],
           [ "inviwo::GLSLSyntaxHighlight", "classinviwo_1_1GLSLSyntaxHighlight.html", null ],
           [ "inviwo::LinkSettings", "classinviwo_1_1LinkSettings.html", null ],
@@ -1270,6 +1271,7 @@ var hierarchy =
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
     ] ],
+    [ "inviwo::util::FovBounds", "structinviwo_1_1util_1_1FovBounds.html", null ],
     [ "inviwo::FragmentListRenderer", "classinviwo_1_1FragmentListRenderer.html", null ],
     [ "inviwo::ffmpeg::Frame", "classinviwo_1_1ffmpeg_1_1Frame.html", null ],
     [ "inviwo::FrameBufferObject", "classinviwo_1_1FrameBufferObject.html", null ],

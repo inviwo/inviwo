@@ -19,6 +19,7 @@ var namespaceinviwo_1_1util =
     [ "for_each_type&lt; std::tuple&lt; T, Types... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_00_01Types_8_8_8_01_4_01_4.html", null ],
     [ "for_each_type_pair", "structinviwo_1_1util_1_1for__each__type__pair.html", null ],
     [ "for_each_type_pair&lt; std::tuple&lt; ATypes... &gt;, std::tuple&lt; BTypes... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type__pair_3_01std_1_1tuple_3_01ATypes_8_8_8_01_4_00_01std_1_980543efefbc8ab89773d2539d3c1f94.html", null ],
+    [ "FovBounds", "structinviwo_1_1util_1_1FovBounds.html", null ],
     [ "glmtype", "structinviwo_1_1util_1_1glmtype.html", null ],
     [ "glmtype&lt; T, 1, 1, P &gt;", "structinviwo_1_1util_1_1glmtype_3_01T_00_011_00_011_00_01P_01_4.html", null ],
     [ "glmtype&lt; T, L, 1, P &gt;", "structinviwo_1_1util_1_1glmtype_3_01T_00_01L_00_011_00_01P_01_4.html", null ],
