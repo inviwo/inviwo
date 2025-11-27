@@ -88,8 +88,8 @@ constexpr std::array<vec3, 8> corners{
 std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundingBox,
                                                              vec3 inViewDir, vec3 inLookUp) {
 
-    const auto offset = vec3{.5f};
-    const auto lookTo = vec3(boundingBox * vec4(offset, 1.f));
+    const auto unitCenter = vec3{.5f};
+    const auto lookTo = vec3(boundingBox * vec4(unitCenter, 1.f));
 
     // Camera basis
     const auto forward = glm::normalize(inViewDir);
@@ -107,7 +107,7 @@ std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundin
         return glm::max(glm::abs(a), glm::abs(b));
     });
 
-    return {lookTo + forward * max.z * 5.0f, lookTo, up, vec2{max}};
+    return {lookTo - forward * max.z * 5.0f, lookTo, up, vec2{max}};
 }
 
 template <typename CamType>
@@ -115,8 +115,8 @@ std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam, const 
                                                       vec3 inViewDir, vec3 inLookUp,
                                                       float fitRatio) {
 
-    const auto offset = vec3{.5f};
-    const auto lookTo = vec3(boundingBox * vec4(offset, 1.f));
+    const auto unitCenter = vec3{.5f};
+    const auto lookTo = vec3(boundingBox * vec4(unitCenter, 1.f));
 
     // Camera basis
     const auto forward = glm::normalize(inViewDir);
@@ -140,11 +140,9 @@ std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam, const 
     };
 
     // take the largest needed distance for all corners.
-    const auto it = std::max_element(corners.begin(), corners.end(),
-                                     [&](vec3 a, vec3 b) { return dist(a) < dist(b); });
-    const auto lookOffset = dist(*it) * forward;
+    const auto maxDist = std::ranges::max(corners | std::views::transform(dist));
 
-    return {lookTo + lookOffset, lookTo, up};
+    return {lookTo - forward * maxDist, lookTo, up};
 }
 
 }  // namespace
