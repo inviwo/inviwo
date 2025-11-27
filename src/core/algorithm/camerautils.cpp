@@ -1,4 +1,3 @@
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -56,7 +55,7 @@ vec3 getViewDir(Side side) {
         case Side::ZNegative:
             return {0, 0, 1};
         case Side::ZPositive:
-            return {0, 0, -1};
+            [[fallthrough]];
         default:
             return {0, 0, -1};
     }
@@ -96,13 +95,12 @@ std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundin
     const auto forward = glm::normalize(inViewDir);
     const glm::vec3 right = glm::normalize(glm::cross(forward, inLookUp));
     const glm::vec3 up = glm::cross(right, forward);
-
-    const auto cb = glm::transpose(mat3{right, up, forward});
+    const auto cb = glm::inverse(mat3{right, up, forward});
 
     const auto viewPoints = corners | std::views::transform([&](const vec3 corner) {
                                 const auto point = vec3(boundingBox * vec4(corner, 1.f));
-                                const auto camPoint = mat4{cb} * vec4{point, 1.f};
-                                return vec3{camPoint};
+                                const auto camPoint = cb * point;
+                                return camPoint;
                             });
 
     const auto max = std::ranges::fold_left(viewPoints, vec3{0}, [](const vec3& a, const vec3& b) {
@@ -197,7 +195,7 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
 void setCameraView(CameraProperty& cam, const mat4& boundingBox, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
-    setCameraView(cam, boundingBox, cam.getLookFrom() - cam.getLookTo(), cam.getLookUp(), fitRatio,
+    setCameraView(cam, boundingBox, cam.getLookTo() - cam.getLookFrom(), cam.getLookUp(), fitRatio,
                   updateNearFar, updateLookRanges, maxZoomFactor, farNearRatio);
 }
 
