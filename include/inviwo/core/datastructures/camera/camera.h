@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/camera/zoomoptions.h>
 #include <inviwo/core/util/glmvec.h>
 #include <glm/mat4x4.hpp>
+#include <glm/mat4x4.hpp>
 
 #include <optional>
 #include <string>
@@ -55,9 +56,9 @@ constexpr float width = 10.f;
 class CameraProperty;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  *
- * \brief Base class for cameras.
+ * @brief Base class for cameras.
  * Override this class to set your own projection matrix.
  * @see PerspectiveCamera
  * @see OrthographicCamera
@@ -107,19 +108,21 @@ public:
 
     virtual void zoom(const ZoomOptions& opts) = 0;
 
+    vec3 getLookRight() const;
+
     /**
-     * \brief Get unnormalized direction of camera: lookTo - lookFrom
+     * @brief Get unnormalized direction of camera: lookTo - lookFrom
      */
     vec3 getDirection() const;
 
     /**
-     * \brief Set distance to the near plane from lookFrom.
+     * @brief Set distance to the near plane from lookFrom.
      */
     virtual void setNearPlaneDist(float distance);
     float getNearPlaneDist() const;
 
     /**
-     * \brief Set distance to the far plane from lookFrom.
+     * @brief Set distance to the far plane from lookFrom.
      */
     virtual void setFarPlaneDist(float distance);
     float getFarPlaneDist() const;
@@ -130,14 +133,14 @@ public:
     const mat4& getInverseProjectionMatrix() const;
 
     /**
-     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
+     * @brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
      * @param ndcCoords Coordinates in [-1 1]
      * @return World space position
      */
     vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
     /**
-     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates,
+     * @brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates,
      * where z value of -1 correspond to the near plane and 1 to the far plane.
      * Coordinates outside of the [-1 1]^3 range will be clipped.
      *
@@ -161,7 +164,7 @@ protected:
     bool equalTo(const Camera& other) const;
 
     /**
-     * \brief Calculate and return the projection matrix for the camera.
+     * @brief Calculate and return the projection matrix for the camera.
      *
      * Implement this function to provide your own projection computation functionality.
      * For example orthogonal or perspective projection.
@@ -200,6 +203,9 @@ protected:
 inline const vec3& Camera::getLookFrom() const { return lookFrom_; }
 inline const vec3& Camera::getLookTo() const { return lookTo_; }
 inline const vec3& Camera::getLookUp() const { return lookUp_; }
+inline vec3 Camera::getLookRight() const {
+    return glm::cross(glm::normalize(getDirection()), lookUp_);
+}
 inline vec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
 inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
 inline float Camera::getFarPlaneDist() const { return farPlaneDist_; }

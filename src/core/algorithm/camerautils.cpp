@@ -36,126 +36,102 @@
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
 #include <inviwo/core/datastructures/camera/plotcamera.h>
 
+#include <inviwo/core/util/glm.h>
+
+#include <numbers>
+
 namespace inviwo {
 
 namespace camerautil {
 
 namespace {
 
-vec3 getViewDir(Side side) {
-    switch (side) {
-        case Side::XNegative:
-            return {1, 0, 0};
-        case Side::XPositive:
-            return {-1, 0, 0};
-        case Side::YNegative:
-            return {0, 1, 0};
-        case Side::YPositive:
-            return {0, -1, 0};
-        case Side::ZNegative:
-            return {0, 0, 1};
-        case Side::ZPositive:
-            [[fallthrough]];
-        default:
-            return {0, 0, -1};
-    }
-}
+mat3 getView(Side side) {
+    const auto [forward, up] = [&] -> std::pair<vec3, vec3> {
+        switch (side) {
+            case Side::XNegative:
+                return {{1, 0, 0}, {0, 1, 0}};
+            case Side::XPositive:
+                return {{-1, 0, 0}, {0, 1, 0}};
+            case Side::YNegative:
+                return {{0, 1, 0}, {0, 0, 1}};
+            case Side::YPositive:
+                return {{0, -1, 0}, {0, 0, 1}};
+            case Side::ZNegative:
+                return {{0, 0, 1}, {0, 1, 0}};
+            case Side::ZPositive:
+                [[fallthrough]];
+            default:
+                return {{0, 0, -1}, {0, 1, 0}};
+        }
+    }();
 
-vec3 getLookUp(Side side) {
-    switch (side) {
-        case Side::XNegative:
-            [[fallthrough]];
-        case Side::XPositive:
-            return {0, 1, 0};
-
-        case Side::YNegative:
-            [[fallthrough]];
-        case Side::YPositive:
-            return {0, 0, 1};
-
-        case Side::ZNegative:
-            [[fallthrough]];
-        case Side::ZPositive:
-            [[fallthrough]];
-        default:
-            return {0, 1, 0};
-    }
+    return glm::inverse(mat3{glm::cross(forward, up), up, forward});
 }
 
 constexpr std::array<vec3, 8> corners{
     {{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}}};
 
 std::tuple<vec3, vec3, vec3, vec2> fitOrthographicCameraView(const mat4& boundingBox,
-                                                             vec3 inViewDir, vec3 inLookUp,
-                                                             vec2 nearFar) {
+                                                             glm::mat3 view, vec2 nearFar) {
 
     const auto unitCenter = vec3{.5f};
     const auto lookTo = vec3(boundingBox * vec4(unitCenter, 1.f));
 
-    // Camera basis
-    const auto forward = glm::normalize(inViewDir);
-    const glm::vec3 right = glm::normalize(glm::cross(forward, inLookUp));
-    const glm::vec3 up = glm::cross(right, forward);
-    const auto cb = glm::inverse(mat3{right, up, forward});
-
     const auto viewPoints = corners | std::views::transform([&](const vec3 corner) {
                                 const auto point = vec3(boundingBox * vec4(corner, 1.f));
-                                const auto camPoint = cb * point;
+                                const auto camPoint = view * (point - lookTo);
                                 return camPoint;
                             });
 
-    const auto max = std::ranges::fold_left(viewPoints, vec3{0}, [](const vec3& a, const vec3& b) {
-        return glm::max(a, b);
-    });
-    const auto min = std::ranges::fold_left(viewPoints, vec3{0}, [](const vec3& a, const vec3& b) {
-        return glm::min(a, b);
-    });
+    const auto max = std::ranges::fold_left(
+        viewPoints, vec3{0}, [](const vec3& a, const vec3& b) { return glm::max(a, b); });
+    const auto min = std::ranges::fold_left(
+        viewPoints, vec3{0}, [](const vec3& a, const vec3& b) { return glm::min(a, b); });
     const auto size = max - min;
 
     const auto dist = std::clamp(size.z * 5.0f, nearFar.x * 5.0f, nearFar.y * 0.5f);
 
-    return {lookTo - forward * dist, lookTo, up, vec2{size}};
+    const auto& [right, up, forward] = glm::inverse(view);
+    return {lookTo + forward * dist, lookTo, up, vec2{size}};
 }
 
-template <typename CamType>
-std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const CamType& cam, const mat4& boundingBox,
-                                                      vec3 inViewDir, vec3 inLookUp,
-                                                      float fitRatio) {
+std::tuple<vec3, vec3, vec3> fitPerspectiveCameraView(const mat4& boundingBox, glm::mat3 view,
+                                                      float fitRatio, vec2 fov) {
 
     const auto unitCenter = vec3{.5f};
     const auto lookTo = vec3(boundingBox * vec4(unitCenter, 1.f));
 
-    // Camera basis
-    const auto forward = glm::normalize(inViewDir);
-    const auto up = glm::normalize(inLookUp);
-    const auto right = glm::cross(forward, up);
-
-    const float fovy = cam.getFovy() / 2.0f;
-    const float fovx = glm::degrees(std::atan(cam.getAspectRatio() * std::tan(glm::radians(fovy))));
+    const vec2 scale{std::tan(std::numbers::pi_v<float> / 2.0f - fov.x / 2.0f),
+                     std::tan(std::numbers::pi_v<float> / 2.0f - fov.y / 2.0f)};
 
     // Find the needed distance from the camera to lookTo given a field of view such that a
     // corner of the bounding box are within the view
     const auto dist = [&](vec3 corner) {
         const auto point = vec3(boundingBox * vec4(corner, 1.f));
-
-        const auto d0 = glm::dot(point - lookTo, -forward);
-        const auto height = glm::abs(glm::dot(point - lookTo, up)) * fitRatio;
-        const auto width = glm::abs(glm::dot(point - lookTo, right)) * fitRatio;
-        const float d1 = height * std::tan(glm::radians(90 - fovy));
-        const float d2 = width * std::tan(glm::radians(90 - fovx));
-        return d0 + std::max(d1, d2);
+        const auto camPoint = view * (point - lookTo);
+        const auto max = glm::compMax(scale * glm::abs(vec2{camPoint})) - camPoint.z;
+        return max;
     };
 
     // take the largest needed distance for all corners.
     const auto maxDist = std::ranges::max(corners | std::views::transform(dist));
 
-    return {lookTo - forward * maxDist, lookTo, up};
+    const auto& [right, up, forward] = glm::inverse(view);
+    return {lookTo + forward * maxDist * fitRatio, lookTo, up};
 }
 
 }  // namespace
 
-void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir, vec3 inLookUp,
-                   float fitRatio, UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
+float fovxFrom(float fovy, float aspect) {
+    return 2.0f * std::atan(std::tan(fovy / 2.0f) * aspect);
+}
+float fovxDegreesFrom(float fovyDegrees, float aspect) {
+    return glm::degrees(fovxFrom(glm::radians(fovyDegrees), aspect));
+}
+
+void setCameraView(CameraProperty& cam, const mat4& boundingBox, glm::mat3 view, float fitRatio,
+                   UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
     const NetworkLock lock(&cam);
     const mat4 fixedBBox = util::minExtentBoundingBox(boundingBox);
@@ -166,15 +142,18 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
     if (updateLookRanges == UpdateLookRanges::Yes) {
         setCameraLookRanges(cam, fixedBBox, maxZoomFactor);
     }
-    if (auto* perspectiveCamera = dynamic_cast<PerspectiveCamera*>(&cam.get())) {
 
-        auto [lookFrom, lookTo, lookUp] =
-            fitPerspectiveCameraView(*perspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
-        cam.setLook(lookFrom, lookTo, lookUp);
+    if (auto* perspectiveCamera = dynamic_cast<PerspectiveCamera*>(&cam.get())) {
+        const auto fovy = glm::radians(perspectiveCamera->getFovy());
+        const auto fovx = fovxFrom(fovy, perspectiveCamera->getAspectRatio());
+        const auto [lookFrom, lookTo, lookUp] =
+            fitPerspectiveCameraView(fixedBBox, view, fitRatio, vec2{fovx, fovy});
+        perspectiveCamera->setLook(lookFrom, lookTo, lookUp);
+
     } else if (auto* orthoCamera = dynamic_cast<OrthographicCamera*>(&cam.get())) {
         const auto nearFar = vec2{orthoCamera->getNearPlaneDist(), orthoCamera->getFarPlaneDist()};
-        auto [lookFrom, lookTo, lookUp, size] =
-            fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp, nearFar);
+        const auto [lookFrom, lookTo, lookUp, size] =
+            fitOrthographicCameraView(fixedBBox, view, nearFar);
 
         orthoCamera->setLook(lookFrom, lookTo, lookUp);
         const auto aspect = orthoCamera->getAspectRatio();
@@ -183,17 +162,21 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
         } else {
             orthoCamera->setWidth(size.x * fitRatio);
         }
+
     } else if (auto* plotCamera = dynamic_cast<PlotCamera*>(&cam.get())) {
         const auto nearFar = vec2{plotCamera->getNearPlaneDist(), plotCamera->getFarPlaneDist()};
-        auto [lookFrom, lookTo, lookUp, size] =
-            fitOrthographicCameraView(fixedBBox, inViewDir, inLookUp, nearFar);
+        const auto [lookFrom, lookTo, lookUp, size] =
+            fitOrthographicCameraView(fixedBBox, view, nearFar);
         plotCamera->setLook(lookFrom, lookTo, lookUp);
         plotCamera->setSize(size * fitRatio);
-    } else if (auto* skewedPerspectiveCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
 
-        auto [lookFrom, lookTo, lookUp] = fitPerspectiveCameraView(
-            *skewedPerspectiveCamera, fixedBBox, inViewDir, inLookUp, fitRatio);
-        cam.setLook(lookFrom, lookTo, lookUp);
+    } else if (auto* skewedCamera = dynamic_cast<SkewedPerspectiveCamera*>(&cam.get())) {
+        const auto fovy = glm::radians(skewedCamera->getFovy());
+        const auto fovx = fovxFrom(fovy, skewedCamera->getAspectRatio());
+        const auto [lookFrom, lookTo, lookUp] =
+            fitPerspectiveCameraView(fixedBBox, view, fitRatio, vec2{fovx, fovy});
+        skewedCamera->setLook(lookFrom, lookTo, lookUp);
+
     } else {
         log::warn("setCameraView does not support {}", cam.get().getClassIdentifier());
     }
@@ -202,17 +185,18 @@ void setCameraView(CameraProperty& cam, const mat4& boundingBox, vec3 inViewDir,
 void setCameraView(CameraProperty& cam, const mat4& boundingBox, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
-    setCameraView(cam, boundingBox, cam.getLookTo() - cam.getLookFrom(), cam.getLookUp(), fitRatio,
-                  updateNearFar, updateLookRanges, maxZoomFactor, farNearRatio);
+    setCameraView(cam, boundingBox, mat3{cam.viewMatrix()}, fitRatio, updateNearFar,
+                  updateLookRanges, maxZoomFactor, farNearRatio);
 }
 
 void setCameraView(CameraProperty& cam, const mat4& boundingBox, Side side, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges,
                    float maxZoomFactor, float farNearRatio) {
-    const mat4 fixedBBox = util::minExtentBoundingBox(boundingBox);
-    const auto viewDir = mat3(fixedBBox) * getViewDir(side);
-    const auto lookUp = mat3(fixedBBox) * getLookUp(side);
-    setCameraView(cam, fixedBBox, viewDir, lookUp, fitRatio, updateNearFar, updateLookRanges,
+
+    auto box = mat3{util::minExtentBoundingBox(boundingBox)};
+    box = mat3{glm::normalize(box[0]), glm::normalize(box[1]), glm::normalize(box[2])};
+
+    setCameraView(cam, boundingBox, getView(side), fitRatio, updateNearFar, updateLookRanges,
                   maxZoomFactor, farNearRatio);
 }
 

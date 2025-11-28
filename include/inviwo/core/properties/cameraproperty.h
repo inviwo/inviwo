@@ -104,6 +104,11 @@ public:
 
     vec3 getLookRight() const;
 
+    /**
+     * @brief Get unnormalized direction of camera: lookTo - lookFrom
+     */
+    vec3 getDirection() const;
+
     CameraProperty& setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
 
@@ -194,6 +199,16 @@ public:
      * Flip the direction of the up vector
      */
     void flipUp();
+
+    /**
+     * Flip the view vector, look at the backside.
+     */
+    void flipView();
+
+    /**
+     * Roll the view
+     */
+    void roll(float radians);
 
     /**
      * Adjust the near and far values for the current bounding box

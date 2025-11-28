@@ -93,12 +93,12 @@ void exposeCameraProperty(pybind11::module& main, pybind11::module& properties) 
 
     cameraModule.def(
         "setCameraView",
-        [](CameraProperty& cam, const mat4& boundingBox, vec3 viewDir, vec3 lookUp, float fitRatio,
+        [](CameraProperty& cam, const mat4& boundingBox, mat3 view, float fitRatio,
            camerautil::UpdateNearFar updateNearFar, camerautil::UpdateLookRanges updateLookRanges) {
-            camerautil::setCameraView(cam, boundingBox, viewDir, lookUp, fitRatio, updateNearFar,
+            camerautil::setCameraView(cam, boundingBox, view, fitRatio, updateNearFar,
                                       updateLookRanges);
         },
-        py::arg("cameraProperty"), py::arg("boundingBox"), py::arg("viewDir"), py::arg("lookUp"),
+        py::arg("cameraProperty"), py::arg("boundingBox"), py::arg("view"),
         py::arg("fitRatio") = 1.05f, py::arg("updateNearFar") = camerautil::UpdateNearFar::No,
         py::arg("updateLookRanges") = camerautil::UpdateLookRanges::No);
 

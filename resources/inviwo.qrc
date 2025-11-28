@@ -116,13 +116,19 @@
 
         <file>svgicons/haptics.svg</file>
 
+        <file>svgicons/view-x.svg</file>
         <file>svgicons/view-x-m.svg</file>
         <file>svgicons/view-x-p.svg</file>
+
+        <file>svgicons/view-y.svg</file>
         <file>svgicons/view-y-m.svg</file>
         <file>svgicons/view-y-p.svg</file>
+
+        <file>svgicons/view-z.svg</file>
         <file>svgicons/view-z-m.svg</file>
         <file>svgicons/view-z-p.svg</file>
         <file>svgicons/view-flip.svg</file>
+        <file>svgicons/view-flip-front-back.svg</file>
         <file>svgicons/view-fit-to-data.svg</file>
 
         <file>svgicons/camera-down.svg</file>
