@@ -39,24 +39,22 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/staticstring.h>
 
-#include <functional>
 #include <random>
-#include <string>
-#include <string_view>
-#include <vector>
 
 namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API HedgeHog2D : public Processor {
-
-    enum class GlyphType { Arrow, Quiver };
-
 public:
+    enum class GlyphType : std::uint8_t { Arrow, Quiver };
+    enum class Pivot : std::uint8_t { Tail, Middle, Tip };
+
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     HedgeHog2D();
@@ -65,34 +63,29 @@ public:
     virtual void process() override;
 
 private:
-    void adjustVisibilites();
-    vec4 getColor(const dvec2& velocity);
-    void createArrow(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
-                     const dvec2& velocity);
-    void createQuiver(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx, float dy,
-                      const dvec2& velocity);
-
     LayerInport inport_;
     MeshOutport mesh_;
 
+    OptionProperty<GlyphType> glyphType_;
+    OptionProperty<Pivot> pivot_;
+    FloatVec4Property color_;
+    BoolCompositeProperty tfGroup_;
+    BoolProperty normalized_;
     FloatProperty glyphScale_;
+    TransferFunctionProperty transferFunction_;
     IntVec2Property numberOfGlyphs_;
     BoolProperty jitter_;
-    OptionProperty<GlyphType> glyphType_;
-
-    FloatVec4Property color_;
+    FloatProperty jitterScale_;
 
     CompositeProperty arrowSettings_;
     FloatProperty arrowBaseWidth_;
     FloatProperty arrowHookWidth_;
     FloatProperty arrowHeadRatio_;
 
-    CompositeProperty quiverSettings_;
-    FloatProperty quiverHookWidth_;
-    FloatProperty quiverHeadRatio_;
+    Int64Property seed_;
+    ButtonProperty reseed_;
 
-    std::random_device rd_;
-    std::mt19937 mt_;
+    std::mt19937 rand_;
 };
 
 }  // namespace inviwo

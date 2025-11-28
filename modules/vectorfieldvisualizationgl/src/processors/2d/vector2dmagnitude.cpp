@@ -53,7 +53,7 @@ Vector2DMagnitude::Vector2DMagnitude()
 
 LayerConfig Vector2DMagnitude::outputConfig(const Layer& input) const {
     const double max = glm::compMax(glm::abs(input.dataMap.dataRange));
-    const double conservativeMax = std::sqrt(3.0 * max * max);
+    const double conservativeMax = std::sqrt(2.0) * max;
     return input.config().updateFrom({.format = DataFloat32::get(),
                                       .swizzleMask = swizzlemasks::defaultData(1),
                                       .dataRange = dvec2{0.0, conservativeMax},
