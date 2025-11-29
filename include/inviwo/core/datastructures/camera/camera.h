@@ -204,7 +204,7 @@ inline const vec3& Camera::getLookFrom() const { return lookFrom_; }
 inline const vec3& Camera::getLookTo() const { return lookTo_; }
 inline const vec3& Camera::getLookUp() const { return lookUp_; }
 inline vec3 Camera::getLookRight() const {
-    return glm::cross(glm::normalize(getDirection()), lookUp_);
+    return glm::cross(glm::normalize(getDirection()), glm::normalize(lookUp_));
 }
 inline vec3 Camera::getDirection() const { return lookTo_ - lookFrom_; }
 inline float Camera::getNearPlaneDist() const { return nearPlaneDist_; }
