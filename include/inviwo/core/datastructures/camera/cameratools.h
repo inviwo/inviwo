@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/datastructures/camera/camera.h>
+#include <inviwo/core/algorithm/camerautils.h>
 
 #include <glm/gtx/transform.hpp>
 
@@ -164,7 +165,7 @@ void perspectiveZoom(CamType& cam, const ZoomOptions& opts) {
                                             cam.getNearPlaneDist(), cam.getFarPlaneDist());
 
                      const auto fovy = glm::radians(cam.getFovy());
-                     const auto fovx = 2 * std::atan(std::tan(fovy / 2.0f) * cam.getAspectRatio());
+                     const auto fovx = camerautil::fovxFrom(fovy, cam.getAspectRatio());
                      return canZoomBounded(bounds, vec2{fovx, fovy}, opts.factor.y);
                  })
                  .value_or(true)) {

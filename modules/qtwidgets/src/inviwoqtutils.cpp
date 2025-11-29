@@ -457,6 +457,8 @@ void addViewActions(QMenu& menu, EventPropagator* ep) {
                    &QAction::triggered, prop(camerautil::Side::ZPositive));
     QMenu::connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
                    &QAction::triggered, prop(camerautil::Side::ZNegative));
+    QMenu::connect(menu.addAction(QIcon(":svgicons/view-flip-front-back.svg"), "Flip View Vector"),
+                   &QAction::triggered, prop(ViewEvent::FlipView{}));
     QMenu::connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
                    &QAction::triggered, prop(ViewEvent::FlipUp{}));
 }

@@ -41,9 +41,10 @@ namespace inviwo {
 class IVW_CORE_API ViewEvent : public Event {
 public:
     struct FlipUp {};
+    struct FlipView {};
     struct FitData {};
 
-    using Action = std::variant<camerautil::Side, FlipUp, FitData>;
+    using Action = std::variant<camerautil::Side, FlipView, FlipUp, FitData>;
 
     ViewEvent(Action action = camerautil::Side::XNegative);
     ViewEvent(const ViewEvent&) = default;

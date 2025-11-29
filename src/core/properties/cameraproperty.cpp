@@ -43,7 +43,10 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <glm/gtx/rotate_vector.hpp>
+
 #include <limits>
+#include <numbers>
 
 namespace inviwo {
 
@@ -340,6 +343,7 @@ void CameraProperty::invokeEvent(Event* event) {
         }
     } else if (auto ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
+                                    [&](ViewEvent::FlipView) { flipView(); },
                                     [&](ViewEvent::FlipUp) { flipUp(); },
                                     [&](ViewEvent::FitData) { fitData(); }},
                    ve->getAction());
@@ -423,9 +427,9 @@ vec3 CameraProperty::getLookTo() const { return camera_->getLookTo(); }
 
 vec3 CameraProperty::getLookUp() const { return camera_->getLookUp(); }
 
-vec3 CameraProperty::getLookRight() const {
-    return glm::cross(glm::normalize(camera_->getDirection()), camera_->getLookUp());
-}
+vec3 CameraProperty::getLookRight() const { return camera_->getLookRight(); }
+
+vec3 CameraProperty::getDirection() const { return camera_->getDirection(); }
 
 const mat4& CameraProperty::viewMatrix() const { return camera_->getViewMatrix(); }
 
@@ -443,29 +447,29 @@ std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
               .tooltip = "Fit data in view",
               .action = [this] { fitData(); }},
              {.name = std::nullopt,
-              .icon = ":svgicons/view-x-m.svg",
-              .tooltip = "View data from X-",
+              .icon = ":svgicons/view-x.svg",
+              .tooltip = "View data from X",
               .action = [this] { setView(camerautil::Side::XNegative); }},
              {.name = std::nullopt,
-              .icon = ":svgicons/view-x-p.svg",
-              .tooltip = "View data from X+",
-              .action = [this] { setView(camerautil::Side::XPositive); }},
-             {.name = std::nullopt,
-              .icon = ":svgicons/view-y-m.svg",
-              .tooltip = "View data from Y-",
+              .icon = ":svgicons/view-y.svg",
+              .tooltip = "View data from Y",
               .action = [this] { setView(camerautil::Side::YNegative); }},
              {.name = std::nullopt,
-              .icon = ":svgicons/view-y-p.svg",
-              .tooltip = "View data from Y+",
-              .action = [this] { setView(camerautil::Side::YPositive); }},
-             {.name = std::nullopt,
-              .icon = ":svgicons/view-z-m.svg",
-              .tooltip = "View data from Z-",
+              .icon = ":svgicons/view-z.svg",
+              .tooltip = "View data from Z",
               .action = [this] { setView(camerautil::Side::ZNegative); }},
              {.name = std::nullopt,
-              .icon = ":svgicons/view-z-p.svg",
-              .tooltip = "View data from Z+",
-              .action = [this] { setView(camerautil::Side::ZPositive); }},
+              .icon = ":svgicons/camera-roll-left.svg",
+              .tooltip = "Camera Roll Left",
+              .action = [this] { roll(std::numbers::pi_v<float> / 4.0f); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/camera-roll-right.svg",
+              .tooltip = "Camera Roll Right",
+              .action = [this] { roll(-std::numbers::pi_v<float> / 4.0f); }},
+             {.name = std::nullopt,
+              .icon = ":svgicons/view-flip-front-back.svg",
+              .tooltip = "Flip the view vector",
+              .action = [this] { flipView(); }},
              {.name = std::nullopt,
               .icon = ":svgicons/view-flip.svg",
               .tooltip = "Flip the up vector",
@@ -514,6 +518,12 @@ void CameraProperty::fitData() {
 }
 
 void CameraProperty::flipUp() { setLookUp(-getLookUp()); }
+
+void CameraProperty::flipView() { setLookFrom(getDirection()); }
+
+void CameraProperty::roll(float radians) {
+    setLookUp(glm::rotate(getLookUp(), radians, getDirection()));
+}
 
 void CameraProperty::setNearFar() {
     if (getBoundingBox_) {
