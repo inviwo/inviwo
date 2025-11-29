@@ -40,9 +40,7 @@
 
 #include <numbers>
 
-namespace inviwo {
-
-namespace camerautil {
+namespace inviwo::camerautil {
 
 namespace {
 
@@ -244,6 +242,4 @@ void setCameraNearFar(CameraProperty& cam, const mat4& boundingBox, float zoomRa
     cam.setNearFarPlaneDist(newNear, newFar);
 }
 
-}  // namespace camerautil
-
-}  // namespace inviwo
+}  // namespace inviwo::camerautil
