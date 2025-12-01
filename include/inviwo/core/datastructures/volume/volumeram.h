@@ -305,6 +305,11 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask&
     , interpolation_{interpolation}
     , wrapping_{wrapping} {
 
+    if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
+                        dimensions_};
+    }
+
     resource::add(resource::toRAM(data_), Resource{.dims = glm::size4_t{dimensions_, 0},
                                                    .format = DataFormat<T>::id(),
                                                    .desc = "VolumeRAM"});
@@ -322,6 +327,12 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping} {
+
+    if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
+                        dimensions_};
+    }
+
     if (!data_) {
         data_ = std::make_unique<T[]>(glm::compMul(dimensions_));
     }
@@ -338,7 +349,7 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeReprConfig& config)
                          config.wrapping.value_or(VolumeConfig::defaultWrapping)} {
 
     if (config.format && config.format != getDataFormat()) {
-        throw Exception("Creating representation with unmatched type and format");
+        throw Exception(SourceContext{}, "Creating representation with unmatched type and format");
     }
 }
 
