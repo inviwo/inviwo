@@ -157,6 +157,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addCamerapProperty</b
 <tr class="memitem:a243521a8f26457a2bdba116d17800401" id="r_a243521a8f26457a2bdba116d17800401"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a243521a8f26457a2bdba116d17800401">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
 <tr class="memitem:a9809d3da72f008bac786199166d21db2" id="r_a9809d3da72f008bac786199166d21db2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9809d3da72f008bac786199166d21db2">fitData</a> ()</td></tr>
 <tr class="memitem:a57c9e847d1c5b80fc5dfe48d041b8e22" id="r_a57c9e847d1c5b80fc5dfe48d041b8e22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57c9e847d1c5b80fc5dfe48d041b8e22">flipUp</a> ()</td></tr>
+<tr class="memitem:ae3035181dc9a4c2157db2cb5992e1400" id="r_ae3035181dc9a4c2157db2cb5992e1400"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3035181dc9a4c2157db2cb5992e1400">flipView</a> ()</td></tr>
 <tr class="memitem:a55109bfe55d8528466b9d36f86630466" id="r_a55109bfe55d8528466b9d36f86630466"><td class="memItemLeft" align="right" valign="top"><a id="a55109bfe55d8528466b9d36f86630466" name="a55109bfe55d8528466b9d36f86630466"></a>
 virtual <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> ()</td></tr>
 <tr class="memitem:a3fc7c934031510156c42b0c1160bccb1" id="r_a3fc7c934031510156c42b0c1160bccb1"><td class="memItemLeft" align="right" valign="top"><a id="a3fc7c934031510156c42b0c1160bccb1" name="a3fc7c934031510156c42b0c1160bccb1"></a>
@@ -168,6 +169,9 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>getAspectRatio</b> (
 <tr class="memitem:a5005b8c450f88898fcaa311b774cf46f" id="r_a5005b8c450f88898fcaa311b774cf46f"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5005b8c450f88898fcaa311b774cf46f">getClassIdentifier</a> () const override</td></tr>
 <tr class="memitem:a13fc101179f0cf1109f898e6d542c352" id="r_a13fc101179f0cf1109f898e6d542c352"><td class="memItemLeft" align="right" valign="top">vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13fc101179f0cf1109f898e6d542c352">getClipPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const</td></tr>
 <tr class="memdesc:a13fc101179f0cf1109f898e6d542c352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.  <br /></td></tr>
+<tr class="memitem:afeabd2ea8e8e5141cc2c7f47d5714d48" id="r_afeabd2ea8e8e5141cc2c7f47d5714d48"><td class="memItemLeft" align="right" valign="top"><a id="afeabd2ea8e8e5141cc2c7f47d5714d48" name="afeabd2ea8e8e5141cc2c7f47d5714d48"></a>
+vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getDirection</b> () const</td></tr>
+<tr class="memdesc:afeabd2ea8e8e5141cc2c7f47d5714d48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get unnormalized direction of camera: lookTo - lookFrom. <br /></td></tr>
 <tr class="memitem:a02c9718e9199301dd4f81c44b8411d91" id="r_a02c9718e9199301dd4f81c44b8411d91"><td class="memItemLeft" align="right" valign="top">virtual float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02c9718e9199301dd4f81c44b8411d91">getFarPlaneDist</a> () const override</td></tr>
 <tr class="memitem:a9e4dfd708a2d841188c5ba90a97f7b0a" id="r_a9e4dfd708a2d841188c5ba90a97f7b0a"><td class="memItemLeft" align="right" valign="top">virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e4dfd708a2d841188c5ba90a97f7b0a">getLookFrom</a> () const override</td></tr>
 <tr class="memitem:a0c22782ac1a27b26a1b4f6fa906307a0" id="r_a0c22782ac1a27b26a1b4f6fa906307a0"><td class="memItemLeft" align="right" valign="top">virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c22782ac1a27b26a1b4f6fa906307a0">getLookFromMaxValue</a> () const override</td></tr>
@@ -194,6 +198,7 @@ const mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>inverseVi
 <tr class="memitem:af018bcff381ba3cb5f22c3dbf722416f" id="r_af018bcff381ba3cb5f22c3dbf722416f"><td class="memItemLeft" align="right" valign="top"><a id="af018bcff381ba3cb5f22c3dbf722416f" name="af018bcff381ba3cb5f22c3dbf722416f"></a>
 const mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>projectionMatrix</b> () const</td></tr>
 <tr class="memitem:aa17e6e395dc830d93b745458225b8318" id="r_aa17e6e395dc830d93b745458225b8318"><td class="memItemLeft" align="right" valign="top">virtual CameraProperty &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa17e6e395dc830d93b745458225b8318">resetToDefaultState</a> () override</td></tr>
+<tr class="memitem:a18d0434e30d91bea5d1c971ae0f31a53" id="r_a18d0434e30d91bea5d1c971ae0f31a53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18d0434e30d91bea5d1c971ae0f31a53">roll</a> (float radians)</td></tr>
 <tr class="memitem:a52251f8a439b365665548216358dda27" id="r_a52251f8a439b365665548216358dda27"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52251f8a439b365665548216358dda27">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="memitem:a158a7a4eedefb08248a7a76a316e0521" id="r_a158a7a4eedefb08248a7a76a316e0521"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a158a7a4eedefb08248a7a76a316e0521">set</a> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> *srcProperty) override</td></tr>
 <tr class="memitem:abe787098cf938a6ef087000f3a7aec30" id="r_abe787098cf938a6ef087000f3a7aec30"><td class="memItemLeft" align="right" valign="top"><a id="abe787098cf938a6ef087000f3a7aec30" name="abe787098cf938a6ef087000f3a7aec30"></a>
@@ -692,6 +697,24 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 
 </div>
 </div>
+<a id="ae3035181dc9a4c2157db2cb5992e1400" name="ae3035181dc9a4c2157db2cb5992e1400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3035181dc9a4c2157db2cb5992e1400">&#9670;&#160;</a></span>flipView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::CameraProperty::flipView </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Flip the view vector, look at the backside. </p>
+
+</div>
+</div>
 <a id="a5005b8c450f88898fcaa311b774cf46f" name="a5005b8c450f88898fcaa311b774cf46f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5005b8c450f88898fcaa311b774cf46f">&#9670;&#160;</a></span>getClassIdentifier()</h2>
 
@@ -1161,6 +1184,24 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 <p>Reset the state of the property back to it's default value. It is important that all overriding properties make sure to call the base class implementation. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1CompositeProperty.html#a4f869f44314c28642de84f96c995db6a">inviwo::CompositeProperty</a>.</p>
+
+</div>
+</div>
+<a id="a18d0434e30d91bea5d1c971ae0f31a53" name="a18d0434e30d91bea5d1c971ae0f31a53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18d0434e30d91bea5d1c971ae0f31a53">&#9670;&#160;</a></span>roll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::CameraProperty::roll </td>
+          <td>(</td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>radians</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Roll the view </p>
 
 </div>
 </div>

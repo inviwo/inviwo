@@ -1,5 +1,8 @@
 var NAVTREEINDEX6 =
 {
+"classinviwo_1_1FontSizePropertyWidgetQt.html#ac400d45c92fc7e00f0bcbdc875fd8f10":[4,0,0,360,0],
+"classinviwo_1_1FragmentListRenderer.html":[2,0,0,352],
+"classinviwo_1_1FragmentListRenderer.html":[4,0,0,361],
 "classinviwo_1_1FragmentListRenderer.html#a91eee23289764776eb8ea13e32ffb3e8":[2,0,0,352,1],
 "classinviwo_1_1FragmentListRenderer.html#a91eee23289764776eb8ea13e32ffb3e8":[4,0,0,361,1],
 "classinviwo_1_1FragmentListRenderer.html#aef573f3f43f0a122df84ef166772fc80":[2,0,0,352,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX6 =
 "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[2,0,0,398,0],
 "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[4,0,0,407,0],
 "classinviwo_1_1ImageCompositor.html":[2,0,0,399],
-"classinviwo_1_1ImageCompositor.html":[4,0,0,408],
-"classinviwo_1_1ImageCompositor.html#a17fb2e5eb372420499dc781f9eb89e1f":[2,0,0,399,0],
-"classinviwo_1_1ImageCompositor.html#a17fb2e5eb372420499dc781f9eb89e1f":[4,0,0,408,0],
-"classinviwo_1_1ImageCompositor.html#a5b8f1f08fb73e9ba32db4e9f1634472c":[2,0,0,399,1]
+"classinviwo_1_1ImageCompositor.html":[4,0,0,408]
 };

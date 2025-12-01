@@ -1,5 +1,8 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1VolumeBoundingBox.html#a56941f376d3b368f1118df522382e673":[2,0,0,1268,0],
+"classinviwo_1_1VolumeBoundingBox.html#a56941f376d3b368f1118df522382e673":[4,0,0,1277,0],
+"classinviwo_1_1VolumeChannelCombiner.html":[2,0,0,1269],
 "classinviwo_1_1VolumeChannelCombiner.html":[4,0,0,1278],
 "classinviwo_1_1VolumeChannelCombiner.html#a4a82294b54906fd417044b6aa1383d90":[2,0,0,1269,0],
 "classinviwo_1_1VolumeChannelCombiner.html#a4a82294b54906fd417044b6aa1383d90":[4,0,0,1278,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1VolumeSequenceExport.html":[4,0,0,1334],
 "classinviwo_1_1VolumeSequenceSampler.html":[2,0,0,1326],
 "classinviwo_1_1VolumeSequenceSampler.html":[4,0,0,1335],
-"classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor.html":[2,0,0,1327],
-"classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor.html":[4,0,0,1336],
-"classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor.html#a930de53a3ea2743a82b75909ff020cf9":[2,0,0,1327,0],
-"classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor.html#a930de53a3ea2743a82b75909ff020cf9":[4,0,0,1336,0]
+"classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor.html":[2,0,0,1327]
 };

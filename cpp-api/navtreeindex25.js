@@ -1,5 +1,8 @@
 var NAVTREEINDEX25 =
 {
+"classinviwo_1_1animation_1_1AnimationController.html#a9b80952d7015e0f3a227c9d03fd88b9d":[4,0,0,2,2,10],
+"classinviwo_1_1animation_1_1AnimationController.html#ac5e8d147642c3f463dc4616a28008cf8":[2,0,0,0,1,8],
+"classinviwo_1_1animation_1_1AnimationController.html#ac5e8d147642c3f463dc4616a28008cf8":[4,0,0,2,2,8],
 "classinviwo_1_1animation_1_1AnimationController.html#ae1ef38e74a4948f380b7f721c52650b0":[2,0,0,0,1,1],
 "classinviwo_1_1animation_1_1AnimationController.html#ae1ef38e74a4948f380b7f721c52650b0":[4,0,0,2,2,1],
 "classinviwo_1_1animation_1_1AnimationControllerObservable.html":[2,0,0,0,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX25 =
 "classinviwo_1_1animation_1_1TrackFactory.html":[4,0,0,2,77],
 "classinviwo_1_1animation_1_1TrackFactory.html#a150611ade84a02ab0628d46fb45ba67e":[2,0,0,0,76,0],
 "classinviwo_1_1animation_1_1TrackFactory.html#a150611ade84a02ab0628d46fb45ba67e":[4,0,0,2,77,0],
-"classinviwo_1_1animation_1_1TrackFactoryObject.html":[2,0,0,0,77],
-"classinviwo_1_1animation_1_1TrackFactoryObject.html":[4,0,0,2,78],
-"classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html":[2,0,0,0,78],
-"classinviwo_1_1animation_1_1TrackFactoryObjectTemplate.html":[4,0,0,2,79]
+"classinviwo_1_1animation_1_1TrackFactoryObject.html":[2,0,0,0,77]
 };

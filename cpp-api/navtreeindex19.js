@@ -1,5 +1,8 @@
 var NAVTREEINDEX19 =
 {
+"classinviwo_1_1SpotLightSourceProcessor.html#a3a4fada09fb7d08ea3442fa514625886":[2,0,0,1078,0],
+"classinviwo_1_1SpotLightSourceProcessor.html#a3a4fada09fb7d08ea3442fa514625886":[4,0,0,1087,0],
+"classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f":[2,0,0,1078,1],
 "classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f":[4,0,0,1087,1],
 "classinviwo_1_1StandardFactory.html":[2,0,0,1082],
 "classinviwo_1_1StandardFactory.html":[4,0,0,1091],
@@ -246,8 +249,5 @@ var NAVTREEINDEX19 =
 "classinviwo_1_1StructuredCoordinateTransformer.html#aaaae17d9d177b6de21e0e96e80dad9fe":[4,0,0,1122,3],
 "classinviwo_1_1StructuredCoordinateTransformer.html#aede149a8184484fc8e854279fdc3ffa6":[2,0,0,1113,2],
 "classinviwo_1_1StructuredCoordinateTransformer.html#aede149a8184484fc8e854279fdc3ffa6":[4,0,0,1122,2],
-"classinviwo_1_1StructuredCoordinateTransformer.html#aeeb3035cdbc2ecde4fec2acee22143c3":[2,0,0,1113,4],
-"classinviwo_1_1StructuredCoordinateTransformer.html#aeeb3035cdbc2ecde4fec2acee22143c3":[4,0,0,1122,4],
-"classinviwo_1_1StructuredCoordinateTransformer.html#affe06bad32098d4c28addb9f0b091d2d":[2,0,0,1113,0],
-"classinviwo_1_1StructuredCoordinateTransformer.html#affe06bad32098d4c28addb9f0b091d2d":[4,0,0,1122,0]
+"classinviwo_1_1StructuredCoordinateTransformer.html#aeeb3035cdbc2ecde4fec2acee22143c3":[2,0,0,1113,4]
 };

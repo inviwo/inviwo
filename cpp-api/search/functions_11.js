@@ -85,7 +85,8 @@ var searchData=
   ['rgb2xyz_82',['rgb2XYZ',['../namespaceinviwo_1_1color.html#a1f7a7d634b67c8090fd164029ce1dac9',1,'inviwo::color']]],
   ['rgb2ycbcr_83',['rgb2ycbcr',['../namespaceinviwo_1_1color.html#a4a95bd0a41aa8685a0b7bc5c6bb8e575',1,'inviwo::color']]],
   ['rgba2hex_84',['rgba2hex',['../namespaceinviwo_1_1color.html#a021d8d0b389cccf6b5b8569a8c71a949',1,'inviwo::color']]],
-  ['rowbegin_85',['rowBegin',['../namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89',1,'inviwo::csvfilters']]],
-  ['rtrim_86',['rtrim',['../namespaceinviwo_1_1util.html#ababf20580e98b848eaffd93c087fedb2',1,'inviwo::util']]],
-  ['run_87',['run',['../classinviwo_1_1PythonScript.html#a21445a616ad64e5885921688fee72665',1,'inviwo::PythonScript']]]
+  ['roll_85',['roll',['../classinviwo_1_1CameraProperty.html#a18d0434e30d91bea5d1c971ae0f31a53',1,'inviwo::CameraProperty']]],
+  ['rowbegin_86',['rowBegin',['../namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89',1,'inviwo::csvfilters']]],
+  ['rtrim_87',['rtrim',['../namespaceinviwo_1_1util.html#ababf20580e98b848eaffd93c087fedb2',1,'inviwo::util']]],
+  ['run_88',['run',['../classinviwo_1_1PythonScript.html#a21445a616ad64e5885921688fee72665',1,'inviwo::PythonScript']]]
 ];

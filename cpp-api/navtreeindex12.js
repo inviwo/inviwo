@@ -1,5 +1,8 @@
 var NAVTREEINDEX12 =
 {
+"classinviwo_1_1MeshVisualizer.html#ae8fd7b44aa0c1be93250a007dfb0e40d":[2,0,0,660,3],
+"classinviwo_1_1MeshVisualizer.html#ae8fd7b44aa0c1be93250a007dfb0e40d":[4,0,0,669,3],
+"classinviwo_1_1MeshVolumeRenderer.html":[2,0,0,661],
 "classinviwo_1_1MeshVolumeRenderer.html":[4,0,0,670],
 "classinviwo_1_1MeshVolumeRenderer.html#a23e25a38aabf8b6ed5a412c7c905a054":[2,0,0,661,0],
 "classinviwo_1_1MeshVolumeRenderer.html#a23e25a38aabf8b6ed5a412c7c905a054":[4,0,0,670,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1Observable.html#ada2b69f3049d663bda3c981fed8ad466":[4,0,0,725,1],
 "classinviwo_1_1ObservableInterface.html":[2,0,0,717],
 "classinviwo_1_1ObservableInterface.html":[4,0,0,726],
-"classinviwo_1_1Observer.html":[2,0,0,718],
-"classinviwo_1_1Observer.html":[4,0,0,727],
-"classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[2,0,0,718,2],
-"classinviwo_1_1Observer.html#a89a511d1efc3db5e2ce1fe8fd53043a4":[4,0,0,727,2]
+"classinviwo_1_1Observer.html":[2,0,0,718]
 };

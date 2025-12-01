@@ -1256,6 +1256,7 @@ var hierarchy =
     [ "inviwo::animation::FindDivisionsResult", "structinviwo_1_1animation_1_1FindDivisionsResult.html", null ],
     [ "inviwo::ViewEvent::FitData", "structinviwo_1_1ViewEvent_1_1FitData.html", null ],
     [ "inviwo::ViewEvent::FlipUp", "structinviwo_1_1ViewEvent_1_1FlipUp.html", null ],
+    [ "inviwo::ViewEvent::FlipView", "structinviwo_1_1ViewEvent_1_1FlipView.html", null ],
     [ "inviwo::TextRenderer::FontCache", "structinviwo_1_1TextRenderer_1_1FontCache.html", null ],
     [ "inviwo::FontSettings", "classinviwo_1_1FontSettings.html", [
       [ "inviwo::FontData", "classinviwo_1_1FontData.html", null ],
