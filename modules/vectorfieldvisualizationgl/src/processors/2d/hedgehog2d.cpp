@@ -45,6 +45,7 @@
 
 #include <cmath>   // for atan2, cos, sin
 #include <memory>  // for unique_ptr, share...
+#include <numbers>
 
 #include <glm/geometric.hpp>  // for length
 #include <glm/mat2x2.hpp>     // for operator*, mat<>:...
@@ -90,8 +91,8 @@ HedgeHog2D::HedgeHog2D()
     , transferFunction_{"transferFunction", "Transfer Function",
                         "Defines the transfer function for mapping the velocity magnitude "
                         "to color and opacity"_help,
-                        TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}},
-                                          {1.0, vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
+                        TransferFunction{{{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                          {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
     , numberOfGlyphs_{"numberOfGlyphs", "Number of Glyphs", ivec2{30}, ivec2{1}, ivec2{1000}}
     , jitter_{"jitter", "Jitter", false}
     , jitterScale_{"jitterScale", "Jitter Scaling",
@@ -138,9 +139,6 @@ struct ArrowConfig {
     float hookWidth = 0.1f;
     float headRatio = 0.2f;
     float scaling = 1.0f;
-
-    ArrowMesh* mesh;
-    IndexBufferRAM* indexBuffer;
 };
 
 vec2 getOffset(HedgeHog2D::Pivot pivot) {
@@ -246,7 +244,7 @@ void HedgeHog2D::process() {
     const DataMapper& dataMap = inport_.getData()->dataMap;
 
     const double max = glm::compMax(glm::abs(dataMap.dataRange));
-    const double conservativeMax = std::sqrt(2.0) * max;
+    const double conservativeMax = std::numbers::sqrt2 * max;
     auto getColor = [this](double t) {
         if (tfGroup_.isChecked()) {
             return transferFunction_.get().sample(t);
@@ -266,14 +264,12 @@ void HedgeHog2D::process() {
     std::uniform_real_distribution<float> jitterx{-deltaHalf.x, deltaHalf.x};
     std::uniform_real_distribution<float> jittery{-deltaHalf.y, deltaHalf.y};
 
-    ArrowConfig config{
+    const ArrowConfig config{
         .pivot = pivot_,
         .baseWidth = arrowBaseWidth_,
         .hookWidth = arrowHookWidth_,
         .headRatio = arrowHeadRatio_,
         .scaling = glyphScale_ * glm::compMin(delta),
-        .mesh = mesh.get(),
-        .indexBuffer = indexBuffer.get(),
     };
 
     for (int j = 0; j < numberOfGlyphs_.get().y; j++) {
@@ -294,11 +290,12 @@ void HedgeHog2D::process() {
             const auto length = normalized_ ? 1.0f : static_cast<float>(normalizedMagnitude);
 
             switch (glyphType_) {
-                case GlyphType::Arrow:
-                    addArrow(*mesh.get(), *indexBuffer, config, pos, velocity, length, color);
-                    break;
                 case GlyphType::Quiver:
-                    addQuiver(*mesh.get(), *indexBuffer, config, pos, velocity, length, color);
+                    addQuiver(*mesh, *indexBuffer, config, pos, velocity, length, color);
+                    break;
+                case GlyphType::Arrow:
+                default:
+                    addArrow(*mesh, *indexBuffer, config, pos, velocity, length, color);
                     break;
             }
         }
