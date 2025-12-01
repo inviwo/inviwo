@@ -87,25 +87,25 @@ LIC3D::LIC3D()
                  InvalidationLevel::InvalidResources}
     , kernel_{"convolutionKernel",
               "Convolution Kernel",
-              "Kernel used in the line integral convolution"_help,
+              "Kernel used in the line integral convolution."_help,
               {{"box", "Box Filter", Kernel::Box}, {"gaussian", "Gaussian", Kernel::Gaussian}},
               0,
               InvalidationLevel::InvalidResources}
     , samples_{"samples", "Steps",
                util::ordinalCount(100, 500).set(
-                   "Number of integration steps in each direction"_help)}
+                   "Number of integration steps in each direction."_help)}
     , stepLength_{"stepLength", "Step Length",
                   util::ordinalScale(0.003f, 1.0f)
                       .setInc(0.0001f)
-                      .set("Distance between each step along of the integration"_help)}
+                      .set("Length of each integration step."_help)}
     , normalizeVectors_{"normalizeVectors", "Normalize vectors",
-                        "If set, the vectors are normalized "_help, true,
+                        "If set, the vectors are normalized prior integration."_help, true,
                         InvalidationLevel::InvalidResources}
     , noiseRepeat_{"noiseRepeat", "Noise Repeat", util::ordinalScale(2.0f, 10.0f).setInc(0.001f)}
     , alphaScale_{"alphaScale", "Density Scaling", util::ordinalScale(10.0f, 100.0f).setInc(0.001f)}
     , outputDimensions_{"outputDimensions",
                         "Output Dimensions",
-                        "Sets the dimensions of the resulting 3D LIC Volume"_help,
+                        "Sets the dimensions of the resulting 3D LIC Volume."_help,
                         {{"noiseVolume", "Noise Volume", OutputDimensions::NoiseVolume},
                          {"vectorField", "Vector Field", OutputDimensions::VectorField},
                          {"custom", "Custom", OutputDimensions::Custom}}}

@@ -68,7 +68,7 @@ float gaussian(in int step) {
     float dist = step / float(samples);
     float distSq = dot(dist, dist);
     float kernelSizeSq = 1.0 / 9.0;
-    return  clamp(exp(-0.693147180559945 * distSq / kernelSizeSq), 0.0, 1.0);
+    return clamp(exp(-0.693147180559945 * distSq / kernelSizeSq), 0.0, 1.0);
 }
 
 float integration(in vec3 pos, in int steps, in int integrationDirection) {

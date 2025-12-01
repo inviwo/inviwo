@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
@@ -48,12 +49,17 @@ public:
 
 private:
     enum class IntegrationDirection : int { Bidirectional = 0, Forward = 1, Backward = -1 };
+    enum class Kernel : std::uint8_t { Box, Gaussian };
+
+    virtual void initializeShader(Shader& shader) override;
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
                             Layer& output) override;
     virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
     LayerInport noiseTexture_;
 
+    OptionProperty<IntegrationDirection> direction_;
+    OptionProperty<Kernel> kernel_;
     IntProperty samples_;
     FloatProperty stepLength_;
     BoolProperty normalizeVectors_;
