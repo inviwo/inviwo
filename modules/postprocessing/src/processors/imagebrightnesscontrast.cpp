@@ -66,8 +66,8 @@ ImageBrightnessContrast::ImageBrightnessContrast()
     addProperty(contrast_);
 }
 
-void ImageBrightnessContrast::preProcess(TextureUnitContainer&) {
-    utilgl::setUniforms(shader_, brightness_, contrast_);
+void ImageBrightnessContrast::preProcess(TextureUnitContainer&, Shader& shader) {
+    utilgl::setUniforms(shader, brightness_, contrast_);
 }
 
 }  // namespace inviwo

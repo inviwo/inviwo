@@ -89,16 +89,14 @@ LIC2D::LIC2D()
     addPort(noiseTexture_);
     addProperties(samples_, stepLength_, useRK4_, normalizeVectors_, postProcessing_);
     postProcessing_.addProperties(intensityMapping_, brightness_, contrast_, gamma_);
-
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-void LIC2D::preProcess(TextureUnitContainer& cont, const Layer&, Layer&) {
-    utilgl::bindAndSetUniforms(shader_, cont, noiseTexture_);
-    utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, useRK4_);
-    shader_.setUniform("postProcessing", postProcessing_.isChecked());
+void LIC2D::preProcess(TextureUnitContainer& cont, Shader& shader, const Layer&, Layer&) {
+    utilgl::bindAndSetUniforms(shader, cont, noiseTexture_);
+    utilgl::setUniforms(shader, samples_, stepLength_, normalizeVectors_, useRK4_);
+    shader.setUniform("postProcessing", postProcessing_.isChecked());
     if (postProcessing_) {
-        utilgl::setUniforms(shader_, intensityMapping_, brightness_, contrast_, gamma_);
+        utilgl::setUniforms(shader, intensityMapping_, brightness_, contrast_, gamma_);
     }
 }
 

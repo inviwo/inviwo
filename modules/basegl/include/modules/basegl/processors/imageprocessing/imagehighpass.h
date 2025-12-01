@@ -50,7 +50,7 @@ public:
     virtual ~ImageHighPass() = default;
 
 protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader) override;
 
 private:
     IntProperty kernelSize_;

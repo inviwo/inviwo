@@ -63,29 +63,39 @@ public:
     ImageGLProcessor(std::string_view fragmentShader, bool buildShader = true);
     virtual ~ImageGLProcessor();
 
-    virtual void initializeResources() override;
+    virtual void initializeResources() final;
 
     virtual void process() override;
 
 protected:
     void markInvalid();
 
-    /*! \brief this function gets called right before the actual processing but
+    /**
+     * \brief this function gets called during resource initialization.
+     *
+     * Override this to add any shader defines etc. The shader will be built automatically.
+     */
+    virtual void initializeShader(Shader& shader);
+
+    /**
+     * \brief this function gets called right before the actual processing but
      *         after the shader has been activated
      *
-     * overwrite this function in the derived class to perform things like custom shader setup
+     * Override this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(TextureUnitContainer& cont);
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader);
 
-    /*! \brief this function gets called at the end of the process function
+    /**
+     * \brief this function gets called at the end of the process function
      *
-     * overwrite this function in the derived class to perform post-processing
+     * Override this function in the derived class to perform post-processing
      */
     virtual void postProcess();
 
-    /*! \brief this function gets called whenever the inport changes
+    /**
+     * \brief this function gets called whenever the inport changes
      *
-     * overwrite this function in the derived class to be notified of inport onChange events
+     * Override this function in the derived class to be notified of inport onChange events
      */
     virtual void afterInportChanged();
 
@@ -102,6 +112,7 @@ protected:
 
     bool internalInvalid_;
 
+private:
     Shader shader_;
 };
 

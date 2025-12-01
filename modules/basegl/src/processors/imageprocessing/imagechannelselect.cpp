@@ -64,11 +64,12 @@ ImageChannelSelect::ImageChannelSelect()
     addProperty(channelSelector_);
 }
 
-void ImageChannelSelect::preProcess(TextureUnitContainer&) {
+void ImageChannelSelect::preProcess(TextureUnitContainer&, Shader& shader) {
     auto inDF = inport_.getData()->getDataFormat();
     dataFormat_ = DataFormatBase::get(inDF->getNumericType(), 1, inDF->getPrecision());
-    shader_.setUniform("channel", channelSelector_.get());
+    shader.setUniform("channel", channelSelector_.get());
 }
+
 void ImageChannelSelect::postProcess() { swizzleMask_ = swizzlemasks::luminance; }
 
 }  // namespace inviwo

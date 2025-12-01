@@ -69,17 +69,16 @@ Jacobian2D::Jacobian2D()
     addProperty(renormalization_);
 }
 
-void Jacobian2D::initializeResources() {
+void Jacobian2D::initializeShader(Shader& shader) {
     if (inverse_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("INVERT_JACOBIAN");
+        shader.getFragmentShaderObject()->addShaderDefine("INVERT_JACOBIAN");
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("INVERT_JACOBIAN");
+        shader.getFragmentShaderObject()->removeShaderDefine("INVERT_JACOBIAN");
     }
-    ImageGLProcessor::initializeResources();
 }
 
-void Jacobian2D::preProcess(TextureUnitContainer&) {
-    shader_.setUniform("renormalization", renormalization_.get());
+void Jacobian2D::preProcess(TextureUnitContainer&, Shader& shader) {
+    shader.setUniform("renormalization", renormalization_.get());
 }
 
 }  // namespace inviwo

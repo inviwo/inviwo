@@ -62,9 +62,10 @@ LayerConfig Vector2DMagnitude::outputConfig(const Layer& input) const {
                                       .valueRange = dvec2{0.0, conservativeMax}});
 }
 
-void Vector2DMagnitude::preProcess(TextureUnitContainer&, const Layer&, Layer& output) {
+void Vector2DMagnitude::preProcess(TextureUnitContainer&, Shader& shader, const Layer&,
+                                   Layer& output) {
     utilgl::setShaderUniforms(
-        shader_, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
+        shader, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
         "outputMap");
 }
 

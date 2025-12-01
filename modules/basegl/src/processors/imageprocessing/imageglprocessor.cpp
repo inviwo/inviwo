@@ -120,6 +120,7 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
 ImageGLProcessor::~ImageGLProcessor() = default;
 
 void ImageGLProcessor::initializeResources() {
+    initializeShader(shader_);
     shader_.build();
     internalInvalid_ = true;
 }
@@ -155,7 +156,7 @@ void ImageGLProcessor::process() {
     cont.push_back(std::move(imgUnit));
 
     // trigger preprocessing
-    preProcess(cont);
+    preProcess(cont, shader_);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
@@ -166,7 +167,9 @@ void ImageGLProcessor::process() {
 
 void ImageGLProcessor::markInvalid() { internalInvalid_ = true; }
 
-void ImageGLProcessor::preProcess(TextureUnitContainer&) {}
+void ImageGLProcessor::initializeShader(Shader&) {}
+
+void ImageGLProcessor::preProcess(TextureUnitContainer&, Shader&) {}
 
 void ImageGLProcessor::postProcess() {}
 

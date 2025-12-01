@@ -104,7 +104,7 @@ ImageNormalizationProcessor::ImageNormalizationProcessor()
     dataMax_.setReadOnly(true);
 }
 
-void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
+void ImageNormalizationProcessor::preProcess(TextureUnitContainer&, Shader& shader) {
     if (inport_.isChanged()) {
         auto minMax =
             util::layerMinMax(inport_.getData()->getColorLayer(), IgnoreSpecialValues::Yes);
@@ -135,10 +135,10 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
         maxDataType = static_cast<float>(dataformat->getMax());
     }
 
-    shader_.setUniform("minValue", vec4{minValue});
-    shader_.setUniform("maxValue", vec4{maxValue});
-    shader_.setUniform("minDataType", minDataType);
-    shader_.setUniform("maxDataType", maxDataType);
+    shader.setUniform("minValue", vec4{minValue});
+    shader.setUniform("maxValue", vec4{maxValue});
+    shader.setUniform("minDataType", minDataType);
+    shader.setUniform("maxDataType", maxDataType);
 
     auto layer = outport_.getEditableData()->getColorLayer();
     dvec2 dataRange = DataMapper::defaultDataRangeFor(layer->getDataFormat());

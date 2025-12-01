@@ -50,9 +50,9 @@ const ProcessorInfo& Vector2DCurl::getProcessorInfo() const { return processorIn
 
 Vector2DCurl::Vector2DCurl() : LayerGLProcessor{utilgl::findShaderResource("vector2dcurl.frag")} {}
 
-void Vector2DCurl::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
-    shader_.setUniform("inverseMetricTensor",
-                       input.getCoordinateTransformer().getInverseMetricTensor());
+void Vector2DCurl::preProcess(TextureUnitContainer&, Shader& shader, const Layer& input, Layer&) {
+    shader.setUniform("inverseMetricTensor",
+                      input.getCoordinateTransformer().getInverseMetricTensor());
 }
 
 LayerConfig Vector2DCurl::outputConfig(const Layer& input) const {

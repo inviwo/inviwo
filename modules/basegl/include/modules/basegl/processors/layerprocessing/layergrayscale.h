@@ -44,7 +44,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
+                            Layer& output) override;
 
 private:
     OptionProperty<luminance::Model> luminanceModel_;

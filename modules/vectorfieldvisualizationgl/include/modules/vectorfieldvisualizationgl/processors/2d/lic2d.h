@@ -47,7 +47,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    enum class IntegrationDirection : int { Bidirectional = 0, Forward = 1, Backward = -1 };
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
+                            Layer& output) override;
     virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 
     LayerInport noiseTexture_;

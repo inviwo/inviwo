@@ -55,9 +55,10 @@ LayerGradient::LayerGradient()
     addProperties(channel_);
 }
 
-void LayerGradient::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
-    shader_.setUniform("inverseMetricTensor", input.getCoordinateTransformer().getInverseMetricTensor());
-    shader_.setUniform("channel", channel_.getSelectedValue());
+void LayerGradient::preProcess(TextureUnitContainer&, Shader& shader, const Layer& input, Layer&) {
+    shader.setUniform("inverseMetricTensor",
+                      input.getCoordinateTransformer().getInverseMetricTensor());
+    shader.setUniform("channel", channel_.getSelectedValue());
 }
 
 LayerConfig LayerGradient::outputConfig(const Layer& input) const {

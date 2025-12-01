@@ -63,7 +63,8 @@ ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")
     , interpolationType_("interpolationType", "Interpolation Type",
                          "Determines the interpolation for resampling (bilinear or bicubic)"_help,
-                         {{"bilinear", "Bilinear", 0}, {"bicubic", "Bicubic", 1}}, 0)
+                         {{"bilinear", "Bilinear", 0}, {"bicubic", "Bicubic", 1}}, 0,
+                         InvalidationLevel::InvalidResources)
     , outputSizeMode_("outputSizeMode", "Output Size Mode",
                       "Determines the size of the resampled image (set by inport, resize"_help,
                       {{"inportDimension", "Inport Dimensions", 0},
@@ -73,7 +74,6 @@ ImageResample::ImageResample()
     , targetResolution_("targetResolution", "Target Resolution", ivec2(256, 256), ivec2(32, 32),
                         ivec2(4096, 4096), ivec2(1, 1)) {
 
-    interpolationType_.onChange([this]() { interpolationTypeChanged(); });
     outputSizeMode_.onChange([this]() { dimensionSourceChanged(); });
     targetResolution_.onChange([this]() { dimensionChanged(); });
 
@@ -82,21 +82,12 @@ ImageResample::ImageResample()
 
 ImageResample::~ImageResample() = default;
 
-void ImageResample::initializeResources() {
-    interpolationTypeChanged();
-    dimensionSourceChanged();
-    ImageGLProcessor::initializeResources();
-}
-
-void ImageResample::interpolationTypeChanged() {
-    switch (interpolationType_.get()) {
-        case 1:
-            shader_.getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
-            break;
-        default:
-            shader_.getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
+void ImageResample::initializeShader(Shader& shader) {
+    if (interpolationType_.get()) {
+        shader.getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
+    } else {
+        shader.getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
     }
-    shader_.build();
 }
 
 void ImageResample::dimensionChanged() {

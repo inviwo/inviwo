@@ -99,9 +99,8 @@ LayerShader::LayerShader()
           Shader::Build::No})
     , fragmentShader_{std::make_shared<StringShaderResource>("layer_shader.frag",
                                                              detail::defaultFrag)}
-    , fragmentShaderSource_{"fragmentShaderSource", "Fragment Shader",
-                            std::string{detail::defaultFrag}, InvalidationLevel::InvalidResources,
-                            PropertySemantics::ShaderEditor}
+    , fragmentShaderSource_{"fragmentShaderSource", "Fragment Shader", detail::defaultFrag,
+                            InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor}
     , inputFormat_{"inputFormat", "Input Format", "Data format of the input layer"_help}
     , format_{"outputFormat", "Output Format",
               "Determines the data format of the output in combination with the number of "
@@ -166,8 +165,6 @@ LayerShader::LayerShader()
 
 {
 
-    shader_.addShaderObject(ShaderType::Fragment, fragmentShader_);
-    shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidResources); });
     fragmentShaderSource_.onChange(
         [this]() { fragmentShader_->setSource(fragmentShaderSource_.get()); });
 
@@ -200,9 +197,15 @@ LayerShader::LayerShader()
     });
 }
 
-void LayerShader::preProcess(TextureUnitContainer&, const Layer&, Layer& output) {
+void LayerShader::initializeShader(Shader& shader) {
+    if (!shader.getFragmentShaderObject()) {
+        shader.addShaderObject(ShaderType::Fragment, fragmentShader_);
+    }
+}
+
+void LayerShader::preProcess(TextureUnitContainer&, Shader& shader, const Layer&, Layer& output) {
     utilgl::setShaderUniforms(
-        shader_, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
+        shader, utilgl::createGLOutputConversion(output.dataMap, output.getDataFormat()),
         "outputMap");
 }
 

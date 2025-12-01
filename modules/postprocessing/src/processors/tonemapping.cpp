@@ -77,36 +77,15 @@ Tonemapping::Tonemapping()
     addProperty(exposure_);
     addProperty(gamma_);
 
-    method_.onChange([this]() {
-        // TODO add parameters
-        switch (method_.get()) {
-            case Method::None:
-                exposure_.setVisible(true);
-                gamma_.setVisible(false);
-                break;
-            case Method::Gamma:
-                exposure_.setVisible(true);
-                gamma_.setVisible(true);
-                break;
-            case Method::Reinhard:
-                exposure_.setVisible(true);
-                gamma_.setVisible(true);
-                break;
-            case Method::Uncharted2:
-                exposure_.setVisible(true);
-                gamma_.setVisible(true);
-                break;
-        }
-    });
+    gamma_.visibilityDependsOn(method_, [](auto v) { return v != Method::None; });
 }
 
-void Tonemapping::initializeResources() {
-    shader_.getFragmentShaderObject()->addShaderDefine("METHOD", std::to_string(method_.get()));
-    ImageGLProcessor::initializeResources();
+void Tonemapping::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->addShaderDefine("METHOD", std::to_string(method_.get()));
 }
 
-void Tonemapping::preProcess(TextureUnitContainer&) {
-    utilgl::setUniforms(shader_, exposure_, gamma_);
+void Tonemapping::preProcess(TextureUnitContainer&, Shader& shader) {
+    utilgl::setUniforms(shader, exposure_, gamma_);
 }
 
 }  // namespace inviwo

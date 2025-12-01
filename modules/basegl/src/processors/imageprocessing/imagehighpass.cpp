@@ -61,8 +61,8 @@ ImageHighPass::ImageHighPass()
     addProperties(kernelSize_, sharpen_);
 }
 
-void ImageHighPass::preProcess(TextureUnitContainer&) {
-    utilgl::setUniforms(shader_, kernelSize_, sharpen_);
+void ImageHighPass::preProcess(TextureUnitContainer&, Shader& shader) {
+    utilgl::setUniforms(shader, kernelSize_, sharpen_);
 }
 
 }  // namespace inviwo

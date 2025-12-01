@@ -84,12 +84,16 @@ public:
 
 protected:
     /**
+     * \brief this function gets called during resource initialization.
+     *
      * Override this to add any shader defines etc. The shader will be built automatically.
      */
     virtual void initializeShader(Shader& shader);
 
-    /*! @brief this function gets called right before the actual processing but
+    /**
+     * \brief this function gets called right before the actual processing but
      * after the shader has been activated.
+     *
      * Overwrite this function in the derived class to perform things like custom shader setup
      * and binding texture etc.
      * The VolumeConfig, is based on the config from the volume inport, updated with the Config from
@@ -98,7 +102,9 @@ protected:
      */
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config);
 
-    /*! @brief this function gets called at the end of the process function
+    /**
+     * \brief this function gets called at the end of the process function
+     *
      * Overwrite this function in the derived class to perform post-processing
      */
     virtual void postProcess(Volume& volume);

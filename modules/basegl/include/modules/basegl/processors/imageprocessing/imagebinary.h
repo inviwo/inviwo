@@ -47,13 +47,12 @@ class IVW_MODULE_BASEGL_API ImageBinary : public ImageGLProcessor {
 public:
     ImageBinary();
 
-    virtual void initializeResources() override;
-
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void initializeShader(Shader& shader) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader) override;
     virtual void afterInportChanged() override;
 
     OptionPropertyInt channel_;
