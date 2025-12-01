@@ -403,8 +403,8 @@ QWidget#CompositeWidget > .QPushButton {
 
 QWidget#ButtonGroupPropertyWidgetQt > .QPushButton {
     /* overwrite minimum size for push buttons within the composite properties */
-    min-height: 0.3125em;
-    min-width: 0.5em;    
+    min-height: 1.6em;
+    min-width: 1.6em;
 }
 
 QPushButton:default {

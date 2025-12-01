@@ -51,6 +51,9 @@ enum class UpdateLookRanges { Yes, No };
 static constexpr float defaultZoomFactor = 125.f;
 static constexpr float defaultFarNearRatio = 2000.f;
 
+IVW_CORE_API float fovxFrom(float fovy, float aspect);
+IVW_CORE_API float fovxDegreesFrom(float fovyDegrees, float aspect);
+
 /**
  * Setup the camera parameters such that the whole boundingBox spanned by basis and offset
  * will be inside the view frustum, for the given view direction
@@ -67,8 +70,8 @@ static constexpr float defaultFarNearRatio = 2000.f;
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox,
-                                glm::vec3 viewDir, glm::vec3 lookUp, float fitRatio = 1.05f,
+IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBox, glm::mat3 view,
+                                float fitRatio = 1.05f,
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No,
                                 float maxZoomFactor = defaultZoomFactor,

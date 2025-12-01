@@ -306,6 +306,17 @@ template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
 decltype(auto) get(glm::vec<L, T, Q>& vec) {
     return vec[N];
 }
+
+template <std::size_t N, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+decltype(auto) get(const glm::mat<C, R, T, Q>& mat) {
+    return mat[N];
+}
+
+template <std::size_t N, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+decltype(auto) get(glm::mat<C, R, T, Q>& mat) {
+    return mat[N];
+}
+
 }  // namespace glm
 
 // Needed to get structured bindings to work for glm vecs
@@ -314,5 +325,13 @@ struct std::tuple_size<glm::vec<L, T, Q>> : std::integral_constant<std::size_t, 
 
 template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
 struct std::tuple_element<N, glm::vec<L, T, Q>> {
-    using type = T;
+    using type = typename glm::vec<L, T, Q>::value_type;
+};
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct std::tuple_size<glm::mat<C, R, T, Q>> : std::integral_constant<std::size_t, C> {};
+
+template <std::size_t N, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct std::tuple_element<N, glm::mat<C, R, T, Q>> {
+    using type = typename glm::mat<C, R, T, Q>::col_type;
 };
