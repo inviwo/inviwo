@@ -306,7 +306,7 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask&
     , wrapping_{wrapping} {
 
     if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
                         dimensions_};
     }
 
@@ -329,7 +329,7 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
     , wrapping_{wrapping} {
 
     if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
                         dimensions_};
     }
 

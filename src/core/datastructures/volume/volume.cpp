@@ -52,7 +52,7 @@ Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
     , histograms_{} {
 
     if (glm::any(glm::equal(defaultDimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
                         defaultDimensions_};
     }
 }
@@ -73,7 +73,7 @@ Volume::Volume(const VolumeConfig& config)
     , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)}
     , histograms_{} {
     if (glm::any(glm::equal(defaultDimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
                         defaultDimensions_};
     }
 }
@@ -110,7 +110,7 @@ Volume::Volume(const Volume& rhs, NoData, const VolumeConfig& config)
     , histograms_{} {
 
     if (glm::any(glm::equal(defaultDimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All volume dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All volume dimensions have to be greater than 0, got {}",
                         defaultDimensions_};
     }
 }

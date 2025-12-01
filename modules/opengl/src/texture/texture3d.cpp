@@ -54,7 +54,7 @@ Texture3D::Texture3D(size3_t dimensions, GLFormat glFormat, GLenum filtering,
     , dimensions_(dimensions) {
 
     if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All texture dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All texture dimensions have to be greater than 0, got {}",
                         dimensions_};
     }
 }
@@ -67,7 +67,7 @@ Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLe
     , dimensions_(dimensions) {
 
     if (glm::any(glm::equal(dimensions_, size3_t{0}))) {
-        throw Exception{SourceContext{}, "All texture dimensions has to be greater than 0, got {}",
+        throw Exception{SourceContext{}, "All texture dimensions have to be greater than 0, got {}",
                         dimensions_};
     }
 }
