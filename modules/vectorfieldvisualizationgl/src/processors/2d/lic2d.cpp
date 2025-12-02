@@ -33,7 +33,23 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
+#include <glm/matrix.hpp>  // for inverse
+
 namespace inviwo {
+
+namespace {
+
+std::string_view toShaderString(LIC2D::Kernel kernel) {
+    switch (kernel) {
+        case LIC2D::Kernel::Gaussian:
+            return "gaussian";
+        case LIC2D::Kernel::Box:
+        default:
+            return "box";
+    }
+}
+
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LIC2D::processorInfo_{
@@ -50,55 +66,92 @@ LIC2D::LIC2D()
     : LayerGLProcessor{utilgl::findShaderResource("lic2d.frag")}
     , noiseTexture_{"noiseTexture",
                     "2D noise layer which will be convoluted along the vector field"_help}
+    , direction_{"direction",
+                 "Integration Direction",
+                 "Specificies the direction for the line integral convolution."_help,
+                 {{"bidirectional", "Forward & Backward", IntegrationDirection::Bidirectional},
+                  {"forward", "Forward", IntegrationDirection::Forward},
+                  {"backward", "Backward", IntegrationDirection::Backward}},
+                 0,
+                 InvalidationLevel::InvalidResources}
+    , kernel_{"convolutionKernel",
+              "Convolution Kernel",
+              "Kernel used in the line integral convolution."_help,
+              {{"box", "Box Filter", Kernel::Box}, {"gaussian", "Gaussian", Kernel::Gaussian}},
+              0,
+              InvalidationLevel::InvalidResources}
     , samples_{"samples", "Number of Steps",
-               util::ordinalCount(20, 100).setMin(2).set(
-                   "Total number of steps, both forward and backward."_help)}
+               util::ordinalCount(20, 100).set(
+                   "Number of integration steps in each direction."_help)}
     , stepLength_{"stepLength", "Step Length",
-                  util::ordinalScale(0.003f, 0.01f).set("Length of each integration step."_help)}
+                  util::ordinalScale(0.003f, 0.01f)
+                      .setInc(0.0001f)
+                      .set("Length of each integration step."_help)}
     , normalizeVectors_{"normalizeVectors", "Normalize Vectors",
-                        "Vectors are normalized prior integration."_help, true}
+                        "If set, the vectors are normalized prior integration."_help, true,
+                        InvalidationLevel::InvalidResources}
     , useRK4_{"useRK4", "Use Runge-Kutta4",
               "Use Runge-Kutta fourth order as integration scheme, otherwise Euler integration is used."_help,
-              true}
+              true, InvalidationLevel::InvalidResources}
     , postProcessing_{"postProcessing", "Post Processing",
                       "Apply some basic image operations to enhance the LIC"_help, true}
     , intensityMapping_{"intensityMapping", "Enable Intensity Remapping",
-                        "Remap the resulting intensity values $v$ with $v^(5 / (v + 1)^4)$. "
+                        "Remap the resulting intensity values v with pow(v, 5 / pow(v + 1, 4)). "
                         "This will increase contrast."_help,
                         false}
     , brightness_{"brightness",
                   "Brightness",
-                  "Adjusts the overall brightness"_help,
+                  "Adjusts the overall brightness."_help,
                   0.0f,
                   {-1.0f, ConstraintBehavior::Immutable},
                   {1.0f, ConstraintBehavior::Immutable}}
     , contrast_{"contrast",
                 "Contrast",
-                "Adjusts the overall contrast"_help,
+                "Adjusts the overall contrast."_help,
                 0.0f,
                 {-1.0f, ConstraintBehavior::Immutable},
                 {1.0f, ConstraintBehavior::Immutable}}
     , gamma_{"gamma",
              "Gamma Correction",
-             "Gamma correction using $v^gamma$"_help,
+             "Gamma correction using pow(v, γ)."_help,
              1.0f,
              {0.0f, ConstraintBehavior::Immutable},
              {2.0f, ConstraintBehavior::Immutable}} {
 
     outport_.setHelp("Resulting layer with grayscale LIC (single channel)"_help);
     addPort(noiseTexture_);
-    addProperties(samples_, stepLength_, useRK4_, normalizeVectors_, postProcessing_);
+    addProperties(direction_, kernel_, samples_, stepLength_, useRK4_, normalizeVectors_,
+                  postProcessing_);
     postProcessing_.addProperties(intensityMapping_, brightness_, contrast_, gamma_);
-
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
-void LIC2D::preProcess(TextureUnitContainer& cont, const Layer&, Layer&) {
-    utilgl::bindAndSetUniforms(shader_, cont, noiseTexture_);
-    utilgl::setUniforms(shader_, samples_, stepLength_, normalizeVectors_, useRK4_);
-    shader_.setUniform("postProcessing", postProcessing_.isChecked());
+void LIC2D::initializeShader(Shader& shader) {
+    auto* fragShader = shader.getFragmentShaderObject();
+    fragShader->addShaderDefine("KERNEL", toShaderString(kernel_));
+    fragShader->addShaderDefine("INTEGRATION_DIRECTION",
+                                fmt::format("{}", static_cast<int>(direction_.getSelectedValue())));
+    fragShader->setShaderDefine("KERNEL_NORMALIZATION", kernel_ != Kernel::Gaussian);
+    fragShader->setShaderDefine("NORMALIZATION", normalizeVectors_);
+    fragShader->setShaderDefine("USE_RUNGEKUTTA", useRK4_);
+}
+
+void LIC2D::preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input, Layer&) {
+    utilgl::bindAndSetUniforms(shader, cont, noiseTexture_);
+    utilgl::setUniforms(shader, samples_, stepLength_);
+    shader.setUniform("worldToTexture", glm::inverse(mat2(input.getBasis())));
+
+    const auto wrapping = input.getWrapping();
+    const vec2 clampMin{
+        wrapping[0] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest(),
+        wrapping[1] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest()};
+    const vec2 clampMax{wrapping[0] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max(),
+                        wrapping[1] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max()};
+    shader.setUniform("clampMin", clampMin);
+    shader.setUniform("clampMax", clampMax);
+
+    shader.setUniform("postProcessing", postProcessing_.isChecked());
     if (postProcessing_) {
-        utilgl::setUniforms(shader_, intensityMapping_, brightness_, contrast_, gamma_);
+        utilgl::setUniforms(shader, intensityMapping_, brightness_, contrast_, gamma_);
     }
 }
 

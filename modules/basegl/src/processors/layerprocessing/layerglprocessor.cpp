@@ -46,8 +46,8 @@ LayerGLProcessor::LayerGLProcessor(Shader shader)
     : Processor()
     , inport_("inport", "The input layer"_help)
     , outport_("outport", "Resulting output layer"_help)
-    , shader_(std::move(shader))
-    , config{} {
+    , config{}
+    , shader_(std::move(shader)) {
 
     addPorts(inport_, outport_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -57,7 +57,10 @@ LayerGLProcessor::LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     : LayerGLProcessor(Shader{{utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}},
                               Shader::Build::No}) {}
 
-void LayerGLProcessor::initializeResources() { shader_.build(); }
+void LayerGLProcessor::initializeResources() {
+    initializeShader(shader_);
+    shader_.build();
+}
 
 void LayerGLProcessor::process() {
     const auto& input = *inport_.getData();
@@ -88,7 +91,7 @@ void LayerGLProcessor::process() {
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "inport");
 
-    preProcess(cont, input, *layer);
+    preProcess(cont, shader_, input, *layer);
 
     const auto dim = layer->getDimensions();
     {
@@ -112,7 +115,9 @@ void LayerGLProcessor::process() {
 LayerConfig LayerGLProcessor::outputConfig([[maybe_unused]] const Layer& input) const {
     return input.config();
 }
-void LayerGLProcessor::preProcess(TextureUnitContainer&, const Layer&, Layer&) {}
+
+void LayerGLProcessor::initializeShader(Shader&) {}
+void LayerGLProcessor::preProcess(TextureUnitContainer&, Shader&, const Layer&, Layer&) {}
 void LayerGLProcessor::postProcess(const Layer&, Layer&) {}
 
 }  // namespace inviwo

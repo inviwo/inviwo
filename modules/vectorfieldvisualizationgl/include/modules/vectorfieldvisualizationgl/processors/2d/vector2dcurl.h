@@ -44,7 +44,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
+                            Layer& output) override;
     virtual LayerConfig outputConfig([[maybe_unused]] const Layer& input) const override;
 };
 

@@ -40,13 +40,14 @@ namespace inviwo {
 class IVW_MODULE_BASEGL_API LayerBinary : public LayerGLProcessor {
 public:
     LayerBinary();
-    virtual void initializeResources() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+    virtual void initializeShader(Shader& shader) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
+                            Layer& output) override;
     virtual LayerConfig outputConfig(const Layer& input) const override;
 
     OptionPropertyInt channel_;

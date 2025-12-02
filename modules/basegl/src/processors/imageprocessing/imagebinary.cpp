@@ -65,13 +65,12 @@ ImageBinary::ImageBinary()
     addProperties(channel_, threshold_, comparison_);
 }
 
-void ImageBinary::initializeResources() {
-    shader_.getFragmentShaderObject()->addShaderDefine("COMPARE", comparison_.getSelectedValue());
-    ImageGLProcessor::initializeResources();
+void ImageBinary::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->addShaderDefine("COMPARE", comparison_.getSelectedValue());
 }
 
-void ImageBinary::preProcess(TextureUnitContainer&) {
-    utilgl::setUniforms(shader_, channel_, threshold_);
+void ImageBinary::preProcess(TextureUnitContainer&, Shader& shader) {
+    utilgl::setUniforms(shader, channel_, threshold_);
 
     auto layer = outport_.getEditableData()->getColorLayer();
     layer->dataMap.dataRange = DataMapper::defaultDataRangeFor(layer->getDataFormat());

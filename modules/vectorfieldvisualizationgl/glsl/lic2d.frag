@@ -24,88 +24,127 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+
+#if !defined(KERNEL)
+#  define KERNEL(s) box(s)
+#  if !defined(KERNEL_NORMALIZATION)
+#  define KERNEL_NORMALIZATION
+#  endif
+#endif
+#if !defined(INTEGRATION_DIRECTION)
+#  define INTEGRATION_DIRECTION 0
+#endif
+
 uniform sampler2D inport;
+uniform ImageParameters inportParameters;
+
 uniform sampler2D noiseTexture;
 
 uniform int samples;
 uniform float stepLength;
-uniform bool normalizeVectors;
-uniform bool useRK4;
+uniform mat2 worldToTexture = mat2(1);
+
+uniform vec2 clampMin = vec2(0);
+uniform vec2 clampMax = vec2(1);
 
 uniform bool postProcessing = false;
 uniform bool intensityMapping = false;
-uniform float brightness = 0.0; // in [-1, 1]
-uniform float contrast = 0.0;   // in [-1, 1]
+uniform float brightness = 0.0;  // in [-1, 1]
+uniform float contrast = 0.0;    // in [-1, 1]
 uniform float gamma = 1.0;
 
 in vec3 texCoord_;
 
-
-vec2 euler(vec2 posF ){
-    vec2 V0 = texture(inport, posF).rg;
-    if(normalizeVectors){
-        V0 = normalize(V0);
-    }
-    return V0;
-
-}
- 
-vec2 rk4(vec2 p0 , float stepsize) {
-    vec2 V0 = euler(p0);
-    
-    vec2 p1 = p0 + V0 * stepsize/2;
-    vec2 V1 = euler(p1);
-    
-    vec2 p2 = p0 + V1 * stepsize/2;
-    vec2 V2 = euler(p2);
-
-    vec2 p3 = p0 + V2 * stepsize;
-    vec2 V3 = euler(p3);
-
-
-    return (V0 + 2*(V1+V2) + V3) / 6.0;
+vec2 euler(in vec2 pos) {
+    vec2 v = getValueTexel(inport, inportParameters, pos).xy;
+#if defined(NORMALIZATION)
+    v = normalize(v);
+#endif
+    return v;
 }
 
-void traverse(inout  float v , inout int c,vec2 posF , float stepSize,int steps){
-    for(int i = 0;i<steps;i++){
-        vec2 V0;
-        if(useRK4){
-            V0 = rk4(posF,stepSize);
-        }else{
-            V0 = euler(posF);
+vec2 rungekutta4(in vec2 p0, in vec2 v0, float stepsize) {
+    vec2 p1 = p0 + v0 * stepsize * 0.5;
+    vec2 v1 = euler(p1);
+
+    vec2 p2 = p0 + v1 * stepsize * 0.5;
+    vec2 v2 = euler(p2);
+
+    vec2 p3 = p0 + v2 * stepsize;
+    vec2 v3 = euler(p3);
+
+    return (v0 + 2.0 * (v1 + v2) + v3) / 6.0;
+}
+
+bool insideUnitSquare(in vec2 posTex) {
+    return posTex == clamp(posTex, clampMin, clampMax);
+}
+
+float box(in int step) {
+    return 1.0;
+}
+
+float gaussian(in int step) {
+    float weight = 2.0 / float(samples);
+#if INTEGRATION_DIRECTION == 0
+    weight *= 0.5;
+#endif
+
+    float dist = step / float(samples);
+    float distSq = dot(dist, dist);
+    float kernelSizeSq = 1.0 / 9.0;
+    return clamp(exp(-0.693147180559945 * distSq / kernelSizeSq) * weight, 0.0, 1.0);
+}
+
+float integration(in vec2 posTex, in int steps, in float stepSize, inout int stepCount) {
+    float density = 0.0;
+    for (int i = 0; i < steps; ++i) {
+        vec2 vWorld = euler(posTex);
+#if defined(USE_RUNGEKUTTA)
+        vWorld = rungekutta4(posTex, vWorld, stepSize);
+#endif
+        vWorld *= stepSize;
+        posTex += worldToTexture * vWorld;
+        if (!insideUnitSquare(posTex)) {
+            break;
         }
-        posF += V0 * stepSize;
-
-        if(posF.x < 0 ) break;
-        if(posF.y < 0 ) break;
-
-        if(posF.x > 1 ) break;
-        if(posF.y > 1 ) break;
-
-        v += texture(noiseTexture, posF.xy).r;
-        c += 1;
+        density += texture(noiseTexture, posTex).x * KERNEL(i);
+        ++stepCount;
     }
+    return density;
 }
 
 void main() {
-	float v = texture(noiseTexture, texCoord_.xy).r;
+    vec2 pos = texCoord_.xy;
+    float density = texture(noiseTexture, pos).x * KERNEL(0);
 
-	int c = 1;
-	traverse(v,c,texCoord_.xy , stepLength , samples / 2);
-    traverse(v,c,texCoord_.xy , -stepLength , samples / 2);
+    float speed = length(worldToTexture * getValueTexel(inport, inportParameters, pos).xy);
+    if (speed > 1.0e-8) {
+        int stepCount = 1;
+#if INTEGRATION_DIRECTION >= 0
+        density += integration(pos, samples, stepLength, stepCount);
+#endif
+#if INTEGRATION_DIRECTION <= 0
+        density += integration(pos, samples, -stepLength, stepCount);
+#endif
 
-	v /= c;
-
-    if (postProcessing) {
-        v = mix(v, pow(v, 5.0 / pow(v + 1.0, 4)), intensityMapping);
-        // brightness-contrast
-        v = clamp((v - 0.5) * (contrast + 1.0) + 0.5 + brightness, 0, 1);
-        // gamma correction
-        v = pow(v, gamma);
+#if defined(KERNEL_NORMALIZATION)
+        density /= stepCount;
+#endif
     }
 
-    FragData0 = vec4(v);
+    if (postProcessing) {
+        density = mix(density, pow(density, 5.0 / pow(density + 1.0, 4)), intensityMapping);
+        // brightness-contrast
+        density = clamp((density - 0.5) * (contrast + 1.0) + 0.5 + brightness, 0, 1);
+        // gamma correction
+        density = pow(density, gamma);
+    }
+
+    FragData0 = vec4(density);
 }

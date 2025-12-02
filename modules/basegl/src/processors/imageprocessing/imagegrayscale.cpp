@@ -91,8 +91,8 @@ ImageGrayscale::ImageGrayscale()
     outport_.setHelp("The grayscale output image."_help);
 }
 
-void ImageGrayscale::preProcess(TextureUnitContainer&) {
-    shader_.setUniform("weights", luminance::weights(luminanceModel_.get()));
+void ImageGrayscale::preProcess(TextureUnitContainer&, Shader& shader) {
+    shader.setUniform("weights", luminance::weights(luminanceModel_.get()));
 }
 
 }  // namespace inviwo

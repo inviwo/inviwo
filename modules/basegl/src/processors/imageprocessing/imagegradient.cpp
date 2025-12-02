@@ -68,11 +68,11 @@ ImageGradient::ImageGradient()
     addProperty(channel_);
 }
 
-void ImageGradient::preProcess(TextureUnitContainer&) {
-    const auto layer = inport_.getData()->getColorLayer();
-    shader_.setUniform("inverseMetricTensor",
-                       layer->getCoordinateTransformer().getInverseMetricTensor());
-    shader_.setUniform("channel", channel_.getSelectedValue());
+void ImageGradient::preProcess(TextureUnitContainer&, Shader& shader) {
+    const auto* layer = inport_.getData()->getColorLayer();
+    shader.setUniform("inverseMetricTensor",
+                      layer->getCoordinateTransformer().getInverseMetricTensor());
+    shader.setUniform("channel", channel_.getSelectedValue());
 
     const double gradientEstimate = glm::compMax(glm::abs(layer->dataMap.dataRange)) /
                                     glm::compMax(layer->getWorldSpaceGradientSpacing());

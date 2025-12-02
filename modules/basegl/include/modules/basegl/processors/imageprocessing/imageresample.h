@@ -51,10 +51,9 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void initializeResources() override;
-
 protected:
-    void interpolationTypeChanged();
+    virtual void initializeShader(Shader& shader) override;
+
     void dimensionChanged();
     void dimensionSourceChanged();
 

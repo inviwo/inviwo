@@ -62,9 +62,10 @@ LayerColorMapping::LayerColorMapping()
     addProperties(channel_, transferFunction_);
 }
 
-void LayerColorMapping::preProcess(TextureUnitContainer& container, const Layer&, Layer&) {
-    utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
-    utilgl::setUniforms(shader_, channel_);
+void LayerColorMapping::preProcess(TextureUnitContainer& container, Shader& shader, const Layer&,
+                                   Layer&) {
+    utilgl::bindAndSetUniforms(shader, container, transferFunction_);
+    utilgl::setUniforms(shader, channel_);
 }
 
 LayerConfig LayerColorMapping::outputConfig([[maybe_unused]] const Layer& input) const {

@@ -64,13 +64,12 @@ LayerBinary::LayerBinary()
     addProperties(channel_, threshold_, comparison_);
 }
 
-void LayerBinary::initializeResources() {
-    shader_.getFragmentShaderObject()->addShaderDefine("COMPARE", comparison_.getSelectedValue());
-    LayerGLProcessor::initializeResources();
+void LayerBinary::initializeShader(Shader& shader) {
+    shader.getFragmentShaderObject()->addShaderDefine("COMPARE", comparison_.getSelectedValue());
 }
 
-void LayerBinary::preProcess(TextureUnitContainer&, const Layer&, Layer&) {
-    utilgl::setUniforms(shader_, channel_, threshold_);
+void LayerBinary::preProcess(TextureUnitContainer&, Shader& shader, const Layer&, Layer&) {
+    utilgl::setUniforms(shader, channel_, threshold_);
 }
 
 LayerConfig LayerBinary::outputConfig(const Layer& input) const {

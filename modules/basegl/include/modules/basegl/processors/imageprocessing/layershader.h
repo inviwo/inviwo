@@ -54,11 +54,13 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output) override;
+private:
+    virtual void initializeShader(Shader& shader) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
+                            Layer& output) override;
     virtual LayerConfig outputConfig(const Layer& input) const override;
 
-private:
-    LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);
+    explicit LayerShader(std::shared_ptr<StringShaderResource> fragmentShader);
     std::shared_ptr<StringShaderResource> fragmentShader_;
     StringProperty fragmentShaderSource_;
 

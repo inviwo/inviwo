@@ -70,13 +70,14 @@ LayerNormalization::LayerNormalization()
     dataMax_.setReadOnly(true);
 }
 
-void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, Layer&) {
+void LayerNormalization::preProcess(TextureUnitContainer&, Shader& shader, const Layer& input,
+                                    Layer&) {
     if (inport_.isChanged()) {
         const auto [min, max] = dataMinMaxGL_.minMax(input);
         dataMin_.set(min);
         dataMax_.set(max);
         // reactivate shader since DataMinMaxGL uses its own shaders
-        shader_.activate();
+        shader.activate();
     }
 
     dvec4 minValue{dataMin_.get()};
@@ -106,12 +107,12 @@ void LayerNormalization::preProcess(TextureUnitContainer&, const Layer& input, L
         resultScaling = 2.0f;
     }
 
-    shader_.setUniform("minValue", vec4{minValue});
-    shader_.setUniform("maxValue", vec4{maxValue});
-    shader_.setUniform("minDataType", minDataType);
-    shader_.setUniform("maxDataType", maxDataType);
-    shader_.setUniform("resultOffset", resultOffset);
-    shader_.setUniform("resultScaling", resultScaling);
+    shader.setUniform("minValue", vec4{minValue});
+    shader.setUniform("maxValue", vec4{maxValue});
+    shader.setUniform("minDataType", minDataType);
+    shader.setUniform("maxDataType", maxDataType);
+    shader.setUniform("resultOffset", resultOffset);
+    shader.setUniform("resultScaling", resultScaling);
 }
 
 LayerConfig LayerNormalization::outputConfig(const Layer& input) const {

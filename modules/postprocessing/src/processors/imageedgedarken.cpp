@@ -62,8 +62,8 @@ ImageEdgeDarken::ImageEdgeDarken()
     addProperty(intensity_);
 }
 
-void ImageEdgeDarken::preProcess(TextureUnitContainer&) {
-    utilgl::setUniforms(shader_, darken_, intensity_);
+void ImageEdgeDarken::preProcess(TextureUnitContainer&, Shader& shader) {
+    utilgl::setUniforms(shader, darken_, intensity_);
 }
 
 }  // namespace inviwo

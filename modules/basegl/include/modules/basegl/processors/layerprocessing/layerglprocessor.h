@@ -59,20 +59,27 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API LayerGLProcessor : public Processor {
 public:
-    LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader);
-    LayerGLProcessor(Shader shader);
+    explicit LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader);
+    explicit LayerGLProcessor(Shader shader);
 
-    virtual void initializeResources() override;
+    virtual void initializeResources() final;
 
     virtual void process() override;
 
 protected:
+    /**
+     * @brief this function gets called during resource initialization.
+     *
+     * Override this to add any shader defines etc. The shader will be built automatically.
+     */
+    virtual void initializeShader(Shader& shader);
     /** @brief this function gets called right before the actual processing but
      *         after the shader has been activated
      *
      * Overwrite this function in the derived class to perform things like custom shader setup.
      */
-    virtual void preProcess(TextureUnitContainer& cont, const Layer& input, Layer& output);
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,
+                            Layer& output);
 
     /** @brief this function gets called at the end of the process function
      *
@@ -93,10 +100,10 @@ protected:
 
     LayerInport inport_;
     LayerOutport outport_;
-    Shader shader_;
 
 private:
     LayerConfig config;
+    Shader shader_;
     std::vector<std::pair<FrameBufferObject, std::shared_ptr<Layer>>> cache_;
 };
 

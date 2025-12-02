@@ -46,13 +46,12 @@ public:
     Jacobian2D();
     virtual ~Jacobian2D() = default;
 
-    virtual void initializeResources() override;
-
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void initializeShader(Shader& shader) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader) override;
 
 private:
     BoolProperty renormalization_;

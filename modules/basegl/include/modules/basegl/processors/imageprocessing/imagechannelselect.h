@@ -45,7 +45,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer& cont) override;
+    virtual void preProcess(TextureUnitContainer& cont, Shader& shader) override;
     virtual void postProcess() override;
 
 private:

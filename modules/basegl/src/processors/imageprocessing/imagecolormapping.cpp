@@ -72,9 +72,9 @@ ImageColorMapping::ImageColorMapping()
     addProperties(channel_, transferFunction_);
 }
 
-void ImageColorMapping::preProcess(TextureUnitContainer& container) {
-    utilgl::bindAndSetUniforms(shader_, container, transferFunction_);
-    utilgl::setUniforms(shader_, channel_);
+void ImageColorMapping::preProcess(TextureUnitContainer& container, Shader& shader) {
+    utilgl::bindAndSetUniforms(shader, container, transferFunction_);
+    utilgl::setUniforms(shader, channel_);
 }
 
 void ImageColorMapping::afterInportChanged() {
