@@ -29,32 +29,23 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
 
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for IndexBufferRAM
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for ConnectivityType
-#include <inviwo/core/datastructures/geometry/typedmesh.h>              // for BasicMesh, TypedMesh
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/imageport.h>                                // for ImageInport
-#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositeProperty
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatProperty
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/util/glmmat.h>                                    // for dmat2, mat2
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec2, ivec2
-#include <inviwo/core/util/imagesampler.h>                              // for ImageSampler
-#include <inviwo/core/util/staticstring.h>                              // for operator+
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>  // for IndexBufferRAM
+#include <inviwo/core/datastructures/geometry/geometrytype.h>      // for ConnectivityType
+#include <inviwo/core/datastructures/geometry/typedmesh.h>         // for BasicMesh, TypedMesh
+#include <inviwo/core/processors/processor.h>                      // for Processor
+#include <inviwo/core/processors/processorinfo.h>                  // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                 // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                  // for Tags, Tags::GL
+#include <inviwo/core/properties/boolproperty.h>                   // for BoolProperty
+#include <inviwo/core/properties/optionproperty.h>                 // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                // for FloatProperty
+#include <inviwo/core/util/glmmat.h>                               // for dmat2, mat2
+#include <inviwo/core/util/glmvec.h>                               // for vec3, vec2, ivec2
+#include <inviwo/core/util/imagesampler.h>                         // for ImageSampler
 
-#include <cmath>          // for atan2, cos, sin
-#include <memory>         // for unique_ptr, share...
-#include <type_traits>    // for remove_extent_t
-#include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
+#include <cmath>   // for atan2, cos, sin
+#include <memory>  // for unique_ptr, share...
+#include <numbers>
 
 #include <glm/geometric.hpp>  // for length
 #include <glm/mat2x2.hpp>     // for operator*, mat<>:...
@@ -68,95 +59,243 @@ const ProcessorInfo HedgeHog2D::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::GL | Tag{"Mesh"},        // Tags
     R"(Creates a mesh for a hedgehog plot of a 2D vector field using arrow and
-    quiver glyphs.)"_unindentHelp,
+    quiver glyphs.
+
+    Example Workspaces:
+    * [VectorFieldVisualizationGL/hedgehog2d-arrows.inv](file:~modulePath~/data/workspaces/hedgehog2d-arrows.inv)
+    * [VectorFieldVisualizationGL/hedgehog2d-quivers.inv](file:~modulePath~/data/workspaces/hedgehog2d-quivers.inv)
+
+    )"_unindentHelp,
 };
 const ProcessorInfo& HedgeHog2D::getProcessorInfo() const { return processorInfo_; }
 
 HedgeHog2D::HedgeHog2D()
-    : Processor()
-    , inport_("inport", "2D vector field"_help)
-    , mesh_("mesh")
-    , glyphScale_("glyphScale", "Glyph Scale", 0.9f, 0.0f, 2.0f)
-    , numberOfGlyphs_("numberOfGlyphs", "Number of Glyphs", ivec2(30), ivec2(1), ivec2(1000))
-    , jitter_("jitter", "Jitter", false)
-    , glyphType_("glyphType", "Glyph Type")
-    , color_("color", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
+    : Processor{}
+    , inport_{"inport", "2D vector field"_help}
+    , mesh_{"mesh"}
+    , glyphType_{"glyphType",
+                 "Glyph Type",
+                 {{"arrow", "Arrow", GlyphType::Arrow}, {"quiver", "Quiver", GlyphType::Quiver}}}
+    , pivot_{"pivot",
+             "Pivot",
+             {{"tail", "Tail", Pivot::Tail},
+              {"middle", "Middle", Pivot::Middle},
+              {"tip", "Tip", Pivot::Tip}}}
+    , color_{"color", "Color", util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f})}
+    , tfGroup_{"tfGroup", "Magnitude Color Mapping", false}
+    , normalized_{"normalized", "Normalized Length",
+                  "Use a normalized length for the glyphs. Glyphs are scaled with the "
+                  "velocity magnitude otherwise"_help,
+                  true}
+    , glyphScale_{"glyphScale", "Glyph Scale", 0.9f, 0.0f, 2.0f}
+    , transferFunction_{"transferFunction", "Transfer Function",
+                        "Defines the transfer function for mapping the velocity magnitude "
+                        "to color and opacity"_help,
+                        TransferFunction{{{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                          {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
+    , numberOfGlyphs_{"numberOfGlyphs", "Number of Glyphs", ivec2{30}, ivec2{1}, ivec2{1000}}
+    , jitter_{"jitter", "Jitter", false}
+    , jitterScale_{"jitterScale", "Jitter Scaling",
+                   util::ordinalScale(0.5f, 1.0f)
+                       .setInc(0.001f)
+                       .setMax(ConstraintBehavior::Immutable)}
+    , arrowSettings_{"arrowSettings", "Arrow Settings"}
+    , arrowBaseWidth_{"baseWidth", "Base Width", util::ordinalScale(0.1f, 1.0f).setInc(0.001f)}
+    , arrowHookWidth_{"hookWidth", "Hook Width", util::ordinalScale(0.1f, 1.0f).setInc(0.001f)}
+    , arrowHeadRatio_{"headRatio", "Head Ratio",
+                      util::ordinalLength(0.25f, 1.0f)
+                          .setInc(0.001f)
+                          .setMax(ConstraintBehavior::Immutable)}
 
-    , arrowSettings_("arrowSettings", "Arrow Settings")
-    , arrowBaseWidth_("baseWidth_", "Base Width", 0.1f, 0.001f, 1.0f, 0.001f)
-    , arrowHookWidth_("hookWidth", "Hook Width", 0.1f, 0.001f, 1.0f, 0.001f)
-    , arrowHeadRatio_("headRatio", "Head Ratio", 0.25f, 0.001f, 1.0f, 0.001f)
+    , seed_{"seed", "Seed", 0, 0, std::mt19937::max()}
+    , reseed_{"reseed_", "Randomize Seed"}
+    , rand_{} {
 
-    , quiverSettings_("quiverSettings", "Quiver Settings")
-    , quiverHookWidth_("hookWidth", "Hook Width", 0.2f, 0.001f, 1.0f, 0.001f)
-    , quiverHeadRatio_("headRatio", "Head Ratio", 0.2f, 0.001f, 1.0f, 0.001f)
+    addPorts(inport_, mesh_);
+    addProperties(glyphType_, pivot_, color_, tfGroup_, normalized_, glyphScale_, numberOfGlyphs_,
+                  jitter_, jitterScale_, seed_, reseed_, arrowSettings_);
 
-    , rd_()
-    , mt_(rd_()) {
-    addPort(inport_);
-    addPort(mesh_);
+    tfGroup_.addProperties(transferFunction_);
 
-    addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    color_.setCurrentStateAsDefault();
+    arrowSettings_.addProperties(arrowBaseWidth_, arrowHookWidth_, arrowHeadRatio_);
+    arrowBaseWidth_.readonlyDependsOn(glyphType_,
+                                      [](const auto& p) { return p.get() != GlyphType::Arrow; });
 
-    addProperty(glyphType_);
-
-    glyphType_.addOption("arrow", "Arrow", GlyphType::Arrow);
-    glyphType_.addOption("quiver", "Quiver", GlyphType::Quiver);
-
-    addProperty(glyphScale_);
-    addProperty(numberOfGlyphs_);
-    addProperty(jitter_);
-
-    addProperty(arrowSettings_);
-    arrowSettings_.addProperty(arrowBaseWidth_);
-    arrowSettings_.addProperty(arrowHookWidth_);
-    arrowSettings_.addProperty(arrowHeadRatio_);
-
-    addProperty(quiverSettings_);
-    quiverSettings_.addProperty(quiverHookWidth_);
-    quiverSettings_.addProperty(quiverHeadRatio_);
-
-    glyphType_.onChange([this]() { this->adjustVisibilites(); });
-
-    adjustVisibilites();
-    setAllPropertiesCurrentStateAsDefault();
+    reseed_.onChange([this]() {
+        std::uniform_int_distribution<std::int64_t> dist{0, seed_.getMaxValue()};
+        seed_.set(dist(rand_));
+    });
 }
 
 HedgeHog2D::~HedgeHog2D() = default;
 
-void HedgeHog2D::process() {
-    auto mesh = std::make_shared<BasicMesh>();
-    auto indexTriangles = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    auto indexLines = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+namespace {
 
-    float dx = 1.0f / numberOfGlyphs_.get().x;
-    float dy = 1.0f / numberOfGlyphs_.get().y;
+using ArrowMesh = TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::ColorsBuffer>;
+
+struct ArrowConfig {
+    HedgeHog2D::Pivot pivot = HedgeHog2D::Pivot::Tail;
+    float baseWidth = 0.1f;
+    float hookWidth = 0.1f;
+    float headRatio = 0.2f;
+    float scaling = 1.0f;
+};
+
+vec2 getOffset(HedgeHog2D::Pivot pivot) {
+    using enum HedgeHog2D::Pivot;
+    switch (pivot) {
+        case Middle:
+            return {-0.5f, 0.0f};
+        case Tip:
+            return {-1.0f, 0.0f};
+        case Tail:
+        default:
+            return {0.0f, 0.0f};
+    }
+}
+
+void addArrow(ArrowMesh& mesh, IndexBufferRAM& indexBuffer, const ArrowConfig& config,
+              const vec2& pos, const vec2& velocity, float length, const vec4& color) {
+
+    if (length == 0.0f) return;
+
+    const auto dir = glm::normalize(velocity);
+    const auto r = std::atan2f(dir.y, dir.x);
+    const auto cr = std::cosf(r);
+    const auto cs = std::sinf(r);
+
+    const vec2 scaling{vec2{length, 1.0f} * config.scaling};
+    const mat2 m{vec2{cr, cs} * scaling.x, vec2{-cs, cr} * scaling.y};
+    const auto offset = getOffset(config.pivot);
+
+    // ensure that the tip length stays the same irrespective of the length.
+    std::array<vec2, 4> arrowBase{
+        vec2{0.0f, -config.baseWidth / 2.0f} + offset,
+        vec2{0.0f, config.baseWidth / 2.0f} + offset,
+        vec2{1.0f - config.headRatio / length, -config.baseWidth / 2.0f} + offset,
+        vec2{1.0f - config.headRatio / length, config.baseWidth / 2.0f} + offset,
+    };
+    // base of the arrow
+    if (config.headRatio / length < 1.0f) {
+        auto i0 = mesh.addVertex(m * arrowBase[0] + pos, color);
+        auto i1 = mesh.addVertex(m * arrowBase[1] + pos, color);
+        auto i2 = mesh.addVertex(m * arrowBase[2] + pos, color);
+        auto i3 = mesh.addVertex(m * arrowBase[3] + pos, color);
+        indexBuffer.append({i0, i1, i2, i1, i2, i3});
+    }
+
+    // arrow head
+    if (config.headRatio > 0.0f) {
+        std::array<vec2, 3> arrowTip{
+            vec2{std::max(arrowBase[2].x, offset.x), arrowBase[0].y - config.hookWidth},
+            vec2{std::max(arrowBase[2].x, offset.x), arrowBase[1].y + config.hookWidth},
+            vec2{1.0f, 0.0f} + offset,
+        };
+        const auto widthAdjustment = std::min(length / config.headRatio, 1.0f);
+        arrowTip[0].y *= widthAdjustment;
+        arrowTip[1].y *= widthAdjustment;
+
+        auto i0 = mesh.addVertex(m * arrowTip[0] + pos, color);
+        auto i1 = mesh.addVertex(m * arrowTip[1] + pos, color);
+        auto i2 = mesh.addVertex(m * arrowTip[2] + pos, color);
+        indexBuffer.append({i0, i1, i2});
+    }
+}
+
+void addQuiver(ArrowMesh& mesh, IndexBufferRAM& indexBuffer, const ArrowConfig& config,
+               const vec2& pos, const vec2& velocity, float length, const vec4& color) {
+
+    if (length == 0.0f) return;
+
+    const auto dir = glm::normalize(velocity);
+    const auto r = std::atan2f(dir.y, dir.x);
+    const auto cr = std::cosf(r);
+    const auto cs = std::sinf(r);
+
+    const vec2 scaling{vec2{length, 1.0f} * config.scaling};
+    const mat2 m{vec2{cr, cs} * scaling.x, vec2{-cs, cr} * scaling.y};
+    const auto offset = getOffset(config.pivot);
+
+    // ensure that the tip length stays the same irrespective of the length.
+    const auto hookWidth = std::min(length / config.headRatio, 1.0f) * config.hookWidth;
+
+    std::array<vec2, 4> quiver{
+        vec2{0.0f, 0.0f} + offset,
+        vec2{1.0f, 0.0f} + offset,
+        vec2{std::max(1.0f - config.headRatio / length, 0.0f) + offset.x, -hookWidth},
+        vec2{std::max(1.0f - config.headRatio / length, 0.0f) + offset.x, hookWidth},
+    };
+
+    auto i0 = mesh.addVertex(m * quiver[0] + pos, color);
+    auto i1 = mesh.addVertex(m * quiver[1] + pos, color);
+    indexBuffer.append({i0, i1});
+    if (config.headRatio > 0.0f && hookWidth > 0.0f) {
+        auto i2 = mesh.addVertex(m * quiver[2] + pos, color);
+        auto i3 = mesh.addVertex(m * quiver[3] + pos, color);
+        indexBuffer.append({i1, i2, i1, i3});
+    }
+}
+
+}  // namespace
+
+void HedgeHog2D::process() {
+    rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
+
+    const DataMapper& dataMap = inport_.getData()->dataMap;
+
+    const double max = glm::compMax(glm::abs(dataMap.dataRange));
+    const double conservativeMax = std::numbers::sqrt2 * max;
+    auto getColor = [this](double t) {
+        if (tfGroup_.isChecked()) {
+            return transferFunction_.get().sample(t);
+        }
+        return color_.get();
+    };
+
+    auto mesh = std::make_shared<ArrowMesh>();
+    const auto dt = glyphType_.get() == GlyphType::Arrow ? DrawType::Triangles : DrawType::Lines;
+    auto indexBuffer = mesh->addIndexBuffer(dt, ConnectivityType::None);
+
+    const vec2 delta{1.0f / vec2{numberOfGlyphs_.get()}};
+    const vec2 deltaHalf{delta * 0.5f};
 
     ImageSampler sampler(inport_.getData());
 
-    std::uniform_real_distribution<float> jitterx(-dx / 2, dx / 2);
-    std::uniform_real_distribution<float> jittery(-dy / 2, dy / 2);
+    std::uniform_real_distribution<float> jitterx{-deltaHalf.x, deltaHalf.x};
+    std::uniform_real_distribution<float> jittery{-deltaHalf.y, deltaHalf.y};
+
+    const ArrowConfig config{
+        .pivot = pivot_,
+        .baseWidth = arrowBaseWidth_,
+        .hookWidth = arrowHookWidth_,
+        .headRatio = arrowHeadRatio_,
+        .scaling = glyphScale_ * glm::compMin(delta),
+    };
 
     for (int j = 0; j < numberOfGlyphs_.get().y; j++) {
-        float y = dy * j;
+        vec2 center{0.0f, static_cast<float>(j) * delta.y + deltaHalf.y};
         for (int i = 0; i < numberOfGlyphs_.get().x; i++) {
-            float x = dx * i;
-            float jx = 0;
-            float jy = 0;
-            if (jitter_.get()) {
-                jx = jitterx(mt_);
-                jy = jittery(mt_);
+            center.x = static_cast<float>(i) * delta.x + deltaHalf.x;
+
+            vec2 pos{center};
+            if (jitter_) {
+                pos += vec2{jitterx(rand_), jittery(rand_)} * jitterScale_.get();
             }
-            const dvec3 v{sampler.sample(x + jx + dx / 2, y + jy + dy / 2)};
-            const auto t = glyphType_.get();
-            switch (t) {
-                case GlyphType::Arrow:
-                    createArrow(*(mesh.get()), *indexTriangles, x + jx, y + jy, dx, dy, v);
-                    break;
+
+            dvec2 velocity{sampler.sample(pos)};
+            velocity = dataMap.mapFromDataToValue(velocity);
+
+            const auto normalizedMagnitude = glm::length(velocity) / conservativeMax;
+            const vec4 color = getColor(normalizedMagnitude);
+            const auto length = normalized_ ? 1.0f : static_cast<float>(normalizedMagnitude);
+
+            switch (glyphType_) {
                 case GlyphType::Quiver:
-                    createQuiver(*(mesh.get()), *indexLines, x + jx, y + jy, dx, dy, v);
+                    addQuiver(*mesh, *indexBuffer, config, pos, velocity, length, color);
+                    break;
+                case GlyphType::Arrow:
+                default:
+                    addArrow(*mesh, *indexBuffer, config, pos, velocity, length, color);
                     break;
             }
         }
@@ -166,134 +305,6 @@ void HedgeHog2D::process() {
     mesh->setWorldMatrix(inport_.getData()->getWorldMatrix());
 
     mesh_.setData(mesh);
-}
-
-void HedgeHog2D::adjustVisibilites() {
-    auto glyph = glyphType_.get();
-    arrowSettings_.setVisible(glyph == GlyphType::Arrow);
-    quiverSettings_.setVisible(glyph == GlyphType::Quiver);
-}
-
-vec4 HedgeHog2D::getColor(const dvec2& /*velocity*/) { return color_; }
-
-void HedgeHog2D::createArrow(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx,
-                             float dy, const dvec2& velocity) {
-    dmat2 m1(1);
-    dmat2 m2(1);
-
-    auto s = glm::length(velocity);
-    auto dir = velocity / s;
-    auto r = std::atan2(dir.y, dir.x);
-    auto cr = std::cos(r);
-    auto cs = std::sin(r);
-
-    m1[0][0] *= cr;
-    m1[1][0] = -cs;
-    m1[0][1] = cs;
-    m1[1][1] *= cr;
-
-    m2[0][0] *= dx * glyphScale_.get();
-    m2[1][1] *= dy * glyphScale_.get();
-
-    auto m = static_cast<mat2>(m1 * m2);
-
-    vec2 offset(x + dx * 0.5, y + dy * 0.5);
-
-    auto w = arrowBaseWidth_.get();
-    auto c = getColor(velocity);
-    if (arrowHeadRatio_.get() != 1) {
-        // Draw base
-        vec2 p0(0, 0.5 - w / 2);
-        vec2 p1(0, 0.5 + w / 2);
-        vec2 p2 = p0;
-        vec2 p3 = p1;
-        p3.x = p2.x = 1 - arrowHeadRatio_.get();
-
-        p0 -= 0.5;
-        p1 -= 0.5;
-        p2 -= 0.5;
-        p3 -= 0.5;
-
-        auto i0 = mesh.addVertex(vec3((m * p0) + offset, 0), vec3(p0, 0), vec3(velocity, 0), c);
-        auto i1 = mesh.addVertex(vec3((m * p1) + offset, 0), vec3(p1, 0), vec3(velocity, 0), c);
-        auto i2 = mesh.addVertex(vec3((m * p2) + offset, 0), vec3(p2, 0), vec3(velocity, 0), c);
-        auto i3 = mesh.addVertex(vec3((m * p3) + offset, 0), vec3(p3, 0), vec3(velocity, 0), c);
-
-        index.add(i0);
-        index.add(i1);
-        index.add(i2);
-
-        index.add(i1);
-        index.add(i2);
-        index.add(i3);
-    }
-    if (arrowHeadRatio_.get() != 0) {
-        // Draw head
-        w += arrowHookWidth_.get() * 2;
-        vec2 p0(0, 0.5 - w / 2);
-        vec2 p1(0, 0.5 + w / 2);
-        vec2 p2(1, 0.5);
-
-        p0.x = p1.x = 1 - arrowHeadRatio_.get();
-
-        p0 -= 0.5;
-        p1 -= 0.5;
-        p2 -= 0.5;
-
-        auto i0 = mesh.addVertex(vec3((m * p0) + offset, 0), vec3(p0, 0), vec3(velocity, 0), c);
-        auto i1 = mesh.addVertex(vec3((m * p1) + offset, 0), vec3(p1, 0), vec3(velocity, 0), c);
-        auto i2 = mesh.addVertex(vec3((m * p2) + offset, 0), vec3(p2, 0), vec3(velocity, 0), c);
-
-        index.add(i0);
-        index.add(i1);
-        index.add(i2);
-    }
-}
-
-void HedgeHog2D::createQuiver(BasicMesh& mesh, IndexBufferRAM& index, float x, float y, float dx,
-                              float dy, const dvec2& velocity) {
-    dmat2 m1(1);
-    dmat2 m2(1);
-
-    auto s = glm::length(velocity);
-    auto dir = velocity / s;
-    auto r = std::atan2(dir.y, dir.x);
-    auto cr = std::cos(r);
-    auto cs = std::sin(r);
-
-    m1[0][0] *= cr;
-    m1[1][0] = -cs;
-    m1[0][1] = cs;
-    m1[1][1] *= cr;
-
-    m2[0][0] *= dx * glyphScale_.get();
-    m2[1][1] *= dy * glyphScale_.get();
-
-    auto m = static_cast<mat2>(m1 * m2);
-
-    vec2 offset(x + dx * 0.5, y + dy * 0.5);
-    auto c = getColor(velocity);
-
-    vec2 p0(0, 0.5);
-    vec2 p1(1, 0.5);
-    vec2 p2(1 - quiverHeadRatio_.get(), 0.5 + quiverHookWidth_.get() / 2);
-    vec2 p3(1 - quiverHeadRatio_.get(), 0.5 - quiverHookWidth_.get() / 2);
-
-    auto i0 =
-        mesh.addVertex(vec3((m * p0) + offset, 0.0f), vec3(p0, 0.0f), vec3(velocity, 0.0f), c);
-    auto i1 =
-        mesh.addVertex(vec3((m * p1) + offset, 0.0f), vec3(p1, 0.0f), vec3(velocity, 0.0f), c);
-    auto i2 =
-        mesh.addVertex(vec3((m * p2) + offset, 0.0f), vec3(p2, 0.0f), vec3(velocity, 0.0f), c);
-    auto i3 =
-        mesh.addVertex(vec3((m * p3) + offset, 0.0f), vec3(p3, 0.0f), vec3(velocity, 0.0f), c);
-
-    index.add(i0);
-    index.add(i1);
-    index.add(i1);
-    index.add(i2);
-    index.add(i1);
-    index.add(i3);
 }
 
 }  // namespace inviwo
