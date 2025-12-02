@@ -35,12 +35,11 @@
 #include <inviwo/core/ports/imageport.h>               // for BaseImageInport, ImageInport
 #include <inviwo/core/ports/inport.h>                  // for Inport
 #include <inviwo/core/ports/meshport.h>                // for MeshInport
-#include <inviwo/core/ports/outportiterable.h>         // for OutportIterable
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
 #include <inviwo/core/processors/processortags.h>      // for Tags, Tags::GL
-#include <inviwo/core/properties/cameraproperty.h>     // for CameraProperty
+#include <inviwo/core/properties/boolproperty.h>       // for BoolProperty
 #include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
 #include <inviwo/core/properties/invalidationlevel.h>  // for InvalidationLevel, Invalidatio...
 #include <inviwo/core/properties/listproperty.h>       // for ListProperty
@@ -52,12 +51,10 @@
 #include <inviwo/core/properties/stringproperty.h>         // for StringProperty
 #include <inviwo/core/util/assertion.h>                    // for IVW_ASSERT
 #include <inviwo/core/util/glmvec.h>                       // for vec3, vec2, vec4, uvec3
-#include <inviwo/core/util/staticstring.h>                 // for operator+
 #include <inviwo/core/util/stringconversion.h>             // for trim, htmlEncode
 #include <inviwo/core/util/utilities.h>                    // for findUniqueIdentifier
 #include <inviwo/core/util/raiiutils.h>                    // for OnScopeExit
 #include <inviwo/core/util/rendercontext.h>                // for RenderContext
-#include <inviwo/core/util/stdextensions.h>                // for overloaded
 #include <inviwo/core/util/foreacharg.h>                   // for forEachArg
 #include <modules/opengl/geometry/meshgl.h>                // for MeshGL
 #include <modules/opengl/inviwoopengl.h>                   // for GL_DEPTH_TEST, GL_ONE_MINUS_SR...
@@ -365,6 +362,8 @@ InstanceRenderer::InstanceRenderer()
 std::vector<std::unique_ptr<Property>> InstanceRenderer::uniformPrefabs() {
     std::vector<std::unique_ptr<Property>> res;
 
+    res.push_back(std::make_unique<BoolProperty>("bool", "boolValue"));
+
     res.push_back(std::make_unique<IntProperty>("int", "intValue"));
     res.push_back(std::make_unique<IntVec2Property>("ivec2", "ivec2Value"));
     res.push_back(std::make_unique<IntVec3Property>("ivec3", "ivec3Value"));
@@ -456,10 +455,11 @@ void InstanceRenderer::onDidAddProperty(Property* property, size_t) {
 }
 
 void InstanceRenderer::onDidAddUniform(Property* property) {
-    using types = std::tuple<IntProperty, IntVec2Property, IntVec3Property, IntVec4Property,
-                             FloatProperty, FloatVec2Property, FloatVec3Property, FloatVec4Property,
-                             FloatMat2Property, FloatMat3Property, FloatMat4Property>;
-    util::for_each_type<types>{}([&]<typename T>() {
+    using types =
+        std::tuple<BoolProperty, IntProperty, IntVec2Property, IntVec3Property, IntVec4Property,
+                   FloatProperty, FloatVec2Property, FloatVec3Property, FloatVec4Property,
+                   FloatMat2Property, FloatMat3Property, FloatMat4Property>;
+    util::for_each_type<types>{}([this, property]<typename T>() {
         if (auto* prop = dynamic_cast<T*>(property)) {
             dynUniforms_.emplace_back(
                 [prop](Shader& shader, TextureUnitContainer&) {
@@ -479,9 +479,9 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
 
     if (auto* tfProp = dynamic_cast<TransferFunctionProperty*>(property)) {
         dynUniforms_.emplace_back(
-            [tfProp](Shader& shader, TextureUnitContainer& units) {
+            [tfProp](const Shader& shader, TextureUnitContainer& units) {
                 auto name = util::stripIdentifier(tfProp->getDisplayName());
-                auto& unit = units.emplace_back();
+                const auto& unit = units.emplace_back();
                 utilgl::bindTexture(*tfProp, unit);
                 shader.setUniform(name, unit);
             },
