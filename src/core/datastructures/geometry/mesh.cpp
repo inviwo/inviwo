@@ -33,11 +33,11 @@
 #include <inviwo/core/util/exception.h>
 
 #include <fmt/format.h>
-#include <ostream>
+#include <ranges>
 
 namespace inviwo {
 
-Mesh::Mesh(DrawType dt, ConnectivityType ct) : Mesh{MeshInfo{dt, ct}} {}
+Mesh::Mesh(DrawType dt, ConnectivityType ct) : Mesh{MeshInfo{.dt = dt, .ct = ct}} {}
 
 Mesh::Mesh(MeshInfo meshInfo)
     : DataGroup<Mesh, MeshRepresentation>()
@@ -47,7 +47,7 @@ Mesh::Mesh(MeshInfo meshInfo)
     , meshInfo_{meshInfo} {}
 
 Mesh::Mesh(const BufferVector& buffers, const IndexVector& indices)
-    : Mesh{{DrawType::NotSpecified, ConnectivityType::None}} {
+    : Mesh{{.dt = DrawType::NotSpecified, .ct = ConnectivityType::None}} {
     addBuffers(buffers);
     addIndices(indices);
 }
@@ -58,11 +58,11 @@ Mesh::Mesh(const Mesh& rhs)
     , MetaDataOwner(rhs)
     , axes{rhs.axes}
     , meshInfo_(rhs.meshInfo_) {
-    for (const auto& elem : rhs.buffers_) {
-        buffers_.emplace_back(elem.first, std::shared_ptr<BufferBase>(elem.second->clone()));
+    for (const auto& [info, buffer] : rhs.buffers_) {
+        buffers_.emplace_back(info, std::shared_ptr<BufferBase>(buffer->clone()));
     }
-    for (const auto& elem : rhs.indices_) {
-        indices_.emplace_back(elem.first, std::shared_ptr<IndexBuffer>(elem.second->clone()));
+    for (const auto& [info, buffer] : rhs.indices_) {
+        indices_.emplace_back(info, std::shared_ptr<IndexBuffer>(buffer->clone()));
     }
 }
 
@@ -83,11 +83,11 @@ Mesh& Mesh::operator=(const Mesh& that) {
         BufferVector buffers;
         IndexVector indices;
 
-        for (const auto& buffer : that.buffers_) {
-            buffers.emplace_back(buffer.first, std::shared_ptr<BufferBase>(buffer.second->clone()));
+        for (const auto& [info, buffer] : that.buffers_) {
+            buffers.emplace_back(info, std::shared_ptr<BufferBase>(buffer->clone()));
         }
-        for (const auto& elem : that.indices_) {
-            indices.emplace_back(elem.first, std::shared_ptr<IndexBuffer>(elem.second->clone()));
+        for (const auto& [info, buffer] : that.indices_) {
+            indices.emplace_back(info, std::shared_ptr<IndexBuffer>(buffer->clone()));
         }
 
         std::swap(buffers, buffers_);
@@ -104,8 +104,8 @@ const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indices_; }
 
 void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer) {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.first.location == info.location; });
+    auto it = std::ranges::find_if(
+        buffers_, [&](const auto& item) { return item.first.location == info.location; });
 
     if (it == buffers_.end()) {
         buffers_.emplace_back(info, buffer);
@@ -115,7 +115,7 @@ void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer) {
 }
 
 void Mesh::addBuffer(BufferType type, std::shared_ptr<BufferBase> buffer) {
-    addBuffer(BufferInfo(type), buffer);
+    addBuffer(BufferInfo(type), std::move(buffer));
 }
 
 void Mesh::addBuffers(const BufferVector& buffers) {
@@ -135,9 +135,9 @@ auto Mesh::removeBuffer(size_t idx) -> std::pair<BufferInfo, std::shared_ptr<Buf
 }
 
 auto Mesh::removeBuffer(BufferBase* buffer) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.second.get() == buffer; });
-    if (it != buffers_.end()) {
+    if (auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.second.get() == buffer; });
+        it != buffers_.end()) {
         auto old = *it;
         buffers_.erase(it);
         return old;
@@ -150,10 +150,10 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
     if (idx < buffers_.size()) {
         auto old = buffers_[idx];
         if (old.first.location != info.location) {
-            auto it = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
-                return item.first.location == info.location;
-            });
-            if (it != buffers_.end()) {
+            if (auto it = std::ranges::find_if(
+                    buffers_,
+                    [&](const auto& item) { return item.first.location == info.location; });
+                it != buffers_.end()) {
                 throw Exception(SourceContext{}, "Location '{}' already used in Mesh",
                                 info.location);
             }
@@ -169,15 +169,15 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
 
 auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr<BufferBase> buff)
     -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.second.get() == oldbuffer; });
-    if (it != buffers_.end()) {
+    if (auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.second.get() == oldbuffer; });
+        it != buffers_.end()) {
         auto old = *it;
         if (old.first.location != info.location) {
-            auto locit = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
-                return item.first.location == info.location;
-            });
-            if (locit != buffers_.end()) {
+            if (auto locit = std::ranges::find_if(
+                    buffers_,
+                    [&](const auto& item) { return item.first.location == info.location; });
+                locit != buffers_.end()) {
                 throw Exception(SourceContext{}, "Location '{}' already used in Mesh",
                                 info.location);
             }
@@ -192,11 +192,11 @@ auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr
 }
 
 void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> buffer) {
-    replaceBuffer(idx, info, buffer);
+    replaceBuffer(idx, info, std::move(buffer));
 }
 
 void Mesh::addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
-    indices_.push_back(std::make_pair(info, ind));
+    indices_.emplace_back(info, ind);
 }
 
 void Mesh::addIndices(const IndexVector& indices) {
@@ -208,7 +208,7 @@ void Mesh::addIndices(const IndexVector& indices) {
 std::shared_ptr<IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
     auto indices = std::make_shared<IndexBuffer>(indicesRam);
-    addIndices(Mesh::MeshInfo(dt, ct), indices);
+    addIndices({.dt = dt, .ct = ct}, indices);
     return indicesRam;
 }
 
@@ -219,8 +219,8 @@ void Mesh::removeIndexBuffer(size_t idx) {
 }
 
 void Mesh::reserveSizeInVertexBuffer(size_t size) {
-    for (auto& buf : buffers_) {
-        buf.second->getEditableRepresentation<BufferRAM>()->reserve(size);
+    for (const auto& [_, buf] : buffers_) {
+        buf->getEditableRepresentation<BufferRAM>()->reserve(size);
     }
 }
 
@@ -234,9 +234,9 @@ const BufferBase* Mesh::getBuffer(size_t idx) const {
 }
 
 std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.first.type == type; });
-    if (it != buffers_.end()) {
+    if (auto it = std::ranges::find_if(buffers_,
+                                       [&](const auto& item) { return item.first.type == type; });
+        it != buffers_.end()) {
         return {it->second.get(), it->first.location};
     } else {
         return {nullptr, 0};
@@ -244,9 +244,9 @@ std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
 }
 
 std::pair<BufferBase*, int> Mesh::findBuffer(BufferType type) {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.first.type == type; });
-    if (it != buffers_.end()) {
+    if (auto it = std::ranges::find_if(buffers_,
+                                       [&](const auto& item) { return item.first.type == type; });
+        it != buffers_.end()) {
         return {it->second.get(), it->first.location};
     } else {
         return {nullptr, 0};
@@ -263,9 +263,9 @@ Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
 }
 
 Mesh::BufferInfo Mesh::getBufferInfo(BufferBase* buffer) const {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.second.get() == buffer; });
-    if (it != buffers_.end()) {
+    if (auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.second.get() == buffer; });
+        it != buffers_.end()) {
         return it->first;
     } else {
         throw Exception("Buffer not found in Mesh");
@@ -274,10 +274,9 @@ Mesh::BufferInfo Mesh::getBufferInfo(BufferBase* buffer) const {
 
 void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
     if (idx < buffers_.size()) {
-        auto locit = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
-            return item.first.location == info.location;
-        });
-        if (&*locit != &buffers_[idx] && locit != buffers_.end()) {
+        if (auto locit = std::ranges::find_if(
+                buffers_, [&](const auto& item) { return item.first.location == info.location; });
+            &*locit != &buffers_[idx] && locit != buffers_.end()) {
             throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
         }
 
@@ -288,13 +287,12 @@ void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
 }
 
 void Mesh::setBufferInfo(BufferBase* buffer, BufferInfo info) {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.second.get() == buffer; });
-    if (it != buffers_.end()) {
-        auto locit = std::find_if(buffers_.begin(), buffers_.end(), [&](const auto& item) {
-            return item.first.location == info.location;
-        });
-        if (locit != it && locit != buffers_.end()) {
+    if (auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.second.get() == buffer; });
+        it != buffers_.end()) {
+        if (auto locit = std::ranges::find_if(
+                buffers_, [&](const auto& item) { return item.first.location == info.location; });
+            locit != it && locit != buffers_.end()) {
             throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
         }
         it->first = info;
@@ -318,9 +316,9 @@ BufferBase* Mesh::getBuffer(size_t idx) {
 }
 
 BufferBase* Mesh::getBuffer(BufferType type) {
-    auto it = std::find_if(buffers_.begin(), buffers_.end(),
-                           [&](const auto& item) { return item.first.type == type; });
-    if (it != buffers_.end()) {
+    if (auto it = std::ranges::find_if(buffers_,
+                                       [&](const auto& item) { return item.first.type == type; });
+        it != buffers_.end()) {
         return it->second.get();
     } else {
         return nullptr;
@@ -365,14 +363,14 @@ void Mesh::append(const Mesh& mesh) {
     for (size_t i = 0; i < buffers_.size(); ++i) {
         buffers_[i].second->append(*(mesh.buffers_[i].second));
     }
-    for (auto indbuffer : mesh.indices_) {
-        const auto& inds = indbuffer.second->getRAMRepresentation()->getDataContainer();
+    for (const auto& [meshInfo, indbuffer] : mesh.indices_) {
+        const auto& inds = indbuffer->getRAMRepresentation()->getDataContainer();
 
         std::vector<std::uint32_t> newInds;
         newInds.reserve(inds.size());
-        std::transform(inds.begin(), inds.end(), std::back_inserter(newInds),
-                       [&](auto& i) { return i + static_cast<uint32_t>(size); });
-        addIndices(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
+        std::ranges::transform(inds, std::back_inserter(newInds),
+                               [&](auto& i) { return i + static_cast<uint32_t>(size); });
+        addIndices(meshInfo, util::makeIndexBuffer(std::move(newInds)));
     }
 }
 
@@ -397,40 +395,32 @@ Document Mesh::getInfo() const {
     tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
     tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
 
-    tb(H(std::string("Buffers (") + std::to_string(buffers_.size()) + ")"));
+    tb(H("Model Matrix"), getModelMatrix());
+    tb(H("World Matrix"), getWorldMatrix());
 
     // show all the buffers
-    for (const auto& elem : buffers_) {
-        std::stringstream ss1;
-        ss1 << elem.first << ", " << elem.second->getBufferUsage();
-        std::stringstream ss2;
-        ss2 << " (" << elem.second->getSize() << ")";
-        tb(ss1.str(), ss2.str());
+    utildoc::TableBuilder tb2(doc.handle(), P::end());
+    tb2(H(fmt::format("Buffers ({})", buffers_.size())));
+    for (const auto& [bufferInfo, buffer] : buffers_) {
+        tb2(fmt::format("{}", bufferInfo), buffer->getDataFormat()->getString(),
+            fmt::format("{}", buffer->getBufferUsage()), fmt::format(" ({})", buffer->getSize()));
     }
 
     // ensure that at least one index buffer is shown
-    int maxPrintableIndexBuf = std::max<int>(maxLines - static_cast<int>(buffers_.size()), 1);
-    int numIndexBuffers = static_cast<int>(indices_.size());
+    const auto maxPrintableIndexBuf =
+        std::max<int>(maxLines - static_cast<int>(buffers_.size()), 1);
+    const auto numIndexBuffers = static_cast<int>(indices_.size());
 
+    utildoc::TableBuilder tb3(doc.handle(), P::end());
     if (!indices_.empty()) {
-        std::stringstream ss;
-        ss << "Indexbuffers (" << indices_.size() << ")";
-        tb(H(ss.str()));
+        tb3(H(fmt::format("Indexbuffers ({})", indices_.size())));
     }
-    int line = 0;
-    for (const auto& elem : indices_) {
-        std::stringstream ss1;
-        ss1 << elem.first.dt << ", " << elem.first.ct;
-        std::stringstream ss2;
-        ss2 << " (" << elem.second->getSize() << ")";
-        tb(ss1.str(), ss2.str());
-        ++line;
-        if (line >= maxPrintableIndexBuf) break;
+    for (const auto& [info, buffer] : indices_ | std::views::take(maxPrintableIndexBuf)) {
+        tb3(fmt::format("{}", info.dt), fmt::format("{}", info.ct),
+            fmt::format("({})", buffer->getSize()));
     }
     if (maxPrintableIndexBuf < numIndexBuffers) {
-        std::stringstream ss;
-        ss << "... (" << (numIndexBuffers - maxPrintableIndexBuf) << " additional buffers)";
-        tb(ss.str());
+        tb3(fmt::format("... ({} additional buffers)", numIndexBuffers - maxPrintableIndexBuf));
     }
 
     return doc;
@@ -439,6 +429,10 @@ Document Mesh::getInfo() const {
 std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info) {
     ss << info.type << " (location = " << info.location << ")";
     return ss;
+}
+
+std::string format_as(const Mesh::BufferInfo& info) {
+    return fmt::format("{} (location = {})", info.type, info.location);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Mesh>;
