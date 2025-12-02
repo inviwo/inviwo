@@ -29,12 +29,12 @@
 
 #include <modules/basegl/processors/instancerenderer.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>         // for boundingBox
 #include <inviwo/core/algorithm/markdown.h>            // for operator""_help, operator""_un...
 #include <inviwo/core/datastructures/geometry/mesh.h>  // for Mesh
+#include <inviwo/core/datastructures/volume/volume.h>  // for Volume
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/ports/imageport.h>               // for BaseImageInport, ImageInport
 #include <inviwo/core/ports/inport.h>                  // for Inport
-#include <inviwo/core/ports/meshport.h>                // for MeshInport
 #include <inviwo/core/processors/processor.h>          // for Processor
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/processors/processorstate.h>     // for CodeState, CodeState::Stable
@@ -77,10 +77,12 @@
 #include <ranges>
 #include <numeric>
 #include <tuple>
+#include <vector>
+#include <optional>
+#include <memory>
 
-#include <fmt/core.h>      // for format, basic_string_view, for...
-#include <fmt/format.h>    // for formatbuf<>::int_type, formatb...
-#include <glm/gtx/io.hpp>  // for operator<<
+#include <fmt/format.h>  // for formatbuf<>::int_type, formatb...
+#include <glm/common.hpp>
 
 namespace inviwo {
 
@@ -557,21 +559,21 @@ void InstanceRenderer::onDidAddPort(Property* property) {
 
         const auto uniqueID = util::findUniqueIdentifier(
             uniform->get(),
-            [&](std::string_view id) {
+            [this, property](std::string_view id) {
                 return std::ranges::none_of(ports_, [&](auto* prop) {
                     if (prop == property) return false;
 
-                    auto* comp = dynamic_cast<CompositeProperty*>(prop);
-                    IVW_ASSERT(comp, "should always exist");
-                    auto* uniform = comp->getProperty<StringProperty>("uniform");
-                    return uniform && uniform->get() == id;
+                    auto* compProp = dynamic_cast<CompositeProperty*>(prop);
+                    IVW_ASSERT(compProp, "should always exist");
+                    const auto* propUniform = compProp->getProperty<StringProperty>("uniform");
+                    return propUniform && propUniform->get() == id;
                 });
             },
             "");
         uniform->set(uniqueID);
 
-        auto* components1D = comp->getProperty<IntProperty>("components");
-        auto* components2D = comp->getProperty<IntVec2Property>("components");
+        const auto* components1D = comp->getProperty<IntProperty>("components");
+        const auto* components2D = comp->getProperty<IntVec2Property>("components");
         IVW_ASSERT(components1D || components2D, "should always exist");
 
         const auto& id = property->getIdentifier();
@@ -653,10 +655,9 @@ void InstanceRenderer::initializeResources() {
                                   .name = commonCode_.getIdentifier(),
                                   .snippet = commonCode_.get()});
 
-    std::for_each(vecPorts_.begin(), vecPorts_.end(), [&](auto& port) { port.addUniform(*vso); });
+    std::ranges::for_each(vecPorts_, [&](auto& port) { port.addUniform(*vso); });
 
-    std::for_each(dynUniforms_.begin(), dynUniforms_.end(),
-                  [&](auto& uniform) { uniform.addUniform(*vso); });
+    std::ranges::for_each(dynUniforms_, [&](auto& uniform) { uniform.addUniform(*vso); });
 
     size_t prio = 100;
     for (auto& transform : transforms_) {
@@ -735,7 +736,7 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
             if (indexBuffer.getSize() == 0) continue;
             const auto meshInfo = meshGL.getMeshInfoForIndexBuffer(ib);
             indexBuffer.bind();
-            callback(indexBuffer.getSize(), meshInfo, [&]() {
+            callback(indexBuffer.getSize(), meshInfo, [&indexBuffer, &meshInfo]() {
                 glDrawElements(MeshDrawerGL::getGLDrawMode(meshInfo),
                                static_cast<GLsizei>(indexBuffer.getSize()),
                                indexBuffer.getFormatType(), nullptr);
@@ -744,7 +745,7 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
         if (numIndexBuffers == 0) {
             auto size = meshGL.getBufferGL(0)->getSize();
             const auto meshInfo = meshGL.getDefaultMeshInfo();
-            callback(size, meshInfo, [&]() {
+            callback(size, meshInfo, [&meshInfo, size]() {
                 glDrawArrays(MeshDrawerGL::getGLDrawMode(meshInfo), 0, static_cast<GLsizei>(size));
             });
         }
@@ -753,13 +754,13 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
 
 mat4 calculateBoundingBox(std::span<const vec4> data) {
     using Pair = std::pair<vec4, vec4>;
-    const auto minMax = std::accumulate(data.begin(), data.end(),
-                                        Pair{DataFormat<vec4>::max(), DataFormat<vec4>::lowest()},
-                                        [](const Pair& mm, const vec4& v) -> Pair {
-                                            return {glm::min(mm.first, v), glm::max(mm.second, v)};
-                                        });
-    auto boundingBox = glm::scale(vec3{minMax.second} - vec3{minMax.first});
-    boundingBox[3] = vec4(vec3{minMax.first}, 1.0f);
+    const auto [min, max] = std::accumulate(
+        data.begin(), data.end(), Pair{DataFormat<vec4>::max(), DataFormat<vec4>::lowest()},
+        [](const Pair& mm, const vec4& v) -> Pair {
+            return {glm::min(mm.first, v), glm::max(mm.second, v)};
+        });
+    auto boundingBox = glm::scale(vec3{max} - vec3{min});
+    boundingBox[3] = vec4(vec3{min}, 1.0f);
     return boundingBox;
 }
 
@@ -796,11 +797,11 @@ std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::Enable<MeshGL> enable{&meshGL};
 
     TextureUnitContainer units;
-    for (auto& uniform : dynUniforms_) {
+    for (const auto& uniform : dynUniforms_) {
         uniform.setAndBind(shader_, units);
     }
 
-    for (auto& item : vecPorts_) {
+    for (const auto& item : vecPorts_) {
         item.bindAndSetUniforms(shader_, units);
     }
 
@@ -810,7 +811,7 @@ std::optional<mat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
                                     GL_STATIC_READ, GL_TRANSFORM_FEEDBACK_BUFFER};
         size_t byteOffset = 0;
         forEach(meshGL, shader_, vecPorts_, nInstances,
-                [&](size_t size, Mesh::MeshInfo mi, const auto& draw) {
+                [&feedbackBuffer, &byteOffset](size_t size, Mesh::MeshInfo mi, const auto& draw) {
                     const auto bufferByteSize = sizeof(vec4) * numberOfVertices(mi, size);
                     feedbackBuffer.bindRange(0, byteOffset, bufferByteSize);
                     glBeginTransformFeedback(primitiveMode(mi.dt));
