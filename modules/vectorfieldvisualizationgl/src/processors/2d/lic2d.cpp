@@ -37,6 +37,20 @@
 
 namespace inviwo {
 
+namespace {
+
+std::string_view toShaderString(LIC2D::Kernel kernel) {
+    switch (kernel) {
+        case LIC2D::Kernel::Gaussian:
+            return "gaussian";
+        case LIC2D::Kernel::Box:
+        default:
+            return "box";
+    }
+}
+
+}  // namespace
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LIC2D::processorInfo_{
     "org.inviwo.LIC2D",            // Class identifier
@@ -82,7 +96,7 @@ LIC2D::LIC2D()
     , postProcessing_{"postProcessing", "Post Processing",
                       "Apply some basic image operations to enhance the LIC"_help, true}
     , intensityMapping_{"intensityMapping", "Enable Intensity Remapping",
-                        "Remap the resulting intensity values $v$ with $v^(5 / (v + 1)^4)$. "
+                        "Remap the resulting intensity values v with pow(v, 5 / pow(v + 1, 4)). "
                         "This will increase contrast."_help,
                         false}
     , brightness_{"brightness",
@@ -99,7 +113,7 @@ LIC2D::LIC2D()
                 {1.0f, ConstraintBehavior::Immutable}}
     , gamma_{"gamma",
              "Gamma Correction",
-             "Gamma correction using $v^gamma$."_help,
+             "Gamma correction using pow(v, γ)."_help,
              1.0f,
              {0.0f, ConstraintBehavior::Immutable},
              {2.0f, ConstraintBehavior::Immutable}} {
@@ -113,31 +127,27 @@ LIC2D::LIC2D()
 
 void LIC2D::initializeShader(Shader& shader) {
     auto* fragShader = shader.getFragmentShaderObject();
-    if (kernel_ == Kernel::Gaussian) {
-        fragShader->addShaderDefine("KERNEL", "gaussian");
-        fragShader->removeShaderDefine("KERNEL_NORMALIZATION");
-    } else {
-        fragShader->addShaderDefine("KERNEL", "box");
-        fragShader->addShaderDefine("KERNEL_NORMALIZATION");
-    }
+    fragShader->addShaderDefine("KERNEL", toShaderString(kernel_));
     fragShader->addShaderDefine("INTEGRATION_DIRECTION",
                                 fmt::format("{}", static_cast<int>(direction_.getSelectedValue())));
-    if (normalizeVectors_) {
-        fragShader->addShaderDefine("NORMALIZATION");
-    } else {
-        fragShader->removeShaderDefine("NORMALIZATION");
-    }
-    if (useRK4_) {
-        fragShader->addShaderDefine("USE_RUNGEKUTTA");
-    } else {
-        fragShader->removeShaderDefine("USE_RUNGEKUTTA");
-    }
+    fragShader->setShaderDefine("KERNEL_NORMALIZATION", kernel_ != Kernel::Gaussian);
+    fragShader->setShaderDefine("NORMALIZATION", normalizeVectors_);
+    fragShader->setShaderDefine("USE_RUNGEKUTTA", useRK4_);
 }
 
 void LIC2D::preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input, Layer&) {
     utilgl::bindAndSetUniforms(shader, cont, noiseTexture_);
     utilgl::setUniforms(shader, samples_, stepLength_);
-    shader.setUniform("invBasis", glm::inverse(mat2(input.getBasis())));
+    shader.setUniform("worldToTexture", glm::inverse(mat2(input.getBasis())));
+
+    const auto wrapping = input.getWrapping();
+    const vec2 clampMin{
+        wrapping[0] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest(),
+        wrapping[1] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest()};
+    const vec2 clampMax{wrapping[0] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max(),
+                        wrapping[1] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max()};
+    shader.setUniform("clampMin", clampMin);
+    shader.setUniform("clampMax", clampMax);
 
     shader.setUniform("postProcessing", postProcessing_.isChecked());
     if (postProcessing_) {

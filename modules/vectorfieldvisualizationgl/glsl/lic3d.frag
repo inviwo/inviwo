@@ -49,15 +49,18 @@ uniform float alphaScale;
 
 uniform int samples;
 uniform float stepLength;
-uniform mat3 invBasis = mat3(1);
+uniform mat3 worldToTexture = mat3(1);
+
+uniform vec3 clampMin = vec3(0);
+uniform vec3 clampMax = vec3(1);
 
 in vec4 texCoord_;
 in vec3 outputTexCoord_;
 
 uniform float noiseRepeat = 5.f;
 
-bool insideUnitCube(in vec3 pos) {
-    return pos == clamp(pos, vec3(0), vec3(1));
+bool insideUnitCube(in vec3 posTex) {
+    return posTex == clamp(posTex, clampMin, clampMax);
 }
 
 float box(in int step) {
@@ -71,20 +74,19 @@ float gaussian(in int step) {
     return clamp(exp(-0.693147180559945 * distSq / kernelSizeSq), 0.0, 1.0);
 }
 
-float integration(in vec3 pos, in int steps, in int integrationDirection) {
+float integration(in vec3 posTex, in int steps, in int integrationDirection) {
     float density = 0.0;
     for (int i = 0; i < steps; ++i) {
-        vec3 v = getValueVoxel(vectorField, vectorFieldParameters, pos).xyz;
+        vec3 vWorld = getValueVoxel(vectorField, vectorFieldParameters, posTex).xyz;
 #if defined(NORMALIZATION)
-        v = normalize(v);
+        vWorld = normalize(vWorld);
 #endif
-        v *= stepLength * integrationDirection;
-        pos += invBasis * v;
-        // TODO: consider texture repeat?
-        if (!insideUnitCube(pos)) {
+        vWorld *= stepLength * integrationDirection;
+        posTex += worldToTexture * vWorld;
+        if (!insideUnitCube(posTex)) {
             break;
         }
-        density += texture(volume, mod(pos * noiseRepeat, 1)).x * KERNEL(i);
+        density += texture(volume, mod(posTex * noiseRepeat, 1)).x * KERNEL(i);
     }
     return density;
 }
@@ -93,7 +95,7 @@ void main(void) {
     vec3 pos = outputTexCoord_.xyz;
     float density = texture(volume, mod(pos * noiseRepeat, 1)).x * KERNEL(0);
 
-    float speed = length(invBasis * getValueVoxel(vectorField, vectorFieldParameters, pos).xyz);
+    float speed = length(worldToTexture * getValueVoxel(vectorField, vectorFieldParameters, pos).xyz);
     if (speed > 1.0e-8) {
 #if INTEGRATION_DIRECTION >= 0
         density += integration(pos, samples, +1);

@@ -42,6 +42,8 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public LayerGLProcessor {
 public:
+    enum class Kernel : std::uint8_t { Box, Gaussian };
+
     LIC2D();
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -49,7 +51,6 @@ public:
 
 private:
     enum class IntegrationDirection : int { Bidirectional = 0, Forward = 1, Backward = -1 };
-    enum class Kernel : std::uint8_t { Box, Gaussian };
 
     virtual void initializeShader(Shader& shader) override;
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader, const Layer& input,

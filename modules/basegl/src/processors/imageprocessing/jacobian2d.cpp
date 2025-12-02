@@ -70,11 +70,7 @@ Jacobian2D::Jacobian2D()
 }
 
 void Jacobian2D::initializeShader(Shader& shader) {
-    if (inverse_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("INVERT_JACOBIAN");
-    } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("INVERT_JACOBIAN");
-    }
+    shader.getFragmentShaderObject()->setShaderDefine("INVERT_JACOBIAN", inverse_.get());
 }
 
 void Jacobian2D::preProcess(TextureUnitContainer&, Shader& shader) {

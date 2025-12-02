@@ -56,7 +56,20 @@
 #include <fmt/base.h>
 
 namespace inviwo {
-class TextureUnitContainer;
+
+namespace {
+
+std::string_view toShaderString(LIC3D::Kernel kernel) {
+    switch (kernel) {
+        case LIC3D::Kernel::Gaussian:
+            return "gaussian";
+        case LIC3D::Kernel::Box:
+        default:
+            return "box";
+    }
+}
+
+}  // namespace
 
 const ProcessorInfo LIC3D::processorInfo_{
     "org.inviwo.LIC3D",            // Class identifier
@@ -131,18 +144,10 @@ LIC3D::LIC3D()
 
 void LIC3D::initializeShader(Shader& shader) {
     auto* fragShader = shader.getFragmentShaderObject();
-    if (kernel_ == Kernel::Gaussian) {
-        fragShader->addShaderDefine("KERNEL", "gaussian");
-    } else {
-        fragShader->addShaderDefine("KERNEL", "box");
-    }
+    fragShader->addShaderDefine("KERNEL", toShaderString(kernel_));
     fragShader->addShaderDefine("INTEGRATION_DIRECTION",
                                 fmt::format("{}", static_cast<int>(direction_.getSelectedValue())));
-    if (normalizeVectors_) {
-        fragShader->addShaderDefine("NORMALIZATION");
-    } else {
-        fragShader->removeShaderDefine("NORMALIZATION");
-    }
+    fragShader->setShaderDefine("NORMALIZATION", normalizeVectors_);
 }
 
 void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
@@ -162,8 +167,18 @@ void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig&
 
     utilgl::bindAndSetUniforms(shader, cont, *vectorField_.getData(), "vectorField");
     utilgl::setUniforms(shader, samples_, stepLength_, noiseRepeat_, alphaScale_);
+    shader.setUniform("worldToTexture", glm::inverse(vectorField_.getData()->getBasis()));
 
-    shader.setUniform("invBasis", glm::inverse(vectorField_.getData()->getBasis()));
+    const auto wrapping = config.wrapping.value_or(VolumeConfig::defaultWrapping);
+    const vec3 clampMin{
+        wrapping[0] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest(),
+        wrapping[1] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest(),
+        wrapping[2] == Wrapping::Clamp ? 0.0f : std::numeric_limits<float>::lowest()};
+    const vec3 clampMax{wrapping[0] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max(),
+                        wrapping[1] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max(),
+                        wrapping[2] == Wrapping::Clamp ? 1.0f : std::numeric_limits<float>::max()};
+    shader.setUniform("clampMin", clampMin);
+    shader.setUniform("clampMax", clampMax);
 
     auto source = vectorField_.getData();
     config.dataRange = dvec2{0.0, 1.0};

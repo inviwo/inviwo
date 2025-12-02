@@ -77,7 +77,7 @@ Tonemapping::Tonemapping()
     addProperty(exposure_);
     addProperty(gamma_);
 
-    gamma_.visibilityDependsOn(method_, [](auto v) { return v != Method::None; });
+    gamma_.visibilityDependsOn(method_, [](const auto& v) { return v != Method::None; });
 }
 
 void Tonemapping::initializeShader(Shader& shader) {

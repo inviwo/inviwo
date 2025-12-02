@@ -1,5 +1,4 @@
 /*********************************************************************************
-/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -47,6 +46,8 @@ class TextureUnitContainer;
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC3D : public VolumeGLProcessor {
 public:
+    enum class Kernel : std::uint8_t { Box, Gaussian };
+
     LIC3D();
     virtual ~LIC3D() = default;
 
@@ -60,7 +61,6 @@ public:
 
 protected:
     enum class IntegrationDirection : int { Bidirectional = 0, Forward = 1, Backward = -1 };
-    enum class Kernel : std::uint8_t { Box, Gaussian };
     enum class OutputDimensions : std::uint8_t { NoiseVolume, VectorField, Custom };
 
     VolumeInport vectorField_;

@@ -68,7 +68,7 @@ public:
 
 protected:
     /**
-     * \brief this function gets called during resource initialization.
+     * @brief this function gets called during resource initialization.
      *
      * Override this to add any shader defines etc. The shader will be built automatically.
      */

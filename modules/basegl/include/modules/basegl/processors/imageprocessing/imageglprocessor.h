@@ -45,9 +45,9 @@ class DataFormatBase;
 class ShaderResource;
 class TextureUnitContainer;
 
-/*! \class ImageGLProcessor
+/*! @class ImageGLProcessor
  *
- * \brief Base class for image processing on the GPU using OpenGL.
+ * @brief Base class for image processing on the GPU using OpenGL.
  *
  * The ImageGLProcessor provides the basic structure for image processing on the GPU.
  * Derived shaders have to provide a custom fragment shader which is used during rendering.
@@ -55,7 +55,7 @@ class TextureUnitContainer;
  * post-processing of the image data set in the outport. Furthermore, it is possible to
  * be notified of changes in the input image by overwriting ImageGLProcessor::afterInportChanged().
  *
- * \see VolumeGLProcessor
+ * @see VolumeGLProcessor
  */
 class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor {
 public:
@@ -71,14 +71,14 @@ protected:
     void markInvalid();
 
     /**
-     * \brief this function gets called during resource initialization.
+     * @brief this function gets called during resource initialization.
      *
      * Override this to add any shader defines etc. The shader will be built automatically.
      */
     virtual void initializeShader(Shader& shader);
 
     /**
-     * \brief this function gets called right before the actual processing but
+     * @brief this function gets called right before the actual processing but
      *         after the shader has been activated
      *
      * Override this function in the derived class to perform things like custom shader setup
@@ -86,14 +86,14 @@ protected:
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader);
 
     /**
-     * \brief this function gets called at the end of the process function
+     * @brief this function gets called at the end of the process function
      *
      * Override this function in the derived class to perform post-processing
      */
     virtual void postProcess();
 
     /**
-     * \brief this function gets called whenever the inport changes
+     * @brief this function gets called whenever the inport changes
      *
      * Override this function in the derived class to be notified of inport onChange events
      */

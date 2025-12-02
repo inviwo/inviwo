@@ -47,9 +47,10 @@ uniform sampler2D noiseTexture;
 
 uniform int samples;
 uniform float stepLength;
-uniform mat2 invBasis = mat2(1);
+uniform mat2 worldToTexture = mat2(1);
 
-uniform bool useRK4;
+uniform vec2 clampMin = vec2(0);
+uniform vec2 clampMax = vec2(1);
 
 uniform bool postProcessing = false;
 uniform bool intensityMapping = false;
@@ -80,8 +81,8 @@ vec2 rungekutta4(in vec2 p0, in vec2 v0, float stepsize) {
     return (v0 + 2.0 * (v1 + v2) + v3) / 6.0;
 }
 
-bool insideUnitSquare(in vec2 pos) {
-    return pos == clamp(pos, vec2(0), vec2(1));
+bool insideUnitSquare(in vec2 posTex) {
+    return posTex == clamp(posTex, clampMin, clampMax);
 }
 
 float box(in int step) {
@@ -100,21 +101,19 @@ float gaussian(in int step) {
     return clamp(exp(-0.693147180559945 * distSq / kernelSizeSq) * weight, 0.0, 1.0);
 }
 
-float integration(in vec2 pos, in int steps, in float stepSize, inout int stepCount) {
+float integration(in vec2 posTex, in int steps, in float stepSize, inout int stepCount) {
     float density = 0.0;
-    int integrationSteps = 1;
     for (int i = 0; i < steps; ++i) {
-        vec2 v = euler(pos);
+        vec2 vWorld = euler(posTex);
 #if defined(USE_RUNGEKUTTA)
-        v = rungekutta4(pos, v, stepSize);
+        vWorld = rungekutta4(posTex, vWorld, stepSize);
 #endif
-        v *= stepSize;
-        pos += invBasis * v;
-        // TODO: consider texture repeat?
-        if (!insideUnitSquare(pos)) {
+        vWorld *= stepSize;
+        posTex += worldToTexture * vWorld;
+        if (!insideUnitSquare(posTex)) {
             break;
         }
-        density += texture(noiseTexture, pos).x * KERNEL(i);
+        density += texture(noiseTexture, posTex).x * KERNEL(i);
         ++stepCount;
     }
     return density;
@@ -124,7 +123,7 @@ void main() {
     vec2 pos = texCoord_.xy;
     float density = texture(noiseTexture, pos).x * KERNEL(0);
 
-    float speed = length(invBasis * getValueTexel(inport, inportParameters, pos).xy);
+    float speed = length(worldToTexture * getValueTexel(inport, inportParameters, pos).xy);
     if (speed > 1.0e-8) {
         int stepCount = 1;
 #if INTEGRATION_DIRECTION >= 0

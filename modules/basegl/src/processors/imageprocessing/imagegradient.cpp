@@ -69,7 +69,7 @@ ImageGradient::ImageGradient()
 }
 
 void ImageGradient::preProcess(TextureUnitContainer&, Shader& shader) {
-    const auto layer = inport_.getData()->getColorLayer();
+    const auto* layer = inport_.getData()->getColorLayer();
     shader.setUniform("inverseMetricTensor",
                       layer->getCoordinateTransformer().getInverseMetricTensor());
     shader.setUniform("channel", channel_.getSelectedValue());

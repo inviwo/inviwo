@@ -83,11 +83,8 @@ ImageResample::ImageResample()
 ImageResample::~ImageResample() = default;
 
 void ImageResample::initializeShader(Shader& shader) {
-    if (interpolationType_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
-    } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
-    }
+    shader.getFragmentShaderObject()->setShaderDefine("BICUBIC_INTERPOLATION",
+                                                      interpolationType_.get());
 }
 
 void ImageResample::dimensionChanged() {
