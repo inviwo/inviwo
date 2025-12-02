@@ -86,14 +86,14 @@ float integration(in vec3 posTex, in int steps, in int integrationDirection) {
         if (!insideUnitCube(posTex)) {
             break;
         }
-        density += texture(volume, mod(posTex * noiseRepeat, 1)).x * KERNEL(i);
+        density += texture(volume, fract(posTex * noiseRepeat)).x * KERNEL(i);
     }
     return density;
 }
 
 void main(void) {
     vec3 pos = outputTexCoord_.xyz;
-    float density = texture(volume, mod(pos * noiseRepeat, 1)).x * KERNEL(0);
+    float density = texture(volume, fract(pos * noiseRepeat)).x * KERNEL(0);
 
     float speed = length(worldToTexture * getValueVoxel(vectorField, vectorFieldParameters, pos).xyz);
     if (speed > 1.0e-8) {
