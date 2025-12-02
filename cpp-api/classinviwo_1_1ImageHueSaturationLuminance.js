@@ -1,4 +1,4 @@
 var classinviwo_1_1ImageHueSaturationLuminance =
 [
-    [ "preProcess", "classinviwo_1_1ImageHueSaturationLuminance.html#a6409fcd0269626e9cdec7d392c5ab0f7", null ]
+    [ "preProcess", "classinviwo_1_1ImageHueSaturationLuminance.html#a25105425b4e2516a7f84e26ae5d7ea28", null ]
 ];

@@ -119,12 +119,8 @@ $(function(){initNavTree('classinviwo_1_1LayerShader.html','','classinviwo_1_1La
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8a4954c60afb5126ad05ad636e037f22" id="r_a8a4954c60afb5126ad05ad636e037f22"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a4954c60afb5126ad05ad636e037f22">getProcessorInfo</a> () const override</td></tr>
-<tr class="memitem:a575f403b4ad8430b4c1d9a0f411c4f90" id="r_a575f403b4ad8430b4c1d9a0f411c4f90"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a575f403b4ad8430b4c1d9a0f411c4f90">outputConfig</a> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;input) const override</td></tr>
-<tr class="memdesc:a575f403b4ad8430b4c1d9a0f411c4f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the output configuration for the layer.  <br /></td></tr>
-<tr class="memitem:a24df391d0bcf10abbb11dda7d369b865" id="r_a24df391d0bcf10abbb11dda7d369b865"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24df391d0bcf10abbb11dda7d369b865">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;input, <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;output) override</td></tr>
-<tr class="memdesc:a24df391d0bcf10abbb11dda7d369b865"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated  <br /></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1LayerGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1LayerGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1LayerGLProcessor.html">inviwo::LayerGLProcessor</a></td></tr>
-<tr class="memitem:a5d212d61ee21645f2b1ad08d47e0e6ba inherit pub_methods_classinviwo_1_1LayerGLProcessor" id="r_a5d212d61ee21645f2b1ad08d47e0e6ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerGLProcessor.html#a5d212d61ee21645f2b1ad08d47e0e6ba">initializeResources</a> () override</td></tr>
+<tr class="memitem:ae21ff5fc2e602d48054c813145ed6aed inherit pub_methods_classinviwo_1_1LayerGLProcessor" id="r_ae21ff5fc2e602d48054c813145ed6aed"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LayerGLProcessor.html#ae21ff5fc2e602d48054c813145ed6aed">initializeResources</a> () final</td></tr>
 <tr class="memitem:a53f8f09f58ed53d3bbc965de9cc510ad inherit pub_methods_classinviwo_1_1LayerGLProcessor" id="r_a53f8f09f58ed53d3bbc965de9cc510ad"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>LayerGLProcessor</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> shader)</td></tr>
 <tr class="memitem:a7e3c531e6c079a22e62f4deb141dd7d4 inherit pub_methods_classinviwo_1_1LayerGLProcessor" id="r_a7e3c531e6c079a22e62f4deb141dd7d4"><td class="memItemLeft" align="right" valign="top">
@@ -467,8 +463,6 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 LayerInport&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></td></tr>
 <tr class="memitem:a6510ff54b018b62bf8c99c82af782934 inherit pro_attribs_classinviwo_1_1LayerGLProcessor" id="r_a6510ff54b018b62bf8c99c82af782934"><td class="memItemLeft" align="right" valign="top">
 LayerOutport&#160;</td><td class="memItemRight" valign="bottom"><b>outport_</b></td></tr>
-<tr class="memitem:a0e6cf3ca287d621f413de13f1b023e39 inherit pro_attribs_classinviwo_1_1LayerGLProcessor" id="r_a0e6cf3ca287d621f413de13f1b023e39"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Shader.html">Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shader_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:acbccbc04b0b13d5459c69db0ba583341 inherit pro_attribs_classinviwo_1_1Processor" id="r_acbccbc04b0b13d5459c69db0ba583341"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html">ProcessorStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isReady_</b></td></tr>
@@ -521,82 +515,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
-
-</div>
-</div>
-<a id="a575f403b4ad8430b4c1d9a0f411c4f90" name="a575f403b4ad8430b4c1d9a0f411c4f90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a575f403b4ad8430b4c1d9a0f411c4f90">&#9670;&#160;</a></span>outputConfig()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a> inviwo::LayerShader::outputConfig </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>input</em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Returns the output configuration for the layer. </p>
-<p>By default the output layer will have the same config (</p><dl class="section see"><dt>See also</dt><dd><a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a>) as the input layer. This function should be overridden in derived classes to provide the specific configuration for the output layer.</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">input</td><td>the input data given </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The output configuration for the layer. </dd></dl>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15">inviwo::LayerGLProcessor</a>.</p>
-
-</div>
-</div>
-<a id="a24df391d0bcf10abbb11dda7d369b865" name="a24df391d0bcf10abbb11dda7d369b865"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24df391d0bcf10abbb11dda7d369b865">&#9670;&#160;</a></span>preProcess()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::LayerShader::preProcess </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cont</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>input</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>output</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>this function gets called right before the actual processing but after the shader has been activated </p>
-<p>Overwrite this function in the derived class to perform things like custom shader setup. </p>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1LayerGLProcessor.html#a214d4ac1c87ea90ab8da61559abab92f">inviwo::LayerGLProcessor</a>.</p>
 
 </div>
 </div>

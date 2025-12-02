@@ -1,9 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"namespaceinviwo_1_1util.html#afa4f3306477d0aadf1371e6953688b1e":[2,0,0,19,87],
-"namespaceinviwo_1_1util.html#afaa3e4c9abdac91937ddd9f54296e200":[2,0,0,19,206],
-"namespaceinviwo_1_1util.html#afcd77e28823a1e07aac632f41f561225":[2,0,0,19,181],
-"namespaceinviwo_1_1utilcl.html":[2,0,0,20],
 "namespaceinviwo_1_1utildoc.html":[2,0,0,21],
 "namespaceinviwo_1_1utilgl.html":[2,0,0,22],
 "namespaceinviwo_1_1utilgl.html#a01ba6d71bea79602047826daf38988ae":[2,0,0,22,38],
@@ -249,5 +245,9 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01char_01_4.html":[4,0,0,495],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html":[2,0,0,487],
 "structinviwo_1_1InviwoDefaults_3_01unsigned_01int_01_4.html":[4,0,0,496],
-"structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[2,0,0,488]
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[2,0,0,488],
+"structinviwo_1_1InviwoDefaults_3_01unsigned_01short_01_4.html":[4,0,0,497],
+"structinviwo_1_1InviwoSetupInfo.html":[2,0,0,498],
+"structinviwo_1_1InviwoSetupInfo.html":[4,0,0,507],
+"structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html":[2,0,0,498,0]
 };

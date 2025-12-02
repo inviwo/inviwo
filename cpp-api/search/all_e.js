@@ -506,7 +506,7 @@ var searchData=
   ['outportiterablewrapper_3c_20std_3a_3avector_3c_20t_20_2a_2c_20alloc_20_3e_20_3e_503',['OutportIterableWrapper&lt; std::vector&lt; T *, Alloc &gt; &gt;',['../structinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_01_5_00_01Alloc_01_4_01_4.html',1,'inviwo::detail']]],
   ['outportiterablewrapper_3c_20std_3a_3avector_3c_20t_2c_20alloc_20_3e_20_3e_504',['OutportIterableWrapper&lt; std::vector&lt; T, Alloc &gt; &gt;',['../classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html',1,'inviwo::detail']]],
   ['outports_505',['Outports',['../classinviwo_1_1ImageLayoutGL.html#autotoc_md30',1,'']]],
-  ['outputconfig_506',['outputConfig',['../classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90',1,'inviwo::LayerShader::outputConfig()'],['../classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d',1,'inviwo::LayerColorMapping::outputConfig()'],['../classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15',1,'inviwo::LayerGLProcessor::outputConfig()']]],
+  ['outputconfig_506',['outputConfig',['../classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d',1,'inviwo::LayerColorMapping::outputConfig()'],['../classinviwo_1_1LayerGLProcessor.html#a70b327ac7d0eb87a39ad53949ff02d15',1,'inviwo::LayerGLProcessor::outputConfig()']]],
   ['outputformat_507',['OutputFormat',['../classinviwo_1_1ffmpeg_1_1OutputFormat.html',1,'inviwo::ffmpeg']]],
   ['outputstream_508',['OutputStream',['../structinviwo_1_1ffmpeg_1_1OutputStream.html',1,'inviwo::ffmpeg']]],
   ['overlayproperty_509',['OverlayProperty',['../classinviwo_1_1OverlayProperty.html',1,'inviwo']]],

@@ -1,9 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"classinviwo_1_1TetraMeshVolumeRaycaster.html#a74ed0cbbbec8ba008619194333c5cee0":[4,0,0,1146,0],
-"classinviwo_1_1TetraMeshVolumeRaycaster.html#a7a319a2c221fc7b4d35bcaee718b298c":[2,0,0,1137,1],
-"classinviwo_1_1TetraMeshVolumeRaycaster.html#a7a319a2c221fc7b4d35bcaee718b298c":[4,0,0,1146,1],
-"classinviwo_1_1TextEditorDockWidget.html":[2,0,0,1141],
 "classinviwo_1_1TextEditorDockWidget.html":[4,0,0,1150],
 "classinviwo_1_1TextEditorDockWidget.html#a5d55ada1b20de1276ca497fe12d775b2":[2,0,0,1141,0],
 "classinviwo_1_1TextEditorDockWidget.html#a5d55ada1b20de1276ca497fe12d775b2":[4,0,0,1150,0],
@@ -148,10 +144,10 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1TimerThread.html":[4,0,0,1211],
 "classinviwo_1_1Tonemapping.html":[2,0,0,1204],
 "classinviwo_1_1Tonemapping.html":[4,0,0,1213],
-"classinviwo_1_1Tonemapping.html#a95755ec11910c461e427f332c0733aaa":[2,0,0,1204,0],
-"classinviwo_1_1Tonemapping.html#a95755ec11910c461e427f332c0733aaa":[4,0,0,1213,0],
-"classinviwo_1_1Tonemapping.html#ac5ae6a47d19d66b3e6b76b24564f8e63":[2,0,0,1204,1],
-"classinviwo_1_1Tonemapping.html#ac5ae6a47d19d66b3e6b76b24564f8e63":[4,0,0,1213,1],
+"classinviwo_1_1Tonemapping.html#a5e586eb83a54d5819e57901eb4802441":[2,0,0,1204,0],
+"classinviwo_1_1Tonemapping.html#a5e586eb83a54d5819e57901eb4802441":[4,0,0,1213,0],
+"classinviwo_1_1Tonemapping.html#ab17593355ebfb405f5733ab6f59831ca":[2,0,0,1204,1],
+"classinviwo_1_1Tonemapping.html#ab17593355ebfb405f5733ab6f59831ca":[4,0,0,1213,1],
 "classinviwo_1_1ToolsMenu.html":[2,0,0,1205],
 "classinviwo_1_1ToolsMenu.html":[4,0,0,1214],
 "classinviwo_1_1TornadoGenerator.html":[2,0,0,1206],
@@ -249,5 +245,9 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1Trackball.html#aed15c7b9cc47ca49dacfd5f579cdb205":[2,0,0,1210,2],
 "classinviwo_1_1Trackball.html#aed15c7b9cc47ca49dacfd5f579cdb205":[4,0,0,1219,2],
 "classinviwo_1_1Trackball.html#aeef932804ee2baac83ffb2994bbcc566":[2,0,0,1210,10],
-"classinviwo_1_1Trackball.html#aeef932804ee2baac83ffb2994bbcc566":[4,0,0,1219,10]
+"classinviwo_1_1Trackball.html#aeef932804ee2baac83ffb2994bbcc566":[4,0,0,1219,10],
+"classinviwo_1_1TrackballAction.html":[2,0,0,1211],
+"classinviwo_1_1TrackballAction.html":[4,0,0,1220],
+"classinviwo_1_1TrackballObject.html":[2,0,0,1212],
+"classinviwo_1_1TrackballObject.html":[4,0,0,1221]
 };

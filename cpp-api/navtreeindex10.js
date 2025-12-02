@@ -40,10 +40,6 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1LayerSeriesSource.html#aea30cb6666738675f1947f7b4a93618e":[4,0,0,586,0],
 "classinviwo_1_1LayerShader.html":[2,0,0,578],
 "classinviwo_1_1LayerShader.html":[4,0,0,587],
-"classinviwo_1_1LayerShader.html#a24df391d0bcf10abbb11dda7d369b865":[2,0,0,578,1],
-"classinviwo_1_1LayerShader.html#a24df391d0bcf10abbb11dda7d369b865":[4,0,0,587,1],
-"classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90":[2,0,0,578,0],
-"classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90":[4,0,0,587,0],
 "classinviwo_1_1LayerSource.html":[2,0,0,579],
 "classinviwo_1_1LayerSource.html":[4,0,0,588],
 "classinviwo_1_1LayerToImage.html":[2,0,0,580],
@@ -249,5 +245,9 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1LinkDialogGraphicsScene.html":[2,0,0,609],
 "classinviwo_1_1LinkDialogGraphicsScene.html":[4,0,0,618],
 "classinviwo_1_1LinkDialogGraphicsView.html":[2,0,0,610],
-"classinviwo_1_1LinkDialogGraphicsView.html":[4,0,0,619]
+"classinviwo_1_1LinkDialogGraphicsView.html":[4,0,0,619],
+"classinviwo_1_1LinkDialogProcessorGraphicsItem.html":[2,0,0,611],
+"classinviwo_1_1LinkDialogProcessorGraphicsItem.html":[4,0,0,620],
+"classinviwo_1_1LinkDialogPropertyGraphicsItem.html":[2,0,0,612],
+"classinviwo_1_1LinkDialogPropertyGraphicsItem.html":[4,0,0,621]
 };

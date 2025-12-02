@@ -1,9 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"functions_p.html":[4,3,0,15],
-"functions_q.html":[4,3,0,16],
-"functions_r.html":[4,3,0,17],
-"functions_s.html":[4,3,0,18],
 "functions_t.html":[4,3,0,19],
 "functions_type.html":[4,3,3],
 "functions_u.html":[4,3,0,20],
@@ -249,5 +245,9 @@ var NAVTREEINDEX28 =
 "namespaceinviwo_1_1pool.html#a0800098fbdf7e02da630f3fce3e74d39a9a8bd28a9c0cdf4614bc4703467aec3e":[2,0,0,15,4,3],
 "namespaceinviwo_1_1pool.html#a9d13e28d8b8012a39177819e13aaaa5b":[2,0,0,15,3],
 "namespaceinviwo_1_1pool_1_1detail.html":[2,0,0,15,0],
-"namespaceinviwo_1_1pyutil.html":[2,0,0,16]
+"namespaceinviwo_1_1pyutil.html":[2,0,0,16],
+"namespaceinviwo_1_1statsutil.html":[2,0,0,17],
+"namespaceinviwo_1_1statsutil.html#aadd88798eec33f67b58834ca3311a3f9":[2,0,0,17,1],
+"namespaceinviwo_1_1swizzlemasks.html":[2,0,0,18],
+"namespaceinviwo_1_1util.html":[2,0,0,19]
 };

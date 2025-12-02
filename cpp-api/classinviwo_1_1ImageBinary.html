@@ -124,12 +124,12 @@ $(function(){initNavTree('classinviwo_1_1ImageBinary.html','','classinviwo_1_1Im
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a29fd35222e23c7c69119a0abd0ce0dca" id="r_a29fd35222e23c7c69119a0abd0ce0dca"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29fd35222e23c7c69119a0abd0ce0dca">getProcessorInfo</a> () const override</td></tr>
-<tr class="memitem:ab4bde250ef43192f6dab376a95adbe7b" id="r_ab4bde250ef43192f6dab376a95adbe7b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4bde250ef43192f6dab376a95adbe7b">initializeResources</a> () override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1ImageGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1ImageGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1ImageGLProcessor.html">inviwo::ImageGLProcessor</a></td></tr>
 <tr class="memitem:a9155c03025a832455d8a08d7555efc13 inherit pub_methods_classinviwo_1_1ImageGLProcessor" id="r_a9155c03025a832455d8a08d7555efc13"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>ImageGLProcessor</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragmentShader, bool buildShader=true)</td></tr>
 <tr class="memitem:a764ff0d8832ba0d5b36b98961c9eea4e inherit pub_methods_classinviwo_1_1ImageGLProcessor" id="r_a764ff0d8832ba0d5b36b98961c9eea4e"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>ImageGLProcessor</b> (std::string_view fragmentShader, bool buildShader=true)</td></tr>
+<tr class="memitem:aeedd15a47c653701ff4e8ebb7843a63a inherit pub_methods_classinviwo_1_1ImageGLProcessor" id="r_aeedd15a47c653701ff4e8ebb7843a63a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageGLProcessor.html#aeedd15a47c653701ff4e8ebb7843a63a">initializeResources</a> () final</td></tr>
 <tr class="memitem:adbc33b8450d7f300bb9e90d27f5f09ee inherit pub_methods_classinviwo_1_1ImageGLProcessor" id="r_adbc33b8450d7f300bb9e90d27f5f09ee"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageGLProcessor.html#adbc33b8450d7f300bb9e90d27f5f09ee">process</a> () override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a06088cebce8b3d454b56abf70458b62e inherit pub_methods_classinviwo_1_1Processor" id="r_a06088cebce8b3d454b56abf70458b62e"><td class="memItemLeft" align="right" valign="top">
@@ -480,8 +480,6 @@ ImageInport&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></t
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>internalInvalid_</b></td></tr>
 <tr class="memitem:a07261877cb9bc0007f618598b1972e06 inherit pro_attribs_classinviwo_1_1ImageGLProcessor" id="r_a07261877cb9bc0007f618598b1972e06"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a>&#160;</td><td class="memItemRight" valign="bottom"><b>outport_</b></td></tr>
-<tr class="memitem:ab58474e968d15893921a5034e09098fb inherit pro_attribs_classinviwo_1_1ImageGLProcessor" id="r_ab58474e968d15893921a5034e09098fb"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1Shader.html">Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shader_</b></td></tr>
 <tr class="memitem:a89e2b7af140908e483e542a841d5f46e inherit pro_attribs_classinviwo_1_1ImageGLProcessor" id="r_a89e2b7af140908e483e542a841d5f46e"><td class="memItemLeft" align="right" valign="top">
 SwizzleMask&#160;</td><td class="memItemRight" valign="bottom"><b>swizzleMask_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
@@ -538,34 +536,6 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
-
-</div>
-</div>
-<a id="ab4bde250ef43192f6dab376a95adbe7b" name="ab4bde250ef43192f6dab376a95adbe7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4bde250ef43192f6dab376a95adbe7b">&#9670;&#160;</a></span>initializeResources()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void inviwo::ImageBinary::initializeResources </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>InitializeResources is called whenever a property with InvalidationLevel::InvalidResources is changes. </p>
-
-<p>Reimplemented from <a class="el" href="classinviwo_1_1ImageGLProcessor.html#a9e77461165f9b851add40ec4d62c9793">inviwo::ImageGLProcessor</a>.</p>
 
 </div>
 </div>

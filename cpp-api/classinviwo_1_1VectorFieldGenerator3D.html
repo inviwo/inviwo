@@ -393,10 +393,11 @@ static const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorIn
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a8e9deff4df000975d4054d0714022f31" id="r_a8e9deff4df000975d4054d0714022f31"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e9deff4df000975d4054d0714022f31">initializeShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) override</td></tr>
+<tr class="memdesc:a8e9deff4df000975d4054d0714022f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called during resource initialization.  <br /></td></tr>
 <tr class="memitem:ae7e67980199cc493ace5e779df6e4f0d" id="r_ae7e67980199cc493ace5e779df6e4f0d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7e67980199cc493ace5e779df6e4f0d">postProcess</a> (<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume) override</td></tr>
-<tr class="memdesc:ae7e67980199cc493ace5e779df6e4f0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing  <br /></td></tr>
+<tr class="memdesc:ae7e67980199cc493ace5e779df6e4f0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function  <br /></td></tr>
 <tr class="memitem:ac1a96559158eb259aa9aa749fe533962" id="r_ac1a96559158eb259aa9aa749fe533962"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1a96559158eb259aa9aa749fe533962">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config) override</td></tr>
-<tr class="memdesc:ac1a96559158eb259aa9aa749fe533962"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume.  <br /></td></tr>
+<tr class="memdesc:ac1a96559158eb259aa9aa749fe533962"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated.  <br /></td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1VolumeGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1VolumeGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html">inviwo::VolumeGLProcessor</a></td></tr>
 <tr class="memitem:acbb72976f4669fe4773d527686d5e983 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_acbb72976f4669fe4773d527686d5e983"><td class="memItemLeft" align="right" valign="top">
 std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getFragmentShaderResource</b> ()</td></tr>
@@ -583,6 +584,8 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>this function gets called during resource initialization. </p>
 <p>Override this to add any shader defines etc. The shader will be built automatically. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a737eff265000feb14ab5b9bf81963ca0">inviwo::VolumeGLProcessor</a>.</p>
@@ -612,7 +615,8 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 </table>
 </div><div class="memdoc">
 
-<p>this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing </p>
+<p>this function gets called at the end of the process function </p>
+<p>Overwrite this function in the derived class to perform post-processing </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#aae45cf293d4c573681826420af2b45b7">inviwo::VolumeGLProcessor</a>.</p>
 
@@ -650,7 +654,8 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 </table>
 </div><div class="memdoc">
 
-<p>this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume. </p>
+<p>this function gets called right before the actual processing but after the shader has been activated. </p>
+<p>Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a4e3abb96acf308e7de3027359e8193b5">inviwo::VolumeGLProcessor</a>.</p>
 

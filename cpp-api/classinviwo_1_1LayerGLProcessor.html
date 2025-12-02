@@ -133,7 +133,7 @@ $(function(){initNavTree('classinviwo_1_1LayerGLProcessor.html','','classinviwo_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5d212d61ee21645f2b1ad08d47e0e6ba" id="r_a5d212d61ee21645f2b1ad08d47e0e6ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d212d61ee21645f2b1ad08d47e0e6ba">initializeResources</a> () override</td></tr>
+<tr class="memitem:ae21ff5fc2e602d48054c813145ed6aed" id="r_ae21ff5fc2e602d48054c813145ed6aed"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae21ff5fc2e602d48054c813145ed6aed">initializeResources</a> () final</td></tr>
 <tr class="memitem:a53f8f09f58ed53d3bbc965de9cc510ad" id="r_a53f8f09f58ed53d3bbc965de9cc510ad"><td class="memItemLeft" align="right" valign="top"><a id="a53f8f09f58ed53d3bbc965de9cc510ad" name="a53f8f09f58ed53d3bbc965de9cc510ad"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>LayerGLProcessor</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> shader)</td></tr>
 <tr class="memitem:a7e3c531e6c079a22e62f4deb141dd7d4" id="r_a7e3c531e6c079a22e62f4deb141dd7d4"><td class="memItemLeft" align="right" valign="top"><a id="a7e3c531e6c079a22e62f4deb141dd7d4" name="a7e3c531e6c079a22e62f4deb141dd7d4"></a>
@@ -394,12 +394,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObserver</b> (<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:ad9c9dd397646a0e706f5de9c232aa9c1" id="r_ad9c9dd397646a0e706f5de9c232aa9c1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9c9dd397646a0e706f5de9c232aa9c1">initializeShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader)</td></tr>
+<tr class="memdesc:ad9c9dd397646a0e706f5de9c232aa9c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called during resource initialization.  <br /></td></tr>
 <tr class="memitem:a70b327ac7d0eb87a39ad53949ff02d15" id="r_a70b327ac7d0eb87a39ad53949ff02d15"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70b327ac7d0eb87a39ad53949ff02d15">outputConfig</a> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;input) const</td></tr>
 <tr class="memdesc:a70b327ac7d0eb87a39ad53949ff02d15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the output configuration for the layer.  <br /></td></tr>
 <tr class="memitem:a88d03d5c296d07ac07cefcb0a0a69e94" id="r_a88d03d5c296d07ac07cefcb0a0a69e94"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88d03d5c296d07ac07cefcb0a0a69e94">postProcess</a> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;input, <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;output)</td></tr>
 <tr class="memdesc:a88d03d5c296d07ac07cefcb0a0a69e94"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function  <br /></td></tr>
-<tr class="memitem:a214d4ac1c87ea90ab8da61559abab92f" id="r_a214d4ac1c87ea90ab8da61559abab92f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a214d4ac1c87ea90ab8da61559abab92f">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;input, <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;output)</td></tr>
-<tr class="memdesc:a214d4ac1c87ea90ab8da61559abab92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated  <br /></td></tr>
+<tr class="memitem:a90ccde79c6e5a341b6e5084ee908268b" id="r_a90ccde79c6e5a341b6e5084ee908268b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90ccde79c6e5a341b6e5084ee908268b">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;input, <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;output)</td></tr>
+<tr class="memdesc:a90ccde79c6e5a341b6e5084ee908268b"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated  <br /></td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a8b02d56fdf37b42ec6cfd600990bebc8 inherit pro_methods_classinviwo_1_1Processor" id="r_a8b02d56fdf37b42ec6cfd600990bebc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a8b02d56fdf37b42ec6cfd600990bebc8">addPortToGroup</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port, std::string_view portGroup)</td></tr>
 <tr class="memitem:a46d0dc5bd8ce5d056f56b716f7dc6ab8 inherit pro_methods_classinviwo_1_1Processor" id="r_a46d0dc5bd8ce5d056f56b716f7dc6ab8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a46d0dc5bd8ce5d056f56b716f7dc6ab8">removePortFromGroups</a> (<a class="el" href="classinviwo_1_1Port.html">Port</a> *port)</td></tr>
@@ -465,8 +467,6 @@ Protected Attributes</h2></td></tr>
 LayerInport&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></td></tr>
 <tr class="memitem:a6510ff54b018b62bf8c99c82af782934" id="r_a6510ff54b018b62bf8c99c82af782934"><td class="memItemLeft" align="right" valign="top"><a id="a6510ff54b018b62bf8c99c82af782934" name="a6510ff54b018b62bf8c99c82af782934"></a>
 LayerOutport&#160;</td><td class="memItemRight" valign="bottom"><b>outport_</b></td></tr>
-<tr class="memitem:a0e6cf3ca287d621f413de13f1b023e39" id="r_a0e6cf3ca287d621f413de13f1b023e39"><td class="memItemLeft" align="right" valign="top"><a id="a0e6cf3ca287d621f413de13f1b023e39" name="a0e6cf3ca287d621f413de13f1b023e39"></a>
-<a class="el" href="classinviwo_1_1Shader.html">Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><b>shader_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:acbccbc04b0b13d5459c69db0ba583341 inherit pro_attribs_classinviwo_1_1Processor" id="r_acbccbc04b0b13d5459c69db0ba583341"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1StateCoordinator.html">StateCoordinator</a>&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html">ProcessorStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isReady_</b></td></tr>
@@ -512,11 +512,11 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for layer processing on the GPU using OpenGL. </p>
-<p>The <a class="el" href="classinviwo_1_1LayerGLProcessor.html" title="Base class for layer processing on the GPU using OpenGL.">LayerGLProcessor</a> provides the basic structure for layer processing on the GPU. Derived processors have to provide a custom fragment shader which is used during rendering. Optionally, derived classes can overwrite <a class="el" href="#a214d4ac1c87ea90ab8da61559abab92f" title="this function gets called right before the actual processing but after the shader has been activated">LayerGLProcessor::preProcess()</a> and <a class="el" href="#a88d03d5c296d07ac07cefcb0a0a69e94" title="this function gets called at the end of the process function">LayerGLProcessor::postProcess()</a> to perform pre- and post-processing of the <a class="el" href="classinviwo_1_1Layer.html">Layer</a> directly before and after rendering. Furthermore, it is possible to specify the data format of the output <a class="el" href="classinviwo_1_1Layer.html">Layer</a> by overriding <a class="el" href="#a70b327ac7d0eb87a39ad53949ff02d15" title="Returns the output configuration for the layer.">LayerGLProcessor::outputConfig()</a>.</p>
+<p>The <a class="el" href="classinviwo_1_1LayerGLProcessor.html" title="Base class for layer processing on the GPU using OpenGL.">LayerGLProcessor</a> provides the basic structure for layer processing on the GPU. Derived processors have to provide a custom fragment shader which is used during rendering. Optionally, derived classes can overwrite <a class="el" href="#a90ccde79c6e5a341b6e5084ee908268b" title="this function gets called right before the actual processing but after the shader has been activated">LayerGLProcessor::preProcess()</a> and <a class="el" href="#a88d03d5c296d07ac07cefcb0a0a69e94" title="this function gets called at the end of the process function">LayerGLProcessor::postProcess()</a> to perform pre- and post-processing of the <a class="el" href="classinviwo_1_1Layer.html">Layer</a> directly before and after rendering. Furthermore, it is possible to specify the data format of the output <a class="el" href="classinviwo_1_1Layer.html">Layer</a> by overriding <a class="el" href="#a70b327ac7d0eb87a39ad53949ff02d15" title="Returns the output configuration for the layer.">LayerGLProcessor::outputConfig()</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ImageGLProcessor.html" title="Base class for image processing on the GPU using OpenGL.">ImageGLProcessor</a> </dd></dl>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a5d212d61ee21645f2b1ad08d47e0e6ba" name="a5d212d61ee21645f2b1ad08d47e0e6ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d212d61ee21645f2b1ad08d47e0e6ba">&#9670;&#160;</a></span>initializeResources()</h2>
+<a id="ae21ff5fc2e602d48054c813145ed6aed" name="ae21ff5fc2e602d48054c813145ed6aed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae21ff5fc2e602d48054c813145ed6aed">&#9670;&#160;</a></span>initializeResources()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -533,7 +533,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel final">final</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -541,7 +541,33 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html#a9ca0ca1407ee6e9f0c5e3a9b1a453dd1">inviwo::Processor</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerBinary.html#ad36222090d695df00e3e52409a2e759d">inviwo::LayerBinary</a>.</p>
+</div>
+</div>
+<a id="ad9c9dd397646a0e706f5de9c232aa9c1" name="ad9c9dd397646a0e706f5de9c232aa9c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9c9dd397646a0e706f5de9c232aa9c1">&#9670;&#160;</a></span>initializeShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::LayerGLProcessor::initializeShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>this function gets called during resource initialization. </p>
+<p>Override this to add any shader defines etc. The shader will be built automatically. </p>
 
 </div>
 </div>
@@ -578,7 +604,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The output configuration for the layer. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d">inviwo::LayerColorMapping</a>, and <a class="el" href="classinviwo_1_1LayerShader.html#a575f403b4ad8430b4c1d9a0f411c4f90">inviwo::LayerShader</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerColorMapping.html#a281e78e7f09db0e3867bbbf9ce81df6d">inviwo::LayerColorMapping</a>.</p>
 
 </div>
 </div>
@@ -614,8 +640,8 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 
 </div>
 </div>
-<a id="a214d4ac1c87ea90ab8da61559abab92f" name="a214d4ac1c87ea90ab8da61559abab92f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a214d4ac1c87ea90ab8da61559abab92f">&#9670;&#160;</a></span>preProcess()</h2>
+<a id="a90ccde79c6e5a341b6e5084ee908268b" name="a90ccde79c6e5a341b6e5084ee908268b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90ccde79c6e5a341b6e5084ee908268b">&#9670;&#160;</a></span>preProcess()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -627,6 +653,11 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
           <td class="memname">virtual void inviwo::LayerGLProcessor::preProcess </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cont</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -649,7 +680,7 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 <p>this function gets called right before the actual processing but after the shader has been activated </p>
 <p>Overwrite this function in the derived class to perform things like custom shader setup. </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerColorMapping.html#a76afc0d26642e654c74193bfadedf3f5">inviwo::LayerColorMapping</a>, <a class="el" href="classinviwo_1_1LayerGrayscale.html#ae15320d86f85d3a1f55988b2edf1e458">inviwo::LayerGrayscale</a>, and <a class="el" href="classinviwo_1_1LayerShader.html#a24df391d0bcf10abbb11dda7d369b865">inviwo::LayerShader</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1LayerColorMapping.html#a6824e01d6c1e877d4f01751cdd981fec">inviwo::LayerColorMapping</a>, and <a class="el" href="classinviwo_1_1LayerGrayscale.html#af0d036579cd8c184f80f6c05fe18338c">inviwo::LayerGrayscale</a>.</p>
 
 </div>
 </div>

@@ -120,10 +120,11 @@ $(function(){initNavTree('classinviwo_1_1Vector3DCurl.html','','classinviwo_1_1V
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a72047d39a7a3c76c8fa2c54cd51a7348" id="r_a72047d39a7a3c76c8fa2c54cd51a7348"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72047d39a7a3c76c8fa2c54cd51a7348">getProcessorInfo</a> () const override</td></tr>
 <tr class="memitem:a09c378e9b8efc169ea6b8b1892f4d28f" id="r_a09c378e9b8efc169ea6b8b1892f4d28f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09c378e9b8efc169ea6b8b1892f4d28f">initializeShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) override</td></tr>
+<tr class="memdesc:a09c378e9b8efc169ea6b8b1892f4d28f"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called during resource initialization.  <br /></td></tr>
 <tr class="memitem:aa9a3bdb6f7d0323ff9dd6f4cf614a3c2" id="r_aa9a3bdb6f7d0323ff9dd6f4cf614a3c2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9a3bdb6f7d0323ff9dd6f4cf614a3c2">postProcess</a> (<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume) override</td></tr>
-<tr class="memdesc:aa9a3bdb6f7d0323ff9dd6f4cf614a3c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing  <br /></td></tr>
+<tr class="memdesc:aa9a3bdb6f7d0323ff9dd6f4cf614a3c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called at the end of the process function  <br /></td></tr>
 <tr class="memitem:af05ee264d00c3782745e9aab31684f48" id="r_af05ee264d00c3782745e9aab31684f48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af05ee264d00c3782745e9aab31684f48">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config) override</td></tr>
-<tr class="memdesc:af05ee264d00c3782745e9aab31684f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume.  <br /></td></tr>
+<tr class="memdesc:af05ee264d00c3782745e9aab31684f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1VolumeGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1VolumeGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html">inviwo::VolumeGLProcessor</a></td></tr>
 <tr class="memitem:afe36914b86a9dbb525ffd249dc225fcb inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_afe36914b86a9dbb525ffd249dc225fcb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#afe36914b86a9dbb525ffd249dc225fcb">initializeResources</a> () final</td></tr>
 <tr class="memitem:a119dcda49973aad33ca20630e74db120 inherit pub_methods_classinviwo_1_1VolumeGLProcessor" id="r_a119dcda49973aad33ca20630e74db120"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a119dcda49973aad33ca20630e74db120">process</a> () final</td></tr>
@@ -560,6 +561,8 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>this function gets called during resource initialization. </p>
 <p>Override this to add any shader defines etc. The shader will be built automatically. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a737eff265000feb14ab5b9bf81963ca0">inviwo::VolumeGLProcessor</a>.</p>
@@ -589,7 +592,8 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 </div><div class="memdoc">
 
-<p>this function gets called at the end of the process function Overwrite this function in the derived class to perform post-processing </p>
+<p>this function gets called at the end of the process function </p>
+<p>Overwrite this function in the derived class to perform post-processing </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#aae45cf293d4c573681826420af2b45b7">inviwo::VolumeGLProcessor</a>.</p>
 
@@ -627,7 +631,8 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b></td></
 </table>
 </div><div class="memdoc">
 
-<p>this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume. </p>
+<p>this function gets called right before the actual processing but after the shader has been activated. </p>
+<p>Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume. </p>
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a4e3abb96acf308e7de3027359e8193b5">inviwo::VolumeGLProcessor</a>.</p>
 
