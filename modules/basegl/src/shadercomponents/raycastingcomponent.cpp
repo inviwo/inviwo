@@ -84,6 +84,11 @@ std::string_view RaycastingComponent::getName() const { return raycasting_.getId
 void RaycastingComponent::process(Shader& shader, TextureUnitContainer&) {
     shader.setUniform("samplingRate", raycasting_.samplingRate_.get());
     shader.setUniform("channel", static_cast<int>(channel_.getSelectedIndex()));
+
+    const auto renderingType = raycasting_.renderingType_;
+    if (renderingType == DvrIsosurface || renderingType == Dvr) {
+        shader.setUniform("dvrReference", raycasting_.dvrReference_.get() / 150.0f);
+    }
 }
 void RaycastingComponent::initializeResources(Shader& shader) {
     auto fso = shader.getFragmentShaderObject();
@@ -135,6 +140,19 @@ constexpr std::string_view colorInit = util::trim(R"(
 vec4 color{color} = vec4(0);
 )");
 
+constexpr std::string_view manualStepInit = util::trim(R"(
+float {volume}worldStep = rayStep * dvrReference * 
+                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+)");
+
+constexpr std::string_view automaticStepInit = util::trim(R"(
+float {volume}dvrScale = min(length({volume}Parameters.dataToWorld[0]), 
+                             min(length({volume}Parameters.dataToWorld[1]), 
+                                 length({volume}Parameters.dataToWorld[2])));
+float {volume}worldStep = rayStep / {volume}dvrScale * 
+                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+)");
+
 constexpr std::string_view classify = util::trim(R"(
 color{color} = texture({tf}, vec2({volume}Voxel[{channel}], 0.5));
 )");
@@ -157,7 +175,7 @@ if (color{color}.a > 0) {{
     #endif
     color{color}.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);
 
-    result = compositeDVR(result, color{color}, rayPosition, rayDepth, rayStep);
+    result = compositeDVR(result, color{color}, rayPosition, rayDepth, {volume}worldStep);
 }}
 )");
 
@@ -165,6 +183,7 @@ if (color{color}.a > 0) {{
 
 auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
+    const auto renderingType = raycasting_.renderingType_;
 
     const auto& isoparam = isotf_.isovalues_.getIdentifier();
     const auto& tf = isotf_.tf_.getIdentifier();
@@ -180,6 +199,7 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     const auto gradientPrev = fmt::format("{}GradientPrev", volume_);
 
     std::vector<Segment> isoSegments{
+        {std::string(R"(uniform float dvrReference = 1.0;)"), placeholder::uniform, 1110},
         {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
                      "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
                      "channel"_a = "channel"),
@@ -189,10 +209,20 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
                      "channel"_a = "channel"),
          placeholder::loop, 1000}};
 
+    const auto stepInit =
+        raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
+            ? fmt::format(automaticStepInit, "volume"_a = volume_)
+            : fmt::format(manualStepInit, "volume"_a = volume_);
+
     std::vector<Segment> dvrSegments{
+        {std::string(R"(uniform float dvrReference = 1.0;)"), placeholder::uniform, 1110},
+
+        {stepInit, placeholder::first, 600},
+
         {fmt::format(colorInit, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
                      "color"_a = ""),
          placeholder::first, 600},
+
         {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
                      "color"_a = ""),
          placeholder::first, 700},
@@ -207,15 +237,17 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
                      "channel"_a = "channel", "color"_a = ""),
          placeholder::loop, 1100}};
 
-    if (raycasting_.renderingType_ == RaycastingProperty::RenderingType::DvrIsosurface ||
-        raycasting_.renderingType_ == RaycastingProperty::RenderingType::Isosurface) {
+    if (renderingType == DvrIsosurface || renderingType == Isosurface) {
         segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),
                         std::make_move_iterator(isoSegments.end()));
     }
-    if (raycasting_.renderingType_ == RaycastingProperty::RenderingType::DvrIsosurface ||
-        raycasting_.renderingType_ == RaycastingProperty::RenderingType::Dvr) {
+    if (renderingType == DvrIsosurface || renderingType == Dvr) {
         segments.insert(segments.end(), std::make_move_iterator(dvrSegments.begin()),
                         std::make_move_iterator(dvrSegments.end()));
+
+        if (raycasting_.dvrReferenceMode_.get() ==
+            RaycastingProperty::DVRReferenceMode::Automatic) {
+        }
     }
 
     return segments;
@@ -247,6 +279,11 @@ bool MultiRaycastingComponent::setUsedChannels(size_t channels) {
 
 void MultiRaycastingComponent::process(Shader& shader, TextureUnitContainer&) {
     shader.setUniform("samplingRate", raycasting_.samplingRate_.get());
+
+    const auto renderingType = raycasting_.renderingType_;
+    if (renderingType == DvrIsosurface || renderingType == Dvr) {
+        shader.setUniform("dvrReference", raycasting_.dvrReference_.get() / 150.0f);
+    }
 }
 void MultiRaycastingComponent::initializeResources(Shader& shader) {
     auto fso = shader.getFragmentShaderObject();
@@ -275,12 +312,24 @@ void MultiRaycastingComponent::initializeResources(Shader& shader) {
 
 auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
+    const auto renderingType = raycasting_.renderingType_;
 
     std::vector<Segment> segments{
         {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},
         {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
-        {std::string{init}, placeholder::first, 600},
-    };
+        {std::string{init}, placeholder::first, 600}};
+
+    if (renderingType == DvrIsosurface || renderingType == Dvr) {
+        segments.emplace_back(std::string(R"(uniform float dvrReference = 1.0;)"),
+                              placeholder::uniform, 1110);
+
+        const auto stepInit =
+            raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
+                ? fmt::format(automaticStepInit, "volume"_a = volume_)
+                : fmt::format(manualStepInit, "volume"_a = volume_);
+
+        segments.emplace_back(stepInit, placeholder::first, 600);
+    }
 
     for (auto&& [i, isotf] : util::enumerate(isotfs_)) {
         if (i >= usedChannels_) continue;
@@ -317,13 +366,11 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
                          "tf"_a = tf, "channel"_a = i, "color"_a = i),
              placeholder::loop, 1100 + i}};
 
-        if (raycasting_.renderingType_ == RaycastingProperty::RenderingType::DvrIsosurface ||
-            raycasting_.renderingType_ == RaycastingProperty::RenderingType::Isosurface) {
+        if (renderingType == DvrIsosurface || renderingType == Isosurface) {
             segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),
                             std::make_move_iterator(isoSegments.end()));
         }
-        if (raycasting_.renderingType_ == RaycastingProperty::RenderingType::DvrIsosurface ||
-            raycasting_.renderingType_ == RaycastingProperty::RenderingType::Dvr) {
+        if (renderingType == DvrIsosurface || renderingType == Dvr) {
             segments.insert(segments.end(), std::make_move_iterator(dvrSegments.begin()),
                             std::make_move_iterator(dvrSegments.end()));
         }

@@ -69,6 +69,8 @@ public:
     bool setUsedChannels(size_t channels);
 
 private:
+    using enum RaycastingProperty::RenderingType;
+
     std::string volume_;
     IsoTFProperty& isotf_;
 
@@ -98,6 +100,8 @@ public:
     bool setUsedChannels(size_t channels);
 
 private:
+    using enum RaycastingProperty::RenderingType;
+
     size_t usedChannels_;
     std::string volume_;
     std::array<std::reference_wrapper<IsoTFProperty>, 4> isotfs_;

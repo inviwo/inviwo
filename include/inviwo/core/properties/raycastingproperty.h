@@ -37,9 +37,8 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \class RaycastingProperty
- * \brief composite property holding parameters for volume raycasting
+ * @ingroup properties
+ * @brief composite property holding parameters for volume raycasting
  */
 class IVW_CORE_API RaycastingProperty : public CompositeProperty {
 public:
@@ -66,6 +65,8 @@ public:
         PrecomputedYZW
     };
 
+    enum class DVRReferenceMode { Automatic, Manual };
+
     RaycastingProperty(std::string_view identifier, std::string_view displayName,
                        InvalidationLevel = InvalidationLevel::InvalidResources,
                        PropertySemantics semantics = PropertySemantics::Default);
@@ -79,8 +80,10 @@ public:
     OptionProperty<Classification> classification_;
     OptionProperty<CompositingType> compositing_;
     OptionProperty<GradientComputation> gradientComputation_;
-
     FloatProperty samplingRate_;
+
+    OptionProperty<DVRReferenceMode> dvrReferenceMode_;
+    FloatProperty dvrReference_;
 };
 
 }  // namespace inviwo

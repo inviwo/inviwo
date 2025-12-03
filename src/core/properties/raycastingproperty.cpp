@@ -71,10 +71,25 @@ RaycastingProperty::RaycastingProperty(std::string_view identifier, std::string_
            {"precomputedXYZ", "Pre-computed Gradients (xyz)", GradientComputation::PrecomputedXYZ},
            {"precomputedYZW", "Pre-computed Gradients (yzw)", GradientComputation::PrecomputedYZW}},
           3, InvalidationLevel::InvalidResources)
-    , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f) {
+    , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f)
+    , dvrReferenceMode_{"dvrReferenceMode",
+                        "DVR Reference Mode",
+                        R"(**Automatic mode** scales the reference using the length of the shortest
+                           basis vector. This is the default mode and works well in most situations.
+
+                           **Manual mode** applies no input-dependent scaling. As a result,
+                           datasets that differ only in the size of their basis will produce
+                           different opacities. If you need consistent rendering across datasets
+                           with different bases (i.e., different world-space extents), you should
+                           use **manual mode**.)"_unindentHelp,
+                        {{"automatic", "Automatic", DVRReferenceMode::Automatic},
+                         {"manual", "Manual", DVRReferenceMode::Manual}},
+                        0,
+                        InvalidationLevel::InvalidResources}
+    , dvrReference_{"dvrReference", "DVR Reference Interval", 150.0f, 1.0f, 1000.0f, 1.0f} {
 
     addProperties(renderingType_, classification_, compositing_, gradientComputation_,
-                  samplingRate_);
+                  samplingRate_, dvrReferenceMode_, dvrReference_);
 }
 
 RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
@@ -83,10 +98,12 @@ RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
     , classification_(rhs.classification_)
     , compositing_(rhs.compositing_)
     , gradientComputation_(rhs.gradientComputation_)
-    , samplingRate_(rhs.samplingRate_) {
+    , samplingRate_(rhs.samplingRate_)
+    , dvrReferenceMode_{rhs.dvrReferenceMode_}
+    , dvrReference_{rhs.dvrReference_} {
 
     addProperties(renderingType_, classification_, compositing_, gradientComputation_,
-                  samplingRate_);
+                  samplingRate_, dvrReferenceMode_, dvrReference_);
 }
 
 RaycastingProperty* RaycastingProperty::clone() const { return new RaycastingProperty(*this); }
