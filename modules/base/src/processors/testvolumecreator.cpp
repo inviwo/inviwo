@@ -32,14 +32,15 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 #include <cmath>
+#include <numbers>
 
 namespace inviwo {
 
 namespace {
 
 std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
-    size3_t dims, mat4 basis, VolumeReuseCache& scalars, VolumeReuseCache& gradients,
-    pool::Progress progress, pool::Stop stop) {
+    TestVolumeCreator::Mode mode, size3_t dims, mat4 basis, VolumeReuseCache& scalars,
+    VolumeReuseCache& gradients, pool::Progress progress, pool::Stop stop) {
 
     const VolumeConfig scalarCfg = {.dimensions = dims,
                                     .format = DataFloat32::get(),
@@ -74,25 +75,53 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
     auto scalarView = scalarRep->getView();
     auto gradientView = gradientRep->getView();
 
-    for (size_t k = 0; k < dims.z; ++k) {
-        for (size_t j = 0; j < dims.y; ++j) {
-            for (size_t i = 0; i < dims.x; ++i) {
-                const auto w = vec3(i2w * vec4(i, j, k, 1.0));
-
-                /*
-                scalarView[im(i, j, k)] = std::sin(w.x) * std::sin(w.y) * std::sin(w.z);
-
-                gradientView[im(i, j, k)] = vec3{std::cos(w.x) * std::sin(w.y) * std::sin(w.z),
-                                                 std::cos(w.y) * std::sin(w.x) * std::sin(w.z),
-                                                 std::cos(w.z) * std::sin(w.x) * std::sin(w.y)};
-                */
-
-                scalarView[im(i, j, k)] = std::sin(w.x) * std::sin(w.y);
-
-                gradientView[im(i, j, k)] =
-                    vec3{std::cos(w.x) * std::sin(w.y), std::cos(w.y) * std::sin(w.x), 0};
+    switch (mode) {
+        case TestVolumeCreator::Mode::Sin1D:
+            for (size_t k = 0; k < dims.z; ++k) {
+                if (stop) return {};
+                progress(static_cast<double>(k) / static_cast<double>(dims.z));
+                for (size_t j = 0; j < dims.y; ++j) {
+                    for (size_t i = 0; i < dims.x; ++i) {
+                        const auto w = std::numbers::pi_v<float> * vec3(i2w * vec4(i, j, k, 1.0));
+                        scalarView[im(i, j, k)] = std::sin(w.x);
+                        gradientView[im(i, j, k)] =
+                            std::numbers::pi_v<float> * vec3{std::cos(w.x), 0.0f, 0.0f};
+                    }
+                }
             }
-        }
+            break;
+        case TestVolumeCreator::Mode::Sin2D:
+            for (size_t k = 0; k < dims.z; ++k) {
+                if (stop) return {};
+                progress(static_cast<double>(k) / static_cast<double>(dims.z));
+                for (size_t j = 0; j < dims.y; ++j) {
+                    for (size_t i = 0; i < dims.x; ++i) {
+                        const auto w = std::numbers::pi_v<float> * vec3(i2w * vec4(i, j, k, 1.0));
+                        scalarView[im(i, j, k)] = std::sin(w.x) * std::sin(w.y);
+                        gradientView[im(i, j, k)] =
+                            std::numbers::pi_v<float> *
+                            vec3{std::cos(w.x) * std::sin(w.y), std::cos(w.y) * std::sin(w.x), 0};
+                    }
+                }
+            }
+            break;
+        case TestVolumeCreator::Mode::Sin3D:
+            for (size_t k = 0; k < dims.z; ++k) {
+                if (stop) return {};
+                progress(static_cast<double>(k) / static_cast<double>(dims.z));
+                for (size_t j = 0; j < dims.y; ++j) {
+                    for (size_t i = 0; i < dims.x; ++i) {
+                        const auto w = std::numbers::pi_v<float> * vec3(i2w * vec4(i, j, k, 1.0));
+                        scalarView[im(i, j, k)] = std::sin(w.x) * std::sin(w.y) * std::sin(w.z);
+                        gradientView[im(i, j, k)] =
+                            std::numbers::pi_v<float> *
+                            vec3{std::cos(w.x) * std::sin(w.y) * std::sin(w.z),
+                                 std::cos(w.y) * std::sin(w.x) * std::sin(w.z),
+                                 std::cos(w.z) * std::sin(w.x) * std::sin(w.y)};
+                    }
+                }
+            }
+            break;
     }
 
     return {scalar, gradient};
@@ -104,10 +133,15 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
 const ProcessorInfo TestVolumeCreator::processorInfo_{
     "org.inviwo.TestVolumeCreator",  // Class identifier
     "Test Volume Creator",           // Display name
-    "Undefined",                     // Category
-    CodeState::Experimental,         // Code state
-    Tags::CPU,                       // Tags
-    R"(Create an analytical scalar field and gradients)"_unindentHelp,
+    "Data Creation",                 // Category
+    CodeState::Stable,               // Code state
+    Tags::CPU | Tag{"Volume"},       // Tags
+    R"(Create an analytical scalar field and gradients
+    There are 3 modes available:
+    - Sin 1D: A sine wave along the x-axis
+    - Sin 2D: A product of sine waves along the x- and y-axes
+    - Sin 3D: A product of sine waves along the x-, y- and z-axes
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& TestVolumeCreator::getProcessorInfo() const { return processorInfo_; }
@@ -119,7 +153,12 @@ TestVolumeCreator::TestVolumeCreator()
 
     , scalars_{}
     , gradients_{}
-
+    , mode_{"mode",
+            "Mode",
+            {{"sin1d", "Sin 1D", Mode::Sin1D},
+             {"sin2d", "Sin 2D", Mode::Sin2D},
+             {"sin3d", "Sin 3D", Mode::Sin3D}},
+            1}
     , basis_{"basis", "Basis", mat4{1.0}}
     , dimensions_("dims", "Dimensions",
                   util::ordinalCount(size3_t(10), size3_t(512)).set("Volume Dimensions"_help))
@@ -128,13 +167,13 @@ TestVolumeCreator::TestVolumeCreator()
 
     addPorts(scalar_, gradient_);
 
-    addProperties(basis_, dimensions_, scalarInformation_, gradientInformation_);
+    addProperties(mode_, basis_, dimensions_, scalarInformation_, gradientInformation_);
 }
 
 void TestVolumeCreator::process() {
-    const auto calc = [this, dims = dimensions_.get(), basis = basis_.get()](
+    const auto calc = [this, mode = mode_.get(), dims = dimensions_.get(), basis = basis_.get()](
                           pool::Progress progress, pool::Stop stop) {
-        return createVolumes(dims, basis, scalars_, gradients_, progress, stop);
+        return createVolumes(mode, dims, basis, scalars_, gradients_, progress, stop);
     };
 
     scalar_.clear();

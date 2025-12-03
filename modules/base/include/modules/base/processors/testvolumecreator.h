@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 
 #include <modules/base/datastructures/volumereusecache.h>
@@ -50,6 +51,8 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    enum class Mode { Sin1D, Sin2D, Sin3D };
+
 private:
     VolumeOutport scalar_;
     VolumeOutport gradient_;
@@ -57,11 +60,12 @@ private:
     VolumeReuseCache scalars_;
     VolumeReuseCache gradients_;
 
+    OptionProperty<Mode> mode_;
+
     OrdinalProperty<mat4> basis_;
     OrdinalProperty<size3_t> dimensions_;
     VolumeInformationProperty scalarInformation_;
     VolumeInformationProperty gradientInformation_;
-
 };
 
 }  // namespace inviwo

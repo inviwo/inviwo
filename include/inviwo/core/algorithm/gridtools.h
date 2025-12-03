@@ -41,8 +41,7 @@ namespace inviwo::grid {
 namespace detail {
 
 template <Wrapping Wx, Wrapping Wy, typename Callable, typename... Args>
-inline constexpr void wrapper2(const std::array<Wrapping, 3>& w, const Callable& obj,
-                               Args&&... args) {
+constexpr void wrapper2(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
     switch (w[2]) {
         default:
             [[fallthrough]];
@@ -56,8 +55,7 @@ inline constexpr void wrapper2(const std::array<Wrapping, 3>& w, const Callable&
 }
 
 template <Wrapping Wx, typename Callable, typename... Args>
-inline constexpr void wrapper1(const std::array<Wrapping, 3>& w, const Callable& obj,
-                               Args&&... args) {
+constexpr void wrapper1(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
     switch (w[1]) {
         default:
             [[fallthrough]];
@@ -72,8 +70,7 @@ inline constexpr void wrapper1(const std::array<Wrapping, 3>& w, const Callable&
 }  // namespace detail
 
 template <typename Callable, typename... Args>
-inline constexpr void wrapper(const std::array<Wrapping, 3>& w, const Callable& obj,
-                              Args&&... args) {
+constexpr void wrapper(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
     switch (w[0]) {
         default:
             [[fallthrough]];
@@ -208,8 +205,7 @@ inline void dispatch(DataFormatId format, const Callable& obj, Args&&... args) {
                   : false) ||
              ...);
         if (!found) throw std::runtime_error("Format not specialized");
-    }
-    (std::make_integer_sequence<size_t, std::tuple_size_v<DefaultDataTypes>>{});
+    }(std::make_integer_sequence<size_t, std::tuple_size_v<DefaultDataTypes>>{});
 }
 
 }  // namespace inviwo::grid
