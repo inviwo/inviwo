@@ -34,17 +34,17 @@
 
 #define REF_SAMPLING_INTERVAL 150.0
 
-vec4 compositeDVR(in vec4 curResult, in vec4 color, in float t, inout float tDepth,
-                  in float tIncr) {
-    vec4 result = curResult;
-
-    if (tDepth == -1.0 && color.a > 0.0) tDepth = t;
-
-    color.a = 1.0 - pow(1.0 - color.a, tIncr * REF_SAMPLING_INTERVAL);
+vec4 DVRCompositing(in vec4 current, in vec4 color, in float relativeSamplingRate) {
+    color.a = 1.0 - pow(1.0 - color.a, relativeSamplingRate);
     // front-to-back blending
     color.rgb *= color.a;
-    result += (1.0 - result.a) * color;
-    return result;
+    return current + (1.0 - current.a) * color;
+}
+
+vec4 compositeDVR(in vec4 curResult, in vec4 color, in float t, inout float tDepth,
+                  in float tIncr) {
+    if (tDepth == -1.0 && color.a > 0.0) tDepth = t;
+    return DVRCompositing(curResult, color, tIncr * REF_SAMPLING_INTERVAL);
 }
 
 vec4 compositeMIP(in vec4 curResult, in vec4 color, in float t, inout float tDepth) {

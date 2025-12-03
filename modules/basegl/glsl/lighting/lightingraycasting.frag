@@ -90,6 +90,11 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
 
+    float dvrScale = min(length(volumeParameters.dataToWorld[0]),
+                         min(length(volumeParameters.dataToWorld[1]),
+                             length(volumeParameters.dataToWorld[2])));
+    float worldStep = tIncr * length(mat3(volumeParameters.dataToWorld) * rayDirection) / dvrScale
+
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;
 #ifdef BACKGROUND_AVAILABLE
@@ -132,7 +137,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #endif
 
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera,
-                                       raycaster.isoValue, t, tDepth, tIncr);
+                                       raycaster.isoValue, t, tDepth, worldStep);
         }
 
         // early ray termination

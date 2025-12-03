@@ -31,28 +31,18 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>  // for boundingBox
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags::GL, Tags
-#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/stringconversion.h>                          // for trim
-#include <inviwo/core/util/zip.h>                                       // for zipper
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>   // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/cameracomponent.h>            // for CameraComponent
-#include <modules/basegl/shadercomponents/isotfcomponent.h>             // for IsoTFComponent
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>        // for RaycastingComponent
-#include <modules/basegl/shadercomponents/volumecomponent.h>            // for VolumeComponent
+#include <inviwo/core/ports/volumeport.h>                              // for VolumeInport
+#include <inviwo/core/properties/isotfproperty.h>                      // for IsoTFProperty
+#include <inviwo/core/util/stringconversion.h>                         // for trim
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>  // for VolumeRaycasterBase
+#include <modules/basegl/shadercomponents/cameracomponent.h>           // for CameraComponent
+#include <modules/basegl/shadercomponents/isotfcomponent.h>            // for IsoTFComponent
+#include <modules/basegl/shadercomponents/raycastingcomponent.h>       // for RaycastingComponent
+#include <modules/basegl/shadercomponents/volumecomponent.h>           // for VolumeComponent
 #include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
 #include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
 #include <modules/opengl/texture/textureutils.h>
-
-#include <functional>   // for __base
-#include <string>       // for string
-#include <type_traits>  // for remove_extent_t
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
 #include <fmt/format.h>  // for compile_string_to_view, FMT...
 
@@ -274,21 +264,19 @@ TexturedIsosurfaceRenderer::TexturedIsosurfaceRenderer(std::string_view identifi
     registerComponents(volume_, iso_, tf_, texturedComponent_, entryExit_, background_, camera_,
                        light_, positionIndicator_, sampleTransform_);
 
-    auto updateIsoHist = [this]() {
-        HistogramSelection selection{};
-        selection[texturedComponent_.isoChannel] = true;
-        iso_.iso.setHistogramSelection(selection);
-    };
-    updateIsoHist();
-    texturedComponent_.isoChannel.onChange(updateIsoHist);
+    util::handleTFSelections(iso_.iso, texturedComponent_.isoChannel);
+    util::handleTFSelections(tf_.tf, texturedComponent_.colorChannel);
+}
 
-    auto updateColorHist = [this]() {
-        HistogramSelection selection{};
-        selection[texturedComponent_.colorChannel] = true;
-        tf_.tf.setHistogramSelection(selection);
-    };
-    updateColorHist();
-    texturedComponent_.colorChannel.onChange(updateColorHist);
+void TexturedIsosurfaceRenderer::process() {
+    util::checkValidChannel(texturedComponent_.isoChannel.getSelectedIndex(),
+                            volume_.channelsForVolume().value_or(0));
+
+    util::checkValidChannel(
+        texturedComponent_.colorChannel.getSelectedIndex(),
+        texturedComponent_.colorPort.getData()->getDataFormat()->getComponents(), "colorVolume");
+
+    VolumeRaycasterBase::process();
 }
 
 }  // namespace inviwo

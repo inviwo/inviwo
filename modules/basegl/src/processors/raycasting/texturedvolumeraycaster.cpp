@@ -35,6 +35,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
 #include <fmt/base.h>
 
@@ -58,11 +59,18 @@ TexturedVolumeComponent::TexturedVolumeComponent(std::string_view name, VolumeIn
                   {"multiplyAll", "Multiply Color & Alpha", Operation::MultiplyPrimaryAll}},
                  1,
                  InvalidationLevel::InvalidResources}
-    , samplingRate_{"samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f}
+    , raycasting_("raycaster", "Raycasting")
     , volume_{volume.getIdentifier()} {
+
+    raycasting_.compositing_.setVisible(false);
+    raycasting_.renderingType_.setVisible(false);
+    raycasting_.classification_.setVisible(false);
 
     secondaryTF_.setHelp("Transfer function applied when sampling the secondary volume."_help);
     dependentLookup_.addProperties(secondaryChannel_, secondaryTF_, operation_);
+
+    util::handleTFSelections(primaryTF_, primaryChannel_);
+    util::handleTFSelections(secondaryTF_, secondaryChannel_);
 }
 
 std::string_view TexturedVolumeComponent::getName() const {
@@ -73,13 +81,19 @@ void TexturedVolumeComponent::initializeResources(Shader& shader) {
     auto* fso = shader.getFragmentShaderObject();
     fso->addShaderDefine("DEPENDENT_LOOKUP_OP",
                          fmt::format("{}", static_cast<int>(operation_.getSelectedValue())));
-    fso->addShaderDefine(
-        "COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParams, samplePos, channel)",
-        "gradientCentralDiff(voxel, volume, volumeParams, samplePos, channel)");
-    fso->addShaderDefine("GRADIENTS_ENABLED");
+
+    // gradients
+    utilgl::setShaderDefines(
+        shader, raycasting_.gradientComputation_,
+        raycasting_.classification_.get() == RaycastingProperty::Classification::Voxel);
 }
 
 void TexturedVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
+
+    util::checkValidChannel(secondaryChannel_.getSelectedIndex(),
+                            secondaryVolumePort_.getData()->getDataFormat()->getComponents(),
+                            secondaryVolumePort_.getIdentifier());
+
     utilgl::bindAndSetUniforms(shader, cont, secondaryVolumePort_);
 
     TextureUnit tfUnit;
@@ -92,9 +106,11 @@ void TexturedVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
     shader.setUniform(fmt::format("{}TF", getName()), secondaryTFunit);
     cont.push_back(std::move(secondaryTFunit));
 
-    utilgl::setUniforms(shader, primaryChannel_, samplingRate_);
+    utilgl::setUniforms(shader, primaryChannel_, raycasting_.samplingRate_,
+                        raycasting_.dvrReference_);
 
     shader.setUniform(fmt::format("{}Channel", getName()), secondaryChannel_);
+
 }
 
 std::vector<std::tuple<Inport*, std::string>> TexturedVolumeComponent::getInports() {
@@ -102,7 +118,7 @@ std::vector<std::tuple<Inport*, std::string>> TexturedVolumeComponent::getInport
 }
 
 std::vector<Property*> TexturedVolumeComponent::getProperties() {
-    return {&primaryChannel_, &primaryTF_, &dependentLookup_, &samplingRate_};
+    return {&primaryChannel_, &primaryTF_, &dependentLookup_, &raycasting_};
 }
 
 namespace {
@@ -141,6 +157,19 @@ ShadingParameters shadingParams = defaultShadingParameters();
 vec4 color = vec4(0);
 )");
 
+constexpr std::string_view manualStepInit = util::trim(R"(
+float {volume}worldStep = rayStep * dvrReference * 
+                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+)");
+
+constexpr std::string_view automaticStepInit = util::trim(R"(
+float {volume}dvrScale = min(length({volume}Parameters.dataToWorld[0]), 
+                             min(length({volume}Parameters.dataToWorld[1]), 
+                                 length({volume}Parameters.dataToWorld[2])));
+float {volume}worldStep = rayStep * dvrReference / {volume}dvrScale * 
+                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+)");
+
 constexpr std::string_view classification = util::trim(R"(
 color = texture({tf}, vec2({volume}Voxel[channel], 0.5));
 color = applyDependentLookup(color, samplePosition);
@@ -164,7 +193,8 @@ if (color.a > 0) {{
     #endif
     color.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);
 
-    result = compositeDVR(result, color, rayPosition, rayDepth, rayStep);
+    if (rayDepth == -1.0 && color.a > 0.0) rayDepth = rayPosition;
+    result = DVRCompositing(result, color, {volume}worldStep);
 }}
 )");
 
@@ -175,6 +205,11 @@ auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
     const auto& tf = primaryTF_.getIdentifier();
     const auto gradient = fmt::format("{}Gradient", volume_);
 
+    const auto stepInit =
+        raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
+            ? fmt::format(automaticStepInit, "volume"_a = volume_)
+            : fmt::format(manualStepInit, "volume"_a = volume_);
+
     return {
         {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
          .placeholder = placeholder::include,
@@ -182,6 +217,11 @@ auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
         {.snippet = fmt::format(uniforms, "lookup"_a = getName(), "tf"_a = tf),
          .placeholder = placeholder::uniform,
          .priority = 1080},
+
+        {std::string(R"(uniform float dvrReference = 150.0;)"), placeholder::uniform, 1110},
+
+        {stepInit, placeholder::first, 600},
+
         {.snippet = fmt::format(lookupFunction, "lookup"_a = getName()),
          .placeholder = placeholder::uniform,
          .priority = 1500},
@@ -217,11 +257,11 @@ const ProcessorInfo TexturedVolumeRaycaster::processorInfo_{
     R"(Uses volume raycasting to render a Volumem with the color based on an additional volume
        and secondary transfer function for dependent color lookups. The primary volume is used
        to determine the opacity as well as the gradients for illumination whereas the color
-       results from the secondardy TF.
+       results from the secondary TF.
 
        Example Network:
        [core/dependent_volume_raycaster.inv](file:~modulePath~/data/workspaces/dependent_volume_raycaster.inv)
-)"_unindentHelp,
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& TexturedVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
@@ -241,6 +281,13 @@ TexturedVolumeRaycaster::TexturedVolumeRaycaster(std::string_view identifier,
 
     registerComponents(volume_, textureComponent_, entryExit_, background_, camera_, light_,
                        positionIndicator_, sampleTransform_);
+}
+
+void TexturedVolumeRaycaster::process() {
+    util::checkValidChannel(textureComponent_.selectedChannel(),
+                            volume_.channelsForVolume().value_or(0));
+
+    VolumeRaycasterBase::process();
 }
 
 }  // namespace inviwo

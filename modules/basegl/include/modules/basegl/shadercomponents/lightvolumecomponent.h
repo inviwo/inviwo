@@ -73,8 +73,6 @@ public:
 
     virtual std::vector<Segment> getSegments() override;
 
-    bool setUsedChannels(size_t channels);
-
 private:
     VolumeInport lightVolume_;
     DataInport<LightSource> lightSource_;
@@ -89,7 +87,6 @@ private:
 
     std::string volumeVarName_;
     std::string gradientVarName_;
-    size_t usedChannels_;
 };
 
 }  // namespace inviwo
