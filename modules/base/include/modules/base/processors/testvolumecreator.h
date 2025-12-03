@@ -51,7 +51,7 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    enum class Mode { Sin1D, Sin2D, Sin3D };
+    enum class Mode : std::uint8_t { Sin1D, Sin2D, Sin3D };
 
 private:
     VolumeOutport scalar_;

@@ -74,6 +74,9 @@ VolumeGradientProcessor::VolumeGradientProcessor()
           "Toggles whether the input data is saved in the alpha channel of the output"_help, false,
           InvalidationLevel::InvalidResources) {
 
+    calculateDataRange_.set(true);
+    calculateDataRange_.setCurrentStateAsDefault();
+
     addProperties(channel_, dataInChannel4_, calculateDataRange_, dataRange_);
 }
 
@@ -104,9 +107,10 @@ void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& 
     if (!dataInChannel4_) {
         config.valueAxis =
             Axis{.name = "Gradient", .unit = data->dataMap.valueAxis.unit / data->axes[0].unit};
+        config.swizzleMask = swizzlemasks::defaultData(3);
+    } else {
+        config.swizzleMask = swizzlemasks::defaultData(3);
     }
-
-    config.swizzleMask = swizzlemasks::defaultData(3);
     shader.setUniform("channel", channel_.getSelectedValue());
 }
 
