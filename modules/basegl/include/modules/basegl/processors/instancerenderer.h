@@ -41,11 +41,9 @@
 #include <inviwo/core/properties/simplelightingproperty.h>  // for SimpleLightingProperty
 #include <inviwo/core/properties/stringproperty.h>          // for StringProperty
 #include <modules/opengl/shader/shader.h>                   // for Shader
-#include <modules/opengl/buffer/bufferobject.h>             // for BufferGL
 #include <modules/opengl/texture/textureunit.h>             // for TextureUnit, TextureUnitContai...
 
 #include <array>       // for array
-#include <cstddef>     // for size_t
 #include <functional>  // for function
 #include <memory>      // for unique_ptr, shared_ptr
 #include <vector>      // for vector

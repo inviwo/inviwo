@@ -38,6 +38,8 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <modules/basegl/processors/layerprocessing/layerglprocessor.h>
 
+#include <cstdint>
+
 namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public LayerGLProcessor {
