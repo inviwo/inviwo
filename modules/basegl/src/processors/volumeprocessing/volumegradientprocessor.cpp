@@ -109,7 +109,7 @@ void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& 
             Axis{.name = "Gradient", .unit = data->dataMap.valueAxis.unit / data->axes[0].unit};
         config.swizzleMask = swizzlemasks::defaultData(3);
     } else {
-        config.swizzleMask = swizzlemasks::defaultData(3);
+        config.swizzleMask = swizzlemasks::defaultData(4);
     }
     shader.setUniform("channel", channel_.getSelectedValue());
 }
