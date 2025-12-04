@@ -35,7 +35,6 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QStyleOption>
-#include <QStyleOptionFrame>
 #include <QPainter>
 #include <QSvgRenderer>
 #include <QFontMetrics>
@@ -138,22 +137,39 @@ bool BaseNumberWidget::event(QEvent* event) {
             }
             updateState(FocusAction::ClearFocus);
         } else if (event->type() == QEvent::KeyPress) {
-            const auto* keyEvent = static_cast<QKeyEvent*>(event);
-
-            if (keyEvent->key() == Qt::Key_Escape) {
-                // cancel editing
-                const QSignalBlocker blocker{this};
-                updateText();
-                clearFocus();
-                return true;
-            } else if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-                // commit changes
-                clearFocus();
-                return true;
-            }
+            return handleKeyEvent(static_cast<QKeyEvent*>(event));
         }
     }
     return QLineEdit::event(event);
+}
+
+bool BaseNumberWidget::handleKeyEvent(QKeyEvent* keyEvent) {
+    if (keyEvent->key() == Qt::Key_Escape) {
+        // cancel editing
+        const QSignalBlocker blocker{this};
+        updateText();
+        clearFocus();
+        return true;
+    } else if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+        // commit changes
+        clearFocus();
+        return true;
+    } else if (keyEvent->key() == Qt::Key_Up) {
+        if (incrementValue()) {
+            updateText();
+            emit valueChanged();
+            update();
+        }
+        return true;
+    } else if (keyEvent->key() == Qt::Key_Down) {
+        if (decrementValue()) {
+            updateText();
+            emit valueChanged();
+            update();
+        }
+        return true;
+    }
+    return false;
 }
 
 void BaseNumberWidget::mousePressEvent(QMouseEvent* event) {

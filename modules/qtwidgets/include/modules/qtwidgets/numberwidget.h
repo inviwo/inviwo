@@ -37,7 +37,7 @@
 #include <tuple>
 
 #include <QLineEdit>
-#include <QByteArray>
+#include <QGuiApplication>
 
 class QEvent;
 class QMouseEvent;
@@ -98,6 +98,11 @@ public:
 
     virtual bool event(QEvent* event) override;
 
+    static constexpr Qt::KeyboardModifier increasedStepModifier = Qt::ControlModifier;
+    static constexpr Qt::KeyboardModifier decreasedStepModifier = Qt::ShiftModifier;
+    static constexpr double increasedStepSize = 10.0;
+    static constexpr double decreasedStepSize = 0.1;
+
 signals:
     void valueChanged();
 
@@ -121,6 +126,7 @@ private:
     enum class FocusAction : std::uint8_t { SetFocus, ClearFocus };
     enum class HoverState : std::uint8_t { Invalid, Center, NegativeInc, PositiveInc };
 
+    bool handleKeyEvent(QKeyEvent* keyEvent);
     QSize calcMinimumSize() const;
     void drawPercentageBar(QPainter& painter, const QRect& rect, bool hover) const;
     QString getPrefixedText() const;
@@ -143,11 +149,6 @@ private:
     bool percentageBarVisible_;
     mutable QSize cachedMinimumSizeHint_;
     int minimumWidth_;
-
-    static constexpr Qt::KeyboardModifier increasedStepModifier = Qt::ControlModifier;
-    static constexpr Qt::KeyboardModifier decreasedStepModifier = Qt::ShiftModifier;
-    static constexpr double increasedStepSize = 10.0;
-    static constexpr double decreasedStepSize = 0.1;
 };
 
 template <typename T>
@@ -253,6 +254,12 @@ bool NumberWidget<T>::incrementValue() {
     if constexpr (std::is_integral_v<T>) {
         uiIncrement = std::max<T>(uiIncrement, 1);
     }
+    if (const auto modifiers = QGuiApplication::queryKeyboardModifiers();
+        modifiers.testFlag(increasedStepModifier)) {
+        uiIncrement *= static_cast<T>(increasedStepSize);
+    } else if (modifiers.testFlag(decreasedStepModifier)) {
+        uiIncrement *= static_cast<T>(decreasedStepSize);
+    }
     if (maxValue_ - uiIncrement < value_) {
         if (getWrapping()) {
             const T delta = maxValue_ - value_;
@@ -270,6 +277,12 @@ bool NumberWidget<T>::decrementValue() {
     auto uiIncrement = static_cast<T>(getUIIncrement());
     if constexpr (std::is_integral_v<T>) {
         uiIncrement = std::max<T>(uiIncrement, 1);
+    }
+    if (const auto modifiers = QGuiApplication::queryKeyboardModifiers();
+        modifiers.testFlag(increasedStepModifier)) {
+        uiIncrement *= static_cast<T>(increasedStepSize);
+    } else if (modifiers.testFlag(decreasedStepModifier)) {
+        uiIncrement *= static_cast<T>(decreasedStepSize);
     }
     if (minValue_ + uiIncrement > value_) {
         if (getWrapping()) {
@@ -443,6 +456,10 @@ bool NumberWidget<T>::updateValue(T v) {
 
 template <typename T>
 double NumberWidget<T>::getUIIncrement() const {
+    if (getInteractionMode() == NumberWidgetConfig::Interaction::NoDragging) {
+        return static_cast<double>(increment_);
+    }
+
     if (minValue_ == std::numeric_limits<T>::lowest() ||
         maxValue_ == std::numeric_limits<T>::max()) {
         return static_cast<double>(increment_);
