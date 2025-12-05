@@ -136,8 +136,9 @@ bool BaseNumberWidget::event(QEvent* event) {
                 emit valueChanged();
             }
             updateState(FocusAction::ClearFocus);
-        } else if (event->type() == QEvent::KeyPress) {
-            return handleKeyEvent(static_cast<QKeyEvent*>(event));
+        } else if (event->type() == QEvent::KeyPress &&
+                   handleKeyEvent(static_cast<QKeyEvent*>(event))) {
+            return true;
         }
     }
     return QLineEdit::event(event);
