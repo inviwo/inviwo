@@ -71,6 +71,7 @@ protected:
     DataInport<T> inport_;
     DataOutport<T> outport_;
 
+    BoolProperty enable_;
     OptionProperty<Mode> space_;
     TransformListProperty transforms_;
 };
@@ -149,6 +150,7 @@ Transform<T>::Transform()
     : Processor()
     , inport_("inport_")
     , outport_("outport_")
+    , enable_("enable", "Enabled", true)
     , space_("space", "Space",
              {{"worldModelTransform", "World * (Model * Transform)", Mode::WorldModelTransform},
               {"world_TransformModel", "World * (Transform * Model)", Mode::World_TransformModel},
@@ -162,11 +164,16 @@ Transform<T>::Transform()
     addPort(inport_);
     addPort(outport_);
 
-    addProperties(space_, transforms_);
+    addProperties(enable_, space_, transforms_);
 }
 
 template <typename T>
 void Transform<T>::process() {
+    if (!enable_) {
+        outport_.setData(inport_.getData());
+        return;
+    }
+
     std::shared_ptr<T> data(inport_.getData()->clone());
 
     switch (*space_) {
