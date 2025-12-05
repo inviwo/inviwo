@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/raycastingproperty.h>
 
 #include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>         // for BackgroundComponent
@@ -70,7 +71,10 @@ public:
 
     virtual std::vector<Segment> getSegments() override;
 
+    size_t selectedChannel() const { return primaryChannel_.getSelectedIndex(); }
+
 private:
+    using enum RaycastingProperty::RenderingType;
     VolumeInport secondaryVolumePort_;
 
     CompositeProperty dependentLookup_;
@@ -79,7 +83,7 @@ private:
     TransferFunctionProperty primaryTF_;
     TransferFunctionProperty secondaryTF_;
     OptionProperty<Operation> operation_;
-    FloatProperty samplingRate_;
+    RaycastingProperty raycasting_;
 
     std::string volume_;
 };
@@ -91,6 +95,8 @@ public:
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+    virtual void process() override;
 
 private:
     VolumeComponent volume_;

@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/lightvolumeraycaster.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
 namespace inviwo {
 
@@ -63,16 +64,13 @@ LightVolumeRaycaster::LightVolumeRaycaster(std::string_view identifier,
     , positionIndicator_{}
     , sampleTransform_{} {
 
-    volume_.volumePort.onChange([this]() {
-        if (volume_.volumePort.hasData()) {
-            const auto channels = volume_.volumePort.getData()->getDataFormat()->getComponents();
-            raycasting_.setUsedChannels(channels);
-            lightVolume_.setUsedChannels(channels);
-        }
-    });
-
     registerComponents(volume_, lightVolume_, entryExit_, background_, raycasting_, isoTF_, camera_,
                        positionIndicator_, sampleTransform_);
+}
+
+void LightVolumeRaycaster::process() {
+    util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
+    VolumeRaycasterBase::process();
 }
 
 }  // namespace inviwo

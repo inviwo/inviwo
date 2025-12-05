@@ -29,29 +29,8 @@
 
 #include <modules/basegl/processors/raycasting/atlasvolumeraycaster.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags, Tags::GL
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/zip.h>                                       // for zipper
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>   // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/cameracomponent.h>            // for CameraComponent
-#include <modules/basegl/shadercomponents/isotfcomponent.h>             // for IsoTFComponent
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>        // for RaycastingComponent
-#include <modules/basegl/shadercomponents/volumecomponent.h>            // for VolumeComponent
-
-#include <array>        // for array
-#include <functional>   // for __base, function
-#include <string>       // for string
-#include <type_traits>  // for remove_extent_t
-
-#include <fmt/core.h>  // for basic_string_view
+#include <inviwo/core/algorithm/boundingbox.h>  // for boundingBox
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
 namespace inviwo {
 
@@ -90,15 +69,13 @@ AtlasVolumeRaycaster::AtlasVolumeRaycaster(std::string_view identifier,
     , sampleTransform_{}
     , atlas_{this, "color", &time_} {
 
-    volume_.volumePort.onChange([this]() {
-        if (volume_.volumePort.hasData()) {
-            const auto channels = volume_.volumePort.getData()->getDataFormat()->getComponents();
-            raycasting_.setUsedChannels(channels);
-        }
-    });
-
     registerComponents(volume_, entryExit_, isoTF_, atlas_, background_, sampleTransform_,
                        raycasting_, camera_, light_, positionIndicator_, time_);
+}
+
+void AtlasVolumeRaycaster::process() {
+    util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
+    VolumeRaycasterBase::process();
 }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,33 +28,27 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/datastructures/histogram.h>
 
-#include <memory>   // for shared_ptr
-#include <utility>  // for pair
-
-namespace inviwo {
-class ShaderResource;
-class ShaderType;
-
-namespace utilgl {
+namespace inviwo::util {
 
 /**
- * Standard minimal vertex shader resource, used if no vertex shader exits in shader.h
+ * Utility to have a tf channel selection depend in a "channel" property.
+ * We expect the tf to be a TF/ISO/ISOTF Property, and channel to be
+ * some integer property
  */
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>>
-imgIdentityVert();
+void handleTFSelections(auto& tf, auto& channel) {
+    const auto update = [&]() {
+        HistogramSelection selection{};
+        selection[channel.get()] = true;
+        tf.setHistogramSelection(selection);
+    };
+    update();
+    channel.onChange(update);
+}
 
-/**
- * Standard vertex shader resource for a quad
- */
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert();
+IVW_MODULE_BASEGL_API void checkValidChannel(size_t channel, size_t numberOfChannels,
+                                             std::string_view volume = "volume");
 
-/**
- * Standard fragment shader resource for a quad
- */
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadFrag();
-
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::util

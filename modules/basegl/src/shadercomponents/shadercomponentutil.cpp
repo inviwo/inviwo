@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/opengl/openglmoduledefine.h>  // for IVW_MODULE_OPENGL_API
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
-#include <memory>   // for shared_ptr
-#include <utility>  // for pair
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
-class ShaderResource;
-class ShaderType;
 
-namespace utilgl {
-
-/**
- * Standard minimal vertex shader resource, used if no vertex shader exits in shader.h
- */
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>>
-imgIdentityVert();
-
-/**
- * Standard vertex shader resource for a quad
- */
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert();
-
-/**
- * Standard fragment shader resource for a quad
- */
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadFrag();
-
-}  // namespace utilgl
+void util::checkValidChannel(size_t channel, size_t numberOfChannels, std::string_view volume) {
+    if (channel >= numberOfChannels) {
+        throw Exception{SourceContext{}, "Selected channel {} does not exist, {} has {} channels",
+                        channel + 1, volume, numberOfChannels};
+    }
+}
 
 }  // namespace inviwo
