@@ -1,5 +1,9 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1MinorTickData.html":[4,0,0,21,24],
+"classinviwo_1_1plot_1_1MinorTickProperty.html":[2,0,0,14,24],
+"classinviwo_1_1plot_1_1MinorTickProperty.html":[4,0,0,21,25],
+"classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855":[2,0,0,14,24,0],
 "classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855":[4,0,0,21,25,0],
 "classinviwo_1_1plot_1_1MinorTickSettings.html":[2,0,0,14,25],
 "classinviwo_1_1plot_1_1MinorTickSettings.html":[4,0,0,21,26],
@@ -181,15 +185,15 @@ var NAVTREEINDEX27 =
 "classinviwo_1_1utilqt_1_1detail_1_1QtProcessFrontHelper.html":[4,0,0,32,0,0],
 "classinviwo_1_1xml_1_1Kind.html":[2,0,0,24,2],
 "classinviwo_1_1xml_1_1Kind.html":[4,0,0,33,2],
-"conceptinviwo_1_1DataType.html":[2,0,0,1366],
+"conceptinviwo_1_1DataType.html":[2,0,0,1367],
 "conceptinviwo_1_1DataType.html":[3,0,4],
-"conceptinviwo_1_1Gettable.html":[2,0,0,1367],
+"conceptinviwo_1_1Gettable.html":[2,0,0,1368],
 "conceptinviwo_1_1Gettable.html":[3,0,5],
-"conceptinviwo_1_1JSONConvertable.html":[2,0,0,1368],
+"conceptinviwo_1_1JSONConvertable.html":[2,0,0,1369],
 "conceptinviwo_1_1JSONConvertable.html":[3,0,6],
-"conceptinviwo_1_1RepresentationOf.html":[2,0,0,1369],
+"conceptinviwo_1_1RepresentationOf.html":[2,0,0,1370],
 "conceptinviwo_1_1RepresentationOf.html":[3,0,7],
-"conceptinviwo_1_1Settable.html":[2,0,0,1370],
+"conceptinviwo_1_1Settable.html":[2,0,0,1371],
 "conceptinviwo_1_1Settable.html":[3,0,8],
 "conceptinviwo_1_1animation_1_1detail_1_1Scalar.html":[3,0,0,0,0],
 "conceptinviwo_1_1deserializer_1_1IdentifiableFunctions.html":[3,0,1,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX27 =
 "functions_l.html":[4,3,0,11],
 "functions_m.html":[4,3,0,12],
 "functions_n.html":[4,3,0,13],
-"functions_o.html":[4,3,0,14],
-"functions_p.html":[4,3,0,15],
-"functions_q.html":[4,3,0,16],
-"functions_r.html":[4,3,0,17],
-"functions_s.html":[4,3,0,18]
+"functions_o.html":[4,3,0,14]
 };
