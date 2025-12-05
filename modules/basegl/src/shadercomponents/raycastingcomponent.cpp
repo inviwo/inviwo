@@ -117,21 +117,20 @@ constexpr std::string_view init = util::trim(R"(
 ShadingParameters shadingParams = defaultShadingParameters();
 )");
 
+constexpr std::string_view dvrReference = R"(uniform float dvrReference = 150.0;)";
+
 constexpr std::string_view colorInit = util::trim(R"(
 vec4 color{color} = vec4(0);
 )");
 
 constexpr std::string_view manualStepInit = util::trim(R"(
-float {volume}worldStep = rayStep * dvrReference * 
-                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+float {volume}worldStep = dvrReference * calcWorldStepScaled(rayStep, rayDirection, 
+                                                             mat3({volume}Parameters.dataToWorld));
 )");
 
 constexpr std::string_view automaticStepInit = util::trim(R"(
-float {volume}dvrScale = min(length({volume}Parameters.dataToWorld[0]), 
-                             min(length({volume}Parameters.dataToWorld[1]), 
-                                 length({volume}Parameters.dataToWorld[2])));
-float {volume}worldStep = rayStep * dvrReference / {volume}dvrScale * 
-                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+float {volume}worldStep = dvrReference * calcWorldStepScaled(rayStep, rayDirection, 
+                                                             mat3({volume}Parameters.dataToWorld));
 )");
 
 constexpr std::string_view classify = util::trim(R"(
@@ -163,6 +162,13 @@ if (color{color}.a > 0) {{
 
 }  // namespace
 
+auto makeFormatter = []<typename... Args>(Args&&... args) {
+    using FormatArgs = fmt::format_string<Args...>;
+    return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
+        return fmt::vformat(snippet, fArgs);
+    };
+};
+
 auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
     const auto renderingType = raycasting_.renderingType_;
@@ -171,53 +177,43 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     const auto& tf = isotf_.tf_.getIdentifier();
 
     std::vector<Segment> segments{
-        {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},
-        {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
-        {std::string(R"(uniform int channel = 0;)"), placeholder::uniform, 1100},
-        {std::string{init}, placeholder::first, 600},
+        {.snippet = std::string(R"(#include "raycasting/iso.glsl")"),
+         .placeholder = placeholder::include,
+         .priority = 1100},
+        {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
+         .placeholder = placeholder::include,
+         .priority = 1100},
+        {.snippet = std::string(R"(uniform int channel = 0;)"),
+         .placeholder = placeholder::uniform,
+         .priority = 1100},
+        {.snippet = std::string{init}, .placeholder = placeholder::first, 600},
     };
 
     const auto gradient = fmt::format("{}Gradient", volume_);
     const auto gradientPrev = fmt::format("{}GradientPrev", volume_);
 
+    auto format = makeFormatter("volume"_a = volume_, "gradient"_a = gradient,
+                                "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
+                                "channel"_a = "channel", "tf"_a = tf, "color"_a = "");
+
     std::vector<Segment> isoSegments{
-        {std::string(R"(uniform float dvrReference = 1.0;)"), placeholder::uniform, 1110},
-        {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
-                     "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
-                     "channel"_a = "channel"),
-         placeholder::first, 1000},
-        {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
-                     "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
-                     "channel"_a = "channel"),
-         placeholder::loop, 1000}};
+        {.snippet = format(dvrReference), .placeholder = placeholder::uniform, .priority = 1110},
+        {.snippet = format(iso), .placeholder = placeholder::first, .priority = 1000},
+        {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 1000}};
 
     const auto stepInit =
         raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
-            ? fmt::format(automaticStepInit, "volume"_a = volume_)
-            : fmt::format(manualStepInit, "volume"_a = volume_);
+            ? format(automaticStepInit)
+            : format(manualStepInit);
 
     std::vector<Segment> dvrSegments{
-        {std::string(R"(uniform float dvrReference = 150.0;)"), placeholder::uniform, 1110},
-
-        {stepInit, placeholder::first, 600},
-
-        {fmt::format(colorInit, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
-                     "color"_a = ""),
-         placeholder::first, 600},
-
-        {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
-                     "color"_a = ""),
-         placeholder::first, 700},
-        {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = "channel",
-                     "color"_a = ""),
-         placeholder::loop, 700},
-
-        {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
-                     "channel"_a = "channel", "color"_a = ""),
-         placeholder::first, 1100},
-        {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
-                     "channel"_a = "channel", "color"_a = ""),
-         placeholder::loop, 1100}};
+        {.snippet = format(dvrReference), .placeholder = placeholder::uniform, .priority = 1110},
+        {.snippet = stepInit, .placeholder = placeholder::first, .priority = 600},
+        {.snippet = format(colorInit), .placeholder = placeholder::first, .priority = 600},
+        {.snippet = format(classify), .placeholder = placeholder::first, .priority = 700},
+        {.snippet = format(classify), .placeholder = placeholder::loop, .priority = 700},
+        {.snippet = format(shadeAndComposite), .placeholder = placeholder::first, .priority = 1100},
+        {.snippet = format(shadeAndComposite), .placeholder = placeholder::loop, .priority = 1100}};
 
     if (renderingType == DvrIsosurface || renderingType == Isosurface) {
         segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),
@@ -297,13 +293,16 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
     const auto renderingType = raycasting_.renderingType_;
 
     std::vector<Segment> segments{
-        {std::string(R"(#include "raycasting/iso.glsl")"), placeholder::include, 1100},
-        {std::string(R"(#include "utils/compositing.glsl")"), placeholder::include, 1100},
-        {std::string{init}, placeholder::first, 600}};
+        {.snippet = std::string(R"(#include "raycasting/iso.glsl")"),
+         .placeholder = placeholder::include,
+         .priority = 1100},
+        {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
+         .placeholder = placeholder::include,
+         .priority = 1100},
+        {.snippet = std::string{init}, .placeholder = placeholder::first, .priority = 600}};
 
     if (renderingType == DvrIsosurface || renderingType == Dvr) {
-        segments.emplace_back(std::string(R"(uniform float dvrReference = 150.0;)"),
-                              placeholder::uniform, 1110);
+        segments.emplace_back(std::string(dvrReference), placeholder::uniform, 1110);
 
         const auto stepInit =
             raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
@@ -320,33 +319,24 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
         const auto gradient = fmt::format("{}AllGradients[{}]", volume_, i);
         const auto gradientPrev = fmt::format("{}AllGradientsPrev[{}]", volume_, i);
 
+        auto format = makeFormatter("volume"_a = volume_, "gradient"_a = gradient,
+                                    "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
+                                    "channel"_a = i, "tf"_a = tf, "color"_a = i);
+
         std::vector<Segment> isoSegments{
-            {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
-                         "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
-                         "channel"_a = i),
-             placeholder::first, 700 + i},
-            {fmt::format(iso, "volume"_a = volume_, "gradient"_a = gradient,
-                         "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
-                         "channel"_a = i),
-             placeholder::loop, 700 + i}};
+            {.snippet = format(iso), .placeholder = placeholder::first, .priority = 700 + i},
+            {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 700 + i}};
 
         std::vector<Segment> dvrSegments{
-            {fmt::format(colorInit, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
-                         "color"_a = i),
-             placeholder::first, 600 + i},
-            {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
-                         "color"_a = i),
-             placeholder::first, 700 + 1},
-            {fmt::format(classify, "volume"_a = volume_, "tf"_a = tf, "channel"_a = i,
-                         "color"_a = i),
-             placeholder::loop, 700 + 1},
-
-            {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
-                         "tf"_a = tf, "channel"_a = i, "color"_a = i),
-             placeholder::first, 1100 + i},
-            {fmt::format(shadeAndComposite, "volume"_a = volume_, "gradient"_a = gradient,
-                         "tf"_a = tf, "channel"_a = i, "color"_a = i),
-             placeholder::loop, 1100 + i}};
+            {.snippet = format(colorInit), .placeholder = placeholder::first, .priority = 600 + i},
+            {.snippet = format(classify), .placeholder = placeholder::first, .priority = 700 + 1},
+            {.snippet = format(classify), .placeholder = placeholder::loop, .priority = 700 + 1},
+            {.snippet = format(shadeAndComposite),
+             .placeholder = placeholder::first,
+             .priority = 1100 + i},
+            {.snippet = format(shadeAndComposite),
+             .placeholder = placeholder::loop,
+             .priority = 1100 + i}};
 
         if (renderingType == DvrIsosurface || renderingType == Isosurface) {
             segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),

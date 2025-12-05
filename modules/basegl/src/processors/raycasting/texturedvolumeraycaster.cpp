@@ -110,7 +110,6 @@ void TexturedVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
                         raycasting_.dvrReference_);
 
     shader.setUniform(fmt::format("{}Channel", getName()), secondaryChannel_);
-
 }
 
 std::vector<std::tuple<Inport*, std::string>> TexturedVolumeComponent::getInports() {
@@ -158,16 +157,13 @@ vec4 color = vec4(0);
 )");
 
 constexpr std::string_view manualStepInit = util::trim(R"(
-float {volume}worldStep = rayStep * dvrReference * 
-                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+float {volume}worldStep = dvrReference * calcWorldStepScaled(rayStep, rayDirection, 
+                                                             mat3({volume}Parameters.dataToWorld));
 )");
 
 constexpr std::string_view automaticStepInit = util::trim(R"(
-float {volume}dvrScale = min(length({volume}Parameters.dataToWorld[0]), 
-                             min(length({volume}Parameters.dataToWorld[1]), 
-                                 length({volume}Parameters.dataToWorld[2])));
-float {volume}worldStep = rayStep * dvrReference / {volume}dvrScale * 
-                          length(mat3({volume}Parameters.dataToWorld) * rayDirection);
+float {volume}worldStep = dvrReference * calcWorldStepScaled(rayStep, rayDirection, 
+                                                             mat3({volume}Parameters.dataToWorld));
 )");
 
 constexpr std::string_view classification = util::trim(R"(
@@ -218,9 +214,11 @@ auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
          .placeholder = placeholder::uniform,
          .priority = 1080},
 
-        {std::string(R"(uniform float dvrReference = 150.0;)"), placeholder::uniform, 1110},
+        {.snippet = std::string(R"(uniform float dvrReference = 150.0;)"),
+         .placeholder = placeholder::uniform,
+         .priority = 1110},
 
-        {stepInit, placeholder::first, 600},
+        {.snippet = stepInit, .placeholder = placeholder::first, .priority = 600},
 
         {.snippet = fmt::format(lookupFunction, "lookup"_a = getName()),
          .placeholder = placeholder::uniform,

@@ -29,8 +29,8 @@
 
 #include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>                         // for boundingBox
-#include <inviwo/core/datastructures/histogram.h>                      // for HistogramSelection
+#include <inviwo/core/algorithm/boundingbox.h>     // for boundingBox
+#include <inviwo/core/datastructures/histogram.h>  // for HistogramSelection
 
 namespace inviwo {
 

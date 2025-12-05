@@ -35,9 +35,8 @@ namespace inviwo {
 
 void util::checkValidChannel(size_t channel, size_t numberOfChannels, std::string_view volume) {
     if (channel >= numberOfChannels) {
-        throw Exception{SourceContext{},
-                        "Selected channel {} does not exist, {} has {} channels", channel + 1,
-                        volume, numberOfChannels};
+        throw Exception{SourceContext{}, "Selected channel {} does not exist, {} has {} channels",
+                        channel + 1, volume, numberOfChannels};
     }
 }
 

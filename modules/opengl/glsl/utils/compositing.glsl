@@ -34,6 +34,16 @@
 
 #define REF_SAMPLING_INTERVAL 150.0
 
+float calcWorldStep(float textureStep, vec3 textureDir, mat3 basis) {
+    return textureStep * length(basis * textureDir);
+}
+
+float calcWorldStepScaled(float textureStep, vec3 textureDir, mat3 basis) {
+    float scale = inversesqrt(
+        min(dot(basis[0], basis[0]), min(dot(basis[1], basis[1]), dot(basis[2], basis[2]))));
+    return scale * calcWorldStep(textureStep, textureDi, basis);
+}
+
 vec4 DVRCompositing(in vec4 current, in vec4 color, in float relativeSamplingRate) {
     color.a = 1.0 - pow(1.0 - color.a, relativeSamplingRate);
     // front-to-back blending
@@ -77,7 +87,8 @@ vec4 compositeFHN(in vec4 curResult, in vec4 color, in vec3 gradient, in float t
     if (result == vec4(0.0) && color.a > 0.0) {
         tDepth = t;
         // Note that the gradient is reversed since we define the normal of a surface as
-        // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+        // the direction towards a lower intensity medium (gradient points in the inreasing
+        // direction)
         vec3 firstHitNormal = normalize(-gradient);
         result = vec4(firstHitNormal * 0.5 + 0.5, 1.0);
     }
@@ -92,7 +103,8 @@ vec4 compositeFHN_VS(in vec4 curResult, in vec4 color, in vec3 gradient, in floa
     if (result == vec4(0.0) && color.a > 0.0) {
         tDepth = t;
         // Note that the gradient is reversed since we define the normal of a surface as
-        // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+        // the direction towards a lower intensity medium (gradient points in the inreasing
+        // direction)
         vec3 firstHitNormal = normalize(-gradient);
 
         // https://cloud.githubusercontent.com/assets/9251300/4753062/34392416-5ab3-11e4-9569-026a8ec9687a.png

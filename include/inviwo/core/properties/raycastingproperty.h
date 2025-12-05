@@ -65,7 +65,7 @@ public:
         PrecomputedYZW
     };
 
-    enum class DVRReferenceMode { Automatic, Manual };
+    enum class DVRReferenceMode : std::uint8_t { Automatic, Manual };
 
     RaycastingProperty(std::string_view identifier, std::string_view displayName,
                        InvalidationLevel = InvalidationLevel::InvalidResources,

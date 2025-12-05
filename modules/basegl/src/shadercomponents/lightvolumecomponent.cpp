@@ -70,8 +70,8 @@ LightVolumeComponent::LightVolumeComponent(Processor& processor, std::string_vie
                      util::ordinalColor(LightingConfig::defaultSpecular)}
     , specularExponent_{"materialShininess", "Shininess",
                         util::ordinalScale(LightingConfig::defaultSpecularExponent)}
-    , volumeVarName_{std::move(volumeName)}
-    , gradientVarName_{std::move(gradientName)} {
+    , volumeVarName_{volumeName}
+    , gradientVarName_{gradientName} {
 
     material_.addProperties(ambientColor_, diffuseColor_, specularColor_, specularExponent_);
 

@@ -66,7 +66,7 @@ public:
 
     virtual std::vector<Segment> getSegments() override;
 
-    size_t selectedChannel() const { return static_cast<size_t>(channel_.getSelectedIndex()); }
+    size_t selectedChannel() const { return channel_.getSelectedIndex(); }
 
 private:
     using enum RaycastingProperty::RenderingType;

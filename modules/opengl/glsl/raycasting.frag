@@ -98,10 +98,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
                                   volumeParameters.textureToWorld * vec4(exitPoint, 1.0))
                                      .xyz);
 
-    float dvrScale = min(length(volumeParameters.dataToWorld[0]),
-                         min(length(volumeParameters.dataToWorld[1]),
-                             length(volumeParameters.dataToWorld[2])));
-    float worldStep = tIncr * length(mat3(volumeParameters.dataToWorld) * rayDirection) / dvrScale;
+    float worldStep = calcWorldStepScaled(tIncr, rayDirection, mat3(volumeParameters.dataToWorld));
 
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;

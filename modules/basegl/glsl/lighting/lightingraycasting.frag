@@ -90,10 +90,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
 
-    float dvrScale = min(length(volumeParameters.dataToWorld[0]),
-                         min(length(volumeParameters.dataToWorld[1]),
-                             length(volumeParameters.dataToWorld[2])));
-    float worldStep = tIncr * length(mat3(volumeParameters.dataToWorld) * rayDirection) / dvrScale
+    float worldStep = calcWorldStepScaled(tIncr, rayDirection, mat3(volumeParameters.dataToWorld));
 
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;
@@ -101,7 +98,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     backgroundColor = texture(bgColor, texCoords);
     // convert to raycasting depth
     bgTDepth = tEnd * calculateTValueFromDepthValue(
-        camera, backgroundDepth, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);        
+        camera, backgroundDepth, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);
 
     if (bgTDepth < 0) {
         result = backgroundColor;
