@@ -33,6 +33,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/algorithm/buildarray.h>
 
 #include <tuple>
 #include <type_traits>
@@ -88,17 +89,6 @@ struct Filter<Predicate, std::tuple<Args...>> {
     using type = typename Filter<Predicate, Args...>::type;
 };
 
-template <typename Index, typename Functor, Index... Is>
-constexpr auto build_array_impl(Functor&& func, std::integer_sequence<Index, Is...>) noexcept {
-    return std::array { func.template operator()<Is>()... };
-}
-
-template <std::size_t N, typename Index = size_t, typename Functor>
-constexpr auto build_array(Functor&& func) noexcept {
-    return build_array_impl<Index>(std::forward<Functor>(func),
-                                   std::make_integer_sequence<Index, N>());
-}
-
 std::string IVW_CORE_API predicateNameHelper(const char* name);
 
 template <template <class> class Predicate>
@@ -135,7 +125,7 @@ auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Resu
     using Functor = Result (*)(Callable&&, Args&&...);
 
     static constexpr auto table =
-        detail::build_array<nFormats>([]<size_t index>() constexpr -> Functor {
+        util::build_array_t<nFormats>([]<size_t index>() constexpr -> Functor {
             using Format = std::tuple_element_t<index, Formats>;
             if constexpr (Predicate<Format>::value) {
                 return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
@@ -187,16 +177,16 @@ auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Resu
  */
 template <typename Result, template <class> class Predicate1, template <class> class Predicate2,
           typename Callable, typename... Args>
-auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj,
-                    Args&&... args) -> Result {
+auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, Args&&... args)
+    -> Result {
     using Formats = DefaultDataFormats;
     constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args&&...);
 
-    static constexpr auto table = detail::build_array<nFormats>([]<size_t index1>() constexpr {
+    static constexpr auto table = util::build_array_t<nFormats>([]<size_t index1>() constexpr {
         using Format1 = std::tuple_element_t<index1, Formats>;
         using T1 = typename Format1::type;
-        return detail::build_array<nFormats>([]<size_t index2>() constexpr -> Functor {
+        return util::build_array_t<nFormats>([]<size_t index2>() constexpr -> Functor {
             using Format2 = std::tuple_element_t<index2, Formats>;
             using T2 = typename Format2::type;
             if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value) {
@@ -259,13 +249,13 @@ auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId for
     constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args&&...);
 
-    static constexpr auto table = detail::build_array<nFormats>([]<size_t index1>() constexpr {
+    static constexpr auto table = util::build_array_t<nFormats>([]<size_t index1>() constexpr {
         using Format1 = std::tuple_element_t<index1, Formats>;
         using T1 = typename Format1::type;
-        return detail::build_array<nFormats>([]<size_t index2>() constexpr {
+        return util::build_array_t<nFormats>([]<size_t index2>() constexpr {
             using Format2 = std::tuple_element_t<index2, Formats>;
             using T2 = typename Format2::type;
-            return detail::build_array<nFormats>([]<size_t index3>() constexpr -> Functor {
+            return util::build_array_t<nFormats>([]<size_t index3>() constexpr -> Functor {
                 using Format3 = std::tuple_element_t<index3, Formats>;
                 using T3 = typename Format3::type;
                 if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value &&
@@ -306,7 +296,7 @@ template <typename Result, template <class> class Predicate, typename Callable, 
     constexpr auto nFormats = std::tuple_size<Formats>::value;
     using Functor = Result (*)(Callable&&, Args&&...);
     static constexpr auto table =
-        detail::build_array<nFormats>([]<size_t index>() constexpr -> Functor {
+        util::build_array_t<nFormats>([]<size_t index>() constexpr -> Functor {
             using Format = std::tuple_element_t<index, Formats>;
             if constexpr (Predicate<Format>::value) {
                 return [](Callable&& innerObj, Args&&... innerArgs) -> Result {

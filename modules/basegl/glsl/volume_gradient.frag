@@ -34,17 +34,15 @@ uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
 
 uniform int channel = 0;
-uniform vec2 dataRange = vec2(0, 1);
-
 in vec4 texCoord_;
 
 void main() {
+    vec3 grad = gradientCentralDiffValue(volume, volumeParameters, texCoord_.xyz, channel);
+
 #ifdef ADD_DATA_CHANNEL
-    float v = getNormalizedVoxelChannel(volume, volumeParameters, texCoord_.xyz, channel) 
-        * (dataRange.y - dataRange.x) + dataRange.x;
+    float v = getValueVoxel(volume, volumeParameters, texCoord_.xyz)[channel];
+    FragData0 = vec4(grad, v);
 #else
-    float v = 1.0f;
+    FragData0 = vec4(grad, 0.0);
 #endif
-    FragData0 =
-        vec4(gradientCentralDiff(vec4(1.0f), volume, volumeParameters, texCoord_.xyz, channel), v);
 }

@@ -31,11 +31,57 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
 
 #include <functional>
 
 namespace inviwo::grid {
+
+namespace detail {
+
+template <Wrapping Wx, Wrapping Wy, typename Callable, typename... Args>
+constexpr void wrapper2(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
+    switch (w[2]) {
+        default:
+            [[fallthrough]];
+        case Wrapping::Clamp:
+            return obj.template operator()<Wx, Wy, Wrapping::Clamp>(std::forward<Args>(args)...);
+        case Wrapping::Repeat:
+            return obj.template operator()<Wx, Wy, Wrapping::Repeat>(std::forward<Args>(args)...);
+        case Wrapping::Mirror:
+            return obj.template operator()<Wx, Wy, Wrapping::Mirror>(std::forward<Args>(args)...);
+    }
+}
+
+template <Wrapping Wx, typename Callable, typename... Args>
+constexpr void wrapper1(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
+    switch (w[1]) {
+        default:
+            [[fallthrough]];
+        case Wrapping::Clamp:
+            return wrapper2<Wx, Wrapping::Clamp>(w, obj, std::forward<Args>(args)...);
+        case Wrapping::Repeat:
+            return wrapper2<Wx, Wrapping::Repeat>(w, obj, std::forward<Args>(args)...);
+        case Wrapping::Mirror:
+            return wrapper2<Wx, Wrapping::Mirror>(w, obj, std::forward<Args>(args)...);
+    }
+}
+}  // namespace detail
+
+template <typename Callable, typename... Args>
+constexpr void wrapper(const std::array<Wrapping, 3>& w, const Callable& obj, Args&&... args) {
+    switch (w[0]) {
+        default:
+            [[fallthrough]];
+        case Wrapping::Clamp:
+            return detail::wrapper1<Wrapping::Clamp>(w, obj, std::forward<Args>(args)...);
+        case Wrapping::Repeat:
+            return detail::wrapper1<Wrapping::Repeat>(w, obj, std::forward<Args>(args)...);
+        case Wrapping::Mirror:
+            return detail::wrapper1<Wrapping::Mirror>(w, obj, std::forward<Args>(args)...);
+    }
+}
 
 enum class Part : std::uint8_t { First, Mid, Last };
 
@@ -101,6 +147,65 @@ double invStep() {
     } else {
         return 0.5;
     }
+}
+
+template <typename Func>
+void centralDifferences(size3_t dims, const std::array<Wrapping, 3>& w, Func func,
+                        const std::function<void(double)>& progress = nullptr,
+                        const std::function<bool()>& stop = nullptr) {
+
+    std::array<size3_t, 6> positions{};
+    dvec3 reciprocalSampleDist{};
+
+    loop(dims.z, [&]<Part Pz>(size_t z) {
+        if (stop && stop()) return;
+        if (progress) progress(static_cast<double>(z) / static_cast<double>(dims.z));
+        loop(dims.y, [&]<Part Py>(size_t y) {
+            loop(dims.x, [&]<Part Px>(size_t x) {
+                wrapper(w, [&]<Wrapping Wx, Wrapping Wy, Wrapping Wz>() {
+                    positions = std::array<size3_t, 6>{{{next<Px, Wx>(x, dims.x), y, z},
+                                                        {prev<Px, Wx>(x, dims.x), y, z},
+                                                        {x, next<Py, Wy>(y, dims.y), z},
+                                                        {x, prev<Py, Wy>(y, dims.y), z},
+                                                        {x, y, next<Pz, Wz>(z, dims.z)},
+                                                        {x, y, prev<Pz, Wz>(z, dims.z)}}};
+
+                    reciprocalSampleDist = {invStep<Px, Wx>(), invStep<Py, Wy>(),
+                                            invStep<Pz, Wz>()};
+                });
+
+                func(size3_t{x, y, z}, positions, reciprocalSampleDist);
+            });
+        });
+    });
+}
+
+namespace detail {
+template <template <class> class Predicate, size_t I>
+constexpr bool pred(DataFormatId format) {
+    return static_cast<size_t>(format) == I + 1 &&
+           Predicate<DataFormat<std::tuple_element_t<I, DefaultDataTypes>>>::value;
+};
+
+template <size_t I, template <class> class Predicate, typename Callable, typename... Args>
+void call(const Callable& obj, Args&&... args) {
+    if constexpr (Predicate<DataFormat<std::tuple_element_t<I, DefaultDataTypes>>>::value) {
+        using T = std::tuple_element_t<I, DefaultDataTypes>;
+        obj.template operator()<T>(std::forward<Args>(args)...);
+    }
+}
+}  // namespace detail
+
+template <template <class> class Predicate, typename Callable, typename... Args>
+inline void dispatch(DataFormatId format, const Callable& obj, Args&&... args) {
+    return [&]<size_t... Is>(std::integer_sequence<size_t, Is...>) {
+        const bool found =
+            ((detail::pred<Predicate, Is>(format)
+                  ? (detail::call<Is, Predicate>(obj, std::forward<Args>(args)...), true)
+                  : false) ||
+             ...);
+        if (!found) throw std::runtime_error("Format not specialized");
+    }(std::make_integer_sequence<size_t, std::tuple_size_v<DefaultDataTypes>>{});
 }
 
 }  // namespace inviwo::grid

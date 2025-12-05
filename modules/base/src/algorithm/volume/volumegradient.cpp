@@ -29,6 +29,8 @@
 
 #include <modules/base/algorithm/volume/volumegradient.h>
 
+#include <inviwo/core/algorithm/buildarray.h>
+#include <inviwo/core/algorithm/gridtools.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>           // for StructuredCoordin...
 #include <inviwo/core/datastructures/data.h>                            // for noData
 #include <inviwo/core/datastructures/datamapper.h>                      // for DataMapper
@@ -39,10 +41,12 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>                // for VolumeRAMPrecision
 #include <inviwo/core/util/glmutils.h>                                  // for Vector
 #include <inviwo/core/util/glmvec.h>                                    // for vec3, size3_t, dvec2
-#include <inviwo/core/util/indexmapper.h>                               // for IndexMapper3D
-#include <inviwo/core/util/spatialsampler.h>                            // for SpatialSampler<>:...
-#include <inviwo/core/util/volumeramutils.h>                            // for forEachVoxelParallel
-#include <inviwo/core/util/volumesampler.h>                             // for VolumeDoubleSampler
+#include <inviwo/core/util/glmcomp.h>
+#include <inviwo/core/util/indexmapper.h>     // for IndexMapper3D
+#include <inviwo/core/util/spatialsampler.h>  // for SpatialSampler<>:...
+#include <inviwo/core/util/volumeramutils.h>  // for forEachVoxelParallel
+#include <inviwo/core/util/volumesampler.h>   // for VolumeDoubleSampler
+#include <inviwo/core/util/assertion.h>
 
 #include <array>          // for array
 #include <functional>     // for __base
@@ -51,6 +55,7 @@
 #include <type_traits>    // for remove_extent_t
 #include <unordered_set>  // for unordered_set
 #include <vector>         // for vector
+#include <ranges>
 
 #include <glm/common.hpp>              // for mix, max, abs
 #include <glm/gtx/component_wise.hpp>  // for compMax
@@ -58,56 +63,76 @@
 #include <glm/vec3.hpp>                // for operator-, operator/
 #include <glm/vec4.hpp>                // for operator*, operator+
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
-std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int channel) {
-    auto newVolume = std::make_unique<Volume>(
-        *volume, noData,
-        volume->config().updateFrom({
-            .valueAxis = Axis{"gradient", volume->dataMap.valueAxis.unit / volume->axes[0].unit},
-        }));
+std::shared_ptr<Volume> gradientVolume(
+    const Volume& srcVolume, std::size_t channel,
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
+    const std::function<void(double)>& progress, const std::function<bool()>& stop) {
 
-    auto newVolumeRep = std::make_shared<VolumeRAMPrecision<vec3>>(volume->getDimensions());
-    newVolume->addRepresentation(newVolumeRep);
+    if (const auto comps = srcVolume.getDataFormat()->getComponents(); channel >= comps) {
+        throw Exception{SourceContext{},
+                        "Requested channel ({}) does not exist in volume ({} channels)", channel,
+                        comps};
+    }
 
-    auto m = newVolume->getCoordinateTransformer().getDataToWorldMatrix();
+    if (progress) progress(0.0);
 
-    const auto a = m * vec4(0, 0, 0, 1);
-    const auto b = m * vec4(1.0f / vec3(volume->getDimensions() - size3_t(1)), 1);
-    const auto spacing = b - a;
+    const auto config = VolumeConfig{srcVolume.config()}.updateFrom(
+        {.format = DataVec3Float32::get(),
+         .swizzleMask = swizzlemasks::defaultData(3),
+         .interpolation = InterpolationType::Linear,
+         .valueAxis =
+             Axis{.name = srcVolume.dataMap.valueAxis.name.empty()
+                              ? "Gradient"
+                              : fmt::format("{} Gradient", srcVolume.dataMap.valueAxis.name),
+                  .unit = srcVolume.dataMap.valueAxis.unit / srcVolume.axes[0].unit}});
+    auto dstVolume = getVolume(config);
+    auto* dstRep =
+        dynamic_cast<VolumeRAMPrecision<vec3>*>(dstVolume->getEditableRepresentation<VolumeRAM>());
+    IVW_ASSERT(dstRep, "should exist");
 
-    const vec3 ox(spacing.x, 0, 0);
-    const vec3 oy(0, spacing.y, 0);
-    const vec3 oz(0, 0, spacing.z);
+    const auto dims = srcVolume.getDimensions();
+    const auto delta = static_cast<dvec3>(dims);
+    const auto wrapping = srcVolume.getWrapping();
+    const auto gInv = dmat3{srcVolume.getCoordinateTransformer().getInverseMetricTensor()};
+    const auto basis = dmat3{srcVolume.getCoordinateTransformer().getDataToWorldMatrix()};
+    const auto dm = srcVolume.dataMap;
+    const auto im = util::IndexMapper3D(dims);
+    const auto* const srcRep = srcVolume.getRepresentation<VolumeRAM>();
+    const auto srcFmt = srcRep->getDataFormatId();
+    const auto dst = dstRep->getView();
+    double max = 0.0;
 
-    VolumeSampler sampler{volume, CoordinateSpace::World};
+    grid::centralDifferences(
+        dims, wrapping,
+        [&](size3_t voxel, const std::array<size3_t, 6>& positions, const dvec3& invStep) {
+            std::array<double, 6> samples{};
+            for (auto&& [pos, dest] : std::views::zip(positions, samples)) {
+                grid::dispatch<dispatching::filter::All>(srcFmt, [&]<typename T> {
+                    auto src = static_cast<const VolumeRAMPrecision<T>*>(srcRep)->getView();
+                    const auto val = static_cast<double>(util::glmcomp(src[im(pos)], channel));
+                    dest = dm.mapFromDataTo<DataMapper::Space::Value>(val);
+                });
+            }
 
-    util::IndexMapper3D index(volume->getDimensions());
-    auto data = newVolumeRep->getDataTyped();
+            const auto Gx = (samples[0] - samples[1]) * delta.x * invStep.x;
+            const auto Gy = (samples[2] - samples[3]) * delta.y * invStep.y;
+            const auto Gz = (samples[4] - samples[5]) * delta.z * invStep.z;
 
-    const dvec3 spacing2 = spacing * 2.0;
-    float max = std::numeric_limits<float>::lowest();
-    auto func = [&](const size3_t& pos) {
-        const vec3 world{m * vec4(vec3(pos) / vec3(volume->getDimensions() - size3_t(1)), 1)};
+            const auto grad = basis * gInv * dvec3{Gx, Gy, Gz};
+            max = std::max(max, std::abs(glm::compMax(grad)));
+            dst[im(voxel)] = static_cast<vec3>(grad);
+        },
+        progress, stop);
 
-        const auto g = static_cast<vec3>(
-            dvec3{(sampler.sample(world + ox) - sampler.sample(world - ox))[channel],
-                  (sampler.sample(world + oy) - sampler.sample(world - oy))[channel],
-                  (sampler.sample(world + oz) - sampler.sample(world - oz))[channel]} /
-            spacing2);
+    dstVolume->dataMap.dataRange = dvec2(-max, max);
+    dstVolume->dataMap.valueRange = dvec2(-max, max);
+    dstVolume->discardHistograms();
 
-        data[index(pos)] = g;
-        max = glm::max(max, glm::compMax(glm::abs(g)));
-    };
+    if (progress) progress(1.0);
 
-    util::forEachVoxelParallel(*volume->getRepresentation<VolumeRAM>(), func);
-
-    newVolume->dataMap.dataRange = dvec2(-max, max);
-    newVolume->dataMap.valueRange = dvec2(-max, max);
-
-    return newVolume;
+    return dstVolume;
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

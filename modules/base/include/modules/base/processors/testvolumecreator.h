@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,38 +29,43 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/ports/volumeport.h>          // for VolumeInport, VolumeOutport
-#include <inviwo/core/processors/poolprocessor.h>  // for Processor
-#include <inviwo/core/processors/processorinfo.h>  // for ProcessorInfo
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 #include <modules/base/datastructures/volumereusecache.h>
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeGradientCPUProcessor : public PoolProcessor {
+class IVW_MODULE_BASE_API TestVolumeCreator : public PoolProcessor {
 public:
-    VolumeGradientCPUProcessor();
-    VolumeGradientCPUProcessor(const VolumeGradientCPUProcessor&) = delete;
-    VolumeGradientCPUProcessor(VolumeGradientCPUProcessor&&) = delete;
-    VolumeGradientCPUProcessor& operator=(const VolumeGradientCPUProcessor&) = delete;
-    VolumeGradientCPUProcessor& operator=(VolumeGradientCPUProcessor&&) = delete;
-    virtual ~VolumeGradientCPUProcessor() = default;
+    TestVolumeCreator();
 
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    enum class Mode : std::uint8_t { Sin1D, Sin2D, Sin3D };
+
 private:
-    VolumeInport inport_;
-    VolumeOutport outport_;
+    VolumeOutport scalar_;
+    VolumeOutport gradient_;
 
-    OptionPropertyInt channel_;
+    VolumeReuseCache scalars_;
+    VolumeReuseCache gradients_;
 
-    VolumeReuseCache cache_;
+    OptionProperty<Mode> mode_;
+
+    OrdinalProperty<mat4> basis_;
+    OrdinalProperty<size3_t> dimensions_;
+    VolumeInformationProperty scalarInformation_;
+    VolumeInformationProperty gradientInformation_;
 };
 
 }  // namespace inviwo
