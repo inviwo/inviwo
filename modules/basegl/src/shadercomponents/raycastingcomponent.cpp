@@ -202,10 +202,7 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
 
     if (renderingType == DvrIsosurface || renderingType == Isosurface) {
         auto isoSegments = std::to_array<Segment>(
-            {{.snippet = format(dvrReference),
-              .placeholder = placeholder::uniform,
-              .priority = 1110},
-             {.snippet = format(iso), .placeholder = placeholder::first, .priority = 1000},
+            {{.snippet = format(iso), .placeholder = placeholder::first, .priority = 1000},
              {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 1000}});
 
         segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),
@@ -304,7 +301,7 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
         {.snippet = std::string{init}, .placeholder = placeholder::first, .priority = 600}};
 
     if (renderingType == DvrIsosurface || renderingType == Dvr) {
-        segments.emplace_back(std::string(dvrReference), placeholder::uniform, 1110);
+        segments.emplace_back(std::string{dvrReference}, placeholder::uniform, 1110);
 
         const auto stepInit =
             raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
