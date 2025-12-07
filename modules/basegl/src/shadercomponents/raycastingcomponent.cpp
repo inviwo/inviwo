@@ -201,15 +201,18 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     };
 
     if (renderingType == DvrIsosurface || renderingType == Isosurface) {
-        segments.append_range(std::to_array<Segment>(
+        auto isoSegments = std::to_array<Segment>(
             {{.snippet = format(dvrReference),
               .placeholder = placeholder::uniform,
               .priority = 1110},
              {.snippet = format(iso), .placeholder = placeholder::first, .priority = 1000},
-             {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 1000}}));
+             {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 1000}});
+
+        segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),
+                        std::make_move_iterator(isoSegments.end()));
     }
     if (renderingType == DvrIsosurface || renderingType == Dvr) {
-        segments.append_range(std::to_array<Segment>(
+        auto dvrSegments = std::to_array<Segment>(
             {{.snippet = format(dvrReference),
               .placeholder = placeholder::uniform,
               .priority = 1110},
@@ -222,7 +225,9 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
               .priority = 1100},
              {.snippet = format(shadeAndComposite),
               .placeholder = placeholder::loop,
-              .priority = 1100}}));
+              .priority = 1100}});
+        segments.insert(segments.end(), std::make_move_iterator(dvrSegments.begin()),
+                        std::make_move_iterator(dvrSegments.end()));
     }
 
     return segments;
@@ -321,26 +326,32 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
                                     "channel"_a = i, "tf"_a = tf, "color"_a = i);
 
         if (renderingType == DvrIsosurface || renderingType == Isosurface) {
-            segments.append_range(std::to_array<Segment>(
+            auto isoSegments = std::to_array<Segment>(
                 {{.snippet = format(iso), .placeholder = placeholder::first, .priority = 700 + i},
-                 {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 700 + i}}));
+                 {.snippet = format(iso), .placeholder = placeholder::loop, .priority = 700 + i}});
+
+            segments.insert(segments.end(), std::make_move_iterator(isoSegments.begin()),
+                            std::make_move_iterator(isoSegments.end()));
         }
         if (renderingType == DvrIsosurface || renderingType == Dvr) {
-            segments.append_range(std::to_array<Segment>({{.snippet = format(colorInit),
-                                                           .placeholder = placeholder::first,
-                                                           .priority = 600 + i},
-                                                          {.snippet = format(classify),
-                                                           .placeholder = placeholder::first,
-                                                           .priority = 700 + 1},
-                                                          {.snippet = format(classify),
-                                                           .placeholder = placeholder::loop,
-                                                           .priority = 700 + 1},
-                                                          {.snippet = format(shadeAndComposite),
-                                                           .placeholder = placeholder::first,
-                                                           .priority = 1100 + i},
-                                                          {.snippet = format(shadeAndComposite),
-                                                           .placeholder = placeholder::loop,
-                                                           .priority = 1100 + i}}));
+            auto dvrSegments = std::to_array<Segment>({{.snippet = format(colorInit),
+                                                        .placeholder = placeholder::first,
+                                                        .priority = 600 + i},
+                                                       {.snippet = format(classify),
+                                                        .placeholder = placeholder::first,
+                                                        .priority = 700 + 1},
+                                                       {.snippet = format(classify),
+                                                        .placeholder = placeholder::loop,
+                                                        .priority = 700 + 1},
+                                                       {.snippet = format(shadeAndComposite),
+                                                        .placeholder = placeholder::first,
+                                                        .priority = 1100 + i},
+                                                       {.snippet = format(shadeAndComposite),
+                                                        .placeholder = placeholder::loop,
+                                                        .priority = 1100 + i}});
+
+            segments.insert(segments.end(), std::make_move_iterator(dvrSegments.begin()),
+                            std::make_move_iterator(dvrSegments.end()));
         }
     }
 
