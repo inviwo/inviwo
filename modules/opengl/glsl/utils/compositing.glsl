@@ -41,7 +41,7 @@ float calcWorldStep(float textureStep, vec3 textureDir, mat3 basis) {
 float calcWorldStepScaled(float textureStep, vec3 textureDir, mat3 basis) {
     float scale = inversesqrt(
         min(dot(basis[0], basis[0]), min(dot(basis[1], basis[1]), dot(basis[2], basis[2]))));
-    return scale * calcWorldStep(textureStep, textureDi, basis);
+    return scale * calcWorldStep(textureStep, textureDir, basis);
 }
 
 vec4 DVRCompositing(in vec4 current, in vec4 color, in float relativeSamplingRate) {

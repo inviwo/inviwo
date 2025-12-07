@@ -194,6 +194,14 @@ if (color.a > 0) {{
 }}
 )");
 
+template <typename... Args>
+auto makeFormatter(Args&&... args) {
+    using FormatArgs = fmt::format_string<Args...>;
+    return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
+        return fmt::vformat(snippet, fArgs);
+    };
+}
+
 }  // namespace
 
 auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
@@ -201,47 +209,29 @@ auto TexturedVolumeComponent::getSegments() -> std::vector<Segment> {
     const auto& tf = primaryTF_.getIdentifier();
     const auto gradient = fmt::format("{}Gradient", volume_);
 
+    auto format = makeFormatter("lookup"_a = getName(), "volume"_a = volume_,
+                                "gradient"_a = gradient, "tf"_a = tf);
+
     const auto stepInit =
         raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
-            ? fmt::format(automaticStepInit, "volume"_a = volume_)
-            : fmt::format(manualStepInit, "volume"_a = volume_);
+            ? format(automaticStepInit)
+            : format(manualStepInit);
 
     return {
-        {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
+        {.snippet = R"(#include "utils/compositing.glsl")",
          .placeholder = placeholder::include,
          .priority = 1100},
-        {.snippet = fmt::format(uniforms, "lookup"_a = getName(), "tf"_a = tf),
-         .placeholder = placeholder::uniform,
-         .priority = 1080},
-
-        {.snippet = std::string(R"(uniform float dvrReference = 150.0;)"),
+        {.snippet = R"(uniform float dvrReference = 150.0;)",
          .placeholder = placeholder::uniform,
          .priority = 1110},
-
+        {.snippet = format(uniforms), .placeholder = placeholder::uniform, .priority = 1080},
         {.snippet = stepInit, .placeholder = placeholder::first, .priority = 600},
-
-        {.snippet = fmt::format(lookupFunction, "lookup"_a = getName()),
-         .placeholder = placeholder::uniform,
-         .priority = 1500},
-        {.snippet = fmt::format(init, "lookup"_a = getName(), "tf"_a = tf, "volume"_a = volume_),
-         .placeholder = placeholder::first,
-         .priority = 600},
-        {.snippet =
-             fmt::format(classification, "lookup"_a = getName(), "tf"_a = tf, "volume"_a = volume_),
-         .placeholder = placeholder::first,
-         .priority = 710},
-        {.snippet =
-             fmt::format(classification, "lookup"_a = getName(), "tf"_a = tf, "volume"_a = volume_),
-         .placeholder = placeholder::loop,
-         .priority = 710},
-        {.snippet = fmt::format(shadeAndComposite, "lookup"_a = getName(), "volume"_a = volume_,
-                                "gradient"_a = gradient),
-         .placeholder = placeholder::first,
-         .priority = 1100},
-        {.snippet = fmt::format(shadeAndComposite, "lookup"_a = getName(), "volume"_a = volume_,
-                                "gradient"_a = gradient),
-         .placeholder = placeholder::loop,
-         .priority = 1100},
+        {.snippet = format(lookupFunction), .placeholder = placeholder::uniform, .priority = 1500},
+        {.snippet = format(init), .placeholder = placeholder::first, .priority = 600},
+        {.snippet = format(classification), .placeholder = placeholder::first, .priority = 710},
+        {.snippet = format(classification), .placeholder = placeholder::loop, .priority = 710},
+        {.snippet = format(shadeAndComposite), .placeholder = placeholder::first, .priority = 1100},
+        {.snippet = format(shadeAndComposite), .placeholder = placeholder::loop, .priority = 1100},
     };
 }
 

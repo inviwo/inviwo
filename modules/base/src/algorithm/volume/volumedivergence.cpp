@@ -120,7 +120,8 @@ std::shared_ptr<Volume> divergenceVolume(
             const auto div = Fx.x + Fy.y + Fz.z;
             max = std::max(max, std::abs(div));
             dst[im(voxel)] = static_cast<float>(div);
-        });
+        },
+        progress, stop);
 
     dstVolume->dataMap.dataRange = dvec2(-max, max);
     dstVolume->dataMap.valueRange = dvec2(-max, max);

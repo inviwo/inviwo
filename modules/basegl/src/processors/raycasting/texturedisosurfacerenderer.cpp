@@ -173,46 +173,41 @@ result = drawISO(result, {iso}, {volume}Voxel[channel], {volume}VoxelPrev[channe
 )");
 
 constexpr std::string_view uniforms = util::trim(R"(
-uniform VolumeParameters {0}Parameters;
-uniform sampler3D {0};
+uniform VolumeParameters {color}Parameters;
+uniform sampler3D {color};
 )");
+
+template <typename... Args>
+auto makeFormatter(Args&&... args) {
+    using FormatArgs = fmt::format_string<Args...>;
+    return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
+        return fmt::vformat(snippet, fArgs);
+    };
+}
 
 }  // namespace
 
 auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    std::vector<Segment> segments{
-        {.snippet = fmt::format(uniforms, colorPort.getIdentifier()),
-         .placeholder = placeholder::uniform,
-         .priority = 400},
+    auto format = makeFormatter("color"_a = colorPort.getIdentifier(), "volume"_a = volume,
+                                "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier());
 
-        {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
+    std::vector<Segment> segments{
+        {.snippet = R"(#include "utils/compositing.glsl")",
          .placeholder = placeholder::include,
          .priority = 1100},
-        {.snippet = std::string(R"(uniform int channel = 0;)"),
+        {.snippet = R"(uniform int channel = 0;)",
          .placeholder = placeholder::uniform,
          .priority = 1100},
-        {.snippet = std::string(R"(uniform int colorChannel = 0;)"),
+        {.snippet = R"(uniform int colorChannel = 0;)",
          .placeholder = placeholder::uniform,
          .priority = 1101},
-
-        {.snippet = fmt::format(isoCalc, "color"_a = colorPort.getIdentifier(),
-                                "tf"_a = tf->getIdentifier()),
-         .placeholder = placeholder::uniform,
-         .priority = 3000},
+        {.snippet = format(uniforms), .placeholder = placeholder::uniform, .priority = 400},
+        {.snippet = format(isoCalc), .placeholder = placeholder::uniform, .priority = 3000},
         {.snippet = std::string{isoDraw}, .placeholder = placeholder::uniform, .priority = 3005},
-
-        {.snippet =
-             fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                         "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
-         .placeholder = placeholder::first,
-         .priority = 600},
-        {.snippet =
-             fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                         "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
-         .placeholder = placeholder::loop,
-         .priority = 600},
+        {.snippet = format(classify), .placeholder = placeholder::first, .priority = 600},
+        {.snippet = format(classify), .placeholder = placeholder::loop, .priority = 600},
     };
 
     return segments;
