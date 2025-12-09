@@ -90,6 +90,7 @@
 #include <unordered_map>  // for unordered_map
 #include <unordered_set>  // for unordered_set
 #include <vector>         // for vector
+#include <array>
 
 #include <flags/flags.h>                 // for operator&, flags
 #include <fmt/core.h>                    // for format
@@ -280,8 +281,8 @@ void CropWidget::process() {
     }
 
     if (showWidget_ || showCropPlane_) {
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        const utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shader_.activate();
 
         utilgl::setShaderUniforms(shader_, camera_, "camera");
@@ -349,20 +350,19 @@ void CropWidget::createLineStripMesh() {
     auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
     auto vertices = std::make_shared<Buffer<vec3>>();
 
-    auto vBuffer = vertices->getEditableRAMRepresentation();
+    auto* vBuffer = vertices->getEditableRAMRepresentation();
 
-    vec3 p(0.0f);
-    vec3 mask[5] = {{0.0f, 0.0f, 0.0f},
-                    {1.0f, 0.0f, 0.0f},
-                    {1.0f, 1.0f, 0.0f},
-                    {0.0f, 1.0f, 0.0f},
-                    {0.0f, 0.0f, 0.0f}};
-    for (int i = 0; i < 5; ++i) {
-        vBuffer->add(p + mask[i]);
+    const std::array<vec3, 5> mask{{{0.0f, 0.0f, 0.0f},
+                                    {1.0f, 0.0f, 0.0f},
+                                    {1.0f, 1.0f, 0.0f},
+                                    {0.0f, 1.0f, 0.0f},
+                                    {0.0f, 0.0f, 0.0f}}};
+    for (auto& elem : mask) {
+        vBuffer->add(elem);
     }
 
     auto indices = std::make_shared<IndexBuffer>();
-    auto indexBuffer = indices->getEditableRAMRepresentation();
+    auto* indexBuffer = indices->getEditableRAMRepresentation();
     indexBuffer->add({3, 0, 1, 2, 3, 4, 1});
 
     linestrip->addBuffer(BufferType::PositionAttrib, vertices);
@@ -376,11 +376,11 @@ void CropWidget::renderAxis(const CropAxis& axis) {
     // if min separation of the range is smaller, the middle handle is not drawn
     const float minSeparationPercentage = 0.05f;
 
-    auto& property = axis.range;
+    const auto& property = axis.range;
 
-    float range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
-    float lowerBound = (property.get().x - property.getRangeMin()) / range;
-    float upperBound = (property.get().y - property.getRangeMin()) / range;
+    const float range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
+    const float lowerBound = (property.get().x - property.getRangeMin()) / range;
+    const float upperBound = (property.get().y - property.getRangeMin()) / range;
 
     // draw the interaction handles
     if (showWidget_) {
@@ -392,8 +392,9 @@ void CropWidget::renderAxis(const CropAxis& axis) {
         const mat4 m = glm::scale(vec3(scale_.get()));
 
         auto draw = [&](auto& drawObject, unsigned int pickID, float value, const mat4& rot) {
-            mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m * rot);
-            mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
+            const mat4 worldMatrix(glm::translate(axis.info.pos + axis.info.axis * value) * m *
+                                   rot);
+            const mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
             shader_.setUniform("geometry.dataToWorldNormalMatrix", normalMatrix);
             shader_.setUniform("pickId", pickID);
@@ -427,31 +428,31 @@ void CropWidget::renderAxis(const CropAxis& axis) {
     }
 
     if (showCropPlane_.get()) {
-        bool drawLowerPlane = (property.get().x != property.getRangeMin());
-        bool drawUpperPlane = (property.get().y != property.getRangeMax());
+        const bool drawLowerPlane = (property.get().x != property.getRangeMin());
+        const bool drawUpperPlane = (property.get().y != property.getRangeMax());
 
         if (drawLowerPlane || drawUpperPlane) {
             if (!linestrip_) {
                 createLineStripMesh();
             }
 
-            utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+            const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
             // rotate clip plane from [0, 0, -1] to match the currently selected clip axis
-            mat4 scale(volumeBasis_);
+            const mat4 scale(volumeBasis_);
             mat4 rotMatrix(1.0f);
             if (axis.axis != CartesianCoordinateAxis::Z) {
-                vec3 v1(0.0f, 0.0f, -1.0f);
-                vec3 v2(glm::normalize(axis.info.axis));
+                const vec3 v1(0.0f, 0.0f, -1.0f);
+                const vec3 v2(glm::normalize(axis.info.axis));
                 rotMatrix = glm::rotate(glm::half_pi<float>(), glm::cross(v1, v2));
             }
             rotMatrix = scale * rotMatrix;
 
             auto draw = [&](float value) {
-                mat4 worldMatrix(glm::translate(volumeOffset_ + axis.info.axis * value) *
-                                 rotMatrix);
+                const mat4 worldMatrix(glm::translate(volumeOffset_ + axis.info.axis * value) *
+                                       rotMatrix);
                 linestrip_->setWorldMatrix(worldMatrix);
-                mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
+                const mat3 normalMatrix(glm::inverseTranspose(worldMatrix));
 
                 lineRenderer_.render(*linestrip_, camera_.get(), outport_.getDimensions(),
                                      cropLineSettings_);
@@ -473,13 +474,13 @@ void CropWidget::updateAxisRanges() {
 
     auto dims = util::getVolumeDimensions(volume_.getData());
 
-    size3_t cropDims;
+    size3_t cropDims{};
     for (int i = 0; i < 3; ++i) {
         cropDims[i] = cropAxes_[i].range.getRangeMax() + 1;
     }
 
     if (dims != cropDims) {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
 
         // crop range should be [0, dims - 1]
         for (int i = 0; i < 3; ++i) {
@@ -519,7 +520,7 @@ void CropWidget::objectPicked(PickingEvent* e) {
             lastState_ = cropAxes_[axisID].range.get();
         } else if (e->getPressState() == PickingPressState::Move &&
                    e->getPressItems() & PickingPressItem::Primary) {
-            InteractionElement element =
+            const auto element =
                 static_cast<InteractionElement>(e->getPickedId() % numInteractionWidgets);
             rangePositionHandlePicked(cropAxes_[axisID], e, element);
         } else if (e->getPressState() == PickingPressState::Release &&
@@ -538,7 +539,7 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
     auto viewMatrix(cam.getViewMatrix());
     auto viewprojMatrix = cam.getProjectionMatrix() * cam.getViewMatrix();
 
-    std::array<int, 3> indices;  // encodes the index of the primary axis and the other two axes
+    std::array<int, 3> indices{};  // encodes the index of the primary axis and the other two axes
 
     mat4 rotMatrix(1.0f);
     mat4 flipOrientationMat;  // matrix used for the second arrow facing the opposite direction
@@ -565,18 +566,18 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
             break;
     }
 
-    vec3 axis(volumeBasis_[indices[0]]);
+    const vec3 axis(volumeBasis_[indices[0]]);
 
-    vec3 volumeCenter =
+    const vec3 volumeCenter =
         volumeOffset_ + (volumeBasis_[0] + volumeBasis_[1] + volumeBasis_[2]) * 0.5f;
     vec4 projCenter(viewprojMatrix * vec4(volumeCenter, 1.0f));
     projCenter /= projCenter.w;
 
-    std::array<vec3, 4> points;      // base points of the four edge candidates
-    std::array<vec4, 4> viewPoints;  // edge mid points in device coords
-    std::array<vec4, 4> projPoints;  // edge mid points in device coords
+    std::array<vec3, 4> points{};      // base points of the four edge candidates
+    std::array<vec4, 4> viewPoints{};  // edge mid points in device coords
+    std::array<vec4, 4> projPoints{};  // edge mid points in device coords
 
-    std::array<vec4, 8> projPoints2;  // edge mid points in device coords
+    std::array<vec4, 8> projPoints2{};  // edge mid points in device coords
 
     for (int i = 0; i < 4; ++i) {
         points[i] = volumeOffset_ + volumeBasis_[indices[1]] * axisSelector[i].x +
@@ -604,10 +605,10 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
               [&](int a, int b) { return viewPoints[a].z > viewPoints[b].z; });
 
     auto isLeftOf = [&](int a, int b) {
-        vec2 v = vec2(projPoints[b]) - vec2(projCenter);
+        const vec2 v = vec2(projPoints[b]) - vec2(projCenter);
         if (glm::dot(vec2(projPoints[a]) - vec2(projPoints[b]), v) < 0.0f) {
             // edge not occluded
-            float d = glm::dot(vec2(projPoints[a]) - vec2(projPoints[b]), vec2(-1.0f, -1.0f));
+            const float d = glm::dot(vec2(projPoints[a]) - vec2(projPoints[b]), vec2(-1.0f, -1.0f));
             return d > 0.0f;
         } else {
             return false;  // edge is occluded, not relevant
@@ -627,11 +628,12 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
         };
 
         std::vector<int> indexLeft{0, 1, 2, 3};
-        std::sort(indexLeft.begin(), indexLeft.end(), leftMost);
+        std::ranges::sort(indexLeft, leftMost);
 
         selectedIndex = indexLeft[0];
     } else {
-        vec3 v1, v2;
+        vec3 v1{};
+        vec3 v2{};
         if (index[2] == ((index[0] + 1) % 4)) {
             v1 = vec3(projPoints2[index[2]]) - vec3(projPoints2[index[0]]);
             v2 = vec3(projPoints2[index[0] + 4]) - vec3(projPoints2[index[0]]);
@@ -639,8 +641,8 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
             v1 = vec3(projPoints2[index[0]]) - vec3(projPoints2[index[2]]);
             v2 = vec3(projPoints2[index[2] + 4]) - vec3(projPoints2[index[2]]);
         }
-        vec3 normal = glm::cross(v1, v2);
-        bool occluded = normal.z < 0.0f;
+        const vec3 normal = glm::cross(v1, v2);
+        const bool occluded = normal.z < 0.0f;
         if (!occluded) {
             // third edge not occluded
             selectedIndex = isLeftOf(index[1], index[2]) ? index[1] : index[2];
@@ -683,9 +685,9 @@ void CropWidget::rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p,
     prevNDC.z = refDepth;
 
     // project mouse delta onto axis
-    vec2 delta(currNDC - prevNDC);
-    vec2 axis2D(cropAxis.info.endNDC - cropAxis.info.startNDC);
-    float dist = glm::dot(delta, glm::normalize(axis2D));
+    const vec2 delta(currNDC - prevNDC);
+    const vec2 axis2D(cropAxis.info.endNDC - cropAxis.info.startNDC);
+    const float dist = glm::dot(delta, glm::normalize(axis2D));
 
     auto& property = cropAxis.range;
 
@@ -694,14 +696,14 @@ void CropWidget::rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p,
     bool modified = false;
     switch (element) {
         case InteractionElement::UpperBound: {
-            int v = lastState_.y + static_cast<int>(dist * (range.y - range.x));
+            int v = lastState_.y + static_cast<int>(dist * static_cast<float>(range.y - range.x));
             v = std::max(v, property.getMinSeparation() + lastState_.x);
             modified = (value.y != v);
             value.y = v;
             break;
         }
         case InteractionElement::LowerBound: {
-            int v = lastState_.x + static_cast<int>(dist * (range.y - range.x));
+            int v = lastState_.x + static_cast<int>(dist * static_cast<float>(range.y - range.x));
             v = std::min(v, lastState_.y - property.getMinSeparation());
             modified = (value.x != v);
             value.x = v;
@@ -709,7 +711,7 @@ void CropWidget::rangePositionHandlePicked(CropAxis& cropAxis, PickingEvent* p,
         }
         case InteractionElement::Middle: {
             // adjust both lower and upper bound
-            int v = lastState_.x + static_cast<int>(dist * (range.y - range.x));
+            int v = lastState_.x + static_cast<int>(dist * static_cast<float>(range.y - range.x));
             v = std::min(v, range.y - property.getMinSeparation());
             modified = (value.x != v);
             value.x = v;

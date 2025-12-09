@@ -178,7 +178,7 @@ uniform sampler3D {color};
 )");
 
 template <typename... Args>
-auto makeFormatter(Args&&... args) {
+auto makeFormatter(Args&&... args) {  // NOLINT(cppcoreguidelines-missing-std-forward)
     using FormatArgs = fmt::format_string<Args...>;
     return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
         return fmt::vformat(snippet, fArgs);
@@ -188,7 +188,7 @@ auto makeFormatter(Args&&... args) {
 }  // namespace
 
 auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
 
     auto format = makeFormatter("color"_a = colorPort.getIdentifier(), "volume"_a = volume,
                                 "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier());

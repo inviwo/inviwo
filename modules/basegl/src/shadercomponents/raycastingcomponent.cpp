@@ -161,7 +161,7 @@ if (color{color}.a > 0) {{
 )");
 
 template <typename... Args>
-auto makeFormatter(Args&&... args) {
+auto makeFormatter(Args&&... args) {  // NOLINT(cppcoreguidelines-missing-std-forward)
     using FormatArgs = fmt::format_string<Args...>;
     return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
         return fmt::vformat(snippet, fArgs);
@@ -171,7 +171,7 @@ auto makeFormatter(Args&&... args) {
 }  // namespace
 
 auto RaycastingComponent::getSegments() -> std::vector<Segment> {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     const auto renderingType = raycasting_.renderingType_;
     const auto& isoparam = isotf_.isovalues_.getIdentifier();
     const auto& tf = isotf_.tf_.getIdentifier();

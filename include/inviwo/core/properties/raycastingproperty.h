@@ -45,9 +45,9 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.RaycastingProperty"};
 
-    enum class RenderingType { Dvr, DvrIsosurface, Isosurface };
-    enum class Classification { None, TF, Voxel };
-    enum class CompositingType {
+    enum class RenderingType : std::uint8_t { Dvr, DvrIsosurface, Isosurface };
+    enum class Classification : std::uint8_t { None, TF, Voxel };
+    enum class CompositingType : std::uint8_t {
         Dvr,
         MaximumIntensity,
         FirstHitPoints,
@@ -55,7 +55,7 @@ public:
         FirstHistNormalsView,
         FirstHitDepth
     };
-    enum class GradientComputation {
+    enum class GradientComputation : std::uint8_t {
         None,
         Forward,
         Backward,

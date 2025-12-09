@@ -49,7 +49,7 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
 }
 
 void ProcessorNetworkEvaluator::setExceptionHandler(EvaluationErrorHandler handler) {
-    exceptionHandler_ = handler;
+    exceptionHandler_ = std::move(handler);
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkEvaluateRequest() {
@@ -96,7 +96,7 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
 
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
-    NetworkLock lock(processorNetwork_);
+    const NetworkLock lock(processorNetwork_);
 
     notifyObserversProcessorNetworkEvaluationBegin();
 
@@ -107,7 +107,7 @@ void ProcessorNetworkEvaluator::evaluate() {
 
     IVW_CPU_PROFILING_IF(500, "Evaluated Processor Network");
 
-    for (auto processor : processorsSorted_) {
+    for (auto* processor : processorsSorted_) {
         if (!processor->isValid()) {
             if (processor->isReady()) {
                 try {
@@ -122,7 +122,7 @@ void ProcessorNetworkEvaluator::evaluate() {
 
                 try {
                     // call onChange for all invalid inports
-                    for (auto inport : processor->getInports()) {
+                    for (auto* inport : processor->getInports()) {
                         inport->callOnChangeIfChanged();
                     }
                 } catch (...) {
