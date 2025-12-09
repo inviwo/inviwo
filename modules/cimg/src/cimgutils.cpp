@@ -327,7 +327,8 @@ auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileEx
     const DataFormatBase* outFormat = DataFloat32::get();
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
-    } else if ((fileExtension == ".tif") || (fileExtension == ".tiff")) {
+    } else if ((fileExtension == ".tif") || (fileExtension == ".tiff") ||
+               (fileExtension == ".raw")) {
         // use the same data format as the input. TIFF supports 8 and 16 bit integer formats as
         // well as 32 bit floating point
         const size_t maxPrecision = (inFormat->getNumericType() == NumericType::Float) ? 32 : 16;
