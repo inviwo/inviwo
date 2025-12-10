@@ -157,7 +157,7 @@ vec4 color = vec4(0);
 )");
 
 constexpr std::string_view manualStepInit = util::trim(R"(
-float {volume}worldStep = dvrReference * calcWorldStepScaled(rayStep, rayDirection, 
+float {volume}worldStep = dvrReference * manualStepInit(rayStep, rayDirection, 
                                                              mat3({volume}Parameters.dataToWorld));
 )");
 
