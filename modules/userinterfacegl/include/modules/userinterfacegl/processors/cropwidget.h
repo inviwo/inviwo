@@ -64,7 +64,7 @@ class PickingEvent;
 
 class IVW_MODULE_USERINTERFACEGL_API CropWidget : public Processor {
 public:
-    enum class InteractionElement { LowerBound, UpperBound, Middle, None };
+    enum class InteractionElement : std::uint8_t { LowerBound, UpperBound, Middle, None };
 
     CropWidget();
     virtual ~CropWidget();
@@ -132,7 +132,7 @@ private:
     Shader shader_;
 
     // number of available interaction elements.
-    static const int numInteractionWidgets = 3;  //!< lower and upper bound arrows, middle handle
+    static const size_t numInteractionWidgets = 3;  //!< lower and upper bound arrows, middle handle
 
     struct PickIDs {
         std::size_t id;

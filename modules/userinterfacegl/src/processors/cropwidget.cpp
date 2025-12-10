@@ -134,24 +134,30 @@ CropWidget::CropWidget()
     , offset_("offset", "Offset", 0.0f, -1.0f, 1.0f)
     , scale_("scale", "Scale", 0.15f, 0.001f, 2.0f, 0.05f)
 
-    , cropAxes_({{{CartesianCoordinateAxis::X,
-                   {"cropAxisX", "Crop X", "enable and adjust crop range along the x axis"_help},
-                   {"cropAxisXEnabled", "Enabled", true},
-                   {"cropX", "Range", 0, 256, 0, 256, 1, 1},
-                   {"cropXOut", "Crop X", 0, 256, 0, 256, 1, 1},
-                   AnnotationInfo()},
-                  {CartesianCoordinateAxis::Y,
-                   {"cropAxisY", "Crop Y", "enable and adjust crop range along the y axis"_help},
-                   {"cropAxisYEnabled", "Enabled", true},
-                   {"cropY", "Range", 0, 256, 0, 256, 1, 1},
-                   {"cropYOut", "Crop Y", 0, 256, 0, 256, 1, 1},
-                   AnnotationInfo()},
-                  {CartesianCoordinateAxis::Z,
-                   {"cropAxisZ", "Crop Z", "enable and adjust crop range along the z axis"_help},
-                   {"cropAxisZEnabled", "Enabled", true},
-                   {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
-                   {"cropZOut", "Crop Z", 0, 256, 0, 256, 1, 1},
-                   AnnotationInfo()}}})
+    , cropAxes_({{{.axis = CartesianCoordinateAxis::X,
+                   .composite = {"cropAxisX", "Crop X",
+                                 "enable and adjust crop range along the x axis"_help},
+                   .enabled = {"cropAxisXEnabled", "Enabled", true},
+                   .range = {"cropX", "Range", 0, 256, 0, 256, 1, 1},
+                   .outputRange{"cropXOut", "Crop X", 0, 256, 0, 256, 1, 1,
+                                InvalidationLevel::Valid, PropertySemantics::Text},
+                   .info = AnnotationInfo()},
+                  {.axis = CartesianCoordinateAxis::Y,
+                   .composite = {"cropAxisY", "Crop Y",
+                                 "enable and adjust crop range along the y axis"_help},
+                   .enabled = {"cropAxisYEnabled", "Enabled", true},
+                   .range = {"cropY", "Range", 0, 256, 0, 256, 1, 1},
+                   .outputRange{"cropYOut", "Crop Y", 0, 256, 0, 256, 1, 1,
+                                InvalidationLevel::Valid, PropertySemantics::Text},
+                   .info = AnnotationInfo()},
+                  {.axis = CartesianCoordinateAxis::Z,
+                   .composite = {"cropAxisZ", "Crop Z",
+                                 "enable and adjust crop range along the z axis"_help},
+                   .enabled = {"cropAxisZEnabled", "Enabled", true},
+                   .range = {"cropZ", "Range", 0, 256, 0, 256, 1, 1},
+                   .outputRange{"cropZOut", "Crop Z", 0, 256, 0, 256, 1, 1,
+                                InvalidationLevel::Valid, PropertySemantics::Text},
+                   .info = AnnotationInfo()}}})
     , relativeRangeAdjustment_("relativeRangeAdjustment", "Rel. Adjustment on Range Change", true)
     , outputProps_("outputProperties", "Output")
     , camera_("camera", "Camera")
@@ -167,8 +173,11 @@ CropWidget::CropWidget()
     , trackball_(&camera_)
     , picking_(this, 3 * numInteractionWidgets, [&](PickingEvent* p) { objectPicked(p); })
     , shader_("geometrycustompicking.vert", "geometryrendering.frag", Shader::Build::No)
+    , pickingIDs_{}
     , isMouseBeingPressedAndHold_(false)
     , lastState_(-1)
+    , interactionHandleMesh_{}
+    , linestrip_{}
     , volumeBasis_(1.0f)
     , volumeOffset_(-0.5f)
     , lineRenderer_() {
@@ -184,8 +193,7 @@ CropWidget::CropWidget()
         // serialize them so we can do a proper renormalization when we load new data.
         elem.range.setSerializationMode(PropertySerializationMode::All);
 
-        elem.composite.addProperty(elem.enabled);
-        elem.composite.addProperty(elem.range);
+        elem.composite.addProperties(elem.enabled, elem.range);
         elem.composite.setCollapsed(true);
         addProperty(elem.composite);
 
@@ -221,46 +229,32 @@ CropWidget::CropWidget()
         // set up output crop range properties
         outputProps_.addProperty(elem.outputRange);
         elem.outputRange.setReadOnly(true);
-        elem.outputRange.setSemantics(PropertySemantics::Text);
     }
     outputProps_.setCollapsed(true);
-    addProperty(outputProps_);
-    addProperty(relativeRangeAdjustment_);
 
     cropLineSettings_.lineWidth.set(2.5f);
-    cropLineSettings_.lineWidth.setCurrentStateAsDefault();
     cropLineSettings_.defaultColor.set(vec4{0.8f, 0.8f, 0.8f, 1.0f});
-    cropLineSettings_.defaultColor.setCurrentStateAsDefault();
 
     // brighten up ambient color
     lightingProperty_.ambientColor_.set(vec3(0.6f));
     lightingProperty_.setCollapsed(true);
-
-    uiSettings_.setCollapsed(true);
-    uiSettings_.addProperty(showWidget_);
-
-    uiSettings_.addProperty(handleColor_);
-    uiSettings_.addProperty(offset_);
-    uiSettings_.addProperty(scale_);
-    uiSettings_.addProperty(showCropPlane_);
-    uiSettings_.addProperty(cropLineSettings_);
-    uiSettings_.addProperty(lightingProperty_);
-    addProperty(uiSettings_);
-
     camera_.setCollapsed(true);
+    uiSettings_.setCollapsed(true);
+    uiSettings_.addProperties(showWidget_, handleColor_, offset_, scale_, showCropPlane_,
+                              cropLineSettings_, lightingProperty_);
 
-    addProperty(camera_);
-    addProperty(trackball_);
+    addProperties(outputProps_, relativeRangeAdjustment_, uiSettings_, camera_, trackball_);
 
     setAllPropertiesCurrentStateAsDefault();
 
     volume_.onChange([this]() { updateAxisRanges(); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    std::array<InteractionElement, 3> elem = {
+    static constexpr std::array<InteractionElement, 3> elem = {
         InteractionElement::LowerBound, InteractionElement::UpperBound, InteractionElement::Middle};
-    for (int i = 0; i < static_cast<int>(pickingIDs_.size()); ++i) {
-        pickingIDs_[i] = {picking_.getPickingId(i), elem[i % numInteractionWidgets]};
+    for (size_t i = 0; i < pickingIDs_.size(); ++i) {
+        pickingIDs_[i] = {.id = picking_.getPickingId(i),
+                          .element = elem[i % numInteractionWidgets]};
     }
 }
 
@@ -357,7 +351,7 @@ void CropWidget::createLineStripMesh() {
                                     {1.0f, 1.0f, 0.0f},
                                     {0.0f, 1.0f, 0.0f},
                                     {0.0f, 0.0f, 0.0f}}};
-    for (auto& elem : mask) {
+    for (const auto& elem : mask) {
         vBuffer->add(elem);
     }
 
@@ -378,9 +372,9 @@ void CropWidget::renderAxis(const CropAxis& axis) {
 
     const auto& property = axis.range;
 
-    const float range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
-    const float lowerBound = (property.get().x - property.getRangeMin()) / range;
-    const float upperBound = (property.get().y - property.getRangeMin()) / range;
+    const auto range = static_cast<float>(property.getRangeMax() - property.getRangeMin());
+    const auto lowerBound = static_cast<float>(property.get().x - property.getRangeMin()) / range;
+    const auto upperBound = static_cast<float>(property.get().y - property.getRangeMin()) / range;
 
     // draw the interaction handles
     if (showWidget_) {
@@ -601,8 +595,7 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
 
     // sort edges based on depth
     std::vector<int> index{0, 1, 2, 3};
-    std::sort(index.begin(), index.end(),
-              [&](int a, int b) { return viewPoints[a].z > viewPoints[b].z; });
+    std::ranges::sort(index, [&](int a, int b) { return viewPoints[a].z > viewPoints[b].z; });
 
     auto isLeftOf = [&](int a, int b) {
         const vec2 v = vec2(projPoints[b]) - vec2(projCenter);
@@ -617,8 +610,9 @@ CropWidget::AnnotationInfo CropWidget::getAxis(CartesianCoordinateAxis majorAxis
 
     const float epsilon = 0.05f;
 
-    bool sameDepth = glm::epsilonEqual(viewPoints[index[0]].z, viewPoints[index[1]].z, epsilon) &&
-                     glm::epsilonEqual(viewPoints[index[0]].z, viewPoints[index[2]].z, epsilon);
+    const bool sameDepth =
+        glm::epsilonEqual(viewPoints[index[0]].z, viewPoints[index[1]].z, epsilon) &&
+        glm::epsilonEqual(viewPoints[index[0]].z, viewPoints[index[2]].z, epsilon);
 
     int selectedIndex = -1;
     if (sameDepth) {
