@@ -129,6 +129,9 @@ LightingRaycaster::LightingRaycaster()
 
     addProperties(raycasting_, camera_, lighting_, channel_, transferFunction_);
     lighting_.addProperties(enableLightColor_, lightVolumeScaling_);
+
+    raycasting_.dvrReferenceMode_.setVisible(false);
+    raycasting_.dvrReference_.setVisible(false);
 }
 
 void LightingRaycaster::initializeResources() {

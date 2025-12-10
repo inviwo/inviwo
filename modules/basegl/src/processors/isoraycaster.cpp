@@ -129,6 +129,8 @@ ISORaycaster::ISORaycaster()
     channel_.addOption(ss.str(), ss.str(), 0);
 
     raycasting_.compositingMode_.setVisible(false);
+    raycasting_.dvrReferenceMode_.setVisible(false);
+    raycasting_.dvrReference_.setVisible(false);
     setAllPropertiesCurrentStateAsDefault();
 }
 
