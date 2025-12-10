@@ -173,6 +173,9 @@ VolumeRaycaster::VolumeRaycaster()
         }
     });
 
+    raycasting_.dvrReferenceMode_.setVisible(false);
+    raycasting_.dvrReference_.setVisible(false);
+
     addProperty(channel_);
     addProperty(raycasting_);
     addProperty(isotfComposite_);
