@@ -120,7 +120,8 @@ std::shared_ptr<Volume> curlVolume(
             const auto curl = basis * (1.0 / sqrt_g) * dvec3{Fy.z - Fz.y, Fz.x - Fx.z, Fx.y - Fy.x};
             max = std::max(max, glm::compMax(glm::abs(curl)));
             dst[im(voxel)] = static_cast<vec3>(curl);
-        });
+        },
+        progress, stop);
 
     dstVolume->dataMap.dataRange = dvec2(-max, max);
     dstVolume->dataMap.valueRange = dvec2(-max, max);

@@ -38,9 +38,8 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \class IsoTFProperty
- * \brief composite property combining transfer function and isovalue properties
+ * @ingroup properties
+ * @brief composite property combining transfer function and isovalue properties
  */
 class IVW_CORE_API IsoTFProperty : public CompositeProperty,
                                    public PropertyObserver,

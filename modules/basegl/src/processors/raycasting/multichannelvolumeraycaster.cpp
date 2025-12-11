@@ -29,30 +29,8 @@
 
 #include <modules/basegl/processors/raycasting/multichannelvolumeraycaster.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
-#include <inviwo/core/datastructures/histogram.h>                       // for HistogramSelection
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags::GL, Tags
-#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/stdextensions.h>                             // for make_array
-#include <inviwo/core/util/zip.h>                                       // for zipper, enumerate
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>   // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/cameracomponent.h>            // for CameraComponent
-#include <modules/basegl/shadercomponents/isotfcomponent.h>             // for IsoTFComponent
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>        // for MultiRaycastingCo...
-#include <modules/basegl/shadercomponents/volumecomponent.h>            // for VolumeComponent
-
-#include <bitset>       // for bitset<>::reference
-#include <functional>   // for ref, __base
-#include <string>       // for string
-#include <type_traits>  // for remove_extent_t
-
-#include <fmt/core.h>  // for basic_string_view
+#include <inviwo/core/algorithm/boundingbox.h>     // for boundingBox
+#include <inviwo/core/datastructures/histogram.h>  // for HistogramSelection
 
 namespace inviwo {
 
@@ -94,9 +72,7 @@ MultiChannelVolumeRaycaster::MultiChannelVolumeRaycaster(std::string_view identi
     }
 
     volume_.volumePort.onChange([this]() {
-        const auto channels = volume_.volumePort.hasData()
-                                  ? volume_.volumePort.getData()->getDataFormat()->getComponents()
-                                  : 4;
+        const auto channels = volume_.channelsForVolume().value_or(4);
         if (raycasting_.setUsedChannels(channels)) {
             // The port onchange callback is invoked while evaluating the network
             // hence it is safe to call initializeResources here.

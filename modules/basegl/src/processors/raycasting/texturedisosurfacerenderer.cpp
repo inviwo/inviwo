@@ -31,28 +31,18 @@
 
 #include <inviwo/core/algorithm/boundingbox.h>  // for boundingBox
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/ports/volumeport.h>                               // for VolumeInport
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tag, Tags::GL, Tags
-#include <inviwo/core/properties/isotfproperty.h>                       // for IsoTFProperty
-#include <inviwo/core/util/formats.h>                                   // for DataFormatBase
-#include <inviwo/core/util/stringconversion.h>                          // for trim
-#include <inviwo/core/util/zip.h>                                       // for zipper
-#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>   // for VolumeRaycasterBase
-#include <modules/basegl/shadercomponents/cameracomponent.h>            // for CameraComponent
-#include <modules/basegl/shadercomponents/isotfcomponent.h>             // for IsoTFComponent
-#include <modules/basegl/shadercomponents/raycastingcomponent.h>        // for RaycastingComponent
-#include <modules/basegl/shadercomponents/volumecomponent.h>            // for VolumeComponent
+#include <inviwo/core/ports/volumeport.h>                              // for VolumeInport
+#include <inviwo/core/properties/isotfproperty.h>                      // for IsoTFProperty
+#include <inviwo/core/util/stringconversion.h>                         // for trim
+#include <modules/basegl/processors/raycasting/volumeraycasterbase.h>  // for VolumeRaycasterBase
+#include <modules/basegl/shadercomponents/cameracomponent.h>           // for CameraComponent
+#include <modules/basegl/shadercomponents/isotfcomponent.h>            // for IsoTFComponent
+#include <modules/basegl/shadercomponents/raycastingcomponent.h>       // for RaycastingComponent
+#include <modules/basegl/shadercomponents/volumecomponent.h>           // for VolumeComponent
 #include <modules/basegl/shadercomponents/shadercomponent.h>  // for ShaderComponent::Segment
 #include <modules/opengl/volume/volumeutils.h>                // for bindAndSetUniforms
 #include <modules/opengl/texture/textureutils.h>
-
-#include <functional>   // for __base
-#include <string>       // for string
-#include <type_traits>  // for remove_extent_t
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
 
 #include <fmt/format.h>  // for compile_string_to_view, FMT...
 
@@ -183,46 +173,41 @@ result = drawISO(result, {iso}, {volume}Voxel[channel], {volume}VoxelPrev[channe
 )");
 
 constexpr std::string_view uniforms = util::trim(R"(
-uniform VolumeParameters {0}Parameters;
-uniform sampler3D {0};
+uniform VolumeParameters {color}Parameters;
+uniform sampler3D {color};
 )");
+
+template <typename... Args>
+auto makeFormatter(Args&&... args) {  // NOLINT(cppcoreguidelines-missing-std-forward)
+    using FormatArgs = fmt::format_string<Args...>;
+    return [fArgs = fmt::make_format_args(args...)](FormatArgs snippet) {
+        return fmt::vformat(snippet, fArgs);
+    };
+}
 
 }  // namespace
 
 auto TexturedIsoSurfaceComponent::getSegments() -> std::vector<Segment> {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
+
+    auto format = makeFormatter("color"_a = colorPort.getIdentifier(), "volume"_a = volume,
+                                "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier());
 
     std::vector<Segment> segments{
-        {.snippet = fmt::format(uniforms, colorPort.getIdentifier()),
-         .placeholder = placeholder::uniform,
-         .priority = 400},
-
-        {.snippet = std::string(R"(#include "utils/compositing.glsl")"),
+        {.snippet = R"(#include "utils/compositing.glsl")",
          .placeholder = placeholder::include,
          .priority = 1100},
-        {.snippet = std::string(R"(uniform int channel = 0;)"),
+        {.snippet = R"(uniform int channel = 0;)",
          .placeholder = placeholder::uniform,
          .priority = 1100},
-        {.snippet = std::string(R"(uniform int colorChannel = 0;)"),
+        {.snippet = R"(uniform int colorChannel = 0;)",
          .placeholder = placeholder::uniform,
          .priority = 1101},
-
-        {.snippet = fmt::format(isoCalc, "color"_a = colorPort.getIdentifier(),
-                                "tf"_a = tf->getIdentifier()),
-         .placeholder = placeholder::uniform,
-         .priority = 3000},
+        {.snippet = format(uniforms), .placeholder = placeholder::uniform, .priority = 400},
+        {.snippet = format(isoCalc), .placeholder = placeholder::uniform, .priority = 3000},
         {.snippet = std::string{isoDraw}, .placeholder = placeholder::uniform, .priority = 3005},
-
-        {.snippet =
-             fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                         "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
-         .placeholder = placeholder::first,
-         .priority = 600},
-        {.snippet =
-             fmt::format(classify, "color"_a = colorPort.getIdentifier(), "volume"_a = volume,
-                         "tf"_a = tf->getIdentifier(), "iso"_a = iso->getIdentifier()),
-         .placeholder = placeholder::loop,
-         .priority = 600},
+        {.snippet = format(classify), .placeholder = placeholder::first, .priority = 600},
+        {.snippet = format(classify), .placeholder = placeholder::loop, .priority = 600},
     };
 
     return segments;
@@ -274,21 +259,19 @@ TexturedIsosurfaceRenderer::TexturedIsosurfaceRenderer(std::string_view identifi
     registerComponents(volume_, iso_, tf_, texturedComponent_, entryExit_, background_, camera_,
                        light_, positionIndicator_, sampleTransform_);
 
-    auto updateIsoHist = [this]() {
-        HistogramSelection selection{};
-        selection[texturedComponent_.isoChannel] = true;
-        iso_.iso.setHistogramSelection(selection);
-    };
-    updateIsoHist();
-    texturedComponent_.isoChannel.onChange(updateIsoHist);
+    util::handleTFSelections(iso_.iso, texturedComponent_.isoChannel);
+    util::handleTFSelections(tf_.tf, texturedComponent_.colorChannel);
+}
 
-    auto updateColorHist = [this]() {
-        HistogramSelection selection{};
-        selection[texturedComponent_.colorChannel] = true;
-        tf_.tf.setHistogramSelection(selection);
-    };
-    updateColorHist();
-    texturedComponent_.colorChannel.onChange(updateColorHist);
+void TexturedIsosurfaceRenderer::process() {
+    util::checkValidChannel(texturedComponent_.isoChannel.getSelectedIndex(),
+                            volume_.channelsForVolume().value_or(0));
+
+    util::checkValidChannel(
+        texturedComponent_.colorChannel.getSelectedIndex(),
+        texturedComponent_.colorPort.getData()->getDataFormat()->getComponents(), "colorVolume");
+
+    VolumeRaycasterBase::process();
 }
 
 }  // namespace inviwo

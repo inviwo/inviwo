@@ -90,13 +90,15 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
 
+    float worldStep = calcWorldStepScaled(tIncr, rayDirection, mat3(volumeParameters.dataToWorld));
+
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;
 #ifdef BACKGROUND_AVAILABLE
     backgroundColor = texture(bgColor, texCoords);
     // convert to raycasting depth
     bgTDepth = tEnd * calculateTValueFromDepthValue(
-        camera, backgroundDepth, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);        
+        camera, backgroundDepth, texture(entryDepth, texCoords).x, texture(exitDepth, texCoords).x);
 
     if (bgTDepth < 0) {
         result = backgroundColor;
@@ -132,7 +134,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
 #endif
 
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera,
-                                       raycaster.isoValue, t, tDepth, tIncr);
+                                       raycaster.isoValue, t, tDepth, worldStep);
         }
 
         // early ray termination

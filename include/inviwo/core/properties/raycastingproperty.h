@@ -37,18 +37,17 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \class RaycastingProperty
- * \brief composite property holding parameters for volume raycasting
+ * @ingroup properties
+ * @brief composite property holding parameters for volume raycasting
  */
 class IVW_CORE_API RaycastingProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.RaycastingProperty"};
 
-    enum class RenderingType { Dvr, DvrIsosurface, Isosurface };
-    enum class Classification { None, TF, Voxel };
-    enum class CompositingType {
+    enum class RenderingType : std::uint8_t { Dvr, DvrIsosurface, Isosurface };
+    enum class Classification : std::uint8_t { None, TF, Voxel };
+    enum class CompositingType : std::uint8_t {
         Dvr,
         MaximumIntensity,
         FirstHitPoints,
@@ -56,7 +55,7 @@ public:
         FirstHistNormalsView,
         FirstHitDepth
     };
-    enum class GradientComputation {
+    enum class GradientComputation : std::uint8_t {
         None,
         Forward,
         Backward,
@@ -65,6 +64,8 @@ public:
         PrecomputedXYZ,
         PrecomputedYZW
     };
+
+    enum class DVRReferenceMode : std::uint8_t { Automatic, Manual };
 
     RaycastingProperty(std::string_view identifier, std::string_view displayName,
                        InvalidationLevel = InvalidationLevel::InvalidResources,
@@ -79,8 +80,10 @@ public:
     OptionProperty<Classification> classification_;
     OptionProperty<CompositingType> compositing_;
     OptionProperty<GradientComputation> gradientComputation_;
-
     FloatProperty samplingRate_;
+
+    OptionProperty<DVRReferenceMode> dvrReferenceMode_;
+    FloatProperty dvrReference_;
 };
 
 }  // namespace inviwo
