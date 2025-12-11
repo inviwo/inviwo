@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"classinviwo_1_1DistanceTransformRAM.html":[4,0,0,290],
+"classinviwo_1_1DistanceTransformRAM.html#a8eb5db1bcf15a9feaa6f2c77cdf1454b":[2,0,0,281,0],
 "classinviwo_1_1DistanceTransformRAM.html#a8eb5db1bcf15a9feaa6f2c77cdf1454b":[4,0,0,290,0],
 "classinviwo_1_1Document.html":[2,0,0,282],
 "classinviwo_1_1Document.html":[4,0,0,291],
@@ -247,7 +249,5 @@ var NAVTREEINDEX5 =
 "classinviwo_1_1FontRenderingModule.html#a8fedbb69245b37a1dfb110a64cd237fb":[4,0,0,358,1],
 "classinviwo_1_1FontSettings.html":[2,0,0,350],
 "classinviwo_1_1FontSettings.html":[4,0,0,359],
-"classinviwo_1_1FontSizePropertyWidgetQt.html":[2,0,0,351],
-"classinviwo_1_1FontSizePropertyWidgetQt.html":[4,0,0,360],
-"classinviwo_1_1FontSizePropertyWidgetQt.html#ac400d45c92fc7e00f0bcbdc875fd8f10":[2,0,0,351,0]
+"classinviwo_1_1FontSizePropertyWidgetQt.html":[2,0,0,351]
 };

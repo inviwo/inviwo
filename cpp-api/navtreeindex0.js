@@ -48,6 +48,8 @@ var NAVTREEINDEX0 =
 "classinviwo_1_1AtlasComponent.html#af59dfa1980286dccd77a99a888b1c6f4":[4,0,0,45,1],
 "classinviwo_1_1AtlasVolumeRaycaster.html":[2,0,0,37],
 "classinviwo_1_1AtlasVolumeRaycaster.html":[4,0,0,46],
+"classinviwo_1_1AtlasVolumeRaycaster.html#abd3a44af558940b787285922a251969d":[2,0,0,37,0],
+"classinviwo_1_1AtlasVolumeRaycaster.html#abd3a44af558940b787285922a251969d":[4,0,0,46,0],
 "classinviwo_1_1AutoLinker.html":[2,0,0,38],
 "classinviwo_1_1AutoLinker.html":[4,0,0,47],
 "classinviwo_1_1AutoLinker.html#a66dc09b5eee2f65914895a626e158fe7":[2,0,0,38,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "classinviwo_1_1BrushingAndLinkingManager.html#a402cc38aadb875969907a1851b1ebbcc":[4,0,0,76,2],
 "classinviwo_1_1BrushingAndLinkingManager.html#a4736f2d2856441c37ee094ebe1ffbf6a":[2,0,0,67,21],
 "classinviwo_1_1BrushingAndLinkingManager.html#a4736f2d2856441c37ee094ebe1ffbf6a":[4,0,0,76,21],
-"classinviwo_1_1BrushingAndLinkingManager.html#a4ebd2d912a4060d8920ecedc4eff37c1":[2,0,0,67,33],
-"classinviwo_1_1BrushingAndLinkingManager.html#a4ebd2d912a4060d8920ecedc4eff37c1":[4,0,0,76,33],
-"classinviwo_1_1BrushingAndLinkingManager.html#a4eed850f962f08301348e9a30996c637":[2,0,0,67,7]
+"classinviwo_1_1BrushingAndLinkingManager.html#a4ebd2d912a4060d8920ecedc4eff37c1":[2,0,0,67,33]
 };

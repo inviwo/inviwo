@@ -391,6 +391,8 @@ IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSplit
 IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>canZoomBounded</b> (const <a class="el" href="structinviwo_1_1util_1_1FovBounds.html">FovBounds</a> &amp;bounds, vec2 fov, float zoomFactor)</td></tr>
 <tr class="memitem:ab2b1c0cb22b88b98acda2e4675f9b3a1" id="r_ab2b1c0cb22b88b98acda2e4675f9b3a1"><td class="memItemLeft" align="right" valign="top"><a id="ab2b1c0cb22b88b98acda2e4675f9b3a1" name="ab2b1c0cb22b88b98acda2e4675f9b3a1"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>changePropertyType</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d, std::vector&lt; std::pair&lt; const <a class="el" href="classinviwo_1_1Property.html">Property</a> *, std::string &gt; &gt; rules)</td></tr>
+<tr class="memitem:a1c4f753148a39f9ebbae4e5309d37391" id="r_a1c4f753148a39f9ebbae4e5309d37391"><td class="memItemLeft" align="right" valign="top"><a id="a1c4f753148a39f9ebbae4e5309d37391" name="a1c4f753148a39f9ebbae4e5309d37391"></a>
+IVW_MODULE_BASEGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>checkValidChannel</b> (size_t channel, size_t numberOfChannels, std::string_view volume=&quot;volume&quot;)</td></tr>
 <tr class="memitem:a1e7ad3053155706c33d60296c48e959e" id="r_a1e7ad3053155706c33d60296c48e959e"><td class="memTemplParams" colspan="2"><a id="a1e7ad3053155706c33d60296c48e959e" name="a1e7ad3053155706c33d60296c48e959e"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a1e7ad3053155706c33d60296c48e959e template"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>classIdentifier</b> ()</td></tr>
@@ -832,6 +834,7 @@ IVW_MODULE_BASE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volum
 <tr class="memitem:aec5a54031ffd03ed97bb957ca8f522d3 template"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec5a54031ffd03ed97bb957ca8f522d3">haltonSequence</a> (size3_t dims, size_t numberOfPoints, size_t baseX=2, size_t baseY=3, size_t baseZ=5)</td></tr>
 <tr class="memitem:ae4a4886800ee3ba916742c7158b183d4" id="r_ae4a4886800ee3ba916742c7158b183d4"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:ae4a4886800ee3ba916742c7158b183d4 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4a4886800ee3ba916742c7158b183d4">haltonSequence</a> (size_t n, size_t base)</td></tr>
+<tr class="memitem:a9ed5a7a5992c633bb2e4450d792abee1" id="r_a9ed5a7a5992c633bb2e4450d792abee1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ed5a7a5992c633bb2e4450d792abee1">handleTFSelections</a> (auto &amp;tf, auto &amp;channel)</td></tr>
 <tr class="memitem:a111c6325641f7d9c5bf18a934e5290c7" id="r_a111c6325641f7d9c5bf18a934e5290c7"><td class="memTemplParams" colspan="2"><a id="a111c6325641f7d9c5bf18a934e5290c7" name="a111c6325641f7d9c5bf18a934e5290c7"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a111c6325641f7d9c5bf18a934e5290c7 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_key</b> (T &amp;map, const typename T::key_type &amp;key)</td></tr>
@@ -5196,6 +5199,28 @@ template&lt;typename T&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>nth </dd></dl>
+
+</div>
+</div>
+<a id="a9ed5a7a5992c633bb2e4450d792abee1" name="a9ed5a7a5992c633bb2e4450d792abee1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ed5a7a5992c633bb2e4450d792abee1">&#9670;&#160;</a></span>handleTFSelections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::util::handleTFSelections </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;</td>          <td class="paramname"><span class="paramname"><em>tf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">auto &amp;</td>          <td class="paramname"><span class="paramname"><em>channel</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Utility to have a tf channel selection depend in a "channel" property. We expect the tf to be a TF/ISO/ISOTF <a class="el" href="classinviwo_1_1Property.html" title="A Property represents a parameter to a processor.">Property</a>, and channel to be some integer property </p>
 
 </div>
 </div>

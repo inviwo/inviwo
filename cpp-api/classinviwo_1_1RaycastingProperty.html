@@ -126,11 +126,11 @@ $(function(){initNavTree('classinviwo_1_1RaycastingProperty.html','','classinviw
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:acd3ffef62e127eab8e75c97c9258c221" id="r_acd3ffef62e127eab8e75c97c9258c221"><td class="memItemLeft" align="right" valign="top"><a id="acd3ffef62e127eab8e75c97c9258c221" name="acd3ffef62e127eab8e75c97c9258c221"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Classification</b> { <b>None</b>
+<tr class="memitem:a92ed231f52e8f8458bb2614c94b3e4ed" id="r_a92ed231f52e8f8458bb2614c94b3e4ed"><td class="memItemLeft" align="right" valign="top"><a id="a92ed231f52e8f8458bb2614c94b3e4ed" name="a92ed231f52e8f8458bb2614c94b3e4ed"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Classification</b> : std::uint8_t { <b>None</b>
 , <b>TF</b>
 , <b>Voxel</b>
  }</td></tr>
-<tr class="memitem:a3fa35471a9115b31e4a6f7560a46182c" id="r_a3fa35471a9115b31e4a6f7560a46182c"><td class="memItemLeft" align="right" valign="top"><a id="a3fa35471a9115b31e4a6f7560a46182c" name="a3fa35471a9115b31e4a6f7560a46182c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>CompositingType</b> { <br />
+<tr class="memitem:ad4fb47cb387dc4f53b01a9b5662e828a" id="r_ad4fb47cb387dc4f53b01a9b5662e828a"><td class="memItemLeft" align="right" valign="top"><a id="ad4fb47cb387dc4f53b01a9b5662e828a" name="ad4fb47cb387dc4f53b01a9b5662e828a"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>CompositingType</b> : std::uint8_t { <br />
 &#160;&#160;<b>Dvr</b>
 , <b>MaximumIntensity</b>
 , <b>FirstHitPoints</b>
@@ -140,7 +140,10 @@ Public Types</h2></td></tr>
 , <b>FirstHitDepth</b>
 <br />
  }</td></tr>
-<tr class="memitem:afaacee5645c754dcaa73c2da8eb37e8e" id="r_afaacee5645c754dcaa73c2da8eb37e8e"><td class="memItemLeft" align="right" valign="top"><a id="afaacee5645c754dcaa73c2da8eb37e8e" name="afaacee5645c754dcaa73c2da8eb37e8e"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>GradientComputation</b> { <br />
+<tr class="memitem:a7a1141844607fd1eefbc8996748256a1" id="r_a7a1141844607fd1eefbc8996748256a1"><td class="memItemLeft" align="right" valign="top"><a id="a7a1141844607fd1eefbc8996748256a1" name="a7a1141844607fd1eefbc8996748256a1"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>DVRReferenceMode</b> : std::uint8_t { <b>Automatic</b>
+, <b>Manual</b>
+ }</td></tr>
+<tr class="memitem:af4c2bb87e51e62fbb0982f9846adc972" id="r_af4c2bb87e51e62fbb0982f9846adc972"><td class="memItemLeft" align="right" valign="top"><a id="af4c2bb87e51e62fbb0982f9846adc972" name="af4c2bb87e51e62fbb0982f9846adc972"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>GradientComputation</b> : std::uint8_t { <br />
 &#160;&#160;<b>None</b>
 , <b>Forward</b>
 , <b>Backward</b>
@@ -151,7 +154,7 @@ Public Types</h2></td></tr>
 , <b>PrecomputedYZW</b>
 <br />
  }</td></tr>
-<tr class="memitem:ad745ca5fc4642fa1b80d98524dded31d" id="r_ad745ca5fc4642fa1b80d98524dded31d"><td class="memItemLeft" align="right" valign="top"><a id="ad745ca5fc4642fa1b80d98524dded31d" name="ad745ca5fc4642fa1b80d98524dded31d"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderingType</b> { <b>Dvr</b>
+<tr class="memitem:a6b83b6af321d2253fd73c379f07632b3" id="r_a6b83b6af321d2253fd73c379f07632b3"><td class="memItemLeft" align="right" valign="top"><a id="a6b83b6af321d2253fd73c379f07632b3" name="a6b83b6af321d2253fd73c379f07632b3"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>RenderingType</b> : std::uint8_t { <b>Dvr</b>
 , <b>DvrIsosurface</b>
 , <b>Isosurface</b>
  }</td></tr>
@@ -474,6 +477,10 @@ Public Attributes</h2></td></tr>
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; Classification &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>classification_</b></td></tr>
 <tr class="memitem:ab0f103d71ca620d426d87d7adaada625" id="r_ab0f103d71ca620d426d87d7adaada625"><td class="memItemLeft" align="right" valign="top"><a id="ab0f103d71ca620d426d87d7adaada625" name="ab0f103d71ca620d426d87d7adaada625"></a>
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; CompositingType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>compositing_</b></td></tr>
+<tr class="memitem:a0d107f5528b9bbd76495b523076988fc" id="r_a0d107f5528b9bbd76495b523076988fc"><td class="memItemLeft" align="right" valign="top"><a id="a0d107f5528b9bbd76495b523076988fc" name="a0d107f5528b9bbd76495b523076988fc"></a>
+FloatProperty&#160;</td><td class="memItemRight" valign="bottom"><b>dvrReference_</b></td></tr>
+<tr class="memitem:aab5863a520f0ad880194a5d7e18c2537" id="r_aab5863a520f0ad880194a5d7e18c2537"><td class="memItemLeft" align="right" valign="top"><a id="aab5863a520f0ad880194a5d7e18c2537" name="aab5863a520f0ad880194a5d7e18c2537"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; DVRReferenceMode &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dvrReferenceMode_</b></td></tr>
 <tr class="memitem:a4b2430d65de2eb6a0f70aa0b798d3cdb" id="r_a4b2430d65de2eb6a0f70aa0b798d3cdb"><td class="memItemLeft" align="right" valign="top"><a id="a4b2430d65de2eb6a0f70aa0b798d3cdb" name="a4b2430d65de2eb6a0f70aa0b798d3cdb"></a>
 <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; GradientComputation &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gradientComputation_</b></td></tr>
 <tr class="memitem:ace5efc11153609fde5f6a39aca979bd2" id="r_ace5efc11153609fde5f6a39aca979bd2"><td class="memItemLeft" align="right" valign="top"><a id="ace5efc11153609fde5f6a39aca979bd2" name="ace5efc11153609fde5f6a39aca979bd2"></a>

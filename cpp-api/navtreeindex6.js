@@ -1,5 +1,7 @@
 var NAVTREEINDEX6 =
 {
+"classinviwo_1_1FontSizePropertyWidgetQt.html":[4,0,0,360],
+"classinviwo_1_1FontSizePropertyWidgetQt.html#ac400d45c92fc7e00f0bcbdc875fd8f10":[2,0,0,351,0],
 "classinviwo_1_1FontSizePropertyWidgetQt.html#ac400d45c92fc7e00f0bcbdc875fd8f10":[4,0,0,360,0],
 "classinviwo_1_1FragmentListRenderer.html":[2,0,0,352],
 "classinviwo_1_1FragmentListRenderer.html":[4,0,0,361],
@@ -247,7 +249,5 @@ var NAVTREEINDEX6 =
 "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[2,0,0,398,0],
 "classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[4,0,0,407,0],
 "classinviwo_1_1ImageCompositor.html":[2,0,0,399],
-"classinviwo_1_1ImageCompositor.html":[4,0,0,408],
-"classinviwo_1_1ImageCompositor.html#a17fb2e5eb372420499dc781f9eb89e1f":[2,0,0,399,0],
-"classinviwo_1_1ImageCompositor.html#a17fb2e5eb372420499dc781f9eb89e1f":[4,0,0,408,0]
+"classinviwo_1_1ImageCompositor.html":[4,0,0,408]
 };

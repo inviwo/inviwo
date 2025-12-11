@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"classinviwo_1_1IndexBufferInformationProperty.html":[2,0,0,449],
+"classinviwo_1_1IndexBufferInformationProperty.html":[4,0,0,458],
 "classinviwo_1_1IndexBufferInformationProperty.html#ac4edecd9f9de2a2ad18e3cacd502abe0":[2,0,0,449,0],
 "classinviwo_1_1IndexBufferInformationProperty.html#ac4edecd9f9de2a2ad18e3cacd502abe0":[4,0,0,458,0],
 "classinviwo_1_1IndexColumn.html":[2,0,0,450],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "classinviwo_1_1InviwoModuleFactoryObjectTemplate.html":[2,0,0,496],
 "classinviwo_1_1InviwoModuleFactoryObjectTemplate.html":[4,0,0,505],
 "classinviwo_1_1InviwoModuleLibraryObserver.html":[2,0,0,497],
-"classinviwo_1_1InviwoModuleLibraryObserver.html":[4,0,0,506],
-"classinviwo_1_1IsoComponent.html":[2,0,0,499],
-"classinviwo_1_1IsoComponent.html":[4,0,0,508]
+"classinviwo_1_1InviwoModuleLibraryObserver.html":[4,0,0,506]
 };

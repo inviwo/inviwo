@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"classinviwo_1_1DataFrameTableVisualizer.html#a48a5920a36796dc7797045883bfa9b0d":[2,0,0,208,5],
+"classinviwo_1_1DataFrameTableVisualizer.html#a48a5920a36796dc7797045883bfa9b0d":[4,0,0,217,5],
 "classinviwo_1_1DataFrameTableVisualizer.html#a494c3a3b09270e0a1f4b3953d5191d48":[2,0,0,208,2],
 "classinviwo_1_1DataFrameTableVisualizer.html#a494c3a3b09270e0a1f4b3953d5191d48":[4,0,0,217,2],
 "classinviwo_1_1DataFrameTableVisualizer.html#a9ff9c0b247817fc936e753dc5334a70f":[2,0,0,208,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "classinviwo_1_1DiskRepresentationLoader.html":[4,0,0,288],
 "classinviwo_1_1Dispatcher.html":[2,0,0,280],
 "classinviwo_1_1Dispatcher.html":[4,0,0,289],
-"classinviwo_1_1DistanceTransformRAM.html":[2,0,0,281],
-"classinviwo_1_1DistanceTransformRAM.html":[4,0,0,290],
-"classinviwo_1_1DistanceTransformRAM.html#a8eb5db1bcf15a9feaa6f2c77cdf1454b":[2,0,0,281,0]
+"classinviwo_1_1DistanceTransformRAM.html":[2,0,0,281]
 };

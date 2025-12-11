@@ -230,6 +230,7 @@ var namespaceinviwo_1_1util =
     [ "haltonSequence", "namespaceinviwo_1_1util.html#ae998c98a827c0d18229a6f1775ff0a8f", null ],
     [ "haltonSequence", "namespaceinviwo_1_1util.html#aec5a54031ffd03ed97bb957ca8f522d3", null ],
     [ "haltonSequence", "namespaceinviwo_1_1util.html#ae4a4886800ee3ba916742c7158b183d4", null ],
+    [ "handleTFSelections", "namespaceinviwo_1_1util.html#a9ed5a7a5992c633bb2e4450d792abee1", null ],
     [ "hash_combine", "namespaceinviwo_1_1util.html#a903ca9372bd3a12d9a2579ac7c99c890", null ],
     [ "iCaseContains", "namespaceinviwo_1_1util.html#a480d23a0ea9a3bb2949572ef11c7c051", null ],
     [ "iCaseEndsWith", "namespaceinviwo_1_1util.html#a72163c26b092ba2ad01a8ba8af763d59", null ],

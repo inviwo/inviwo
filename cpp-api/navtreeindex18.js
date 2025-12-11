@@ -1,5 +1,9 @@
 var NAVTREEINDEX18 =
 {
+"classinviwo_1_1SharedLibrary.html#a0311002e757680bc379085b825133ae7":[2,0,0,1042,0],
+"classinviwo_1_1SharedLibrary.html#a0311002e757680bc379085b825133ae7":[4,0,0,1051,0],
+"classinviwo_1_1SharedLibrary.html#a663ad43936e7135eea2290186297a175":[2,0,0,1042,1],
+"classinviwo_1_1SharedLibrary.html#a663ad43936e7135eea2290186297a175":[4,0,0,1051,1],
 "classinviwo_1_1SharedLibrary.html#a7bfcc869230ff7546237d043860a5681":[2,0,0,1042,2],
 "classinviwo_1_1SharedLibrary.html#a7bfcc869230ff7546237d043860a5681":[4,0,0,1051,2],
 "classinviwo_1_1SharedOpenGLResources.html":[2,0,0,1043],
@@ -206,6 +210,8 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SphericalComponent.html#ae924d3a150ff89b0f5bbb29f7e432eac":[4,0,0,1080,1],
 "classinviwo_1_1SphericalVolumeRaycaster.html":[2,0,0,1072],
 "classinviwo_1_1SphericalVolumeRaycaster.html":[4,0,0,1081],
+"classinviwo_1_1SphericalVolumeRaycaster.html#a47f1ae9d9b17f70fb9723f3f75a19fe0":[2,0,0,1072,0],
+"classinviwo_1_1SphericalVolumeRaycaster.html#a47f1ae9d9b17f70fb9723f3f75a19fe0":[4,0,0,1081,0],
 "classinviwo_1_1SplitImage.html":[2,0,0,1073],
 "classinviwo_1_1SplitImage.html":[4,0,0,1082],
 "classinviwo_1_1SplitImage.html#a801faced2965802c6cc9546babf958fc":[2,0,0,1073,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SpotLight.html#ae38d434ef5ac15b11259ba30c561ce6b":[2,0,0,1077,9],
 "classinviwo_1_1SpotLight.html#ae38d434ef5ac15b11259ba30c561ce6b":[4,0,0,1086,9],
 "classinviwo_1_1SpotLight.html#ae38fd477e4e6f11f8181ff600b697667":[2,0,0,1077,6],
-"classinviwo_1_1SpotLight.html#ae38fd477e4e6f11f8181ff600b697667":[4,0,0,1086,6],
-"classinviwo_1_1SpotLightSourceProcessor.html":[2,0,0,1078],
-"classinviwo_1_1SpotLightSourceProcessor.html":[4,0,0,1087],
-"classinviwo_1_1SpotLightSourceProcessor.html#a3a4fada09fb7d08ea3442fa514625886":[2,0,0,1078,0],
-"classinviwo_1_1SpotLightSourceProcessor.html#a3a4fada09fb7d08ea3442fa514625886":[4,0,0,1087,0],
-"classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f":[2,0,0,1078,1],
-"classinviwo_1_1SpotLightSourceProcessor.html#a8d91c4b742c27bbab683e0d2c01cfc6f":[4,0,0,1087,1]
+"classinviwo_1_1SpotLight.html#ae38fd477e4e6f11f8181ff600b697667":[4,0,0,1086,6]
 };

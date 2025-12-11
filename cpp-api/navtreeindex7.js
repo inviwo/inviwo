@@ -1,5 +1,7 @@
 var NAVTREEINDEX7 =
 {
+"classinviwo_1_1ImageCompositor.html#a17fb2e5eb372420499dc781f9eb89e1f":[2,0,0,399,0],
+"classinviwo_1_1ImageCompositor.html#a17fb2e5eb372420499dc781f9eb89e1f":[4,0,0,408,0],
 "classinviwo_1_1ImageCompositor.html#a5b8f1f08fb73e9ba32db4e9f1634472c":[2,0,0,399,1],
 "classinviwo_1_1ImageCompositor.html#a5b8f1f08fb73e9ba32db4e9f1634472c":[4,0,0,408,1],
 "classinviwo_1_1ImageContourProcessor.html":[2,0,0,400],
@@ -247,7 +249,5 @@ var NAVTREEINDEX7 =
 "classinviwo_1_1ImageVisualizer.html#acb7aceaabe07d8021b918eb5b4cdc115":[2,0,0,447,8],
 "classinviwo_1_1ImageVisualizer.html#acb7aceaabe07d8021b918eb5b4cdc115":[4,0,0,456,8],
 "classinviwo_1_1ImageVisualizer.html#ad6be42d13a7a5ca67888aece54aab6ea":[2,0,0,447,4],
-"classinviwo_1_1ImageVisualizer.html#ad6be42d13a7a5ca67888aece54aab6ea":[4,0,0,456,4],
-"classinviwo_1_1IndexBufferInformationProperty.html":[2,0,0,449],
-"classinviwo_1_1IndexBufferInformationProperty.html":[4,0,0,458]
+"classinviwo_1_1ImageVisualizer.html#ad6be42d13a7a5ca67888aece54aab6ea":[4,0,0,456,4]
 };

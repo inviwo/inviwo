@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"classinviwo_1_1ColumnOptionToOptionConverter.html":[4,0,0,154],
+"classinviwo_1_1CommandLineArgHolder.html":[2,0,0,146],
 "classinviwo_1_1CommandLineArgHolder.html":[4,0,0,155],
 "classinviwo_1_1CommandLineParser.html":[2,0,0,147],
 "classinviwo_1_1CommandLineParser.html":[4,0,0,156],
@@ -247,7 +249,5 @@ var NAVTREEINDEX3 =
 "classinviwo_1_1DataFrameTableVisualizer.html#a1e05201cb50a5b4ae747dfe79d773a21":[2,0,0,208,7],
 "classinviwo_1_1DataFrameTableVisualizer.html#a1e05201cb50a5b4ae747dfe79d773a21":[4,0,0,217,7],
 "classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5":[2,0,0,208,1],
-"classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5":[4,0,0,217,1],
-"classinviwo_1_1DataFrameTableVisualizer.html#a48a5920a36796dc7797045883bfa9b0d":[2,0,0,208,5],
-"classinviwo_1_1DataFrameTableVisualizer.html#a48a5920a36796dc7797045883bfa9b0d":[4,0,0,217,5]
+"classinviwo_1_1DataFrameTableVisualizer.html#a39e7e0d72871ae8572926898fbd1a8b5":[4,0,0,217,1]
 };
