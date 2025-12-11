@@ -90,6 +90,25 @@ set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
 set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/resources/DS_mapp")
 set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 
+# AppImge settings
+if(UNIX AND NOT APPLE)
+    message("APPIMAGE SETTINGS '${IVW_PACKAGE_HEADERS}'")
+    set(CPACK_PACKAGE_ICON          "inviwo_light.png")
+    set(CPACK_APPIMAGE_DESKTOP_FILE "inviwo.desktop")
+    install(FILES "${IVW_ROOT_DIR}/resources/inviwo.desktop" DESTINATION "${IVW_SHARE_INSTALL_DIR}" COMPONENT Application)
+    install(FILES "${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.png" DESTINATION "${IVW_SHARE_INSTALL_DIR}" COMPONENT Application)
+
+    qt_generate_deploy_app_script(
+        TARGET inviwo
+        OUTPUT_SCRIPT deploy_script
+        NO_TRANSLATIONS
+        NO_COMPILER_RUNTIME
+        NO_UNSUPPORTED_PLATFORM_ERROR   
+    )
+    install(SCRIPT ${deploy_script})
+
+endif()
+
 # Debian settings
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.inviwo.org")
 
@@ -109,6 +128,8 @@ endif()
 install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}data  COMPONENT Datasets)
 install(DIRECTORY ${IVW_ROOT_DIR}/tests/ DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}tests COMPONENT Testing)
 
+
+
 option(IVW_PACKAGE_INSTALLER "Create installer instead of a package NSIS/DMG/DEB" OFF)
 if(NOT CPACK_GENERATOR)
     if(WIN32)
@@ -125,7 +146,7 @@ if(NOT CPACK_GENERATOR)
         endif()
     else()
         if(IVW_PACKAGE_INSTALLER)
-            set(CPACK_GENERATOR "DEB")
+            set(CPACK_GENERATOR "AppImage")
         else()
             set(CPACK_GENERATOR "TGZ")
         endif()

@@ -68,11 +68,19 @@ function(ivw_private_vcpkg_install_helper)
         else()
             set(dest ${ARG_DESTINATION}/${relpathdir})
         endif()
-        install(
-            FILES ${item}
-            DESTINATION ${dest}
+        
+        #install(
+        #    FILES ${item}
+        #    DESTINATION ${dest}
+        #    COMPONENT ${ARG_COMPONENT}
+        #    CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+        #    FOLLOW_SYMLINK_CHAIN
+        #)
+        install(CODE 
+            "if(NOT CMAKE_INSTALL_CONFIG_NAME MATCHES \"^[Dd][Ee][Bb][Uu][Gg]$\")
+                file(INSTALL ${item} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${dest}\" FOLLOW_SYMLINK_CHAIN)
+            endif()"
             COMPONENT ${ARG_COMPONENT}
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel
         )
     endforeach()
 
@@ -87,11 +95,18 @@ function(ivw_private_vcpkg_install_helper)
         else()
             set(dest ${ARG_DESTINATION}/${relpathdir})
         endif()
-        install(
-            FILES ${item}
-            DESTINATION ${dest}
+        #install(
+        #    FILES ${item}
+        #    DESTINATION ${dest}
+        #    COMPONENT ${ARG_COMPONENT}
+        #    CONFIGURATIONS Debug
+        #    FOLLOW_SYMLINK_CHAIN
+        #)
+        install(CODE 
+            "if(CMAKE_INSTALL_CONFIG_NAME MATCHES \"^[Dd][Ee][Bb][Uu][Gg]$\")
+                file(INSTALL ${item} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${dest}\" FOLLOW_SYMLINK_CHAIN)
+            endif()"
             COMPONENT ${ARG_COMPONENT}
-            CONFIGURATIONS Debug
         )
     endforeach()
 
