@@ -118,9 +118,6 @@ MultichannelRaycaster::MultichannelRaycaster()
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-
-    raycasting_.dvrReferenceMode_.setVisible(false);
-    raycasting_.dvrReference_.setVisible(false);
 }
 
 void MultichannelRaycaster::initializeResources() {
