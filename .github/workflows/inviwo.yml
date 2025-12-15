@@ -203,21 +203,21 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Upload ccache-logs"
-      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
+      if: ${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}
       uses: actions/upload-artifact@v5
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: ccache-debug/*
 
     - name: "Upload Vcpkg build Logs"
-      if: "${{ failure() }}"
+      if: ${{ failure() }}
       uses: actions/upload-artifact@v5
       with:
         name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: vcpkg/buildtrees/**/*.log
 
     - name: "Setup tmate session"
-      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      if: ${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -454,14 +454,14 @@ jobs:
         path: vcpkg/buildtrees/**/*.log
 
     - name: "Setup tmate session"
-      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if: ${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
         limit-access-to-actor: true
 
   test-installer-windows:
-    name: "Test Installer"
+    name: "Test Installer Windows"
     needs: build
     runs-on: windows-latest
     steps:
@@ -495,7 +495,7 @@ jobs:
         }
 
     - name: "Setup tmate session"
-      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if: ${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -503,7 +503,7 @@ jobs:
 
         
   test-installer-macos:
-    name: "Test Installer"
+    name: "Test Installer MacOS"
     needs: build      
     runs-on: macos-latest
     steps:
@@ -530,7 +530,7 @@ jobs:
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session"
-      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if:"${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -538,7 +538,7 @@ jobs:
  
 
   test-installer-linux:
-    name: "Test Installer"
+    name: "Test Installer Linux"
     needs: build
        
     runs-on: ubuntu-latest
@@ -555,7 +555,7 @@ jobs:
         $app --logconsole --quit
 
     - name: "Setup tmate session"
-      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      if: ${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -589,7 +589,7 @@ jobs:
   update-api-docs:
     name: "Publish updated API Docs"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, regression]
+    needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression]
 
     runs-on: ubuntu-latest
     steps:
@@ -633,7 +633,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer-win, test-installer-macos, test-installer-linux, regression, create-changelog]
+    needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression, create-changelog]
     runs-on: ubuntu-latest
     
     steps:
