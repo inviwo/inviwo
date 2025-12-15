@@ -471,7 +471,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: "Download artifact"
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: ${{ matrix.installer }}
 
@@ -569,13 +569,13 @@ jobs:
           submodules: false
 
       - name: "Download python-api"
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: inviwo-python-api
           path: inviwo/python-api
 
       - name: "Download cpp-api"
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: inviwo-cpp-api
           path: inviwo/cpp-api
@@ -606,7 +606,7 @@ jobs:
     
     steps:
     - name: "Download installer"
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         pattern: inviwo-installer-*
         merge-multiple: true
