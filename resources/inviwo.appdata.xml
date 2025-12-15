@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.inviwo</id>
+  <name>Inviwo</name>
+  <summary>Visual programming framework for scientific data visualization</summary>
+  
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>BSD-2-Clause</project_license>
+  
+  <url type="homepage">https://www.inviwo.org</url>
+  <description>
+    <p>
+      Inviwo is a powerful visualization framework designed for scientists, researchers, and 
+      developers who need to transform complex data into meaningful visual representations. 
+      Whether you&apos;re working with medical imaging, scientific simulations, or data analysis,
+      Inviwo provides an intuitive platform for building customized visualization solutions.
+    </p>
+  </description>
+  <developer id="org.inviwo.foundation">
+    <name>Inviwo Foundation</name>
+    <email>info@inviwo.org</email>
+  </developer>
+
+  <content_rating type="oars-1.1" />
+  
+  <launchable type="desktop-id">inviwo.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/inviwo/inviwo/blob/master/docs/images/inviwo-screenshot.png</image>
+    </screenshot>
+  </screenshots>
+</component>

@@ -93,20 +93,18 @@ set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 # AppImge settings
 if(UNIX AND NOT APPLE)
     message("APPIMAGE SETTINGS '${IVW_PACKAGE_HEADERS}'")
-    set(CPACK_PACKAGE_ICON          "inviwo_light.png")
+    set(CPACK_PACKAGE_ICON          "inviwo.png")
     set(CPACK_APPIMAGE_DESKTOP_FILE "inviwo.desktop")
-    install(FILES "${IVW_ROOT_DIR}/resources/inviwo.desktop" DESTINATION "${IVW_SHARE_INSTALL_DIR}" COMPONENT Application)
-    install(FILES "${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.png" DESTINATION "${IVW_SHARE_INSTALL_DIR}" COMPONENT Application)
-
-    qt_generate_deploy_app_script(
-        TARGET inviwo
-        OUTPUT_SCRIPT deploy_script
-        NO_TRANSLATIONS
-        NO_COMPILER_RUNTIME
-        NO_UNSUPPORTED_PLATFORM_ERROR   
-    )
-    install(SCRIPT ${deploy_script})
-
+    set(CPACK_APPIMAGE_NO_APPSTREAM ON)
+    set(CPACK_PACKAGING_INSTALL_PREFIX /usr)
+    install(FILES "${IVW_ROOT_DIR}/resources/inviwo.desktop" 
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/applications" COMPONENT Application)
+    install(FILES "${IVW_ROOT_DIR}/resources/inviwo.appdata.xml" 
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/metainfo" COMPONENT Application)
+    install(FILES "${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.png" 
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/icons/hicolor/64x64/apps/" RENAME "inviwo.png" COMPONENT Application)
+    install(FILES "${IVW_ROOT_DIR}/resources/inviwo/inviwo-logo-light.svg" 
+            DESTINATION "${IVW_SHARE_INSTALL_DIR}/icons/hicolor/scalable/apps/" RENAME "inviwo.svg" COMPONENT Application)
 endif()
 
 # Debian settings
