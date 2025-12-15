@@ -203,7 +203,7 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Upload ccache-logs"
-      if: contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug')
+      if: ${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}
       uses: actions/upload-artifact@v5
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
