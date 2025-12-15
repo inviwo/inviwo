@@ -58,7 +58,7 @@ runs:
         # Get a cmake with AppImage support 4.2+
         curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-linux-x86_64.sh
         chmod +x install_cmake.sh
-        sudo ./install_cmake.sh --skip-license --prefix=/usr/local
+        ./install_cmake.sh --skip-license --prefix=/usr/local
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash

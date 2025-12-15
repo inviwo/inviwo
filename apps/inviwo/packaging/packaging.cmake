@@ -126,9 +126,7 @@ endif()
 install(DIRECTORY ${IVW_ROOT_DIR}/data/  DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}data  COMPONENT Datasets)
 install(DIRECTORY ${IVW_ROOT_DIR}/tests/ DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}tests COMPONENT Testing)
 
-
-
-option(IVW_PACKAGE_INSTALLER "Create installer instead of a package NSIS/DMG/DEB" OFF)
+option(IVW_PACKAGE_INSTALLER "Create installer instead of a package NSIS/DMG/AppImage" OFF)
 if(NOT CPACK_GENERATOR)
     if(WIN32)
         if(IVW_PACKAGE_INSTALLER)
