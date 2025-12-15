@@ -60,8 +60,8 @@ jobs:
           - system: linux
             os: 'ubuntu-24.04'
             targets: 'all'
-            installer: 'inviwo-installer-ubuntu'
-            artifact: 'build/inviwo-v*.deb'
+            installer: 'inviwo-installer-linux'
+            artifact: 'build/inviwo-v*.AppImage'
             run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
 
           # set triplets
@@ -104,6 +104,11 @@ jobs:
             linkage: 'dynamic'
             configuration: Release
             targets: 'ALL_BUILD package'
+
+          - system: 'linux'
+            linkage: 'dynamic'
+            configuration: Release
+            targets: 'all package'
             
         exclude:
           # Windows debug build are to big, they run out of diskspace
@@ -455,29 +460,17 @@ jobs:
       with:
         limit-access-to-actor: true
 
-  test-installer:
+  test-installer-windows:
     name: "Test Installer"
     needs: build
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest]
-        include:
-          - os: 'windows-latest'
-            installer: 'inviwo-installer-win'
-          - os: 'macos-latest'
-            installer: 'inviwo-installer-macos'
-        
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     steps:
     - name: "Download artifact"
       uses: actions/download-artifact@v6
       with:
-        name: ${{ matrix.installer }}
+        name: inviwo-installer-win
 
-    # Windows
-    - name: "Run Windows Installer"
-      if: runner.os == 'Windows'
+    - name: "Run Installer"
       shell: pwsh
       run: |
         # find the name of the installer
@@ -491,7 +484,6 @@ jobs:
         }
         
     - name: "Run Inviwo"
-      if: runner.os == 'Windows'
       shell: pwsh
       run: |
         $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
@@ -501,10 +493,26 @@ jobs:
           C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i inviwo-cli.exe +sls
           C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q inviwo-cli.exe
         }
-    
-    # Macos
-    - name: "Run MacOS Installer"
-      if: runner.os == 'macOS'
+
+    - name: "Setup tmate session"
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
+      with:
+        limit-access-to-actor: true
+
+        
+  test-installer-macos:
+    name: "Test Installer"
+    needs: build      
+    runs-on: macos-latest
+    steps:
+    - name: "Download artifact"
+      uses: actions/download-artifact@v6
+      with:
+        name: inviwo-installer-macos
+
+    - name: "Run Installer"
       shell: bash
       run: |
         # Find the name of the installer 
@@ -516,7 +524,6 @@ jobs:
         hdiutil detach /Volumes/${DMG%%.dmg}/
 
     - name: "Run Inviwo"
-      if: runner.os == 'macOS'
       shell: bash
       run: |
         cd /Applications/inviwo.app/Contents/MacOS/
@@ -529,6 +536,31 @@ jobs:
       with:
         limit-access-to-actor: true
  
+
+  test-installer-linux:
+    name: "Test Installer"
+    needs: build
+       
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Download artifact"
+      uses: actions/download-artifact@v6
+      with:
+        name: inviwo-installer-linux
+
+    - name: "Run Inviwo"
+      shell: bash
+      run: |
+        app=$(ls inviwo-*.AppImage)
+        $app --logconsole --quit
+
+    - name: "Setup tmate session"
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
+      with:
+        limit-access-to-actor: true
+
   create-changelog:
     name: "Create Changelog"
     runs-on: ubuntu-latest
@@ -601,7 +633,7 @@ jobs:
   update-latest-release:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
-    needs: [build, test-installer, regression, create-changelog]
+    needs: [build, test-installer-win, test-installer-macos, test-installer-linux, regression, create-changelog]
     runs-on: ubuntu-latest
     
     steps:
