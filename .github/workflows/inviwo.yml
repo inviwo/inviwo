@@ -203,21 +203,21 @@ jobs:
         path: build/docs/python-api/*
     
     - name: "Upload ccache-logs"
-      if: ${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}
+      if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
       uses: actions/upload-artifact@v5
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: ccache-debug/*
 
     - name: "Upload Vcpkg build Logs"
-      if: ${{ failure() }}
+      if: "${{ failure() }}"
       uses: actions/upload-artifact@v5
       with:
         name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: vcpkg/buildtrees/**/*.log
 
     - name: "Setup tmate session"
-      if: ${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -454,7 +454,7 @@ jobs:
         path: vcpkg/buildtrees/**/*.log
 
     - name: "Setup tmate session"
-      if: ${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -495,7 +495,7 @@ jobs:
         }
 
     - name: "Setup tmate session"
-      if: ${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -530,7 +530,7 @@ jobs:
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session"
-      if:"${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
@@ -555,7 +555,7 @@ jobs:
         $app --logconsole --quit
 
     - name: "Setup tmate session"
-      if: ${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}
+      if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 30
       with:
