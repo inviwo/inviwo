@@ -552,7 +552,8 @@ jobs:
       shell: bash
       run: |
         app=$(ls inviwo-*.AppImage)
-        $app --logconsole --quit
+        echo ${app}
+        QT_QPA_PLATFORM=offscreen ./${app} --logconsole --quit
 
     - name: "Setup tmate session"
       if: "${{ failure() && contains(github.event.pull_request.labels.*.name, 'CI: Debug') }}"
