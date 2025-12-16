@@ -82,6 +82,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/raycasting/texturedvolumeraycaster.h
     include/modules/basegl/processors/raycasting/volumeraycasterbase.h
     include/modules/basegl/processors/redgreenprocessor.h
+    include/modules/basegl/processors/ribbonrenderer.h
     include/modules/basegl/processors/shadercomponentprocessorbase.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
@@ -215,6 +216,7 @@ set(SOURCE_FILES
     src/processors/raycasting/texturedvolumeraycaster.cpp
     src/processors/raycasting/volumeraycasterbase.cpp
     src/processors/redgreenprocessor.cpp
+    src/processors/ribbonrenderer.cpp
     src/processors/shadercomponentprocessorbase.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
