@@ -548,6 +548,11 @@ jobs:
       with:
         name: inviwo-installer-linux
 
+    - name: "Install OpenGL runtime"
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libopengl0
+
     - name: "Run Inviwo"
       shell: bash
       run: |
