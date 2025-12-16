@@ -34,29 +34,27 @@
 
 #include <modules/base/algorithm/convexhull.h>
 
+#include <array>
+
 namespace inviwo {
 
+namespace {
+
 // create a point set, but only for glm vector types
-template <class T, typename std::enable_if<
-                       util::rank<T>::value ==
-                           1 /* && util::is_floating_point<T::value_type>::value == true*/,
-                       int>::type = 0>
+template <util::Vec2D T>
 std::vector<T> getPointSet(const std::size_t numPoints) {
     srand(0);  // seed to always be the same random numbers
 
     std::vector<T> points(numPoints);
     for (size_t i = 0; i < numPoints; i++) {
         for (size_t j = 0; j < util::extent<T>::value; ++j) {
-            points[i][j] = rand() / float(RAND_MAX);
+            points[i][j] = rand() / static_cast<float>(RAND_MAX);
         }
     }
     return points;
 }
 
-template <class T, typename std::enable_if<
-                       util::rank<T>::value ==
-                           1 /*&& util::is_floating_point<T::value_type>::value == false*/,
-                       int>::type = 0>
+template <util::Vec2D T>
 std::vector<T> getPointSet(const std::size_t numPoints, T extent) {
     srand(0);  // seed to always be the same random numbers
 
@@ -69,8 +67,7 @@ std::vector<T> getPointSet(const std::size_t numPoints, T extent) {
     return points;
 }
 
-// TEST(ConvexHullTests, init) {
-//}
+}  // namespace
 
 TEST(isConvex, oneElement) {
     std::vector<ivec2> points = {ivec2(1, 0)};
@@ -152,6 +149,9 @@ TEST(convexHull, ivec2) {
     auto hull = util::convexHull(points);
 
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex (monotone chain)";
+    for (const auto& p : points) {
+        EXPECT_TRUE(util::isInside(hull, p)) << "point p=" << p << " outside of convex hull ";
+    }
 }
 
 TEST(convexHull, dvec2) {
@@ -161,10 +161,34 @@ TEST(convexHull, dvec2) {
     EXPECT_TRUE(util::isConvex(hull));
 }
 
+TEST(convexHull, dvec2span) {
+    auto points = getPointSet<dvec2>(10);
+
+    std::array<dvec2, 20> hull{};
+    auto result = util::convexHull<10>(points, hull);
+
+    EXPECT_TRUE(util::isConvex(result));
+    for (const auto& p : points) {
+        EXPECT_TRUE(util::isInside(result, p)) << "point p=" << p << " outside of convex hull";
+    }
+}
+
+TEST(convexHull, ivec2span) {
+    auto points = getPointSet<ivec2>(10, ivec2(10, 10));
+
+    std::array<ivec2, 20> hull{};
+    auto result = util::convexHull<10>(points, hull);
+
+    EXPECT_TRUE(util::isConvex(result));
+    for (const auto& p : points) {
+        EXPECT_TRUE(util::isInside(result, p)) << "point p=" << p << " outside of convex hull";
+    }
+}
+
 TEST(convexHull, vec3) {
     std::vector<vec3> p = {vec3(0.0f), vec3(1.0f)};
     // convex hull is not yet implemented for other types than *vec2
-    EXPECT_THROW(util::convexHull<vec3>(p), inviwo::Exception);
+    EXPECT_THROW(util::convexHull(p), inviwo::Exception);
 }
 
 }  // namespace inviwo
