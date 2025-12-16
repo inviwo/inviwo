@@ -54,7 +54,8 @@ runs:
                          libglew-dev ninja-build nasm libicu-dev libomp-dev \
                          autoconf autoconf-archive automake libtool libltdl-dev \
                          '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev \
-                         libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev
+                         libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev \
+                         libwayland-dev wayland-protocols
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash

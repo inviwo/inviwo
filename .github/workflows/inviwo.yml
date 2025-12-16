@@ -553,6 +553,7 @@ jobs:
       run: |
         app=$(ls inviwo-*.AppImage)
         echo ${app}
+        chmod +x ./${app}
         QT_QPA_PLATFORM=offscreen ./${app} --logconsole --quit
 
     - name: "Setup tmate session"
