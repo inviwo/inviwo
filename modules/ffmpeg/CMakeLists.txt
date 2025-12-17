@@ -44,7 +44,31 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(FFMPEG REQUIRED)
-ivw_vcpkg_install(ffmpeg MODULE FFmpeg)
+
+
+# The installed version is missing the symbolic link for the soversion, so we create them here
+set(code "")
+foreach(lib IN ITEMS libavutil libavcodec libavdevice libavfilter libavformat libswresample libswscale)
+    set(version ${FFMPEG_${lib}_VERSION})
+    string(REGEX REPLACE "^([0-9]+)\\..*" "\\1" soversion ${version})
+    string(APPEND code
+        "install(
+            CODE \"
+                if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
+                    file(CREATE_LINK ${lib}.so.${version} \\\${CMAKE_INSTALL_PREFIX}/debug/${IVW_LIBRARY_INSTALL_DIR}/${lib}.so.${soversion} SYMBOLIC)
+                else()
+                    file(CREATE_LINK ${lib}.so.${version} \\\${CMAKE_INSTALL_PREFIX}/${IVW_LIBRARY_INSTALL_DIR}/${lib}.so.${soversion} SYMBOLIC)
+                endif()
+                \"
+            COMPONENT Application
+        )
+        ")
+endforeach()
+
+ivw_vcpkg_install(ffmpeg MODULE FFmpeg EXTRA_CODE "${code}")
+
+
+
 target_include_directories(inviwo-module-ffmpeg 
     PUBLIC 
         $<BUILD_INTERFACE:${FFMPEG_INCLUDE_DIRS}>

@@ -551,7 +551,7 @@ jobs:
     - name: "Install OpenGL runtime"
       run: |
         sudo apt-get update
-        sudo apt-get install -y libopengl0
+        sudo apt-get install -y libopengl0 libb2-1
 
     - name: "Run Inviwo"
       shell: bash

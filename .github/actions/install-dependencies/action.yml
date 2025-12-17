@@ -53,7 +53,7 @@ runs:
         sudo apt install --fix-missing libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev \
                          libglew-dev ninja-build nasm libicu-dev libomp-dev \
                          autoconf autoconf-archive automake libtool libltdl-dev \
-                         '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev \
+                         '^libxcb.*-dev' libx11-xcb-dev libxrender-dev \
                          libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev \
                          libwayland-dev wayland-protocols
 
