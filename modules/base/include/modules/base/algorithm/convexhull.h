@@ -98,7 +98,7 @@ bool isInside(const C& hull, const std::ranges::range_value_t<C>& p) {
 }
 
 /**
- * \brief compute the area of a convex polygon
+ * \brief compute the area of a simple polygon, i.e. non-self intersecting
  *
  * @param polygon   points ordered counter-clockwise
  * @return area of polygon
@@ -111,10 +111,10 @@ double getArea(const C& polygon) {
     auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
     double area = 0.0;
     for (std::size_t i = 0; i < n; ++i) {
-        area += cross2D(polygon[(i + 1) % n] - polygon[i], polygon[(i + 2) % n] - polygon[i]);
+        area += cross2D(polygon[i], polygon[(i + 1) % n]);
     }
     area *= 0.5;
-    return area;
+    return std::abs(area);
 }
 
 /**
