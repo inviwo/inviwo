@@ -91,8 +91,7 @@ set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/resources/DS_mapp")
 set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
 
 # AppImge settings
-if(UNIX AND NOT APPLE)
-    message("APPIMAGE SETTINGS '${IVW_PACKAGE_HEADERS}'")
+if(UNIX AND NOT APPLE AND IVW_PACKAGE_INSTALLER)
     set(CPACK_PACKAGE_ICON          "inviwo.png")
     set(CPACK_APPIMAGE_DESKTOP_FILE "inviwo.desktop")
     set(CPACK_APPIMAGE_NO_APPSTREAM ON)

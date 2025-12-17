@@ -57,10 +57,23 @@ function(ivw_private_vcpkg_install_helper)
     endif()
 
     string(REPLACE "." "\\." dir ${ARG_DIRNAME})
+
+    # Find matching files e.g., libexample.so
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}$")
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
 
+    # include symlinked files, e.g., libexample.so.1 -> libexample.so.1.2.3
+    set(links ${${ARG_FILES_VAR}})
+    list(FILTER links INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}\\.[0-9.]+$")
+    list(TRANSFORM links PREPEND ${VCPKG_INSTALLED_DIR}/)
+    foreach(link IN LISTS links)
+        if(IS_SYMLINK ${link})
+            list(APPEND files ${link})
+        endif()
+    endforeach()
+
+    # group files by destination directory
     foreach(item IN LISTS files)
         cmake_path(RELATIVE_PATH item
             BASE_DIRECTORY ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME}
@@ -73,15 +86,21 @@ function(ivw_private_vcpkg_install_helper)
         list(REMOVE_DUPLICATES destinations)
     endforeach()
 
+    # install files per destination directory, 
+    # FOLLOW_SYMLINK_CHAIN is needed since libexample.so is usually 
+    # a symlink to the real file, e.g. libexample.so.1.2.3
     foreach(dest IN LISTS destinations)
-        list(JOIN files_in_${dest} "\n      " filelist)
+        list(JOIN files_in_${dest} "\n        " filelist)
         install(CODE 
             "# vcpkg: install files from ${ARG_PORT_NAME}/${ARG_DIRNAME}
   if(NOT CMAKE_INSTALL_CONFIG_NAME MATCHES \"^[Dd][Ee][Bb][Uu][Gg]$\")
-    file(INSTALL 
-      ${filelist} 
-    DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${dest}\" 
-    FOLLOW_SYMLINK_CHAIN)
+    file(
+      INSTALL 
+        ${filelist} 
+      DESTINATION 
+        \"\${CMAKE_INSTALL_PREFIX}/${dest}\"
+      FOLLOW_SYMLINK_CHAIN
+    )
   endif()"
             COMPONENT ${ARG_COMPONENT}
         )
@@ -89,9 +108,19 @@ function(ivw_private_vcpkg_install_helper)
     endforeach()
     unset(destinations)
 
+    # Same for debug files
     set(files ${${ARG_FILES_VAR}})
     list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}$")
     list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
+
+    set(links ${${ARG_FILES_VAR}})
+    list(FILTER links INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}\\.[0-9.]+$")
+    list(TRANSFORM links PREPEND ${VCPKG_INSTALLED_DIR}/)
+    foreach(link IN LISTS links)
+        if(IS_SYMLINK ${link})
+            list(APPEND files ${link})
+        endif()
+    endforeach()
 
     foreach(item IN LISTS files)
         cmake_path(RELATIVE_PATH item
@@ -106,73 +135,23 @@ function(ivw_private_vcpkg_install_helper)
     endforeach()
 
     foreach(dest IN LISTS destinations)
-        list(JOIN files_in_${dest} "\n      " filelist)
+        list(JOIN files_in_${dest} "\n        " filelist)
         install(CODE 
             "# vcpkg: install files from ${ARG_PORT_NAME}/debug/${ARG_DIRNAME}
   if(CMAKE_INSTALL_CONFIG_NAME MATCHES \"^[Dd][Ee][Bb][Uu][Gg]$\")
-    file(INSTALL 
-      ${filelist} 
-    DESTINATION \"\${CMAKE_INSTALL_PREFIX}/debug/${dest}\" 
-    FOLLOW_SYMLINK_CHAIN)
+    file(
+      INSTALL 
+        ${filelist} 
+      DESTINATION 
+        \"\${CMAKE_INSTALL_PREFIX}/debug/${dest}\"
+      FOLLOW_SYMLINK_CHAIN
+    )
   endif()"
             COMPONENT ${ARG_COMPONENT}
         )
         unset(files_in_${dest})
     endforeach()
     unset(destinations)
-
-
-    
-#    foreach(item IN LISTS files)
-#        file(RELATIVE_PATH relpath ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/${ARG_DIRNAME} ${item})
-#        cmake_path(GET relpath PARENT_PATH relpathdir)
-#        if(NOT relpathdir)
-#            set(dest ${ARG_DESTINATION})
-#        else()
-#            set(dest ${ARG_DESTINATION}/${relpathdir})
-#        endif()
-#        
-#        #install(
-#        #    FILES ${item}
-#        #    DESTINATION ${dest}
-#        #    COMPONENT ${ARG_COMPONENT}
-#        #    CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-#        #    FOLLOW_SYMLINK_CHAIN
-#        #)
-#        install(CODE 
-#            "if(NOT CMAKE_INSTALL_CONFIG_NAME MATCHES \"^[Dd][Ee][Bb][Uu][Gg]$\")
-#                file(INSTALL ${item} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${dest}\" FOLLOW_SYMLINK_CHAIN)
-#            endif()"
-#            COMPONENT ${ARG_COMPONENT}
-#        )
-#    endforeach()
-
-#    set(files ${${ARG_FILES_VAR}})
-#    list(FILTER files INCLUDE REGEX "^${VCPKG_TARGET_TRIPLET}/debug/${dir}/([^/]+/)*[^/]+\\.${ARG_EXTENSION}$")
-#    list(TRANSFORM files PREPEND ${VCPKG_INSTALLED_DIR}/)
-#    foreach(item IN LISTS files)
-#        file(RELATIVE_PATH relpath ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/${ARG_DIRNAME} ${item})
-#        cmake_path(GET relpath PARENT_PATH relpathdir)
-#        if(NOT relpathdir)
-#            set(dest ${ARG_DESTINATION})
-#        else()
-#            set(dest ${ARG_DESTINATION}/${relpathdir})
-#        endif()
-#        #install(
-#        #    FILES ${item}
-#        #    DESTINATION ${dest}
-#        #    COMPONENT ${ARG_COMPONENT}
-#        #    CONFIGURATIONS Debug
-#        #    FOLLOW_SYMLINK_CHAIN
-#        #)
-#        install(CODE 
-#            "if(CMAKE_INSTALL_CONFIG_NAME MATCHES \"^[Dd][Ee][Bb][Uu][Gg]$\")
-#                file(INSTALL ${item} DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${dest}\" FOLLOW_SYMLINK_CHAIN)
-#            endif()"
-#            COMPONENT ${ARG_COMPONENT}
-#        )
-#    endforeach()
-
 endfunction()
 
 # Reset global variable used to show Python warning in ivw_vcpkg_install only once
