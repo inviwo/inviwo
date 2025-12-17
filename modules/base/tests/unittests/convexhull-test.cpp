@@ -35,6 +35,8 @@
 #include <modules/base/algorithm/convexhull.h>
 
 #include <array>
+#include <numbers>
+#include <ranges>
 
 namespace inviwo {
 
@@ -70,73 +72,73 @@ std::vector<T> getPointSet(const std::size_t numPoints, T extent) {
 }  // namespace
 
 TEST(isConvex, oneElement) {
-    std::vector<ivec2> points = {ivec2(1, 0)};
-    std::vector<ivec2> result = {ivec2(1, 0)};
+    const std::vector<ivec2> points = {ivec2(1, 0)};
+    const std::vector<ivec2> result = {ivec2(1, 0)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_TRUE(util::isConvex(hull));
     EXPECT_EQ(result, hull) << "computed hull is _not_ convex";
 }
 
 TEST(isConvex, twoElements) {
-    std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0)};
-    std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0)};
+    const std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0)};
+    const std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex";
 }
 
 TEST(isConvex, threeElements) {
-    std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0), ivec2(1, 1)};
-    std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0), ivec2(1, 1)};
+    const std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0), ivec2(1, 1)};
+    const std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0), ivec2(1, 1)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex";
 }
 
 TEST(isConvex, fourElements) {
-    std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0), ivec2(0, 1), ivec2(1, 1)};
-    std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0), ivec2(1, 1), ivec2(0, 1)};
+    const std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0), ivec2(0, 1), ivec2(1, 1)};
+    const std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0), ivec2(1, 1), ivec2(0, 1)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex";
 }
 
 TEST(isConvex, fourElementsDouble) {
-    std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
-    std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
+    const std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
+    const std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex";
 }
 
 TEST(isInside, inside) {
-    std::vector<ivec2> points = {ivec2(2, 0), ivec2(0, 0), ivec2(0, 2), ivec2(2, 2)};
-    std::vector<ivec2> result = {ivec2(0, 0), ivec2(2, 0), ivec2(2, 2), ivec2(0, 2)};
+    const std::vector<ivec2> points = {ivec2(2, 0), ivec2(0, 0), ivec2(0, 2), ivec2(2, 2)};
+    const std::vector<ivec2> result = {ivec2(0, 0), ivec2(2, 0), ivec2(2, 2), ivec2(0, 2)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isInside(hull, ivec2(1, 1))) << "point (1,1) not inside convex hull";
 }
 
 TEST(isInside, insideDouble) {
-    std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
-    std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
+    const std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
+    const std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isInside(hull, dvec2(0.5, 0.5))) << "point (0.5,0.5) not inside convex hull";
 }
 
 TEST(isInside, outsideDouble) {
-    std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
-    std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
+    const std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
+    const std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
 
-    auto hull = util::convexHull(points);
+    const auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_FALSE(util::isInside(hull, dvec2(1.5, 0.5)))
         << "point (1.5,0.5) not outside convex hull";
@@ -145,8 +147,8 @@ TEST(isInside, outsideDouble) {
 }
 
 TEST(convexHull, ivec2) {
-    auto points = getPointSet<ivec2>(10, ivec2(10, 10));
-    auto hull = util::convexHull(points);
+    const auto points = getPointSet<ivec2>(10, ivec2(10, 10));
+    const auto hull = util::convexHull(points);
 
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex (monotone chain)";
     for (const auto& p : points) {
@@ -155,14 +157,14 @@ TEST(convexHull, ivec2) {
 }
 
 TEST(convexHull, dvec2) {
-    auto points = getPointSet<dvec2>(10);
-    auto hull = util::convexHull(points);
+    const auto points = getPointSet<dvec2>(10);
+    const auto hull = util::convexHull(points);
 
     EXPECT_TRUE(util::isConvex(hull));
 }
 
 TEST(convexHull, dvec2span) {
-    auto points = getPointSet<dvec2>(10);
+    const auto points = getPointSet<dvec2>(10);
 
     std::array<dvec2, 20> hull{};
     auto result = util::convexHull<10>(points, hull);
@@ -174,7 +176,7 @@ TEST(convexHull, dvec2span) {
 }
 
 TEST(convexHull, ivec2span) {
-    auto points = getPointSet<ivec2>(10, ivec2(10, 10));
+    const auto points = getPointSet<ivec2>(10, ivec2(10, 10));
 
     std::array<ivec2, 20> hull{};
     auto result = util::convexHull<10>(points, hull);
@@ -186,9 +188,111 @@ TEST(convexHull, ivec2span) {
 }
 
 TEST(convexHull, vec3) {
-    std::vector<vec3> p = {vec3(0.0f), vec3(1.0f)};
+    const std::vector<vec3> p = {vec3(0.0f), vec3(1.0f)};
     // convex hull is not yet implemented for other types than *vec2
     EXPECT_THROW(util::convexHull(p), inviwo::Exception);
+}
+
+namespace {
+
+template <typename T, size_t N>
+std::array<T, N> rotate(double angleRadian, const std::array<T, N>& points) {
+    std::array<T, N> result{};
+    const dmat2 m{std::cos(angleRadian), -std::sin(angleRadian), std::sin(angleRadian),
+                  std::cos(angleRadian)};
+    std::ranges::transform(points, result.begin(), [m](auto& pos) { return m * pos; });
+    return result;
+}
+
+template <size_t N>
+std::array<dvec2, N> createNgon(const dvec2& center, double radius) {
+    std::array<dvec2, N> points = {dvec2{0.0}};
+
+    const double deltaAngle = std::numbers::pi * 2.0 / static_cast<double>(N);
+    for (auto i : std::views::iota(size_t{0}, points.size())) {
+        const auto angle = deltaAngle * static_cast<double>(i);
+        points[i] = center + dvec2{std::cos(angle), std::sin(angle)} * radius;
+    }
+    return points;
+}
+
+double ngonArea(size_t n, double r) {
+    return static_cast<double>(n) / 2.0 *
+           std::sin(2.0 * std::numbers::pi / static_cast<double>(n)) * r * r;
+}
+
+}  // namespace
+
+TEST(polygonArea, unitSquare) {
+    const std::array<dvec2, 4> p = {dvec2{0.0}, dvec2{1.0, 0.0}, dvec2{1.0}, dvec2{0.0, 1.0}};
+
+    const double expected = 1.0;
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p));
+
+    const std::array p2 = rotate(std::numbers::pi / 3.0, p);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p2));
+}
+
+TEST(polygonArea, squareCCW) {
+    const std::array<dvec2, 4> p = {dvec2{-0.5}, dvec2{0.5, -0.5}, dvec2{0.5}, dvec2{-0.5, 0.5}};
+
+    const double expected = 1.0;
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p));
+
+    const std::array p2 = rotate(std::numbers::pi / 3.0, p);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p2));
+}
+
+TEST(polygonArea, squareCW) {
+    const std::array<dvec2, 4> p = {dvec2{-0.5}, dvec2{-0.5, 0.5}, dvec2{0.5}, dvec2{0.5, -0.5}};
+
+    const double expected = 1.0;
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p));
+
+    const std::array p2 = rotate(std::numbers::pi / 3.0, p);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p2));
+}
+
+TEST(polygonArea, triangle) {
+    const std::array<dvec2, 3> p = {dvec2{-0.5, 0.0}, dvec2{0.5, 0.0}, dvec2{0.0, 0.5}};
+
+    const double expected = 1.0 * 0.5 * 0.5;
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p));
+
+    const std::array p2 = rotate(std::numbers::pi / 3.0, p);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p2));
+}
+
+TEST(polygonArea, rightTriangle) {
+    const std::array<dvec2, 3> p = {dvec2{1.4, 0.0}, dvec2{1.9, 0.0}, dvec2{1.4, 1.0}};
+
+    const double expected = 1.0 * 0.5 * 0.5;
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p));
+
+    const std::array p2 = rotate(std::numbers::pi / 3.0, p);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(p2));
+}
+
+TEST(polygonArea, hexagon) {
+    const double r = 1.5;
+    const auto points = createNgon<6>(dvec2{1.5, 2.3}, r);
+
+    const double expected = ngonArea(6, r);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(points));
+
+    const std::array points2 = rotate(std::numbers::pi / 3.0, points);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(points2));
+}
+
+TEST(polygonArea, octagon) {
+    const double r = 1.5;
+    const auto points = createNgon<8>(dvec2{2.0, 1.5}, r);
+
+    const double expected = ngonArea(8, r);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(points));
+
+    const std::array points2 = rotate(std::numbers::pi / 3.0, points);
+    EXPECT_DOUBLE_EQ(expected, util::getArea(points2));
 }
 
 }  // namespace inviwo
