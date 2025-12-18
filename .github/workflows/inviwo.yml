@@ -566,6 +566,7 @@ jobs:
         QT_DEBUG_PLUGINS: 1
         LIBGL_ALWAYS_SOFTWARE: 1
         GALLIUM_DRIVER: llvmpipe
+        INVIWO_DISABLE_MODULES: webbrowser
       run: |
         app=$(ls inviwo-*.AppImage)
         echo ${app}
