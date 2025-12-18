@@ -554,7 +554,7 @@ jobs:
         GALLIUM_DRIVER: llvmpipe
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1 libgl1-mesa-dri mesa-utils xvfb
+        sudo apt-get install -y libopengl0 libgl1 libgl1-mesa-dri mesa-utils xvfb
         xvfb-run glxinfo
 
     - name: "Run Inviwo"
