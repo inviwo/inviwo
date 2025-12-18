@@ -129,7 +129,7 @@ template <RangeOfVec<2> C>
 std::vector<std::ranges::range_value_t<C>> convexHull(const C& points) {
     using E = std::ranges::range_value_t<C>;
     // sort points according to x coordinate, if equal chose lower y coordinate
-    std::vector<E> p = points;
+    std::vector<E> p(points.begin(), points.end());
     auto compare = [](const E& a, const E& b) {
         return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y));
     };
@@ -161,13 +161,13 @@ std::vector<std::ranges::range_value_t<C>> convexHull(const C& points) {
     // build upper hull
     const std::size_t lastIndex = k + 1;
     for (int i = static_cast<int>(n) - 2; i >= 0; --i) {
-        while ((k >= lastIndex) &&
-               (cross2D(E(hull[k - 1] - hull[k - 2]), E(p[i] - hull[k - 2])) <= 0)) {
+        const auto c = static_cast<size_t>(i);
+        while ((k >= lastIndex) && (cross2D(hull[k - 1] - hull[k - 2], p[c] - hull[k - 2]) <= 0)) {
             // last two points of the hull and p do not make a counter-clockwise turn
             // -> remove last hull point
             --k;
         }
-        hull[k++] = p[i];
+        hull[k++] = p[c];
     }
     // adjust hull size to k
     hull.resize(k - 1);
@@ -180,16 +180,19 @@ std::vector<std::ranges::range_value_t<C>> convexHull(const C& points) {
  * \see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
  *
  * This version avoids unnecessary allocations by passing in the container @p hull where the result
- * is written. Note that the hull is of size 2*N.
+ * is written. Note that the hull is of size <tt>N+1</tt>.
  *
- * @param points   set of 2D points
- * @param hull     resulting convex hull of the input points, holding twice the number of points in
- *                 @p points
+ * @tparam N       number of points
+ * @tparam T       type of the 2D glm vector
+ * @param points   set of <tt>N</tt> 2D points
+ * @param hull     resulting convex hull of the input points, holding <tt>N+1</tt> elements
  * @return span of the actual hull pointing into @p hull
  */
-template <size_t N, RangeOfVec<2> C, typename E = std::ranges::range_value_t<C>>
-std::span<const E> convexHull(const C& points,
-                              std::span<std::ranges::range_value_t<C>, 2 * N> hull) {
+template <size_t N, typename T>
+std::span<const glm::vec<2, T>> convexHull(std::span<const glm::vec<2, T>, N> points,
+                                           std::span<glm::vec<2, T>, N + 1> hull) {
+    using E = glm::vec<2, T>;
+
     if constexpr (N <= 3) {
         // trivial case
         std::ranges::copy_n(points, hull.begin, N);
@@ -222,8 +225,7 @@ std::span<const E> convexHull(const C& points,
     // build upper hull
     const std::size_t lastIndex = k + 1;
     for (int i = static_cast<int>(N) - 2; i >= 0; --i) {
-        while ((k >= lastIndex) &&
-               (cross2D(E(hull[k - 1] - hull[k - 2]), E(p[i] - hull[k - 2])) <= 0)) {
+        while ((k >= lastIndex) && (cross2D(hull[k - 1] - hull[k - 2], p[i] - hull[k - 2]) <= 0)) {
             // last two points of the hull and p do not make a counter-clockwise turn
             // -> remove last hull point
             --k;

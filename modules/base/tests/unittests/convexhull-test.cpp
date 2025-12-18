@@ -43,27 +43,27 @@ namespace inviwo {
 namespace {
 
 // create a point set, but only for glm vector types
-template <util::Vec2D T>
-std::vector<T> getPointSet(const std::size_t numPoints) {
+template <util::Vec2D T, size_t N>
+std::array<T, N> getPointSet() {
     srand(0);  // seed to always be the same random numbers
 
-    std::vector<T> points(numPoints);
-    for (size_t i = 0; i < numPoints; i++) {
+    std::array<T, N> points{};
+    for (size_t i = 0; i < N; i++) {
         for (size_t j = 0; j < util::extent<T>::value; ++j) {
-            points[i][j] = rand() / static_cast<float>(RAND_MAX);
+            points[i][j] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         }
     }
     return points;
 }
 
-template <util::Vec2D T>
-std::vector<T> getPointSet(const std::size_t numPoints, T extent) {
+template <util::Vec2D T, size_t N>
+std::array<T, N> getPointSet(T extent) {
     srand(0);  // seed to always be the same random numbers
 
-    std::vector<T> points(numPoints);
-    for (size_t i = 0; i < numPoints; i++) {
+    std::array<T, N> points{};
+    for (size_t i = 0; i < N; i++) {
         for (size_t j = 0; j < util::extent<T>::value; ++j) {
-            points[i][j] = rand() % extent[j];
+            points[i][j] = static_cast<typename T::value_type>(rand()) % extent[j];
         }
     }
     return points;
@@ -147,7 +147,7 @@ TEST(isInside, outsideDouble) {
 }
 
 TEST(convexHull, ivec2) {
-    const auto points = getPointSet<ivec2>(10, ivec2(10, 10));
+    const auto points = getPointSet<ivec2, 10>({10, 10});
     const auto hull = util::convexHull(points);
 
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex (monotone chain)";
@@ -157,17 +157,17 @@ TEST(convexHull, ivec2) {
 }
 
 TEST(convexHull, dvec2) {
-    const auto points = getPointSet<dvec2>(10);
+    const auto points = getPointSet<dvec2, 10>();
     const auto hull = util::convexHull(points);
 
     EXPECT_TRUE(util::isConvex(hull));
 }
 
 TEST(convexHull, dvec2span) {
-    const auto points = getPointSet<dvec2>(10);
+    const auto points = getPointSet<dvec2, 10>();
 
-    std::array<dvec2, 20> hull{};
-    auto result = util::convexHull<10>(points, hull);
+    std::array<dvec2, points.size() + 1> hull{};
+    auto result = util::convexHull<10, double>(points, hull);
 
     EXPECT_TRUE(util::isConvex(result));
     for (const auto& p : points) {
@@ -176,10 +176,10 @@ TEST(convexHull, dvec2span) {
 }
 
 TEST(convexHull, ivec2span) {
-    const auto points = getPointSet<ivec2>(10, ivec2(10, 10));
+    const auto points = getPointSet<ivec2, 10>({10, 10});
 
-    std::array<ivec2, 20> hull{};
-    auto result = util::convexHull<10>(points, hull);
+    std::array<ivec2, points.size() + 1> hull{};
+    auto result = util::convexHull<10, std::int32_t>(points, hull);
 
     EXPECT_TRUE(util::isConvex(result));
     for (const auto& p : points) {
@@ -188,7 +188,7 @@ TEST(convexHull, ivec2span) {
 }
 
 TEST(convexHull, vec3) {
-    const std::vector<vec3> p = {vec3(0.0f), vec3(1.0f)};
+    const std::vector<vec3> p = {vec3{0.0f}, vec3{1.0f}};
     // convex hull is not yet implemented for other types than *vec2
     EXPECT_THROW(util::convexHull(p), inviwo::Exception);
 }
@@ -224,7 +224,7 @@ double ngonArea(size_t n, double r) {
 }  // namespace
 
 TEST(polygonArea, unitSquare) {
-    const std::array<dvec2, 4> p = {dvec2{0.0}, dvec2{1.0, 0.0}, dvec2{1.0}, dvec2{0.0, 1.0}};
+    const auto p = std::to_array<dvec2>({{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}});
 
     const double expected = 1.0;
     EXPECT_DOUBLE_EQ(expected, util::getArea(p));
@@ -234,7 +234,7 @@ TEST(polygonArea, unitSquare) {
 }
 
 TEST(polygonArea, squareCCW) {
-    const std::array<dvec2, 4> p = {dvec2{-0.5}, dvec2{0.5, -0.5}, dvec2{0.5}, dvec2{-0.5, 0.5}};
+    const auto p = std::to_array<dvec2>({{-0.5, -0.5}, {0.5, -0.5}, {0.5, 0.5}, {-0.5, 0.5}});
 
     const double expected = 1.0;
     EXPECT_DOUBLE_EQ(expected, util::getArea(p));
@@ -244,7 +244,7 @@ TEST(polygonArea, squareCCW) {
 }
 
 TEST(polygonArea, squareCW) {
-    const std::array<dvec2, 4> p = {dvec2{-0.5}, dvec2{-0.5, 0.5}, dvec2{0.5}, dvec2{0.5, -0.5}};
+    const auto p = std::to_array<dvec2>({{-0.5, -0.5}, {-0.5, 0.5}, {0.5, 0.5}, {0.5, -0.5}});
 
     const double expected = 1.0;
     EXPECT_DOUBLE_EQ(expected, util::getArea(p));
@@ -254,7 +254,7 @@ TEST(polygonArea, squareCW) {
 }
 
 TEST(polygonArea, triangle) {
-    const std::array<dvec2, 3> p = {dvec2{-0.5, 0.0}, dvec2{0.5, 0.0}, dvec2{0.0, 0.5}};
+    const auto p = std::to_array<dvec2>({{-0.5, 0.0}, {0.5, 0.0}, {0.0, 0.5}});
 
     const double expected = 1.0 * 0.5 * 0.5;
     EXPECT_DOUBLE_EQ(expected, util::getArea(p));
@@ -264,7 +264,7 @@ TEST(polygonArea, triangle) {
 }
 
 TEST(polygonArea, rightTriangle) {
-    const std::array<dvec2, 3> p = {dvec2{1.4, 0.0}, dvec2{1.9, 0.0}, dvec2{1.4, 1.0}};
+    const auto p = std::to_array<dvec2>({{1.4, 0.0}, {1.9, 0.0}, {1.4, 1.0}});
 
     const double expected = 1.0 * 0.5 * 0.5;
     EXPECT_DOUBLE_EQ(expected, util::getArea(p));
