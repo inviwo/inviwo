@@ -554,13 +554,16 @@ jobs:
         GALLIUM_DRIVER: llvmpipe
       run: |
         sudo apt-get update
-        sudo apt-get install -y libopengl0 libgl1 libgl1-mesa-dri mesa-utils xvfb
+        sudo apt-get install -y libopengl0 libgl1 libgl1-mesa-dri mesa-utils xvfb \
+                             libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1  libxcb-shape0 \
+                             libxcb-xinput0
         xvfb-run glxinfo
 
     - name: "Run Inviwo"
       shell: bash
       env:
         QT_QPA_PLATFORM: xcb
+        QT_DEBUG_PLUGINS: 1
         LIBGL_ALWAYS_SOFTWARE: 1
         GALLIUM_DRIVER: llvmpipe
       run: |
