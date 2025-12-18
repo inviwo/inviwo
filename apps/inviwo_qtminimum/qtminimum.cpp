@@ -91,15 +91,11 @@ int main(int argc, char** argv) {
     inviwoApp.printApplicationInfo();
     inviwo::log::info("Qt Version {}", QT_VERSION_STR);
 
-    inviwoApp.setProgressCallback([&logger](std::string_view m) {
-        logger.log("InviwoApplication", inviwo::LogLevel::Info, inviwo::LogAudience::User, "", "",
-                   0, m);
-    });
-
     auto& cmdParser = inviwoApp.getCommandLineParser();
 
     // Initialize all modules
-    inviwo::util::registerModules(inviwoApp.getModuleManager(),
+    const auto progressCallback = [&](std::string_view s) { inviwo::log::info("{}", s); };
+    inviwo::util::registerModules(inviwoApp.getModuleManager(), progressCallback,
                                   inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                   cmdParser.getModuleSearchPaths());
 
@@ -206,9 +202,10 @@ int main(int argc, char** argv) {
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
 
-    const auto workspace = cmdParser.getLoadWorkspaceFromArg()
-                               ? cmdParser.getWorkspacePath()
-                               : inviwo::filesystem::getPath(inviwo::PathType::Workspaces, "/boron.inv");
+    const auto workspace =
+        cmdParser.getLoadWorkspaceFromArg()
+            ? cmdParser.getWorkspacePath()
+            : inviwo::filesystem::getPath(inviwo::PathType::Workspaces, "/boron.inv");
 
     try {
         if (!workspace.empty()) {

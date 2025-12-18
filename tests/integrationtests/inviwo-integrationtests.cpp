@@ -56,6 +56,7 @@
 #include <modules/opengl/openglsettings.h>
 
 #include <inviwo/sys/moduleregistration.h>
+#include <inviwo/sys/moduleloading.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -80,18 +81,20 @@ int main(int argc, char** argv) {
         InviwoApplication inviwoApp(argc, argv, "Inviwo-IntegrationTests");
         inviwoApp.getSystemSettings().stackTraceInException_.set(true);
         inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
-        inviwoApp.setProgressCallback([&](std::string_view m) {
-            logCentral.log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
-        });
 
         // Initialize all modules
+        const auto progressCallback = [&](std::string_view s) { inviwo::log::info("{}", s); };
+        inviwo::util::registerModules(inviwoApp.getModuleManager(), progressCallback,
+                                      inviwoApp.getSystemSettings().moduleSearchPaths_.get());
+
         inviwoApp.registerModules(inviwo::getModuleList());
         inviwoApp.resizePool(0);
         inviwoApp.printApplicationInfo();
 
         RenderContext::getPtr()->activateDefaultRenderContext();
 
-        for (auto* settings : util::getModuleByTypeOrThrow<OpenGLModule>(&inviwoApp).getSettings()) {
+        for (auto* settings :
+             util::getModuleByTypeOrThrow<OpenGLModule>(&inviwoApp).getSettings()) {
             if (auto* glSettings = dynamic_cast<OpenGLSettings*>(settings)) {
                 glSettings->debugMessages_.set(utilgl::debug::Mode::DebugSynchronous);
                 glSettings->debugSeverity_.set(utilgl::debug::Severity::Medium);

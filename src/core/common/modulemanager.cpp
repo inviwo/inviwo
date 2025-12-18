@@ -104,20 +104,22 @@ bool ModuleManager::isRuntimeModuleReloadingEnabled() {
     return app_->getSystemSettings().runtimeModuleReloading_;
 }
 
-void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo) {
+void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo,
+                                    std::function<void(std::string_view)> progressCallback) {
     std::vector<ModuleContainer> inviwoModules;
     for (auto& obj : mfo) {
         inviwoModules.emplace_back(std::move(obj));
     }
-    registerModules(std::move(inviwoModules));
+    registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
-void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) {
+void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules,
+                                    std::function<void(std::string_view)> progressCallback) {
     // Topological sort to make sure that we load modules in correct order
     topologicalSort(inviwoModules);
 
     for (auto& cont : inviwoModules) {
-        app_->postProgress("Loading module: " + cont.name());
+        if (progressCallback) progressCallback("Loading module: " + cont.name());
         if (getModuleByIdentifier(cont.identifier())) continue;  // already loaded
         if (!checkDependencies(cont.factoryObject())) continue;
 
@@ -144,7 +146,7 @@ void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) 
 
     ModuleContainer::updateGraph(inviwoModules_);
 
-    app_->postProgress("Loading Capabilities");
+    if (progressCallback) progressCallback("Loading Capabilities");
     for (auto& cont : inviwoModules_) {
         if (auto* inviwoModule = cont.getModule()) {
             for (auto& capability : inviwoModule->getCapabilities()) {
@@ -327,7 +329,8 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
 }
 
 void ModuleManager::registerModules(RuntimeModuleLoading,
-                                    std::function<bool(std::string_view)> isEnabled) {
+                                    std::function<bool(std::string_view)> isEnabled,
+                                    std::function<void(std::string_view)> progressCallback) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
     // 2. Filter out files with correct extension, named inviwo-module
@@ -342,7 +345,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     auto modules = findRuntimeModules(librarySearchPaths, std::move(isEnabled),
                                       isRuntimeModuleReloadingEnabled());
 
-    registerModules(std::move(modules));
+    registerModules(std::move(modules), std::move(progressCallback));
 }
 
 InviwoModule* ModuleManager::getModuleByIdentifier(std::string_view identifier) const {

@@ -84,7 +84,9 @@ std::vector<inviwo::ModuleContainer> getModuleContainers(ModuleManager& moduleMa
 }
 
 template <typename Filter, typename... Args>
-void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter, Args&&... searchPaths) {
+void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter,
+                             std::function<void(std::string_view)> progressCallback,
+                             Args&&... searchPaths) {
     auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
 
     const auto disabled = inviwoModules | std::views::filter(filter) |
@@ -110,13 +112,15 @@ void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter, Args
         return std::ranges::contains(disabled, m.identifier()) ||
                std::ranges::contains(dependent, m.identifier());
     });
-    moduleManager.registerModules(std::move(inviwoModules));
+    moduleManager.registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
 template <typename... Args>
-void registerModules(ModuleManager& moduleManager, Args&&... searchPaths) {
+void registerModules(ModuleManager& moduleManager,
+                     std::function<void(std::string_view)> progressCallback,
+                     Args&&... searchPaths) {
     auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
-    moduleManager.registerModules(std::move(inviwoModules));
+    moduleManager.registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
 }  // namespace util

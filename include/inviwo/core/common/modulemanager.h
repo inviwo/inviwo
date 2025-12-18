@@ -67,9 +67,11 @@ public:
      * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
+                         std::function<void(std::string_view)> progressCallback);
 
-    void registerModules(std::vector<ModuleContainer> moduleFactories);
+    void registerModules(std::vector<ModuleContainer> moduleFactories,
+                         std::function<void(std::string_view)> progressCallback);
 
     /**
      * @brief Load modules from dynamic library files in the specified search paths.
@@ -80,8 +82,10 @@ public:
      * @note Which modules to load can be specified by creating a file
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      */
-    void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> filter =
-                                                   ModuleManager::getEnabledFilter());
+    void registerModules(
+        RuntimeModuleLoading,
+        std::function<bool(std::string_view)> filter = ModuleManager::getEnabledFilter(),
+        std::function<void(std::string_view)> progressCallback = nullptr);
 
     std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths);

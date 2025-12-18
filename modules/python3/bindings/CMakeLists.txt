@@ -134,7 +134,7 @@ if (CMAKE_GENERATOR MATCHES "^Ninja.*")
 
     if (mem LESS maxMem) 
         math(EXPR maxCores "${mem} / ${memRequired}")
-        message(WARNING "Setting max parallel jobs for inviwopy to ${maxCores}")
+        message(STATUS "Setting max parallel jobs for inviwopy to ${maxCores}")
         set_property(GLOBAL PROPERTY JOB_POOLS memorybound=${maxCores})
         set_property(TARGET inviwopy PROPERTY JOB_POOL_COMPILE memorybound)
     endif()
