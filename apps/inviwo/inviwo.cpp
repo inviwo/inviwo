@@ -110,7 +110,10 @@ int main(int argc, char** argv) {
     splashScreen.showMessage("Initializing modules...");
 
     // Remove GLFW module register since we will use Qt for the OpenGL context
-    auto filter = [](const inviwo::ModuleContainer& m) { return m.identifier() == "glfw"; };
+    auto filter = [envFilter = inviwo::util::makeEnvironmentModuleFilter()](
+                      const inviwo::ModuleContainer& m) {
+        return m.identifier() == "glfw" || envFilter(m);
+    };
     inviwo::util::registerModulesFiltered(inviwoApp.getModuleManager(), filter,
                                           inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                           clp.getModuleSearchPaths());
@@ -185,4 +188,3 @@ int main(int argc, char** argv) {
         }
     }
 }
-
