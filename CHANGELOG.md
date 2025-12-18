@@ -1,5 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2025-12-18 Disable modules at runtime
+A new environment variable to disable loading modules at runtime `INVIWO_DISABLE_MODULES` has been added.
+It takes a semicolon separated list of lowercase module identifiers. 
+
 ## 2025-11-04 Updated GLSL data range conversions
 Utility functions `getValueTexel()` were added to `utils/sampler2d.glsl` and `utils/sampler3d.glsl`. These functions are similar to `getNormalizedTexel()` but instead return the sampled texture value in value space.
 

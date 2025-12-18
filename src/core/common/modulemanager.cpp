@@ -431,19 +431,23 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
 }
 
 std::vector<std::string> ModuleManager::findDependentModules(std::string_view moduleId) const {
+    return findDependentModules(inviwoModules_, moduleId);
+}
+
+std::vector<std::string> ModuleManager::findDependentModules(
+    const std::vector<ModuleContainer>& modules, std::string_view moduleId) {
     std::vector<std::string> dependencies;
-    for (const auto& item : inviwoModules_) {
+    for (const auto& item : modules) {
         if (item.dependsOn(moduleId)) {
-            auto deps = findDependentModules(item.identifier());
+            auto deps = findDependentModules(modules, item.identifier());
             util::append(dependencies, deps);
             dependencies.push_back(item.identifier());
         }
     }
-    std::vector<std::string> unique;
-    for (const auto& item : dependencies) {
-        util::push_back_unique(unique, item);
-    }
-    return unique;
+    std::ranges::sort(dependencies);
+    const auto ret = std::ranges::unique(dependencies);
+    dependencies.erase(ret.begin(), ret.end());
+    return dependencies;
 }
 
 std::vector<std::string> ModuleManager::deregisterDependentModules(

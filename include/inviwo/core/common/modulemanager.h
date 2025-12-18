@@ -64,7 +64,7 @@ public:
     bool isRuntimeModuleReloadingEnabled();
 
     /**
-     * \brief Registers modules from factories and takes ownership of input module factories.
+     * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
     void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
@@ -72,7 +72,7 @@ public:
     void registerModules(std::vector<ModuleContainer> moduleFactories);
 
     /**
-     * \brief Load modules from dynamic library files in the specified search paths.
+     * @brief Load modules from dynamic library files in the specified search paths.
      *
      * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
      * The library filename must contain "inviwo-module" to be loaded.
@@ -134,13 +134,16 @@ public:
     InviwoModuleFactoryObject* getFactoryObject(std::string_view identifier) const;
     std::vector<std::string> findDependentModules(std::string_view module) const;
 
+    static std::vector<std::string> findDependentModules(
+        const std::vector<ModuleContainer>& modules, std::string_view module);
+
     /**
-     * \brief Register callback for monitoring when modules have been registered.
+     * @brief Register callback for monitoring when modules have been registered.
      * Invoked in registerModules.
      */
     std::shared_ptr<std::function<void()>> onModulesDidRegister(std::function<void()> callback);
     /**
-     * \brief Register callback for monitoring when modules have been registered.
+     * @brief Register callback for monitoring when modules have been registered.
      * Invoked in unregisterModules.
      */
     std::shared_ptr<std::function<void()>> onModulesWillUnregister(std::function<void()> callback);
