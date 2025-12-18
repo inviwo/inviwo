@@ -226,12 +226,14 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
                     volumes_.reset();
                     loadingFailed_ = true;
                     isReady_.update();
+                    break;
                 }
             } catch (const DataReaderException& e) {
                 log::exception(e);
                 volumes_.reset();
                 loadingFailed_ = true;
                 isReady_.update();
+                break;
             }
         }
     }
@@ -239,8 +241,9 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
     if (volumes_ && !volumes_->empty()) {
         // store filename in metadata
         for (auto volume : *volumes_) {
-            if (!volume->hasMetaData<StringMetaData>("filename"))
+            if (!volume->hasMetaData<StringMetaData>("filename")) {
                 volume->setMetaData<StringMetaData>("filename", file_.get().generic_string());
+            }
         }
 
         // set basis of first volume
