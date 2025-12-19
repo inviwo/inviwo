@@ -1,5 +1,10 @@
 var NAVTREEINDEX32 =
 {
+"structinviwo_1_1RuntimeModuleLoading.html":[2,0,0,1008],
+"structinviwo_1_1RuntimeModuleLoading.html":[4,0,0,1017],
+"structinviwo_1_1SearchDSL_1_1Item.html":[2,0,0,1014,0],
+"structinviwo_1_1SearchDSL_1_1Item.html":[4,0,0,1023,0],
+"structinviwo_1_1SelectionColorState.html":[2,0,0,1021],
 "structinviwo_1_1SelectionColorState.html":[4,0,0,1030],
 "structinviwo_1_1ShaderComponent_1_1Segment.html":[2,0,0,1034,0],
 "structinviwo_1_1ShaderComponent_1_1Segment.html":[4,0,0,1043,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX32 =
 "structinviwo_1_1dispatching_1_1filter_1_1SignedIntegerVecs.html":[4,0,0,12,1,13],
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[2,0,0,8,0,14],
 "structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html":[4,0,0,12,1,14],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[2,0,0,8,0,15],
-"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[4,0,0,12,1,15],
-"structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[2,0,0,8,0,16],
-"structinviwo_1_1dispatching_1_1filter_1_1Vec2s.html":[4,0,0,12,1,16],
-"structinviwo_1_1dispatching_1_1filter_1_1Vec3s.html":[2,0,0,8,0,17],
-"structinviwo_1_1dispatching_1_1filter_1_1Vec3s.html":[4,0,0,12,1,17]
+"structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html":[2,0,0,8,0,15]
 };

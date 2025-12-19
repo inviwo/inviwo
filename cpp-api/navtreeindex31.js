@@ -1,5 +1,10 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1InviwoDefaults_3_01char_01_4.html":[4,0,0,488],
+"structinviwo_1_1InviwoDefaults_3_01double_01_4.html":[2,0,0,480],
+"structinviwo_1_1InviwoDefaults_3_01double_01_4.html":[4,0,0,489],
+"structinviwo_1_1InviwoDefaults_3_01float_01_4.html":[2,0,0,481],
+"structinviwo_1_1InviwoDefaults_3_01float_01_4.html":[4,0,0,490],
 "structinviwo_1_1InviwoDefaults_3_01int_01_4.html":[2,0,0,482],
 "structinviwo_1_1InviwoDefaults_3_01int_01_4.html":[4,0,0,491],
 "structinviwo_1_1InviwoDefaults_3_01short_01_4.html":[2,0,0,483],
@@ -244,10 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1Resource.html":[2,0,0,1000],
 "structinviwo_1_1Resource.html":[4,0,0,1009],
 "structinviwo_1_1ResourceMeta.html":[2,0,0,1006],
-"structinviwo_1_1ResourceMeta.html":[4,0,0,1015],
-"structinviwo_1_1RuntimeModuleLoading.html":[2,0,0,1008],
-"structinviwo_1_1RuntimeModuleLoading.html":[4,0,0,1017],
-"structinviwo_1_1SearchDSL_1_1Item.html":[2,0,0,1014,0],
-"structinviwo_1_1SearchDSL_1_1Item.html":[4,0,0,1023,0],
-"structinviwo_1_1SelectionColorState.html":[2,0,0,1021]
+"structinviwo_1_1ResourceMeta.html":[4,0,0,1015]
 };

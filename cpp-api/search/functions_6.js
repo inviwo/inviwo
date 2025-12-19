@@ -13,7 +13,7 @@ var searchData=
   ['getanimation_10',['getAnimation',['../classinviwo_1_1animation_1_1AnimationController.html#ae1ef38e74a4948f380b7f721c52650b0',1,'inviwo::animation::AnimationController::getAnimation()'],['../classinviwo_1_1animation_1_1AnimationController.html#a1335d8e6ddb069c2d6396b784aee96c2',1,'inviwo::animation::AnimationController::getAnimation() const']]],
   ['getantialiasingwidth_11',['getAntialiasingWidth',['../classinviwo_1_1LineSettings.html#a124750a848a71212289d2bd8cb9f566b',1,'inviwo::LineSettings::getAntialiasingWidth()'],['../classinviwo_1_1LineSettingsInterface.html#a89908398fb507937b71bdd5489fd4bc2',1,'inviwo::LineSettingsInterface::getAntialiasingWidth()'],['../classinviwo_1_1LineSettingsProperty.html#aa45309cab1d08a7d03f947225c72946c',1,'inviwo::LineSettingsProperty::getAntialiasingWidth()']]],
   ['getapplicationmainwindow_12',['getApplicationMainWindow',['../namespaceinviwo_1_1utilqt.html#a583ab1296d218f71ed78d739424f5fab',1,'inviwo::utilqt']]],
-  ['getarea_13',['getArea',['../namespaceinviwo_1_1util.html#aaba0bfadae887301565e97b98483268b',1,'inviwo::util']]],
+  ['getarea_13',['getArea',['../namespaceinviwo_1_1util.html#a2961be003917f7f102fe957258b2dd1d',1,'inviwo::util']]],
   ['getascodedbuffer_14',['getAsCodedBuffer',['../classinviwo_1_1Layer.html#a64ab7ab95627b197b0f0acbc69992c65',1,'inviwo::Layer']]],
   ['getasdouble_15',['getAsDouble',['../classinviwo_1_1CategoricalColumn.html#a68ede7fcb771bd07d23ba14dc2e6dcbc',1,'inviwo::CategoricalColumn']]],
   ['getasstring_16',['getAsString',['../classinviwo_1_1CategoricalColumn.html#ad1ef360a4eb5297b719b6b2b680d14af',1,'inviwo::CategoricalColumn']]],

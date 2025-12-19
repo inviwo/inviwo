@@ -1,5 +1,9 @@
 var NAVTREEINDEX28 =
 {
+"functions_func_s.html":[4,3,1,18],
+"functions_func_t.html":[4,3,1,19],
+"functions_func_u.html":[4,3,1,20],
+"functions_func_v.html":[4,3,1,21],
 "functions_func_w.html":[4,3,1,22],
 "functions_func_x.html":[4,3,1,23],
 "functions_func_~.html":[4,3,1,24],
@@ -245,9 +249,5 @@ var NAVTREEINDEX28 =
 "namespaceinviwo_1_1meshutil.html#ab1b287f94ada0d7b15c0e40f0fea831d":[2,0,0,13,5],
 "namespaceinviwo_1_1meshutil.html#aefab0ef45f52d52f4003e6ca5e1da8a7":[2,0,0,13,10],
 "namespaceinviwo_1_1meshutil.html#affb9d1d6995eaa81f953baa3747ec170":[2,0,0,13,3],
-"namespaceinviwo_1_1plot.html":[2,0,0,14],
-"namespaceinviwo_1_1plot.html#a14faa95221250b79c028b6849690b3ae":[2,0,0,14,41],
-"namespaceinviwo_1_1plot.html#a217193c9f0c289742e72fd263dcc8281":[2,0,0,14,45],
-"namespaceinviwo_1_1plot.html#a7460727ccb573b25ca2c6307a0122e8d":[2,0,0,14,44],
-"namespaceinviwo_1_1plot.html#a79683484e2d6aa88d10297c3d2382465":[2,0,0,14,46]
+"namespaceinviwo_1_1plot.html":[2,0,0,14]
 };

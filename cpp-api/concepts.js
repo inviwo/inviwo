@@ -19,7 +19,9 @@ var concepts =
         [ "pathlike", "conceptinviwo_1_1detail_1_1pathlike.html", null ]
       ] ],
       [ "util", "namespaceinviwo_1_1util.html", [
-        [ "hasRAMrepresentation", "conceptinviwo_1_1util_1_1hasRAMrepresentation.html", null ]
+        [ "hasRAMrepresentation", "conceptinviwo_1_1util_1_1hasRAMrepresentation.html", null ],
+        [ "RangeOfVec", "conceptinviwo_1_1util_1_1RangeOfVec.html", null ],
+        [ "Vec2D", "conceptinviwo_1_1util_1_1Vec2D.html", null ]
       ] ],
       [ "DataType", "conceptinviwo_1_1DataType.html", null ],
       [ "Gettable", "conceptinviwo_1_1Gettable.html", null ],

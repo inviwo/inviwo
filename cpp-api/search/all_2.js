@@ -199,7 +199,7 @@ var searchData=
   ['convertdeltatoslider_196',['convertDeltaToSlider',['../classinviwo_1_1glui_1_1RangeSlider.html#a01056bc77ef9d13b6e8ec8d4a828ed08',1,'inviwo::glui::RangeSlider::convertDeltaToSlider()'],['../classinviwo_1_1glui_1_1Slider.html#ab52b5cd4b771ba20174a243e0d3a3a98',1,'inviwo::glui::Slider::convertDeltaToSlider()']]],
   ['converterexception_197',['ConverterException',['../classinviwo_1_1ConverterException.html',1,'inviwo']]],
   ['convertiblelink_198',['ConvertibleLink',['../structinviwo_1_1ConvertibleLink.html',1,'inviwo']]],
-  ['convexhull_199',['convexHull',['../namespaceinviwo_1_1util.html#ab6356ee05cfde312881b948335bf689b',1,'inviwo::util']]],
+  ['convexhull_199',['convexHull',['../namespaceinviwo_1_1util.html#a4ac2b1d9cf184fc314e1533112bfd4fd',1,'inviwo::util::convexHull(const C &amp;points)'],['../namespaceinviwo_1_1util.html#a67023a6d247dfc0cd712fd17e9f63d05',1,'inviwo::util::convexHull(std::span&lt; const glm::vec&lt; 2, T &gt;, N &gt; points, std::span&lt; glm::vec&lt; 2, T &gt;, N+1 &gt; hull)']]],
   ['convexhull2dprocessor_200',['ConvexHull2DProcessor',['../classinviwo_1_1ConvexHull2DProcessor.html',1,'inviwo']]],
   ['coordinatespace_201',['CoordinateSpace',['../namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8',1,'inviwo']]],
   ['copyfile_202',['copyFile',['../namespaceinviwo_1_1filesystem.html#a1298176ca84ca16c16750cb1b30e283b',1,'inviwo::filesystem']]],

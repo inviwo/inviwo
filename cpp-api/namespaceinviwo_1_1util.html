@@ -184,6 +184,8 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-concepts" class="groupheader"><a id="concepts" name="concepts"></a>
 Concepts</h2></td></tr>
 <tr class="memitem:hasRAMrepresentation" id="r_hasRAMrepresentation"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptinviwo_1_1util_1_1hasRAMrepresentation.html">hasRAMrepresentation</a></td></tr>
+<tr class="memitem:RangeOfVec" id="r_RangeOfVec"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptinviwo_1_1util_1_1RangeOfVec.html">RangeOfVec</a></td></tr>
+<tr class="memitem:Vec2D" id="r_Vec2D"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptinviwo_1_1util_1_1Vec2D.html">Vec2D</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -430,9 +432,15 @@ template&lt;typename T, typename Pred&gt; </td></tr>
 <tr class="memitem:ab1f54391ec0db5815036c778ed412346 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains_if</b> (T &amp;cont, Pred pred)</td></tr>
 <tr class="memitem:abd1da85e48a030a3838781befc1b58a6" id="r_abd1da85e48a030a3838781befc1b58a6"><td class="memItemLeft" align="right" valign="top"><a id="abd1da85e48a030a3838781befc1b58a6" name="abd1da85e48a030a3838781befc1b58a6"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; IVW_MODULE_BASE_API&#160;</td><td class="memItemRight" valign="bottom"><b>convertHullToMesh</b> (const std::vector&lt; vec2 &gt; &amp;hull, bool useIndices=false)</td></tr>
-<tr class="memitem:ab6356ee05cfde312881b948335bf689b" id="r_ab6356ee05cfde312881b948335bf689b"><td class="memTemplParams" colspan="2">template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </td></tr>
-<tr class="memitem:ab6356ee05cfde312881b948335bf689b template"><td class="memItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6356ee05cfde312881b948335bf689b">convexHull</a> (const std::vector&lt; T &gt; &amp;points)</td></tr>
-<tr class="memdesc:ab6356ee05cfde312881b948335bf689b"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the complex hull from a given set of 2D points using the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm  <br /></td></tr>
+<tr class="memitem:a4ac2b1d9cf184fc314e1533112bfd4fd" id="r_a4ac2b1d9cf184fc314e1533112bfd4fd"><td class="memTemplParams" colspan="2">template&lt;RangeOfVec&lt; 2 &gt; C&gt; </td></tr>
+<tr class="memitem:a4ac2b1d9cf184fc314e1533112bfd4fd template"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::ranges::range_value_t&lt; C &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ac2b1d9cf184fc314e1533112bfd4fd">convexHull</a> (const C &amp;points)</td></tr>
+<tr class="memdesc:a4ac2b1d9cf184fc314e1533112bfd4fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the complex hull from a given set of 2D points using the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm  <br /></td></tr>
+<tr class="memitem:a94137506c5e4c0df339e92dbdcf6dbfa" id="r_a94137506c5e4c0df339e92dbdcf6dbfa"><td class="memTemplParams" colspan="2"><a id="a94137506c5e4c0df339e92dbdcf6dbfa" name="a94137506c5e4c0df339e92dbdcf6dbfa"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a94137506c5e4c0df339e92dbdcf6dbfa template"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::ranges::range_value_t&lt; T &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>convexHull</b> (const T &amp;)</td></tr>
+<tr class="memitem:a67023a6d247dfc0cd712fd17e9f63d05" id="r_a67023a6d247dfc0cd712fd17e9f63d05"><td class="memTemplParams" colspan="2">template&lt;size_t N, typename T&gt; </td></tr>
+<tr class="memitem:a67023a6d247dfc0cd712fd17e9f63d05 template"><td class="memItemLeft" align="right" valign="top">std::span&lt; const glm::vec&lt; 2, T &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67023a6d247dfc0cd712fd17e9f63d05">convexHull</a> (std::span&lt; const glm::vec&lt; 2, T &gt;, N &gt; points, std::span&lt; glm::vec&lt; 2, T &gt;, N+1 &gt; hull)</td></tr>
+<tr class="memdesc:a67023a6d247dfc0cd712fd17e9f63d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the complex hull from a given set of 2D points using the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm  <br /></td></tr>
 <tr class="memitem:a9ea3b690dfcdeda7ee4c0a5c54926945" id="r_a9ea3b690dfcdeda7ee4c0a5c54926945"><td class="memTemplParams" colspan="2"><a id="a9ea3b690dfcdeda7ee4c0a5c54926945" name="a9ea3b690dfcdeda7ee4c0a5c54926945"></a>
 template&lt;typename T, typename OutIt, typename P&gt; </td></tr>
 <tr class="memitem:a9ea3b690dfcdeda7ee4c0a5c54926945 template"><td class="memItemLeft" align="right" valign="top">OutIt&#160;</td><td class="memItemRight" valign="bottom"><b>copy_if</b> (const T &amp;cont, OutIt out, P pred)</td></tr>
@@ -666,9 +674,9 @@ template&lt;size_t N&gt; </td></tr>
 <tr class="memitem:a2b1f29a2adf6ba7edfe46f0bbf9a1e3c template"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>generateTransforms</b> (std::array&lt; <a class="el" href="namespaceinviwo.html#a5d5ef9c7cb55aff220f45ad7d5c891c8">CoordinateSpace</a>, N &gt; spaces)</td></tr>
 <tr class="memitem:a5a243ad49641848e83c5e0e5b48a52b6" id="r_a5a243ad49641848e83c5e0e5b48a52b6"><td class="memTemplParams" colspan="2">template&lt;typename Functor&gt; </td></tr>
 <tr class="memitem:a5a243ad49641848e83c5e0e5b48a52b6 template"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a243ad49641848e83c5e0e5b48a52b6">generateVolume</a> (const size3_t &amp;dimensions, const mat3 &amp;basis, const Functor &amp;function)</td></tr>
-<tr class="memitem:aaba0bfadae887301565e97b98483268b" id="r_aaba0bfadae887301565e97b98483268b"><td class="memTemplParams" colspan="2">template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </td></tr>
-<tr class="memitem:aaba0bfadae887301565e97b98483268b template"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaba0bfadae887301565e97b98483268b">getArea</a> (const std::vector&lt; T &gt; &amp;polygon)</td></tr>
-<tr class="memdesc:aaba0bfadae887301565e97b98483268b"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the area of a convex polygon  <br /></td></tr>
+<tr class="memitem:a2961be003917f7f102fe957258b2dd1d" id="r_a2961be003917f7f102fe957258b2dd1d"><td class="memTemplParams" colspan="2">template&lt;RangeOfVec&lt; 2 &gt; C&gt; </td></tr>
+<tr class="memitem:a2961be003917f7f102fe957258b2dd1d template"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2961be003917f7f102fe957258b2dd1d">getArea</a> (const C &amp;polygon)</td></tr>
+<tr class="memdesc:a2961be003917f7f102fe957258b2dd1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the area of a simple polygon, i.e. non-self intersecting  <br /></td></tr>
 <tr class="memitem:a710f88375365f14820bd4594488a8722" id="r_a710f88375365f14820bd4594488a8722"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_FONTRENDERING_API std::vector&lt; std::pair&lt; std::string, std::filesystem::path &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a710f88375365f14820bd4594488a8722">getAvailableFonts</a> (const std::filesystem::path &amp;fontPath=std::string())</td></tr>
 <tr class="memdesc:a710f88375365f14820bd4594488a8722"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns a list of all fonts found in the given directory, font directory of the fontrendering module  <br /></td></tr>
 <tr class="memitem:a8256eb5b33cde59a3e0d832b0569d323" id="r_a8256eb5b33cde59a3e0d832b0569d323"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::pair&lt; ivec2, ivec2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8256eb5b33cde59a3e0d832b0569d323">getBoundingBox</a> (const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;processors)</td></tr>
@@ -899,18 +907,18 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memitem:acdd7c9fa30cdd956764cfe090ff6a4bb template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_future_ready</b> (const std::future&lt; T &gt; &amp;future)</td></tr>
 <tr class="memitem:a3b0ff59bd90d37ed4d9bef5a3f6295e2" id="r_a3b0ff59bd90d37ed4d9bef5a3f6295e2"><td class="memItemLeft" align="right" valign="top"><a id="a3b0ff59bd90d37ed4d9bef5a3f6295e2" name="a3b0ff59bd90d37ed4d9bef5a3f6295e2"></a>
 bool IVW_CORE_API&#160;</td><td class="memItemRight" valign="bottom"><b>isBricked</b> (const std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;volume)</td></tr>
-<tr class="memitem:aa048b0cf2e27625499d9ac8e03af03d6" id="r_aa048b0cf2e27625499d9ac8e03af03d6"><td class="memTemplParams" colspan="2">template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </td></tr>
-<tr class="memitem:aa048b0cf2e27625499d9ac8e03af03d6 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa048b0cf2e27625499d9ac8e03af03d6">isConvex</a> (const std::vector&lt; T &gt; &amp;polygon)</td></tr>
-<tr class="memdesc:aa048b0cf2e27625499d9ac8e03af03d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether the given polygon is convex  <br /></td></tr>
+<tr class="memitem:a661ff4ac48c8bca8c91ea0dfb0f41124" id="r_a661ff4ac48c8bca8c91ea0dfb0f41124"><td class="memTemplParams" colspan="2">template&lt;RangeOfVec&lt; 2 &gt; T&gt; </td></tr>
+<tr class="memitem:a661ff4ac48c8bca8c91ea0dfb0f41124 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a661ff4ac48c8bca8c91ea0dfb0f41124">isConvex</a> (const T &amp;polygon)</td></tr>
+<tr class="memdesc:a661ff4ac48c8bca8c91ea0dfb0f41124"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether the given polygon is convex  <br /></td></tr>
 <tr class="memitem:a46823dad226364774c3e7f3b30ca21e9" id="r_a46823dad226364774c3e7f3b30ca21e9"><td class="memTemplParams" colspan="2"><a id="a46823dad226364774c3e7f3b30ca21e9" name="a46823dad226364774c3e7f3b30ca21e9"></a>
 template&lt;glm::length_t L, typename T, glm::qualifier Q&gt; </td></tr>
 <tr class="memitem:a46823dad226364774c3e7f3b30ca21e9 template"><td class="memItemLeft" align="right" valign="top">glm::vec&lt; L, bool, Q &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isfinite</b> (const glm::vec&lt; L, T, Q &gt; &amp;x)</td></tr>
 <tr class="memitem:a5780feabad27a979c9c92bc67cf6ada2" id="r_a5780feabad27a979c9c92bc67cf6ada2"><td class="memTemplParams" colspan="2"><a id="a5780feabad27a979c9c92bc67cf6ada2" name="a5780feabad27a979c9c92bc67cf6ada2"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a5780feabad27a979c9c92bc67cf6ada2 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>isfinite</b> (const T &amp;v)</td></tr>
-<tr class="memitem:a193aac2254d9cc5b5b1029995323d957" id="r_a193aac2254d9cc5b5b1029995323d957"><td class="memTemplParams" colspan="2">template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </td></tr>
-<tr class="memitem:a193aac2254d9cc5b5b1029995323d957 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a193aac2254d9cc5b5b1029995323d957">isInside</a> (const std::vector&lt; T &gt; &amp;hull, const T &amp;p)</td></tr>
-<tr class="memdesc:a193aac2254d9cc5b5b1029995323d957"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether a given point lies within the convex hull  <br /></td></tr>
+<tr class="memitem:a70e06202b732f15b834faf155f5f67fe" id="r_a70e06202b732f15b834faf155f5f67fe"><td class="memTemplParams" colspan="2">template&lt;RangeOfVec&lt; 2 &gt; C&gt; </td></tr>
+<tr class="memitem:a70e06202b732f15b834faf155f5f67fe template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70e06202b732f15b834faf155f5f67fe">isInside</a> (const C &amp;hull, const std::ranges::range_value_t&lt; C &gt; &amp;p)</td></tr>
+<tr class="memdesc:a70e06202b732f15b834faf155f5f67fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether a given point lies within the convex hull  <br /></td></tr>
 <tr class="memitem:a819d6ed95184ff0ae2c68b501dcd0cff" id="r_a819d6ed95184ff0ae2c68b501dcd0cff"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a819d6ed95184ff0ae2c68b501dcd0cff">isInviwoApplicationInitialized</a> ()</td></tr>
 <tr class="memitem:a31c6a37fda50958cd9ff741f12929524" id="r_a31c6a37fda50958cd9ff741f12929524"><td class="memTemplParams" colspan="2"><a id="a31c6a37fda50958cd9ff741f12929524" name="a31c6a37fda50958cd9ff741f12929524"></a>
 template&lt;glm::length_t L, typename T, glm::qualifier Q&gt; </td></tr>
@@ -2283,18 +2291,18 @@ requires hasRAMrepresentation&lt;T, TRAMrep&gt;</div>
 
 </div>
 </div>
-<a id="ab6356ee05cfde312881b948335bf689b" name="ab6356ee05cfde312881b948335bf689b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6356ee05cfde312881b948335bf689b">&#9670;&#160;</a></span>convexHull()</h2>
+<a id="a4ac2b1d9cf184fc314e1533112bfd4fd" name="a4ac2b1d9cf184fc314e1533112bfd4fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac2b1d9cf184fc314e1533112bfd4fd">&#9670;&#160;</a></span>convexHull() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </div>
+template&lt;RangeOfVec&lt; 2 &gt; C&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; T &gt; inviwo::util::convexHull </td>
+          <td class="memname">std::vector&lt; std::ranges::range_value_t&lt; C &gt; &gt; inviwo::util::convexHull </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>points</em></span></td><td>)</td>
+          <td class="paramtype">const C &amp;</td>          <td class="paramname"><span class="paramname"><em>points</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -2309,6 +2317,48 @@ template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviw
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>complex hull of input points </dd></dl>
+
+</div>
+</div>
+<a id="a67023a6d247dfc0cd712fd17e9f63d05" name="a67023a6d247dfc0cd712fd17e9f63d05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67023a6d247dfc0cd712fd17e9f63d05">&#9670;&#160;</a></span>convexHull() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t N, typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const glm::vec&lt; 2, T &gt; &gt; inviwo::util::convexHull </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const glm::vec&lt; 2, T &gt;, N &gt;</td>          <td class="paramname"><span class="paramname"><em>points</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; glm::vec&lt; 2, T &gt;, N+1 &gt;</td>          <td class="paramname"><span class="paramname"><em>hull</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>compute the complex hull from a given set of 2D points using the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms">https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms</a></dd></dl>
+<p>This version avoids unnecessary allocations by passing in the container <code class="param">hull</code> where the result is written. Note that the hull is of size <span class="tt">N+1</span>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">N</td><td>number of points </td></tr>
+    <tr><td class="paramname">T</td><td>type of the 2D glm vector </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">points</td><td>set of <span class="tt">N</span> 2D points </td></tr>
+    <tr><td class="paramname">hull</td><td>resulting convex hull of the input points, holding <span class="tt">N+1</span> elements </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>span of the actual hull pointing into <code class="param">hull</code> </dd></dl>
 
 </div>
 </div>
@@ -3171,24 +3221,24 @@ template&lt;typename Functor&gt; </div>
 
 </div>
 </div>
-<a id="aaba0bfadae887301565e97b98483268b" name="aaba0bfadae887301565e97b98483268b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaba0bfadae887301565e97b98483268b">&#9670;&#160;</a></span>getArea()</h2>
+<a id="a2961be003917f7f102fe957258b2dd1d" name="a2961be003917f7f102fe957258b2dd1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2961be003917f7f102fe957258b2dd1d">&#9670;&#160;</a></span>getArea()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </div>
+template&lt;RangeOfVec&lt; 2 &gt; C&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">double inviwo::util::getArea </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>polygon</em></span></td><td>)</td>
+          <td class="paramtype">const C &amp;</td>          <td class="paramname"><span class="paramname"><em>polygon</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>compute the area of a convex polygon </p>
+<p>compute the area of a simple polygon, i.e. non-self intersecting </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">polygon</td><td>points ordered counter-clockwise </td></tr>
@@ -5467,18 +5517,18 @@ template&lt;typename... A, typename F&gt; </div>
 
 </div>
 </div>
-<a id="aa048b0cf2e27625499d9ac8e03af03d6" name="aa048b0cf2e27625499d9ac8e03af03d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa048b0cf2e27625499d9ac8e03af03d6">&#9670;&#160;</a></span>isConvex()</h2>
+<a id="a661ff4ac48c8bca8c91ea0dfb0f41124" name="a661ff4ac48c8bca8c91ea0dfb0f41124"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a661ff4ac48c8bca8c91ea0dfb0f41124">&#9670;&#160;</a></span>isConvex()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </div>
+template&lt;RangeOfVec&lt; 2 &gt; T&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">bool inviwo::util::isConvex </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>polygon</em></span></td><td>)</td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>polygon</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -5495,23 +5545,23 @@ template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviw
 
 </div>
 </div>
-<a id="a193aac2254d9cc5b5b1029995323d957" name="a193aac2254d9cc5b5b1029995323d957"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a193aac2254d9cc5b5b1029995323d957">&#9670;&#160;</a></span>isInside()</h2>
+<a id="a70e06202b732f15b834faf155f5f67fe" name="a70e06202b732f15b834faf155f5f67fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70e06202b732f15b834faf155f5f67fe">&#9670;&#160;</a></span>isInside()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; T &gt;::value==1 &amp;&amp;<a class="el" href="structinviwo_1_1util_1_1extent.html">util::extent</a>&lt; T &gt;::value==2, int &gt;::type = 0&gt; </div>
+template&lt;RangeOfVec&lt; 2 &gt; C&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">bool inviwo::util::isInside </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>hull</em></span>, </td>
+          <td class="paramtype">const C &amp;</td>          <td class="paramname"><span class="paramname"><em>hull</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
+          <td class="paramtype">const std::ranges::range_value_t&lt; C &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

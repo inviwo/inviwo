@@ -216,6 +216,10 @@ var NAVTREEINDEX27 =
 "conceptinviwo_1_1detail_1_1is__transparent.html":[3,0,2,2],
 "conceptinviwo_1_1detail_1_1is__unique__ptr.html":[3,0,2,3],
 "conceptinviwo_1_1detail_1_1pathlike.html":[3,0,2,4],
+"conceptinviwo_1_1util_1_1RangeOfVec.html":[2,0,0,19,65],
+"conceptinviwo_1_1util_1_1RangeOfVec.html":[3,0,3,1],
+"conceptinviwo_1_1util_1_1Vec2D.html":[2,0,0,19,66],
+"conceptinviwo_1_1util_1_1Vec2D.html":[3,0,3,2],
 "conceptinviwo_1_1util_1_1hasRAMrepresentation.html":[2,0,0,19,64],
 "conceptinviwo_1_1util_1_1hasRAMrepresentation.html":[3,0,3,0],
 "concepts.html":[3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX27 =
 "functions_func_o.html":[4,3,1,14],
 "functions_func_p.html":[4,3,1,15],
 "functions_func_q.html":[4,3,1,16],
-"functions_func_r.html":[4,3,1,17],
-"functions_func_s.html":[4,3,1,18],
-"functions_func_t.html":[4,3,1,19],
-"functions_func_u.html":[4,3,1,20],
-"functions_func_v.html":[4,3,1,21]
+"functions_func_r.html":[4,3,1,17]
 };
