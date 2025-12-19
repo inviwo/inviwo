@@ -139,13 +139,13 @@ std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memIt
 <tr class="memdesc:af20f4a577db38023cd3a7545e6f4a251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register callback for monitoring when modules have been registered. Invoked in unregisterModules. <br /></td></tr>
 <tr class="memitem:a5edbfb6286654add4eea803a91e54b6b" id="r_a5edbfb6286654add4eea803a91e54b6b"><td class="memItemLeft" align="right" valign="top"><a id="a5edbfb6286654add4eea803a91e54b6b" name="a5edbfb6286654add4eea803a91e54b6b"></a>
 ModuleManager &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const ModuleManager &amp;that)=delete</td></tr>
-<tr class="memitem:ac634bcffbe1f5a276cf18740abffc80f" id="r_ac634bcffbe1f5a276cf18740abffc80f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac634bcffbe1f5a276cf18740abffc80f">registerModules</a> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>, std::function&lt; bool(std::string_view)&gt; filter=ModuleManager::getEnabledFilter())</td></tr>
-<tr class="memdesc:ac634bcffbe1f5a276cf18740abffc80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load modules from dynamic library files in the specified search paths.  <br /></td></tr>
-<tr class="memitem:a4c5fbdd2fee0bdab3f98c2cc4eaa337a" id="r_a4c5fbdd2fee0bdab3f98c2cc4eaa337a"><td class="memItemLeft" align="right" valign="top"><a id="a4c5fbdd2fee0bdab3f98c2cc4eaa337a" name="a4c5fbdd2fee0bdab3f98c2cc4eaa337a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt; moduleFactories)</td></tr>
-<tr class="memitem:a82d9e48a2df8a22281ea9b06736ec5c8" id="r_a82d9e48a2df8a22281ea9b06736ec5c8"><td class="memItemLeft" align="right" valign="top"><a id="a82d9e48a2df8a22281ea9b06736ec5c8" name="a82d9e48a2df8a22281ea9b06736ec5c8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1InviwoModuleFactoryObject.html">InviwoModuleFactoryObject</a> &gt; &gt; moduleFactories)</td></tr>
-<tr class="memdesc:a82d9e48a2df8a22281ea9b06736ec5c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers modules from factories and takes ownership of input module factories. Module is registered if dependencies exist and they have correct version. <br /></td></tr>
+<tr class="memitem:a5418c886830293ae66bb4a2369fda6b8" id="r_a5418c886830293ae66bb4a2369fda6b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5418c886830293ae66bb4a2369fda6b8">registerModules</a> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>, std::function&lt; bool(std::string_view)&gt; filter=ModuleManager::getEnabledFilter(), const std::function&lt; void(std::string_view)&gt; &amp;progressCallback=nullptr)</td></tr>
+<tr class="memdesc:a5418c886830293ae66bb4a2369fda6b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load modules from dynamic library files in the specified search paths.  <br /></td></tr>
+<tr class="memitem:a9268f7a43d43edf7205d026236a8fc4f" id="r_a9268f7a43d43edf7205d026236a8fc4f"><td class="memItemLeft" align="right" valign="top"><a id="a9268f7a43d43edf7205d026236a8fc4f" name="a9268f7a43d43edf7205d026236a8fc4f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt; moduleFactories, const std::function&lt; void(std::string_view)&gt; &amp;progressCallback)</td></tr>
+<tr class="memitem:a9883a12fa7e33a47d78ceabe5cd0261a" id="r_a9883a12fa7e33a47d78ceabe5cd0261a"><td class="memItemLeft" align="right" valign="top"><a id="a9883a12fa7e33a47d78ceabe5cd0261a" name="a9883a12fa7e33a47d78ceabe5cd0261a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1InviwoModuleFactoryObject.html">InviwoModuleFactoryObject</a> &gt; &gt; moduleFactories, const std::function&lt; void(std::string_view)&gt; &amp;progressCallback)</td></tr>
+<tr class="memdesc:a9883a12fa7e33a47d78ceabe5cd0261a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers modules from factories and takes ownership of input module factories. Module is registered if dependencies exist and they have correct version. <br /></td></tr>
 <tr class="memitem:a90b71f304b3a257a7f80b6e67e4c5e94" id="r_a90b71f304b3a257a7f80b6e67e4c5e94"><td class="memItemLeft" align="right" valign="top"><a id="a90b71f304b3a257a7f80b6e67e4c5e94" name="a90b71f304b3a257a7f80b6e67e4c5e94"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reloadModules</b> ()</td></tr>
 <tr class="memitem:adfe2399ec1c358f9fc9f118ba9f44f1d" id="r_adfe2399ec1c358f9fc9f118ba9f44f1d"><td class="memItemLeft" align="right" valign="top"><a id="adfe2399ec1c358f9fc9f118ba9f44f1d" name="adfe2399ec1c358f9fc9f118ba9f44f1d"></a>
@@ -155,14 +155,16 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ada0b53af6d692fbda54f69ecbccde5be" id="r_ada0b53af6d692fbda54f69ecbccde5be"><td class="memItemLeft" align="right" valign="top"><a id="ada0b53af6d692fbda54f69ecbccde5be" name="ada0b53af6d692fbda54f69ecbccde5be"></a>
+static std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findDependentModules</b> (const std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt; &amp;modules, std::string_view module)</td></tr>
 <tr class="memitem:a88e514ebc2a30fe1cc36475b56962632" id="r_a88e514ebc2a30fe1cc36475b56962632"><td class="memItemLeft" align="right" valign="top"><a id="a88e514ebc2a30fe1cc36475b56962632" name="a88e514ebc2a30fe1cc36475b56962632"></a>
 static std::function&lt; bool(std::string_view)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getEnabledFilter</b> ()</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages finding, loading, unloading, reloading of Inviwo modules </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="ac634bcffbe1f5a276cf18740abffc80f" name="ac634bcffbe1f5a276cf18740abffc80f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac634bcffbe1f5a276cf18740abffc80f">&#9670;&#160;</a></span>registerModules()</h2>
+<a id="a5418c886830293ae66bb4a2369fda6b8" name="a5418c886830293ae66bb4a2369fda6b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5418c886830293ae66bb4a2369fda6b8">&#9670;&#160;</a></span>registerModules()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -175,7 +177,12 @@ static std::function&lt; bool(std::string_view)&gt;&#160;</td><td class="memItem
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::function&lt; bool(std::string_view)&gt;</td>          <td class="paramname"><span class="paramname"><em>filter</em></span><span class="paramdefsep"> = </span><span class="paramdefval">ModuleManager::getEnabledFilter()</span>&#160;)</td>
+          <td class="paramtype">std::function&lt; bool(std::string_view)&gt;</td>          <td class="paramname"><span class="paramname"><em>filter</em></span><span class="paramdefsep"> = </span><span class="paramdefval">ModuleManager::getEnabledFilter()</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; void(std::string_view)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>progressCallback</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
