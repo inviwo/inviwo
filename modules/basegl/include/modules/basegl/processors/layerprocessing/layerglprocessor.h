@@ -32,6 +32,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/layerport.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/framebufferobject.h>
@@ -102,6 +103,7 @@ protected:
     LayerOutport outport_;
 
 private:
+    BoolProperty enabled_;
     LayerConfig config;
     Shader shader_;
     std::vector<std::pair<FrameBufferObject, std::shared_ptr<Layer>>> cache_;

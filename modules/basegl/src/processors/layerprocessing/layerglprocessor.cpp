@@ -43,13 +43,15 @@
 namespace inviwo {
 
 LayerGLProcessor::LayerGLProcessor(Shader shader)
-    : Processor()
-    , inport_("inport", "The input layer"_help)
-    , outport_("outport", "Resulting output layer"_help)
+    : Processor{}
+    , inport_{"inport", "The input layer"_help}
+    , outport_{"outport", "Resulting output layer"_help}
+    , enabled_{"enabled", "Enabled", true}
     , config{}
-    , shader_(std::move(shader)) {
+    , shader_{std::move(shader)} {
 
     addPorts(inport_, outport_);
+    addProperty(enabled_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
@@ -63,6 +65,11 @@ void LayerGLProcessor::initializeResources() {
 }
 
 void LayerGLProcessor::process() {
+    if (!enabled_) {
+        outport_.setData(inport_.getData());
+        return;
+    }
+
     const auto& input = *inport_.getData();
     if (const auto newConfig = outputConfig(input); config != newConfig) {
         cache_.clear();
