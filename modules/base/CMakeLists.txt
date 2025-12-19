@@ -170,6 +170,7 @@ set(SOURCE_FILES
     src/algorithm/algorithmoptions.cpp
     src/algorithm/cohensutherland.cpp
     src/algorithm/combinechannels.cpp
+    src/algorithm/convexhull.cpp
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
     src/algorithm/dataminmax.cpp
