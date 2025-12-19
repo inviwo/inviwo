@@ -128,7 +128,7 @@ public:
      * Module is registered if dependencies exist and they have correct version.
      */
     void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
-                         std::function<void(std::string_view)> progressCallback = nullptr);
+                         const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     /**
      * \brief Load modules from dynamic library files in the regular search paths.

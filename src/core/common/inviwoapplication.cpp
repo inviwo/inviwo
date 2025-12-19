@@ -227,8 +227,8 @@ InviwoApplication::~InviwoApplication() { resizePool(0); }
 
 void InviwoApplication::registerModules(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
-    std::function<void(std::string_view)> progressCallback) {
-    moduleManager_->registerModules(std::move(moduleFactories), std::move(progressCallback));
+    const std::function<void(std::string_view)>& progressCallback) {
+    moduleManager_->registerModules(std::move(moduleFactories), progressCallback);
 }
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token) {

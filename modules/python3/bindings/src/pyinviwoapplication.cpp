@@ -191,9 +191,8 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def("registerModules",
              [](InviwoApplication* app,
                 std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
-                std::function<void(std::string_view)> progressCallback) {
-                 app->getModuleManager().registerModules(std::move(modules),
-                                                         std::move(progressCallback));
+                const std::function<void(std::string_view)>& progressCallback) {
+                 app->getModuleManager().registerModules(std::move(modules), progressCallback);
              })
         .def("registerRuntimeModules",
              [](InviwoApplication* app) { app->registerModules(RuntimeModuleLoading{}); })
@@ -203,9 +202,9 @@ void exposeInviwoApplication(pybind11::module& m) {
              })
         .def("registerRuntimeModules",
              [](InviwoApplication* app, std::function<bool(std::string_view)> filter,
-                std::function<void(std::string_view)> progressCallback) {
+                const std::function<void(std::string_view)>& progressCallback) {
                  app->getModuleManager().registerModules(RuntimeModuleLoading{}, std::move(filter),
-                                                         std::move(progressCallback));
+                                                         progressCallback);
              })
         .def("runningBackgroundJobs",
              [](InviwoApplication* app) {
