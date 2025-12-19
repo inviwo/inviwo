@@ -344,10 +344,6 @@ int main(int argc, char** argv) {
         }};
         inviwo::InviwoApplication app("Inviwo");
         app.printApplicationInfo();
-        app.setProgressCallback([&logger](std::string_view m) {
-            logger.log("InviwoApplication", inviwo::LogLevel::Info, inviwo::LogAudience::User, "",
-                       "", 0, m);
-        });
         app.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&app));
 
         std::vector<std::string> arg(argv + 1, argv + argc);
