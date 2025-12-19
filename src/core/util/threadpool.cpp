@@ -32,6 +32,8 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/threadutil.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 // the constructor just launches some amount of workers
@@ -39,13 +41,13 @@ ThreadPool::ThreadPool(size_t threads, std::function<void()> onThreadStart,
                        std::function<void()> onThreadStop)
     : onThreadStart_{std::move(onThreadStart)}, onThreadStop_{std::move(onThreadStop)} {
     while (workers.size() < threads) {
-        workers.push_back(std::make_unique<Worker>(*this));
+        workers.push_back(std::make_unique<Worker>(*this, workers.size() + 1));
     }
 }
 
 size_t ThreadPool::trySetSize(size_t size) {
     while (workers.size() < size) {
-        workers.push_back(std::make_unique<Worker>(*this));
+        workers.push_back(std::make_unique<Worker>(*this, workers.size() + 1));
     }
 
     if (workers.size() > size) {
@@ -84,9 +86,9 @@ ThreadPool::~ThreadPool() {
 
 ThreadPool::Worker::~Worker() { thread.join(); }
 
-ThreadPool::Worker::Worker(ThreadPool& pool)
-    : state{State::Free}, thread{[this, &pool]() {
-        util::setThreadDescription("Inviwo Worker Thread");
+ThreadPool::Worker::Worker(ThreadPool& pool, size_t index)
+    : state{State::Free}, thread{[this, &pool, index]() {
+        util::setThreadDescription(fmt::format("Inviwo BG {}", index));
         pool.onThreadStart_();
         util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
 

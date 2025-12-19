@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include <modules/openglqt/openglqtmodule.h>
+
 #include <inviwo/core/common/inviwoapplication.h>                               // for InviwoApp...
 #include <inviwo/core/common/inviwomodule.h>                                    // for InviwoModule
 #include <inviwo/core/common/modulemanager.h>                                   // for ModuleMan...
@@ -50,7 +52,6 @@
 #include <modules/openglqt/hiddencanvasqt.h>                                    // for HiddenCan...
 #include <modules/openglqt/openglqtcapabilities.h>                              // for OpenGLQtC...
 #include <modules/openglqt/openglqtmenu.h>                                      // for OpenGLQtMenu
-#include <modules/openglqt/openglqtmodule.h>                                    // for OpenGLQtM...
 #include <modules/openglqt/processors/canvasprocessorwidgetqt.h>                // for CanvasPro...
 #include <modules/openglqt/processors/canvaswithpropertiesprocessor.h>          // for CanvasWit...
 #include <modules/openglqt/processors/canvaswithpropertiesprocessorwidgetqt.h>  // for CanvasWit...
@@ -84,7 +85,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     }
 
     // Create GL Context
-    sharedCanvas_.initializeGL();
+    sharedCanvas_.createContext();
+    sharedCanvas_.activate();
+    sharedCanvas_.initializeGLEW();
 
     if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate OpenGL");

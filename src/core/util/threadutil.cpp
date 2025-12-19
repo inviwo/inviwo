@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-void util::setThreadDescription(const std::string& desc) {
+void util::setThreadDescription(const std::string_view desc) {
 #ifdef WIN32
     typedef HRESULT(WINAPI * SetThreadDescriptionFunc)(HANDLE hThread, PCWSTR threadDescription);
     // SetThreadDescription was introduced with Windows 10, version 1607
@@ -59,9 +59,40 @@ void util::setThreadDescription(const std::string& desc) {
     }
 #elif defined(__APPLE__)
     // Apple only supports setting the name on the same thread
-    pthread_setname_np(desc.c_str());
+    std::string name(desc.substr(0, 15));  // limit to 15 + null characters
+    pthread_setname_np(name.c_str());
 #else
-    pthread_setname_np(pthread_self(), desc.c_str());
+    std::string name(desc.substr(0, 15));  // limit to 15 + null characters
+    pthread_setname_np(pthread_self(), name.c_str());
+#endif
+}
+
+std::string util::getThreadDescription() {
+#ifdef WIN32
+    typedef HRESULT(WINAPI * GetThreadDescriptionFunc)(HANDLE hThread, PWSTR * threadDescription);
+    // GetThreadDescription was introduced with Windows 10, version 1607
+    // For that version and later Windows 10 version, the function should be in kernel32.dll
+    static GetThreadDescriptionFunc getThreadDescription =
+        reinterpret_cast<GetThreadDescriptionFunc>(
+            GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "GetThreadDescription"));
+    // some Windows versions (e.g. 2016 Server) have the function in KernelBase.dll
+    if (!getThreadDescription) {
+        getThreadDescription = reinterpret_cast<GetThreadDescriptionFunc>(
+            GetProcAddress(GetModuleHandle(TEXT("KernelBase.dll")), "GetThreadDescription"));
+    }
+    if (getThreadDescription) {
+        PWSTR wstr = nullptr;
+        if (SUCCEEDED(getThreadDescription(::GetCurrentThread(), &wstr))) {
+            std::string desc = util::fromWstring(wstr);
+            LocalFree(wstr);
+            return desc;
+        }
+    }
+    return "";
+#else
+    std::array<char, 16> name = {0};
+    pthread_getname_np(pthread_self(), name.data(), name.size());
+    return std::string{name.data()};
 #endif
 }
 

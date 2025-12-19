@@ -68,10 +68,10 @@ public:
      * Module is registered if dependencies exist and they have correct version.
      */
     void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
-                         std::function<void(std::string_view)> progressCallback);
+                         const std::function<void(std::string_view)>& progressCallback);
 
     void registerModules(std::vector<ModuleContainer> moduleFactories,
-                         std::function<void(std::string_view)> progressCallback);
+                         const std::function<void(std::string_view)>& progressCallback);
 
     /**
      * @brief Load modules from dynamic library files in the specified search paths.
@@ -85,7 +85,7 @@ public:
     void registerModules(
         RuntimeModuleLoading,
         std::function<bool(std::string_view)> filter = ModuleManager::getEnabledFilter(),
-        std::function<void(std::string_view)> progressCallback = nullptr);
+        const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths);

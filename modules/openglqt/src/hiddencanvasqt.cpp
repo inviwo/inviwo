@@ -40,13 +40,16 @@
 #include <inviwo/core/util/canvas.h>               // for Canvas, Canvas::ContextID
 #include <inviwo/core/util/rendercontext.h>        // for CanvasContextHolder, RenderContext
 #include <inviwo/core/util/stringconversion.h>     // for toString
-#include <modules/opengl/openglcapabilities.h>     // for OpenGLCapabilities
+#include <inviwo/core/util/threadutil.h>
+#include <modules/opengl/openglcapabilities.h>  // for OpenGLCapabilities
 
 #include <atomic>      // for atomic, __atomic_base
 #include <functional>  // for __base
 #include <future>      // for future
 #include <string>      // for char_traits, operator+, basic_string
 #include <thread>      // for get_id
+
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -67,11 +70,8 @@ HiddenCanvasQt::~HiddenCanvasQt() {
     delete offScreenSurface_;
 }
 
-void HiddenCanvasQt::initializeGL() {
-    context_->create();
-    activate();
-    OpenGLCapabilities::initializeGLEW();
-}
+void HiddenCanvasQt::createContext() { context_->create(); }
+void HiddenCanvasQt::initializeGLEW() { OpenGLCapabilities::initializeGLEW(); }
 
 void HiddenCanvasQt::update() {}
 void HiddenCanvasQt::activate() { context_->makeCurrent(offScreenSurface_); }
@@ -81,19 +81,27 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenCanvas() { return createHidd
 std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
     static std::atomic<int> hiddenContextCount = 0;
     const auto contextNumber = hiddenContextCount++;
-    const auto name = "Background Context " + toString(contextNumber);
+    const auto name = fmt::format("Background Context {}", contextNumber);
 
-    auto thread = QThread::currentThread();
+    auto* thread = QThread::currentThread();
     // The context has to be created on the main thread.
-    auto res = dispatchFront([&thread, name]() {
+    auto res = dispatchFront([thread, name]() {
         auto canvas = std::make_unique<HiddenCanvasQt>(name);
+
+        // Need to create the OpenGL context here on the main thread
+        // This can deadlock if we try to initialize it on the background thread
+        // Then we can move it to the background thread
+        canvas->context_->create();
         canvas->getContext()->moveToThread(thread);
         return canvas;
     });
 
+    // Wait for the context to be created
     auto newContext = res.get();
-    // OpenGL can be initialized in this thread
-    newContext->initializeGL();
+
+    // Activate the context to initialize GLEW in this thread
+    newContext->activate();
+    newContext->initializeGLEW();
 
     // Since the qt context has to be created on the main thread and moved to the background we need
     // to update the registered thread id to the correct one here
