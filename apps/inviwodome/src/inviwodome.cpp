@@ -144,9 +144,8 @@ struct SGCTCallbacks {
             return m.identifier().ends_with("qt") || m.identifier().starts_with("qt");
         };
         const auto progressCallback = [&](std::string_view s) { inviwo::log::info("{}", s); };
-        inviwo::util::registerModulesFiltered(
-            app.getModuleManager(), filter,
-            progressCallback app.getSystemSettings().moduleSearchPaths_.get());
+        inviwo::util::registerModulesFiltered(app.getModuleManager(), filter, progressCallback,
+                                              app.getSystemSettings().moduleSearchPaths_.get());
 
         if (syncServer) {
             syncServer->setSettings(app.getSettingsByType<inviwo::SGCTSettings>());
