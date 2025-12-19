@@ -73,12 +73,12 @@ std::vector<inviwo::ModuleContainer> getModuleContainers(ModuleManager& moduleMa
     util::for_each_argument(
         [&](auto&& arg) {
             if constexpr (std::constructible_from<std::filesystem::path, decltype(arg)>) {
-                paths.emplace_back(arg);
+                paths.emplace_back(std::forward<decltype(arg)>(arg));
             } else {
                 std::ranges::for_each(arg, [&](auto& item) { paths.emplace_back(item); });
             }
         },
-        searchPaths...);
+        std::forward<Args>(searchPaths)...);
 
     return getModuleContainersImpl(moduleManager, paths);
 }
@@ -87,9 +87,9 @@ template <typename Filter, typename... Args>
 void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter,
                              std::function<void(std::string_view)> progressCallback,
                              Args&&... searchPaths) {
-    auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
+    auto inviwoModules = getModuleContainers(moduleManager, std::forward<Args>(searchPaths)...);
 
-    const auto disabled = inviwoModules | std::views::filter(filter) |
+    const auto disabled = inviwoModules | std::views::filter(std::forward<Filter>(filter)) |
                           std::views::transform(&ModuleContainer::identifier) |
                           std::ranges::to<std::vector>();
 
@@ -119,7 +119,7 @@ template <typename... Args>
 void registerModules(ModuleManager& moduleManager,
                      std::function<void(std::string_view)> progressCallback,
                      Args&&... searchPaths) {
-    auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
+    auto inviwoModules = getModuleContainers(moduleManager, std::forward<Args>(searchPaths)...);
     moduleManager.registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
