@@ -75,16 +75,14 @@ int main(int argc, char** argv) {
     InviwoApplication inviwoApp(argc, argv, "Inviwo-GLFW");
     inviwoApp.printApplicationInfo();
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
-    inviwoApp.setProgressCallback([&](std::string_view m) {
-        logger.log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0, m);
-    });
 
     inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
 
     auto& cmdParser = inviwoApp.getCommandLineParser();
 
     // Initialize all modules
-    inviwo::util::registerModules(inviwoApp.getModuleManager(),
+    const auto progressCallback = [&](std::string_view s) { inviwo::log::info("{}", s); };
+    inviwo::util::registerModules(inviwoApp.getModuleManager(), progressCallback,
                                   inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                   cmdParser.getModuleSearchPaths());
 

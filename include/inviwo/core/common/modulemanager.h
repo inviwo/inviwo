@@ -64,15 +64,17 @@ public:
     bool isRuntimeModuleReloadingEnabled();
 
     /**
-     * \brief Registers modules from factories and takes ownership of input module factories.
+     * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories);
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
+                         const std::function<void(std::string_view)>& progressCallback);
 
-    void registerModules(std::vector<ModuleContainer> moduleFactories);
+    void registerModules(std::vector<ModuleContainer> moduleFactories,
+                         const std::function<void(std::string_view)>& progressCallback);
 
     /**
-     * \brief Load modules from dynamic library files in the specified search paths.
+     * @brief Load modules from dynamic library files in the specified search paths.
      *
      * Will recursively search for all dll/so/dylib/bundle files in the specified search paths.
      * The library filename must contain "inviwo-module" to be loaded.
@@ -80,8 +82,10 @@ public:
      * @note Which modules to load can be specified by creating a file
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      */
-    void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> filter =
-                                                   ModuleManager::getEnabledFilter());
+    void registerModules(
+        RuntimeModuleLoading,
+        std::function<bool(std::string_view)> filter = ModuleManager::getEnabledFilter(),
+        const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths);
@@ -134,13 +138,16 @@ public:
     InviwoModuleFactoryObject* getFactoryObject(std::string_view identifier) const;
     std::vector<std::string> findDependentModules(std::string_view module) const;
 
+    static std::vector<std::string> findDependentModules(
+        const std::vector<ModuleContainer>& modules, std::string_view module);
+
     /**
-     * \brief Register callback for monitoring when modules have been registered.
+     * @brief Register callback for monitoring when modules have been registered.
      * Invoked in registerModules.
      */
     std::shared_ptr<std::function<void()>> onModulesDidRegister(std::function<void()> callback);
     /**
-     * \brief Register callback for monitoring when modules have been registered.
+     * @brief Register callback for monitoring when modules have been registered.
      * Invoked in unregisterModules.
      */
     std::shared_ptr<std::function<void()>> onModulesWillUnregister(std::function<void()> callback);

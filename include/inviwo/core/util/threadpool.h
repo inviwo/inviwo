@@ -108,7 +108,7 @@ private:
     };
 
     struct Worker {
-        Worker(ThreadPool& pool);
+        Worker(ThreadPool& pool, size_t index);
         Worker(const Worker&) = delete;
         Worker(Worker&& rhs) = delete;
         Worker& operator=(const Worker&) = delete;

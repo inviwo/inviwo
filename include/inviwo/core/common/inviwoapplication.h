@@ -127,7 +127,8 @@ public:
      * \brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules);
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
+                         const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     /**
      * \brief Load modules from dynamic library files in the regular search paths.
@@ -241,7 +242,6 @@ public:
 
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
-    void setProgressCallback(std::function<void(std::string_view)> progressCallback);
 
     ThreadPool& getThreadPool();
 
@@ -411,7 +411,6 @@ public:
     TimerThread& getTimerThread();
     const std::string& getDisplayName() const;
     virtual void printApplicationInfo();
-    void postProgress(std::string_view progress) const;
 
     /**
      * Get the current LayerRamResizer
@@ -449,7 +448,6 @@ protected:
     std::unique_ptr<CommandLineParser> commandLineParser_;
     std::shared_ptr<ConsoleLogger> consoleLogger_;
     std::shared_ptr<FileLogger> filelogger_;
-    std::function<void(std::string_view)> progressCallback_;
     std::unique_ptr<FileSystemObserver> fileSystemObserver_;
 
     std::locale uiLocale_{};

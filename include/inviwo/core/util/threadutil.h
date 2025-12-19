@@ -33,6 +33,7 @@
 #include <inviwo/core/util/threadpool.h>
 
 #include <string>
+#include <string_view>
 #include <thread>
 #include <future>
 #include <functional>
@@ -43,7 +44,8 @@ class InviwoApplication;
 
 namespace util {
 
-IVW_CORE_API void setThreadDescription(const std::string& desc);
+IVW_CORE_API void setThreadDescription(std::string_view desc);
+IVW_CORE_API std::string getThreadDescription();
 
 IVW_CORE_API int getPid();
 

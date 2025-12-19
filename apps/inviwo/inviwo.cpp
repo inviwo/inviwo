@@ -99,8 +99,6 @@ int main(int argc, char** argv) {
 
     // initialize and show splash screen
     inviwo::InviwoSplashScreen splashScreen(clp.getShowSplashScreen());
-    inviwoApp.setProgressCallback([&](std::string_view s) { splashScreen.showMessage(s); });
-
     inviwo::initializePythonModules();
 
     splashScreen.show();
@@ -110,8 +108,15 @@ int main(int argc, char** argv) {
     splashScreen.showMessage("Initializing modules...");
 
     // Remove GLFW module register since we will use Qt for the OpenGL context
-    auto filter = [](const inviwo::ModuleContainer& m) { return m.identifier() == "glfw"; };
-    inviwo::util::registerModulesFiltered(inviwoApp.getModuleManager(), filter,
+    const auto filter = [envFilter = inviwo::util::makeEnvironmentModuleFilter()](
+                            const inviwo::ModuleContainer& m) {
+        return m.identifier() == "glfw" || envFilter(m);
+    };
+    const auto progressCallback = [&](std::string_view s) {
+        inviwo::log::info("{}", s);
+        splashScreen.showMessage(s);
+    };
+    inviwo::util::registerModulesFiltered(inviwoApp.getModuleManager(), filter, progressCallback,
                                           inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                           clp.getModuleSearchPaths());
 
@@ -127,7 +132,6 @@ int main(int argc, char** argv) {
     qtApp.processEvents();  // Make sure the gui is done loading before loading workspace
 
     mainWin.openLastWorkspace(clp.getWorkspacePath());  // open last workspace
-    inviwoApp.setProgressCallback(nullptr);
     splashScreen.finish(&mainWin);
 
     qtApp.processEvents();
@@ -185,4 +189,3 @@ int main(int argc, char** argv) {
         }
     }
 }
-

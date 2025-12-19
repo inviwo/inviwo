@@ -32,6 +32,9 @@
 #include <inviwo/sys/inviwosysdefine.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/stringconversion.h>
+
 #include <inviwo/core/common/modulecontainer.h>
 #include <inviwo/core/common/modulemanager.h>
 
@@ -40,10 +43,24 @@
 #include <filesystem>
 #include <concepts>
 #include <ranges>
+#include <algorithm>
 
 namespace inviwo {
 
 namespace util {
+
+inline auto makeEnvironmentModuleFilter() {
+    const auto disabled = []() -> std::vector<std::string_view> {
+        if (auto* env = std::getenv("INVIWO_DISABLE_MODULES")) {
+            return util::splitStringView(env, ';');
+        } else {
+            return {};
+        }
+    }();
+    return [disabled](const ModuleContainer& m) -> bool {
+        return std::ranges::contains(disabled, m.identifier());
+    };
+}
 
 IVW_SYS_API std::vector<ModuleContainer> getModuleContainersImpl(
     ModuleManager& moduleManager, std::span<const std::filesystem::path> searchPaths);
@@ -56,27 +73,54 @@ std::vector<inviwo::ModuleContainer> getModuleContainers(ModuleManager& moduleMa
     util::for_each_argument(
         [&](auto&& arg) {
             if constexpr (std::constructible_from<std::filesystem::path, decltype(arg)>) {
-                paths.emplace_back(arg);
+                paths.emplace_back(std::forward<decltype(arg)>(arg));
             } else {
                 std::ranges::for_each(arg, [&](auto& item) { paths.emplace_back(item); });
             }
         },
-        searchPaths...);
+        std::forward<Args>(searchPaths)...);
 
     return getModuleContainersImpl(moduleManager, paths);
 }
 
 template <typename Filter, typename... Args>
-void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter, Args&&... searchPaths) {
-    auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
-    std::erase_if(inviwoModules, filter);
-    moduleManager.registerModules(std::move(inviwoModules));
+void registerModulesFiltered(ModuleManager& moduleManager, Filter&& filter,
+                             std::function<void(std::string_view)> progressCallback,
+                             Args&&... searchPaths) {
+    auto inviwoModules = getModuleContainers(moduleManager, std::forward<Args>(searchPaths)...);
+
+    const auto disabled = inviwoModules | std::views::filter(std::forward<Filter>(filter)) |
+                          std::views::transform(&ModuleContainer::identifier) |
+                          std::ranges::to<std::vector>();
+
+    if (!disabled.empty()) {
+        log::info("The following modules were disabled from loading: {}", disabled);
+    }
+    auto dependent = disabled | std::views::transform([&](std::string_view id) {
+                         return ModuleManager::findDependentModules(inviwoModules, id);
+                     }) |
+                     std::views::join | std::ranges::to<std::vector>();
+    std::ranges::sort(dependent);
+    const auto ret = std::ranges::unique(dependent);
+    dependent.erase(ret.begin(), ret.end());
+    if (!dependent.empty()) {
+        log::info("The following modules were disabled due to depending on disabled modules: {}",
+                  dependent);
+    }
+
+    std::erase_if(inviwoModules, [&](const ModuleContainer& m) {
+        return std::ranges::contains(disabled, m.identifier()) ||
+               std::ranges::contains(dependent, m.identifier());
+    });
+    moduleManager.registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
 template <typename... Args>
-void registerModules(ModuleManager& moduleManager, Args&&... searchPaths) {
-    auto inviwoModules = getModuleContainers(moduleManager, searchPaths...);
-    moduleManager.registerModules(std::move(inviwoModules));
+void registerModules(ModuleManager& moduleManager,
+                     std::function<void(std::string_view)> progressCallback,
+                     Args&&... searchPaths) {
+    auto inviwoModules = getModuleContainers(moduleManager, std::forward<Args>(searchPaths)...);
+    moduleManager.registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
 }  // namespace util

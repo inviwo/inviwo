@@ -186,13 +186,25 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def("registerModules",
              [](InviwoApplication* app,
                 std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules) {
-                 app->registerModules(std::move(modules));
+                 app->getModuleManager().registerModules(std::move(modules), nullptr);
+             })
+        .def("registerModules",
+             [](InviwoApplication* app,
+                std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
+                const std::function<void(std::string_view)>& progressCallback) {
+                 app->getModuleManager().registerModules(std::move(modules), progressCallback);
              })
         .def("registerRuntimeModules",
              [](InviwoApplication* app) { app->registerModules(RuntimeModuleLoading{}); })
         .def("registerRuntimeModules",
              [](InviwoApplication* app, std::function<bool(std::string_view)> filter) {
-                 app->registerModules(RuntimeModuleLoading{}, filter);
+                 app->getModuleManager().registerModules(RuntimeModuleLoading{}, std::move(filter));
+             })
+        .def("registerRuntimeModules",
+             [](InviwoApplication* app, std::function<bool(std::string_view)> filter,
+                const std::function<void(std::string_view)>& progressCallback) {
+                 app->getModuleManager().registerModules(RuntimeModuleLoading{}, std::move(filter),
+                                                         progressCallback);
              })
         .def("runningBackgroundJobs",
              [](InviwoApplication* app) {
@@ -211,8 +223,7 @@ void exposeInviwoApplication(pybind11::module& m) {
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,
-                               py::return_value_policy::reference)
-        .def("setProgressCallback", &InviwoApplication::setProgressCallback);
+                               py::return_value_policy::reference);
 }
 
 }  // namespace inviwo

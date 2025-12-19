@@ -44,7 +44,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(FFMPEG REQUIRED)
+
 ivw_vcpkg_install(ffmpeg MODULE FFmpeg)
+
 target_include_directories(inviwo-module-ffmpeg 
     PUBLIC 
         $<BUILD_INTERFACE:${FFMPEG_INCLUDE_DIRS}>

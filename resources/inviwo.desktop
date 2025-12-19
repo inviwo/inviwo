@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Inviwo
+GenericName=Interactive Visualization Workshop
+Comment=Visual programming framework for scientific data visualization
+Exec=inviwo
+Icon=inviwo
+Categories=Science;
+Keywords=visualization;scientific;data;graphics;3d;volume;rendering;
+Terminal=false
+StartupNotify=true
+StartupWMClass=Inviwo

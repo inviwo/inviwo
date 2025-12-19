@@ -71,3 +71,15 @@ runs:
       run: |
         mkdir build
         cp ${{ steps.ccache.outputs.executable }} build/cl.exe
+
+    - name: "AppImageTool and New CMake 4.2+ with AppImage support"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        curl -L -o install_cmake.sh https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-linux-x86_64.sh
+        chmod +x install_cmake.sh
+        sudo ./install_cmake.sh --skip-license --prefix=/usr/local
+
+        curl -L -o appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool.AppImage
+        sudo mv appimagetool.AppImage /usr/local/bin/appimagetool

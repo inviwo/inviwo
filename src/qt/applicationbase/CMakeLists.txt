@@ -80,6 +80,7 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
                 EXTENSION "(dylib|a|so|dll)"
                 DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
                 COMPONENT Application
+                PORT_NAME qtbase
             )
         ]=])
         ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
@@ -89,9 +90,10 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
                 EXTENSION "(dylib|a|so|dll)"
                 DESTINATION ${IVW_INSTALL_PREFIX}PlugIns
                 COMPONENT Application
+                PORT_NAME qtsvg
             )
         ]=])
-    else()
+    elseif(WIN32)
         ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
             ivw_private_vcpkg_install_helper(
                 FILES_VAR INFO_VCPKG_OWNED_FILES
@@ -99,6 +101,7 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
                 EXTENSION "(dylib|a|so|dll)"
                 DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
                 COMPONENT Application
+                PORT_NAME qtbase
             )
         ]=])
         ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
@@ -108,6 +111,30 @@ if("qt" IN_LIST VCPKG_MANIFEST_FEATURES)
                 EXTENSION "(dylib|a|so|dll)"
                 DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
                 COMPONENT Application
+                PORT_NAME qtsvg
+            )
+        ]=])
+    else()
+        ivw_vcpkg_install(qtbase MODULE Core EXT EXTRA_CODE [=[
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "Qt6/plugins"
+                EXTENSION "(dylib|a|so|dll)"
+                DESTINATION Qt6/plugins
+                COMPONENT Application
+                PORT_NAME qtbase
+            )
+            file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/qt.conf" "[Paths]\nPrefix=../\nPlugins=Qt6/plugins\n")
+            install(FILES "${CMAKE_CURRENT_BINARY_DIR}/qt.conf" DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT Application)
+        ]=])
+        ivw_vcpkg_install(qtsvg MODULE Core EXT EXTRA_CODE [=[
+            ivw_private_vcpkg_install_helper(
+                FILES_VAR INFO_VCPKG_OWNED_FILES
+                DIRNAME "Qt6/plugins"
+                EXTENSION "(dylib|a|so|dll)"
+                DESTINATION Qt6/plugins
+                COMPONENT Application
+                PORT_NAME qtsvg
             )
         ]=])
     endif()

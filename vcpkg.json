@@ -92,6 +92,10 @@
             {
              "name": "xrender",
              "platform": "linux"
+            },
+            {
+             "name": "wayland",
+             "platform": "linux"
             }
           ]
         },

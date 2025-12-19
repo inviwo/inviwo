@@ -125,7 +125,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
             return std::shared_ptr<FileLogger>{};
         }
     }()}
-    , progressCallback_()
     , pool_(
           0,
           []() {
@@ -227,8 +226,9 @@ InviwoApplication::InviwoApplication(std::string_view displayName)
 InviwoApplication::~InviwoApplication() { resizePool(0); }
 
 void InviwoApplication::registerModules(
-    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories) {
-    moduleManager_->registerModules(std::move(moduleFactories));
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
+    const std::function<void(std::string_view)>& progressCallback) {
+    moduleManager_->registerModules(std::move(moduleFactories), progressCallback);
 }
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token) {
@@ -287,10 +287,6 @@ void InviwoApplication::printApplicationInfo() {
 
     log::info("Config: {} [{}] {} ({})", build::generator, build::configuration, build::compiler,
               build::compilerVersion);
-}
-
-void InviwoApplication::postProgress(std::string_view progress) const {
-    if (progressCallback_) progressCallback_(progress);
 }
 
 size_t InviwoApplication::getPoolSize() const { return pool_.getSize(); }
@@ -431,11 +427,6 @@ size_t InviwoApplication::processFront() {
 
     const std::unique_lock<std::mutex> lock{queue_.mutex};
     return queue_.tasks.size();
-}
-
-void InviwoApplication::setProgressCallback(
-    std::function<void(std::string_view)> progressCallback) {
-    progressCallback_ = progressCallback;
 }
 
 ThreadPool& InviwoApplication::getThreadPool() { return pool_; }

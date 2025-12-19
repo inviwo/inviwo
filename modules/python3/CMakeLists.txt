@@ -119,10 +119,15 @@ if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
                 EXTENSION "(py|pyd|dll)"
                 DESTINATION ${IVW_INSTALL_PREFIX}tools/${pythondir}
                 COMPONENT Application
+                PORT_NAME python3
             )
             install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/${pythondir}/Lib/site-packages"
                 DESTINATION "${IVW_INSTALL_PREFIX}tools/${pythondir}/Lib"
                 COMPONENT Application
+                FILES_MATCHING
+                    PATTERN "*"
+                    PATTERN "*.pyc" EXCLUDE 
+                    PATTERN "__pycache__" EXCLUDE
             )
         else()
             set(pythondir python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
@@ -132,10 +137,15 @@ if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
                 EXTENSION "(py|dylib|so|dll)"
                 DESTINATION ${IVW_INSTALL_PREFIX}lib/${pythondir}
                 COMPONENT Application
+                PORT_NAME python3
             )
             install(DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/${pythondir}/site-packages"
                 DESTINATION "${IVW_INSTALL_PREFIX}lib/${pythondir}"
                 COMPONENT Application
+                FILES_MATCHING
+                    PATTERN "*"
+                    PATTERN "*.pyc" EXCLUDE 
+                    PATTERN "__pycache__" EXCLUDE
             )
         endif()
     ]=])

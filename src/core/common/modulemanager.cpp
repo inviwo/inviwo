@@ -104,20 +104,22 @@ bool ModuleManager::isRuntimeModuleReloadingEnabled() {
     return app_->getSystemSettings().runtimeModuleReloading_;
 }
 
-void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo) {
+void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo,
+                                    const std::function<void(std::string_view)>& progressCallback) {
     std::vector<ModuleContainer> inviwoModules;
     for (auto& obj : mfo) {
         inviwoModules.emplace_back(std::move(obj));
     }
-    registerModules(std::move(inviwoModules));
+    registerModules(std::move(inviwoModules), progressCallback);
 }
 
-void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) {
+void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules,
+                                    const std::function<void(std::string_view)>& progressCallback) {
     // Topological sort to make sure that we load modules in correct order
     topologicalSort(inviwoModules);
 
     for (auto& cont : inviwoModules) {
-        app_->postProgress("Loading module: " + cont.name());
+        if (progressCallback) progressCallback("Loading module: " + cont.name());
         if (getModuleByIdentifier(cont.identifier())) continue;  // already loaded
         if (!checkDependencies(cont.factoryObject())) continue;
 
@@ -144,7 +146,7 @@ void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules) 
 
     ModuleContainer::updateGraph(inviwoModules_);
 
-    app_->postProgress("Loading Capabilities");
+    if (progressCallback) progressCallback("Loading Capabilities");
     for (auto& cont : inviwoModules_) {
         if (auto* inviwoModule = cont.getModule()) {
             for (auto& capability : inviwoModule->getCapabilities()) {
@@ -327,7 +329,8 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
 }
 
 void ModuleManager::registerModules(RuntimeModuleLoading,
-                                    std::function<bool(std::string_view)> isEnabled) {
+                                    std::function<bool(std::string_view)> isEnabled,
+                                    const std::function<void(std::string_view)>& progressCallback) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
     // 2. Filter out files with correct extension, named inviwo-module
@@ -342,7 +345,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     auto modules = findRuntimeModules(librarySearchPaths, std::move(isEnabled),
                                       isRuntimeModuleReloadingEnabled());
 
-    registerModules(std::move(modules));
+    registerModules(std::move(modules), progressCallback);
 }
 
 InviwoModule* ModuleManager::getModuleByIdentifier(std::string_view identifier) const {
@@ -431,19 +434,23 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
 }
 
 std::vector<std::string> ModuleManager::findDependentModules(std::string_view moduleId) const {
+    return findDependentModules(inviwoModules_, moduleId);
+}
+
+std::vector<std::string> ModuleManager::findDependentModules(
+    const std::vector<ModuleContainer>& modules, std::string_view moduleId) {
     std::vector<std::string> dependencies;
-    for (const auto& item : inviwoModules_) {
+    for (const auto& item : modules) {
         if (item.dependsOn(moduleId)) {
-            auto deps = findDependentModules(item.identifier());
+            auto deps = findDependentModules(modules, item.identifier());
             util::append(dependencies, deps);
             dependencies.push_back(item.identifier());
         }
     }
-    std::vector<std::string> unique;
-    for (const auto& item : dependencies) {
-        util::push_back_unique(unique, item);
-    }
-    return unique;
+    std::ranges::sort(dependencies);
+    const auto ret = std::ranges::unique(dependencies);
+    dependencies.erase(ret.begin(), ret.end());
+    return dependencies;
 }
 
 std::vector<std::string> ModuleManager::deregisterDependentModules(

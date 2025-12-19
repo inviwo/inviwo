@@ -78,16 +78,16 @@ public:
     HiddenCanvasQt& operator=(HiddenCanvasQt&&) = delete;
 
     virtual ~HiddenCanvasQt();
-    /*
-     * Initialize context and OpenGL functions. Only call this function once.
-     */
-    void initializeGL();
+
+    void createContext();
+    void initializeGLEW();
+
     /*
      * Does nothing
      */
     virtual void render([[maybe_unused]] std::shared_ptr<const Image>,
                         [[maybe_unused]] LayerType layerType = LayerType::Color,
-                        [[maybe_unused]] size_t idx = 0) override{};
+                        [[maybe_unused]] size_t idx = 0) override {};
 
     virtual void update() override;
     virtual void activate() override;
