@@ -74,7 +74,96 @@
 
 namespace inviwo {
 class Deserializer;
-class Inport;
+
+namespace layout {
+
+MultiInput::MultiInput(std::function<void(bool)> update) : inport("inport") {
+    inport.setIsReadyUpdater([this]() {
+        // Ports with dimensions (1,1) or less are considered to be inactive
+        return inport.isConnected() && util::all_of(inport.getConnectedOutports(), [](Outport* p) {
+                   auto* ip = static_cast<ImageOutport*>(p);
+                   return (ip->hasData() &&
+                           glm::any(glm::lessThanEqual(ip->getDimensions(), size2_t(1))))
+                              ? true
+                              : p->isReady();
+               });
+    });
+
+    inport.onConnect([update]() { update(true); });
+    inport.onDisconnect([update]() { update(false); });
+}
+
+void MultiInput::addPorts(Processor* p) { p->addPort(inport); }
+
+size_t MultiInput::size() const { return std::distance(inport.begin(), inport.end()); }
+
+const std::vector<std::shared_ptr<const Image>>& MultiInput::getData() {
+    data.clear();
+    data.insert(data.end(), inport.begin(), inport.end());
+    return data;
+}
+
+void MultiInput::propagateEvent(Event* event, size_t index) {
+    const auto& outports = inport.getConnectedOutports();
+    if (index < outports.size()) {
+        inport.propagateEvent(event, outports[index]);
+    }
+}
+
+void MultiInput::propagateEvent(Event* event, Processor* p, Outport* source) {
+    if (event->shouldPropagateTo(&inport, p, source)) {
+        inport.propagateEvent(event);
+    }
+}
+
+size_t MultiInput::indexOf(Outport* to) const {
+    const auto& ports = inport.getConnectedOutports();
+    auto portIt = std::find(ports.begin(), ports.end(), to);
+    return static_cast<size_t>(std::distance(ports.begin(), portIt));
+}
+
+SequenceInput::SequenceInput(std::function<void(bool)> update) : inport("inport") {
+    inport.setIsReadyUpdater([this]() {
+        return (inport.isConnected() && util::all_of(inport.getConnectedOutports(),
+                                                     [](Outport* p) { return p->isReady(); }));
+    });
+
+    inport.onConnect([update]() { update(true); });
+    inport.onDisconnect([update]() { update(false); });
+}
+
+void SequenceInput::addPorts(Processor* p) { p->addPort(inport); }
+
+size_t SequenceInput::size() const {
+    if (auto data = inport.getData()) {
+        return inport.getData()->size();
+    }
+    return 0;
+}
+
+const std::vector<std::shared_ptr<const Image>>& SequenceInput::getData() {
+    data.clear();
+    if (auto seq = inport.getData()) {
+        data.insert(data.end(), seq->begin(), seq->end());
+    }
+    return data;
+}
+
+void SequenceInput::propagateEvent(Event* event, size_t index) {
+    if (index == 0) {
+        inport.propagateEvent(event, inport.getConnectedOutport());
+    }
+}
+
+void SequenceInput::propagateEvent(Event* event, Processor* p, Outport* source) {
+    if (event->shouldPropagateTo(&inport, p, source)) {
+        inport.propagateEvent(event);
+    }
+}
+
+size_t SequenceInput::indexOf(Outport* to) const { return 0; }
+
+}  // namespace layout
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ColumnLayout::processorInfo_{
@@ -101,7 +190,7 @@ const ProcessorInfo& RowLayout::getProcessorInfo() const { return processorInfo_
 
 Layout::Layout(splitter::Direction direction)
     : Processor()
-    , inport_("inport")
+    , input_([this](bool connect) { updateSplitters(connect); })
     , outport_("outport")
     , splitterSettings_("splitterSettings", "Style", true, splitter::Style::Line,
                         vec4(0.27f, 0.3f, 0.31f, 1.0f), vec4(0.1f, 0.1f, 0.12f, 1.0f))
@@ -114,7 +203,7 @@ Layout::Layout(splitter::Direction direction)
     , shader_("img_texturequad.vert", "img_copy.frag")
     , deserialized_(false) {
 
-    addPort(inport_);
+    input_.addPorts(this);
     addPort(outport_);
 
     splitterSettings_.setCollapsed(true);
@@ -123,21 +212,6 @@ Layout::Layout(splitter::Direction direction)
     splitterSettings_.setCurrentStateAsDefault();
 
     addProperties(splitterSettings_, minWidth_, splitters_);
-
-    inport_.setIsReadyUpdater([this]() {
-        // Ports with dimensions (1,1) or less are considered to be inactive
-        return inport_.isConnected() &&
-               util::all_of(inport_.getConnectedOutports(), [](Outport* p) {
-                   auto ip = static_cast<ImageOutport*>(p);
-                   return (ip->hasData() &&
-                           glm::any(glm::lessThanEqual(ip->getDimensions(), size2_t(1))))
-                              ? true
-                              : p->isReady();
-               });
-    });
-
-    inport_.onConnect([this]() { updateSplitters(true); });
-    inport_.onDisconnect([this]() { updateSplitters(false); });
 
     renderer_.setInvalidateAction([this]() { invalidate(InvalidationLevel::InvalidOutput); });
     renderer_.setDragAction([this](float pos, int index) {
@@ -148,7 +222,7 @@ Layout::Layout(splitter::Direction direction)
 }
 
 void Layout::process() {
-    auto images = inport_.getVectorData();
+    auto& images = input_.getData();
     deserialized_ = false;
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
@@ -193,45 +267,26 @@ void Layout::propagateEvent(Event* event, Outport* source) {
     if (event->hasBeenUsed()) return;
 
     if (event->hash() == ResizeEvent::chash()) {
-        auto resizeEvent = static_cast<ResizeEvent*>(event);
+        auto* resizeEvent = static_cast<ResizeEvent*>(event);
 
         updateViewports(resizeEvent->size());
         currentDim_ = resizeEvent->size();
-
-        const auto& outports = inport_.getConnectedOutports();
-        for (size_t i = 0; i < outports.size(); ++i) {
-            const size2_t size = [&]() {
-                if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
-                    return size2_t(1);
-                } else {
-                    return size2_t(viewManager_[i].size);
-                }
-            }();
-
-            ResizeEvent e(size);
-            outports[i]->propagateEvent(&e, &inport_);
+        for (size_t i = 0; i < viewManager_.size(); ++i) {
+            ResizeEvent e(glm::max(glm::ivec2(1, 1), viewManager_[i].size));
+            input_.propagateEvent(&e, i);
         }
     } else {
-        auto& data = inport_.getConnectedOutports();
-        auto prop = [&](Event* newEvent, size_t ind) {
-            if (ind < viewManager_.size()) {
-                inport_.propagateEvent(newEvent, data[ind]);
-            }
-        };
-        auto propagated = viewManager_.propagateEvent(event, prop);
-        if (!propagated && event->shouldPropagateTo(&inport_, this, source)) {
-            inport_.propagateEvent(event);
+        auto propagated = viewManager_.propagateEvent(
+            event, [this](Event* e, size_t i) { input_.propagateEvent(e, i); });
+
+        if (!propagated) {
+            input_.propagateEvent(event, this, source);
         }
     }
 }
 
 bool Layout::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) const {
-    IVW_ASSERT(from == &inport_,
-               "Layout was designed for one inport but isConnectionActive was called with "
-               "another inport");
-    const auto ports = inport_.getConnectedOutports();
-    auto portIt = std::find(ports.begin(), ports.end(), to);
-    auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
+    auto id = input_.indexOf(to);
     if (id < viewManager_.size()) {
         // Note: We cannot use Outport dimensions since it might not exist
         return glm::compMul(viewManager_.getViews()[id].size) != 0;
@@ -245,7 +300,7 @@ void Layout::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 
     int count = 0;
-    for (auto p : splitters_) {
+    for (auto* p : splitters_) {
         p->onChange([count, this]() { updateSliders(count); });
         ++count;
     }
@@ -254,13 +309,13 @@ void Layout::deserialize(Deserializer& d) {
 }
 
 void Layout::updateSplitters(bool connect) {
-    const auto numViews = std::distance(inport_.begin(), inport_.end());
+    const auto numViews = input_.size();
 
     size_t count = 0;
     for (ptrdiff_t i = 1; i < numViews; ++i) {
         count++;
         if (splitters_.size() < count) {
-            auto prop = new FloatProperty(
+            auto* prop = new FloatProperty(
                 fmt::format("splitter{}", count - 1), fmt::format("Splitter {}", count),
                 {i / static_cast<float>(numViews), 0.0f, ConstraintBehavior::Immutable, 1.0f,
                  ConstraintBehavior::Immutable, 0.01f, InvalidationLevel::InvalidOutput});
@@ -279,7 +334,7 @@ void Layout::updateSplitters(bool connect) {
 
     updateViewports(currentDim_);
 
-    if (inport_.isConnected() && !connect) {
+    if (!connect) {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     }
@@ -296,13 +351,13 @@ float Layout::getSplitPosition(int i) {
 }
 
 void Layout::updateSliders(int slider) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     // push everything to the left if necessary
     const float minDelta = static_cast<float>(minWidth_.get()) / currentDim_.x;
     float sliderPos = getSplitPosition(slider);
     for (int i = slider - 1; i >= 0; --i) {
-        auto prop = static_cast<FloatProperty*>(splitters_[i]);
+        auto* prop = static_cast<FloatProperty*>(splitters_[i]);
         if (*prop + minDelta < sliderPos) {
             break;
         }
@@ -313,7 +368,7 @@ void Layout::updateSliders(int slider) {
     // push everything to the right if necessary
     sliderPos = getSplitPosition(slider);
     for (size_t i = slider + 1; i < splitters_.size(); ++i) {
-        auto prop = static_cast<FloatProperty*>(splitters_[i]);
+        auto* prop = static_cast<FloatProperty*>(splitters_[i]);
         if (sliderPos < *prop - minDelta) {
             break;
         }
@@ -323,26 +378,24 @@ void Layout::updateSliders(int slider) {
 
     updateViewports(currentDim_);
 
-    if (inport_.isConnected()) {
-        ResizeEvent e(currentDim_);
-        propagateEvent(&e, &outport_);
-    }
+    ResizeEvent e(currentDim_);
+    propagateEvent(&e, &outport_);
 }
 
 ColumnLayout::ColumnLayout() : Layout(splitter::Direction::Vertical) {}
 
 void ColumnLayout::updateViewports(ivec2 dim) {
-    const auto numViews = static_cast<int>(std::distance(inport_.begin(), inport_.end()));
+    const auto numViews = input_.size();
 
     std::vector<int> positions;
     positions.push_back(0);
-    for (auto i = 0; i < numViews - 1; ++i) {
-        positions.push_back(static_cast<int>(getSplitPosition(i) * dim.x));
+    for (size_t i = 1; i < numViews; ++i) {
+        positions.push_back(static_cast<int>(getSplitPosition(i - 1) * static_cast<float>(dim.x)));
     }
     positions.push_back(dim.x);
 
     viewManager_.clear();
-    for (auto i = 0; i < std::max(1, numViews); ++i) {
+    for (size_t i = 0; i < std::max(1uz, numViews); ++i) {
         viewManager_.push_back(ivec4(positions[i], 0, positions[i + 1] - positions[i], dim.y));
     }
     notifyObserversActiveConnectionsChange(this);
@@ -351,17 +404,18 @@ void ColumnLayout::updateViewports(ivec2 dim) {
 RowLayout::RowLayout() : Layout(splitter::Direction::Horizontal) {}
 
 void RowLayout::updateViewports(ivec2 dim) {
-    const auto numViews = static_cast<int>(std::distance(inport_.begin(), inport_.end()));
+    const auto numViews = input_.size();
 
     std::vector<int> positions;
     positions.push_back(dim.y);
-    for (auto i = 0; i < numViews - 1; ++i) {
-        positions.push_back(static_cast<int>((1.0f - getSplitPosition(i)) * dim.y));
+    for (size_t i = 1; i < numViews; ++i) {
+        positions.push_back(
+            static_cast<int>((1.0f - getSplitPosition(i - 1)) * static_cast<float>(dim.y)));
     }
     positions.push_back(0);
 
     viewManager_.clear();
-    for (auto i = 0; i < std::max(1, numViews); ++i) {
+    for (size_t i = 0; i < std::max(1uz, numViews); ++i) {
         viewManager_.push_back(ivec4(0, positions[i + 1], dim.x, positions[i] - positions[i + 1]));
     }
     notifyObserversActiveConnectionsChange(this);

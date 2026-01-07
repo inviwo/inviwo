@@ -46,12 +46,43 @@
 namespace inviwo {
 class Deserializer;
 class Event;
-class Inport;
-class Outport;
+
+namespace layout {
+struct MultiInput {
+    explicit MultiInput(std::function<void(bool)> update);
+
+    void addPorts(Processor* p);
+    size_t size() const;
+    const std::vector<std::shared_ptr<const Image>>& getData();
+    void propagateEvent(Event* event, size_t index);
+    void propagateEvent(Event* event, Processor* p, Outport* source);
+    size_t indexOf(Outport* to) const;
+
+private:
+    ImageMultiInport inport;
+    std::vector<std::shared_ptr<const Image>> data;
+};
+
+struct SequenceInput {
+    explicit SequenceInput(std::function<void(bool)> update);
+
+    void addPorts(Processor* p);
+    size_t size() const;
+    const std::vector<std::shared_ptr<const Image>>& getData();
+    void propagateEvent(Event* event, size_t index);
+    void propagateEvent(Event* event, Processor* p, Outport* source);
+    size_t indexOf(Outport* to) const;
+
+private:
+    DataInport<DataSequence<Image>> inport;
+    std::vector<std::shared_ptr<const Image>> data;
+};
+
+}  // namespace layout
 
 class IVW_MODULE_BASEGL_API Layout : public Processor {
 public:
-    Layout(splitter::Direction direction);
+    explicit Layout(splitter::Direction direction);
     virtual ~Layout() = default;
 
     virtual void process() override;
@@ -66,7 +97,7 @@ protected:
     float getSplitPosition(int i);
     void updateSliders(int i);
 
-    ImageMultiInport inport_;
+    layout::SequenceInput input_;
     ImageOutport outport_;
 
     SplitterProperty splitterSettings_;
