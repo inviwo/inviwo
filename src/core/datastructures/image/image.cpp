@@ -52,33 +52,26 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
         throw Exception("All layers has to have the same dimensions");
     }
 
-    const auto dims = layers.empty() ? size2_t{8, 8} : layers.front()->getDimensions();
+    const auto dims =
+        layers.empty() ? LayerConfig::defaultDimensions : layers.front()->getDimensions();
 
-    if (auto it =
-            std::find_if(layers.begin(), layers.end(),
-                         [](auto& layer) { return layer->getLayerType() == LayerType::Depth; });
-        it != layers.end()) {
-
+    constexpr auto getType = [](const auto& layer) { return layer->getLayerType(); };
+    if (auto it = std::ranges::find(layers, LayerType::Depth, getType); it != layers.end()) {
         depthLayer_ = *it;
         layers.erase(it);
     } else {
         depthLayer_ = createDepthLayer(dims);
     }
 
-    if (auto it =
-            std::find_if(layers.begin(), layers.end(),
-                         [](auto& layer) { return layer->getLayerType() == LayerType::Picking; });
-        it != layers.end()) {
-
+    if (auto it = std::ranges::find(layers, LayerType::Picking, getType); it != layers.end()) {
         pickingLayer_ = *it;
         layers.erase(it);
     } else {
         pickingLayer_ = createPickingLayer(dims);
     }
 
-    if (auto it =
-            std::find_if(layers.begin(), layers.end(),
-                         [](auto& layer) { return layer->getLayerType() != LayerType::Color; });
+    if (auto it = std::ranges::find_if_not(
+            layers, [](auto& layer) { return layer->getLayerType() != LayerType::Color; });
         it != layers.end()) {
         throw Exception(SourceContext{}, "Multiple layers of type {} found", (*it)->getLayerType());
     }
@@ -91,46 +84,56 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
 }
 
 Image::Image(std::shared_ptr<Layer> layer)
-    : DataGroup<Image, ImageRepresentation>(), MetaDataOwner() {
-    if (layer) {
-        const auto dimensions = layer->getDimensions();
+    : DataGroup<Image, ImageRepresentation>()
+    , MetaDataOwner()
+    , colorLayers_{}
+    , depthLayer_{}
+    , pickingLayer_{} {
 
+    const auto dimensions = layer ? layer->getDimensions() : LayerConfig::defaultDimensions;
+    if (layer) {
         switch (layer->getLayerType()) {
             case LayerType::Color: {
-                colorLayers_.push_back(layer);
-                depthLayer_ = createDepthLayer(dimensions);
-                pickingLayer_ = createPickingLayer(dimensions);
+                colorLayers_.emplace_back(std::move(layer));
                 break;
             }
             case LayerType::Depth: {
-                colorLayers_.push_back(createColorLayer(dimensions));
-                depthLayer_ = layer;
-                pickingLayer_ = createPickingLayer(dimensions);
+                depthLayer_ = std::move(layer);
                 break;
             }
             case LayerType::Picking: {
-                colorLayers_.push_back(createColorLayer(dimensions));
-                depthLayer_ = createDepthLayer(dimensions);
-                pickingLayer_ = layer;
+                pickingLayer_ = std::move(layer);
                 break;
             }
         }
-    } else {
-        colorLayers_.push_back(createColorLayer());
-        depthLayer_ = createDepthLayer();
-        pickingLayer_ = createPickingLayer();
+    }
+    if (colorLayers_.empty()) {
+        colorLayers_.emplace_back(createColorLayer(dimensions));
+    }
+    if (!depthLayer_) {
+        depthLayer_ = createDepthLayer(dimensions);
+    }
+    if (!pickingLayer_) {
+        pickingLayer_ = createPickingLayer(dimensions);
     }
 }
 
-Image::Image(const Image& rhs) : DataGroup<Image, ImageRepresentation>(rhs), MetaDataOwner(rhs) {
+Image::Image(const Image& rhs)
+    : DataGroup<Image, ImageRepresentation>(rhs)
+    , MetaDataOwner(rhs)
+    , colorLayers_{}
+    , depthLayer_{}
+    , pickingLayer_{} {
     for (const auto& elem : rhs.colorLayers_) {
-        colorLayers_.push_back(std::shared_ptr<Layer>(elem->clone()));
+        colorLayers_.emplace_back(elem->clone());
     }
 
-    if (auto depth = rhs.getDepthLayer()) depthLayer_ = std::shared_ptr<Layer>(depth->clone());
-
-    if (auto picking = rhs.getPickingLayer())
+    if (const auto* depth = rhs.getDepthLayer()) {
+        depthLayer_ = std::shared_ptr<Layer>(depth->clone());
+    }
+    if (const auto* picking = rhs.getPickingLayer()) {
         pickingLayer_ = std::shared_ptr<Layer>(picking->clone());
+    }
 }
 
 Image::Image(const Image& rhs, NoData, const DataFormatBase* colorLayerFormat)
@@ -146,14 +149,15 @@ Image& Image::operator=(const Image& that) {
         MetaDataOwner::operator=(that);
 
         std::vector<std::shared_ptr<Layer>> colorLayers;
+        colorLayers.reserve(that.colorLayers_.size());
         for (const auto& color : that.colorLayers_) {
             colorLayers.push_back(std::shared_ptr<Layer>(color->clone()));
         }
 
-        auto depth = that.getDepthLayer();
+        const auto* depth = that.getDepthLayer();
         auto depthLayer = depth ? std::shared_ptr<Layer>(depth->clone()) : std::shared_ptr<Layer>();
 
-        auto picking = that.getPickingLayer();
+        const auto* picking = that.getPickingLayer();
         auto pickingLayer =
             picking ? std::shared_ptr<Layer>(picking->clone()) : std::shared_ptr<Layer>();
 
@@ -174,6 +178,7 @@ std::shared_ptr<Layer> Image::createColorLayer(size2_t dimensions, const DataFor
 std::vector<std::shared_ptr<Layer>> Image::createColorLayers(const Image& image,
                                                              const DataFormatBase* format) {
     std::vector<std::shared_ptr<Layer>> layers;
+    layers.reserve(image.getNumberOfColorLayers());
 
     for (size_t i = 0; i < image.getNumberOfColorLayers(); ++i) {
         layers.push_back(std::make_shared<Layer>(*image.getColorLayer(i), noData,
@@ -248,7 +253,7 @@ Layer* Image::getColorLayer(size_t idx) {
     }
 }
 
-void Image::addColorLayer(std::shared_ptr<Layer> layer) { colorLayers_.push_back(layer); }
+void Image::addColorLayer(std::shared_ptr<Layer> layer) { colorLayers_.emplace_back(std::move(layer)); }
 
 size_t Image::getNumberOfColorLayers() const { return colorLayers_.size(); }
 
@@ -263,7 +268,7 @@ Layer* Image::getPickingLayer() { return pickingLayer_.get(); }
 size2_t Image::getDimensions() const { return getColorLayer()->getDimensions(); }
 
 void Image::setDimensions(size2_t dimensions) {
-    for (auto layer : colorLayers_) layer->setDimensions(dimensions);
+    for (auto& layer : colorLayers_) layer->setDimensions(dimensions);
     if (depthLayer_) depthLayer_->setDimensions(dimensions);
     if (pickingLayer_) pickingLayer_->setDimensions(dimensions);
 }
@@ -271,7 +276,7 @@ void Image::setDimensions(size2_t dimensions) {
 std::unique_ptr<std::vector<unsigned char>> Image::getLayerAsCodedBuffer(
     LayerType layerType, const std::string& fileExtension, size_t idx) const {
 
-    if (auto layer = this->getLayer(layerType, idx)) {
+    if (const auto* layer = this->getLayer(layerType, idx)) {
         return layer->getAsCodedBuffer(fileExtension);
     } else {
         log::error("Requested layer does not exist");
@@ -308,8 +313,8 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
     for (const auto& item : order) {
         const auto sIt = representations_.find(item.second);
         if (sIt != representations_.end()) {
-            auto sourceRepr = sIt->second.get();
-            auto targetRepr = targets[item.second].get();
+            auto* sourceRepr = sIt->second.get();
+            auto* targetRepr = targets[item.second].get();
             if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                 sourceRepr->update(false);
                 targetRepr->update(true);
@@ -323,7 +328,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
     }
 
     // Fallback. If no representation exist, create ImageRAM one
-    const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
+    const auto* imageRAM = this->getRepresentation<ImageRAM>();
     if (!imageRAM->copyRepresentationsTo(targetImage->getEditableRepresentation<ImageRAM>())) {
         throw Exception("Failed to copy Image Representation");
     }
@@ -350,7 +355,7 @@ dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
         return it->second->readPixel(pos, layer, index);
     } else {
         // Fallback. If no representation exist, create ImageRAM one
-        const auto imageRAM = getRepresentation<ImageRAM>();
+        const auto* imageRAM = getRepresentation<ImageRAM>();
         return imageRAM->readPixel(pos, layer, index);
     }
 }
