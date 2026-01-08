@@ -43,6 +43,7 @@
 #include <inviwo/core/ports/portfactoryobject.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/processors/datatosequence.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
@@ -435,6 +436,7 @@ void InviwoModule::registerDefaultsForDataType() {
     registerProcessor<SequenceCompositeSource<DataInport<DataSequence<T>>, DataOutport<T>>>();
     registerProcessor<SequenceCompositeSink<DataInport<T>, DataOutport<DataSequence<T>>>>();
     registerProcessor<SequenceSelect<T>>();
+    registerProcessor<DataToSequence<T>>();
 }
 
 template <typename T>
