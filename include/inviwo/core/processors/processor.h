@@ -44,6 +44,7 @@
 #include <inviwo/core/util/transparentmaps.h>
 
 #include <memory>
+#include <concepts>
 
 namespace inviwo {
 
@@ -181,7 +182,7 @@ public:
      * If the parameters are not set, the processor factory will initiate the
      * identifier and displayName with the ProcessorInfo displayName.
      */
-    Processor(std::string_view identifier = "", std::string_view displayName = "");
+    explicit Processor(std::string_view identifier = "", std::string_view displayName = "");
     virtual ~Processor();
 
     // Should be implemented by all inheriting classes;
@@ -376,7 +377,8 @@ public:
      * @param port to add
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
-    template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int> = 0>
+    template <typename T>
+        requires std::derived_from<T, Inport>
     T& addPort(std::unique_ptr<T> port, std::string_view portGroup = "default");
 
     /**
@@ -386,7 +388,8 @@ public:
      * @param port to add
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
-    template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int> = 0>
+    template <typename T>
+        requires std::derived_from<T, Outport>
     T& addPort(std::unique_ptr<T> port, std::string_view portGroup = "default");
 
     /**
@@ -397,6 +400,7 @@ public:
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
     template <typename T>
+        requires std::derived_from<T, Inport> || std::derived_from<T, Outport>
     T& addPort(T& port, std::string_view portGroup = "default");
 
     /**
@@ -469,7 +473,7 @@ private:
     std::vector<InteractionHandler*> interactionHandlers_;
 
     UnorderedStringMap<std::vector<Port*>> groupPorts_;
-    UnorderedStringMap<std::string> portGroups_;
+    std::unordered_map<Port*, std::string> portGroups_;
 
     ProcessorNetwork* network_;
 
@@ -479,7 +483,8 @@ private:
 
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
 
-template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int>>
+template <typename T>
+    requires std::derived_from<T, Inport>
 T& Processor::addPort(std::unique_ptr<T> port, std::string_view portGroup) {
     T& ret = *port;
     addPortInternal(port.get(), portGroup);
@@ -487,7 +492,8 @@ T& Processor::addPort(std::unique_ptr<T> port, std::string_view portGroup) {
     return ret;
 }
 
-template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int>>
+template <typename T>
+    requires std::derived_from<T, Outport>
 T& Processor::addPort(std::unique_ptr<T> port, std::string_view portGroup) {
     T& ret = *port;
     addPortInternal(port.get(), portGroup);
@@ -496,9 +502,8 @@ T& Processor::addPort(std::unique_ptr<T> port, std::string_view portGroup) {
 }
 
 template <typename T>
+    requires std::derived_from<T, Inport> || std::derived_from<T, Outport>
 T& Processor::addPort(T& port, std::string_view portGroup) {
-    static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
-                  "T must be an Inport or Outport");
     addPortInternal(&port, portGroup);
     return port;
 }

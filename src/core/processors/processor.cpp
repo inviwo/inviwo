@@ -123,10 +123,10 @@ void Processor::addPortInternal(Outport* port, std::string_view portGroup) {
 }
 
 Port* Processor::removePort(std::string_view identifier) {
-    if (auto inport = getInport(identifier)) {
+    if (auto* inport = getInport(identifier)) {
         return removePort(inport);
     }
-    if (auto outport = getOutport(identifier)) {
+    if (auto* outport = getOutport(identifier)) {
         return removePort(outport);
     }
     return nullptr;
@@ -184,12 +184,16 @@ void Processor::accept(NetworkVisitor& visitor) {
 }
 
 void Processor::addPortToGroup(Port* port, std::string_view portGroup) {
-    portGroups_[port->getIdentifier()] = portGroup;
-    groupPorts_[std::string(portGroup)].push_back(port);
+    portGroups_[port] = portGroup;
+    if (auto it = groupPorts_.find(portGroup); it != groupPorts_.end()) {
+        it->second.push_back(port);
+    } else {
+        groupPorts_[std::string(portGroup)].push_back(port);
+    }
 }
 
 void Processor::removePortFromGroups(Port* port) {
-    if (auto groupIt = portGroups_.find(port->getIdentifier()); groupIt != portGroups_.end()) {
+    if (auto groupIt = portGroups_.find(port); groupIt != portGroups_.end()) {
         std::erase(groupPorts_[groupIt->second], port);
         if (groupPorts_[groupIt->second].empty()) groupPorts_.erase(groupIt->second);
         portGroups_.erase(groupIt);
@@ -213,7 +217,7 @@ void Processor::setIdentifier(std::string_view identifier) {
             throw Exception(SourceContext{}, R"(Processor identifier "{}" already in use.)",
                             identifier);
         }
-        auto old = identifier_;
+        const auto old = identifier_;
         identifier_ = identifier;
         identifierDispatcher_.invoke(identifier_, old);
     }
@@ -223,20 +227,20 @@ const std::string& Processor::getIdentifier() const { return identifier_; }
 
 auto Processor::onIdentifierChange(std::function<void(std::string_view, std::string_view)> callback)
     -> NameDispatcherHandle {
-    return identifierDispatcher_.add(callback);
+    return identifierDispatcher_.add(std::move(callback));
 }
 
 const std::string& Processor::getDisplayName() const { return displayName_; }
 void Processor::setDisplayName(std::string_view displayName) {
     if (displayName_ != displayName) {
-        auto old = displayName_;
+        const auto old = displayName_;
         displayName_ = displayName;
         displayNameDispatcher_.invoke(displayName_, old);
     }
 }
 auto Processor::onDisplayNameChange(
     std::function<void(std::string_view, std::string_view)> callback) -> NameDispatcherHandle {
-    return displayNameDispatcher_.add(callback);
+    return displayNameDispatcher_.add(std::move(callback));
 }
 
 void Processor::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
@@ -250,22 +254,22 @@ bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr
 void Processor::setNetwork(ProcessorNetwork* network) { network_ = network; }
 
 Port* Processor::getPort(std::string_view identifier) const {
-    for (auto port : inports_)
-        if (port->getIdentifier() == identifier) return port;
-    for (auto port : outports_)
-        if (port->getIdentifier() == identifier) return port;
+    if (auto* port = getInport(identifier)) return port;
+    if (auto* port = getOutport(identifier)) return port;
     return nullptr;
 }
 
 Inport* Processor::getInport(std::string_view identifier) const {
-    for (auto port : inports_)
+    for (auto* port : inports_) {
         if (port->getIdentifier() == identifier) return port;
+    }
     return nullptr;
 }
 
 Outport* Processor::getOutport(std::string_view identifier) const {
-    for (auto port : outports_)
+    for (auto* port : outports_) {
         if (port->getIdentifier() == identifier) return port;
+    }
     return nullptr;
 }
 
@@ -274,7 +278,7 @@ const std::vector<Inport*>& Processor::getInports() const { return inports_; }
 const std::vector<Outport*>& Processor::getOutports() const { return outports_; }
 
 const std::string& Processor::getPortGroup(Port* port) const {
-    auto it = portGroups_.find(port->getIdentifier());
+    auto it = portGroups_.find(port);
     if (it != portGroups_.end()) {
         return it->second;
     } else {
@@ -355,15 +359,15 @@ void Processor::serialize(Serializer& s) const {
     s.serialize("identifier", identifier_, SerializationTarget::Attribute);
     s.serialize("displayName", displayName_, SerializationTarget::Attribute);
 
-    s.serialize("PortGroups", portGroups_, "PortGroup", [&](const auto& pair) {
-        return util::contains_if(ownedInports_,
-                                 [&](const std::unique_ptr<Inport>& p) {
-                                     return p->getIdentifier() == pair.first;
-                                 }) ||
-               util::contains_if(ownedOutports_, [&](const std::unique_ptr<Outport>& p) {
-                   return p->getIdentifier() == pair.first;
-               });
-    });
+    s.serialize(
+        "PortGroups", portGroups_, "PortGroup",
+        [&](const auto& pair) {
+            return std::ranges::contains(ownedInports_, pair.first,
+                                         [](const auto& p) { return p.get(); }) ||
+                   std::ranges::contains(ownedOutports_, pair.first,
+                                         [](const auto& p) { return p.get(); });
+        },
+        [](const Port* port) { return port->getIdentifier(); });
 
     s.serialize("OwnedInportIdentifiers", ownedInports_, "InportIdentifier", util::alwaysTrue{},
                 util::identifier{});
@@ -399,7 +403,7 @@ void Processor::deserialize(Deserializer& d) {
                 .shouldMakeNew = [&](std::string_view id,
                                      size_t) { return util::contains(ownedInportIds, id); },
                 .canRecreate = [&](std::string_view id,
-                                      size_t) { return util::contains(ownedInportIds, id); },
+                                   size_t) { return util::contains(ownedInportIds, id); },
                 .onNew =
                     [&](Inport*& port, size_t) {
                         if (const auto it = portGroups.find(port->getIdentifier());
@@ -432,7 +436,7 @@ void Processor::deserialize(Deserializer& d) {
                 .shouldMakeNew = [&](std::string_view id,
                                      size_t) { return util::contains(ownedOutportIds, id); },
                 .canRecreate = [&](std::string_view id,
-                                      size_t) { return util::contains(ownedOutportIds, id); },
+                                   size_t) { return util::contains(ownedOutportIds, id); },
                 .onNew =
                     [&](Outport*& port, size_t) {
                         if (const auto it = portGroups.find(port->getIdentifier());
@@ -471,7 +475,7 @@ void Processor::invokeEvent(Event* event) {
     PropertyOwner::invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    for (auto elem : interactionHandlers_) elem->invokeEvent(event);
+    for (auto* elem : interactionHandlers_) elem->invokeEvent(event);
 }
 
 void Processor::propagateEvent(Event* event, Outport* source) {
@@ -481,7 +485,7 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     bool used = event->hasBeenUsed();
     if (used) return;
 
-    for (auto inport : getInports()) {
+    for (auto* inport : getInports()) {
         if (event->shouldPropagateTo(inport, this, source)) {
             inport->propagateEvent(event);
             used |= event->markAsUnused();
