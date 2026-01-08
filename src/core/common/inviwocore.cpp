@@ -118,6 +118,7 @@
 #include <inviwo/core/processors/sequenceprocessor.h>
 #include <inviwo/core/processors/sequencecompositesink.h>
 #include <inviwo/core/processors/sequencecompositesource.h>
+#include <inviwo/core/processors/sequenceselect.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -209,7 +210,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProcessor<SequenceProcessor>();
     registerProcessor<SequenceCompositeSink<ImageInport, DataOutport<DataSequence<Image>>>>();
     registerProcessor<SequenceCompositeSource<DataInport<DataSequence<Image>>, ImageOutport>>();
+    registerProcessor<SequenceSelect<Image, ImageOutport>>();
 
+    registerDefaultsForDataType<Layer>();
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();
     registerDefaultsForScalarDataType<VolumeSequence>();

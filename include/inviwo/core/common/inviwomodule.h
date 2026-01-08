@@ -50,6 +50,7 @@
 #include <inviwo/core/processors/compositesource.h>
 #include <inviwo/core/processors/sequencecompositesink.h>
 #include <inviwo/core/processors/sequencecompositesource.h>
+#include <inviwo/core/processors/sequenceselect.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
@@ -433,6 +434,7 @@ void InviwoModule::registerDefaultsForDataType() {
 
     registerProcessor<SequenceCompositeSource<DataInport<DataSequence<T>>, DataOutport<T>>>();
     registerProcessor<SequenceCompositeSink<DataInport<T>, DataOutport<DataSequence<T>>>>();
+    registerProcessor<SequenceSelect<T>>();
 }
 
 template <typename T>
