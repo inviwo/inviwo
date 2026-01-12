@@ -39,29 +39,29 @@ namespace inviwo {
 
 namespace meshutil {
 /**
- * \brief The weighting modes for calculating normals
+ * @brief The weighting modes for calculating normals
  */
 enum class CalculateMeshNormalsMode {
     /**
-     * \brief Pass through, mesh is not changed
+     * @brief Pass through, mesh is not changed
      */
     PassThrough,
     /**
-     * \brief no weighting of the normals, simple average
+     * @brief no weighting of the normals, simple average
      */
     NoWeighting,
     /**
-     * \brief Weight = area of the triangle
+     * @brief Weight = area of the triangle
      */
     WeightArea,
     /**
-     * \brief Weight based on the angle.
+     * @brief Weight based on the angle.
      * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
      * Charles A. Wüthrich 1998.
      */
     WeightAngle,
     /**
-     * \brief Based on "Weights for Computing Vertex Normals from Facet Normals", N. Max, 1999.
+     * @brief Based on "Weights for Computing Vertex Normals from Facet Normals", N. Max, 1999.
      * This gives the best results in most cases.
      */
     WeightNMax

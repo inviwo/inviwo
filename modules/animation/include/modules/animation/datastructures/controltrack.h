@@ -47,7 +47,7 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class ControlTrack
+/**
  * A special track for manipulating the playback.
  * Exposes functions for adding a ControlKeyFrame and ControlKeyFrameSequence
  * @see Track

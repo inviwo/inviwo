@@ -180,7 +180,7 @@ public:
     void clearSegments();
 
     /**
-     * \brief adds an additional output specifier to the shader
+     * @brief adds an additional output specifier to the shader
      * The given name will be added as
      *
      *     out __type__ __name__;
@@ -199,7 +199,7 @@ public:
     const std::vector<OutDeclaration>& getOutDeclarations() const;
 
     /**
-     * \brief adds an additional input specifier to the shader
+     * @brief adds an additional input specifier to the shader
      * The given name will be added as
      *
      *     in __type__ __name__;

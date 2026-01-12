@@ -50,8 +50,7 @@ ALLOW_FLAGS_FOR_ENUM(PropertyPresetType)
 using PropertyPresetTypes = flags::flags<PropertyPresetType>;
 
 /**
- * \class PropertyPresetManager
- * \brief Manage property presets. Has a set of global application presets, a set of workspace
+ * @brief Manage property presets. Has a set of global application presets, a set of workspace
  * presets, and handles property specific presets.
  */
 class IVW_CORE_API PropertyPresetManager {

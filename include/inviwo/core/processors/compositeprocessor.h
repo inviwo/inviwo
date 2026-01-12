@@ -47,8 +47,7 @@ class CompositeSinkBase;
 class CompositeSourceBase;
 
 /**
- * \class CompositeProcessor
- * \brief A processor containing a network of processors, i.e. it will act as a sub network within a
+ * @brief A processor containing a network of processors, i.e. it will act as a sub network within a
  * processor network. A CompositeProcessor can be used to reduce cluttering in the network. Also
  * makes it easy to reuse groups of processors inside of a network, and across network since they
  * can be saved in the processor list. A CompositeProcessor is usually created by selecting a group

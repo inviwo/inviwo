@@ -37,7 +37,7 @@ namespace inviwo {
 /**
  * \struct TextBoundingBox
  *
- * \brief struct for holding bounding box information for a specific text
+ * @brief struct for holding bounding box information for a specific text
  *
  * The textual bounding box for a string has its origin (0,0) at the bottom-left corner and is
  * given by its extent. The bounding box enclosing all glyphs has its own origin relative to (0,0).

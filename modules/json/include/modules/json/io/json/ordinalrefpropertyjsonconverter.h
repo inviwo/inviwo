@@ -44,10 +44,10 @@ class OrdinalRefProperty;
  * @see OrdinalRefProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * OrdinalRefProperty<double> p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 template <typename T>
 void to_json(json& j, const OrdinalRefProperty<T>& p) {
@@ -66,9 +66,9 @@ void to_json(json& j, const OrdinalRefProperty<T>& p) {
  * @see OrdinalRefProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<OrdinalRefProperty<double>>();
- * \endcode
+ * @endcode
  */
 template <typename T>
 void from_json(const json& j, OrdinalRefProperty<T>& p) {

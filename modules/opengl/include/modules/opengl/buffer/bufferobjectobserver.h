@@ -34,12 +34,10 @@
 
 namespace inviwo {
 
-/** \class BufferObjectObserver
- *
+/**
  * This observer is notified before and after
  * a buffer is initialized (glBufferData is called).
  * This enables shared objects to release and rebind the buffer.
- *
  *
  * @see Observable
  * @see BufferObject

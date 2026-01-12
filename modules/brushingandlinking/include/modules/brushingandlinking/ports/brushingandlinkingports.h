@@ -112,7 +112,7 @@ public:
      *
      * @return true if there have been recent changes
      *
-     * \see getModifiedActions
+     * @see getModifiedActions
      */
     virtual bool isChanged() const override;
 
@@ -169,7 +169,7 @@ public:
      *
      * @throw Exception if action is BrushingAction::Filter and no source is given
      *
-     * \see BrushingAndLinkingManager::brush
+     * @see BrushingAndLinkingManager::brush
      */
     void brush(BrushingAction action, BrushingTarget target, const BitSet& indices,
                std::string_view source = {});

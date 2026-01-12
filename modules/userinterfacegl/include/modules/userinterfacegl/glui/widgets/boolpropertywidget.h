@@ -47,8 +47,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class BoolPropertyWidget
- * \brief glui property widget for a bool property using glui::CheckBox
+ * @brief glui property widget for a bool property using glui::CheckBox
  */
 class IVW_MODULE_USERINTERFACEGL_API BoolPropertyWidget : public CheckBox,
                                                           public PropertyWidget,

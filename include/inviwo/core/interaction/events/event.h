@@ -40,7 +40,8 @@ namespace inviwo {
 class Processor;
 class Inport;
 class Outport;
-/** \class Event
+
+/**
  * Events are propagated upwards in the ProcessorNetwork through ports of processors until
  * they are marked as used or reach a SourceProcessor.
  */

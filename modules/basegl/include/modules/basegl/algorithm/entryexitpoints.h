@@ -52,8 +52,7 @@ enum class IncludeNormals { Yes, No };
 enum class CapNearClip { Yes, No };
 
 /**
- * \class EntryExitPointsHelper
- * \brief Helper class for creating entry and exit points for a mesh
+ * @brief Helper class for creating entry and exit points for a mesh
  */
 class IVW_MODULE_BASEGL_API EntryExitPointsHelper {
 public:
@@ -61,7 +60,7 @@ public:
     ~EntryExitPointsHelper() = default;
 
     /**
-     * \brief computes entry and exit points for raycasting using the given \p camera and bounding
+     * @brief computes entry and exit points for raycasting using the given \p camera and bounding
      * geometry \p mesh. The color components of \p mesh are interpreted as positions in Data
      * space.
      *
@@ -78,7 +77,7 @@ public:
                     CapNearClip capNearClip, IncludeNormals includeNormals);
 
     /**
-     * \brief computes entry and exit points for raycasting using the given \p camera and bounding
+     * @brief computes entry and exit points for raycasting using the given \p camera and bounding
      * geometry \p mesh. The color components of \p mesh are interpreted as positions in Data
      * space.
      *
@@ -95,7 +94,7 @@ public:
                     const Mesh& mesh, CapNearClip capNearClip, IncludeNormals includeNormals);
 
     /**
-     * \brief computes entry and exit points for raycasting using the given \p camera and bounding
+     * @brief computes entry and exit points for raycasting using the given \p camera and bounding
      * geometry \p mesh. Positions of \p mesh are mapped to Data space (texture coordinates) of the
      * volume by using the Model to Data space transformation of \p volume.
      *
@@ -113,7 +112,7 @@ public:
                     IncludeNormals includeNormals);
 
     /**
-     * \brief computes entry and exit points for raycasting using the given \p camera and bounding
+     * @brief computes entry and exit points for raycasting using the given \p camera and bounding
      * geometry \p mesh. Positions of \p mesh are mapped to Data space (texture coordinates) of the
      * volume by using the Model to Data space transformation of \p volume.
      *

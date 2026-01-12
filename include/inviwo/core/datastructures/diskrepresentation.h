@@ -49,7 +49,7 @@ class DiskRepresentationLoader;
 
 /**
  * @ingroup datastructures
- * Base class for all DiskRepresentations \see Data, DataRepresentation
+ * Base class for all DiskRepresentations @see Data, DataRepresentation
  */
 template <typename Repr, typename Self>
 class DiskRepresentation {

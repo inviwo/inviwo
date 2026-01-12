@@ -45,8 +45,7 @@ namespace inviwo {
 class InviwoApplication;
 
 /**
- * \class InviwoModuleLibraryObserver
- * \brief Serializes the network, reloads modules and de-serializes the network when observed module
+ * @brief Serializes the network, reloads modules and de-serializes the network when observed module
  * library changes.
  */
 class IVW_CORE_API InviwoModuleLibraryObserver {

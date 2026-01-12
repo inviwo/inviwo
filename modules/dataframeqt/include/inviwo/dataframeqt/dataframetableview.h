@@ -50,7 +50,7 @@ class DataFrameModel;
 class DataFrameSortFilterProxy;
 
 /**
- * \brief Widget for showing a DataFrame in a QTableView
+ * @brief Widget for showing a DataFrame in a QTableView
  */
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTableView : public QTableView {
 #include <warn/push>

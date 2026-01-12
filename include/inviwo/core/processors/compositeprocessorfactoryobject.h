@@ -40,9 +40,6 @@ namespace inviwo {
 
 class InviwoApplication;
 
-/**
- * \class CompositeProcessorFactoryObject
- */
 class IVW_CORE_API CompositeProcessorFactoryObject : public ProcessorFactoryObject {
 public:
     CompositeProcessorFactoryObject(const std::filesystem::path& filen);

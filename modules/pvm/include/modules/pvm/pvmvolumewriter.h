@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-/** \brief Writer for *.pvm files
+/** @brief Writer for *.pvm files
  *
  *  Format designed by Stefan Roettger
  */

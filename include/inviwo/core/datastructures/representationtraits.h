@@ -32,8 +32,7 @@
 namespace inviwo {
 
 /**
- * \class representation_traits
- * \brief A type trait to connect data classes to representation classes of different kinds.
+ * @brief A type trait to connect data classes to representation classes of different kinds.
  */
 namespace kind {
 struct Base {};

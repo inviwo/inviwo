@@ -44,7 +44,7 @@ class QWidget;
 namespace inviwo {
 
 /**
- * \brief A text overlay widget
+ * @brief A text overlay widget
  */
 class IVW_MODULE_QTWIDGETS_API TextLabelOverlay : public QLabel {
 public:

@@ -42,7 +42,7 @@ namespace inviwo {
 
 /**
  * @ingroup dataio
- *\brief Reader for *.dat files
+ *@brief Reader for *.dat files
  *
  *  The following tags are supported:
  *   - __RawFile__      The name of the raw data file, should be in the same directory (Mandatory).

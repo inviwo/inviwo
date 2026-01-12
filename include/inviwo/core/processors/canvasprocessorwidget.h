@@ -38,7 +38,7 @@ namespace inviwo {
 class Canvas;
 
 /**
- * \brief A processor widget that has a canvas.
+ * @brief A processor widget that has a canvas.
  * CanvasProcessorWidget is the base class for all processor widgets with canvases.
  *
  * The CanvasProcessorWidget is responsible for sending ResizeEvents up the network whenever there

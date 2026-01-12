@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \brief Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
+ * @brief Computes the gradient magnitude of a 3D scalar field and outputs it as float volume.
  *
  * This processor internally computes the gradients of the given 3D scalar field and only
  * writes the magnitudes of the gradients to the outport. It yields the same results as

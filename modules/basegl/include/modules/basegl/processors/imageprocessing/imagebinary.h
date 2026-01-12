@@ -39,9 +39,7 @@
 namespace inviwo {
 
 /**
- * \class ImageBinary
- *
- * \brief computes a binary image of the input image using a threshold.
+ * @brief computes a binary image of the input image using a threshold.
  */
 class IVW_MODULE_BASEGL_API ImageBinary : public ImageGLProcessor {
 public:

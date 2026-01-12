@@ -53,7 +53,7 @@ class Volume;
  * a more advanced version including shading and isosurfaces check out the VolumeRaycaster
  * processor.
  *
- * \see VolumeRaycaster
+ * @see VolumeRaycaster
  */
 class IVW_MODULE_EXAMPLE_API SimpleRaycaster : public Processor {
 public:

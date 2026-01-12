@@ -81,7 +81,7 @@ void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
 /**
  * A utility for iterating over types in a list.
  * Example:
- * \code{.cpp}
+ * @code{.cpp}
  *     struct Functor {
  *         template <typename T>
  *         auto operator()(std::vector<Property*>& properties) {
@@ -91,7 +91,7 @@ void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
  *     std::vector<Property*>& properties;
  *     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
  *     util::for_each_type<Vec4s>{}(Functor{}, properties);
- * \endcode
+ * @endcode
  */
 template <class... Types>
 struct for_each_type;
@@ -118,7 +118,7 @@ struct for_each_type<std::tuple<T, Types...>> {
 /**
  * A utility for iterating over all permutations of pairs from two lists of types.
  * Example:
- * \code{.cpp}
+ * @code{.cpp}
  *     struct Functor {
  *         template <typename T, typename U>
  *         auto operator()(std::vector<Converter*>& converters) {
@@ -128,7 +128,7 @@ struct for_each_type<std::tuple<T, Types...>> {
  *     std::vector<Converter*> converters;
  *     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
  *     util::for_each_type_pair<Vec4s, Vec4s>{}(Functor{}, converters);
- * \endcode
+ * @endcode
  */
 template <class ATypes, class BTypes>
 struct for_each_type_pair;

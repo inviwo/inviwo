@@ -258,7 +258,7 @@ public:
         requires std::is_same_v<T, std::string>;
 
     /**
-     * \brief Adds an option to the property
+     * @brief Adds an option to the property
      *
      * Adds a option to the property and stores it as a struct in the options_
      * The option name is the name of the option that will be displayed in the widget.

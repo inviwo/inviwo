@@ -77,7 +77,7 @@
 namespace inviwo {
 
 /**
- * \brief Assimp LogStream => Inviwo LogCentral
+ * @brief Assimp LogStream => Inviwo LogCentral
  *
  *  Derive Assimp::LogStream to forward logged messages from the library to Inviwos LogCentral.
  */

@@ -57,7 +57,7 @@ public:
     virtual std::string getContentType() const = 0;
 
     /**
-     * \brief sets the current directory of the file dialog to the parent directory of the given
+     * @brief sets the current directory of the file dialog to the parent directory of the given
      *   file name or, if it is referring to a directory, to the given path. The file will be
      *   selected when the dialog is shown.
      *
@@ -68,7 +68,7 @@ public:
     std::filesystem::path getSelectedFile() const;
     virtual std::vector<std::filesystem::path> getSelectedFiles() const = 0;
     /**
-     * \brief set the current directory of the file dialog
+     * @brief set the current directory of the file dialog
      *
      * @param path  given path, must not contain a file name
      */

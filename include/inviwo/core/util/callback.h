@@ -79,7 +79,7 @@ public:
     }
 
     /**
-     * \brief Removes callback if the callback was added before.
+     * @brief Removes callback if the callback was added before.
      * @param callback Callback to be removed.
      * @return bool True if removed, false otherwise.
      */
@@ -94,7 +94,7 @@ public:
     }
 
     /**
-     * \brief Removes all added callbacks.
+     * @brief Removes all added callbacks.
      */
     void clear() { callBackList_.clear(); }
 

@@ -58,7 +58,7 @@ public:
     virtual void process() override;
     virtual void invokeEvent(Event* event) override;
     /*
-     * \brief Pan from one pixel to another.
+     * @brief Pan from one pixel to another.
      */
     void pan(ivec2 from, ivec2 to);
     ImageInport inport_;

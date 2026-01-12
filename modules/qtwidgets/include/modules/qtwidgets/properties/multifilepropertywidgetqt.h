@@ -44,8 +44,7 @@ class MultiFileProperty;
 class FilePathLineEditQt;
 
 /**
- * \class MultiFilePropertyWidgetQt
- * \brief Property widget for MultiFileProperty showing only the first file name.
+ * @brief Property widget for MultiFileProperty showing only the first file name.
  */
 class IVW_MODULE_QTWIDGETS_API MultiFilePropertyWidgetQt : public PropertyWidgetQt,
                                                            public FileRequestable {

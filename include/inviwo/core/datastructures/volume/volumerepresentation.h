@@ -56,7 +56,7 @@ public:
     std::string_view getDataFormatString() const { return getDataFormat()->getString(); }
     DataFormatId getDataFormatId() const { return getDataFormat()->getId(); }
     /**
-     * \brief update the swizzle mask of the color channels when sampling the volume
+     * @brief update the swizzle mask of the color channels when sampling the volume
      *
      * @param mask new swizzle mask
      */

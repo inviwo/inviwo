@@ -47,8 +47,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class RangeSlider
- * \brief glui::element representing a range slider, the label is positioned to the right. If the
+ * @brief glui::element representing a range slider, the label is positioned to the right. If the
  * flipped flag is set, the range slider uses the inverted range, i.e. the positions of the min/max
  * values are swapped.
  */
@@ -90,7 +89,7 @@ protected:
     const ivec2& getPreviousValue() const;
 
     /**
-     * \brief transform mouse movements from pixel to normalized slider range while also
+     * @brief transform mouse movements from pixel to normalized slider range while also
      * considering the slider orientation
      *
      * @param delta   (in screen coords, i.e. pixel)

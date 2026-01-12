@@ -49,21 +49,21 @@ bool IVW_CORE_API isBricked(const std::shared_ptr<const Volume>& volume);
 size3_t IVW_CORE_API getBrickDimensions(const std::shared_ptr<const Volume>& volume);
 
 /**
- * \brief return the margins of a volume, in normalized texture coordinates [0,1]
+ * @brief return the margins of a volume, in normalized texture coordinates [0,1]
  *
  * @return pair of margins from the bottom left corner and the top right corner
  */
 std::pair<vec3, vec3> IVW_CORE_API getVolumeMargins(const std::shared_ptr<const Volume>& volume);
 
 /**
- * \brief returns the true volume dimensions considering volume margins and bricking
+ * @brief returns the true volume dimensions considering volume margins and bricking
  *
  * @return true volume dimensions
  */
 size3_t IVW_CORE_API getVolumeDimensions(const std::shared_ptr<const Volume>& volume);
 
 /**
- * \brief calculates the volume of a single voxel, taking the basis and the dimensions into account
+ * @brief calculates the volume of a single voxel, taking the basis and the dimensions into account
  * The units of the result is in the unit as the basis vectors ^3
  *
  * @return volume of one voxel

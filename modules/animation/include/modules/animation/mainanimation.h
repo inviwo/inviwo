@@ -46,7 +46,7 @@ namespace animation {
 class Animation;
 
 /**
- * \brief Responsible for the main AnimationController and saving it in the workspace.
+ * @brief Responsible for the main AnimationController and saving it in the workspace.
  *
  * This class is intented to be owned by WorkspaceAnimations, which is responsible for animations
  * stored in the workspace. The main Animation can only be changed through WorkspaceAnimations.

@@ -110,7 +110,7 @@ struct asPointer<false> {
  * PropagateConst decides if we should treat the value as const if the pointer is const.
  *
  * Example:
- * \code{.cpp}
+ * @code{.cpp}
  * std::vector<std::unique_ptr<int>> vec;
  * for (int i = 0; i < 5; ++i) {
  *     vec.push_back(std::make_unique<int>(i));
@@ -126,7 +126,7 @@ struct asPointer<false> {
  * auto mutable_it = util::makeIndirectIterator<false>(vec.cbegin());
  * *mutable_it = 5; // will work since __don't__ propagate const from the pointer to the value
  *
- * \endcode
+ * @endcode
  *
  * The use case is to container types that stores items using a vector of pointers, but want to
  * expose an iterator directly to the item not to the pointer.

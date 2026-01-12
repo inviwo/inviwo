@@ -39,7 +39,6 @@ namespace inviwo {
 class DataFrame;
 
 /**
- * \class JSONDataFrameReader
  * @ingroup dataio
  * Reads a json file into DataFrame
  * Expects object layout:

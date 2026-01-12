@@ -37,7 +37,7 @@ class StipplingSettingsInterface;
 class TransferFunction;
 
 /**
- * \brief Settings for line rendering
+ * @brief Settings for line rendering
  */
 class IVW_MODULE_BASEGL_API LineSettingsInterface {
 public:

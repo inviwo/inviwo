@@ -38,7 +38,7 @@ namespace inviwo {
 
 class PickingEvent;
 
-/** \class PickingManager
+/**
  * Manager for picking objects.
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {

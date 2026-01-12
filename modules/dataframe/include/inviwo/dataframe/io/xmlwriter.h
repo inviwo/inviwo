@@ -41,7 +41,7 @@ namespace inviwo {
 class DataFrame;
 
 /**
- * \brief DataFrame XML Writer
+ * @brief DataFrame XML Writer
  */
 class IVW_MODULE_DATAFRAME_API XMLWriter : public DataWriterType<DataFrame> {
 public:

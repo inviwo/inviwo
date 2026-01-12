@@ -41,8 +41,7 @@
 
 namespace inviwo {
 
-/** \class ClockGL
- *
+/**
  * Clock for measuring elapsed time between a start and stop points on the GPU using OpenGL
  * performance timer queries. The clock accumulates the elapsed times when start and stop are called
  * multiple times.
@@ -51,7 +50,7 @@ namespace inviwo {
  *       instance in different render contexts results in undefined behavior and getElapsedTime()
  *       will most likely time out.
  *
- * \see RenderContext::activateDefaultRenderContext, RenderContext::activateLocalRenderContext
+ * @see RenderContext::activateDefaultRenderContext, RenderContext::activateLocalRenderContext
  */
 class IVW_MODULE_OPENGL_API ClockGL {
 public:
@@ -128,7 +127,7 @@ public:
      *
      * @param timeout    time out in seconds when querying the OpenGL performance counters
      * @return accumulated time in milliseconds
-     * \see getElapsedTime
+     * @see getElapsedTime
      */
     double getElapsedMilliseconds(std::chrono::seconds timeout = std::chrono::seconds{30});
 
@@ -140,7 +139,7 @@ public:
      *
      * @param timeout    time out in seconds when querying the OpenGL performance counters
      * @return accumulated time in seconds
-     * \see getElapsedTime
+     * @see getElapsedTime
      */
     double getElapsedSeconds(std::chrono::seconds timeout = std::chrono::seconds{30});
 
@@ -162,8 +161,8 @@ protected:
 /**
  * scoped clock for OpenGL time measurements
  *
- * \see IVW_OPENGL_PROFILING(message), IVW_OPENGL_PROFILING_CUSTOM(src, message)
- * \see IVW_OPENGL_PROFILING_IF(time, message), IVW_OPENGL_PROFILING_IF(time, src, message)
+ * @see IVW_OPENGL_PROFILING(message), IVW_OPENGL_PROFILING_CUSTOM(src, message)
+ * @see IVW_OPENGL_PROFILING_IF(time, message), IVW_OPENGL_PROFILING_IF(time, src, message)
  */
 template <typename Callback>
 using ScopedClockGL = ScopedClock<ClockGL, Callback>;

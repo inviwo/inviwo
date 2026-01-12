@@ -42,8 +42,7 @@
 namespace inviwo {
 
 /**
- * \class MeshMapping
- * \brief Maps the contents of a buffer to colors of a mesh via a transfer function.
+ * @brief Maps the contents of a buffer to colors of a mesh via a transfer function.
  */
 class IVW_MODULE_BASE_API MeshMapping : public Processor {
 public:

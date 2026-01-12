@@ -41,8 +41,7 @@
 namespace inviwo {
 
 /**
- * \class ShaderResource
- * \brief Abstraction for a shader source file.
+ * @brief Abstraction for a shader source file.
  */
 class IVW_MODULE_OPENGL_API ShaderResource {
 public:

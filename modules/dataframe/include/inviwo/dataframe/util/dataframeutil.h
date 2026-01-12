@@ -63,7 +63,7 @@ IVW_MODULE_DATAFRAME_API void copyBufferRange(std::shared_ptr<const BufferBase> 
                                               size_t dstStart = 0);
 
 /**
- * \brief create a new DataFrame by appending the columns of DataFrame \p right to DataFrame \p left
+ * @brief create a new DataFrame by appending the columns of DataFrame \p right to DataFrame \p left
  *
  * @param left
  * @param right
@@ -79,7 +79,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendColumns(const DataFram
                                                                   bool fillMissingRows = false);
 
 /**
- * \brief create a new DataFrame by appending the rows of DataFrame \p bottom to DataFrame \p top
+ * @brief create a new DataFrame by appending the rows of DataFrame \p bottom to DataFrame \p top
  * @param top
  * @param bottom
  * @param matchByName    if true, column headers are used for matching columns. Otherwise columns
@@ -92,7 +92,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> appendRows(const DataFrame& 
                                                                bool matchByName = false);
 
 /**
- * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
+ * @brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
  * That is only rows with matching keys are kept. The row indices of \p left will be reused.
  *
  * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
@@ -108,7 +108,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
     const std::pair<std::string, std::string>& keyColumns = {"index", "index"});
 
 /**
- * \brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
+ * @brief create a new DataFrame by using an inner join of DataFrame \p left and DataFrame \p right.
  * That is only rows with matching keys are kept. The row indices of \p left will be reused.
  *
  * It is assumed that the entries in the key columns are unique. Otherwise results are undefined.
@@ -123,7 +123,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> innerJoin(
     const std::vector<std::pair<std::string, std::string>>& keyColumns);
 
 /**
- * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
+ * @brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
  * right. That is all rows of \p left are augmented with matching rows from \p right.  The row
  * indices of \p left will be reused.
  *
@@ -142,7 +142,7 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> leftJoin(
     const std::pair<std::string, std::string>& keyColumns = {"index", "index"});
 
 /**
- * \brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
+ * @brief create a new DataFrame by using an outer left join of DataFrame \p left and DataFrame \p
  * right. That is all rows of \p left are augmented with matching rows from \p right.  The row
  * indices of \p left will be reused.
  *
@@ -164,27 +164,27 @@ IVW_MODULE_DATAFRAME_API std::shared_ptr<DataFrame> combineDataFrames(
     std::string skipcol = "index");
 
 /**
- * \brief apply predicate \p pred to each value of column \p col and return the row indices where
+ * @brief apply predicate \p pred to each value of column \p col and return the row indices where
  * the predicate evaluates to true.
  *
  * Note: the predicate function needs to take care of the different column datatypes
- * \code{.cpp}
+ * @code{.cpp}
  * auto pred = [](const auto& arg) {
  *                 if  constexpr(std::is_same_v<decltype(arg), float>) {
  *                     return  arg == 4.5f
  *                 } else {
  *                     return true;
  *                 }};
- * \endcode
+ * @endcode
  *
  * Alternatively, predicate overloads can be used.
- * \code{.cpp}
+ * @code{.cpp}
  * #include <inviwo/core/util/stdextensions.h>
  *
  * auto pred = util::overloaded{[](const std::string& arg) { return arg == "bla"; },
  *                              [](const int& arg) { return arg == 5;  },
  *                              [](const auto&) { return true; });
- * \endcode
+ * @endcode
  *
  * @param col   column containing data for filtering
  * @param pred  predicate to check values from \p col
@@ -195,7 +195,7 @@ template <typename Pred>
 std::vector<std::uint32_t> selectRows(std::shared_ptr<const Column> col, Pred pred);
 
 /**
- * \brief apply the \p filters to each row of column \p col and return the row indices where
+ * @brief apply the \p filters to each row of column \p col and return the row indices where
  * any of the filters evaluates to true.
  *
  * @param col     column containing data for filtering
@@ -207,7 +207,7 @@ IVW_MODULE_DATAFRAME_API std::vector<std::uint32_t> selectRows(
     const Column& col, const std::vector<dataframefilters::ItemFilter>& filters);
 
 /**
- * \brief apply the \p filters to each row of \p dataframe and return the row indices where
+ * @brief apply the \p filters to each row of \p dataframe and return the row indices where
  * any of the include filters and no exclude filter evaluates to true.
  *
  * @param dataframe   column containing data for filtering

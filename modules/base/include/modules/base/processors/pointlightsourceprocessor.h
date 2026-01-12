@@ -86,7 +86,7 @@ public:
     void setHandleEventsOptions(int);
 
     /**
-     * \brief Changes the direction of the light source, relative to the camera,
+     * @brief Changes the direction of the light source, relative to the camera,
      * such that it acts as if it comes from the direction where the user clicked on the screen.
      *
      * Intersects a sphere covering the scene and places the light source

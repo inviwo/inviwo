@@ -45,26 +45,26 @@ class TransferFunctionProperty;
 namespace util {
 
 /**
- * \brief Shows an InviwoFileDialog to import a TransferFunction from a file.
+ * @brief Shows an InviwoFileDialog to import a TransferFunction from a file.
  *
  */
 IVW_MODULE_QTWIDGETS_API std::shared_ptr<TransferFunction> importTransferFunctionDialog();
 
 /**
- * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
+ * @brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
  *
  * @param tf             TransferFunction set to be exported
  */
 IVW_MODULE_QTWIDGETS_API void exportTransferFunctionDialog(const TransferFunction& tf);
 
 /**
- * \brief Shows an InviwoFileDialog to import a IsoValueCollection from a file.
+ * @brief Shows an InviwoFileDialog to import a IsoValueCollection from a file.
  *
  */
 IVW_MODULE_QTWIDGETS_API std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog();
 
 /**
- * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
+ * @brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
  *
  * @param iso            IsoValueCollection set to be exported
  */

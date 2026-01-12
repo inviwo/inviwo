@@ -231,7 +231,7 @@ public:
 
     virtual void add(const T& value);
     /**
-     * \brief Converts given value to type T, which is added to the column
+     * @brief Converts given value to type T, which is added to the column
      *
      * @param value
      * @throws InvalidConversion if the value cannot be converted to T
@@ -323,7 +323,7 @@ inline auto categoricalTransform(const std::vector<std::string>& table) {
 }  // namespace detail
 
 /**
- * \brief Specialized data column representing categorical values, i.e. strings.
+ * @brief Specialized data column representing categorical values, i.e. strings.
  * Categorical values are internally mapped to a number representation.
  *
  * For example:
@@ -331,7 +331,7 @@ inline auto categoricalTransform(const std::vector<std::string>& table) {
  *    by 0, 0, 1, 2.
  *    The original string values can be accessed using CategoricalColumn::get(index, true)
  *
- * \see CategoricalColumn::get()
+ * @see CategoricalColumn::get()
  * @ingroup datastructures
  */
 class IVW_MODULE_DATAFRAME_API CategoricalColumn : public Column {
@@ -425,7 +425,7 @@ public:
     AddMany addMany();
 
     /**
-     * \brief \copybrief Column::append(const Column&) and builds a union of all
+     * @brief \copybrief Column::append(const Column&) and builds a union of all
      * categorical values
      *
      * @param col
@@ -434,7 +434,7 @@ public:
     virtual void append(const Column& col) override;
 
     /**
-     * \brief Append the categorical values given in \p data
+     * @brief Append the categorical values given in \p data
      *
      * @param data    categorical values
      */
@@ -446,7 +446,7 @@ public:
     const std::vector<std::string>& getCategories() const { return lookUpTable_; }
 
     /**
-     * \brief Returns column contents as list of categorical values
+     * @brief Returns column contents as list of categorical values
      *
      * @return all categorical values stored in the column
      * @see values
@@ -458,7 +458,7 @@ public:
      * categorical values as <tt>const std::string&</tt>.
      *
      * Example:
-     * \code{.cpp}
+     * @code{.cpp}
      * CategoricalColumn col("example", {"first", "second"});
      * for (auto v : col.values()) {
      *     std::cout << "value: " << v;
@@ -466,7 +466,7 @@ public:
      * for (auto&& [row, v] : util::enumerate<std::uint32_t>(col.values())) {
      *     std::cout << fmt::format("Row: {}, value: {}", row, v);
      * }
-     * \endcode
+     * @endcode
      *
      * @return iterator range over all categorical values stored in the column
      * @see getValues
@@ -474,7 +474,7 @@ public:
     util::iter_range<ConstIterator> values() const;
 
     /**
-     * \brief Add a category \p cat. It will not be added if the category already exists.
+     * @brief Add a category \p cat. It will not be added if the category already exists.
      *
      * @return index of the category
      */

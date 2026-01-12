@@ -70,7 +70,7 @@ public:
     virtual const size3_t& getDimensions() const override;
 
     /**
-     * \brief update the swizzle mask of the color channels when sampling the volume
+     * @brief update the swizzle mask of the color channels when sampling the volume
      *
      * @param mask new swizzle mask
      */

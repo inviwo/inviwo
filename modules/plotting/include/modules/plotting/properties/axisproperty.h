@@ -80,7 +80,7 @@ public:
     virtual ~AxisProperty() = default;
 
     /**
-     * \brief aligns and centers caption and labels according to the current axis orientation and
+     * @brief aligns and centers caption and labels according to the current axis orientation and
      * mirror state. For a horizontal axis, both caption and labels are centered horizontally with
      * the vertical anchor position at the top (or bottom when mirrored). In the vertical
      * case, labels are right-aligned (left when mirrored) and vertically centered.
@@ -94,30 +94,30 @@ public:
 
     AxisProperty& setLabelFormat(std::string_view formatStr);
     /**
-     * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
+     * @brief sets range property of axis and ensures the min/max limits are adjusted accordingly
      * @param range   new axis range
      */
     AxisProperty& setRange(const dvec2& range);
 
     /**
-     * \brief set all colors to \p c, i.e. axis, ticks, labels, and caption
+     * @brief set all colors to \p c, i.e. axis, ticks, labels, and caption
      */
     AxisProperty& setColor(const vec4& c);
 
     /**
-     * \brief set font face of labels and caption to \p fontFace
+     * @brief set font face of labels and caption to \p fontFace
      */
     AxisProperty& setFontFace(const std::filesystem::path& fontFace);
 
     /**
-     * \brief set font size for caption and labels
+     * @brief set font size for caption and labels
      */
     AxisProperty& setFontSize(int fontsize);
 
     AxisProperty& setTickLength(float major, float minor);
 
     /**
-     * \brief set the line width of the axis, major, and minor ticks. Minor ticks will be 2/3 the
+     * @brief set the line width of the axis, major, and minor ticks. Minor ticks will be 2/3 the
      * width.
      */
     AxisProperty& setLineWidth(float width);

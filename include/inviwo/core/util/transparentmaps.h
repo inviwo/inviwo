@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \brief Transparent string hashing for use in unordered containers with string keys
+ * @brief Transparent string hashing for use in unordered containers with string keys
  * for example: std::unordered_map<std::string, V, StringHash, std::equal_to<>>;
  */
 struct IVW_CORE_API StringHash {

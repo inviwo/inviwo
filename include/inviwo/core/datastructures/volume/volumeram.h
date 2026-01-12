@@ -59,7 +59,7 @@ public:
     virtual const void* getData(size_t) const = 0;
 
     /**
-     * \brief Takes ownership of data pointer
+     * @brief Takes ownership of data pointer
      *
      * @param data is raw volume data pointer
      * @param dimensions is the dimensions of the data.
@@ -214,7 +214,7 @@ public:
     virtual void setDimensions(size3_t dimensions) override;
 
     /**
-     * \brief update the swizzle mask of the color channels when sampling the volume
+     * @brief update the swizzle mask of the color channels when sampling the volume
      *
      * @param mask new swizzle mask
      */

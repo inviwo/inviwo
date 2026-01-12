@@ -44,10 +44,10 @@ namespace inviwo {
  * @see OrdinalProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * OrdinalProperty<double> p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 template <typename T>
 void to_json(json& j, const OrdinalProperty<T>& p) {
@@ -66,9 +66,9 @@ void to_json(json& j, const OrdinalProperty<T>& p) {
  * @see OrdinalProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<OrdinalProperty<double>>();
- * \endcode
+ * @endcode
  */
 template <typename T>
 void from_json(const json& j, OrdinalProperty<T>& p) {

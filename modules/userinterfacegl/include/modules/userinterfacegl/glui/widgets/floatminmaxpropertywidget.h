@@ -48,8 +48,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class FloatMinMaxPropertyWidget
- * \brief glui property widget for a float minmax property using glui::RangeSlider
+ * @brief glui property widget for a float minmax property using glui::RangeSlider
  */
 class IVW_MODULE_USERINTERFACEGL_API FloatMinMaxPropertyWidget : public RangeSlider,
                                                                  public PropertyWidget,

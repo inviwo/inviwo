@@ -122,7 +122,7 @@ public:
     using value_type = std::filesystem::path;
 
     /**
-     * \brief Constructor for the FileProperty
+     * @brief Constructor for the FileProperty
      *
      * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used
      * instead of a FilePropertyWidget
@@ -145,7 +145,7 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     /**
-     * \brief Constructor for the FileProperty
+     * @brief Constructor for the FileProperty
      *
      * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used
      * instead of a FilePropertyWidget
@@ -164,7 +164,7 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     /**
-     * \brief Constructor for the FileProperty
+     * @brief Constructor for the FileProperty
      *
      * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used
      * instead of a FilePropertyWidget

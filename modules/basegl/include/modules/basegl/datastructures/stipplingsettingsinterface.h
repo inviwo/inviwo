@@ -33,12 +33,12 @@
 namespace inviwo {
 
 /*
- * \brief Settings for stippling (Dashed line, e.g., - - -)
+ * @brief Settings for stippling (Dashed line, e.g., - - -)
  */
 class IVW_MODULE_BASEGL_API StipplingSettingsInterface {
 public:
     /*
-     * \brief Determines in which space the stippling parameters should be applied.
+     * @brief Determines in which space the stippling parameters should be applied.
      */
     enum class Mode { None, ScreenSpace, WorldSpace };
     StipplingSettingsInterface() = default;

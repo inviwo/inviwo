@@ -52,8 +52,7 @@ class Property;
 class PropertyOwner;
 
 /**
- * \class TFSelector
- * \brief processor for selecting a transfer function from a number of customizable presets
+ * @brief processor for selecting a transfer function from a number of customizable presets
  */
 class IVW_MODULE_BASE_API TFSelector : public Processor,
                                        public PropertyObserver,

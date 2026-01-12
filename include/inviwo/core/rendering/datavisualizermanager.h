@@ -72,7 +72,7 @@ public:
     std::vector<FileExtension> getSupportedFileExtensions() const;
 
     /**
-     * \brief Get a list of Data Visualizers supporting the file extension of the supplied string.
+     * @brief Get a list of Data Visualizers supporting the file extension of the supplied string.
      * @param pathOrExtension Path to file, or simply the extension.
      */
     std::vector<DataVisualizer*> getDataVisualizersForFile(

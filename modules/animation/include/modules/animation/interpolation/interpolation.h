@@ -44,7 +44,7 @@ class Serializer;
 
 namespace animation {
 
-/** \class Interpolation
+/**
  *	Interface for keyframe interpolations.
  */
 class IVW_MODULE_ANIMATION_API Interpolation : public Serializable {
@@ -66,7 +66,7 @@ public:
 IVW_MODULE_ANIMATION_API bool operator==(const Interpolation& a, const Interpolation& b);
 IVW_MODULE_ANIMATION_API bool operator!=(const Interpolation& a, const Interpolation& b);
 
-/** \class InterpolationTyped
+/**
  *	Base class for interpolation between key frames.
  *  Interpolation will always be performed between at least two key frames.
  *

@@ -47,13 +47,13 @@
 namespace inviwo {
 
 /**
- * \defgroup datastructures Datastructures
+ * @defgroup datastructures Datastructures
  */
 
 /**
  * @ingroup datastructures
  *
- * \brief The base class for all data objects.
+ * @brief The base class for all data objects.
  *
  * Data is a handle class and, by it self does not have any data, it only stores metadata, and a
  * list of representations. The representations is were the actually data is stored. A Volume can
@@ -67,7 +67,7 @@ namespace inviwo {
  * is a invalid representation around, update that representation with the valid representation.
  *
  * Call getRepresentation to retrieve the data:
- * \code{.cpp}
+ * @code{.cpp}
  *      // Create a Buffer with a BufferRAM representation
  *      auto buffer = util::makeBuffer<vec2>(
  *      { {0.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f, -1.0f} });
@@ -75,7 +75,7 @@ namespace inviwo {
  *      auto bufferRAM = buffer.getRepresentation<BufferRAM>();
  *      // The data will be transferred to the GPU if not already there.
  *      auto bufferGL = buffer.getRepresentation<BufferGL>();
- * \endcode
+ * @endcode
  *
  * Requirements:
  *      1. Copy constructor for deep copy
@@ -125,9 +125,9 @@ public:
     /**
      * Check if a specific representation type exists.
      * Example:
-     * \code{.cpp}
+     * @code{.cpp}
      *     hasRepresentation<BufferRAM>();
-     * \endcode
+     * @endcode
      * @return true if existing, false otherwise.
      */
     template <typename T>

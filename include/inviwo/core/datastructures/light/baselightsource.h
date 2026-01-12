@@ -119,7 +119,7 @@ protected:
 };
 
 /**
- * \brief Encodes the position and direction in a matrix.
+ * @brief Encodes the position and direction in a matrix.
  *
  * Light source position is extracted using:
  * `p = M * vec4(0, 0, 0, 1)`

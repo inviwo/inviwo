@@ -37,9 +37,6 @@
 
 namespace inviwo {
 
-/**
- * \class GLFWException
- */
 class IVW_MODULE_GLFW_API GLFWException : public Exception {
 public:
     GLFWException(const std::string& message = "", SourceContext context = SourceContext());

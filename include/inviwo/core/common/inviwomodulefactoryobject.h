@@ -115,7 +115,7 @@ InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
                                 std::move(aliases), std::move(licenses), protectedModule) {}
 
 /**
- * \brief Topological sort to make sure that we load modules in correct order
+ * @brief Topological sort to make sure that we load modules in correct order
  *
  * https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
  *

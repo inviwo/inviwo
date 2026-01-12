@@ -74,30 +74,30 @@ public:
     virtual ~DataRangeProperty() = default;
 
     /**
-     * \brief update both value and data ranges using \p volume
+     * @brief update both value and data ranges using \p volume
      */
     void updateFromVolume(std::shared_ptr<Volume> volume);
     /**
-     * \brief update both value and data ranges using \p layer
+     * @brief update both value and data ranges using \p layer
      */
     void updateFromLayer(std::shared_ptr<Layer> layer);
     /**
-     * \brief update the data range
+     * @brief update the data range
      */
     void setDataRange(const dvec2& range);
     /**
-     * \brief update the value range
+     * @brief update the value range
      */
     void setValueRange(const dvec2& range);
     /**
-     * \brief returns the currently selected data range
+     * @brief returns the currently selected data range
      *
      * @return custom data range if enabled, otherwise input data range
      */
     dvec2 getDataRange() const;
     dvec2 getCustomDataRange() const;
     /**
-     * \brief returns the currently selected value range
+     * @brief returns the currently selected value range
      *
      * @return custom value range if enabled, otherwise input value range
      */

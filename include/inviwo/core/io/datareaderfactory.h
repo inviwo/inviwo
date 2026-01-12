@@ -68,7 +68,7 @@ public:
     auto getExtensionsForTypesView() const;
 
     /**
-     * \brief Return a reader matching the file extension of DataReader of type T.
+     * @brief Return a reader matching the file extension of DataReader of type T.
      * Does case insensitive comparison between the last part of filePathOrExtension and each
      * registered extension. Does not check for "." before the extension, so it is valid to pass for
      * example "png".

@@ -51,8 +51,7 @@ class PortInspector;
 class ProcessorNetwork;
 
 /**
- * \class PortInspectorManager
- * \brief Keep track of which port has port inspectors on them
+ * @brief Keep track of which port has port inspectors on them
  */
 class IVW_CORE_API PortInspectorManager : public Serializable, public ProcessorNetworkObserver {
 public:

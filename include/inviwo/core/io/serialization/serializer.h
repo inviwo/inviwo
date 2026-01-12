@@ -83,13 +83,13 @@ public:
     virtual ~Serializer();
 
     /**
-     * \brief Writes serialized data to the file specified by the currently set file name.
+     * @brief Writes serialized data to the file specified by the currently set file name.
      * @throws SerializationException
      */
     void writeFile();
 
     /**
-     * \brief Writes serialized data to stream.
+     * @brief Writes serialized data to stream.
      *
      * @param stream Stream to be written to.
      * @param format Format the output, i.e. insert line breaks and tabs.

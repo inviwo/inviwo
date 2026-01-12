@@ -51,13 +51,12 @@ class Texture2DArray;
 namespace glui {
 
 /**
- * \class Renderer
- * \brief provides the basic rendering functionality required to render UI elements. Also provides a
+ * @brief provides the basic rendering functionality required to render UI elements. Also provides a
  * texture cache for different widgets. Each set of widget textures is represented by a 2D texture
  * array consisting of six textures (widget state normal, pressed, checked plus corresponding
  * halos).
  *
- * \see glui::Element
+ * @see glui::Element
  */
 class IVW_MODULE_USERINTERFACEGL_API Renderer {
 public:
@@ -65,7 +64,7 @@ public:
     virtual ~Renderer() = default;
 
     /**
-     * \brief create a UI texture object representing the normal, pressed, and checked state
+     * @brief create a UI texture object representing the normal, pressed, and checked state
      * for both the UI widget and its halo.
      *
      * @param name    internal name of the texture object

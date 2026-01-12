@@ -44,17 +44,17 @@ class QToolButton;
 
 namespace inviwo {
 
-/*! \class InviwoDockWidgetTitleBar
-\brief Custom title bar widget for QDockWidget derived from QWidget.
-
-The title bar widget contains a label showing the window title of the
-parent QDockWidget and buttons for the sticky mode, dock/undock, and close.
-The sticky mode determines whether the floating dock widget can be docked
-to prevent involuntary docking when moving the dock widget. Docking via the
-dock button or double clicking the title bar is still possible.
-
-Note: adding a custom title bar to a QDockWidget removes the window decoration!
-*/
+/**
+ * @brief Custom title bar widget for QDockWidget derived from QWidget.
+ *
+ * The title bar widget contains a label showing the window title of the
+ * parent QDockWidget and buttons for the sticky mode, dock/undock, and close.
+ * The sticky mode determines whether the floating dock widget can be docked
+ * to prevent involuntary docking when moving the dock widget. Docking via the
+ * dock button or double clicking the title bar is still possible.
+ *
+ * Note: adding a custom title bar to a QDockWidget removes the window decoration!
+ */
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     Q_OBJECT

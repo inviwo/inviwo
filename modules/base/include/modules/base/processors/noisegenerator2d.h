@@ -46,7 +46,7 @@
 namespace inviwo {
 
 /**
- * \brief A processor to generate a noise image
+ * @brief A processor to generate a noise image
  */
 class IVW_MODULE_BASE_API NoiseGenerator2D : public Processor {
     enum class NoiseType { Random, Perlin, PoissonDisk, HaltonSequence };

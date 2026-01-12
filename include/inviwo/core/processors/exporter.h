@@ -44,7 +44,7 @@ class ProcessorNetwork;
 class Image;
 
 /**
- * \brief A base class for a Processor that might export a file. For example a CanvasProcessor
+ * @brief A base class for a Processor that might export a file. For example a CanvasProcessor
  */
 class IVW_CORE_API Exporter {
 public:

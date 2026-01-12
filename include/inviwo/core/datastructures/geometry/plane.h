@@ -47,7 +47,7 @@ public:
     const vec3& getNormal() const noexcept { return normal_; };
 
     /**
-     * \brief Get intersection point with plane and line segment.
+     * @brief Get intersection point with plane and line segment.
      * Intersects if plane is in between start and stop.
      * Segement start point will be returned if segment lies in the plane.
      *
@@ -90,12 +90,12 @@ public:
 
     /**
      * Check if point is on positive side of plane.
-     * \verbatim
+     * @verbatim
               Plane
                 |
                 |-> normal
       (outside) |  (inside)
-     \endverbatim
+     @endverbatim
      *
      * @see Plane::distance
      * @param point to check

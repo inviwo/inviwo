@@ -43,8 +43,7 @@
 namespace inviwo {
 
 /**
- * \class WaveFrontWriter
- * \brief Export Meshes in the Wavefront Obj format
+ * @brief Export Meshes in the Wavefront Obj format
  */
 class IVW_MODULE_BASE_API WaveFrontWriter : public DataWriterType<Mesh> {
 public:

@@ -40,9 +40,6 @@
 
 namespace inviwo {
 
-/**
- * \class ImageCompositor
- */
 class IVW_MODULE_OPENGL_API ImageCompositor {
 public:
     ImageCompositor(std::string programFileName = "composite.frag");

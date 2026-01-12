@@ -65,7 +65,7 @@ class Mesh;
 class Shader;
 
 /**
- * \brief Mesh Renderer specialized for rendering highly layered and transparent surfaces.
+ * @brief Mesh Renderer specialized for rendering highly layered and transparent surfaces.
  *
  * Its settings will be used to add fragments to a FragmentListRenderer for the rendering of the
  * transparent mesh. Many alpha computation modes, shading modes, color modes can be combined and
@@ -94,7 +94,7 @@ public:
 
 protected:
     /**
-     * \brief Update the mesh drawer.
+     * @brief Update the mesh drawer.
      * This is called when the inport is changed or when a property requires preprocessing steps on
      * the mesh, e.g. for silhouettes or special alpha features.
      */
@@ -114,7 +114,7 @@ protected:
     OptionProperty<meshutil::CalculateMeshNormalsMode> normalComputationMode_;
 
     /**
-     * \brief Settings to assemble the equation for the alpha values.
+     * @brief Settings to assemble the equation for the alpha values.
      * All individual factors are clamped to [0,1].
      */
     struct AlphaSettings : public CompositeProperty {
@@ -140,7 +140,7 @@ protected:
     AlphaSettings alphaSettings_;
 
     /**
-     * \brief Settings controlling how edges are highlighted.
+     * @brief Settings controlling how edges are highlighted.
      */
     struct EdgeSettings : public CompositeProperty {
         EdgeSettings();
@@ -158,7 +158,7 @@ protected:
     enum class HatchingMode : char { U, V, UV };
     enum class HatchingBlendingMode : char { Multiplicative, Additive };
     /**
-     * \brief Hatching settings. These are exactly the parameters from the IRIS-paper
+     * @brief Hatching settings. These are exactly the parameters from the IRIS-paper
      */
     struct HatchingSettings {
         HatchingSettings();
@@ -178,7 +178,7 @@ protected:
         OptionProperty<HatchingBlendingMode> blendingMode_;
     };
     /**
-     * \brief The render settings per face.
+     * @brief The render settings per face.
      * faceSettings_[0]=front face, faceSettings_[1]=back face
      */
     struct FaceSettings {
@@ -219,7 +219,7 @@ protected:
     Shader shader_;
 
     /**
-     * \brief This flag is set to true if adjacency information is available in the shader.
+     * @brief This flag is set to true if adjacency information is available in the shader.
      */
     bool meshHasAdjacency_{};
     bool supportsFragmentLists_{};

@@ -51,7 +51,7 @@ class RoaringSetBitBiDirectionalIterator;
 namespace inviwo {
 
 /**
- * \brief represents a bitset based on roaring bitmaps provided by the CRoaring library
+ * @brief represents a bitset based on roaring bitmaps provided by the CRoaring library
  */
 class IVW_CORE_API BitSet : public Serializable {
 public:
@@ -122,13 +122,13 @@ public:
     /**
      * Return the number of elements the bitset holds
      *
-     * \see size()
+     * @see size()
      */
     uint32_t cardinality() const;
     /**
      * Return the number of elements the bitset holds
      *
-     * \see cardinality()
+     * @see cardinality()
      */
     size_t size() const;
 
@@ -353,7 +353,7 @@ public:
     /**
      * Return the number of bytes required to serialize the bitset
      *
-     * \see optimize(), shrinkToFit()
+     * @see optimize(), shrinkToFit()
      */
     size_t getSizeInBytes() const;
 
@@ -386,7 +386,7 @@ public:
      * Enforce removing the run-length encoding of the bitset even though it might be more
      * efficient.
      *
-     * \see optimize()
+     * @see optimize()
      */
     void removeRLECompression();
 

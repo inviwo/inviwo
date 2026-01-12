@@ -41,8 +41,7 @@
 namespace inviwo {
 
 /**
- * \class NiftiReader
- * \brief Volume data reader for Nifti-1 files.
+ * @brief Volume data reader for Nifti-1 files.
  *
  */
 class IVW_MODULE_NIFTI_API NiftiReader : public DataReaderType<VolumeSequence> {

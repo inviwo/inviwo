@@ -40,7 +40,6 @@ class PickingEvent;
 class Processor;
 
 /**
- * \class PickingAction
  * Associate a range of picking colors / indices to a callback function. Created and handled by the
  * PickingManager. Use a PickingMapper to ask the PickingManager for a PickingAction.
  */
@@ -76,7 +75,7 @@ public:
     /**
      *	The picking color to use for the object with local index id.
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
-     * \param id the local picking index
+     * @param id the local picking index
      */
     vec3 getColor(size_t id = 0) const;
 

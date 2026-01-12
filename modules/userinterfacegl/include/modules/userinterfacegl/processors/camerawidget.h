@@ -69,8 +69,7 @@ class MeshDrawerGL;
 class PickingEvent;
 
 /**
- * \class CameraWidget
- * \brief provides a mesh-based interaction widget for the camera rotation
+ * @brief provides a mesh-based interaction widget for the camera rotation
  */
 class IVW_MODULE_USERINTERFACEGL_API CameraWidget : public Processor {
 public:

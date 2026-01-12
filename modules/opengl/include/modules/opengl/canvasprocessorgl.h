@@ -39,7 +39,7 @@ namespace inviwo {
 class InviwoApplication;
 
 /**
- * \brief Takes an Image Inport and renders it into a OpenGL window i.e. a canvas.
+ * @brief Takes an Image Inport and renders it into a OpenGL window i.e. a canvas.
  */
 class IVW_MODULE_OPENGL_API CanvasProcessorGL : public CanvasProcessor {
 public:

@@ -45,8 +45,7 @@ class Property;
 class TFPrimitiveSet;
 
 /**
- * \class TFSelectionWatcher
- * \brief observes a selection of primitives in a particular TF and sends signals to inform on
+ * @brief observes a selection of primitives in a particular TF and sends signals to inform on
  * position, alpha, and color changes
  */
 class IVW_MODULE_QTWIDGETS_API TFSelectionWatcher : public QObject, public TFPrimitiveObserver {

@@ -57,7 +57,7 @@ public:
     virtual ~FileExtension() = default;
 
     /**
-     * \brief extracts a FileExtension object from a string. This function assumes
+     * @brief extracts a FileExtension object from a string. This function assumes
      * that the extension is given within the right most parentheses.
      *
      * @param str Input string  formed like "Text files (*.txt)".
@@ -68,7 +68,7 @@ public:
 
     bool empty() const;
     /**
-     * \brief returns true, if the current extension matches all files, i.e. it is equal to '*'.
+     * @brief returns true, if the current extension matches all files, i.e. it is equal to '*'.
      * Note: the description can be different from all().
      *
      * @return true if extension_ == '*'
@@ -76,7 +76,7 @@ public:
     bool matchesAll() const;
 
     /**
-     * \brief checks whether the given string is matched by this FileExtension
+     * @brief checks whether the given string is matched by this FileExtension
      * Extensions are matched case insensitive while an empty FileExtension, i.e. '*', will match
      * all strings.
      *

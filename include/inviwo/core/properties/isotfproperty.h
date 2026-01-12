@@ -86,12 +86,12 @@ public:
 
     virtual void set(const Property* property) override;
     /**
-     * \brief sets only the isovalue property to \p p. The transfer function property remains
+     * @brief sets only the isovalue property to \p p. The transfer function property remains
      * unchanged.
      */
     void set(const IsoValueProperty* p);
     /**
-     * \brief sets only the transfer function property to \p p. The isovalue property remains
+     * @brief sets only the transfer function property to \p p. The isovalue property remains
      * unchanged.
      */
     void set(const TransferFunctionProperty* p);

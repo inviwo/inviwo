@@ -40,7 +40,7 @@ class QPaintEvent;
 class QPoint;
 
 namespace inviwo {
-/** \class AngleRadiusWidget
+/**
  * The AngleRadiusWidget provides an interface to edit an angle in [0 2pi)
  * as well as a radius within given bounds [minRadius maxRadius].
  *

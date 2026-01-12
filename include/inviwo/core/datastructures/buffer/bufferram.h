@@ -454,7 +454,7 @@ std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> da
 }
 
 /**
- * \brief compare two buffers using their RAM representation
+ * @brief compare two buffers using their RAM representation
  *
  * @return true if buffers are identical, i.e. identical data format, size, and buffer contents
  */

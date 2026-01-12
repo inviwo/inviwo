@@ -49,8 +49,8 @@ namespace animation {
 class Keyframe;
 class KeyframeSequence;
 
-/** \class Track
- * Interface for tracks in an animation.
+/**
+ * @brief Interface for tracks in an animation.
  * A track usually represent a value to be animated over time and
  * contains a list of KeyFrameSequence.
  * The value will only be animated when the time in the animation
@@ -177,7 +177,7 @@ public:
     friend bool operator>=(const Seconds& a, const Track& b) { return a >= b.getFirstTime(); }
 };
 
-/** \class TrackTyped
+/**
  * Track containing KeyFrameSequence of a given KeyFrame type.
  * @see Track
  * @see KeyframeSequenceTyped

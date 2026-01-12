@@ -55,8 +55,7 @@
 namespace inviwo {
 
 /**
- * \class PointRenderer
- * \brief Renders input geometry with 2D points
+ * @brief Renders input geometry with 2D points
  */
 class IVW_MODULE_BASEGL_API PointRenderer : public Processor {
 public:

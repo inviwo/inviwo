@@ -237,7 +237,7 @@ std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Con
 }
 
 /**
- * \brief for each row in leftCol return a list of matching row indices in rightCol
+ * @brief for each row in leftCol return a list of matching row indices in rightCol
  */
 template <bool firstMatchOnly = false>
 std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Column> leftCol,

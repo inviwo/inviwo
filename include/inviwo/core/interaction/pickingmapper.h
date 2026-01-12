@@ -41,8 +41,7 @@ class PickingEvent;
 class PickingAction;
 
 /**
- * \class PickingMapper
- * \brief RAII tool for PickingActions
+ * @brief RAII tool for PickingActions
  */
 class IVW_CORE_API PickingMapper {
 public:
@@ -74,14 +73,14 @@ public:
     /**
      * Returns the global picking index, the global index can be used with the
      * PickingManager::indexToColor(size_t index) function to get a picking color.
-     * \param id the local picking index
+     * @param id the local picking index
      */
     size_t getPickingId(size_t id = 0) const;
 
     /**
      *	The picking color to use for the object with local index id.
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
-     * \param id the local picking index
+     * @param id the local picking index
      */
     vec3 getColor(size_t id = 0) const;
 

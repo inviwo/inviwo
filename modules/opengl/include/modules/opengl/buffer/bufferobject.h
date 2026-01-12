@@ -65,7 +65,7 @@ public:
     /**
      * Policy for managing the buffer size when uploading new data to the GPU.
      *
-     * \see upload
+     * @see upload
      */
     enum class SizePolicy {
         GrowOnly,    //!< the buffer only grows and will never be resized to a smaller size
@@ -92,17 +92,17 @@ public:
     const DataFormatBase* getDataFormat() const;
 
     /**
-     * \brief Calls glBindBuffer.
+     * @brief Calls glBindBuffer.
      */
     void bind() const;
 
     /**
-     * \brief Calls glBindBuffer with buffer name 0
+     * @brief Calls glBindBuffer with buffer name 0
      */
     void unbind() const;
 
     /**
-     * \brief Calls glBindBufferBase.
+     * @brief Calls glBindBufferBase.
      * Binds the buffer at index of the array of targets
      * specified by the associated target ( @see getTarget )
      * Targets must be one of GL_ATOMIC_COUNTER_BUFFER,
@@ -111,7 +111,7 @@ public:
     void bindBase(GLuint index) const;
 
     /**
-     * \brief Calls glBindBufferRange.
+     * @brief Calls glBindBufferRange.
      * Binds the range (offset, offset + size) of the buffer at index of the array of targets
      * specified by the associated target ( @see getTarget )
      * Targets must be one of GL_ATOMIC_COUNTER_BUFFER,
@@ -120,7 +120,7 @@ public:
     void bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const;
 
     /**
-     * \brief bind the buffer object and set the vertex attribute pointer
+     * @brief bind the buffer object and set the vertex attribute pointer
      *
      * This will bind the buffer object and then set the respective glVertexAttrib*Pointer.
      * By default, i.e. \p bindingType = BindingType::Native, glVertexAttribIPointer (note the 'I')
@@ -128,7 +128,7 @@ public:
      * types. This behavior can be overwritten by \p bindingType. Then the buffer is only accessible
      * using `float` in the shader.
      *
-     * \see BindingType
+     * @see BindingType
      *
      * @param location   used to set the vertex attribute location
      * @param bindingType  determines which glVertexAttrib*Pointer is used
@@ -149,7 +149,7 @@ public:
     /**
      * Get the capacity of the buffer in bytes, which might be larger than the size returned by
      * getSizeInBytes()
-     * \see SizePolicy
+     * @see SizePolicy
      */
     GLsizeiptr getCapacityInBytes() const;
 

@@ -44,8 +44,7 @@
 namespace inviwo {
 
 /**
- * \class VolumeInformation
- * \brief provides information on input volume
+ * @brief provides information on input volume
  */
 class IVW_MODULE_BASE_API VolumeInformation : public Processor {
 public:

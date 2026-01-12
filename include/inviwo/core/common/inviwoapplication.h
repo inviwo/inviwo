@@ -106,9 +106,7 @@ class InviwoApplicationCallbacks;
 }  // namespace detail
 
 /**
- * \class InviwoApplication
- *
- * \brief The main application which holds the instances of all modules.
+ * @brief The main application which holds the instances of all modules.
  *
  * All modules should be owned and accessed trough this singleton, as well as the processor network
  *and the evaluator.
@@ -124,14 +122,14 @@ public:
     virtual ~InviwoApplication();
 
     /**
-     * \brief Registers modules from factories and takes ownership of input module factories.
+     * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
     void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
                          const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     /**
-     * \brief Load modules from dynamic library files in the regular search paths.
+     * @brief Load modules from dynamic library files in the regular search paths.
      *
      * Will recursively search for all dll/so/dylib/bundle files in the regular search paths.
      * The library filename must contain "inviwo-module" to be loaded.
@@ -159,7 +157,7 @@ public:
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
     /**
-     * \brief Add an action that can be shown in for example property widget context menu.
+     * @brief Add an action that can be shown in for example property widget context menu.
      * Will be shown when right clicking on a property in the NetworkEditor.
      * Added callbacks will be removed in ~InviwoModule when your module is destroyed.
      * Example if you want to do it earlier:
@@ -172,7 +170,7 @@ public:
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
 
     /**
-     * \brief Get list of ModuleCallbackAction shown in for example property widget context menu.
+     * @brief Get list of ModuleCallbackAction shown in for example property widget context menu.
      * Do not keep references to elements in the list around since you cannot be notified when
      * they will be removed.
      * @see addCallbackAction

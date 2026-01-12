@@ -38,7 +38,7 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class ValueKeyframe
+/**
  * Keyframe of a given value type (float, integer, vec3 and so on).
  * Stores the KeyFrame value at a given time.
  * @see Keyframe

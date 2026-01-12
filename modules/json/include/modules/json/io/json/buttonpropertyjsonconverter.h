@@ -42,10 +42,10 @@ class ButtonProperty;
  * @see ButtonProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * ButtonProperty p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const ButtonProperty& p);
 
@@ -56,9 +56,9 @@ IVW_MODULE_JSON_API void to_json(json& j, const ButtonProperty& p);
  * @see ButtonProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<BoolProperty>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void from_json(const json& j, ButtonProperty& p);
 

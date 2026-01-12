@@ -39,8 +39,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * \class MemoryFileHandle
- * \brief RAII class for providing a FILE stream handle to a buffer in memory.
+ * @brief RAII class for providing a FILE stream handle to a buffer in memory.
  *      This class will open a file handle to /dev/null and use a dedicated buffer for
  *      buffering. As long as less bytes than getBufferSize() bytes are written/read, its
  *      status is well defined. However, after writing more than buffer size bytes, the
@@ -73,7 +72,7 @@ public:
     size_t getBufferSize() const;
 
     /**
-     * \brief returns the number of bytes currently stored in the buffer.
+     * @brief returns the number of bytes currently stored in the buffer.
      * If the number of bytes written using the file handle exceeds the buffer size,
      * the result will be the number of bytes modulo buffer size.
      *

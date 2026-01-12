@@ -40,8 +40,7 @@
 namespace inviwo {
 
 /**
- * \class ImageLayer
- * \brief extracts the selected layer from the source image and outputs it as color layer.
+ * @brief extracts the selected layer from the source image and outputs it as color layer.
  */
 class IVW_MODULE_BASEGL_API ImageLayer : public Processor {
 public:

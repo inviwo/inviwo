@@ -62,7 +62,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     , protectedModule(aProtectedModule) {}
 
 /**
- * \brief Sorts modules according to their dependencies.
+ * @brief Sorts modules according to their dependencies.
  *
  * Recursive function that sorts the input vector according to their dependencies.
  * Modules depending on other modules will end up last in the list.

@@ -41,7 +41,7 @@ namespace inviwo {
 
 /**
  * @ingroup datastructures
- * \brief Data required to render tetrahedral meshes
+ * @brief Data required to render tetrahedral meshes
  *
  * Provides and interface for the data structures required for rendering a tetrahedral mesh with
  * OpenGL.
@@ -52,7 +52,7 @@ namespace inviwo {
  *    In Brazilian Symposium on Computer Graphics and Image Processing
  *    (SIBGRAPI'05), pp. 349-356, 2005, doi: 10.1109/SIBGRAPI.2005.18
  *
- * \see TetraMeshBuffers
+ * @see TetraMeshBuffers
  */
 class IVW_MODULE_TETRAMESH_API TetraMesh : public SpatialEntity {
 public:

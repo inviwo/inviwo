@@ -35,7 +35,7 @@
 namespace inviwo {
 
 /**
- * \brief Intersects a ray with a sphere.
+ * @brief Intersects a ray with a sphere.
  *
  * @param sphereCenter Center of sphere
  * @param radius Sphere radius

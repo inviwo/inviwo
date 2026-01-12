@@ -53,7 +53,7 @@ namespace inviwo {
 class Shader;
 
 /**
- * \brief Renders input geometry with 3D sphere glyphs using OpenGL shaders
+ * @brief Renders input geometry with 3D sphere glyphs using OpenGL shaders
  */
 class IVW_MODULE_BASEGL_API SphereRenderer : public Processor {
 public:

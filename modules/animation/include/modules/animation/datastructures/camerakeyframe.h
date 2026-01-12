@@ -43,7 +43,7 @@ class Serializer;
 
 namespace animation {
 
-/** \class CameraKeyframe
+/**
  * Keyframe of Camera value type.
  * Stores the KeyFrame value at a given time.
  * @note Only considers the Camera lookFrom, lookTo and lookUp
@@ -71,7 +71,7 @@ public:
     virtual void setLookUp(vec3 val);
 
     /**
-     * \brief Get unnormalized direction of camera: lookTo - lookFrom
+     * @brief Get unnormalized direction of camera: lookTo - lookFrom
      */
     vec3 getDirection() const;
 

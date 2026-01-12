@@ -52,7 +52,7 @@ class Shader;
 class TextureUnitContainer;
 
 /**
- * \brief Raycaster component for considering a light volume
+ * @brief Raycaster component for considering a light volume
  * Adds a volume inport for a light volume. The light volume is bound as texture and used for
  * volumetric illumination.
  */

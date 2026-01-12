@@ -37,8 +37,7 @@
 namespace inviwo {
 
 /**
- * \class ProcessorNetworkConverter
- * \brief A utility to handle conversion of ProcessorNetwork versions.
+ * @brief A utility to handle conversion of ProcessorNetwork versions.
  */
 class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
 public:

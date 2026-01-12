@@ -45,10 +45,10 @@ namespace inviwo {
  * @see MinMaxProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * MinMaxProperty<double> p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 template <typename T>
 void to_json(json& j, const MinMaxProperty<T>& p) {
@@ -67,9 +67,9 @@ void to_json(json& j, const MinMaxProperty<T>& p) {
  * @see MinMaxProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<MinMaxProperty<double>>();
- * \endcode
+ * @endcode
  */
 template <typename T>
 void from_json(const json& j, MinMaxProperty<T>& p) {

@@ -42,7 +42,7 @@ class Serializer;
 
 namespace animation {
 
-/** \class Keyframe
+/**
  * Interface for keyframes in an animation Track.
  * A keyframe usually contain a snapshot of a value at a given time,
  * which will used for interpolation in a KeyFrameSequence.

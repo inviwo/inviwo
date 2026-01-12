@@ -43,9 +43,6 @@ namespace inviwo {
 
 class MeshGL;
 
-/**
- * \class SharedOpenGLResources
- */
 class IVW_MODULE_OPENGL_API SharedOpenGLResources : public Singleton<SharedOpenGLResources> {
 public:
     SharedOpenGLResources() = default;

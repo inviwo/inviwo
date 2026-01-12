@@ -44,8 +44,7 @@ namespace inviwo {
 class ListProperty;
 
 /**
- * \class ListPropertyWidgetQt
- * \brief PropertyWidget for a ListProperty.
+ * @brief PropertyWidget for a ListProperty.
  *
  * This widget considers the UI flags of the property. If the property supports adding list
  * elements, a tool button is added next to the property name (indicated by a plus). In case

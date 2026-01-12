@@ -66,7 +66,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
  * ResizeEvents. The following table explains the behaviors:
  *
  *
- * \verbatim
+ * @verbatim
  *                                                 ImageOutport
  *                                           isHandlingResizeEvents()
  *
@@ -93,7 +93,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
  *                    │                                  │                                  │
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
- * \endverbatim
+ * @endverbatim
  *
  * @see ImageOutport
  * @see ResizeEvent
@@ -164,7 +164,7 @@ struct PortTraits<BaseImageInport<0>> {
  * ImageOutport extends DataOutport<Image> with extra functionality for handing
  * ResizeEvents. The following table explains the behaviors:
  *
- * \verbatim
+ * @verbatim
  *                                                 ImageOutport
  *                                           isHandlingResizeEvents()
  *
@@ -191,7 +191,7 @@ struct PortTraits<BaseImageInport<0>> {
  *                    │                                  │                                  │
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
- * \endverbatim
+ * @endverbatim
  *
  * The ImageOutport records all the requested sizes from all its connected inports. If the outport
  * 'isHandlingResizeEvents', the port will resize its data to the largest the requested size and

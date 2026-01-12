@@ -260,8 +260,8 @@ private:
 }  // namespace detail
 
 /**
- * \brief Renders an axis based on AxisSettings
- * \see AxisSettings AxisProperty CategoricalAxisProperty
+ * @brief Renders an axis based on AxisSettings
+ * @see AxisSettings AxisProperty CategoricalAxisProperty
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
@@ -298,7 +298,7 @@ private:
 };
 
 /**
- * \brief Renderer for 2D axes in screen coordinates. The side to the right of the line from start
+ * @brief Renderer for 2D axes in screen coordinates. The side to the right of the line from start
  * to end position of the axis is defined as the "outside". As an example, consider the x axis at
  * the bottom of a 2D plot, the outside is below the axis while the inside lies within the plot
  * area. Mirroring the axis exchanges "outside" and "inside", that is labels and ticks will appear
@@ -338,7 +338,7 @@ private:
 };
 
 /**
- * \brief Renderer for arbitrary axes in world coordinates
+ * @brief Renderer for arbitrary axes in world coordinates
  */
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer3D : public AxisRendererBase {
 public:

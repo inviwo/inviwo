@@ -54,11 +54,10 @@ class Serializer;
 class Deserializer;
 
 /**
- * \class PropertyTraits
- * \brief A traits class for getting the class identifier from a Property.
+ * @brief A traits class for getting the class identifier from a Property.
  * This provides a customization point if one wants to generate the class identifier dynamically,
  * by specializing the traits for your kind of Property:
- * \code{.cpp}
+ * @code{.cpp}
  *     template <typename T>
  *     struct PropertyTraits<MyProperty<T>> {
  *        static constexpr std::string_view classIdentifier() {
@@ -66,7 +65,7 @@ class Deserializer;
  *           return cid;
  *        }
  *     };
- * \endcode
+ * @endcode
  * The default behavior returns the static member "classIdentifier" or "CLASS_IDENTIFIER";
  */
 template <typename T>
@@ -84,15 +83,15 @@ struct PropertyTraits {
 enum class ReadOnly { No, Yes };
 
 /**
- *	\defgroup properties Properties
- *  \brief Properties represents a parameters to Processors.
+ *	@defgroup properties Properties
+ *  @brief Properties represents a parameters to Processors.
  */
 
 class PropertyOwner;
 /**
  * @ingroup properties
  *
- * \brief A Property represents a parameter to a processor.
+ * @brief A Property represents a parameter to a processor.
  *
  * Concepts:
  *  * __PropertyOwner__: A property can have a owner, usually a Processor or a CompositeProperty. If
@@ -141,7 +140,7 @@ public:
      */
     virtual Property* clone() const = 0;
     /**
-     * \brief Removes itself from its PropertyOwner.
+     * @brief Removes itself from its PropertyOwner.
      */
     virtual ~Property();
 
@@ -162,13 +161,13 @@ public:
     void getPath(std::pmr::string& out) const;
 
     /**
-     * \brief A property's name displayed to the user
+     * @brief A property's name displayed to the user
      */
     virtual Property& setDisplayName(std::string_view displayName);
     virtual const std::string& getDisplayName() const;
 
     /**
-     * \brief Returns which property's widget should be used
+     * @brief Returns which property's widget should be used
      * when the WidgetFactory tries to create a widget.
      * Defaults to getClassIdentifier(), should only be overridden
      * if a subclass want to reuse another property's widget.
@@ -179,7 +178,7 @@ public:
     virtual PropertySemantics getSemantics() const;
 
     /**
-     * \brief Enable or disable editing of property
+     * @brief Enable or disable editing of property
      */
     virtual Property& setReadOnly(bool value);
     virtual bool getReadOnly() const;
@@ -315,7 +314,7 @@ public:
     virtual Property& setVisible(bool val);
     virtual bool getVisible() const;
 
-    /* \brief sets visibility depending another property `prop`, according to `callback`
+    /* @brief sets visibility depending another property `prop`, according to `callback`
      * @param prop is the property on which the visibility depends
      * @param callback is a function that outputs a visibility boolean value. The function gets
      * `prop` as parameter
@@ -335,7 +334,7 @@ public:
         return *this;
     }
 
-    /* \brief sets readonly depending another property `prop`, according to `callback`
+    /* @brief sets readonly depending another property `prop`, according to `callback`
      * @param prop is the property on which the readonly state depends
      * @param callback is a function that outputs a readonly boolean value. The function gets `prop`
      * as parameter

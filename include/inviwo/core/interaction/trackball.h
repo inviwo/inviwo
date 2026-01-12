@@ -91,7 +91,7 @@ public:
     void setLookUp(vec3 lookUp);
 
     /**
-     * \brief Set look from, look to and up vector at the same time.
+     * @brief Set look from, look to and up vector at the same time.
      * Should be used when more than one parameter will be changed to avoid duplicate evaluations.
      *
      * @param lookFrom
@@ -153,7 +153,7 @@ protected:
     void recenterFocusPoint(Event* event);
 
     /**
-     * \brief Rotates around the direction vector,
+     * @brief Rotates around the direction vector,
      * zooms along the direction vector and translates along up/right vector.
      *
      * @param event TouchEvent

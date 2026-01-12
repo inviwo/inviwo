@@ -39,8 +39,7 @@
 namespace inviwo {
 
 /**
- * \class ProcessorInfo
- * \brief Static information about a processor. Needed mostly for the processor list and factories
+ * @brief Static information about a processor. Needed mostly for the processor list and factories
  */
 struct IVW_CORE_API ProcessorInfo {
 public:

@@ -41,9 +41,7 @@
 namespace inviwo {
 
 /**
- * \class ImageLowPass
- *
- * \brief Applies a low pass filter on the input image using either constant weight or Gaussian
+ * @brief Applies a low pass filter on the input image using either constant weight or Gaussian
  * weights
  */
 class IVW_MODULE_BASEGL_API ImageLowPass : public Processor {

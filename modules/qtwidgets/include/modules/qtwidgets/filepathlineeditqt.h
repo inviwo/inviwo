@@ -47,8 +47,7 @@ class QWidget;
 namespace inviwo {
 
 /**
- * \class FilePathLineEditQt
- * \brief QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path
+ * @brief QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path
  * is shown. When not in focus, it shows only the file name with extension. A small warning icon is
  * shown to indicate non-existing files and paths.
  */

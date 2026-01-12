@@ -46,7 +46,7 @@ class PickingEvent;
 class Processor;
 
 /**
- * \brief utility class for rendering vertical or horizontal splitters and providing drag
+ * @brief utility class for rendering vertical or horizontal splitters and providing drag
  * interactions. This class will invalidate the processor for hover and drag events in order to
  * trigger a redraw.
  */
@@ -63,20 +63,20 @@ public:
     virtual ~SplitterRenderer() = default;
 
     /**
-     * \brief set the invalidation callback. \p callback is called whenever the splitter requires a
+     * @brief set the invalidation callback. \p callback is called whenever the splitter requires a
      * redraw, for example during dragging or for hover events
      */
     void setInvalidateAction(InvalidateCallback callback);
 
     /**
-     * \brief \p callback will be called when the splitter is moved by dragging via mouse or touch.
+     * @brief \p callback will be called when the splitter is moved by dragging via mouse or touch.
      * The arguments of the callback correspond to the new position and the index of the dragged
      * splitter. When only one splitter is rendered the index will be 0.
      */
     void setDragAction(DragCallback callback);
 
     /*
-     * \brief render a splitter at the given positions \pos and \p direction using the \p
+     * @brief render a splitter at the given positions \pos and \p direction using the \p
      * settings
      *
      * @param settings    used to determine the style of the splitter (color, width, ...)

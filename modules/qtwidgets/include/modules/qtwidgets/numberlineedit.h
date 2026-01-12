@@ -49,7 +49,7 @@ namespace inviwo {
 class NumberLineEditPrivate;
 
 /**
- * \brief widget for entering numbers with spinbox functionality. It uses less horizontal space than
+ * @brief widget for entering numbers with spinbox functionality. It uses less horizontal space than
  * a QSpinBox and allows entering numbers in scientific notation.
  *
  * The widget supports the functionality of a regular QSpinBox, i.e. the value can also be adjusted
@@ -86,7 +86,7 @@ public:
     void setIncrement(double inc);
 
     /**
-     * \brief Overrides the timerEvent to prevent
+     * @brief Overrides the timerEvent to prevent
      * spinbox to be updated twice in case of
      * calculations being slow
      */

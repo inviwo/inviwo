@@ -52,8 +52,7 @@ class Renderer;
 enum class UIOrientation { Vertical, Horizontal };
 
 /**
- * \class Element
- * \brief graphical UI element for use in combination with Layout
+ * @brief graphical UI element for use in combination with Layout
  *
  * Layout of a UI element:
  *                                                         extent
@@ -71,7 +70,7 @@ enum class UIOrientation { Vertical, Horizontal };
  *   +----------------------------------------------------+
  * (0,0)
  *
- * \see Layout, Renderer
+ * @see Layout, Renderer
  */
 class IVW_MODULE_USERINTERFACEGL_API Element {
 public:
@@ -110,31 +109,31 @@ public:
     bool isDirty() const;
 
     /**
-     * \brief sets the extent of the widget
+     * @brief sets the extent of the widget
      * @param extent   new extent of the widget
      */
     void setWidgetExtent(const ivec2& extent);
     const ivec2& getWidgetExtent() const;
 
     /**
-     * \brief sets the extent of the widget
+     * @brief sets the extent of the widget
      * @param extent   new extent of the widget (including scaling)
      */
     void setWidgetExtentScaled(const ivec2& extent);
     /**
-     * \brief returns the true widget extent including scaling
+     * @brief returns the true widget extent including scaling
      * @return widget extent
      */
     ivec2 getWidgetExtentScaled() const;
     /**
-     * \brief return extent of the element, including both widget and label, and considering scaling
+     * @brief return extent of the element, including both widget and label, and considering scaling
      *
      * @return total element extent
      */
     const ivec2& getExtent();
 
     /**
-     * \brief render the widget and its label at the given position
+     * @brief render the widget and its label at the given position
      *
      * @param origin         defines the lower left corner where the widget is positioned
      * @param canvasDim      dimensions of the output canvas
@@ -151,7 +150,7 @@ public:
     bool isChecked() const;
 
     /**
-     * \brief sets the callback action when the user releases the mouse button
+     * @brief sets the callback action when the user releases the mouse button
      */
     void setAction(const std::function<void()>& action);
 
@@ -164,15 +163,15 @@ public:
 
 protected:
     /**
-     * \brief updates the UI state and triggers the callback action set by setAction().
+     * @brief updates the UI state and triggers the callback action set by setAction().
      * This function is called when the user releases the mouse button.
      *
-     * \see setAction
+     * @see setAction
      */
     void triggerAction();
 
     /**
-     * \brief set callback function for handling mouse movements based on a delta position.
+     * @brief set callback function for handling mouse movements based on a delta position.
      * This callback gets called on mouse move events.
      *
      * @param action   function taking one argument (2D delta position in screen coords) returning
@@ -181,7 +180,7 @@ protected:
     void setMouseMoveAction(const std::function<bool(const dvec2&)>& action);
 
     /**
-     * \brief gets called on mouse move events
+     * @brief gets called on mouse move events
      *
      * @param delta    delta mouse position in screen coord, i.e. pixels, relative to pressed
      * position
@@ -196,14 +195,14 @@ protected:
     virtual UIState uiState() const;
     virtual vec2 marginScale() const;
     /**
-     * \brief is called before the action is triggered to update the internal UI state
+     * @brief is called before the action is triggered to update the internal UI state
      *
-     * \see triggerAction, setAction
+     * @see triggerAction, setAction
      */
     virtual void updateState(){};
 
     /**
-     * \brief  It is called by setPushState after the internal push state has been updated
+     * @brief  It is called by setPushState after the internal push state has been updated
      */
     virtual void pushStateChanged(){};
 
@@ -217,7 +216,7 @@ protected:
     static vec4 adjustColor(const vec4& color);
 
     /**
-     * \brief set up text renderer for rendering the label using current settings,
+     * @brief set up text renderer for rendering the label using current settings,
      * i.e. font size, widget scaling, and whether it should be rendered bold
      *
      * @return reference to the set-up text renderer

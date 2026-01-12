@@ -44,10 +44,10 @@ class ColumnOptionProperty;
  * @see ColumnOptionProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * ColumnOptionProperty p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_DATAFRAME_API void to_json(json& j, const ColumnOptionProperty& p);
 
@@ -60,9 +60,9 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const ColumnOptionProperty& p);
  * @see OptionProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<OptionProperty<double>>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, ColumnOptionProperty& p);
 

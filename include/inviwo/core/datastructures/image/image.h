@@ -128,7 +128,7 @@ public:
     void setDimensions(size2_t dimensions);
 
     /**
-     * \brief encode the requested layer contents to a buffer considering the given image extension
+     * @brief encode the requested layer contents to a buffer considering the given image extension
      * @param layerType Indicate which type of layer to return. see LayerType
      * @param fileExtension file extension of the requested image format
      * @param idx In case of layerType being LayerType::ColorLayer, than return color layer at

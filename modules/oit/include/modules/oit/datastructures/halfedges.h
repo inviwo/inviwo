@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -45,7 +45,7 @@
 namespace inviwo {
 
 /**
- * \brief A half edge datastructure of the mesh topology.
+ * @brief A half edge datastructure of the mesh topology.
  * Note: only the topology is stored, no vertex data.
  *
  * Code ideas taken from https://github.com/yig/halfedge and http://prideout.net/blog/?p=54,
@@ -68,22 +68,22 @@ namespace inviwo {
 class IVW_MODULE_OIT_API HalfEdges {
 public:
     /**
-     * \brief Construct from MeshInfo and index buffer.
+     * @brief Construct from MeshInfo and index buffer.
      */
     HalfEdges(Mesh::MeshInfo info, const IndexBuffer& indexBuffer);
 
     /**
-     * \brief Construct from Mesh, only triangles are considered
+     * @brief Construct from Mesh, only triangles are considered
      */
     HalfEdges(const Mesh& mesh);
 
     /**
-     * \brief Creates a index buffer for triangles with connectivity 'None'
+     * @brief Creates a index buffer for triangles with connectivity 'None'
      */
     IndexBuffer createIndexBuffer() const;
 
     /**
-     * \brief Creates a index buffer for triangles with connectivity 'Adjacency'
+     * @brief Creates a index buffer for triangles with connectivity 'Adjacency'
      */
     IndexBuffer createIndexBufferWithAdjacency() const;
 
@@ -137,28 +137,28 @@ private:
     friend EdgeIter;
 
     /**
-     * \brief A single half edge
+     * @brief A single half edge
      */
     struct IVW_MODULE_OIT_API HalfEdge {
         /**
-         * \brief index of the vertex the half edge points to
+         * @brief index of the vertex the half edge points to
          */
         std::uint32_t vertex;
         /**
-         * \brief Index of the adjacent face / triangle
+         * @brief Index of the adjacent face / triangle
          */
         std::uint32_t face;
         /**
-         * \brief Next half edge around the face
+         * @brief Next half edge around the face
          */
         std::uint32_t next;
         /**
-         * \brief Next half edge around the face
+         * @brief Next half edge around the face
          */
         std::uint32_t prev;
 
         /**
-         * \brief Twin half edge, opposite direction.
+         * @brief Twin half edge, opposite direction.
          * nullopt if border.
          */
         std::optional<std::uint32_t> twin = std::nullopt;

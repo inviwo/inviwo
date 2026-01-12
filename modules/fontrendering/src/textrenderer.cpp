@@ -494,7 +494,7 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache& fc,
     // create glyph entry with glyph specific params like advance, bearing (bitmap_left and
     // bitmap_top), and size (bitmap.width, bitmap.height)
     //
-    // \see
+    // @see
     // https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_GlyphSlotRec
     //
     const ivec2 advance(fontface_->glyph->advance.x >> 6, fontface_->glyph->advance.y >> 6);

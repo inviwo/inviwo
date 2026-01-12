@@ -47,7 +47,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \brief glui property widget for a double minmax property using glui::RangeSlider
+ * @brief glui property widget for a double minmax property using glui::RangeSlider
  */
 class IVW_MODULE_USERINTERFACEGL_API DoubleMinMaxPropertyWidget : public RangeSlider,
                                                                   public PropertyWidget,

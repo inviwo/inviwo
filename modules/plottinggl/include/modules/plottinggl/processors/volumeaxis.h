@@ -43,8 +43,7 @@ namespace inviwo {
 namespace plot {
 
 /**
- * \class VolumeAxis
- * \brief Processor for rendering axis annotations next to a volume
+ * @brief Processor for rendering axis annotations next to a volume
  */
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:

@@ -46,7 +46,7 @@
 namespace inviwo {
 
 /**
- * \brief Observes the network and logs
+ * @brief Observes the network and logs
  */
 struct IVW_CORE_API NetworkDebugObserver : ProcessorNetworkObserver,
                                            ProcessorNetworkEvaluationObserver,

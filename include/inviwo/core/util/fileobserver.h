@@ -42,7 +42,7 @@ namespace inviwo {
 class InviwoApplication;
 class FileSystemObserver;
 
-/** \class FileObserver
+/**
  * Calls fileChanged when an observed file/directory changes.
  * One or multiple files/directories can be observed.
  */
@@ -69,12 +69,12 @@ public:
     virtual ~FileObserver();
 
     /**
-     * \brief Starts observing file if it exists.
+     * @brief Starts observing file if it exists.
      * @param filePath Full path to file
      */
     bool startFileObservation(const std::filesystem::path& filePath);
     /**
-     * \brief Stops observing the file if being observed.
+     * @brief Stops observing the file if being observed.
      * @param filePath Full path to file
      */
     bool stopFileObservation(const std::filesystem::path& filePath);

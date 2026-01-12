@@ -45,8 +45,7 @@
 namespace inviwo {
 
 /**
- * \class Version
- * \brief Parses a version string "Major.Minor.Patch-PreRelease+Build" and allow versions to be
+ * @brief Parses a version string "Major.Minor.Patch-PreRelease+Build" and allow versions to be
  * compared. Try to follow semantic versioning: http://semver.org/ A nuanced picture, i.e. reasons
  * why you do not necessarily need to follow semantic versioning: "Why Semantic Versioning Isn't":
  * https://gist.github.com/jashkenas/cbd2b088e20279ae2c8e
@@ -71,7 +70,7 @@ namespace inviwo {
 class IVW_CORE_API Version {
 public:
     /**
-     * \brief Parses the version.
+     * @brief Parses the version.
      * @param version Dot separated version string "Major.Minor.Patch.Build"
      */
     constexpr Version(std::string_view version);
@@ -90,7 +89,7 @@ public:
     constexpr bool semanticVersionEqual(const Version& other) const;
 
     /**
-     * \brief Compares major, minor, patch and prerelease versions in order.
+     * @brief Compares major, minor, patch and prerelease versions in order.
      */
     constexpr std::strong_ordering operator<=>(const Version& rhs) const {
         // Keep ordering using lexicographical comparison provided by std::tie:

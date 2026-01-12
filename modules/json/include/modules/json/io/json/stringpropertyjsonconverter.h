@@ -41,10 +41,10 @@ class StringProperty;
  * @see StringProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * StringProperty p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const StringProperty& p);
 
@@ -55,9 +55,9 @@ IVW_MODULE_JSON_API void to_json(json& j, const StringProperty& p);
  * @see StringProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<StringProperty>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void from_json(const json& j, StringProperty& p);
 

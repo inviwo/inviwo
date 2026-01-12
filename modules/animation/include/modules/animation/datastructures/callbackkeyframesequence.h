@@ -45,7 +45,7 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class CallbackKeyframeSequence
+/**
  * KeyframeSequence for CallbackKeyframe.
  * Animating over a CallbackKeyframe in the sequence will call its corresponding callbacks.
  * @see CallbackKeyframe

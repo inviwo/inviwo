@@ -54,7 +54,7 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.EventProperty"};
 
     /**
-     * \brief Constructor used to create a new action-key binding.
+     * @brief Constructor used to create a new action-key binding.
      *
      * The constructor creates a new binding between a specified action and event.
      *
@@ -72,7 +72,7 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     /**
-     * \brief Constructor used to create a new action-key binding.
+     * @brief Constructor used to create a new action-key binding.
      *
      * The constructor creates a new binding between a specified action and event.
      *

@@ -40,7 +40,7 @@ namespace inviwo {
 /**
  * @ingroup properties
  *
- * \brief A Property that represents a plane
+ * @brief A Property that represents a plane
  *
  * A Plane is represented by a plane normal and a point that is in the plane.
  * The property also holds a color for drawing the plane. A bool for turning it on an and off.

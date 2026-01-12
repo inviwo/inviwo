@@ -44,8 +44,7 @@
 namespace inviwo {
 
 /**
- * \class DataTraits
- * \brief A traits class for getting information about a data object.
+ * @brief A traits class for getting information about a data object.
  * This provides a customization point if one wants to generate the information dynamically,
  * by specializing the traits for your kind of Data:
  *

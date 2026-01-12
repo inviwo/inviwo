@@ -40,7 +40,7 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class CallbackKeyframe
+/**
  * Keyframe which calls one function when animating forward and a different one when animating
  * backwards. This makes it possible to do/undo things when animating back and forth.
  * This keyframe is intended to be added programatically, i.e., not through the animation user

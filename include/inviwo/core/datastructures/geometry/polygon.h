@@ -34,8 +34,7 @@
 namespace inviwo {
 
 /**
- * \class Polygon
- * \brief Create a Polygon which consists of points.
+ * @brief Create a Polygon which consists of points.
  *
  * A Polygon consists of a specific number of vertices, or indices to vertices.
  * When polygon contains vertices, adjacent vertices are considered to be connected with lines to

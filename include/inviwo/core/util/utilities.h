@@ -94,7 +94,7 @@ IVW_CORE_API std::string findUniqueIdentifier(std::string_view identifier,
     std::string_view identifier, std::string_view extra = "");
 
 /**
- * \brief Removes inviwo-module from module library file name.
+ * @brief Removes inviwo-module from module library file name.
  * Turns "/path/to/inviwo-module-yourmodule.dll" into "yourmodule".
  * Returns filename without extension if inviwo-module was not found.
  *

@@ -41,7 +41,7 @@ namespace inviwo {
 class DataFormatBase;
 
 /**
- * \brief Map values into data or value ranges.
+ * @brief Map values into data or value ranges.
  * Data range refers to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data.
  * Value range refers to the physical meaning of the value, i.e. Hounsfield value range is from
  * [-1000 3000].
@@ -62,7 +62,7 @@ public:
      * In order to match the normalization of signed integer formats on the GPU, the symmetric
      * normalization has to be used in the DataMapper for OpenGL >= 4.2.
      *
-     * \see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
+     * @see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
      */
     enum class SignedNormalization {
         Asymmetric,  //!< uses an asymmetric range, i.e. [-2^(b-1), 2^(b-1) - 1]

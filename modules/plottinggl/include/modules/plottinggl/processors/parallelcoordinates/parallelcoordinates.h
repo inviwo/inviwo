@@ -217,7 +217,7 @@ private:
         std::vector<float> axisPositions;
         // using int here for performance reasons since bool is not supported as GLSL uniform
         // A bool vector would internally be converted to an int array prior setting the uniform.
-        // \see UniformSetter<std::array<bool, N>>
+        // @see UniformSetter<std::array<bool, N>>
         std::vector<int> axisFlipped;
 
         inline static size_t offsetToIndex(size_t offset, size_t cols) {

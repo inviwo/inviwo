@@ -79,8 +79,7 @@ class PickingEvent;
 namespace plot {
 
 /**
- * \class PersistenceDiagramPlotGL
- * \brief base class for plotting a persistence diagram using OpenGL
+ * @brief base class for plotting a persistence diagram using OpenGL
  */
 class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotGL {
 public:

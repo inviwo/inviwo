@@ -42,8 +42,7 @@
 
 namespace inviwo {
 
-/** \class Clock
- *
+/**
  * Clock for measuring elapsed time between a start and stop point. The clock accumulates the
  * elapsed times when start and stop are called multiple times.
  */
@@ -93,7 +92,7 @@ public:
      * time plus the current elapsed time.
      *
      * @return accumulated time in milliseconds
-     * \see getElapsedTime
+     * @see getElapsedTime
      */
     double getElapsedMilliseconds() const;
 
@@ -102,7 +101,7 @@ public:
      * time plus the current elapsed time.
      *
      * @return accumulated time in seconds
-     * \see getElapsedTime
+     * @see getElapsedTime
      */
     double getElapsedSeconds() const;
 
@@ -113,12 +112,11 @@ protected:
     duration accumulatedTime_ = static_cast<duration>(0);
 };
 
-/** \class ScopedClock
- *
+/**
  * Scoped clock which prints the elapsed time when the instance is destroyed, i.e. print() is called
  * by the destructor.
  *
- * \see ScopedClockCPU, ScopedClockGL
+ * @see ScopedClockCPU, ScopedClockGL
  */
 template <typename Clock, typename Callback>
 class ScopedClock : public Clock {
@@ -199,7 +197,7 @@ void ScopedClock<Clock, Callback>::printAndReset() {
 /**
  * scoped clock for CPU time measurements
  *
- * \see IVW_CPU_PROFILING(message), IVW_CPU_PROFILING_IF(time, message)
+ * @see IVW_CPU_PROFILING(message), IVW_CPU_PROFILING_IF(time, message)
  */
 template <typename Callback>
 using ScopedClockCPU = ScopedClock<Clock, Callback>;

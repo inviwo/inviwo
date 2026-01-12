@@ -45,7 +45,6 @@ namespace animation {
 class AnimationManager;
 
 /**
- * \class AnimationSupplier
  * Base class to derive your module from if your module should add to the animation framework
  */
 class IVW_MODULE_ANIMATION_API AnimationSupplier {

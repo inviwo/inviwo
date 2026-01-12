@@ -42,7 +42,7 @@ namespace animation {
 
 enum class ControlAction { Pause, Jump };
 
-/** \class ControlKeyframe
+/**
  * Base class for Keyframes that performs some type of control action.
  * @see Keyframe
  */

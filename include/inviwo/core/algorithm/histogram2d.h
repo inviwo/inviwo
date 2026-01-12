@@ -65,7 +65,7 @@ IVW_CORE_API DataMapper histogramDataMap(const DataMapper& datamap, double effec
  *                  range and data types of \p T and \p U
  * @return 2D histogram of \p data1[channel1] and \p data2[channel2]
  * @throws Exception if the sizes of \p data1 and \p data2 do not match
- * \see util::detail::optimalBinCount
+ * @see util::detail::optimalBinCount
  */
 template <typename T, typename U>
 Histogram2D calculateHistogram2D(std::span<const T> data1, size_t channel1,

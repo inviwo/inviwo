@@ -36,7 +36,7 @@ namespace inviwo {
 /**
  * @ingroup datastructures
  *
- *  \brief The base class for all DataGroupRepresentation objects.
+ *  @brief The base class for all DataGroupRepresentation objects.
  *
  *  It has reference to zero or many DataRepresentation objects, but never owns them,
  *  they are always owned by the Data object.

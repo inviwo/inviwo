@@ -43,7 +43,7 @@ enum class FullPath { Yes, No };
 enum class FontType { Default, Bold, Caption, Label };
 
 /**
- * \brief returns a list of all fonts found in the given directory,  font directory of the
+ * @brief returns a list of all fonts found in the given directory,  font directory of the
  * fontrendering module
  *
  * @param  fontPath   path to fonts. If empty, the directory returned by getDefaultPath() will be
@@ -56,7 +56,7 @@ IVW_MODULE_FONTRENDERING_API std::vector<std::pair<std::string, std::filesystem:
 getAvailableFonts(const std::filesystem::path& fontPath = std::string());
 
 /**
- * \brief returns the default font directory of Inviwo
+ * @brief returns the default font directory of Inviwo
  *
  * @return default path containing fonts shipped with Inviwo. Corresponds to the font directory
  *                 located in the font rendering module directory.
@@ -64,7 +64,7 @@ getAvailableFonts(const std::filesystem::path& fontPath = std::string());
 IVW_MODULE_FONTRENDERING_API std::filesystem::path getDefaultFontPath();
 
 /**
- * \brief returns the default typeface of Inviwo for \p type along with the default font path and
+ * @brief returns the default typeface of Inviwo for \p type along with the default font path and
  * extension if \p fullPath is true
  *
  * @param type    requested font type

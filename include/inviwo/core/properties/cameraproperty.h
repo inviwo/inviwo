@@ -142,14 +142,14 @@ public:
     virtual void zoom(const ZoomOptions& opts) override;
 
     /**
-     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
+     * @brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
      * @param ndcCoords Coordinates in [-1 1]
      * @return World space position
      */
     virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
 
     /**
-     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
+     * @brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
      * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for
      * perspective division.
      * @return Clip space position

@@ -42,10 +42,10 @@ class BoolProperty;
  * @see BoolProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * BoolProperty p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const BoolProperty& p);
 
@@ -56,9 +56,9 @@ IVW_MODULE_JSON_API void to_json(json& j, const BoolProperty& p);
  * @see BoolProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<BoolProperty>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void from_json(const json& j, BoolProperty& p);
 

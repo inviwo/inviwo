@@ -47,9 +47,6 @@ namespace inviwo {
 class AutoSaver;
 class ProcessorNetwork;
 
-/**
- * \class UndoManager
- */
 class IVW_QTAPPLICATIONBASE_API UndoManager : public QObject {
 public:
     UndoManager(

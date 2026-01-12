@@ -72,7 +72,7 @@ IVW_MODULE_TETRAMESH_API std::vector<int> getBoundaryFaces(const std::vector<ive
  * @param boundaryFaces  list of face IDs belonging to the boundary
  * @return triangle mesh representing the boundary faces
  *
- * \see getOpposingFaces
+ * @see getOpposingFaces
  */
 IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(
     const TetraMesh& mesh, const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,
@@ -85,8 +85,8 @@ IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(
  * @param mesh    tetrahedra mesh
  * @return triangle mesh representing the boundary faces
  *
- * \see getOpposingFaces
- * \see createBoundaryMesh(const TetraMesh&, const std::vector<vec4>&, const std::vector<ivec4>&,
+ * @see getOpposingFaces
+ * @see createBoundaryMesh(const TetraMesh&, const std::vector<vec4>&, const std::vector<ivec4>&,
  * const std::vector<int>&)
  */
 IVW_MODULE_TETRAMESH_API std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& mesh);

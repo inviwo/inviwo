@@ -37,7 +37,7 @@ namespace inviwo {
 namespace utilqt {
 
 /**
- * \brief getCurrentStdLocale
+ * @brief getCurrentStdLocale
  * This function returns the current system locale provided by Qt.
  * If the Qt application has not been initialized, the returned
  * value is the environment's default locale.

@@ -77,8 +77,7 @@ class VersionConverter;
 class DataVisualizer;
 
 /**
- * \class InviwoModule
- * \brief A module class contains registrations of functionality, such as processors, ports,
+ * @brief A module class contains registrations of functionality, such as processors, ports,
  * properties etc.
  */
 class IVW_CORE_API InviwoModule {
@@ -95,7 +94,7 @@ public:
     virtual ~InviwoModule();
 
     /**
-     * \brief Get module identifier, i.e the module folder name.
+     * @brief Get module identifier, i.e the module folder name.
      */
     const std::string& getIdentifier() const;
 

@@ -41,9 +41,6 @@ namespace inviwo {
 
 class Image;
 
-/**
- * \class ImageCache
- */
 class IVW_CORE_API ImageCache {
 public:
     ImageCache(std::shared_ptr<const Image> master = std::shared_ptr<const Image>());

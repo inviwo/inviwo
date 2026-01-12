@@ -56,7 +56,7 @@ class MinorTickSettings;
 class PlotTextSettings;
 
 /**
- * \brief Axis for variables with a fixed number of possible values, e.g., categories.
+ * @brief Axis for variables with a fixed number of possible values, e.g., categories.
  * Will set the AxisProperty::range to match the number of categories and make it read-only.
  * minorTicks will be made invisible.
  */

@@ -41,7 +41,7 @@
 namespace inviwo {
 
 /**
- * \brief A texture backed by buffer storage
+ * @brief A texture backed by buffer storage
  */
 template <typename T = std::uint8_t, GLenum InternalFormat = GL_R8UI>
 class BufferTexture : public TextureBase {

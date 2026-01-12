@@ -38,7 +38,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * \brief convert the given duration from milliseconds to a string.
+ * @brief convert the given duration from milliseconds to a string.
  * The returned string will have the format "%dd %dh %dmin %dsec %.3fms", where days, hours,
  * minutes, seconds, ... are suppressed up to the first non-zero unit if not needed. Milliseconds
  * and seconds are combined if larger than 1 second.
@@ -52,7 +52,7 @@ namespace util {
 IVW_CORE_API std::string msToString(double ms, bool includeZeros = true, bool spacing = false);
 
 /**
- * \brief convenience function for converting a std::chrono::duration to a string calling
+ * @brief convenience function for converting a std::chrono::duration to a string calling
  * msToString(double).
  *
  * @param duration       duration

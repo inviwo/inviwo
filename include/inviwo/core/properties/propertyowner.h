@@ -56,7 +56,7 @@ public:
     using const_iterator = std::vector<Property*>::const_iterator;
     PropertyOwner& operator=(const PropertyOwner& that) = delete;
     /**
-     * \brief Removes all properties and notifies its observers of the removal.
+     * @brief Removes all properties and notifies its observers of the removal.
      */
     virtual ~PropertyOwner();
 
@@ -68,7 +68,7 @@ public:
     void addProperties(Ts&... properties);
 
     /**
-     * \brief insert property \p property at position \p index
+     * @brief insert property \p property at position \p index
      * If \p index is not valid, the property is appended.
      *
      * @param index      insertion point for property
@@ -77,7 +77,7 @@ public:
     void insertProperty(size_t index, Property& property);
 
     /**
-     * \brief insert property \p property at position \p index
+     * @brief insert property \p property at position \p index
      * If \p index is not valid, the property is appended.
      *
      * @param index      insertion point for property
@@ -86,7 +86,7 @@ public:
     Property* insertProperty(size_t index, std::unique_ptr<Property> property);
 
     /**
-     * \brief insert property \p property at position \p index
+     * @brief insert property \p property at position \p index
      * If \p index is not valid, the property is appended.
      *
      * @param index      insertion point for property
@@ -99,7 +99,7 @@ public:
     Property* removeProperty(Property* property);
     Property* removeProperty(Property& property);
     /**
-     * \brief remove property referred to by \p index
+     * @brief remove property referred to by \p index
      *
      * @param index   index of property to be removed
      * @throw RangeException if \p index is not valid

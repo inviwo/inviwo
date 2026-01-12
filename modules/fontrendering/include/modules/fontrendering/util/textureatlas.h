@@ -48,10 +48,9 @@ struct TextBoundingBox;
 namespace util {
 
 /**
- * \class TextureAtlas
- * \brief Texture atlas for a number of strings rendered with the TextRenderer
+ * @brief Texture atlas for a number of strings rendered with the TextRenderer
  *
- * \see TextRenderer
+ * @see TextRenderer
  */
 class IVW_MODULE_FONTRENDERING_API TextureAtlas {
 public:
@@ -77,7 +76,7 @@ public:
 
 private:
     /**
-     * \brief figure out texture atlas size to fit all entries given a specific width
+     * @brief figure out texture atlas size to fit all entries given a specific width
      * using the Shelf First Fit algorithm. This function also updates the element positions
      * within the new atlas texture
      *

@@ -66,9 +66,7 @@ struct TextTextureObject {
 };
 
 /**
- * \class TextRenderer
- *
- * \brief Render text using the FreeType font library
+ * @brief Render text using the FreeType font library
  *
  * The origin is at the top-left corner. The first line starts at origin - ascender
  * (getBaseLineOffset()). The distance between two lines is governed by either setting the line
@@ -78,7 +76,7 @@ struct TextTextureObject {
  * height of 1.2 * font size.
  *
  *
- * \verbatim
+ * @verbatim
  * Origin
  * +───────────────────────────ffffffffffffffff──────────────────── Top line
  *                            f::::::::::::::::f    ▲          ▲
@@ -109,7 +107,7 @@ struct TextTextureObject {
  *                                                  │          │
  *                                                  ▼          ▼
  * ──────────────────────────────────────────────────────────────── Top line (of subsequent line)
- * \endverbatim
+ * @endverbatim
  *
  */
 class IVW_MODULE_FONTRENDERING_API TextRenderer {
@@ -123,7 +121,7 @@ public:
     ~TextRenderer();
 
     /**
-     * \brief replace the currently loaded font face with a new one
+     * @brief replace the currently loaded font face with a new one
      *
      * @param fontPath   full path to the new font face
      * @throws Exception      if the font file could not be opened
@@ -139,7 +137,7 @@ public:
     void render(std::string_view str, const vec2& posf, const vec2& scale, const vec4& color);
 
     /**
-     * \brief renders the given string with the specified color at position x, y in normalized
+     * @brief renders the given string with the specified color at position x, y in normalized
      * device coordinates [-1,1] using the scaling factor.
      *
      * @param str    input string
@@ -151,7 +149,7 @@ public:
     void render(std::string_view str, float x, float y, const vec2& scale, const vec4& color);
 
     /**
-     * \brief renders the given string with the specified color into a subregion of the current
+     * @brief renders the given string with the specified color into a subregion of the current
      * destination
      *
      * @param textBoundingBox the text bounding box of the given str
@@ -164,7 +162,7 @@ public:
                 const vec4& color);
 
     /**
-     * \brief renders the given string with the specified color into a texture.
+     * @brief renders the given string with the specified color into a texture.
      *
      * @param texture   the text will be rendered into this texture
      * @param str    input string
@@ -177,7 +175,7 @@ public:
     void renderToTexture(const TextTextureObject& texObject, std::string_view str,
                          const vec4& color, bool clearTexture = true);
     /**
-     * \brief renders the given string with the specified color into a subregion of the texture.
+     * @brief renders the given string with the specified color into a subregion of the texture.
      *
      * @param texObject      the text will be rendered into this texture
      * @param origin         origin of sub region within the texture (lower left corner, in pixel)
@@ -207,7 +205,7 @@ public:
     void clear(std::shared_ptr<Texture2D> texture, vec4 color);
 
     /**
-     * \brief computes the glyph bounding box of a given string in normalized device coordinates
+     * @brief computes the glyph bounding box of a given string in normalized device coordinates
      * using the scaling factor. The vertical height of the bounding box will be about (ascend +
      * descend) + (number of lines - 1) times line height.
      *
@@ -217,24 +215,24 @@ public:
      * @return size of the bounding box enclosing all glyphs of the input string in normalized
      * device coordinates
      *
-     * \see computeBoundingBox
+     * @see computeBoundingBox
      */
     vec2 computeTextSize(std::string_view str, const vec2& scale);
 
     /**
-     * \brief computes the glyph bounding box of a given string in pixels (screen space). The
+     * @brief computes the glyph bounding box of a given string in pixels (screen space). The
      * vertical height of the bounding box will be about (ascend + descend) + (number of lines - 1)
      * times line height.
      *
      * @param str  input string
      * @return size of the bounding box enclosing all glyphs of the input string in pixel
      *
-     * \see computeBoundingBox
+     * @see computeBoundingBox
      */
     size2_t computeTextSize(std::string_view str);
 
     /**
-     * \brief computes the bounding boxes of both text and all glyphs for a given string in pixels
+     * @brief computes the bounding boxes of both text and all glyphs for a given string in pixels
      * (screen space).
      *
      * The vertical height of the textual bounding box is equal to
@@ -251,7 +249,7 @@ public:
     int getFontSize() const { return fontSize_; }
 
     /**
-     * \brief sets the line spacing relative to the font size (default 0.2 = 20%)
+     * @brief sets the line spacing relative to the font size (default 0.2 = 20%)
      *
      * @param lineSpacing   factor for line spacing
      */
@@ -262,14 +260,14 @@ public:
     int getLineHeight() const;
 
     /**
-     * \brief returns the offset of the baseline, which corresponds to ascent
+     * @brief returns the offset of the baseline, which corresponds to ascent
      *
      * @return baseline offset
      */
     int getBaseLineOffset() const;
 
     /**
-     * \brief returns the size of the font part below the baseline, which corresponds to descent
+     * @brief returns the size of the font part below the baseline, which corresponds to descent
      *
      * @return baseline offset
      */
@@ -286,7 +284,7 @@ protected:
          * glyph specific metrics. The bearing defines the offset from the origin to
          * the top-left corner of the glyph.
          *
-         * \see https://www.freetype.org/freetype2/docs/tutorial/step2.html
+         * @see https://www.freetype.org/freetype2/docs/tutorial/step2.html
          */
         ivec2 advance;
         ivec2 size;     // corresponds to ivec2(bitmap.width, bitmap.rows)
@@ -312,7 +310,7 @@ protected:
     double getFontDescender() const;
 
     /**
-     * \brief request glyph information from the texture atlas. The glyph will be added
+     * @brief request glyph information from the texture atlas. The glyph will be added
      * to the atlas if it isn't registered yet and there is space left in the atlas.
      *
      * @param fc       font cache for the currently selected font, style, and size
@@ -357,7 +355,7 @@ protected:
 namespace util {
 
 /**
- * \brief Creates a texture with rendered text for a given string including its bounding box
+ * @brief Creates a texture with rendered text for a given string including its bounding box
  *
  * Creates a texture with rendered text for a string using the specified renderer and
  * color. May take an additional variable tex of an existing texture that can be reused to reduce
@@ -383,7 +381,7 @@ createTextTextureObject(TextRenderer& textRenderer, std::string text, vec4 fontC
                         std::shared_ptr<Texture2D> tex = nullptr);
 
 /**
- * \brief Creates a texture with rendered text for a given string
+ * @brief Creates a texture with rendered text for a given string
  *
  * Creates a texture with a text string using the specified renderer and color. May
  * take an additional variable tex of an existing texture that can be reused to reduce the number of

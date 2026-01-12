@@ -48,10 +48,10 @@ class DirectoryProperty;
  * @see DirectoryProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * DirectoryProperty p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const DirectoryProperty& p);
 
@@ -69,9 +69,9 @@ IVW_MODULE_JSON_API void to_json(json& j, const DirectoryProperty& p);
  * @see DirectoryProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<DirectoryProperty>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void from_json(const json& j, DirectoryProperty& p);
 

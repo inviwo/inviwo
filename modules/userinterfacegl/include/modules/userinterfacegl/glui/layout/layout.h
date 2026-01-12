@@ -40,10 +40,9 @@ namespace glui {
 class Element;
 
 /**
- * \class Layout
- * \brief base class for layouting glui::Elements
+ * @brief base class for layouting glui::Elements
  *
- * \see glui::Element
+ * @see glui::Element
  */
 class IVW_MODULE_USERINTERFACEGL_API Layout {
 public:
@@ -54,7 +53,7 @@ public:
 
     void setMargins(int top, int left, int bottom, int right);
     /**
-     * \brief set layout margins. \p margins correspond to margins in the order: top, left, bottom,
+     * @brief set layout margins. \p margins correspond to margins in the order: top, left, bottom,
      * and right.
      *
      * @param margins   new margins (top, left, bottom, right)
@@ -63,7 +62,7 @@ public:
     const ivec4& getMargins() const;
 
     /**
-     * \brief apply the given scaling factor to all widgets
+     * @brief apply the given scaling factor to all widgets
      *
      * @param factor   scaling factor for widget extents
      * @see Element::setScalingFactor
@@ -71,7 +70,7 @@ public:
     virtual void setScalingFactor(double factor) = 0;
 
     /**
-     * \brief render the layout and all its UI elements at the given position
+     * @brief render the layout and all its UI elements at the given position
      *
      * @param topLeft         defines the top left corner where the UI is positioned
      * @param canvasDim      dimensions of the output canvas
@@ -79,14 +78,14 @@ public:
     virtual void render(const ivec2& topLeft, const size2_t& canvasDim) = 0;
 
     /**
-     * \brief add a UI element to the layout at the end of the layout
+     * @brief add a UI element to the layout at the end of the layout
      *
      * @param element  UI element to be added
      */
     virtual void addElement(Element& element) = 0;
 
     /**
-     * \brief remove the given UI element from the layout
+     * @brief remove the given UI element from the layout
      *
      * @param element  UI element to be removed
      */

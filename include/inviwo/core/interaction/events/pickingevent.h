@@ -44,7 +44,8 @@ class PickingAction;
 class Camera;
 
 /**
- * \class PickingEvent
+ * @brief Handles object interaction in images.
+ * @see PickingManager
  */
 class IVW_CORE_API PickingEvent : public Event {
 public:
