@@ -181,7 +181,7 @@ size2_t CanvasGL::getImageDimensions() const {
     if (auto image = image_.lock()) {
         return image->getDimensions();
     } else {
-        return {0, 0};
+        return getCanvasDimensions();
     }
 }
 
