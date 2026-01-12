@@ -67,6 +67,7 @@
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_extent_t
 #include <vector>       // for vector
+#include <ranges>
 
 #include <fmt/core.h>                 // for format
 #include <glm/vec2.hpp>               // for vec<>::(anonymous)
@@ -103,6 +104,16 @@ const std::vector<std::shared_ptr<const Image>>& MultiInput::getData() {
     return data;
 }
 
+void MultiInput::propagateEvent(ResizeEvent* event, ViewManager& vm) {
+    const auto& outports = inport.getConnectedOutports();
+    for (size_t i = 0; i < vm.size(); ++i) {
+        if (!vm[i].empty() && i < outports.size()) {
+            ResizeEvent e{vm[i].size};
+            inport.propagateEvent(&e, outports[i]);
+        }
+    }
+}
+
 void MultiInput::propagateEvent(Event* event, size_t index) {
     const auto& outports = inport.getConnectedOutports();
     if (index < outports.size()) {
@@ -128,6 +139,7 @@ SequenceInput::SequenceInput(std::function<void(bool)> update) : inport("inport"
                                                      [](Outport* p) { return p->isReady(); }));
     });
 
+    inport.onChange([update]() { update(true); });
     inport.onConnect([update]() { update(true); });
     inport.onDisconnect([update]() { update(false); });
 }
@@ -135,8 +147,8 @@ SequenceInput::SequenceInput(std::function<void(bool)> update) : inport("inport"
 void SequenceInput::addPorts(Processor* p) { p->addPort(inport); }
 
 size_t SequenceInput::size() const {
-    if (auto data = inport.getData()) {
-        return inport.getData()->size();
+    if (auto input = inport.getData()) {
+        return input->size();
     }
     return 0;
 }
@@ -147,6 +159,15 @@ const std::vector<std::shared_ptr<const Image>>& SequenceInput::getData() {
         data.insert(data.end(), seq->begin(), seq->end());
     }
     return data;
+}
+
+void SequenceInput::propagateEvent(ResizeEvent* event, ViewManager& vm) {
+    const auto max = std::ranges::fold_left(
+        vm.getViews() | std::views::transform([](const auto& v) { return v.size; }), ivec2{1, 1},
+        [](const ivec2& a, const ivec2& b) { return glm::max(a, b); });
+
+    ResizeEvent e{max};
+    inport.propagateEvent(&e, inport.getConnectedOutport());
 }
 
 void SequenceInput::propagateEvent(Event* event, size_t index) {
@@ -163,32 +184,52 @@ void SequenceInput::propagateEvent(Event* event, Processor* p, Outport* source) 
 
 size_t SequenceInput::indexOf(Outport* to) const { return 0; }
 
+Input::Input(std::function<void(bool)> update)
+    : input_{std::in_place_type_t<SequenceInput>{}, std::move(update)} {}
+
+void Input::addPorts(Processor* p) {
+    std::visit([&](auto& i) { i.addPorts(p); }, input_);
+}
+
+size_t Input::size() const {
+    return std::visit([](auto& i) { return i.size(); }, input_);
+}
+
+const std::vector<std::shared_ptr<const Image>>& Input::getData() {
+    return std::visit([&](auto& i) -> decltype(auto) { return i.getData(); }, input_);
+}
+
+void Input::propagateEvent(ResizeEvent* event, ViewManager& vm) {
+    std::visit([&](auto& i) { i.propagateEvent(event, vm); }, input_);
+}
+
+void Input::propagateEvent(Event* event, size_t index) {
+    std::visit([&](auto& i) { i.propagateEvent(event, index); }, input_);
+}
+
+void Input::propagateEvent(Event* event, Processor* p, Outport* source) {
+    std::visit([&](auto& i) { i.propagateEvent(event, p, source); }, input_);
+}
+
+size_t Input::indexOf(Outport* to) const {
+    return std::visit([&](auto& i) { return i.indexOf(to); }, input_);
+}
+
 }  // namespace layout
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ColumnLayout::processorInfo_{
-    "org.inviwo.ColumnLayout",  // Class identifier
-    "Column Layout",            // Display name
-    "Image Operation",          // Category
-    CodeState::Stable,          // Code state
-    Tags::GL | Tag("Layout"),   // Tags
-    "Horizontal layout which puts multiple input images next to each other. "
-    "Interactions are forwarded to the respective areas."_help,
-};
-const ProcessorInfo& ColumnLayout::getProcessorInfo() const { return processorInfo_; }
+namespace {
 
-const ProcessorInfo RowLayout::processorInfo_{
-    "org.inviwo.RowLayout",    // Class identifier
-    "Row Layout",              // Display name
-    "Image Operation",         // Category
-    CodeState::Stable,         // Code state
-    Tags::GL | Tag("Layout"),  // Tags
-    "Horizontal layout which puts multiple input images next to each other. "
-    "Interactions are forwarded to the respective areas"_help,
-};
-const ProcessorInfo& RowLayout::getProcessorInfo() const { return processorInfo_; }
+float aspect(const auto& dims) { return static_cast<float>(dims.x) / static_cast<float>(dims.y); }
+glm::mat4 scale(const auto& srcDims, const auto& dstDims) {
+    const auto sourceAspect = aspect(srcDims);
+    const auto targetAspect = aspect(dstDims);
+    return targetAspect < sourceAspect
+               ? glm::scale(glm::vec3(1.0f, targetAspect / sourceAspect, 1.0f))
+               : glm::scale(glm::vec3(sourceAspect / targetAspect, 1.0f, 1.0f));
+}
 
-Layout::Layout(splitter::Direction direction)
+}  // namespace
+Layout::Layout()
     : Processor()
     , input_([this](bool connect) { updateSplitters(connect); })
     , outport_("outport")
@@ -196,11 +237,14 @@ Layout::Layout(splitter::Direction direction)
                         vec4(0.27f, 0.3f, 0.31f, 1.0f), vec4(0.1f, 0.1f, 0.12f, 1.0f))
     , minWidth_("minWidth", "Minimum Width (px)", 10, 0, 4096, 1, InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox)
-    , splitters_("splitters", "Split Positions")
-    , renderer_(this)
-    , direction_(direction)
+    , horizontalSplitters_("horizontalSplitters", "Horizontal Split Positions",
+                           [this]() { return static_cast<float>(minWidth_.get()) / currentDim_.x; })
+    , verticalSplitters_("verticalSplitters", "Vertical Split Positions",
+                         [this]() { return static_cast<float>(minWidth_.get()) / currentDim_.y; })
+    , horizontalRenderer_(this)
+    , verticalRenderer_(this)
     , currentDim_(0, 0)
-    , shader_("img_texturequad.vert", "img_copy.frag")
+    , shader_("standard.vert", "img_copy.frag")
     , deserialized_(false) {
 
     input_.addPorts(this);
@@ -211,18 +255,25 @@ Layout::Layout(splitter::Direction direction)
     splitterSettings_.triSize_.set(0.0f);
     splitterSettings_.setCurrentStateAsDefault();
 
-    addProperties(splitterSettings_, minWidth_, splitters_);
+    addProperties(splitterSettings_, minWidth_, horizontalSplitters_.splitters_,
+                  verticalSplitters_.splitters_);
 
-    renderer_.setInvalidateAction([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-    renderer_.setDragAction([this](float pos, int index) {
-        if (index < static_cast<int>(splitters_.size())) {
-            static_cast<FloatProperty*>(splitters_[index])->set(pos);
-        }
-    });
+    horizontalSplitters_.splitters_.onChange([this]() { splittersChanged(); });
+    verticalSplitters_.splitters_.onChange([this]() { splittersChanged(); });
+
+    horizontalRenderer_.setInvalidateAction(
+        [this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    horizontalRenderer_.setDragAction(
+        [this](float pos, int index) { horizontalSplitters_.set(index, pos); });
+
+    verticalRenderer_.setInvalidateAction(
+        [this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    verticalRenderer_.setDragAction(
+        [this](float pos, int index) { verticalSplitters_.set(index, pos); });
 }
 
 void Layout::process() {
-    auto& images = input_.getData();
+    const auto& images = input_.getData();
     deserialized_ = false;
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
@@ -233,14 +284,12 @@ void Layout::process() {
     shader_.setUniform("depth_", depthUnit.getUnitNumber());
     shader_.setUniform("picking_", pickingUnit.getUnitNumber());
 
-    size_t minNum = std::min(images.size(), viewManager_.size());
-    for (size_t i = 0; i < minNum; ++i) {
-        if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
-            continue;
-        }
-        utilgl::bindTextures(*images[i], colorUnit, depthUnit, pickingUnit);
-        glViewport(viewManager_[i].pos.x, viewManager_[i].pos.y, viewManager_[i].size.x,
-                   viewManager_[i].size.y);
+    for (auto&& [image, view] : std::views::zip(images, viewManager_.getViews())) {
+        if (view.empty()) continue;
+
+        shader_.setUniform("dataToClip", scale(image->getDimensions(), view.size));
+        utilgl::bindTextures(*image, colorUnit, depthUnit, pickingUnit);
+        glViewport(view.pos.x, view.pos.y, view.size.x, view.size.y);
         utilgl::singleDrawImagePlaneRect();
     }
 
@@ -248,11 +297,15 @@ void Layout::process() {
     glViewport(0, 0, dim.x, dim.y);
 
     if (splitterSettings_.enabled()) {
-        std::vector<float> positions;
-        for (size_t i = 1; i < minNum; ++i) {
-            positions.push_back(static_cast<const FloatProperty*>(splitters_[i - 1])->get());
-        }
-        renderer_.render(splitterSettings_, direction_, positions, outport_.getDimensions());
+        splits_.clear();
+        splits_.append_range(horizontalSplitters_.splits());
+        horizontalRenderer_.render(splitterSettings_, splitter::Direction::Horizontal, splits_,
+                                   outport_.getDimensions());
+
+        splits_.clear();
+        splits_.append_range(verticalSplitters_.splits());
+        verticalRenderer_.render(splitterSettings_, splitter::Direction::Vertical, splits_,
+                                 outport_.getDimensions());
     }
 
     shader_.deactivate();
@@ -266,15 +319,11 @@ void Layout::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (event->hash() == ResizeEvent::chash()) {
-        auto* resizeEvent = static_cast<ResizeEvent*>(event);
-
-        updateViewports(resizeEvent->size());
+    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
         currentDim_ = resizeEvent->size();
-        for (size_t i = 0; i < viewManager_.size(); ++i) {
-            ResizeEvent e(glm::max(glm::ivec2(1, 1), viewManager_[i].size));
-            input_.propagateEvent(&e, i);
-        }
+        calculateViews(currentDim_);
+        input_.propagateEvent(resizeEvent, viewManager_);
+
     } else {
         auto propagated = viewManager_.propagateEvent(
             event, [this](Event* e, size_t i) { input_.propagateEvent(e, i); });
@@ -286,12 +335,10 @@ void Layout::propagateEvent(Event* event, Outport* source) {
 }
 
 bool Layout::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) const {
-    auto id = input_.indexOf(to);
+    const auto id = input_.indexOf(to);
     if (id < viewManager_.size()) {
-        // Note: We cannot use Outport dimensions since it might not exist
-        return glm::compMul(viewManager_.getViews()[id].size) != 0;
+        return !viewManager_[id].empty();
     } else {
-        // More connections than views
         return false;
     }
 }
@@ -299,126 +346,102 @@ bool Layout::isConnectionActive([[maybe_unused]] Inport* from, Outport* to) cons
 void Layout::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 
-    int count = 0;
-    for (auto* p : splitters_) {
-        p->onChange([count, this]() { updateSliders(count); });
-        ++count;
-    }
+    horizontalSplitters_.deserialized();
+    verticalSplitters_.deserialized();
 
     deserialized_ = true;
 }
 
 void Layout::updateSplitters(bool connect) {
-    const auto numViews = input_.size();
+    const NetworkLock lock(this);
 
-    size_t count = 0;
-    for (ptrdiff_t i = 1; i < numViews; ++i) {
-        count++;
-        if (splitters_.size() < count) {
-            auto* prop = new FloatProperty(
-                fmt::format("splitter{}", count - 1), fmt::format("Splitter {}", count),
-                {i / static_cast<float>(numViews), 0.0f, ConstraintBehavior::Immutable, 1.0f,
-                 ConstraintBehavior::Immutable, 0.01f, InvalidationLevel::InvalidOutput});
-            prop->onChange([idx = static_cast<int>(i), this]() { updateSliders(idx - 1); });
-            splitters_.addProperty(prop);
-        } else if (!deserialized_ && connect) {
-            // redistribute space evenly when new ports are connected
-            static_cast<FloatProperty*>(splitters_[i - 1])->set(i / static_cast<float>(numViews));
+    const auto grid = getGrid(std::max(1uz, input_.size()));
+
+    if (verticalSplitters_.updateSize(grid.x - 1uz) ||
+        horizontalSplitters_.updateSize(grid.y - 1uz)) {
+
+        if (!deserialized_ && connect) {
+            horizontalSplitters_.spaceEvenly();
+            verticalSplitters_.spaceEvenly();
         }
-        splitters_[i - 1]->setVisible(true);
-    }
 
-    for (size_t i = count; i < splitters_.size(); i++) {
-        splitters_[i]->setVisible(false);
-    }
-
-    updateViewports(currentDim_);
-
-    if (!connect) {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     }
 }
 
-float Layout::getSplitPosition(int i) {
-    if (i < 0) {
-        return 0.0f;
-    } else if (i >= static_cast<int>(splitters_.size())) {
-        return 1.0f;
-    } else {
-        return static_cast<const FloatProperty*>(splitters_[i])->get();
+void Layout::calculateViews(ivec2 imgSize) {
+    std::vector<float> xpos;
+    xpos.emplace_back(0.0f);
+    xpos.append_range(verticalSplitters_.splits());
+    xpos.emplace_back(1.0f);
+
+    std::vector<float> ypos;
+    ypos.emplace_back(1.0f);
+    ypos.append_range(horizontalSplitters_.splits() |
+                      std::views::transform([](float y) { return 1.0f - y; }));
+    ypos.emplace_back(0.0f);
+
+    viewManager_.clear();
+    for (auto&& [xStart, xStop] : std::views::zip(xpos, xpos | std::views::drop(1))) {
+        for (auto&& [yStop, yStart] : std::views::zip(ypos, ypos | std::views::drop(1))) {
+            const auto pos = ivec2{vec2{imgSize} * vec2{xStart, yStart}};
+            const auto size = ivec2{vec2{imgSize} * vec2{xStop - xStart, yStop - yStart}};
+            viewManager_.push_back({pos, size});
+        }
     }
+    notifyObserversActiveConnectionsChange(this);
 }
 
-void Layout::updateSliders(int slider) {
+void Layout::splittersChanged() {
     const NetworkLock lock(this);
-
-    // push everything to the left if necessary
-    const float minDelta = static_cast<float>(minWidth_.get()) / currentDim_.x;
-    float sliderPos = getSplitPosition(slider);
-    for (int i = slider - 1; i >= 0; --i) {
-        auto* prop = static_cast<FloatProperty*>(splitters_[i]);
-        if (*prop + minDelta < sliderPos) {
-            break;
-        }
-        prop->set(sliderPos - minDelta);
-        sliderPos = *prop;
-    }
-
-    // push everything to the right if necessary
-    sliderPos = getSplitPosition(slider);
-    for (size_t i = slider + 1; i < splitters_.size(); ++i) {
-        auto* prop = static_cast<FloatProperty*>(splitters_[i]);
-        if (sliderPos < *prop - minDelta) {
-            break;
-        }
-        prop->set(sliderPos + minDelta);
-        sliderPos = *prop;
-    }
-
-    updateViewports(currentDim_);
-
     ResizeEvent e(currentDim_);
     propagateEvent(&e, &outport_);
 }
 
-ColumnLayout::ColumnLayout() : Layout(splitter::Direction::Vertical) {}
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo ColumnLayout::processorInfo_{
+    "org.inviwo.ColumnLayout",  // Class identifier
+    "Column Layout",            // Display name
+    "Image Operation",          // Category
+    CodeState::Stable,          // Code state
+    Tags::GL | Tag("Layout"),   // Tags
+    "Horizontal layout which puts multiple input images next to each other. "
+    "Interactions are forwarded to the respective areas."_help,
+};
+const ProcessorInfo& ColumnLayout::getProcessorInfo() const { return processorInfo_; }
+ColumnLayout::ColumnLayout() : Layout() {}
+ivec2 ColumnLayout::getGrid(size_t inputs) const { return {inputs, 1}; }
 
-void ColumnLayout::updateViewports(ivec2 dim) {
-    const auto numViews = input_.size();
+const ProcessorInfo RowLayout::processorInfo_{
+    "org.inviwo.RowLayout",    // Class identifier
+    "Row Layout",              // Display name
+    "Image Operation",         // Category
+    CodeState::Stable,         // Code state
+    Tags::GL | Tag("Layout"),  // Tags
+    "Horizontal layout which puts multiple input images next to each other. "
+    "Interactions are forwarded to the respective areas"_help,
+};
+const ProcessorInfo& RowLayout::getProcessorInfo() const { return processorInfo_; }
+RowLayout::RowLayout() : Layout() {}
+ivec2 RowLayout::getGrid(size_t inputs) const { return {1, inputs}; }
 
-    std::vector<int> positions;
-    positions.push_back(0);
-    for (size_t i = 1; i < numViews; ++i) {
-        positions.push_back(static_cast<int>(getSplitPosition(i - 1) * static_cast<float>(dim.x)));
-    }
-    positions.push_back(dim.x);
+const ProcessorInfo GridLayout::processorInfo_{
+    "org.inviwo.GridLayout",   // Class identifier
+    "Grid Layout",             // Display name
+    "Image Operation",         // Category
+    CodeState::Stable,         // Code state
+    Tags::GL | Tag("Layout"),  // Tags
+    "Grid layout which puts multiple input images into a grid. "
+    "Interactions are forwarded to the respective areas"_help,
+};
+const ProcessorInfo& GridLayout::getProcessorInfo() const { return processorInfo_; }
 
-    viewManager_.clear();
-    for (size_t i = 0; i < std::max(1uz, numViews); ++i) {
-        viewManager_.push_back(ivec4(positions[i], 0, positions[i + 1] - positions[i], dim.y));
-    }
-    notifyObserversActiveConnectionsChange(this);
-}
+GridLayout::GridLayout() : Layout() {}
+ivec2 GridLayout::getGrid(size_t inputs) const {
+    const auto side = static_cast<size_t>(std::ceil(std::sqrt(inputs)));
 
-RowLayout::RowLayout() : Layout(splitter::Direction::Horizontal) {}
-
-void RowLayout::updateViewports(ivec2 dim) {
-    const auto numViews = input_.size();
-
-    std::vector<int> positions;
-    positions.push_back(dim.y);
-    for (size_t i = 1; i < numViews; ++i) {
-        positions.push_back(
-            static_cast<int>((1.0f - getSplitPosition(i - 1)) * static_cast<float>(dim.y)));
-    }
-    positions.push_back(0);
-
-    viewManager_.clear();
-    for (size_t i = 0; i < std::max(1uz, numViews); ++i) {
-        viewManager_.push_back(ivec4(0, positions[i + 1], dim.x, positions[i] - positions[i + 1]));
-    }
-    notifyObserversActiveConnectionsChange(this);
+    return {side, side};
 }
 
 }  // namespace inviwo

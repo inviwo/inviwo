@@ -173,7 +173,7 @@ void SplitImage::process() {
         renderPort(inport1_, viewport1);
     }
 
-    renderer_.render(splitterSettings_, splitDirection_, {splitPosition_},
+    renderer_.render(splitterSettings_, splitDirection_, std::array{splitPosition_.get()},
                      outport_.getDimensions());
 
     utilgl::deactivateCurrentTarget();

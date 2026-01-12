@@ -31,11 +31,12 @@
 
 #include <modules/basegl/baseglmoduledefine.h>  // for IVW_MODULE_BASEGL_API
 
-#include <inviwo/core/ports/imageport.h>                     // for ImageMultiInport, ImageOutport
-#include <inviwo/core/processors/processor.h>                // for Processor
-#include <inviwo/core/processors/processorinfo.h>            // for ProcessorInfo
-#include <inviwo/core/properties/compositeproperty.h>        // for CompositeProperty
-#include <inviwo/core/properties/ordinalproperty.h>          // for IntProperty
+#include <inviwo/core/ports/imageport.h>               // for ImageMultiInport, ImageOutport
+#include <inviwo/core/processors/processor.h>          // for Processor
+#include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
+#include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
+#include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/glmvec.h>                         // for ivec2
 #include <modules/basegl/datastructures/splittersettings.h>  // for Direction
 #include <modules/basegl/properties/splitterproperty.h>      // for SplitterProperty
@@ -43,17 +44,20 @@
 #include <modules/basegl/viewmanager.h>                      // for ViewManager
 #include <modules/opengl/shader/shader.h>                    // for Shader
 
+#include <variant>
+
 namespace inviwo {
 class Deserializer;
 class Event;
 
 namespace layout {
-struct MultiInput {
+struct IVW_MODULE_BASEGL_API MultiInput {
     explicit MultiInput(std::function<void(bool)> update);
 
     void addPorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
+    void propagateEvent(ResizeEvent* event, ViewManager& vm);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
@@ -63,12 +67,13 @@ private:
     std::vector<std::shared_ptr<const Image>> data;
 };
 
-struct SequenceInput {
+struct IVW_MODULE_BASEGL_API SequenceInput {
     explicit SequenceInput(std::function<void(bool)> update);
 
     void addPorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
+    void propagateEvent(ResizeEvent* event, ViewManager& vm);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
@@ -78,11 +83,136 @@ private:
     std::vector<std::shared_ptr<const Image>> data;
 };
 
+struct IVW_MODULE_BASEGL_API Input {
+    explicit Input(std::function<void(bool)> update);
+
+    void addPorts(Processor* p);
+    size_t size() const;
+    const std::vector<std::shared_ptr<const Image>>& getData();
+    void propagateEvent(ResizeEvent* event, ViewManager& vm);
+    void propagateEvent(Event* event, size_t index);
+    void propagateEvent(Event* event, Processor* p, Outport* source);
+    size_t indexOf(Outport* to) const;
+
+private:
+    std::variant<MultiInput, SequenceInput> input_;
+};
+
+struct IVW_MODULE_BASEGL_API SplitterPositions {
+    SplitterPositions(std::string_view identifier, std::string_view displayName,
+                      std::function<float()> minSpacing)
+        : splitters_{identifier, displayName}
+        , nSplitters_{0}
+        , minSpacing_{std::move(minSpacing)}
+        , isEnforcing_{false} {}
+
+    auto splits() const {
+        return splitters_ | std::views::take(nSplitters_) | std::views::transform(toFloat) |
+               std::views::transform(getter);
+    }
+
+    float position(size_t i) const { return i >= size() ? 1.0f : get(i)->get(); }
+    FloatProperty* get(size_t i) { return static_cast<FloatProperty*>(splitters_[i]); }
+    const FloatProperty* get(size_t i) const {
+        return static_cast<const FloatProperty*>(splitters_[i]);
+    }
+
+    void set(size_t i, float pos) {
+        if (i < size()) get(i)->set(std::clamp(pos, 0.0f, 1.0f));
+    }
+
+    size_t size() const { return nSplitters_; }
+
+    void enforceOrder(size_t fixedSliderIndex) {
+        if (isEnforcing_) return;
+        const util::KeepTrueWhileInScope enforce{&isEnforcing_};
+        const NetworkLock lock(&splitters_);
+        const auto minSpacing = minSpacing_();
+
+        // push everything to the left if necessary
+        float sliderPos = position(fixedSliderIndex);
+        for (auto i : std::views::iota(0uz, fixedSliderIndex) | std::views::reverse) {
+            if (position(i) + minSpacing >= sliderPos) {
+                set(i, sliderPos - minSpacing);
+            }
+            sliderPos = position(i);
+        }
+
+        // push everything to the right if necessary
+        sliderPos = position(fixedSliderIndex);
+        for (auto i : std::views::iota(fixedSliderIndex + 1, size())) {
+            if (sliderPos >= position(i) - minSpacing) {
+                set(i, sliderPos + minSpacing);
+            }
+            sliderPos = position(i);
+        }
+    }
+
+    bool updateSize(size_t newSize) {
+        const util::KeepTrueWhileInScope enforce{&isEnforcing_};
+        const NetworkLock lock(&splitters_);
+
+        if (nSplitters_ == newSize) return false;
+
+        for (size_t i = 0; i < newSize; ++i) {
+            if (splitters_.size() <= i) {
+                auto* prop = new FloatProperty(
+                    fmt::format("splitter{}", i + 1), fmt::format("Splitter {}", i + 1),
+                    {(i + 1) / static_cast<float>(newSize + 1), 0.0f, ConstraintBehavior::Immutable,
+                     1.0f, ConstraintBehavior::Immutable, 0.01f, InvalidationLevel::InvalidOutput});
+                prop->onChange([i, this]() { enforceOrder(i); });
+                splitters_.addProperty(prop);
+            }
+            get(i)->setVisible(true);
+        }
+        for (size_t i = newSize; i < splitters_.size(); i++) {
+            get(i)->setVisible(false);
+
+            for (size_t j = 0; j < splitters_.size(); j++) {
+                set(j, position(i) * static_cast<float>(splitters_.size()) /
+                           static_cast<float>(splitters_.size() + 1));
+            }
+        }
+        nSplitters_ = newSize;
+        return true;
+    }
+
+    void spaceEvenly() {
+        const util::KeepTrueWhileInScope enforce{&isEnforcing_};
+        const NetworkLock lock(&splitters_);
+        const auto minSpacing = minSpacing_();
+
+        for (size_t i = 0; i < size(); i++) {
+            set(i, std::max((i + 1) * minSpacing, (i + 1) / static_cast<float>(size() + 1)));
+        }
+    }
+
+    void deserialized() {
+        for (size_t i = 0; i < splitters_.size(); i++) {
+            if (splitters_[i]->getVisible()) ++nSplitters_;
+            splitters_[i]->onChange([i, this]() { enforceOrder(i); });
+        }
+    }
+
+    CompositeProperty splitters_;
+
+private:
+    size_t nSplitters_;
+    std::function<float()> minSpacing_;
+    bool isEnforcing_;
+
+    static constexpr auto toFloat = [](const Property* prop) {
+        return static_cast<const FloatProperty*>(prop);
+    };
+    static constexpr auto visible = [](const Property* prop) { return prop->getVisible(); };
+    static constexpr auto getter = [](const FloatProperty* prop) { return prop->get(); };
+};
+
 }  // namespace layout
 
 class IVW_MODULE_BASEGL_API Layout : public Processor {
 public:
-    explicit Layout(splitter::Direction direction);
+    explicit Layout();
     virtual ~Layout() = default;
 
     virtual void process() override;
@@ -91,24 +221,27 @@ public:
     virtual bool isConnectionActive([[maybe_unused]] Inport* from, Outport* to) const override;
 
 protected:
-    virtual void updateViewports(ivec2 dim) = 0;
+    virtual ivec2 getGrid(size_t inputs) const = 0;
 
     void updateSplitters(bool connect);
-    float getSplitPosition(int i);
-    void updateSliders(int i);
+    void calculateViews(ivec2 imgSize);
+    void splittersChanged();
 
-    layout::SequenceInput input_;
+    layout::Input input_;
     ImageOutport outport_;
+
+    ViewManager viewManager_;
 
     SplitterProperty splitterSettings_;
     IntProperty minWidth_;
-    CompositeProperty splitters_;
-    ViewManager viewManager_;
-    SplitterRenderer renderer_;
-    splitter::Direction direction_;
+    layout::SplitterPositions horizontalSplitters_;
+    layout::SplitterPositions verticalSplitters_;
+    SplitterRenderer horizontalRenderer_;
+    SplitterRenderer verticalRenderer_;
     ivec2 currentDim_;
     Shader shader_;
     bool deserialized_;
+    std::vector<float> splits_;
 };
 
 class IVW_MODULE_BASEGL_API ColumnLayout : public Layout {
@@ -120,7 +253,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void updateViewports(ivec2 dim) override;
+    virtual ivec2 getGrid(size_t inputs) const override;
 };
 
 class IVW_MODULE_BASEGL_API RowLayout : public Layout {
@@ -132,7 +265,19 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    virtual void updateViewports(ivec2 dim) override;
+    virtual ivec2 getGrid(size_t inputs) const override;
+};
+
+class IVW_MODULE_BASEGL_API GridLayout : public Layout {
+public:
+    GridLayout();
+    virtual ~GridLayout() = default;
+
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    virtual ivec2 getGrid(size_t inputs) const override;
 };
 
 }  // namespace inviwo

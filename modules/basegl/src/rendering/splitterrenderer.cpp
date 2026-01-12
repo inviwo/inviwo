@@ -90,7 +90,7 @@ void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) { invali
 void SplitterRenderer::setDragAction(DragCallback callback) { dragAction_ = callback; }
 
 void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direction direction,
-                              const std::vector<float>& pos, size2_t canvasDims) {
+                              std::span<const float> pos, size2_t canvasDims) {
     if (!settings.enabled() || pos.empty()) {
         return;
     }

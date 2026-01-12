@@ -38,7 +38,7 @@
 
 #include <cstddef>     // for size_t
 #include <functional>  // for function
-#include <vector>      // for vector
+#include <span>        // for vector
 
 namespace inviwo {
 
@@ -85,7 +85,7 @@ public:
      * @param canvasDims  dimensions of the output canvas
      */
     void render(const SplitterSettings& settings, splitter::Direction direction,
-                const std::vector<float>& pos, size2_t canvasDims);
+                std::span<const float> pos, size2_t canvasDims);
 
 private:
     void handlePickingEvent(PickingEvent* e);

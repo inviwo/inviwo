@@ -272,6 +272,7 @@ void ViewManager::replace(ViewId ind, View view) {
 }
 
 ViewManager::View& ViewManager::operator[](ViewId ind) { return views_[ind]; }
+const ViewManager::View& ViewManager::operator[](ViewId ind) const { return views_[ind]; }
 
 size_t ViewManager::size() const { return views_.size(); }
 

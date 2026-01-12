@@ -204,6 +204,8 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<LayerShader>();
     registerProcessor<LightVolumeRaycaster>();
     registerProcessor<RowLayout>();
+    registerProcessor<GridLayout>();
+
 
     // volume processing
     registerProcessor<TexturedIsosurfaceRenderer>();
