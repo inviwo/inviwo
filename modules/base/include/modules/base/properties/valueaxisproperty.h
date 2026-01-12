@@ -45,7 +45,7 @@ class Layer;
 class Volume;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A CompositeProperty holding value axis name and unit for DataMapper holders like volumes and
  * layers, and optional overrides
  */

@@ -37,12 +37,12 @@
 namespace inviwo {
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using BufferInport = DataInport<BufferBase>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using BufferOutport = DataOutport<BufferBase>;
 

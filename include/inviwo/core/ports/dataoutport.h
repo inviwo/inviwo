@@ -46,7 +46,7 @@
 namespace inviwo {
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * DataOutport hold data of type T
  */
 template <typename T>

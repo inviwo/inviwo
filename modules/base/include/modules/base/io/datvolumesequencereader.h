@@ -41,7 +41,7 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  *\brief Reader for *.dat files
  *
  *  The following tags are supported:

@@ -53,9 +53,8 @@ namespace inviwo {
 class Camera;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  *
- * \class Volume
  * Data structure for volumetric data in form of a structured three-dimensional grid. Basis and
  * offset determine the position and extent of the volume in model space. Skewed volumes are
  * represented by providing a non-orthogonal basis.

@@ -43,7 +43,7 @@ namespace inviwo {
 enum class AssimpLogLevel : int { None, Error, Warn, Info, Debug };  // increased verbosity
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * \brief Inviwo Module Assimp
  *
  *  A GeometryReader (DataReaderType<Geometry>) using the Assimp Library.

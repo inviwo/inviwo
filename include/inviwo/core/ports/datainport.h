@@ -47,7 +47,7 @@
 namespace inviwo {
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * DataInport represents a general inport providing data as a std:shared_ptr<const T>
  * If N is set to 0 the port will accept multiple connections, and will provide a
  * std::vector<std::shared_ptr<const T>> of data. If N is larger then 1 exactly that many

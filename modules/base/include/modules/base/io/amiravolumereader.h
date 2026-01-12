@@ -36,7 +36,7 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * \brief AmiraMesh scalar field (volume) reader
  */
 class IVW_MODULE_BASE_API AmiraVolumeReader : public DataReaderType<Volume> {

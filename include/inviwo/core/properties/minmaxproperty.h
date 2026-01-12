@@ -43,7 +43,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property representing a range.
  */
 template <typename T>

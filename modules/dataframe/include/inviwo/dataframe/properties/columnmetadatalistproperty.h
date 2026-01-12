@@ -46,7 +46,7 @@ namespace inviwo {
 class ColumnMetaDataProperty;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * List and override column metadata of a DataFrame
  */
 class IVW_MODULE_DATAFRAME_API ColumnMetaDataListProperty : public ListProperty {

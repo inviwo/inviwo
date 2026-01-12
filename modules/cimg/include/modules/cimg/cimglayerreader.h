@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * \brief Reader for Images files
  */
 class IVW_MODULE_CIMG_API CImgLayerReader : public DataReaderType<Layer> {

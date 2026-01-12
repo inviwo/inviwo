@@ -37,22 +37,22 @@
 namespace inviwo {
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using VolumeInport = DataInport<Volume>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using VolumeOutport = DataOutport<Volume>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using VolumeSequenceInport = DataInport<VolumeSequence>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using VolumeSequenceOutport = DataOutport<VolumeSequence>;
 

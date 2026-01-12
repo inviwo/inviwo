@@ -45,7 +45,7 @@ namespace inviwo {
 class Image;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * \brief A CompositeProperty holding properties to show a information about an image
  */
 class IVW_MODULE_BASE_API ImageInformationProperty : public CompositeProperty {

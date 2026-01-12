@@ -36,7 +36,7 @@
 
 namespace inviwo {
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * Reader for text files.
  */
 class IVW_CORE_API TextFileReader {

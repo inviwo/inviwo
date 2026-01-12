@@ -46,7 +46,7 @@ class Document;
  */
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * \brief A abstract base class for all ports.
  * A port can be connected to other ports and is owned by a processor.
  */

@@ -51,7 +51,7 @@ namespace inviwo {
 class Inport;
 class CameraFactory;
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property wrapping the Camera data structure
  * @see Camera
  */

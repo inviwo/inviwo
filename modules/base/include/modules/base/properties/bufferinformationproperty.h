@@ -46,7 +46,7 @@ namespace inviwo {
 class BufferBase;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * \brief A CompositeProperty holding properties to show a information about an Inviwo Buffer
  */
 class IVW_MODULE_BASE_API BufferInformationProperty : public CompositeProperty {

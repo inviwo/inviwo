@@ -42,7 +42,7 @@ namespace inviwo {
 class InviwoApplication;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A grouping property for collecting properties in a hierarchy, CompositeProperties can be nested
  * arbitrarily deep.
  */

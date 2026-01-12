@@ -41,7 +41,7 @@
 
 namespace inviwo {
 /**
- *  \ingroup datastructures
+ *  @ingroup datastructures
  *
  *  \brief The base class for all DataGroup objects.
  *

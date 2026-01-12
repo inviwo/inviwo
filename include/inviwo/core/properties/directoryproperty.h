@@ -37,7 +37,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A class for file representations.
  * Holds the value of the path to a file as a string.
  * @see FileProperty, StringProperty

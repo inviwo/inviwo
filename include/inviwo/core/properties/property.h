@@ -90,7 +90,7 @@ enum class ReadOnly { No, Yes };
 
 class PropertyOwner;
 /**
- * \ingroup properties
+ * @ingroup properties
  *
  * \brief A Property represents a parameter to a processor.
  *

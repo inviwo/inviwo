@@ -49,7 +49,7 @@ class DataFrame;
 
 /**
  * \class CSVReader
- * \ingroup dataio
+ * @ingroup dataio
  *
  * \brief A reader for comma separated value (CSV) files with customizable delimiters and filters.
  * The default delimiter is ',' and headers are included. Floating point values are stored as

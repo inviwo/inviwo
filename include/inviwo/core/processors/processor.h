@@ -60,7 +60,7 @@ class InviwoApplication;
  */
 
 /**
- * \ingroup processors
+ * @ingroup processors
  * \brief A processor generally performs operation on input data and outputs the new result.
  *
  * It can hold arbitrary number of inports and outports, as well as properties which can be used

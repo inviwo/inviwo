@@ -44,7 +44,7 @@ namespace inviwo {
 class MetaDataOwner;
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  */
 class IVW_MODULE_CIMG_API CImgVolumeReader : public DataReaderType<Volume> {
 public:

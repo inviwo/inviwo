@@ -38,7 +38,7 @@
 
 namespace inviwo {
 /**
- * \ingroup dataio
+ * @ingroup dataio
  */
 class IVW_MODULE_BASE_API DatVolumeWriter : public DataWriterType<Volume> {
 public:

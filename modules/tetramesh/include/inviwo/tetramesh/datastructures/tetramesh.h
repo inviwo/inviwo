@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  * \brief Data required to render tetrahedral meshes
  *
  * Provides and interface for the data structures required for rendering a tetrahedral mesh with

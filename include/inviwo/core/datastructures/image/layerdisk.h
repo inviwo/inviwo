@@ -36,7 +36,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API LayerDisk : public LayerRepresentation,
                                public DiskRepresentation<LayerRepresentation, LayerDisk> {

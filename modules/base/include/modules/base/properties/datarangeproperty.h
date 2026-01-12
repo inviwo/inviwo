@@ -50,7 +50,7 @@ class Layer;
 class Volume;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A CompositeProperty holding data and value ranges for volumes and optional custom range overrides
  */
 class IVW_MODULE_BASE_API DataRangeProperty : public CompositeProperty {

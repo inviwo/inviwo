@@ -41,7 +41,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * Property which contains one event matcher and one action to represent the current
  * key binding for the contained action.
  * @see EventPropertyWidgetQt

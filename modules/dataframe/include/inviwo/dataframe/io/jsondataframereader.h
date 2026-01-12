@@ -40,7 +40,7 @@ class DataFrame;
 
 /**
  * \class JSONDataFrameReader
- * \ingroup dataio
+ * @ingroup dataio
  * Reads a json file into DataFrame
  * Expects object layout:
  * [ {"Col1": val11, "Col2": val12 },

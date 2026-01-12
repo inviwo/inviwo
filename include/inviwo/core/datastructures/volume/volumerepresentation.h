@@ -40,7 +40,7 @@ namespace inviwo {
 class Volume;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API VolumeRepresentation : public DataRepresentation<Volume> {
 public:

@@ -39,7 +39,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
                                 public DiskRepresentation<VolumeRepresentation, VolumeDisk> {

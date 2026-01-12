@@ -51,7 +51,7 @@ namespace inviwo {
 class DataFormatBase;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:

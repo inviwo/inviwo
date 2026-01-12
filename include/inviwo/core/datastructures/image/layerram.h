@@ -45,7 +45,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
@@ -150,7 +150,7 @@ protected:
 };
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {

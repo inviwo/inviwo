@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  * \class IsoValueCollection
  * \brief data structure representing isovalues
  *

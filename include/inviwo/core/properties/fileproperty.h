@@ -112,7 +112,7 @@ private:
 };
 
 /**
- * \ingroup properties
+ * @ingroup properties
  *  A class for a file/directory path
  */
 class IVW_CORE_API FileProperty : public Property, public FileBase {

@@ -46,7 +46,7 @@ namespace inviwo {
 class HistogramCalculationState;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
@@ -170,7 +170,7 @@ struct representation_traits<Volume, kind::RAM> {
 };
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {

@@ -163,7 +163,7 @@ struct ValueWrapper<TransferFunction> {
 };
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property holding a TransferFunction data structure
  */
 class IVW_CORE_API TransferFunctionProperty : public Property,

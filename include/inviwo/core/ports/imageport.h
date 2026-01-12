@@ -61,7 +61,7 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, OutportDeterminesSize od
 IVW_CORE_API std::ostream& operator<<(std::ostream& ss, HandleResizeEvents hre);
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * BaseImageInport extends  DataInport<Image> with extra functionality for handing
  * ResizeEvents. The following table explains the behaviors:
  *
@@ -130,12 +130,12 @@ private:
 };
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using ImageInport = BaseImageInport<1>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using ImageMultiInport = BaseImageInport<0>;
 
@@ -160,7 +160,7 @@ struct PortTraits<BaseImageInport<0>> {
 };
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * ImageOutport extends DataOutport<Image> with extra functionality for handing
  * ResizeEvents. The following table explains the behaviors:
  *

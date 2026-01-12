@@ -49,7 +49,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public SpatialEntity,

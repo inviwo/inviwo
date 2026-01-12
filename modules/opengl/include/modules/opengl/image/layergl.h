@@ -46,7 +46,7 @@ class Texture2D;
 class TextureUnit;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:

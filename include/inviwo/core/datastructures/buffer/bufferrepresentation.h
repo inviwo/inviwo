@@ -38,7 +38,7 @@ namespace inviwo {
 class BufferBase;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API BufferRepresentation : public DataRepresentation<BufferBase> {
 public:

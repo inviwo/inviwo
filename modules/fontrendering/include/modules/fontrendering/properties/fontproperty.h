@@ -45,7 +45,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A composite property with the necessary parameters for font rendering like font face, font size,
  * and line spacing.
  */

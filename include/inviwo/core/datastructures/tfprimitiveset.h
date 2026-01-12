@@ -68,7 +68,7 @@ protected:
 };
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  * \class TFPrimitiveSet
  * \brief data structure managing multiple TFPrimitives
  *

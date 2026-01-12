@@ -39,7 +39,7 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * \brief Writer for *.ivf volume files
  *
  * Supports writing a single volume to disk. Creates one main file ([name].ivf) and one raw file
@@ -99,7 +99,7 @@ public:
 };
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * \brief Writer for *.ivfs volume sequence files
  *
  * Supports writing a volume sequence to disk. Creates one main file ([name].ivfs) and a series

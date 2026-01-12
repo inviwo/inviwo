@@ -37,7 +37,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  * \class TransferFunction
  * \brief data structure for holding 1D transfer function data
  */

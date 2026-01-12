@@ -37,7 +37,7 @@ namespace inviwo {
 class Mesh;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation<Mesh> {
 public:

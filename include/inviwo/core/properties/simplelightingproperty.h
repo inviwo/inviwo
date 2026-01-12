@@ -43,7 +43,7 @@ namespace inviwo {
 
 class CameraProperty;
 /**
- * \ingroup properties
+ * @ingroup properties
  * A CompositeProperty representing a light with position, ambient, diffuse, specular color. Used
  * for phong shading.
  */

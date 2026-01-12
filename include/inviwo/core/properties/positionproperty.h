@@ -42,7 +42,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  *
  * \brief Enables Edit a position in world or view space.
  *

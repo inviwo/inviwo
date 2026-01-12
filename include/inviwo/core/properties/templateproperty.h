@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property holding single value type. The type needs to support copy construction and assignment.
  */
 template <typename T>

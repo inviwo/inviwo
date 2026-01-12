@@ -43,7 +43,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API Image : public DataGroup<Image, ImageRepresentation>, public MetaDataOwner {
 public:

@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * \brief  The StringProperty holds a string as value.
  *
  * The string property has 2 different widgets, one that just displays

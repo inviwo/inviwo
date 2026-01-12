@@ -36,7 +36,7 @@ namespace inviwo {
 class Volume;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  * \brief Data required for rendering an Inviwo Volume as tetrahedral mesh
  *
  * Provides an interface between a Volume and the data structures required for rendering a

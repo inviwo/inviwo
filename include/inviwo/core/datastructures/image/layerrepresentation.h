@@ -39,7 +39,7 @@ namespace inviwo {
 class Layer;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API LayerRepresentation : public DataRepresentation<Layer> {
 public:

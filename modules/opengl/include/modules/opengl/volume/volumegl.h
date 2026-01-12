@@ -52,7 +52,7 @@ struct GL {};
 }  // namespace kind
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 

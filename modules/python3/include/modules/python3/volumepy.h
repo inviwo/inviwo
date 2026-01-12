@@ -53,7 +53,7 @@ class DataFormatBase;
 #include <warn/push>
 #include <warn/ignore/attributes>
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_PYTHON3_API VolumePy : public VolumeRepresentation {
 public:

@@ -43,7 +43,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * \brief Property for keeping track of margins
  *
  * Set functions use the same ordering as is common in CSS, that is clockwise direction starting

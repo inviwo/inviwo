@@ -111,7 +111,7 @@ struct OrdinalRefPropertyState {
 };
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property representing a reference to an ordinal value, for example a int, float, or vec3.
  * The property does not hold or own the value itself. It only contains a set and get callback
  * function. It does handle min/max/increment for the value.

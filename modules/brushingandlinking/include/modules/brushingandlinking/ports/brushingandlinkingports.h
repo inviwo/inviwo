@@ -56,7 +56,7 @@ class Port;
 class Serializer;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * Enables selection/filtering/highlighting between processors.
  * The inport has it's own BrushingManager and therefore does
  * not need to be connected to a BrushingAndLinkingOutport to be valid.
@@ -255,7 +255,7 @@ private:
     BrushingAndLinkingManager manager_;
 };
 /**
- * \ingroup ports
+ * @ingroup ports
  * Enables selection/filtering/highlighting between processors.
  * The BrushingAndLinkingOutport can be connected to several BrushingAndLinkingInports in order to
  * share information.

@@ -115,7 +115,7 @@ struct OrdinalPropertyState {
 };
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property representing an Ordinal value, for example int, floats.
  */
 template <typename T>

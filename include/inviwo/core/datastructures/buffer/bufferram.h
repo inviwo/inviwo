@@ -42,7 +42,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
@@ -138,7 +138,7 @@ protected:
 };
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {

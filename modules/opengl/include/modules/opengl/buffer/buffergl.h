@@ -45,7 +45,7 @@ class BufferObjectArray;
 class DataFormatBase;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:

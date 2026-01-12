@@ -43,18 +43,18 @@ namespace inviwo {
 
 /**
  * \defgroup typedmesh TypedMesh
- * \ingroup datastructures
+ * @ingroup datastructures
  *
  * \copydetails TypedMesh
  */
 
 /**
  * Namespace for buffer traits
- * \ingroup typedmesh
+ * @ingroup typedmesh
  */
 namespace buffertraits {
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Based class used to decorate TypedMesh with buffers. Handles creation of buffers and adds it to
  * the mesh. Also has convince functions to access the buffers and its data containers.
  * **Note on Template parameters**
@@ -89,7 +89,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Position buffers
  */
 template <unsigned DIMS>
@@ -112,7 +112,7 @@ using PositionsBuffer2D = PositionsBufferBase<2>;
 using PositionsBuffer1D = PositionsBufferBase<1>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Normal buffers (glm::vec3)
  */
 class NormalBuffer
@@ -130,7 +130,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Colors buffers (glm::vec4)
  */
 class ColorsBuffer
@@ -148,7 +148,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Texture Coordinate buffers
  */
 template <unsigned DIMS = 3>
@@ -169,7 +169,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Curvature buffers (float)
  */
 class CurvatureBuffer
@@ -187,7 +187,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Uint32 buffers
  */
 class IndexBuffer
@@ -205,7 +205,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for radii buffers (float)
  * \see SphereMesh
  */
@@ -224,7 +224,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for picking buffers (uint32)
  * \see PickingMapper
  */
@@ -243,7 +243,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for scalar meta data buffers (float)
  * Useful the pass additional information the rendering
  * \see SphereRenderer
@@ -266,8 +266,8 @@ public:
 
 /**
  * \class TypedMesh
- * \ingroup datastructures
- * \ingroup typedmesh
+ * @ingroup datastructures
+ * @ingroup typedmesh
  *
  *
  * TypedMesh is a templated data structure for creating meshes with a custom amount of vertex
@@ -595,7 +595,7 @@ void TypedMesh<BufferTraits...>::setVertex(size_t index, Args&&... args) {
 }
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh useful for Spheres, consists of a vec3-buffer for position, a
  * float-buffer for radii and vec4 for colors.
  */
@@ -603,7 +603,7 @@ using SphereMesh =
     TypedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer, buffertraits::ColorsBuffer>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh having only positions(vec3) and colors(vec4).
  * Example usage:
  * \snippet modules/base/src/algorithm/meshutils.cpp Using Colored Mesh
@@ -611,7 +611,7 @@ using SphereMesh =
 using ColoredMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), normals(vec3), texture
  * coordinates(vec3) and colors(vec4).
  */
@@ -619,7 +619,7 @@ using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalB
                             buffertraits::TexCoordBuffer<3>, buffertraits::ColorsBuffer>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), texture
  * coordinates(vec3) and colors(vec4). Example usage:
  * \snippet modules/base/src/algorithm/meshutils.cpp Using PosTexColorMesh

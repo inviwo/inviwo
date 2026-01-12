@@ -47,7 +47,7 @@ namespace inviwo {
 class Mesh;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * \brief A CompositeProperty holding properties to show information about a mesh and its buffers
  */
 class IVW_MODULE_BASE_API MeshInformationProperty : public CompositeProperty {

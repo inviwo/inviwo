@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  *
  * \brief A Property that represents a plane
  *

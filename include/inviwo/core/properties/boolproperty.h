@@ -34,7 +34,7 @@
 
 namespace inviwo {
 /**
- * \ingroup properties
+ * @ingroup properties
  * \brief The BoolProperty class provides a property holding boolean values
  *
  * The property widget consist of a check box that sets the value of the property.
