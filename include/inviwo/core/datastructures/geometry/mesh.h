@@ -302,6 +302,8 @@ protected:
     MeshInfo meshInfo_;
 };
 
+using MeshSequence = DataSequence<Mesh>;
+
 namespace meshutil {
 
 IVW_CORE_API bool hasPickIDBuffer(const Mesh* mesh);

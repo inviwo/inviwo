@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,20 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumesequencesource.h>
+#include <modules/base/processors/sequencesource.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+std::optional<std::filesystem::path> util::getFirstFileInFolder(const std::filesystem::path& folder,
+                                                                const std::string& filter) {
+    auto files = filesystem::getDirectoryContents(folder);
+    for (auto f : files) {
+        auto file = folder / f;
+        if (filesystem::wildcardStringMatch(filter, file.generic_string())) {
+            return file;
+        }
+    }
+    return std::nullopt;
+}
+
+}  // namespace inviwo

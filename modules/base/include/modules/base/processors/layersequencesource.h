@@ -30,59 +30,34 @@
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/datastructures/image/layer.h>    // for VolumeSequence
-#include <inviwo/core/ports/layerport.h>               // for VolumeSequenceOutport
-#include <inviwo/core/properties/buttonproperty.h>     // for ButtonProperty
-#include <inviwo/core/properties/directoryproperty.h>  // for DirectoryProperty
-#include <inviwo/core/properties/fileproperty.h>       // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>     // for OptionProperty
-#include <inviwo/core/properties/stringproperty.h>     // for StringProperty
-#include <inviwo/core/util/fileextension.h>            // for FileExtension, operator==
 
-#include <modules/base/properties/basisproperty.h>             // for BasisProperty
+#include <inviwo/core/datastructures/image/layer.h>  // for VolumeSequence
+#include <inviwo/core/ports/layerport.h>             // for VolumeSequenceOutport
+
+#include <modules/base/processors/sequencesource.h>
 #include <modules/base/properties/layerinformationproperty.h>  // for VolumeInformationProperty
 
 namespace inviwo {
 
-class InviwoApplication;
-class DataReaderFactory;
-class Deserializer;
+namespace detail {
+struct LayerConf {
+    using Type = Layer;
+    using Sequence = DataSequence<Type>;
+    using Info = LayerInformationProperty;
+    using Outport = LayerSequenceOutport;
+    static constexpr auto name = DataTraits<Type>::dataName();
+    static constexpr auto plural = "s";
+    static constexpr size_t dim = 2;
 
-class IVW_MODULE_BASE_API LayerSequenceSource : public Processor {
-    enum class InputType { SingleFile, Folder };
-
-public:
-    LayerSequenceSource(InviwoApplication* app);
-
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    void load(bool deserialize = false);
-    void loadFile(bool deserialize = false);
-    void loadFolder(bool deserialize = false);
-
-    DataReaderFactory* rf_;
-    std::shared_ptr<LayerSequence> layers_;
-
-    LayerSequenceOutport outport_;
-
-    OptionProperty<InputType> inputType_;
-    FileProperty file_;
-    DirectoryProperty folder_;
-    StringProperty filter_;
-
-    OptionProperty<FileExtension> reader_;
-    ButtonProperty reload_;
-
-    BasisProperty basis_;
-    LayerInformationProperty information_;
-
-    bool deserialized_ = false;
-    bool loadingFailed_ = false;
+    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
+        info.updateForNewLayer(data, overwrite);
+    }
 };
+}  // namespace detail
+
+/**
+ * @brief Loads a sequence of Layers
+ */
+using LayerSequenceSource = SequenceSource<detail::LayerConf>;
 
 }  // namespace inviwo

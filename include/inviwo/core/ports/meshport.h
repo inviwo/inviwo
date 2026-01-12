@@ -56,4 +56,14 @@ using MeshFlatMultiInport = DataInport<Mesh, 0, true>;
  */
 using MeshOutport = DataOutport<Mesh>;
 
+/**
+ * @ingroup ports
+ */
+using MeshSequenceInport = DataInport<MeshSequence>;
+
+/**
+ * @ingroup ports
+ */
+using MeshSequenceOutport = DataOutport<MeshSequence>;
+
 }  // namespace inviwo
