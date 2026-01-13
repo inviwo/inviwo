@@ -46,11 +46,11 @@ struct MeshConf {
     using Info = MeshInformationProperty;
     using Outport = MeshSequenceOutport;
     static constexpr auto name = DataTraits<Type>::dataName();
-    static constexpr auto plural = "s";
+    static constexpr auto plural = "es";
     static constexpr size_t dim = 3;
 
     static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
-        info.updateForNewVolume(data, overwrite);
+        info.updateForNewMesh(data);
     }
 };
 }  // namespace detail
