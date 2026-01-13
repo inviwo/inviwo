@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processorinfo.h>      // for ProcessorInfo
 #include <inviwo/core/properties/compositeproperty.h>  // for CompositeProperty
 #include <inviwo/core/properties/ordinalproperty.h>    // for IntProperty
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/glmvec.h>                         // for ivec2
 #include <modules/basegl/datastructures/splittersettings.h>  // for Direction
@@ -51,10 +52,13 @@ class Deserializer;
 class Event;
 
 namespace layout {
+enum class InputMode : std::uint8_t { Multi, Sequence };
+
 struct IVW_MODULE_BASEGL_API MultiInput {
     explicit MultiInput(std::function<void(bool)> update);
 
     void addPorts(Processor* p);
+    void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
     void propagateEvent(ResizeEvent* event, ViewManager& vm);
@@ -71,6 +75,7 @@ struct IVW_MODULE_BASEGL_API SequenceInput {
     explicit SequenceInput(std::function<void(bool)> update);
 
     void addPorts(Processor* p);
+    void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
     void propagateEvent(ResizeEvent* event, ViewManager& vm);
@@ -87,6 +92,7 @@ struct IVW_MODULE_BASEGL_API Input {
     explicit Input(std::function<void(bool)> update);
 
     void addPorts(Processor* p);
+    void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
     void propagateEvent(ResizeEvent* event, ViewManager& vm);
@@ -94,17 +100,15 @@ struct IVW_MODULE_BASEGL_API Input {
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
 
+    void setMode(Processor* p, InputMode mode, std::function<void(bool)> update);
+
 private:
     std::variant<MultiInput, SequenceInput> input_;
 };
 
 struct IVW_MODULE_BASEGL_API SplitterPositions {
     SplitterPositions(std::string_view identifier, std::string_view displayName,
-                      std::function<float()> minSpacing)
-        : splitters_{identifier, displayName}
-        , nSplitters_{0}
-        , minSpacing_{std::move(minSpacing)}
-        , isEnforcing_{false} {}
+                      std::function<float()> minSpacing);
 
     auto splits() const {
         return splitters_ | std::views::take(nSplitters_) | std::views::transform(toFloat) |
@@ -116,83 +120,15 @@ struct IVW_MODULE_BASEGL_API SplitterPositions {
     const FloatProperty* get(size_t i) const {
         return static_cast<const FloatProperty*>(splitters_[i]);
     }
-
     void set(size_t i, float pos) {
         if (i < size()) get(i)->set(std::clamp(pos, 0.0f, 1.0f));
     }
-
     size_t size() const { return nSplitters_; }
 
-    void enforceOrder(size_t fixedSliderIndex) {
-        if (isEnforcing_) return;
-        const util::KeepTrueWhileInScope enforce{&isEnforcing_};
-        const NetworkLock lock(&splitters_);
-        const auto minSpacing = minSpacing_();
-
-        // push everything to the left if necessary
-        float sliderPos = position(fixedSliderIndex);
-        for (auto i : std::views::iota(0uz, fixedSliderIndex) | std::views::reverse) {
-            if (position(i) + minSpacing >= sliderPos) {
-                set(i, sliderPos - minSpacing);
-            }
-            sliderPos = position(i);
-        }
-
-        // push everything to the right if necessary
-        sliderPos = position(fixedSliderIndex);
-        for (auto i : std::views::iota(fixedSliderIndex + 1, size())) {
-            if (sliderPos >= position(i) - minSpacing) {
-                set(i, sliderPos + minSpacing);
-            }
-            sliderPos = position(i);
-        }
-    }
-
-    bool updateSize(size_t newSize) {
-        const util::KeepTrueWhileInScope enforce{&isEnforcing_};
-        const NetworkLock lock(&splitters_);
-
-        if (nSplitters_ == newSize) return false;
-
-        for (size_t i = 0; i < newSize; ++i) {
-            if (splitters_.size() <= i) {
-                auto* prop = new FloatProperty(
-                    fmt::format("splitter{}", i + 1), fmt::format("Splitter {}", i + 1),
-                    {(i + 1) / static_cast<float>(newSize + 1), 0.0f, ConstraintBehavior::Immutable,
-                     1.0f, ConstraintBehavior::Immutable, 0.01f, InvalidationLevel::InvalidOutput});
-                prop->onChange([i, this]() { enforceOrder(i); });
-                splitters_.addProperty(prop);
-            }
-            get(i)->setVisible(true);
-        }
-        for (size_t i = newSize; i < splitters_.size(); i++) {
-            get(i)->setVisible(false);
-
-            for (size_t j = 0; j < splitters_.size(); j++) {
-                set(j, position(i) * static_cast<float>(splitters_.size()) /
-                           static_cast<float>(splitters_.size() + 1));
-            }
-        }
-        nSplitters_ = newSize;
-        return true;
-    }
-
-    void spaceEvenly() {
-        const util::KeepTrueWhileInScope enforce{&isEnforcing_};
-        const NetworkLock lock(&splitters_);
-        const auto minSpacing = minSpacing_();
-
-        for (size_t i = 0; i < size(); i++) {
-            set(i, std::max((i + 1) * minSpacing, (i + 1) / static_cast<float>(size() + 1)));
-        }
-    }
-
-    void deserialized() {
-        for (size_t i = 0; i < splitters_.size(); i++) {
-            if (splitters_[i]->getVisible()) ++nSplitters_;
-            splitters_[i]->onChange([i, this]() { enforceOrder(i); });
-        }
-    }
+    void enforceOrder(size_t fixedSliderIndex);
+    bool updateSize(size_t newSize);
+    void spaceEvenly();
+    void deserialized();
 
     CompositeProperty splitters_;
 
@@ -232,12 +168,14 @@ protected:
 
     ViewManager viewManager_;
 
+    OptionProperty<layout::InputMode> inputMode_;
     SplitterProperty splitterSettings_;
     IntProperty minWidth_;
     layout::SplitterPositions horizontalSplitters_;
     layout::SplitterPositions verticalSplitters_;
     SplitterRenderer horizontalRenderer_;
     SplitterRenderer verticalRenderer_;
+    ButtonProperty splitEvenly_;
     ivec2 currentDim_;
     Shader shader_;
     bool deserialized_;
