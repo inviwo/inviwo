@@ -5,7 +5,7 @@ var classinviwo_1_1Deserializer =
     [ "Deserializer", "classinviwo_1_1Deserializer.html#a8f87fa7134fd151bdcb99ea1d1c462a8", null ],
     [ "Deserializer", "classinviwo_1_1Deserializer.html#ac489c44a45a711d08bc9b86a7d7226b2", null ],
     [ "Deserializer", "classinviwo_1_1Deserializer.html#af38cad1ddbb22a606c9a8a34fd7908fe", null ],
-    [ "deserialize", "classinviwo_1_1Deserializer.html#a4160c16216425a5bd8c2aadfc0dbb99f", null ],
+    [ "deserialize", "classinviwo_1_1Deserializer.html#a561672127e1aee4231af07817d4f6c7d", null ],
     [ "deserialize", "classinviwo_1_1Deserializer.html#a689235b7b76c295fb6ef7d7a8e731f01", null ],
     [ "deserialize", "classinviwo_1_1Deserializer.html#a480408a47751ac362ba7aa8f783a68b6", null ],
     [ "deserialize", "classinviwo_1_1Deserializer.html#a03a48275563ce92e41e018ee8a6cb348", null ]

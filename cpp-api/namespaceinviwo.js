@@ -80,6 +80,7 @@ var namespaceinviwo =
       [ "wildcardStringMatchDigits", "namespaceinviwo_1_1filesystem.html#aea08a44a49a90d298bc2808c72c51861", null ]
     ] ],
     [ "inviwopy", "namespaceinviwo_1_1inviwopy.html", null ],
+    [ "kind", "namespaceinviwo_1_1kind.html", "namespaceinviwo_1_1kind" ],
     [ "log", "namespaceinviwo_1_1log.html", "namespaceinviwo_1_1log" ],
     [ "meshutil", "namespaceinviwo_1_1meshutil.html", [
       [ "CalculateMeshNormalsMode", "namespaceinviwo_1_1meshutil.html#aa1547c4667e1a4f6526e80d174ccb3b0", [
@@ -1474,12 +1475,12 @@ var namespaceinviwo =
     [ "JSONConvertable", "conceptinviwo_1_1JSONConvertable.html", null ],
     [ "RepresentationOf", "conceptinviwo_1_1RepresentationOf.html", null ],
     [ "Settable", "conceptinviwo_1_1Settable.html", null ],
-    [ "BasicMesh", "group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f", null ],
+    [ "BasicMesh", "group__typedmesh.html#ga99f563e4719dff2809e3baae6fa5c3ec", null ],
     [ "ColoredMesh", "group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7", null ],
-    [ "PosTexColorMesh", "group__typedmesh.html#gaf62c75e26fbcd5404859a165b89d7410", null ],
+    [ "PosTexColorMesh", "group__typedmesh.html#ga061ff3676981691b398f6c5650b48286", null ],
     [ "ScopedClockCPU", "namespaceinviwo.html#a805f6499529f32e5da1c8c4d09bd12f5", null ],
     [ "ScopedClockGL", "namespaceinviwo.html#aa9bc4adec8778181ef760044d0d2688a", null ],
-    [ "SphereMesh", "group__typedmesh.html#gafddba801d4e659e2242b0896545a5065", null ],
+    [ "SphereMesh", "group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac", null ],
     [ "BrushingAction", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4", [
       [ "Filter", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4ad7778d0c64b6ba21494c97f77a66885a", null ],
       [ "Select", "namespaceinviwo.html#a0780518930e4f82763044068321c57f4ae0626222614bdee31951d84c64e5e9ff", null ],

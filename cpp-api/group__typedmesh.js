@@ -24,8 +24,8 @@ var group__typedmesh =
       [ "setVertex", "classinviwo_1_1TypedMesh.html#aebfdb0a4017433d99c0f6c8d3799b526", null ]
     ] ],
     [ "inviwo::buffertraits::TypedMeshBufferBase&lt; T, DIM, attrib, location &gt;", "classinviwo_1_1buffertraits_1_1TypedMeshBufferBase.html", null ],
-    [ "inviwo::BasicMesh", "group__typedmesh.html#ga0d8285980d0ece5eca678282d437230f", null ],
+    [ "inviwo::BasicMesh", "group__typedmesh.html#ga99f563e4719dff2809e3baae6fa5c3ec", null ],
     [ "inviwo::ColoredMesh", "group__typedmesh.html#ga49f50f4760a5c42168792e6fb1232ea7", null ],
-    [ "inviwo::PosTexColorMesh", "group__typedmesh.html#gaf62c75e26fbcd5404859a165b89d7410", null ],
-    [ "inviwo::SphereMesh", "group__typedmesh.html#gafddba801d4e659e2242b0896545a5065", null ]
+    [ "inviwo::PosTexColorMesh", "group__typedmesh.html#ga061ff3676981691b398f6c5650b48286", null ],
+    [ "inviwo::SphereMesh", "group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac", null ]
 ];

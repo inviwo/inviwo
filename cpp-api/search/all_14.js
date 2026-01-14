@@ -9,7 +9,7 @@ var searchData=
   ['unitsettings_6',['UnitSettings',['../classinviwo_1_1UnitSettings.html',1,'inviwo']]],
   ['unregisterfileobserver_7',['unRegisterFileObserver',['../classinviwo_1_1FileSystemObserver.html#a5b1ab9ede5179b1054b9fcbf58c7747e',1,'inviwo::FileSystemObserver::unRegisterFileObserver()'],['../classinviwo_1_1FileWatcher.html#a09a5e307bfe36ed9a89d63949612716b',1,'inviwo::FileWatcher::unRegisterFileObserver()']]],
   ['unregisterobject_8',['unRegisterObject',['../classinviwo_1_1DataVisualizerManager.html#ad7fcd2db32d6c32a1a340aae69829fc4',1,'inviwo::DataVisualizerManager']]],
-  ['unsetmetadata_9',['unsetMetaData',['../classinviwo_1_1MetaDataOwner.html#a0cc52ac4aae07fc14df9aa43f9ab1a80',1,'inviwo::MetaDataOwner']]],
+  ['unsetmetadata_9',['unsetMetaData',['../classinviwo_1_1MetaDataOwner.html#a665a120ae6061da24bda2b1e900f7b21',1,'inviwo::MetaDataOwner']]],
   ['unsignedintegerscalars_10',['UnsignedIntegerScalars',['../structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerScalars.html',1,'inviwo::dispatching::filter']]],
   ['unsignedintegervecs_11',['UnsignedIntegerVecs',['../structinviwo_1_1dispatching_1_1filter_1_1UnsignedIntegerVecs.html',1,'inviwo::dispatching::filter']]],
   ['unsupportednumberofcolorsexception_12',['UnsupportedNumberOfColorsException',['../classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html',1,'inviwo::colorbrewer']]],

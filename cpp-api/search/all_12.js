@@ -274,7 +274,7 @@ var searchData=
   ['spatialsampler_3c_20dvec3_20_3e_271',['SpatialSampler&lt; dvec3 &gt;',['../classinviwo_1_1SpatialSampler.html',1,'inviwo']]],
   ['spatialsampler_3c_20dvec4_20_3e_272',['SpatialSampler&lt; dvec4 &gt;',['../classinviwo_1_1SpatialSampler.html',1,'inviwo']]],
   ['sphereconfig_273',['SphereConfig',['../classinviwo_1_1SphereConfig.html',1,'inviwo']]],
-  ['spheremesh_274',['SphereMesh',['../group__typedmesh.html#gafddba801d4e659e2242b0896545a5065',1,'inviwo']]],
+  ['spheremesh_274',['SphereMesh',['../group__typedmesh.html#ga2d8fc4330041da81252febcd0a8c0dac',1,'inviwo']]],
   ['sphererasterizer_275',['SphereRasterizer',['../classinviwo_1_1SphereRasterizer.html',1,'inviwo']]],
   ['sphererenderer_276',['SphereRenderer',['../classinviwo_1_1SphereRenderer.html',1,'inviwo']]],
   ['sphericalcomponent_277',['SphericalComponent',['../classinviwo_1_1SphericalComponent.html',1,'inviwo']]],

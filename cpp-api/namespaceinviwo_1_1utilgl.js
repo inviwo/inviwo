@@ -26,7 +26,7 @@ var namespaceinviwo_1_1utilgl =
     [ "Viewport", "structinviwo_1_1utilgl_1_1Viewport.html", null ],
     [ "ViewportState", "structinviwo_1_1utilgl_1_1ViewportState.html", null ],
     [ "DepthFuncState", "namespaceinviwo_1_1utilgl.html#a25c7c3b66b8c4cc490159490288758a5", null ],
-    [ "DepthMaskState", "namespaceinviwo_1_1utilgl.html#a211fca561d574fe4157ff03e50a090bb", null ],
+    [ "DepthMaskState", "namespaceinviwo_1_1utilgl.html#a9a61fe7a8372a93346866cc7e749d601", null ],
     [ "PointSizeState", "namespaceinviwo_1_1utilgl.html#a161f5ee005aede17d3bbed0d9ded5e97", null ],
     [ "createGLFormatRenormalization", "namespaceinviwo_1_1utilgl.html#a3d09cbb3a0c406ef52827f62bcf965ae", null ],
     [ "createGLOutputConversion", "namespaceinviwo_1_1utilgl.html#a4769941605263491f479a0ab2981b82a", null ],
