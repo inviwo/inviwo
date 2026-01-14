@@ -129,8 +129,8 @@ ConstColorLayerIterator&#160;</td><td class="memItemRight"><b>begin</b> () const
 ConstColorLayerIterator&#160;</td><td class="memItemRight"><b>cbegin</b> () const</td></tr>
 <tr class="memitem:a4ed79511636dd625ec7de402c16634d4" id="r_a4ed79511636dd625ec7de402c16634d4"><td class="memItemLeft"><a id="a4ed79511636dd625ec7de402c16634d4" name="a4ed79511636dd625ec7de402c16634d4"></a>
 ConstColorLayerIterator&#160;</td><td class="memItemRight"><b>cend</b> () const</td></tr>
-<tr class="memitem:a73e0b3ed2b8228733d38012fa5c1f357" id="r_a73e0b3ed2b8228733d38012fa5c1f357"><td class="memItemLeft">virtual <a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a73e0b3ed2b8228733d38012fa5c1f357">clone</a> () const</td></tr>
-<tr class="memitem:a7ca331b7a7f43df5bdc23a0ef3e90bf6" id="r_a7ca331b7a7f43df5bdc23a0ef3e90bf6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7ca331b7a7f43df5bdc23a0ef3e90bf6">copyRepresentationsTo</a> (<a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> *target) const</td></tr>
+<tr class="memitem:a73e0b3ed2b8228733d38012fa5c1f357" id="r_a73e0b3ed2b8228733d38012fa5c1f357"><td class="memItemLeft">virtual <a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a73e0b3ed2b8228733d38012fa5c1f357">clone</a> () const</td></tr>
+<tr class="memitem:a7ca331b7a7f43df5bdc23a0ef3e90bf6" id="r_a7ca331b7a7f43df5bdc23a0ef3e90bf6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7ca331b7a7f43df5bdc23a0ef3e90bf6">copyRepresentationsTo</a> (<a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> *target) const</td></tr>
 <tr class="memitem:aa4e22b95d848e3223c73e65673ff68ce" id="r_aa4e22b95d848e3223c73e65673ff68ce"><td class="memItemLeft"><a id="aa4e22b95d848e3223c73e65673ff68ce" name="aa4e22b95d848e3223c73e65673ff68ce"></a>
 ColorLayerIterator&#160;</td><td class="memItemRight"><b>end</b> ()</td></tr>
 <tr class="memitem:a7d8505c4b6ee4debfccdca3fd75d1a9f" id="r_a7d8505c4b6ee4debfccdca3fd75d1a9f"><td class="memItemLeft"><a id="a7d8505c4b6ee4debfccdca3fd75d1a9f" name="a7d8505c4b6ee4debfccdca3fd75d1a9f"></a>
@@ -174,14 +174,14 @@ DataBuffer&#160;</td><td class="memItemRight"><b>getPickingLayerAsCodedBuffer</b
 <tr class="memitem:a64837cce3f4cf1d7cd2fdb973925c025" id="r_a64837cce3f4cf1d7cd2fdb973925c025"><td class="memItemLeft"><a id="a64837cce3f4cf1d7cd2fdb973925c025" name="a64837cce3f4cf1d7cd2fdb973925c025"></a>
 &#160;</td><td class="memItemRight"><b>Image</b> (const Image &amp;rhs)</td></tr>
 <tr class="memitem:a1a572976d9987ae02fdc1bbf1bb621d7" id="r_a1a572976d9987ae02fdc1bbf1bb621d7"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a1a572976d9987ae02fdc1bbf1bb621d7">Image</a> (const Image &amp;rhs, <a class="el" href="structinviwo_1_1NoData.html">NoData</a>, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *colorLayerFormat=nullptr)</td></tr>
-<tr class="memitem:ab94b25efc2753e69c32d5624e2438d6e" id="r_ab94b25efc2753e69c32d5624e2438d6e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> (size2_t dimensions=size2_t(8, 8), const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=DataVec4UInt8::get())</td></tr>
-<tr class="memdesc:ab94b25efc2753e69c32d5624e2438d6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new image with <code class="param">dimensions</code> and <code class="param">format</code>. The image will hold one color layer, one depth layer and one picking layer. The layers will not have any representations.  <br /></td></tr>
+<tr class="memitem:a64ff0726e5ecac957e1d9ff55b7cd6a2" id="r_a64ff0726e5ecac957e1d9ff55b7cd6a2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> (size2_t dimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=LayerConfig::defaultFormat)</td></tr>
+<tr class="memdesc:a64ff0726e5ecac957e1d9ff55b7cd6a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new image with <code class="param">dimensions</code> and <code class="param">format</code>. The image will hold one color layer, one depth layer and one picking layer. The layers will not have any representations.  <br /></td></tr>
 <tr class="memitem:a5e3b071aea2cdd7d3a2a82955ca2cd42" id="r_a5e3b071aea2cdd7d3a2a82955ca2cd42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a5e3b071aea2cdd7d3a2a82955ca2cd42">Image</a> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; layer)</td></tr>
 <tr class="memdesc:a5e3b071aea2cdd7d3a2a82955ca2cd42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new image from the given layer. Default layers will be added for the other two LayerTypes.  <br /></td></tr>
 <tr class="memitem:ab5e62d9b929fba4219b695c4b03cf4e2" id="r_ab5e62d9b929fba4219b695c4b03cf4e2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ab5e62d9b929fba4219b695c4b03cf4e2">Image</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; &gt; layers)</td></tr>
 <tr class="memdesc:ab5e62d9b929fba4219b695c4b03cf4e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an <a class="el" href="classinviwo_1_1Image.html">Image</a> from the given layers. Any number of color layers can be added. The color layers will be added in the same order as in the list. For any LayerType not in the list default layers will added.  <br /></td></tr>
 <tr class="memitem:a6cb31bf8141577098a9729847ff50c22" id="r_a6cb31bf8141577098a9729847ff50c22"><td class="memItemLeft"><a id="a6cb31bf8141577098a9729847ff50c22" name="a6cb31bf8141577098a9729847ff50c22"></a>
-<a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const <a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> &amp;that)</td></tr>
+<a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const <a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> &amp;that)</td></tr>
 <tr class="memitem:a9012d96986e25e62c743f1c197687a7f" id="r_a9012d96986e25e62c743f1c197687a7f"><td class="memItemLeft">dvec4&#160;</td><td class="memItemRight"><a class="el" href="#a9012d96986e25e62c743f1c197687a7f">readPixel</a> (size2_t pos, LayerType layer, size_t index=0) const</td></tr>
 <tr class="memitem:a0f7cf6a811b72212ea8e8376c211de7a" id="r_a0f7cf6a811b72212ea8e8376c211de7a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0f7cf6a811b72212ea8e8376c211de7a">setDimensions</a> (size2_t dimensions)</td></tr>
 <tr class="memitem:a0dd29e28e77d3831045507322b708427" id="r_a0dd29e28e77d3831045507322b708427"><td class="memItemLeft"><a id="a0dd29e28e77d3831045507322b708427" name="a0dd29e28e77d3831045507322b708427"></a>
@@ -253,14 +253,14 @@ static constexpr std::string_view&#160;</td><td class="memItemRight"><b>dataName
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-static-methods" class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a989156eee92d7cf51a4f0733f137df5d" id="r_a989156eee92d7cf51a4f0733f137df5d"><td class="memItemLeft"><a id="a989156eee92d7cf51a4f0733f137df5d" name="a989156eee92d7cf51a4f0733f137df5d"></a>
-static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight"><b>createColorLayer</b> (size2_t dimensions=size2_t(8, 8), const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=DataVec4UInt8::get())</td></tr>
+<tr class="memitem:afeba9bd685919e7cca017962fcb8f128" id="r_afeba9bd685919e7cca017962fcb8f128"><td class="memItemLeft"><a id="afeba9bd685919e7cca017962fcb8f128" name="afeba9bd685919e7cca017962fcb8f128"></a>
+static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight"><b>createColorLayer</b> (size2_t dimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=LayerConfig::defaultFormat)</td></tr>
 <tr class="memitem:a0cec4dddf98a618c5e4eb9e91da330aa" id="r_a0cec4dddf98a618c5e4eb9e91da330aa"><td class="memItemLeft"><a id="a0cec4dddf98a618c5e4eb9e91da330aa" name="a0cec4dddf98a618c5e4eb9e91da330aa"></a>
-static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; &gt;&#160;</td><td class="memItemRight"><b>createColorLayers</b> (const <a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> &amp;srcImage, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=nullptr)</td></tr>
-<tr class="memitem:ab1541c35100d3eee6d864d3dd092c019" id="r_ab1541c35100d3eee6d864d3dd092c019"><td class="memItemLeft"><a id="ab1541c35100d3eee6d864d3dd092c019" name="ab1541c35100d3eee6d864d3dd092c019"></a>
-static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight"><b>createDepthLayer</b> (size2_t dimensions=size2_t(8, 8))</td></tr>
-<tr class="memitem:a51fef4011331343141bbb3169f59d875" id="r_a51fef4011331343141bbb3169f59d875"><td class="memItemLeft"><a id="a51fef4011331343141bbb3169f59d875" name="a51fef4011331343141bbb3169f59d875"></a>
-static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight"><b>createPickingLayer</b> (size2_t dimensions=size2_t(8, 8))</td></tr>
+static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; &gt;&#160;</td><td class="memItemRight"><b>createColorLayers</b> (const <a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> &amp;srcImage, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=nullptr)</td></tr>
+<tr class="memitem:a0b9c27b5be254ec8780dc4ef7c89cdbf" id="r_a0b9c27b5be254ec8780dc4ef7c89cdbf"><td class="memItemLeft"><a id="a0b9c27b5be254ec8780dc4ef7c89cdbf" name="a0b9c27b5be254ec8780dc4ef7c89cdbf"></a>
+static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight"><b>createDepthLayer</b> (size2_t dimensions=LayerConfig::defaultDimensions)</td></tr>
+<tr class="memitem:aa00c1f7a261288ee79aae3f6627ef1f4" id="r_aa00c1f7a261288ee79aae3f6627ef1f4"><td class="memItemLeft"><a id="aa00c1f7a261288ee79aae3f6627ef1f4" name="aa00c1f7a261288ee79aae3f6627ef1f4"></a>
+static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight"><b>createPickingLayer</b> (size2_t dimensions=LayerConfig::defaultDimensions)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -320,23 +320,31 @@ DataGroup&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a>, <a class
 </div>
 </div>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab94b25efc2753e69c32d5624e2438d6e" name="ab94b25efc2753e69c32d5624e2438d6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab94b25efc2753e69c32d5624e2438d6e">&#9670;&#160;</a></span>Image() <span class="overload">[1/4]</span></h2>
+<a id="a64ff0726e5ecac957e1d9ff55b7cd6a2" name="a64ff0726e5ecac957e1d9ff55b7cd6a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">&#9670;&#160;</a></span>Image() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::Image::Image </td>
           <td>(</td>
-          <td class="paramtype">size2_t</td>          <td class="paramname"><span class="paramname"><em>dimensions</em></span><span class="paramdefsep"> = </span><span class="paramdefval">size2_t(8,&#160;8)</span>, </td>
+          <td class="paramtype">size2_t</td>          <td class="paramname"><span class="paramname"><em>dimensions</em></span><span class="paramdefsep"> = </span><span class="paramdefval">LayerConfig::defaultDimensions</span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *</td>          <td class="paramname"><span class="paramname"><em>format</em></span><span class="paramdefsep"> = </span><span class="paramdefval">DataVec4UInt8::get()</span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *</td>          <td class="paramname"><span class="paramname"><em>format</em></span><span class="paramdefsep"> = </span><span class="paramdefval">LayerConfig::defaultFormat</span>&#160;)</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Create a new image with <code class="param">dimensions</code> and <code class="param">format</code>. The image will hold one color layer, one depth layer and one picking layer. The layers will not have any representations. </p>
@@ -355,6 +363,9 @@ DataGroup&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a>, <a class
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::Image::Image </td>
@@ -363,6 +374,11 @@ DataGroup&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a>, <a class
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Create an <a class="el" href="classinviwo_1_1Image.html">Image</a> from the given layers. Any number of color layers can be added. The color layers will be added in the same order as in the list. For any LayerType not in the list default layers will added. </p>
@@ -383,6 +399,9 @@ All Layers in the list must have the same dimensions. </dd></dl>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::Image::Image </td>
@@ -391,6 +410,11 @@ All Layers in the list must have the same dimensions. </dd></dl>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Create a new image from the given layer. Default layers will be added for the other two LayerTypes. </p>
@@ -447,7 +471,7 @@ All Layers in the list must have the same dimensions. </dd></dl>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> * inviwo::Image::clone </td>
+          <td class="memname">virtual <a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> * inviwo::Image::clone </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -473,7 +497,7 @@ All Layers in the list must have the same dimensions. </dd></dl>
         <tr>
           <td class="memname">void inviwo::Image::copyRepresentationsTo </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="#ab94b25efc2753e69c32d5624e2438d6e">Image</a> *</td>          <td class="paramname"><span class="paramname"><em>target</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> *</td>          <td class="paramname"><span class="paramname"><em>target</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

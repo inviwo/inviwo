@@ -95,7 +95,7 @@ var group__datastructures =
     [ "inviwo::DataRepresentation&lt; Owner &gt;", "classinviwo_1_1DataRepresentation.html", null ],
     [ "inviwo::DiskRepresentation&lt; Repr, Self &gt;", "classinviwo_1_1DiskRepresentation.html", null ],
     [ "inviwo::Image", "classinviwo_1_1Image.html", [
-      [ "Image", "classinviwo_1_1Image.html#ab94b25efc2753e69c32d5624e2438d6e", null ],
+      [ "Image", "classinviwo_1_1Image.html#a64ff0726e5ecac957e1d9ff55b7cd6a2", null ],
       [ "Image", "classinviwo_1_1Image.html#ab5e62d9b929fba4219b695c4b03cf4e2", null ],
       [ "Image", "classinviwo_1_1Image.html#a5e3b071aea2cdd7d3a2a82955ca2cd42", null ],
       [ "Image", "classinviwo_1_1Image.html#a1a572976d9987ae02fdc1bbf1bb621d7", null ],
