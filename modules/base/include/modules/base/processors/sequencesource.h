@@ -305,7 +305,7 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
         auto file = folder_.get() / f;
         if (filesystem::wildcardStringMatch(filter_, file.generic_string())) {
             try {
-                loadAndAddToSequence(file, sequence_);
+                loadAndAddToSequence(file, *sequence_);
             } catch (const DataReaderException& e) {
                 log::exception(e);
                 sequence_.reset();
