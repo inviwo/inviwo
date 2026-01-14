@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['scopedclockcpu_0',['ScopedClockCPU',['../namespaceinviwo.html#af6063dbfa21ae84f8552863e30392752',1,'inviwo']]],
-  ['scopedclockgl_1',['ScopedClockGL',['../namespaceinviwo.html#ac3d944a7bd421a12028702561da16033',1,'inviwo']]],
-  ['selectionfunc_2',['SelectionFunc',['../classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#adfd6f9668bd1f2858e7ab9d1f7bd508b',1,'inviwo::plot::BoxSelectionInteractionHandler']]],
-  ['spheremesh_3',['SphereMesh',['../group__typedmesh.html#ga2e0b49412f2c6c645df8153dc3872830',1,'inviwo']]]
+  ['pointsizestate_0',['PointSizeState',['../namespaceinviwo_1_1utilgl.html#a161f5ee005aede17d3bbed0d9ded5e97',1,'inviwo::utilgl']]],
+  ['postexcolormesh_1',['PosTexColorMesh',['../group__typedmesh.html#ga061ff3676981691b398f6c5650b48286',1,'inviwo']]],
+  ['precisiontype_2',['PrecisionType',['../namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b',1,'inviwo::util::PrecisionType'],['../namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b',1,'inviwo::util::PrecisionType']]],
+  ['precisionvaluetype_3',['PrecisionValueType',['../namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5',1,'inviwo::util']]]
 ];

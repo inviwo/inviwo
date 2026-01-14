@@ -102,6 +102,7 @@ $(function(){initNavTree('classinviwo_1_1Layer.html','','classinviwo_1_1Layer-me
   <map id="inviwo_3A_3ALayer_map" name="inviwo_3A_3ALayer_map">
 <area href="classinviwo_1_1Data.html" alt="inviwo::Data&lt; Layer, LayerRepresentation &gt;" shape="rect" coords="0,56,263,80"/>
 <area href="classinviwo_1_1StructuredGridEntity.html" alt="inviwo::StructuredGridEntity&lt; 2 &gt;" shape="rect" coords="273,56,536,80"/>
+<area href="classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get MetaDataOwner is the base class for all the objec..." alt="inviwo::MetaDataOwner" shape="rect" coords="546,56,809,80"/>
 <area href="classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="inviwo::SpatialEntity" shape="rect" coords="273,0,536,24"/>
   </map>
 </div></div>
@@ -210,6 +211,50 @@ void&#160;</td><td class="memItemRight"><b>setWorldMatrix</b> (const glm::mat4 &
 &#160;</td><td class="memItemRight"><b>SpatialEntity</b> (const glm::mat4 &amp;modelMatrix, const glm::mat4 &amp;worldMatrix)</td></tr>
 <tr class="memitem:a8daeb099cf876b1b761ce81637c7ae32 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a8daeb099cf876b1b761ce81637c7ae32"><td class="memItemLeft">
 &#160;</td><td class="memItemRight"><b>SpatialEntity</b> (const SpatialEntity &amp;rhs)</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1MetaDataOwner')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
+<tr class="memitem:a8f5200da468902134faaa84b20b03b7c inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a8f5200da468902134faaa84b20b03b7c"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>copyMetaDataFrom</b> (const MetaDataOwner &amp;src)</td></tr>
+<tr class="memitem:a7ccbe65641711bae4f4314da0df9024a inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7ccbe65641711bae4f4314da0df9024a"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>copyMetaDataTo</b> (MetaDataOwner &amp;dst)</td></tr>
+<tr class="memitem:a29440e20b7c4406c14404e0d259c383b inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a29440e20b7c4406c14404e0d259c383b"><td class="memTemplParams" colspan="2">
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a29440e20b7c4406c14404e0d259c383b inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">T *&#160;</td><td class="memItemRight"><b>createMetaData</b> (std::string_view key)</td></tr>
+<tr class="memitem:abb9e1a56048d3d22f0ed91727d292c02 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_abb9e1a56048d3d22f0ed91727d292c02"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d)</td></tr>
+<tr class="memitem:ad773252ee5a56103b15822ef0ad45b20 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_ad773252ee5a56103b15822ef0ad45b20"><td class="memTemplParams" colspan="2">
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ad773252ee5a56103b15822ef0ad45b20 inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">T *&#160;</td><td class="memItemRight"><b>getMetaData</b> (std::string_view key)</td></tr>
+<tr class="memitem:ae5788a35d13c8bdc04e01224fa520f20 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_ae5788a35d13c8bdc04e01224fa520f20"><td class="memTemplParams" colspan="2">
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ae5788a35d13c8bdc04e01224fa520f20 inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">const T *&#160;</td><td class="memItemRight"><b>getMetaData</b> (std::string_view key) const</td></tr>
+<tr class="memitem:a38540240d5bd948cc1760947d4acc1cd inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a38540240d5bd948cc1760947d4acc1cd"><td class="memTemplParams" colspan="2">
+template&lt;typename T, typename U&gt; </td></tr>
+<tr class="memitem:a38540240d5bd948cc1760947d4acc1cd inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">U&#160;</td><td class="memItemRight"><b>getMetaData</b> (std::string_view key, U val) const</td></tr>
+<tr class="memitem:a1dacfc9f6df8a2cb7780d63d1f070d60 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a1dacfc9f6df8a2cb7780d63d1f070d60"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a> *&#160;</td><td class="memItemRight"><b>getMetaDataMap</b> ()</td></tr>
+<tr class="memitem:a64d447c6c642257c44de419a8f0370b5 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a64d447c6c642257c44de419a8f0370b5"><td class="memItemLeft">
+const <a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a> *&#160;</td><td class="memItemRight"><b>getMetaDataMap</b> () const</td></tr>
+<tr class="memitem:a76d61c5ecf564ce56f89a8d7b0fd9537 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a76d61c5ecf564ce56f89a8d7b0fd9537"><td class="memTemplParams" colspan="2">
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a76d61c5ecf564ce56f89a8d7b0fd9537 inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><b>hasMetaData</b> (std::string_view key) const</td></tr>
+<tr class="memitem:aed68ab80a64a09dd581f8dc51cfa12f5 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_aed68ab80a64a09dd581f8dc51cfa12f5"><td class="memItemLeft">
+bool&#160;</td><td class="memItemRight"><b>hasMetaData</b> (std::string_view key) const</td></tr>
+<tr class="memitem:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a4f12e6cd72de9cd307f35224b2554744"><td class="memItemLeft">
+&#160;</td><td class="memItemRight"><b>MetaDataOwner</b> (const MetaDataOwner &amp;rhs)=default</td></tr>
+<tr class="memitem:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7aada3794e05c567f84a254adb294786"><td class="memItemLeft">
+&#160;</td><td class="memItemRight"><b>MetaDataOwner</b> (MetaDataOwner &amp;rhs)=default</td></tr>
+<tr class="memitem:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7cbb6806abd7ed53ae01a93738c02270"><td class="memItemLeft">
+MetaDataOwner &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const MetaDataOwner &amp;rhs)=default</td></tr>
+<tr class="memitem:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a1c5eb2d764f8389461840736d209be82"><td class="memItemLeft">
+MetaDataOwner &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (MetaDataOwner &amp;)=default</td></tr>
+<tr class="memitem:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a48334a3ef25f428f388e675cc9cdca2d"><td class="memItemLeft">
+void&#160;</td><td class="memItemRight"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const</td></tr>
+<tr class="memitem:a6244754fc35189715fa92c57be348591 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a6244754fc35189715fa92c57be348591"><td class="memTemplParams" colspan="2">
+template&lt;typename T, typename U&gt; </td></tr>
+<tr class="memitem:a6244754fc35189715fa92c57be348591 inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><b>setMetaData</b> (std::string_view key, U value)</td></tr>
+<tr class="memitem:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a665a120ae6061da24bda2b1e900f7b21"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1MetaDataOwner.html#a665a120ae6061da24bda2b1e900f7b21">unsetMetaData</a> (std::string_view key)</td></tr>
+<tr class="memdesc:a665a120ae6061da24bda2b1e900f7b21 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="mdescLeft">&#160;</td><td class="mdescRight">unset, i.e. remove the metadata entry matching the given key and type  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -241,6 +286,9 @@ glm::mat4&#160;</td><td class="memItemRight"><b>modelMatrix_</b></td></tr>
 std::unique_ptr&lt; <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &gt;&#160;</td><td class="memItemRight"><b>transformer_</b></td></tr>
 <tr class="memitem:a622248b9930471cd146885deb194f95a inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_a622248b9930471cd146885deb194f95a"><td class="memItemLeft">
 glm::mat4&#160;</td><td class="memItemRight"><b>worldMatrix_</b></td></tr>
+<tr class="inherit_header pro_attribs_classinviwo_1_1MetaDataOwner"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1MetaDataOwner')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1MetaDataOwner.html">inviwo::MetaDataOwner</a></td></tr>
+<tr class="memitem:a7b331cee0264fea40c3649b9a4ba1815 inherit pro_attribs_classinviwo_1_1MetaDataOwner" id="r_a7b331cee0264fea40c3649b9a4ba1815"><td class="memItemLeft">
+<a class="el" href="classinviwo_1_1MetaDataMap.html">MetaDataMap</a>&#160;</td><td class="memItemRight"><b>metaData_</b></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad5ee1f525279756f20d93d14f5ff45f1" name="ad5ee1f525279756f20d93d14f5ff45f1"></a>

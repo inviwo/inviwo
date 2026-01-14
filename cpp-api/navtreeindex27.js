@@ -1,9 +1,5 @@
 var NAVTREEINDEX27 =
 {
-"classinviwo_1_1plot_1_1MajorTickData.html":[4,0,0,21,20],
-"classinviwo_1_1plot_1_1MajorTickProperty.html":[2,0,0,15,20],
-"classinviwo_1_1plot_1_1MajorTickProperty.html":[4,0,0,21,21],
-"classinviwo_1_1plot_1_1MajorTickProperty.html#a6584f5d17cd22a3c0439ee5886659449":[2,0,0,15,20,0],
 "classinviwo_1_1plot_1_1MajorTickProperty.html#a6584f5d17cd22a3c0439ee5886659449":[4,0,0,21,21,0],
 "classinviwo_1_1plot_1_1MajorTickSettings.html":[2,0,0,15,21],
 "classinviwo_1_1plot_1_1MajorTickSettings.html":[4,0,0,21,22],
@@ -127,8 +123,8 @@ var NAVTREEINDEX27 =
 "classinviwo_1_1plot_1_1VolumeAxis.html":[4,0,0,21,41],
 "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[2,0,0,15,40,0],
 "classinviwo_1_1plot_1_1VolumeAxis.html#adcfd6f37498b7cec87e3811ae1552ce7":[4,0,0,21,41,0],
-"classinviwo_1_1pngModule.html":[2,0,0,793],
-"classinviwo_1_1pngModule.html":[4,0,0,801],
+"classinviwo_1_1pngModule.html":[2,0,0,792],
+"classinviwo_1_1pngModule.html":[4,0,0,800],
 "classinviwo_1_1pool_1_1Progress.html":[2,0,0,16,1],
 "classinviwo_1_1pool_1_1Progress.html":[4,0,0,22,1],
 "classinviwo_1_1pool_1_1Stop.html":[2,0,0,16,2],
@@ -249,5 +245,9 @@ var NAVTREEINDEX27 =
 "functions_func_o.html":[4,3,1,14],
 "functions_func_p.html":[4,3,1,15],
 "functions_func_q.html":[4,3,1,16],
-"functions_func_r.html":[4,3,1,17]
+"functions_func_r.html":[4,3,1,17],
+"functions_func_s.html":[4,3,1,18],
+"functions_func_t.html":[4,3,1,19],
+"functions_func_u.html":[4,3,1,20],
+"functions_func_v.html":[4,3,1,21]
 };

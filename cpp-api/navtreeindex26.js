@@ -1,9 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1animation_1_1Track.html#a8a9b3af54a19561d2c1809158e5f5c0e":[4,0,0,2,75,8],
-"classinviwo_1_1animation_1_1Track.html#ab6c92d0080a4eb45c32cdd3a760dea28":[2,0,0,0,74,9],
-"classinviwo_1_1animation_1_1Track.html#ab6c92d0080a4eb45c32cdd3a760dea28":[4,0,0,2,75,9],
-"classinviwo_1_1animation_1_1Track.html#aeb00c3039d67ee3af6591142a0ce3437":[2,0,0,0,74,0],
 "classinviwo_1_1animation_1_1Track.html#aeb00c3039d67ee3af6591142a0ce3437":[4,0,0,2,75,0],
 "classinviwo_1_1animation_1_1TrackControlsWidgetQt.html":[2,0,0,0,75],
 "classinviwo_1_1animation_1_1TrackControlsWidgetQt.html":[4,0,0,2,76],
@@ -66,11 +62,11 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[2,0,0,4,1],
 "classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html":[4,0,0,6,1],
 "classinviwo_1_1detail_1_1Build.html":[4,0,0,11,0],
-"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,0,11,13],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01DataSequence_3_01T_01_4_01_4.html":[4,0,0,11,14],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html":[4,0,0,11,18],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,0,11,15],
-"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,0,11,16],
+"classinviwo_1_1detail_1_1OutportIterableWrapper.html":[4,0,0,11,15],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01DataSequence_3_01T_01_4_01_4.html":[4,0,0,11,16],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html":[4,0,0,11,20],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,0,11,17],
+"classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html":[4,0,0,11,18],
 "classinviwo_1_1detail_1_1hasProcessorInfo.html":[4,0,0,11,10],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[2,0,0,8,1],
 "classinviwo_1_1dispatching_1_1DispatchException.html":[4,0,0,12,2],
@@ -249,5 +245,9 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1LayerAxis.html":[4,0,0,21,19],
 "classinviwo_1_1plot_1_1LayerAxis.html#af9e7f57ddc24584db3f9fb60f32a57f1":[2,0,0,15,18,0],
 "classinviwo_1_1plot_1_1LayerAxis.html#af9e7f57ddc24584db3f9fb60f32a57f1":[4,0,0,21,19,0],
-"classinviwo_1_1plot_1_1MajorTickData.html":[2,0,0,15,19]
+"classinviwo_1_1plot_1_1MajorTickData.html":[2,0,0,15,19],
+"classinviwo_1_1plot_1_1MajorTickData.html":[4,0,0,21,20],
+"classinviwo_1_1plot_1_1MajorTickProperty.html":[2,0,0,15,20],
+"classinviwo_1_1plot_1_1MajorTickProperty.html":[4,0,0,21,21],
+"classinviwo_1_1plot_1_1MajorTickProperty.html#a6584f5d17cd22a3c0439ee5886659449":[2,0,0,15,20,0]
 };

@@ -175,6 +175,8 @@ var annotated_dup =
         [ "hasProcessorInfo", "classinviwo_1_1detail_1_1hasProcessorInfo.html", null ],
         [ "helper", "structinviwo_1_1detail_1_1helper.html", null ],
         [ "helper&lt; F, 0 &gt;", "structinviwo_1_1detail_1_1helper_3_01F_00_010_01_4.html", null ],
+        [ "LayerConf", "structinviwo_1_1detail_1_1LayerConf.html", null ],
+        [ "MeshConf", "structinviwo_1_1detail_1_1MeshConf.html", null ],
         [ "OutportIterableWrapper", "classinviwo_1_1detail_1_1OutportIterableWrapper.html", null ],
         [ "OutportIterableWrapper&lt; DataSequence&lt; T &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01DataSequence_3_01T_01_4_01_4.html", null ],
         [ "OutportIterableWrapper&lt; std::vector&lt; std::shared_ptr&lt; T &gt;, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
@@ -183,7 +185,8 @@ var annotated_dup =
         [ "OutportIterableWrapper&lt; std::vector&lt; T, Alloc &gt; &gt;", "classinviwo_1_1detail_1_1OutportIterableWrapper_3_01std_1_1vector_3_01T_00_01Alloc_01_4_01_4.html", null ],
         [ "static_size_t", "structinviwo_1_1detail_1_1static__size__t.html", null ],
         [ "static_size_t&lt; char[N]&gt;", "structinviwo_1_1detail_1_1static__size__t_3_01char_0fN_0e_4.html", null ],
-        [ "static_size_t&lt; StaticString&lt; N &gt; &gt;", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ]
+        [ "static_size_t&lt; StaticString&lt; N &gt; &gt;", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ],
+        [ "VolumeConf", "structinviwo_1_1detail_1_1VolumeConf.html", null ]
       ] ],
       [ "dispatching", "namespaceinviwo_1_1dispatching.html", [
         [ "detail", null, [
@@ -1102,7 +1105,6 @@ var annotated_dup =
       [ "LayerRepresentation", "classinviwo_1_1LayerRepresentation.html", "classinviwo_1_1LayerRepresentation" ],
       [ "LayerResampling", "classinviwo_1_1LayerResampling.html", "classinviwo_1_1LayerResampling" ],
       [ "LayerSequenceElementSelector", "classinviwo_1_1LayerSequenceElementSelector.html", null ],
-      [ "LayerSequenceSource", "classinviwo_1_1LayerSequenceSource.html", "classinviwo_1_1LayerSequenceSource" ],
       [ "LayerSeriesSource", "classinviwo_1_1LayerSeriesSource.html", "classinviwo_1_1LayerSeriesSource" ],
       [ "LayerShader", "classinviwo_1_1LayerShader.html", null ],
       [ "LayerSource", "classinviwo_1_1LayerSource.html", null ],
@@ -1389,6 +1391,7 @@ var annotated_dup =
       [ "ProcessorTraits&lt; HistogramToDataFrame&lt; Volume &gt; &gt;", "structinviwo_1_1ProcessorTraits_3_01HistogramToDataFrame_3_01Volume_01_4_01_4.html", null ],
       [ "ProcessorTraits&lt; InputSelector&lt; Inport, Outport &gt; &gt;", "structinviwo_1_1ProcessorTraits_3_01InputSelector_3_01Inport_00_01Outport_01_4_01_4.html", null ],
       [ "ProcessorTraits&lt; PathLines3D &gt;", "structinviwo_1_1ProcessorTraits_3_01PathLines3D_01_4.html", null ],
+      [ "ProcessorTraits&lt; SequenceSource&lt; Conf &gt; &gt;", "structinviwo_1_1ProcessorTraits_3_01SequenceSource_3_01Conf_01_4_01_4.html", null ],
       [ "ProcessorTraits&lt; StreamLines2D &gt;", "structinviwo_1_1ProcessorTraits_3_01StreamLines2D_01_4.html", null ],
       [ "ProcessorTraits&lt; StreamLines3D &gt;", "structinviwo_1_1ProcessorTraits_3_01StreamLines3D_01_4.html", null ],
       [ "ProcessorTraits&lt; Transform&lt; Layer &gt; &gt;", "structinviwo_1_1ProcessorTraits_3_01Transform_3_01Layer_01_4_01_4.html", null ],
@@ -1548,6 +1551,7 @@ var annotated_dup =
       [ "SeedsFromMaskSequence", "classinviwo_1_1SeedsFromMaskSequence.html", "classinviwo_1_1SeedsFromMaskSequence" ],
       [ "SelectionColorProperty", "classinviwo_1_1SelectionColorProperty.html", "classinviwo_1_1SelectionColorProperty" ],
       [ "SelectionColorState", "structinviwo_1_1SelectionColorState.html", null ],
+      [ "SequenceSource", "classinviwo_1_1SequenceSource.html", "classinviwo_1_1SequenceSource" ],
       [ "SequenceTimerProperty", "classinviwo_1_1SequenceTimerProperty.html", "classinviwo_1_1SequenceTimerProperty" ],
       [ "Serializable", "classinviwo_1_1Serializable.html", null ],
       [ "SerializationException", "classinviwo_1_1SerializationException.html", null ],
@@ -1855,7 +1859,6 @@ var annotated_dup =
       [ "VolumeSequenceExport", "classinviwo_1_1VolumeSequenceExport.html", null ],
       [ "VolumeSequenceSampler", "classinviwo_1_1VolumeSequenceSampler.html", null ],
       [ "VolumeSequenceSingleTimestepSamplerProcessor", "classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor.html", "classinviwo_1_1VolumeSequenceSingleTimestepSamplerProcessor" ],
-      [ "VolumeSequenceSource", "classinviwo_1_1VolumeSequenceSource.html", "classinviwo_1_1VolumeSequenceSource" ],
       [ "VolumeSequenceToDataFrame", "classinviwo_1_1VolumeSequenceToDataFrame.html", "classinviwo_1_1VolumeSequenceToDataFrame" ],
       [ "VolumeSequenceToSpatial4DSampler", "classinviwo_1_1VolumeSequenceToSpatial4DSampler.html", "classinviwo_1_1VolumeSequenceToSpatial4DSampler" ],
       [ "VolumeShader", "classinviwo_1_1VolumeShader.html", null ],
