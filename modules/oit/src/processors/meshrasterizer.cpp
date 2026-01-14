@@ -34,12 +34,7 @@
 #include <inviwo/core/datastructures/data.h>                            // for noData
 #include <inviwo/core/datastructures/geometry/geometrytype.h>           // for Connectivit...
 #include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh:...
-#include <inviwo/core/datastructures/image/layer.h>                     // for Layer
-#include <inviwo/core/datastructures/representationconverter.h>         // for Representat...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for Representat...
-#include <inviwo/core/datastructures/transferfunction.h>                // for TransferFun...
 #include <inviwo/core/ports/datainport.h>                               // for DataInport
-#include <inviwo/core/ports/inportiterable.h>                           // for InportItera...
 #include <inviwo/core/ports/meshport.h>                                 // for MeshFlatMul...
 #include <inviwo/core/processors/processor.h>                           // for Processor
 #include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
@@ -58,16 +53,13 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFun...
 #include <inviwo/core/util/document.h>                                  // for Document
 #include <inviwo/core/util/glmmat.h>                                    // for mat4
-#include <inviwo/core/util/glmutils.h>                                  // for Matrix
 #include <inviwo/core/util/glmvec.h>                                    // for vec4, ivec2
-#include <inviwo/core/util/iterrange.h>                                 // for iter_range
 #include <inviwo/core/util/logcentral.h>                                // for LogCentral
+#include <inviwo/core/util/rendercontext.h>                             // for RenderContext
 #include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <modules/base/properties/transformlistproperty.h>              // for TransformLi...
 #include <modules/oit/algorithm/calcnormals.h>                          // for CalculateMe...
 #include <modules/oit/datastructures/halfedges.h>                       // for HalfEdges
 #include <modules/oit/datastructures/transformedrasterization.h>        // for Transformed...
-#include <modules/oit/ports/rasterizationport.h>                        // for Rasterizati...
 #include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
 #include <modules/opengl/image/layergl.h>                               // for LayerGL
 #include <modules/opengl/inviwoopengl.h>                                // for GL_BACK
@@ -78,10 +70,6 @@
 #include <modules/opengl/shader/shaderutils.h>                          // for addShaderDe...
 #include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
 
-#include <cstddef>        // for size_t
-#include <tuple>          // for tuple_eleme...
-#include <type_traits>    // for remove_exte...
-#include <unordered_set>  // for unordered_set
 #include <utility>        // for pair
 #include <variant>        // for visit, variant
 
@@ -503,6 +491,8 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
 }
 
 void MeshRasterizer::updateMeshes() {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+
     enhancedMeshes_.clear();
     for (auto mesh : inport_) {
         std::shared_ptr<Mesh> copy = nullptr;
