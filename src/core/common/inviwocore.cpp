@@ -119,6 +119,7 @@
 #include <inviwo/core/processors/sequencecompositesink.h>
 #include <inviwo/core/processors/sequencecompositesource.h>
 #include <inviwo/core/processors/sequenceselect.h>
+#include <inviwo/core/processors/metadataprocessor.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -211,6 +212,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProcessor<SequenceCompositeSink<ImageInport, DataOutport<DataSequence<Image>>>>();
     registerProcessor<SequenceCompositeSource<DataInport<DataSequence<Image>>, ImageOutport>>();
     registerProcessor<SequenceSelect<Image, ImageOutport>>();
+    registerProcessor<MetaDataProcessor<Image, ImageInport, ImageOutport>>();
 
     registerDefaultsForDataType<Layer>();
     registerDefaultsForDataType<Mesh>();
@@ -235,9 +237,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
         registerDefaultsForScalarDataType<T>();
         registerDefaultsForScalarDataType<std::vector<T>>();
     });
-
-
-
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),

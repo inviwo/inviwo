@@ -237,6 +237,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/datatosequence.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/exporter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/metadataprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/poolprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
@@ -638,6 +639,7 @@ set(SOURCE_FILES
     processors/compositesource.cpp
     processors/datatosequence.cpp
     processors/exporter.cpp
+    processors/metadataprocessor.cpp
     processors/poolprocessor.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
