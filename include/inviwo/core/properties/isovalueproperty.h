@@ -45,9 +45,8 @@ namespace inviwo {
 class IsoTFProperty;
 
 /**
- * \ingroup properties
- * \class IsoValueProperty
- * \brief property managing a collection of isovalues
+ * @ingroup properties
+ * @brief property managing a collection of isovalues
  * The InvalidationLevel is set to InvalidationLevel::InvalidResources when isovalues are added or
  * removed. Otherwise InvalidationLevel::InvalidOutput is used.
  */

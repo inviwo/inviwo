@@ -43,8 +43,7 @@ namespace glui {
 class Element;
 
 /**
- * \class BoxLayout
- * \brief layout for aligning Elements either horizontally or vertically
+ * @brief layout for aligning Elements either horizontally or vertically
  *
  * This class does not take over ownership of the Elements.
  */
@@ -64,7 +63,7 @@ public:
     int getSpacing() const;
 
     /**
-     * \brief apply the given scaling factor to all widgets
+     * @brief apply the given scaling factor to all widgets
      *
      * @param factor   scaling factor for widget extents
      * @see Element::setScalingFactor
@@ -72,7 +71,7 @@ public:
     virtual void setScalingFactor(double factor) override;
 
     /**
-     * \brief render the layout and all its glui::Elements at the given position
+     * @brief render the layout and all its glui::Elements at the given position
      *
      * @param topLeft         defines the top left corner where the UI is positioned
      * @param canvasDim      dimensions of the output canvas
@@ -80,14 +79,14 @@ public:
     virtual void render(const ivec2& topLeft, const size2_t& canvasDim) override;
 
     /**
-     * \brief add a glui::Element to the layout at the end of the layout
+     * @brief add a glui::Element to the layout at the end of the layout
      *
      * @param element  glui::Element to be added
      */
     virtual void addElement(Element& element) override;
 
     /**
-     * \brief insert a glui::Element to the layout at the given index. If the index is negative, the
+     * @brief insert a glui::Element to the layout at the given index. If the index is negative, the
      * UI element is added at the end.
      *
      * @param index    index position of where to insert the glui::Element
@@ -96,7 +95,7 @@ public:
     void insertElement(int index, Element& element);
 
     /**
-     * \brief remove the given glui::Element from the layout
+     * @brief remove the given glui::Element from the layout
      *
      * @param element  glui::Element to be removed
      */

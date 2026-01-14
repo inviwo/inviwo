@@ -43,7 +43,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property representing a range.
  */
 template <typename T>
@@ -102,7 +102,7 @@ public:
     MinMaxProperty<T>& setRange(const value_type& value);
 
     /**
-     * \brief set all parameters of the range property at the same time with only a
+     * @brief set all parameters of the range property at the same time with only a
      * single validation.
      * This circumvents problems when updating both range and value, e.g. changing them
      * from 0 - 100 to 1000 - 2000.
@@ -133,7 +133,7 @@ public:
     virtual Document getDescription() const override;
 
     /**
-     * \brief clamp the given value against the set min/max range
+     * @brief clamp the given value against the set min/max range
      *
      * @param v   value to be clamped
      * @return returns a valid value within the min max range

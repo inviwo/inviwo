@@ -58,7 +58,7 @@ class EventPropagator;
 class MouseInteractionEvent;
 
 /**
- * \brief Map Qt interaction events Mouse, Keyboard, Touch to the corresponing inviwo events
+ * @brief Map Qt interaction events Mouse, Keyboard, Touch to the corresponing inviwo events
  */
 class IVW_MODULE_OPENGLQT_API InteractionEventMapperQt : public QObject {
 public:

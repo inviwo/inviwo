@@ -49,7 +49,7 @@ namespace plot {
 class BoxSelectionProperty;
 
 /**
- * \brief Handles interaction for 2D rectangle selection/filtering
+ * @brief Handles interaction for 2D rectangle selection/filtering
  * Selection/Filtering callbacks are called when filtering changes.
  *
  * The current drag rectangle is given by getDragRectangle.
@@ -58,14 +58,14 @@ class BoxSelectionProperty;
 class IVW_MODULE_PLOTTING_API BoxSelectionInteractionHandler : public InteractionHandler {
 public:
     /**
-     * \brief Selection/filtering-changed callback.
+     * @brief Selection/filtering-changed callback.
      * The index of each element is given by its location (0, 1 ... n).
      * Second argument specifies if the selection/filtering should be appended.
      */
     using SelectionFunc = void(const std::vector<bool>&, bool);
     using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
     /**
-     * \brief Handles interaction for 2D rectangle selection/filtering
+     * @brief Handles interaction for 2D rectangle selection/filtering
      * Selection/Filtering callbacks are called when filtering changes.
      * @param boxSelectionSettings use for selection/filtering/none
      * @param xAxis data
@@ -81,30 +81,30 @@ public:
     virtual void invokeEvent(Event* event) override;
     
     /**
-     * \brief Added callbacks will be called when selection changed.
+     * @brief Added callbacks will be called when selection changed.
      */
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
     /**
-     * \brief Added callbacks will be called when filtering changed.
+     * @brief Added callbacks will be called when filtering changed.
      */
     SelectionCallbackHandle addFilteringChangedCallback(std::function<SelectionFunc> callback);
 
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);
     /**
-     * \brief Returns (lower, upper) screen space coordinates of selection rectangle, null if not
+     * @brief Returns (lower, upper) screen space coordinates of selection rectangle, null if not
      * active.
      */
     std::optional<std::array<dvec2, 2>> getDragRectangle() const { return dragRect_; }
     /**
-     * \brief Reset the drag rectangle
+     * @brief Reset the drag rectangle
      * @see getDragRectangle
      */
     void reset();
 
 protected:
     /**
-     * \brief React to rectangle drag changes. Input is in data-space of each axis.
+     * @brief React to rectangle drag changes. Input is in data-space of each axis.
      */
     void dragRectChanged(const dvec2& start, const dvec2& end, bool append);
     std::vector<bool> boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis_,

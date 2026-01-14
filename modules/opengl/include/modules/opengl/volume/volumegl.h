@@ -52,7 +52,7 @@ struct GL {};
 }  // namespace kind
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
@@ -84,7 +84,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
     /**
-     * \brief update the swizzle mask of the color channels when sampling the volume
+     * @brief update the swizzle mask of the color channels when sampling the volume
      *
      * @param mask new swizzle mask
      */

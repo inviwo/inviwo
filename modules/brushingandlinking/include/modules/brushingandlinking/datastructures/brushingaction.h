@@ -49,7 +49,7 @@ namespace inviwo {
 /**
  * type of action for Brushing and Linking
  *
- * \see BrushingAndLinkingManager
+ * @see BrushingAndLinkingManager
  */
 enum class BrushingAction {
     Filter,     //!< filter the given indices and mark them as removed
@@ -95,7 +95,7 @@ IVW_MODULE_BRUSHINGANDLINKING_API std::ostream& operator<<(std::ostream& ss,
  *
  * Commonly used brushing targets are BrushingTarget::Row and BrushingTarget::Column
  *
- * \see BrushingAndLinkingManager
+ * @see BrushingAndLinkingManager
  */
 struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     BrushingTarget() : target_{Row.target_} {}

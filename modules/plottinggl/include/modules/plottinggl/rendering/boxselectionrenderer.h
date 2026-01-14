@@ -43,7 +43,7 @@ namespace inviwo::plot {
 class BoxSelectionProperty;
 
 /**
- * \brief Renders a 2D rectangle in screen space.
+ * @brief Renders a 2D rectangle in screen space.
  * Use in combination with BoxSelectionInteractionHandler.
  * @see BoxSelectionInteractionHandler
  */
@@ -52,7 +52,7 @@ public:
     explicit BoxSelectionRenderer(const BoxSelectionProperty& settings);
     virtual ~BoxSelectionRenderer() = default;
     /*
-     * \brief Draw rectangle if dragRect exists.
+     * @brief Draw rectangle if dragRect exists.
      *
      * @param dragRect start/end pixel coordinates
      * @param screenDim size of render surface

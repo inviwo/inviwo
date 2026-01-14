@@ -43,8 +43,8 @@ public:
 };
 
 /**
- * \ingroup datastructures
- * \brief Base class for all DataRepresentations \see Data
+ * @ingroup datastructures
+ * @brief Base class for all DataRepresentations @see Data
  */
 template <typename Owner>
 class DataRepresentation {

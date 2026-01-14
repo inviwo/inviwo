@@ -54,10 +54,10 @@ std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 
 
 /**
  * Generate all the successive \p r length permutations of the elements in \p values
- * \see https://docs.python.org/3/library/itertools.html#itertools.permutations
+ * @see https://docs.python.org/3/library/itertools.html#itertools.permutations
  *
  * Example:
- * \code
+ * @code
  * std::array values = {0, 1, 2};
  * util::Permutations perm(std::span{values}, 2);
  * do {
@@ -66,7 +66,7 @@ std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 
  *     }
  *     std::cout << "\n";
  * } while (perm.next());
- * \endcode
+ * @endcode
  */
 template <typename T>
 class Permutations {
@@ -121,10 +121,10 @@ Permutations(std::span<T, N>, size_t) -> Permutations<T>;
 
 /**
  * Generate \p r length subsequences of elements from the input \p values.
- * \see https://docs.python.org/3/library/itertools.html#itertools.combinations
+ * @see https://docs.python.org/3/library/itertools.html#itertools.combinations
  *
  * Example:
- * \code
+ * @code
  * std::array values = {0, 1, 2};
  * util::Combinations comb(std::span{values}, 2);
  * do {
@@ -133,7 +133,7 @@ Permutations(std::span<T, N>, size_t) -> Permutations<T>;
  *     }
  *     std::cout << "\n";
  * } while (comb.next());
- * \endcode
+ * @endcode
  */
 template <typename T>
 class Combinations {
@@ -178,10 +178,10 @@ Combinations(std::span<T, N>, size_t) -> Combinations<T>;
 
 /**
  * Generate \p r length subsequences of elements from the input \p values.
- * \see https://docs.python.org/3/library/itertools.html#itertools.product
+ * @see https://docs.python.org/3/library/itertools.html#itertools.product
  *
  * Example:
- * \code
+ * @code
  * std::array sizes = {3, 2};
  * util::IndexProduct inds(std::span{sizes}, 2);
  * do {
@@ -190,7 +190,7 @@ Combinations(std::span<T, N>, size_t) -> Combinations<T>;
  *     }
  *     std::cout << "\n";
  * } while (inds.next());
- * \endcode
+ * @endcode
  */
 template <typename T>
 class IndexProduct {

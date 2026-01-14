@@ -56,7 +56,7 @@ public:
     virtual int getVersion() const override;
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
     /*
-     * \brief Returns WorkspaceAnimations, which keeps track of animations stored in the workspace.
+     * @brief Returns WorkspaceAnimations, which keeps track of animations stored in the workspace.
      * One of the animations is set to be the MainAnimation, which can be changed from the GUI (see
      * AnimationQtModule).
      */

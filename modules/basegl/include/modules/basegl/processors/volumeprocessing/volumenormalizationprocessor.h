@@ -42,8 +42,6 @@
 namespace inviwo {
 
 /**
- * \class VolumeNormalizationProcessor
- *
  * Enables the usage of the %VolumeNormalization algorithm. For details about the algorithm,
  * please see VolumeNormalization.
  * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel

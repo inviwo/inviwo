@@ -77,7 +77,7 @@ protected:
     virtual QRectF boundingRect() const override;
 
     /**
-     * \brief Get the KeyframeQt corresponding to the given keyframe
+     * @brief Get the KeyframeQt corresponding to the given keyframe
      *
      * @param keyframe The keyframe to search for
      * @return KeyframeWidgetQt containing the keyframe or null if not found.

@@ -47,7 +47,7 @@ namespace inviwo {
 
 namespace utilqt {
 /**
- * \brief  Convert the button state
+ * @brief  Convert the button state
  * when the event was generated
  * to an inviwo button.
  *
@@ -56,7 +56,7 @@ namespace utilqt {
 IVW_MODULE_QTWIDGETS_API MouseButtons getMouseButtons(const QMouseEvent* e);
 
 /**
- * \brief Convert the button originally
+ * @brief Convert the button originally
  * causing the event to an inviwo button.
  *
  * Converts QMouseEvent::getButton().

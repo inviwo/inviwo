@@ -53,7 +53,7 @@ public:
     using allocator_type = std::pmr::polymorphic_allocator<std::byte>;
 
     /**
-     * \brief Base class for Serializer and Deserializer.
+     * @brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
      * and de-serializer.
@@ -71,16 +71,16 @@ public:
     virtual ~SerializeBase();
 
     /**
-     * \brief Gets the workspace file name.
+     * @brief Gets the workspace file name.
      */
     const std::filesystem::path& getFileName() const { return fileName_; }
     /**
-     * \brief Gets the workspace file directory.
+     * @brief Gets the workspace file directory.
      */
     const std::filesystem::path& getFileDir() const { return fileDir_; }
 
     /**
-     * \brief Checks whether the given type is a primitive type.
+     * @brief Checks whether the given type is a primitive type.
      *
      * return true if type is one of following type:
      * bool, char, signed int, unsigned int, float, double, long double, std::string
@@ -183,7 +183,7 @@ public:
     NodeSwitch& operator=(NodeSwitch&&) noexcept;
 
     /**
-     * \brief NodeSwitch helps track parent node during recursive/nested function calls.
+     * @brief NodeSwitch helps track parent node during recursive/nested function calls.
      *
      * @param serializer reference to serializer or deserializer
      * @param node the node to switch to
@@ -193,7 +193,7 @@ public:
     NodeSwitch(SerializeBase& serializer, TiXmlElement& node, bool retrieveChild = true);
 
     /**
-     * \brief NodeSwitch helps track parent node during recursive/nested function calls.
+     * @brief NodeSwitch helps track parent node during recursive/nested function calls.
      *
      * @param serializer reference to serializer or deserializer
      * @param key the child to switch to.

@@ -36,9 +36,6 @@ namespace inviwo {
 
 class ProcessorNetworkEvaluationObservable;
 
-/**
- * \class ProcessorNetworkEvaluationObserver
- */
 class IVW_CORE_API ProcessorNetworkEvaluationObserver : public Observer {
 public:
     virtual void onProcessorNetworkEvaluationBegin(){};

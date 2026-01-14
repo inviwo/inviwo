@@ -42,7 +42,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * This option property lists all available font faces which can be used for font rendering.
  */
 class IVW_MODULE_FONTRENDERING_API FontFaceOptionProperty

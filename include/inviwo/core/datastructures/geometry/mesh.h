@@ -49,7 +49,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API Mesh : public DataGroup<Mesh, MeshRepresentation>,
                           public SpatialEntity,
@@ -161,7 +161,7 @@ public:
      * @param info  information about the buffer contents (e.g. buffer type and shader location)
      * @param buffer   new buffer data used during rendering
      *
-     * \see replaceBuffer
+     * @see replaceBuffer
      */
     // clang-format off
     [[deprecated("Mesh::setBuffer() is deprecated, use Mesh::replaceBuffer()")]]
@@ -275,7 +275,7 @@ public:
     size_t getNumberOfIndices() const;
 
     /**
-     * \brief Append another mesh to this mesh
+     * @brief Append another mesh to this mesh
      *
      * Requires that both meshes has the same type and number of vertex buffers.
      * Will append the contents of each vertex buffer in mesh to each vertex in this.

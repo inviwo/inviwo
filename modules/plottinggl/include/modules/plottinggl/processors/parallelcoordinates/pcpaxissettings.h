@@ -126,7 +126,6 @@ private:
 };
 
 /**
- * \class PCPAxisSettings
  * Helper class for handling axis specific tasks for the parallel coordinates plot
  */
 class IVW_MODULE_PLOTTINGGL_API PCPAxisSettings : public AxisSettings,

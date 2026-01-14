@@ -49,7 +49,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * \brief Returns paths to search for module libraries.
+ * @brief Returns paths to search for module libraries.
  * All platforms: executable directory and application modules directory
  * (AppData/Inviwo/modules on windows).
  * Platform dependent search directories:
@@ -63,8 +63,7 @@ IVW_CORE_API std::vector<std::filesystem::path> getLibrarySearchPaths();
 }  // namespace util
 
 /**
- * \class SharedLibrary
- * \brief Loader for dll/so/dylib. Get functions from loaded library using findSymbol(...).
+ * @brief Loader for dll/so/dylib. Get functions from loaded library using findSymbol(...).
  *
  * Loads specified dll/so/dylib on construction and unloads it on destruction.
  * Throws an inviwo::Exception if library failed to load.
@@ -81,26 +80,26 @@ public:
     const std::filesystem::path& getFilePath() { return filePath_; }
 
     /**
-     * \brief Get function address from library.
+     * @brief Get function address from library.
      *
      * Example usage:
-     * \code{.cpp}
+     * @code{.cpp}
      *      using f_getModule = InviwoModuleFactoryObject* (__stdcall *)();
      *      auto moduleFunc = reinterpret_cast<f_getModule>(sharedLib->findSymbol("createModule"));
-     * \endcode
+     * @endcode
      * @param name Function name
      * @return Address to function if found, otherwise nullptr
      */
     void* findSymbol(const std::string& name);
 
     /**
-     * \brief Get typed function address from library.
+     * @brief Get typed function address from library.
      *
      * Example usage:
-     * \code{.cpp}
+     * @code{.cpp}
      *      using f_getModule = InviwoModuleFactoryObject* (__stdcall *)();
      *      auto moduleFunc = sharedLib->findSymbolTyped<f_getModule>("createModule"));
-     * \endcode
+     * @endcode
      * @param name Function name
      * @return Address to function if found, otherwise nullptr
      */

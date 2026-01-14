@@ -41,9 +41,9 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class LinearInterpolation
+/**
  * Linear interpolation function for key frames.
- * Perfoms linear interpolation between two neighboring key frames.
+ * Performs linear interpolation between two neighboring key frames.
  */
 template <typename Key, typename Result = typename Key::value_type>
 class LinearInterpolation : public InterpolationTyped<Key, Result> {

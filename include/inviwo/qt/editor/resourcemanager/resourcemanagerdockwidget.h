@@ -42,8 +42,7 @@ class ResourceManager;
 class ResourceManagerItemModel;
 
 /**
- * \class ResourceManagerDockWidget
- * \brief Widget class for the Resource Manager
+ * @brief Widget class for the Resource Manager
  */
 class IVW_QTEDITOR_API ResourceManagerDockWidget : public InviwoDockWidget {
 public:

@@ -37,8 +37,7 @@ class Event;
 class Outport;
 
 /**
- * \class EventPropagator
- * \brief Abstract base class for a event propagator.
+ * @brief Abstract base class for a event propagator.
  */
 class IVW_CORE_API EventPropagator {
 public:

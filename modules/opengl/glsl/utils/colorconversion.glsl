@@ -31,7 +31,7 @@
 #define IVW_COLOR_CONVERSION_GLSL
 
 /**
- * \brief reference white point D65 in CIE XYZ color space
+ * @brief reference white point D65 in CIE XYZ color space
  *
  * The values are obtained by converting sRGB(1, 1, 1) to XYZ using rgb2XYZ() since sRGB assumes D65
  * as reference white.
@@ -63,7 +63,7 @@ vec3 rgb2hcv(vec3 rgb) {
 }
 
 /**
- * \brief Convert from RGB to HSV color.
+ * @brief Convert from RGB to HSV color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -82,7 +82,7 @@ vec3 rgb2hsv(vec3 rgb) {
 }
 
 /**
- * \brief Convert from HSV to RGB color.
+ * @brief Convert from HSV to RGB color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -98,7 +98,7 @@ vec3 hsv2rgb(vec3 hsv) {
 }
 
 /**
- * \brief Convert from HSV to RGB color.
+ * @brief Convert from HSV to RGB color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -115,7 +115,7 @@ vec3 hsl2rgb(vec3 hsl) {
 }
 
 /**
- * \brief Convert from RGB to HSV color.
+ * @brief Convert from RGB to HSV color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -135,7 +135,7 @@ vec3 rgb2hsl(vec3 rgb) {
 }
 
 /**
- * \brief Convert from XYZ to Lab color space
+ * @brief Convert from XYZ to Lab color space
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space
  * and http://www.brucelindbloom.com/
  * @param xyz color in the CIE XYZ color space (roughly in the [0 1]^3 range)
@@ -163,7 +163,7 @@ vec3 XYZ2lab(vec3 xyz, vec3 whitePointXYZ) {
 vec3 XYZ2lab(vec3 xyz) { return XYZ2lab(xyz, whitePoint); }
 
 /**
- * \brief Convert from Lab to CIE XYZ color space
+ * @brief Convert from Lab to CIE XYZ color space
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * and http://www.brucelindbloom.com/
  * @param lab Color
@@ -193,7 +193,7 @@ vec3 lab2XYZ(vec3 lab, const vec3 whitePointXYZ) {
 vec3 lab2XYZ(vec3 lab) { return lab2XYZ(lab, whitePoint); }
 
 /** 
- * \brief Convert from XYZ color to sRGB using D65 white point.
+ * @brief Convert from XYZ color to sRGB using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
  * http://www.brucelindbloom.com/
@@ -220,7 +220,7 @@ vec3 XYZ2rgb(vec3 XYZ) {
 }
 
 /** 
- * \brief Convert from sRGB color to XYZ using D65 white point
+ * @brief Convert from sRGB color to XYZ using D65 white point
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
  * http://www.brucelindbloom.com/
  * and http://en.wikipedia.org/wiki/RGB_color_model 
@@ -244,7 +244,7 @@ vec3 rgb2XYZ(vec3 rgb) {
 }
 
 /**
- * \brief Convert from sRGB color to Lab using D65 white point.
+ * @brief Convert from sRGB color to Lab using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * http://www.brucelindbloom.com/
@@ -259,7 +259,7 @@ vec3 rgb2lab(vec3 rgb) {
 }
 
 /**
- * \brief Convert from Lab color to sRGB using D65 white point.
+ * @brief Convert from Lab color to sRGB using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * http://www.brucelindbloom.com/
@@ -274,7 +274,7 @@ vec3 lab2rgb(vec3 lab) {
 }
 
 /**
- * \brief Convert from CIE XYZ to CIE Luv
+ * @brief Convert from CIE XYZ to CIE Luv
  *
  * The CIE Luv color value is converted to CIE XYZ color space using the reference white point.
  *
@@ -316,7 +316,7 @@ vec3 XYZ2Luv(vec3 XYZ, vec3 whitePointXYZ) {
 vec3 XYZ2Luv(vec3 XYZ) { return XYZ2Luv(XYZ,  whitePoint); }
 
 /**
- * \brief Convert from CIE Luv to CIE XYZ
+ * @brief Convert from CIE Luv to CIE XYZ
  *
  * The CIE Luv color value is converted to CIE XYZ color space using the reference white point.
  *
@@ -368,7 +368,7 @@ vec3 Luv2XYZ(vec3 Luv, vec3 whitePointXYZ) {
 vec3 Luv2XYZ(vec3 Luv) { return Luv2XYZ(Luv, whitePoint); }
 
 /**
- * \brief Convert from CIE XYZ color space to normalized chromaticity of CIE Luv, i.e. u' and v'
+ * @brief Convert from CIE XYZ color space to normalized chromaticity of CIE Luv, i.e. u' and v'
  *
  * See http://en.wikipedia.org/wiki/CIELUV, http://www.brucelindbloom.com/
  *
@@ -394,7 +394,7 @@ vec3 XYZ2LuvChromaticity(vec3 XYZ) {
 }
 
 /**
- * \brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to XYZ
+ * @brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to XYZ
  *
  * See http://en.wikipedia.org/wiki/CIELUV, http://www.brucelindbloom.com/
  *
@@ -426,7 +426,7 @@ vec3 LuvChromaticity2XYZ(vec3 LuvChroma) {
 }
 
 /**
- * \brief Convert from sRGB to normalized chromaticity of CIE Luv, i.e. u' and v'
+ * @brief Convert from sRGB to normalized chromaticity of CIE Luv, i.e. u' and v'
  *
  * The sRGB color is converted to chromaticity of CIE Luv (luminance, u', v') via the CIE XYZ color
  * space.
@@ -442,7 +442,7 @@ vec3 rgb2LuvChromaticity(vec3 rgb) {
 }
 
 /**
- * \brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to sRGB
+ * @brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to sRGB
  *
  * The chromaticity of CIE Luv (luminance, u', v') is converted to sRGB via the CIE XYZ color space.
  *
@@ -483,7 +483,7 @@ vec3 LuvChromaticity2rgb(vec3 LuvChroma) {
 }
 
 /**
- * \brief Convert from YCbCr color to sRGB
+ * @brief Convert from YCbCr color to sRGB
  *
  * The YCbCr color (luminance, blue-yellow chroma, red-green chroma) is
  * converted to sRGB without considering footroom and headroom.
@@ -503,7 +503,7 @@ vec3 ycbcr2rgb(vec3 ycbcrColor) {
 }
 
 /**
- * \brief Convert from sRGB color to YCbCr
+ * @brief Convert from sRGB color to YCbCr
  *
  * The sRGB color is converted to to YCbCr (luminance, blue-yellow chroma,
  * red-green chroma). The YCbCr color uses the full range and does not

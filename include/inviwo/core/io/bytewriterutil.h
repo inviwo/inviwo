@@ -43,7 +43,7 @@ namespace inviwo::util {
  * if \p compression is enabled and supported.
 *
  * @throw DataReaderException if the file cannot be created or written to
- * \see util::isCompressionSupported
+ * @see util::isCompressionSupported
  */
 IVW_CORE_API void writeBytes(const std::filesystem::path& path, const void* source, size_t bytes,
                              Compression compression);

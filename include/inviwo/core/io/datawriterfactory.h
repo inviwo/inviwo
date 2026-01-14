@@ -79,7 +79,7 @@ public:
     auto getExtensionsForTypesView() const;
 
     /**
-     * \brief Return a writer matching the file extension of DataWriterType of type T.
+     * @brief Return a writer matching the file extension of DataWriterType of type T.
      * Does case insensitive comparison between the last part of filePathOrExtension and each
      * registered extension. Does not check for "." before the extension, so it is valid to pass for
      * example "png".

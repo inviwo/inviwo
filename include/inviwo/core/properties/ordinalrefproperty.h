@@ -111,7 +111,7 @@ struct OrdinalRefPropertyState {
 };
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property representing a reference to an ordinal value, for example a int, float, or vec3.
  * The property does not hold or own the value itself. It only contains a set and get callback
  * function. It does handle min/max/increment for the value.
@@ -178,7 +178,7 @@ public:
      */
     void set(const T& value);
     /**
-     * \brief set all parameters of the ordinal property at the same time with only a
+     * @brief set all parameters of the ordinal property at the same time with only a
      * single validation. The value will be clamped according to the current ConstraintBehaviour
      */
     void set(const T& value, const T& minVal, const T& maxVal, const T& increment);
@@ -226,7 +226,7 @@ public:
     virtual Document getDescription() const override;
 
     /**
-     * \brief clamps the given value against the set min/max range
+     * @brief clamps the given value against the set min/max range
      * @param v value to be clamped
      * @return the clamped value
      */

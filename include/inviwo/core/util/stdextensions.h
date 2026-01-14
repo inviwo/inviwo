@@ -107,14 +107,14 @@ auto ref(Ts&... args) {
 /**
 * Helper struct to allow passing multiple lambda expressions to std::visit.
 * Example useage:
-* \code{.cpp}
+* @code{.cpp}
 *  std::variant<int, std::string, float, double> data = ...;
 *  std::visit(util::overloaded{[](const int& arg) {   }, // called if data contains an int
                                [](const std::string &arg) {  }, // called if data contains a string
                                [](const auto& arg) {  }} // use auto to capture "the other types"
                                , data);
 *
-* \endcode
+* @endcode
 *
 */
 template <class... Ts>

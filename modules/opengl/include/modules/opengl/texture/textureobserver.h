@@ -34,8 +34,7 @@
 
 namespace inviwo {
 
-/** \class TextureObserver
- *
+/**
  * This observer is notified before and after
  * a texture is initialized (glTexture is called).
  * This enables shared objects to release and rebind the texture.

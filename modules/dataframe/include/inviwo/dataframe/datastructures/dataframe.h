@@ -106,14 +106,14 @@ public:
     ~DataFrame() = default;
 
     /**
-     * \brief add existing column to DataFrame
+     * @brief add existing column to DataFrame
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
     std::shared_ptr<Column> addColumn(std::shared_ptr<Column> column);
 
     /**
-     * \brief add column based on the contents of the given buffer
+     * @brief add column based on the contents of the given buffer
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      * Note: this will copy the data of buffer.
@@ -124,7 +124,7 @@ public:
                                                 std::optional<dvec2> range = std::nullopt);
 
     /**
-     * \brief add column of type T
+     * @brief add column of type T
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
@@ -134,7 +134,7 @@ public:
                                                  std::optional<dvec2> range = std::nullopt);
 
     /**
-     * \brief add column of type T from a std::vector<T>
+     * @brief add column of type T from a std::vector<T>
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
@@ -144,26 +144,26 @@ public:
                                                  std::optional<dvec2> range = std::nullopt);
 
     /**
-     * \brief Drop a column from data frame
+     * @brief Drop a column from data frame
      *
      * Drops all columns with the specified header. If the data frame does not have a column with
      * the specified header, nothing happens.
      *
-     * \param header Name of the column to be dropped
+     * @param header Name of the column to be dropped
      */
     void dropColumn(std::string_view header);
 
     /**
-     * \brief Drop a column from data frame
+     * @brief Drop a column from data frame
      *
      * Drops the column at the specified position.
      *
-     * \param index Position of the column to be dropped
+     * @param index Position of the column to be dropped
      */
     void dropColumn(size_t index);
 
     /**
-     * \brief add a categorical column
+     * @brief add a categorical column
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
@@ -173,7 +173,7 @@ public:
                                                             const std::vector<std::string>& values);
 
     /**
-     * \brief access individual columns
+     * @brief access individual columns
      * updateIndexBuffer() needs to be called if the size of the column, i.e. the row count, was
      * changed
      */
@@ -247,7 +247,7 @@ public:
     std::vector<std::shared_ptr<Column>>::const_iterator end() const;
 
     /**
-     * \brief update row indices. Needs to be called if the row count has changed, i.e.
+     * @brief update row indices. Needs to be called if the row count has changed, i.e.
      * after adding rows from the DataFrame or adding or removing rows from a particular
      * column.
      */

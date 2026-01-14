@@ -376,21 +376,21 @@ struct zipper {
 /**
  * Iterate over containers in sync.
  * Example use case 1:
- * \code{.cpp}
+ * @code{.cpp}
  * std::vector<int> a(10);
  * std::vector<int> b(10);
  * for (auto&& i : util::zip(a, b)) {
  *      std::cout << i.first() << " " << i.second() << std::endl;
  *      // alternatively, get<0>(i) and get<1>(i) can be used
  * }
- * \endcode
+ * @endcode
  *
  * with C++17 structured bindings:
- * \code{.cpp}
+ * @code{.cpp}
  * for (auto&& [i, j] : util::enumerate(vec)) {
  *      std::cout << i << " " << j << std::endl;
  * }
- * \endcode
+ * @endcode
  */
 template <typename... T>
 auto zip(T&&... args) -> detailzip::zipper<T...> {
@@ -506,12 +506,12 @@ private:
 /**
  * Convenvience function for creating a sequence.
  * Use case example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto inc = 2; auto end = 3;
  * for (auto&& i : util::make_sequence(0, end, inc)) {
  *   // Iterates over 0 and 2
  * }
- * \endcode
+ * @endcode
  */
 template <typename T>
 auto make_sequence(const T& begin, const T& end, const T& inc = T{1}) -> sequence<T> {

@@ -50,7 +50,7 @@ struct IVW_MODULE_TETRAMESH_API TetraMeshBuffers {
      * Bind the Shader Storage Buffers and tie them to specific layout locations. They can then be
      * accessed in the shader as follows:
      *
-     * \code{.glsl}
+     * @code{.glsl}
      * struct VertexPosition {
      *     vec3 pos;
      *     float scalar;
@@ -65,9 +65,9 @@ struct IVW_MODULE_TETRAMESH_API TetraMeshBuffers {
      * layout(std430, binding=2) readonly buffer opposingFaceIdsBuffer {
      *     ivec4 faceIds[];
      * };
-     * \endcode
+     * @endcode
      *
-     * \see glBindBufferBase
+     * @see glBindBufferBase
      */
     void bind() const;
     /**

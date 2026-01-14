@@ -34,8 +34,8 @@
 
 namespace inviwo {
 /**
- * \ingroup properties
- * \brief The Button property class provides buttons that you can bind functions to.
+ * @ingroup properties
+ * @brief The Button property class provides buttons that you can bind functions to.
  *
  * The button property has a widget witch creates a button and register a function to it.
  * You can only assign one function to the property.

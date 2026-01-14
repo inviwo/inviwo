@@ -48,8 +48,7 @@
 
 namespace inviwo {
 /**
- * \class TFPropertyConcept
- * \brief property interface used by the TF dialog to support different TF properties
+ * @brief property interface used by the TF dialog to support different TF properties
  */
 class IVW_MODULE_QTWIDGETS_API TFPropertyConcept {
 public:

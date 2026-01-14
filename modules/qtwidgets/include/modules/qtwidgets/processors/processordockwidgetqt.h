@@ -49,14 +49,13 @@ class QWidget;
 namespace inviwo {
 
 /**
- * \class ProcessorDockWidgetQt
- * \brief Base class for Qt processor widget using InviwoDockWidget.
+ * @brief Base class for Qt processor widget using InviwoDockWidget.
  *
  * This Qt widget provides the basic functionality and setup
  * for creating a processor widget based on InviwoDockWidget.
  * The content of the dock widget is set by calling setContent().
  *
- * \see InviwoDockWidget ProcessorWidget
+ * @see InviwoDockWidget ProcessorWidget
  */
 class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
                                                        public ProcessorWidget {

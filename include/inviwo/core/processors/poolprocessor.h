@@ -72,7 +72,7 @@ struct StateTemplate;
  *     return results;
  * };
  * ```
- * \see PoolProcessor
+ * @see PoolProcessor
  */
 class IVW_CORE_API Stop {
 public:
@@ -99,7 +99,7 @@ private:
  *     return results;
  * };
  * ```
- * \see PoolProcessor
+ * @see PoolProcessor
  */
 class IVW_CORE_API Progress {
 public:
@@ -116,7 +116,7 @@ private:
 
 /**
  * Settings for the PoolProcessor
- * \see PoolProcessor
+ * @see PoolProcessor
  */
 enum class Option {
     /// Also call done for old jobs, by default old jobs will be discarded.
@@ -149,7 +149,7 @@ class IVW_CORE_API PoolProcessor : public Processor {
 public:
     /**
      * Construct the pool processor with given options.
-     * \see pool::Option
+     * @see pool::Option
      */
     PoolProcessor(pool::Options options = pool::Options{flags::empty},
                   const std::string& identifier = "", const std::string& displayName = "");
@@ -182,7 +182,7 @@ public:
      * will be executed on the main thread, and only if the processor is still valid and the job has
      * not been stopped. Hence it is safe to refer to the processor in this functor.
      *
-     * \code{.cpp}
+     * @code{.cpp}
      * const auto calc = [image = inport_.getData()]
      *     ( pool::Stop stop, pool::Progress progress) -> std::shared_ptr<const Image> {
      *     if (stop) return nullptr;
@@ -197,7 +197,7 @@ public:
      *     newResults();  // Let the network know that the processor has new results on the
      *                    // outport.
      * });
-     * \endcode
+     * @endcode
      */
     template <typename Job, typename Done>
     void dispatchOne(Job&& job, Done&& done);
@@ -217,7 +217,7 @@ public:
      * It will be executed on the main thread, and only if the processor is still valid and the jobs
      * have not been stopped. Hence it is safe to refer to the processor in this functor.
      *
-     * \code{.cpp}
+     * @code{.cpp}
      * std::vector<std::function<std::shared_ptr<Mesh>(pool::Stop, pool::Progress progress)>> jobs;
      * for (...) {
      *     jobs.push_back([some state](pool::Stop stop, pool::Progress progress) {
@@ -231,7 +231,7 @@ public:
      *     outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(results));
      *     newResults();
      * });
-     * \endcode
+     * @endcode
      */
     template <typename Job, typename Done>
     void dispatchMany(std::vector<Job> jobs, Done&& done);
@@ -270,24 +270,24 @@ public:
                             Property* source = nullptr) override;
 
     /**
-     * Get the current Options \see pool::Option
+     * Get the current Options @see pool::Option
      */
     pool::Options getOptions() const { return options_; }
 
     /**
-     *  \see pool::Option::KeepOldResults
+     *  @see pool::Option::KeepOldResults
      */
     bool keepOldJobs() const { return options_.contains(pool::Option::KeepOldResults); }
     /**
-     *  \see pool::Option::QueuedDispatch
+     *  @see pool::Option::QueuedDispatch
      */
     bool queuedDispatch() const { return options_.contains(pool::Option::QueuedDispatch); }
     /**
-     *  \see pool::Option::DelayDispatch
+     *  @see pool::Option::DelayDispatch
      */
     bool delayDispatch() const { return options_.contains(pool::Option::DelayDispatch); }
     /**
-     *  \see pool::Option::DelayInvalidation
+     *  @see pool::Option::DelayInvalidation
      */
     bool delayInvalidation() const { return options_.contains(pool::Option::DelayInvalidation); }
 

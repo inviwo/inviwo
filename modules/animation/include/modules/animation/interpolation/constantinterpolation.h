@@ -42,7 +42,7 @@
 
 namespace inviwo::animation {
 
-/** \class ConstantInterpolation
+/**
  * Interpolation function for key frames.
  * Returns left keyframe value until reaching right keyframe.
  *

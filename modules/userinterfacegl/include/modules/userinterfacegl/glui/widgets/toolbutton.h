@@ -49,8 +49,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class ToolButton
- * \brief glui::Element representing a tool button with an image instead of a label
+ * @brief glui::Element representing a tool button with an image instead of a label
  */
 class IVW_MODULE_USERINTERFACEGL_API ToolButton : public AbstractButton {
 public:

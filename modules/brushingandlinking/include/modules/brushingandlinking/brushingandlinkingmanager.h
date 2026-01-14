@@ -181,7 +181,7 @@ public:
      *
      * @throw Exception if action is BrushingAction::Filter and no source is given
      *
-     * \see BrushingAction
+     * @see BrushingAction
      */
     void brush(BrushingAction action, BrushingTarget target, const BitSet& indices,
                std::string_view source = {});
@@ -198,7 +198,7 @@ public:
      *
      * @return true if there have been recent changes
      *
-     * \see getModifiedActions
+     * @see getModifiedActions
      */
     bool isModified() const;
 
@@ -262,7 +262,7 @@ public:
      * @return bitset corresponding to \p action and \p target
      * @throw Exception if \p target does not exist for \p action
      *
-     * \see hasIndices
+     * @see hasIndices
      */
     const BitSet& getIndices(BrushingAction action,
                              BrushingTarget target = BrushingTarget::Row) const;
@@ -306,13 +306,13 @@ public:
                   BrushingTarget target = BrushingTarget::Row) const;
 
     //! convenience function for contains(idx, BrushingAction::Filter, target)
-    //! \see contains
+    //! @see contains
     bool isFiltered(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
     //! convenience function for contains(idx, BrushingAction::Select, target)
-    //!\see contains
+    //!@see contains
     bool isSelected(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
     //! convenience function for contains(idx, BrushingAction::Highlight, target)
-    //! \see contains
+    //! @see contains
     bool isHighlighted(uint32_t idx, BrushingTarget target = BrushingTarget::Row) const;
 
     std::vector<std::pair<BrushingAction, std::vector<BrushingTarget>>> getTargets() const;
@@ -333,7 +333,7 @@ public:
      *
      * @param callback   gets called with the same arguments as brush()
      *
-     * \see brush(BrushingAction, BrushingTarget, const BitSet&, std::string_view)
+     * @see brush(BrushingAction, BrushingTarget, const BitSet&, std::string_view)
      */
     void onBrush(
         std::function<void(BrushingAction, BrushingTarget, const BitSet&, std::string_view)>

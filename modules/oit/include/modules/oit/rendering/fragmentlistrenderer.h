@@ -50,7 +50,7 @@ namespace inviwo {
 class Image;
 
 /**
- * \brief helper class for rendering perfect alpha-blended shapes using fragment lists.
+ * @brief helper class for rendering perfect alpha-blended shapes using fragment lists.
  * Inspiration taken from
  * http://blog.icare3d.org/2010/07/opengl-40-abuffer-v20-linked-lists-of.html.
  * It requires OpenGL 4.2.
@@ -75,26 +75,26 @@ public:
     ~FragmentListRenderer();
 
     /**
-     * \brief Starts the rendering of transparent objects using fragment lists.
+     * @brief Starts the rendering of transparent objects using fragment lists.
      * It resets all counters and allocated the index textures of the given screen size.
      * This has to be called each frame before objects can be rendered with the fragment lists.
-     * \param screenSize the current screen size
+     * @param screenSize the current screen size
      */
     void prePass(const size2_t& screenSize);
 
     /**
-     * \brief Sets the shader uniforms required by the fragment list renderer.
+     * @brief Sets the shader uniforms required by the fragment list renderer.
      * The uniforms are defined in <code>oit/abufferlinkedlist.glsl</code>
-     * \param shader the shader of the object to be rendered
+     * @param shader the shader of the object to be rendered
      */
     void setShaderUniforms(Shader& shader) const;
 
     /**
-     * \brief Finishes the fragment list pass and renders the final result.
+     * @brief Finishes the fragment list pass and renders the final result.
      * This sorts the fragment lists per pixel and outputs the blended color.
-     * \param useIllustration Set to true if the illustration buffer
+     * @param useIllustration Set to true if the illustration buffer
      * should be enabled
-     * \param background The background to render on and use depth information from.
+     * @param background The background to render on and use depth information from.
      * \return <code>true</code> if successfull, <code>false</code> if not enough
      * space for all fragments was available and the procedure should be repeated.
      */

@@ -50,8 +50,7 @@ namespace animation {
 class Keyframe;
 
 /**
- * \class KeyframeWidgetQt
- * \brief Graphical representation of a keyframe
+ * @brief Graphical representation of a keyframe
  */
 class IVW_MODULE_ANIMATIONQT_API KeyframeWidgetQt : public QGraphicsItem, public KeyframeObserver {
 public:

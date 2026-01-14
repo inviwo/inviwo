@@ -36,8 +36,8 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \brief A CompositeProperty with an additional check box.
+ * @ingroup properties
+ * @brief A CompositeProperty with an additional check box.
  */
 class IVW_CORE_API BoolCompositeProperty : public CompositeProperty {
 public:

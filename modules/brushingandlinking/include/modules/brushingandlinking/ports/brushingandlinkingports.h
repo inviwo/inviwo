@@ -56,7 +56,7 @@ class Port;
 class Serializer;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  * Enables selection/filtering/highlighting between processors.
  * The inport has it's own BrushingManager and therefore does
  * not need to be connected to a BrushingAndLinkingOutport to be valid.
@@ -112,7 +112,7 @@ public:
      *
      * @return true if there have been recent changes
      *
-     * \see getModifiedActions
+     * @see getModifiedActions
      */
     virtual bool isChanged() const override;
 
@@ -169,7 +169,7 @@ public:
      *
      * @throw Exception if action is BrushingAction::Filter and no source is given
      *
-     * \see BrushingAndLinkingManager::brush
+     * @see BrushingAndLinkingManager::brush
      */
     void brush(BrushingAction action, BrushingTarget target, const BitSet& indices,
                std::string_view source = {});
@@ -255,7 +255,7 @@ private:
     BrushingAndLinkingManager manager_;
 };
 /**
- * \ingroup ports
+ * @ingroup ports
  * Enables selection/filtering/highlighting between processors.
  * The BrushingAndLinkingOutport can be connected to several BrushingAndLinkingInports in order to
  * share information.

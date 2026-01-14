@@ -60,7 +60,7 @@ enum class ColormapType { Continuous, Categorical };
 
 IVW_MODULE_DATAFRAME_API std::ostream& operator<<(std::ostream& os, ColormapType colormap);
 /**
- * \brief Selection of pre-defined color maps based on data type.
+ * @brief Selection of pre-defined color maps based on data type.
  *
  * The following data types are supported:
  * Continuous: Ordered/Sequential data progressing from low to high

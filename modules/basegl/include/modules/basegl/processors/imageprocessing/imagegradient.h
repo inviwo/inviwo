@@ -39,8 +39,7 @@ namespace inviwo {
 class TextureUnitContainer;
 
 /**
- * \class ImageGradient
- * \brief Computes the gradient of one channel of the input image.
+ * @brief Computes the gradient of one channel of the input image.
  */
 class IVW_MODULE_BASEGL_API ImageGradient : public ImageGLProcessor {
 public:

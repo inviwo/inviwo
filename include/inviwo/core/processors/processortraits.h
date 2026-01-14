@@ -60,18 +60,17 @@ ProcessorInfo processorInfo() {
 }  // namespace detail
 
 /**
- * \class ProcessorTraits
- * \brief A traits class for getting the Processor info from a processor.
+ * @brief A traits class for getting the Processor info from a processor.
  * This provides a customization point if one wants to generate the processor info dynamically,
  * by specializing the traits for your kind of processor:
- *\code{.cpp}
+ * @code{.cpp}
  *     template <typename T>
  *     struct ProcessorTraits<MyProcessor<T>> {
  *        static ProcessorInfo getProcessorInfo() {
  *           return generateMyProcessorInfo<T>();
  *        }
  *     };
- *\endcode
+ * @endcode
  * The default behaviour returns the static member processorInfo_;
  *
  */

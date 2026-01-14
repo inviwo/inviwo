@@ -44,7 +44,7 @@ class DataFrame;
 class DataFrameTableView;
 
 /**
- * \brief A processor widget showing a DataFrame in a table view.
+ * @brief A processor widget showing a DataFrame in a table view.
  */
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt {
     Q_OBJECT
@@ -64,7 +64,7 @@ public:
      * linking manager. Call this function in Processor::process(). This function performs the
      * checks itself whether there have been any changes.
      *
-     * \see setManager
+     * @see setManager
      */
     void brushingUpdate();
 

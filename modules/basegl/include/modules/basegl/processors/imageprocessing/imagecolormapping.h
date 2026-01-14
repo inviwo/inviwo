@@ -40,7 +40,7 @@ namespace inviwo {
 class TextureUnitContainer;
 
 /**
- * \brief Maps the input image to an output with the help of a transfer function.
+ * @brief Maps the input image to an output with the help of a transfer function.
  */
 class IVW_MODULE_BASEGL_API ImageColorMapping : public ImageGLProcessor {
 public:

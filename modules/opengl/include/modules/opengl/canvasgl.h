@@ -61,7 +61,7 @@ public:
     virtual size2_t getCanvasDimensions() const = 0;
     virtual size2_t getImageDimensions() const;
     /**
-     * \brief Retrieve depth value in normalized device coordinates at screen coordinate.
+     * @brief Retrieve depth value in normalized device coordinates at screen coordinate.
      *
      * Depth is defined in [-1 1], where -1 is the near plane and 1 is the far plane.
      * Will be 1 if no depth value is available.

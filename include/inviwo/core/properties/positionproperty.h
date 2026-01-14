@@ -42,9 +42,9 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  *
- * \brief Enables Edit a position in world or view space.
+ * @brief Enables Edit a position in world or view space.
  *
  * The default value of the position is the origin (0, 0, 0).
  * @note View space is disabled if a camera is not supplied.

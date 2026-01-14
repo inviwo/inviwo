@@ -36,22 +36,22 @@
 namespace inviwo {
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using TetraMeshInport = DataInport<TetraMesh>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using TetraMeshMultiInport = DataInport<TetraMesh, 0>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using TetraMeshFlatMultiInport = DataInport<TetraMesh, 0, true>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using TetraMeshOutport = DataOutport<TetraMesh>;
 

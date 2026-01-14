@@ -40,11 +40,9 @@
 namespace inviwo {
 
 /**
- * \class JSONConversionException
- *
- * \brief This exception is thrown by from_json(json& j, const DataFrame* df) in case the input is
+ * @brief This exception is thrown by from_json(json& j, const DataFrame* df) in case the input is
  * illformated or unsupported. This includes empty sources, unmatched quotes, missing headers.
- * \see JSONDataFrameReader
+ * @see JSONDataFrameReader
  */
 class IVW_MODULE_DATAFRAME_API JSONConversionException : public DataReaderException {
 public:
@@ -55,7 +53,7 @@ public:
  * Converts a DataFrame to a JSON object. NaN floating point values are converted to null.
  * The output is based on Pandas pandas.DataFrame.to_json(order='split') and has the following JSON
  * object layout:
- * \code{.json}
+ * @code{.json}
  * {
  *     "columns": [ "col1", "col2" ],
  *     "data": [
@@ -65,14 +63,14 @@ public:
  *     "index": [ 0, 1 ],
  *     "types": [ "FLOAT64", "CATEGORICAL" ]
  * }
- * \endcode
+ * @endcode
  * The example above contains two rows and two columns, one with double values and one categorical.
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * Dataframe df;
  * json j = df;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 
@@ -84,11 +82,11 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
  * to NaN in float columns and 0 in integer columns.
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto df = j.get<DataFrame>();
- * \endcode
+ * @endcode
  *
- * \see to_json(json&, const DataFrame&)
+ * @see to_json(json&, const DataFrame&)
  */
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
 

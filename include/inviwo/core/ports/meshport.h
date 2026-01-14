@@ -37,22 +37,22 @@
 namespace inviwo {
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using MeshInport = DataInport<Mesh>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using MeshMultiInport = DataInport<Mesh, 0>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using MeshFlatMultiInport = DataInport<Mesh, 0, true>;
 
 /**
- * \ingroup ports
+ * @ingroup ports
  */
 using MeshOutport = DataOutport<Mesh>;
 

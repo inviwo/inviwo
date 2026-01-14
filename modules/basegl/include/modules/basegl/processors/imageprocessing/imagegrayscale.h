@@ -73,9 +73,8 @@ OptionPropertyState<Model> optionState();
 
 }  // namespace luminance
 
-/*! \class ImageGrayscale
- *
- * \brief Compute a gray-scale image from color input. Alpha channel is not touched.
+/**
+ * @brief Compute a gray-scale image from color input. Alpha channel is not touched.
  *
  * This processor computes the gray-scale image from a color image according to either
  * perceived luminance (Y = 0.299 R + 0.587 G + 0.114 B) or relative luminance for XYZ color

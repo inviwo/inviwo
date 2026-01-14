@@ -42,8 +42,7 @@
 namespace inviwo {
 
 /**
- * \class StlWriter
- * \brief Export Meshes in the STL format
+ * @brief Export Meshes in the STL format
  */
 class IVW_MODULE_BASE_API StlWriter : public DataWriterType<Mesh> {
 public:

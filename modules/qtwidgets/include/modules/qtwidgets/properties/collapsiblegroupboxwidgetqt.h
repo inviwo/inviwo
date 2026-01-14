@@ -125,7 +125,7 @@ protected:
     virtual void setChecked(bool checked);
 
     /**
-     * \brief set the text which is shown if there are no sub-properties and showIfEmpty is true
+     * @brief set the text which is shown if there are no sub-properties and showIfEmpty is true
      *
      * @param str    text to indicate that there are no sub-properties
      *

@@ -65,7 +65,7 @@ namespace glui {
 class Element;
 
 /**
- * \brief provides a simple user interface based on GLUI
+ * @brief provides a simple user interface based on GLUI
  */
 class IVW_MODULE_USERINTERFACEGL_API GLUIProcessor : public Processor,
                                                      public PropertyOwnerObserver {

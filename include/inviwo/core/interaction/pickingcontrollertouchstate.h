@@ -40,7 +40,7 @@ class EventPropagator;
 class PickingManager;
 
 /*
- * \brief Keeps track of when touch events enter/move/exit picking objects.
+ * @brief Keeps track of when touch events enter/move/exit picking objects.
  * @see PickingController
  */
 class IVW_CORE_API PickingControllerTouchState {

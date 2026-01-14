@@ -53,7 +53,7 @@ enum Type {
 }
 
 /**
- * \brief Maps a heightfield onto a geometry and renders it to an image.
+ * @brief Maps a heightfield onto a geometry and renders it to an image.
  */
 class IVW_MODULE_BASEGL_API HeightFieldProcessor : public Processor {
 public:

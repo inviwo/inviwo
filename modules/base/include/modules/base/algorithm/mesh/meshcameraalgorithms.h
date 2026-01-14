@@ -43,7 +43,7 @@ class Mesh;
 
 namespace meshutil {
 /**
- * \brief Set lookAt position of camera to the center point of the meshes and adjust near/far plane
+ * @brief Set lookAt position of camera to the center point of the meshes and adjust near/far plane
  * distances. Adjusts min/max parameters of lookTo and near/far plane according to the supplied
  * minMaxRatio.
  *
@@ -55,7 +55,7 @@ namespace meshutil {
 IVW_MODULE_BASE_API void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
                                             CameraProperty& camera, float minMaxRatio = 10.f);
 /**
- * \brief Compute near and far plane parameters covering the bounding box when maximally zoomed out.
+ * @brief Compute near and far plane parameters covering the bounding box when maximally zoomed out.
  *
  * Projects the bounding box onto the view direction and selects the distance furthest away as far
  * plane (increased by 1% to make sure that mesh is not clipped). The view directions considered are

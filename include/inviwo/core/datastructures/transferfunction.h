@@ -37,9 +37,8 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
- * \class TransferFunction
- * \brief data structure for holding 1D transfer function data
+ * @ingroup datastructures
+ * @brief data structure for holding 1D transfer function data
  */
 class IVW_CORE_API TransferFunction : public TFPrimitiveSet {
 public:

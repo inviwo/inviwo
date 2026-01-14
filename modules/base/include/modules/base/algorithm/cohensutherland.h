@@ -40,7 +40,7 @@ namespace inviwo {
 namespace algorithm {
 
 /**
- * \brief clip a 2D line at given rectangle using Cohen-Sutherland algorithm
+ * @brief clip a 2D line at given rectangle using Cohen-Sutherland algorithm
  *
  * This function uses the Cohen-Sutherland algorithm for line clipping. It clips the line between \p
  * p1 and \p p2 at the rectangle defined by the lower left corner \p rectMin and upper right corner
@@ -59,7 +59,7 @@ IVW_MODULE_BASE_API std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1
                                                                          const vec2& rectMax);
 
 /**
- * \brief check whether point \p p lies within a rectangle
+ * @brief check whether point \p p lies within a rectangle
  *
  * Checks if the point \p p lies inside the rectangle defined by the lower left corner \p rectMin
  * and upper right corner \p rectMax.

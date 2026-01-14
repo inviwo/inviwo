@@ -37,9 +37,6 @@
 
 namespace inviwo {
 
-/**
- * \class PythonLogger
- */
 class IVW_MODULE_PYTHON3_API PythonLogger : public PythonExecutionOutputObserver {
 public:
     virtual void onPythonExecutionOutput(const std::string& msg,

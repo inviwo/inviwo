@@ -61,7 +61,7 @@ public:
     };
 
     /**
-     * \brief This class provides functionality for efficient, subsequent drawing of a mesh. The
+     * @brief This class provides functionality for efficient, subsequent drawing of a mesh. The
      * buffers of the mesh will be bound once this class is instantiated.
      */
     class IVW_MODULE_OPENGL_API DrawObject {
@@ -90,7 +90,7 @@ public:
         void drawOnlyInstanced(std::function<bool(const Mesh::MeshInfo&)> filter, size_t instances);
 
         /**
-         * \brief returns the number of index buffers associated with the mesh representation
+         * @brief returns the number of index buffers associated with the mesh representation
          */
         std::size_t size() const;
 
@@ -115,21 +115,21 @@ public:
     static DrawObject getDrawObject(const Mesh* mesh);
 
     /**
-     * \brief draws the mesh using its mesh info. If index buffers are present, the mesh
+     * @brief draws the mesh using its mesh info. If index buffers are present, the mesh
      * will be rendered with glDrawElements() using those index buffers and the associated draw
      * modes. Otherwise, the entire mesh is rendered using glDrawArrays with the default draw mode
      * returned by Mesh::getDefaultMeshInfo().
      *
-     * \see Mesh, Mesh::MeshInfo
+     * @see Mesh, Mesh::MeshInfo
      */
     virtual void draw() override;
 
     /**
-     * \brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
+     * @brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
      * will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh
      * is rendered using glDrawArrays.
      *
-     * \see Mesh, DrawMode
+     * @see Mesh, DrawMode
      *
      * @param drawMode draw mode used to render the mesh
      */

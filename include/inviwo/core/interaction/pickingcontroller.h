@@ -49,7 +49,6 @@ class TouchEvent;
 class WheelEvent;
 
 /**
- * \class PickingController
  * Handle mapping of interaction events into picking events and propagation of them
  * if the index of the color in the picking buffer of the src image if found by the PickingManager
  */

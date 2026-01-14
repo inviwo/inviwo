@@ -35,7 +35,7 @@
 namespace inviwo {
 
 /**
- * \brief Intersection test of a ray with a plane.
+ * @brief Intersection test of a ray with a plane.
  *
  * @param planePos Point in the plane
  * @param planeNormal Plane normal

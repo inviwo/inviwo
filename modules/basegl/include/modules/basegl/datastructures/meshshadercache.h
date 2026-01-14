@@ -47,7 +47,7 @@ namespace inviwo {
 class ShaderResource;
 
 /**
- * \brief Keeps a set of shaders for various mesh configs
+ * @brief Keeps a set of shaders for various mesh configs
  */
 class IVW_MODULE_BASEGL_API MeshShaderCache {
 public:

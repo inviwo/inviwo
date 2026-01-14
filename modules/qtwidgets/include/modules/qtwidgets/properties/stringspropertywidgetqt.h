@@ -67,7 +67,7 @@ public:
 };
 
 /**
- * \brief PropertyWidget for StringsProperties
+ * @brief PropertyWidget for StringsProperties
  */
 template <size_t N>
 class StringsPropertyWidgetQt : public PropertyWidgetQt {

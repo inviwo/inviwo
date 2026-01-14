@@ -126,7 +126,7 @@ public:
     LogVerbosity getVerbosity();
 
     /**
-     * \brief Register logger for use. LogCentral does not take ownership
+     * @brief Register logger for use. LogCentral does not take ownership
      * of registered loggers.
      * @param logger Logger to register.
      */

@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-/** \brief Create the invert image of an input image. Alpha channel is not touched.
+/** @brief Create the invert image of an input image. Alpha channel is not touched.
  *
  * This processor computes the inverted image by subtracting the rgb channels from 1.0
  * utilizing the ImageGLProcessor.

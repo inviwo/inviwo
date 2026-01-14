@@ -38,7 +38,7 @@ namespace inviwo {
 class LayerRAM;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API ImageRAM : public ImageRepresentation {
 

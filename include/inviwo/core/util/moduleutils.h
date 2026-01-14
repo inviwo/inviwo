@@ -65,7 +65,7 @@ IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module);
 IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module, ModulePath pathType);
 
 /**
- * \brief return the path for a specific type located within the requested module
+ * @brief return the path for a specific type located within the requested module
  *
  * @param identifier   name of the module
  * @param pathType     type of the requested path
@@ -118,7 +118,7 @@ T& getModuleByTypeOrThrow(SourceContext context = std::source_location::current(
 }
 
 /**
- * \brief return the path for a specific type located within the requested module of type T
+ * @brief return the path for a specific type located within the requested module of type T
  *
  * @param pathType     type of the requested path
  * @return subdirectory of the module matching the type

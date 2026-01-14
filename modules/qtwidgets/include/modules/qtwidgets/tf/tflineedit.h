@@ -41,8 +41,7 @@
 namespace inviwo {
 
 /**
- * \class TFLineEdit
- * \brief widget for entering double values within certain bounds and optional range mapping
+ * @brief widget for entering double values within certain bounds and optional range mapping
  */
 class IVW_MODULE_QTWIDGETS_API TFLineEdit : public QWidget {
     Q_OBJECT

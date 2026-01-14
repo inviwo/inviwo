@@ -43,7 +43,7 @@ namespace inviwo {
 enum class Overwrite { No, Yes };
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  * @brief A abstract base class for all file writers.
  * @see DataWriterFactory InviwoApplication::getDataWriterFactory
  */

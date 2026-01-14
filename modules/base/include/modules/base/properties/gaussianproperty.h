@@ -47,7 +47,7 @@ template <typename T>
 struct PropertyTraits;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property representing a Gaussian function
  */
 template <typename T>

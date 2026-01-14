@@ -36,9 +36,9 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  *
- * \brief A property for highlighting a plane, line of point in 3D
+ * @brief A property for highlighting a plane, line of point in 3D
  *
  * The property is used to represent an indicator in a 3D volume the indicator
  * can be a set of planes, a set of lines, or some other.

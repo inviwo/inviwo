@@ -45,7 +45,7 @@ class Serializer;
 
 namespace animation {
 
-/** \class CameraSphericalInterpolation
+/**
  * Spherical interpolation between two neighboring key frames.
  * 1. Orbit around lookAt if lookFrom's are different between key frames.
  * 2. Pan/tilt (rotate lookAt between key frames) otherwise.

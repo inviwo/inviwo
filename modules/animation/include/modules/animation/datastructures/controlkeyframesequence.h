@@ -45,7 +45,7 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class ControlKeyframeSequence
+/**
  * KeyframeSequence for Control Keyframes.
  * @see KeyframeSequence
  */

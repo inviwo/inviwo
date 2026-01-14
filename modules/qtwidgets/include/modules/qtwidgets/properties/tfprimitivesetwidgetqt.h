@@ -49,8 +49,7 @@ struct TFPrimitiveData;
 class TFData;
 
 /**
- * \class TFPrimitiveSetWidgetQt
- * \brief text-based widget for editing TF primitives
+ * @brief text-based widget for editing TF primitives
  *
  * This is a text-based widget for editing a TFPrimitiveSet, i.e. a TransferFunction or
  * IsoValueCollection. The individual TF primitives are represented by "position alpha #RRGGBB".

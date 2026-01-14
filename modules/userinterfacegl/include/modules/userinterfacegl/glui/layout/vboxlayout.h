@@ -38,8 +38,7 @@ namespace inviwo {
 namespace glui {
 
 /**
- * \class VBoxLayout
- * \brief layout for aligning Elements vertically (top to bottom)
+ * @brief layout for aligning Elements vertically (top to bottom)
  */
 class IVW_MODULE_USERINTERFACEGL_API VBoxLayout : public BoxLayout {
 public:

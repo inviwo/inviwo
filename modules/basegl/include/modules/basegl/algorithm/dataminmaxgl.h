@@ -52,7 +52,7 @@ class DataFormatBase;
 namespace utilgl {
 
 /**
- * \brief Utility class for computing min and max values using OpenGL
+ * @brief Utility class for computing min and max values using OpenGL
  *
  * This class uses compute shaders to compute min and max values of Buffers, Layers, and Volumes.
  * If compute shaders are not available, the corresponding CPU functions from

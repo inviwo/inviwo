@@ -37,7 +37,7 @@ namespace inviwo {
 
 namespace animation {
 
-/** \class ButtonKeyframe
+/**
  * Keyframe for ButtonProperty. Button will be pressed when passing over the keyframe in any
  * direction.
  * @see ButtonTrack

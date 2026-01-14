@@ -37,7 +37,7 @@ namespace inviwo {
 class Processor;
 
 /**
- * \brief Utility class to calculate and apply auto linking
+ * @brief Utility class to calculate and apply auto linking
  */
 class IVW_CORE_API AutoLinker {
 public:

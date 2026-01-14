@@ -61,9 +61,9 @@ class Outport;
 namespace plot {
 
 /**
- * \brief plot an image with an x and y axis
+ * @brief plot an image with an x and y axis
  * Event handling based on ViewManager
- * \see ViewManager, ImageOverlayGL
+ * @see ViewManager, ImageOverlayGL
  */
 class IVW_MODULE_PLOTTINGGL_API ImagePlotProcessor : public Processor {
 public:

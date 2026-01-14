@@ -46,8 +46,7 @@
 namespace inviwo {
 
 /**
- * \class LineRendererProcessor
- * \brief Renders input geometry with 2D lines
+ * @brief Renders input geometry with 2D lines
  */
 class IVW_MODULE_BASEGL_API LineRendererProcessor : public Processor {
 public:

@@ -41,8 +41,7 @@ class QTimerEvent;
 
 namespace inviwo {
 
-/** \class CustomDoubleSpinBoxQt
- *
+/**
  * Enables displaying a value with a certain precision without truncating the actual value, which
  * QDoubleSpinBox does.
  */
@@ -66,7 +65,7 @@ public:
     void setDecimals(int decimals);
 
     /**
-     * \brief Overrides the timerEvent to prevent
+     * @brief Overrides the timerEvent to prevent
      * spinbox to be updated twice in case of
      * calculations being slows
      */

@@ -47,7 +47,7 @@ class Layer;
 class LayerRAM;
 
 /**
- * \brief ImageSampler aids sampling of images using Bi-Linear Interpolation.
+ * @brief ImageSampler aids sampling of images using Bi-Linear Interpolation.
  *
  * A helper class to aid sampling of images. Expects the input to be on the range [0 1]. Eg., input
  * of (0,0) will return the color of the bottom left pixel and (1,1) will return then top right
@@ -147,7 +147,7 @@ template <size_t N = 4>
 using ImageSpatialSampler = ImageSampler<glm::vec<4, double>>;
 
 /**
- * \brief TemplateImageSampler<T,P> aids sampling of images of a given type (T) using Bi-Linear
+ * @brief TemplateImageSampler<T,P> aids sampling of images of a given type (T) using Bi-Linear
  * Interpolation with precision (P).
  *
  * A helper class to aid sampling of images of a given type (T). Expects the input to be on the

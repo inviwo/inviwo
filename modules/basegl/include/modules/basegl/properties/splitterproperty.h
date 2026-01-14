@@ -47,8 +47,8 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \brief composite property holding all settings of a splitter handle
+ * @ingroup properties
+ * @brief composite property holding all settings of a splitter handle
  */
 class IVW_MODULE_BASEGL_API SplitterProperty : public BoolCompositeProperty,
                                                public SplitterSettings {

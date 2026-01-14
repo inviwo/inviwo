@@ -42,10 +42,10 @@ namespace inviwo {
  * @see TemplateProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * TemplateProperty<double> p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 template <typename T>
 void to_json(json& j, const TemplateProperty<T>& p) {
@@ -59,9 +59,9 @@ void to_json(json& j, const TemplateProperty<T>& p) {
  * @see TemplateProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<TemplateProperty<double>>();
- * \endcode
+ * @endcode
  */
 template <typename T>
 void from_json(const json& j, TemplateProperty<T>& p) {

@@ -36,7 +36,7 @@
 namespace inviwo {
 
 /**
- * \class TrackballObject
+ * @brief Interface for Trackball interaction
  */
 class IVW_CORE_API TrackballObject {
 public:

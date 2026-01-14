@@ -56,8 +56,7 @@ struct IVW_CORE_API TFPrimitiveData {
 };
 
 /**
- * \class TFPrimitive
- * \brief Base class for a variety of primitives as used by a transfer function
+ * @brief Base class for a variety of primitives as used by a transfer function
  */
 class IVW_CORE_API TFPrimitive : public Observable<TFPrimitiveObserver>, public Serializable {
 public:

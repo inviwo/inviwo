@@ -45,18 +45,17 @@ class CompositeProperty;
 namespace util {
 
 /**
- * \class MetaDataToProperty
  * Helper class for adding and caching metadata properties, i.e. creating properties matching the
  * data given in a metadata map.
  *
- * \see VolumeInformation, ImageInformation
+ * @see VolumeInformation, ImageInformation
  */
 class IVW_CORE_API MetaDataToProperty {
 public:
     MetaDataToProperty();
 
     /**
-     * \brief Adds one subproperty to the CompositeProperty \p parent for each entry in \p
+     * @brief Adds one subproperty to the CompositeProperty \p parent for each entry in \p
      * metaDataMap. Note that \p parent will hold only sub properties matching the meta data and
      * nothing else. That is additional subproperties will be removed.
      */

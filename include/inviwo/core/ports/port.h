@@ -42,12 +42,12 @@ class Processor;
 class Document;
 
 /**
- * \defgroup ports Ports
+ * @defgroup ports Ports
  */
 
 /**
- * \ingroup ports
- * \brief A abstract base class for all ports.
+ * @ingroup ports
+ * @brief A abstract base class for all ports.
  * A port can be connected to other ports and is owned by a processor.
  */
 class IVW_CORE_API Port : public Serializable {

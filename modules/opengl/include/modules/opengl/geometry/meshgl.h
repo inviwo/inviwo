@@ -39,7 +39,7 @@ namespace inviwo {
 class BufferGL;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API MeshGL : public MeshRepresentation {
 public:

@@ -38,8 +38,7 @@ namespace inviwo {
 class Processor;
 
 /**
- * \class LogFilter
- * \brief filters log messages based on the verbosity level. Messages below the selected verbosity
+ * @brief filters log messages based on the verbosity level. Messages below the selected verbosity
  * will be ignored.
  */
 class IVW_CORE_API LogFilter : public Logger {

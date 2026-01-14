@@ -40,7 +40,7 @@ namespace inviwo {
 
 class ObservableInterface;
 
-/** \class Observer
+/**
  * Class to support observer pattern. An example of usage is given in the Observable class.
  * @see Observable
  */
@@ -86,7 +86,7 @@ private:
     void removeObservationInternal(ObservableInterface* observable);
 };
 
-/** \class ObservableInterface
+/**
  * Class to support observer pattern.
  * This is an interface only, inherit from Observable<DerivedObserver> to define your
  * own "notify()" method.
@@ -120,9 +120,8 @@ private:
     virtual bool removeObserverInternal(Observer* observer) = 0;
 };
 
-/** \class Observable
- *
- * Class to support observer pattern.
+/**
+ * @brief Class to support observer pattern.
  *
  * Example of how to apply it to a simple button.
  * @code

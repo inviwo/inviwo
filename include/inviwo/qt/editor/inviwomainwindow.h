@@ -170,7 +170,7 @@ public:
     void hideWelcomeScreen();
 
     /**
-     * \brief query the Qt settings for recent workspaces
+     * @brief query the Qt settings for recent workspaces
      */
     QStringList getRecentWorkspaceList() const;
 
@@ -231,7 +231,7 @@ private:
     void addToRecentWorkspaces(const std::filesystem::path& workspaceFileName);
 
     /**
-     * \brief update Qt settings for recent workspaces with internal status
+     * @brief update Qt settings for recent workspaces with internal status
      */
     void saveRecentWorkspaceList(const QStringList& list);
     void setCurrentWorkspace(const std::filesystem::path& workspaceFileName);

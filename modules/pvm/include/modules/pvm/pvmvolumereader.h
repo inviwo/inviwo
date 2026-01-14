@@ -40,7 +40,7 @@
 namespace inviwo {
 class MetaDataOwner;
 
-/** \brief Reader for *.pvm files
+/** @brief Reader for *.pvm files
  *
  *  Format designed by Stefan Roettger
  */

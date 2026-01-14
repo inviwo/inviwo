@@ -43,10 +43,10 @@ namespace inviwo {
  * @see OptionPropertyOption
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * OptionPropertyOption<double> p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 template <typename T>
 void to_json(json& j, const OptionPropertyOption<T>& o) {
@@ -62,9 +62,9 @@ void to_json(json& j, const OptionPropertyOption<T>& o) {
  * @see OptionPropertyOption
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<OrdinalProperty<double>>();
- * \endcode
+ * @endcode
  */
 template <typename T>
 void from_json(const json& j, OptionPropertyOption<T>& o) {
@@ -92,10 +92,10 @@ void from_json(const json& j, OptionPropertyOption<T>& o) {
  * @see OptionProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * OptionProperty<double> p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 template <typename T>
 void to_json(json& j, const OptionProperty<T>& p) {
@@ -115,9 +115,9 @@ void to_json(json& j, const OptionProperty<T>& p) {
  * @see OptionProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<OptionProperty<double>>();
- * \endcode
+ * @endcode
  */
 template <typename T>
 void from_json(const json& j, OptionProperty<T>& p) {

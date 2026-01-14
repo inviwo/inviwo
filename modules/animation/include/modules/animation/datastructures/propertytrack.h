@@ -123,7 +123,7 @@ AnimationTimeState AnimateSequence<Prop, Seq>::animate(Prop* prop, const Seq& se
 
 }  // namespace detail
 
-/** \class BasePropertyTrack
+/**
  * Interface for tracks based on a Property.
  * Exposes functions for adding a KeyFrame and KeyFrameSequence
  * using the current values of the Property.
@@ -187,7 +187,7 @@ public:
     virtual void setKeyframeFromProperty(const Property* src, Keyframe* dst) = 0;
 };
 
-/** \class PropertyTrack
+/**
  * Implementation of BasePropertyTrack and TrackTyped based on templates parameter types for
  * Property, KeyFrame and KeyframeSequence.
  * Exposes functions for adding a KeyFrame and KeyFrameSequence
@@ -238,7 +238,7 @@ public:
     virtual Track* toTrack() override;
 
     /**
-     * \brief Helper function to set a property from a keyframe
+     * @brief Helper function to set a property from a keyframe
      *
      * Called from inviwo::animation::KeyframeEditorWidget when creating the widget
      *
@@ -253,7 +253,7 @@ public:
     }
 
     /**
-     * \brief Helper function to update the value if a keyframe from a property (other than the
+     * @brief Helper function to update the value if a keyframe from a property (other than the
      * property owned by the track)
      *
      * Called from inviwo::animation::KeyframeEditorWidget when the value of the keyframe is updated

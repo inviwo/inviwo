@@ -34,7 +34,6 @@
 namespace inviwo {
 
 /**
- * \class StateCoordinator
  * A utility class for keeping track of changes to some state, and delivering notifications when it
  * changes. The StateCoordinator uses two functors one for updating the state (updater), and one for
  * delivering a notification (notifier) when the result of the updater changes. Moreover there is an

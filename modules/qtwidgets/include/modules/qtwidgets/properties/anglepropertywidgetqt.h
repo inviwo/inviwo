@@ -48,7 +48,7 @@ class QHBoxLayout;
 
 namespace inviwo {
 
-/** \class AnglePropertyWidgetQt
+/**
  * Widget for Float and Double properties to edit an angle in [0 2pi).
  *
  * @see AngleWidget

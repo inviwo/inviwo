@@ -47,7 +47,7 @@ namespace inviwo {
 class Column;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A property for accessing and overriding column-specific metadata of a DataFrame
  */
 class IVW_MODULE_DATAFRAME_API ColumnMetaDataProperty : public BoolCompositeProperty {

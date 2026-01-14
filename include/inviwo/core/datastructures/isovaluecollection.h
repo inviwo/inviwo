@@ -38,11 +38,10 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
- * \class IsoValueCollection
- * \brief data structure representing isovalues
+ * @ingroup datastructures
+ * @brief data structure representing isovalues
  *
- * \see IsoValue
+ * @see IsoValue
  */
 class IVW_CORE_API IsoValueCollection : public TFPrimitiveSet {
 public:

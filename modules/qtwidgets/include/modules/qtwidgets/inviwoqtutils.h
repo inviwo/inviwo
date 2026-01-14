@@ -92,7 +92,7 @@ class IsoTFProperty;
 namespace utilqt {
 
 /**
- * \brief localize
+ * @brief localize
  * The given stream is imbued with the currently set system locale provided by Qt.
  *
  * @param stream   the locale is imbued onto this stream
@@ -101,40 +101,40 @@ namespace utilqt {
 IVW_MODULE_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 
 /**
- * \brief create a QString from a UTF8-encoded std::string
+ * @brief create a QString from a UTF8-encoded std::string
  */
 inline QString toLocalQString(std::string_view str) {
     return QString::fromLocal8Bit(str.data(), str.size());
 }
 /**
- * \brief create a QString from a UTF8-encoded std::string
+ * @brief create a QString from a UTF8-encoded std::string
  */
 inline QString toLocalQString(const std::string& str) {
     return QString::fromLocal8Bit(str.data(), str.size());
 }
 /**
- * \brief convert a QString to a localized 8bit std::string
+ * @brief convert a QString to a localized 8bit std::string
  */
 inline std::string fromLocalQString(const QString& str) { return {str.toLocal8Bit().constData()}; }
 
 /**
- * \brief create a QString from a UTF8-encoded std::string
+ * @brief create a QString from a UTF8-encoded std::string
  */
 inline QString toQString(std::string_view str) { return QString::fromUtf8(str.data(), str.size()); }
 /**
- * \brief create a QString from a UTF8-encoded std::string
+ * @brief create a QString from a UTF8-encoded std::string
  */
 inline QString toQString(const std::string& str) {
     return QString::fromUtf8(str.data(), str.size());
 }
 
 /**
- * \brief create a UTF8-encoded std::string from a QString
+ * @brief create a UTF8-encoded std::string from a QString
  */
 inline std::string fromQString(const QString& str) { return {str.toUtf8().constData()}; }
 
 /**
- * \brief Extract a numeric value of type \p T from \p str using the C locale.
+ * @brief Extract a numeric value of type \p T from \p str using the C locale.
  *
  * Extract a numeric value of type \p T from \p str using the C locale. For floating point values
  * '.' and ',' are accepted as decimal point. The string must contain only the value.
@@ -169,7 +169,7 @@ std::optional<T> numericValueFromString(const QString& str) {
 }
 
 /**
- * \brief Formats a floating point number as QString.
+ * @brief Formats a floating point number as QString.
  *
  * Formats the given floating point number \p value to a QString using the C locale.
  * The default representation has eight decimals after the decimal point, e.g. a value of
@@ -237,13 +237,13 @@ IVW_MODULE_QTWIDGETS_API QPixmap toQPixmap(const TFPropertyConcept& propertyConc
 IVW_MODULE_QTWIDGETS_API QPointF clamp(const QPointF& pos, const QRectF& rect);
 
 /**
- * \brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.
+ * @brief Retrieve the QMainWindow named "InviwoMainWindow" from QApplication.
  * @return The main window if the application contains the widget, otherwise null.
  */
 IVW_MODULE_QTWIDGETS_API QMainWindow* getApplicationMainWindow();
 
 /**
- * \brief Moves point to become relative to the main window and thereby visible.
+ * @brief Moves point to become relative to the main window and thereby visible.
  *
  * Positions saved for one screen setup may end up outside on other setups.
  * Apply this function to make sure that the widget ends up visible on the screen.
@@ -257,7 +257,7 @@ IVW_MODULE_QTWIDGETS_API QPoint movePointOntoDesktop(const QPoint& point, const 
                                                      bool decorationOffset = true);
 
 /**
- * \brief Offset widgets based on order added such that they do not end up on top of each other.
+ * @brief Offset widgets based on order added such that they do not end up on top of each other.
  * Base offset of (350, 100). The offset will be increased by (40, 40) every time the function is
  * called. Furthermore, the horizontal offset will be increased by 200 every tenth time.
  * @return
@@ -273,7 +273,7 @@ IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
 IVW_MODULE_QTWIDGETS_API std::shared_ptr<Layer> toLayer(const QImage& image);
 
 /*
- * \brief save the given QImage \p image as base64-encoded string using the image file format \p
+ * @brief save the given QImage \p image as base64-encoded string using the image file format \p
  * format and image \p quality.
  *
  * @param image    image to be encoded
@@ -282,36 +282,36 @@ IVW_MODULE_QTWIDGETS_API std::shared_ptr<Layer> toLayer(const QImage& image);
  *                 -1 uses default settings
  * @return base64 string of the corresponding image
  *
- * \see QImage::save()
+ * @see QImage::save()
  */
 IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image, std::string_view format = "PNG",
                                               int quality = -1);
 /*
- * \brief Convert base64-encoded string to QImage.
+ * @brief Convert base64-encoded string to QImage.
  *
  * @param base64 byte array to be converted
  * @param format of data (e.g. "jpeg")
  * @return QImage representation of the string
  *
- * \see toBase64
+ * @see toBase64
  */
 IVW_MODULE_QTWIDGETS_API QImage fromBase64(std::string_view base64,
                                            std::string_view format = "PNG");
 
 /*
- * \brief Convert base64-encoded string to QIcon.
+ * @brief Convert base64-encoded string to QIcon.
  *
  * @param base64 byte array to be converted
  * @param format of data (e.g. "jpeg"), auto-detected if empty.
  * @return QIcon representation of the string
  *
- * \see QPixmap::loadFromData
+ * @see QPixmap::loadFromData
  */
 IVW_MODULE_QTWIDGETS_API QIcon fromBase64ToIcon(std::string_view base64,
                                                 std::string_view format = "PNG");
 
 /*
- * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
+ * @brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
  * visible in order to be considered.
  *
  * @param network    visible canvases are extracted from this processor network
@@ -328,11 +328,11 @@ IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
 IVW_MODULE_QTWIDGETS_API void addViewActions(QMenu& menu, EventPropagator* ep);
 
 /*
- * \brief formats a title string similar to QWidget::setWindowTitle, i.e. "[*]" is replaced with
+ * @brief formats a title string similar to QWidget::setWindowTitle, i.e. "[*]" is replaced with
  * either nothing or '*' depending on the modification state of \p widget
  *
  * @return title where "[*]" is replaced with '*' if the widget is modified, or '' otherwise
- * \see QWidget::setWindowTitle
+ * @see QWidget::setWindowTitle
  */
 QString windowTitleHelper(const QString& title, const QWidget* widget);
 

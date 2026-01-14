@@ -42,19 +42,19 @@
 namespace inviwo {
 
 /**
- * \defgroup typedmesh TypedMesh
- * \ingroup datastructures
+ * @defgroup typedmesh TypedMesh
+ * @ingroup datastructures
  *
  * \copydetails TypedMesh
  */
 
 /**
  * Namespace for buffer traits
- * \ingroup typedmesh
+ * @ingroup typedmesh
  */
 namespace buffertraits {
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Based class used to decorate TypedMesh with buffers. Handles creation of buffers and adds it to
  * the mesh. Also has convince functions to access the buffers and its data containers.
  * **Note on Template parameters**
@@ -63,8 +63,8 @@ namespace buffertraits {
  * Similarly, The template parameter `int attrib` can't be a strongly typed enum
  * (inviwo::BufferType) and therefor it is an int.
  *
- * \see TypedMesh
- * \see typedmesh
+ * @see TypedMesh
+ * @see typedmesh
  */
 template <typename T, unsigned DIM, int attrib, int location = attrib>
 class TypedMeshBufferBase {
@@ -89,7 +89,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Position buffers
  */
 template <unsigned DIMS>
@@ -112,7 +112,7 @@ using PositionsBuffer2D = PositionsBufferBase<2>;
 using PositionsBuffer1D = PositionsBufferBase<1>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Normal buffers (glm::vec3)
  */
 class NormalBuffer
@@ -130,7 +130,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Colors buffers (glm::vec4)
  */
 class ColorsBuffer
@@ -148,7 +148,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Texture Coordinate buffers
  */
 template <unsigned DIMS = 3>
@@ -169,7 +169,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Curvature buffers (float)
  */
 class CurvatureBuffer
@@ -187,7 +187,7 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for Uint32 buffers
  */
 class IndexBuffer
@@ -205,9 +205,9 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for radii buffers (float)
- * \see SphereMesh
+ * @see SphereMesh
  */
 class RadiiBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::RadiiAttrib)> {
@@ -224,9 +224,9 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for picking buffers (uint32)
- * \see PickingMapper
+ * @see PickingMapper
  */
 class PickingBuffer
     : public TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::PickingAttrib)> {
@@ -243,10 +243,10 @@ public:
 };
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * BufferTrait for scalar meta data buffers (float)
  * Useful the pass additional information the rendering
- * \see SphereRenderer
+ * @see SphereRenderer
  */
 class ScalarMetaBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::ScalarMetaAttrib)> {
@@ -265,9 +265,8 @@ public:
 }  // namespace buffertraits
 
 /**
- * \class TypedMesh
- * \ingroup datastructures
- * \ingroup typedmesh
+ * @ingroup datastructures
+ * @ingroup typedmesh
  *
  *
  * TypedMesh is a templated data structure for creating meshes with a custom amount of vertex
@@ -278,48 +277,48 @@ public:
  *
  * # Simple Usage
  *
- * \code{.cpp}
+ * @code{.cpp}
  * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
- * \endcode
+ * @endcode
  *
  * If texture coordinates are also needed for each vertex in the mesh then one could instead use:
  *
- * \code{.cpp}
+ * @code{.cpp}
  * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer,
  * buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * mesh.addVertex(vec3(0.0f), vec3(0.0f), vec4(1,0,0,1) );
  * mesh.addVertex(vec3(1.0f), vec3(1.0f), vec4(0,1,0,1) );
- * \endcode
+ * @endcode
  *
  * For meshes with more than a couple of vertices, it is more efficient to add all vertices to the
  * mesh at the same time. This can be done by using a std::vector containing
  * TypedMesh::Vertex instead, as described by the following example:
  *
- * \code{.cpp}
+ * @code{.cpp}
  * using MyMesh = TypedMesh<PositionsBufferTrait,ColorsBufferTrait>;
  * std::vector<MyMesh::Vertex> vertices;
  * vertices.emplace_back(vec3(0.0f), vec4(1,0,0,1));
  * vertices.emplace_back(vec3(1.0f), vec4(0,1,0,1));
  * MyMesh mesh;
  * mesh.addVertices(vertices);
- * \endcode
+ * @endcode
  *
  * When creating meshes it is very common to also have Index buffers, in addition to the vertex
  * buffers. To add a index buffer to the mesh you can use the function addIndexBuffer as
  * demonstrated by the following example.
  *
- * \code{.cpp}
+ * @code{.cpp}
  * using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
  * MyMesh mesh;
  * // Add vertices as above
  * auto ib = mesh.addIndexBuffer(DrawType::Lines, ConnectivityType::None);
  * ib->add({0,1}); // Create a line between vertex 0 and 1
  * ib->add({1,2}); // Create another line between vertex 1 and 2
- * \endcode
+ * @endcode
  *
  * # Examples
  * ## Creating a bounding box with Adjacency information
@@ -377,7 +376,7 @@ public:
     virtual ~TypedMesh() = default;
 
     /**
-     * \brief Append another TypedMesh to the current TypedMesh
+     * @brief Append another TypedMesh to the current TypedMesh
      *
      * @see Mesh::append
      * @param mesh The mesh to append
@@ -387,7 +386,7 @@ public:
     }
 
     /**
-     * \brief Adds a vector of vertices to the mesh
+     * @brief Adds a vector of vertices to the mesh
      *
      * This method is often faster than adding the vertices one at a time with
      * TypedMesh::addVertex()
@@ -399,16 +398,16 @@ public:
     void setVertex(size_t index, const Vertex& vertex);
 
     /**
-     * \brief Adds a vertex
+     * @brief Adds a vertex
      *
      * Adds a vertex to the mesh. The arguments to the function are automatically determined by the
      * buffers of the mesh. For example:
-     * \code{.cpp}
+     * @code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
      * mesh.addVertex(vec3(0.0f), vec4(1,0,0,1) );
      * mesh.addVertex(vec3(1.0f), vec4(0,1,0,1) );
-     * \endcode
+     * @endcode
      *
      * @param args the arguments, needs to match the buffers of the mesh
      * @return uint32_t the position of the new vertex is the buffers.
@@ -417,7 +416,7 @@ public:
     uint32_t addVertex(Args&&... args);
 
     /**
-     * \brief Sets a specific vertex.
+     * @brief Sets a specific vertex.
      *
      * The arguments to the function are automatically determined by the buffers of the mesh.
      *
@@ -429,15 +428,15 @@ public:
     void setVertex(size_t index, Args&&... args);
 
     /**
-     * \brief Updates the a specific value in specific buffer
+     * @brief Updates the a specific value in specific buffer
      *
      * The following example will set the color of vertex with index 5 to read:
-     * \code{.cpp}
+     * @code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
      * // ... add some vertices
      * mesh.setVertex<buffertraits::ColorsBuffer>(5 , vec4(1,0,0,1) );
-     * \endcode
+     * @endcode
      *
      * @param index vertex index to update
      * @param v the new value
@@ -448,13 +447,13 @@ public:
     }
 
     /**
-     * \brief Returns a specific buffer.
+     * @brief Returns a specific buffer.
      * The following example shows how to get the color buffer:
-     * \code{.cpp}
+     * @code{.cpp}
      * using MyMesh = TypedMesh<buffertraits::PositionsBuffer,buffertraits::ColorsBuffer>;
      * MyMesh mesh;
      * auto colorBuffer = mesh.getTypedBuffer<buffertraits::ColorsBuffer>();
-     * \endcode
+     * @endcode
      */
     template <typename BT>
     auto getTypedBuffer() {
@@ -595,7 +594,7 @@ void TypedMesh<BufferTraits...>::setVertex(size_t index, Args&&... args) {
 }
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh useful for Spheres, consists of a vec3-buffer for position, a
  * float-buffer for radii and vec4 for colors.
  */
@@ -603,7 +602,7 @@ using SphereMesh =
     TypedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer, buffertraits::ColorsBuffer>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh having only positions(vec3) and colors(vec4).
  * Example usage:
  * \snippet modules/base/src/algorithm/meshutils.cpp Using Colored Mesh
@@ -611,7 +610,7 @@ using SphereMesh =
 using ColoredMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), normals(vec3), texture
  * coordinates(vec3) and colors(vec4).
  */
@@ -619,7 +618,7 @@ using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalB
                             buffertraits::TexCoordBuffer<3>, buffertraits::ColorsBuffer>;
 
 /**
- * \ingroup typedmesh
+ * @ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), texture
  * coordinates(vec3) and colors(vec4). Example usage:
  * \snippet modules/base/src/algorithm/meshutils.cpp Using PosTexColorMesh

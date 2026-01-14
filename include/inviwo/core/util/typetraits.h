@@ -96,7 +96,7 @@ struct is_string : detail::is_string<T> {};
  * This is a slightly modified version to avoid constexpr.
  *
  * Requirements on Container T:
- * \code{.cpp}
+ * @code{.cpp}
  *     T::iterator = T::begin();
  *     T::iterator = T::end();
  *     T::const_iterator = T::begin() const;
@@ -104,7 +104,7 @@ struct is_string : detail::is_string<T> {};
  *
  *     *T::iterator = T::value_type &
  *     *T::const_iterator = T::value_type const &
- * \endcode
+ * @endcode
  */
 
 template <typename T>

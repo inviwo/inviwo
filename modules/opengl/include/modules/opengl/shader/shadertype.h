@@ -43,8 +43,7 @@
 namespace inviwo {
 
 /**
- * \class ShaderType
- * \brief Encapsulate a GLenum shader type, and related information.
+ * @brief Encapsulate a GLenum shader type, and related information.
  */
 class IVW_MODULE_OPENGL_API ShaderType {
 public:

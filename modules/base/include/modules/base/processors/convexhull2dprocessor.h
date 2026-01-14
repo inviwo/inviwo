@@ -44,7 +44,7 @@ namespace inviwo {
 class Mesh;
 
 /**
- * \brief Processor computing the convex hull of a given 2D input geometry
+ * @brief Processor computing the convex hull of a given 2D input geometry
  */
 class IVW_MODULE_BASE_API ConvexHull2DProcessor : public Processor {
 public:

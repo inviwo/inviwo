@@ -53,9 +53,7 @@ class TouchEvent;
 class WheelEvent;
 
 /**
- * \class ViewManager
- *
- * \brief A viewport manager for layout processors like imagelayout.
+ * @brief A viewport manager for layout processors like imagelayout.
  * Viewports are added using the following coordinate system:
  *
  * y ^

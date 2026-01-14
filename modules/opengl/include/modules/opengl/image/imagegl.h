@@ -50,7 +50,7 @@ class LayerGL;
 class Shader;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  * @brief OpenGL representation of an Image as a framebuffer
  *
  * Handles attaching all the image layers to the framebuffer

@@ -42,7 +42,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
@@ -138,7 +138,7 @@ protected:
 };
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {
@@ -454,7 +454,7 @@ std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> da
 }
 
 /**
- * \brief compare two buffers using their RAM representation
+ * @brief compare two buffers using their RAM representation
  *
  * @return true if buffers are identical, i.e. identical data format, size, and buffer contents
  */

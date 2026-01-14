@@ -36,7 +36,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API LayerDisk : public LayerRepresentation,
                                public DiskRepresentation<LayerRepresentation, LayerDisk> {
@@ -67,7 +67,7 @@ public:
     virtual bool copyRepresentationsTo(LayerRepresentation* target) const override;
 
     /**
-     * \brief Updates the data format retrieved during loading
+     * @brief Updates the data format retrieved during loading
      *
      * @param format the new dataformat
      *
@@ -76,7 +76,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
     /**
-     * \brief update the swizzle mask of the channels for sampling color layers
+     * @brief update the swizzle mask of the channels for sampling color layers
      * Needs to be overloaded by child classes.
      *
      * @param mask    new swizzle mask

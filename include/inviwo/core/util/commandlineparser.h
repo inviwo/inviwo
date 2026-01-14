@@ -73,7 +73,7 @@ private:
     TCLAP::Arg& arg_;
 };
 
-/** \brief Wrapper class to handle command line parsing.
+/** @brief Wrapper class to handle command line parsing.
  *
  *  Wraps around TCLAP to provide command line argument parsing.
  */

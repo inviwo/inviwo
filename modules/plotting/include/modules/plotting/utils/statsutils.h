@@ -65,14 +65,14 @@ IVW_MODULE_PLOTTING_API RegresionResult linearRegresion(const BufferBase& X, con
 IVW_MODULE_PLOTTING_API std::ostream& operator<<(std::ostream& os, RegresionResult res);
 
 /**
- * \brief Compute value below a percentage of observations in the data.
+ * @brief Compute value below a percentage of observations in the data.
  * Uses the nearest rank method, i.e. ceil(percentile * N), where N = number of elements in data.
  *
  * NaNs (Not a Numbers) are excluded from the computation.
  * The following example will return {1,2}
- * \code{.cpp}
+ * @code{.cpp}
  *    auto percentiles = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});
- * \endcode
+ * @endcode
  * See also https://en.wikipedia.org/wiki/Percentile
  *
  * @param data to compute percentiles on

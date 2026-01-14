@@ -40,8 +40,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * \class TempFileHandle
- * \brief RAII interface for providing a file handle and file name to a temporary file
+ * @brief RAII interface for providing a file handle and file name to a temporary file
  */
 class IVW_CORE_API TempFileHandle {
 public:

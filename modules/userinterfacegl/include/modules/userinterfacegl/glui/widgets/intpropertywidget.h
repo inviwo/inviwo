@@ -48,8 +48,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class IntPropertyWidget
- * \brief glui property widget for an int property using glui::Slider
+ * @brief glui property widget for an int property using glui::Slider
  */
 class IVW_MODULE_USERINTERFACEGL_API IntPropertyWidget : public Slider,
                                                          public PropertyWidget,

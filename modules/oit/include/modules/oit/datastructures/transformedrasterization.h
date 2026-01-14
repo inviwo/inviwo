@@ -47,7 +47,7 @@
 namespace inviwo {
 
 /**
- * \brief A very simple SpatialEntity to handle a world and model transform
+ * @brief A very simple SpatialEntity to handle a world and model transform
  * Used by rasterizations for adding transforms before rendering, without copying the mesh data.
  */
 struct IVW_MODULE_OIT_API CompositeTransform : public SpatialEntity {

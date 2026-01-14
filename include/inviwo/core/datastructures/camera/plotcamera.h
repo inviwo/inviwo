@@ -35,8 +35,7 @@
 namespace inviwo {
 
 /**
- * \class PlotCamera
- * \brief Orthographic camera for plotting that does not preserve aspect ratios.
+ * @brief Orthographic camera for plotting that does not preserve aspect ratios.
  *
  * The PlotCamera is a specialized orthographic camera designed for plotting and visualization
  * tasks where maintaining the original aspect ratio of the view is not required. Unlike standard

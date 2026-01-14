@@ -35,8 +35,7 @@
 namespace inviwo {
 
 /**
- * \class ConsoleLogger
- * \brief A Logger class that log to the console using cout
+ * @brief A Logger class that log to the console using cout
  */
 class IVW_CORE_API ConsoleLogger : public Logger {
 public:

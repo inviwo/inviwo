@@ -39,8 +39,7 @@
 namespace inviwo {
 
 /**
- * \class StereoCameraSyncer
- * \brief A processor linking a left and right camera.
+ * @brief A processor linking a left and right camera.
  */
 class IVW_MODULE_BASE_API StereoCameraSyncer : public Processor {
 public:

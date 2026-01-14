@@ -39,7 +39,7 @@ namespace inviwo {
 class Layer;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API LayerRepresentation : public DataRepresentation<Layer> {
 public:
@@ -61,7 +61,7 @@ public:
     virtual const size2_t& getDimensions() const = 0;
 
     /**
-     * \brief update the swizzle mask of the channels for sampling color layers
+     * @brief update the swizzle mask of the channels for sampling color layers
      * Needs to be overloaded by child classes.
      *
      * @param mask new swizzle mask
@@ -70,7 +70,7 @@ public:
     virtual SwizzleMask getSwizzleMask() const = 0;
 
     /**
-     * \brief update the interpolation for sampling layer
+     * @brief update the interpolation for sampling layer
      * Needs to be overloaded by child classes.
      *
      * @param interpolation new interpolation type
@@ -79,7 +79,7 @@ public:
     virtual InterpolationType getInterpolation() const = 0;
 
     /**
-     * \brief Update the wrapping type of the layer
+     * @brief Update the wrapping type of the layer
      * Needs to be overloaded by child classes.
      *
      * @param wrapping new wrapping type

@@ -52,7 +52,7 @@ enum class ShadingFunctionKind {
 };
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * Adds advanced shading properties to a PropertyOwner (Processor).
  * @see ShadingFunctionEnum
  */

@@ -68,11 +68,10 @@ protected:
 };
 
 /**
- * \ingroup datastructures
- * \class TFPrimitiveSet
- * \brief data structure managing multiple TFPrimitives
+ * @ingroup datastructures
+ * @brief data structure managing multiple TFPrimitives
  *
- * \see TFPrimitive
+ * @see TFPrimitive
  */
 class IVW_CORE_API TFPrimitiveSet : public Serializable,
                                     public TFPrimitiveSetObservable,

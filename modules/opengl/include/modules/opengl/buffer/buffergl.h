@@ -45,12 +45,12 @@ class BufferObjectArray;
 class DataFormatBase;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:
     /**
-     * \brief Create a buffer stored on the GPU.
+     * @brief Create a buffer stored on the GPU.
      *
      * @param size Size in bytes.
      * @param format Data format
@@ -67,7 +67,7 @@ public:
     virtual const DataFormatBase* getDataFormat() const override;
 
     /**
-     * \brief set the size of the buffer
+     * @brief set the size of the buffer
      * Note that the internal BufferObject is only growing in size and never shrinking to avoid
      * unnecessary reallocations in GPU memory.
      */

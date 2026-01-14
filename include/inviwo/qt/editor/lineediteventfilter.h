@@ -42,7 +42,7 @@ class QEvent;
 namespace inviwo {
 
 /**
- * \brief custom event filter for line edit widgets where the 'Esc' key clears the line edit and
+ * @brief custom event filter for line edit widgets where the 'Esc' key clears the line edit and
  * 'arrow down' switches focus to the given widget
  */
 class IVW_QTEDITOR_API LineEditEventFilter : public QObject {

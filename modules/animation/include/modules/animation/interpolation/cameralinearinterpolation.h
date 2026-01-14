@@ -45,8 +45,8 @@ class Serializer;
 
 namespace animation {
 
-/** \class CameraLinearInterpolation
- * Perfoms linear interpolation between lookFrom and lookTo of two neighboring key frames.
+/**
+ * Performs linear interpolation between lookFrom and lookTo of two neighboring key frames.
  * lookUp is rotated between the two neighboring keyframes.
  * Generally, you do not want to linearly interpolate lookFrom/lookTo - use
  * CameraSphericalInterpolation instead.

@@ -36,8 +36,7 @@
 namespace inviwo {
 
 /**
- * \class SingleFileObserver
- * \brief SingleFileObserver observes a single file for changes on disk.
+ * @brief SingleFileObserver observes a single file for changes on disk.
  * SingleFileObserver observes a single file for changes on disk. When the application detects the
  * file has been modified it will invoke all lambda functions registered with onChange(...)
  */

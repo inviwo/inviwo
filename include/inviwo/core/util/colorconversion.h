@@ -39,7 +39,7 @@
 namespace inviwo::color {
 
 /**
- * \brief reference white point D65 in CIE XYZ color space
+ * @brief reference white point D65 in CIE XYZ color space
  *
  * The values are obtained by converting sRGB(1, 1, 1) to XYZ using rgb2XYZ() since sRGB assumes D65
  * as reference white.
@@ -50,7 +50,7 @@ namespace inviwo::color {
 constexpr vec3 D65WhitePoint{0.95047f, 1.0f, 1.08883f};
 
 /**
- * \brief convert from hexadecimal html color code to RGBA
+ * @brief convert from hexadecimal html color code to RGBA
  *
  * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
  * hexcodes with a leading '#' and optional alpha value (single / double digit).
@@ -65,7 +65,7 @@ constexpr vec3 D65WhitePoint{0.95047f, 1.0f, 1.08883f};
 IVW_CORE_API vec4 hex2rgba(std::string_view str);
 
 /**
- * \brief convert from rgba to 8-digit hexadecimal html color code
+ * @brief convert from rgba to 8-digit hexadecimal html color code
  *
  * RGBA is converted to a 8 digit hexadecimal html color code with leading '#'
  *
@@ -75,7 +75,7 @@ IVW_CORE_API vec4 hex2rgba(std::string_view str);
 IVW_CORE_API std::string rgba2hex(const vec4& rgba);
 
 /**
- * \brief convert from rgb to 6-digit hexadecimal html color code
+ * @brief convert from rgb to 6-digit hexadecimal html color code
  *
  * RGB is converted to a 6 digit hexadecimal html color code with leading '#'
  *
@@ -85,7 +85,7 @@ IVW_CORE_API std::string rgba2hex(const vec4& rgba);
 IVW_CORE_API std::string rgb2hex(const vec3& rgb);
 
 /**
- * \brief Convert from HSV to RGB color.
+ * @brief Convert from HSV to RGB color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -153,7 +153,7 @@ constexpr vec3 hsv2rgb(const vec3& hsv) {
 }
 
 /**
- * \brief Convert from RGB to HSV color.
+ * @brief Convert from RGB to HSV color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -197,7 +197,7 @@ constexpr vec3 rgb2hsv(const vec3& rgb) {
 }
 
 /**
- * \brief Convert from HSL to RGB color.
+ * @brief Convert from HSL to RGB color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -210,7 +210,7 @@ constexpr vec3 rgb2hsv(const vec3& rgb) {
 IVW_CORE_API vec3 hsl2rgb(const vec3& hsl);
 
 /**
- * \brief Convert from RGB to HSV color.
+ * @brief Convert from RGB to HSV color.
  *
  * See http://en.wikipedia.org/wiki/HSL_and_HSV and
  * http://en.wikipedia.org/wiki/RGB_color_model
@@ -223,7 +223,7 @@ IVW_CORE_API vec3 hsl2rgb(const vec3& hsl);
 IVW_CORE_API vec3 rgb2hsl(const vec3& rgb);
 
 /**
- * \brief Convert from XYZ to Lab color space
+ * @brief Convert from XYZ to Lab color space
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space
  * and http://www.brucelindbloom.com/
  * @param xyz color in the CIE XYZ color space (roughly in the [0 1]^3 range)
@@ -233,7 +233,7 @@ IVW_CORE_API vec3 rgb2hsl(const vec3& rgb);
 IVW_CORE_API vec3 XYZ2lab(const vec3& xyz, const vec3& whitePoint = D65WhitePoint);
 
 /**
- * \brief Convert from Lab to CIE XYZ color space
+ * @brief Convert from Lab to CIE XYZ color space
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * and http://www.brucelindbloom.com/
  * @param lab Color
@@ -243,7 +243,7 @@ IVW_CORE_API vec3 XYZ2lab(const vec3& xyz, const vec3& whitePoint = D65WhitePoin
 IVW_CORE_API vec3 lab2XYZ(const vec3& lab, const vec3& whitePoint = D65WhitePoint);
 
 /**
- * \brief Convert from sRGB color to XYZ using D65 white point
+ * @brief Convert from sRGB color to XYZ using D65 white point
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
  * http://www.brucelindbloom.com/
  * and http://en.wikipedia.org/wiki/RGB_color_model
@@ -253,7 +253,7 @@ IVW_CORE_API vec3 lab2XYZ(const vec3& lab, const vec3& whitePoint = D65WhitePoin
 IVW_CORE_API vec3 rgb2XYZ(const vec3& rgb);
 
 /**
- * \brief Convert from CIE XYZ color to sRGB using D65 white point.
+ * @brief Convert from CIE XYZ color to sRGB using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
  * http://www.brucelindbloom.com/
@@ -264,7 +264,7 @@ IVW_CORE_API vec3 rgb2XYZ(const vec3& rgb);
 IVW_CORE_API vec3 XYZ2rgb(const vec3& xyz);
 
 /**
- * \brief Convert from CIE XYZ color space to normalized xyY, which is for example used in the
+ * @brief Convert from CIE XYZ color space to normalized xyY, which is for example used in the
  * chromaticity diagram.
  *
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space and http://www.brucelindbloom.com/
@@ -274,7 +274,7 @@ IVW_CORE_API vec3 XYZ2rgb(const vec3& xyz);
 IVW_CORE_API vec3 XYZ2xyY(const vec3& xyz);
 
 /**
- * \brief Convert from xyY color space to XYZ
+ * @brief Convert from xyY color space to XYZ
  *
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space and http://www.brucelindbloom.com/
  * @param xyY  xyY color
@@ -283,7 +283,7 @@ IVW_CORE_API vec3 XYZ2xyY(const vec3& xyz);
 IVW_CORE_API vec3 xyY2XYZ(const vec3& xyY);
 
 /**
- * \brief Convert from sRGB color to Lab using D65 white point.
+ * @brief Convert from sRGB color to Lab using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * http://www.brucelindbloom.com/
@@ -295,7 +295,7 @@ IVW_CORE_API vec3 xyY2XYZ(const vec3& xyY);
 IVW_CORE_API vec3 rgb2lab(const vec3& rgb);
 
 /**
- * \brief Convert from Lab color to sRGB using D65 white point.
+ * @brief Convert from Lab color to sRGB using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * http://www.brucelindbloom.com/
@@ -307,7 +307,7 @@ IVW_CORE_API vec3 rgb2lab(const vec3& rgb);
 IVW_CORE_API vec3 lab2rgb(const vec3& lab);
 
 /**
- * \brief Convert from sRGB color to YCbCr
+ * @brief Convert from sRGB color to YCbCr
  *
  * The sRGB color is converted to to YCbCr (luminance, blue-yellow chroma,
  * red-green chroma). The YCbCr color uses the full range and does not
@@ -321,7 +321,7 @@ IVW_CORE_API vec3 lab2rgb(const vec3& lab);
 IVW_CORE_API vec3 rgb2ycbcr(const vec3& rgb);
 
 /**
- * \brief Convert from YCbCr color to sRGB
+ * @brief Convert from YCbCr color to sRGB
  *
  * The YCbCr color (luminance, blue-yellow chroma, red-green chroma) is
  * converted to sRGB without considering footroom and headroom.
@@ -334,7 +334,7 @@ IVW_CORE_API vec3 rgb2ycbcr(const vec3& rgb);
 IVW_CORE_API vec3 ycbcr2rgb(const vec3& ycbcr);
 
 /**
- * \brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to sRGB
+ * @brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to sRGB
  *
  * The chromaticity of CIE Luv (luminance, u', v') is converted to sRGB via the CIE XYZ color space.
  *
@@ -349,7 +349,7 @@ IVW_CORE_API vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp = false,
                                       const vec3& whitePointXYZ = D65WhitePoint);
 
 /**
- * \brief Convert from sRGB to normalized chromaticity of CIE Luv, i.e. u' and v'
+ * @brief Convert from sRGB to normalized chromaticity of CIE Luv, i.e. u' and v'
  *
  * The sRGB color is converted to chromaticity of CIE Luv (luminance, u', v') via the CIE XYZ color
  * space.
@@ -363,7 +363,7 @@ IVW_CORE_API vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp = false,
 IVW_CORE_API vec3 rgb2LuvChromaticity(const vec3& rgb, const vec3& whitePointXYZ = D65WhitePoint);
 
 /**
- * \brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to XYZ
+ * @brief Convert from normalized chromaticity of CIE Luv, i.e. u' and v', to XYZ
  *
  * See http://en.wikipedia.org/wiki/CIELUV, http://www.brucelindbloom.com/
  *
@@ -375,7 +375,7 @@ IVW_CORE_API vec3 LuvChromaticity2XYZ(const vec3& LuvChroma,
                                       const vec3& whitePointXYZ = D65WhitePoint);
 
 /**
- * \brief Convert from CIE XYZ color space to normalized chromaticity of CIE Luv, i.e. u' and v'
+ * @brief Convert from CIE XYZ color space to normalized chromaticity of CIE Luv, i.e. u' and v'
  *
  * See http://en.wikipedia.org/wiki/CIELUV, http://www.brucelindbloom.com/
  *
@@ -386,7 +386,7 @@ IVW_CORE_API vec3 LuvChromaticity2XYZ(const vec3& LuvChroma,
 IVW_CORE_API vec3 XYZ2LuvChromaticity(const vec3& XYZ, const vec3& whitePointXYZ = D65WhitePoint);
 
 /**
- * \brief Convert from CIE XYZ to CIE Luv
+ * @brief Convert from CIE XYZ to CIE Luv
  *
  * The CIE Luv color value is converted to CIE XYZ color space using the reference white point.
  *
@@ -400,7 +400,7 @@ IVW_CORE_API vec3 XYZ2LuvChromaticity(const vec3& XYZ, const vec3& whitePointXYZ
 IVW_CORE_API vec3 XYZ2Luv(const vec3& XYZ, const vec3& whitePointXYZ = D65WhitePoint);
 
 /**
- * \brief Convert from CIE Luv to CIE XYZ
+ * @brief Convert from CIE Luv to CIE XYZ
  *
  * The CIE Luv color value is converted to CIE XYZ color space using the reference white point.
  *
@@ -415,7 +415,7 @@ IVW_CORE_API vec3 XYZ2Luv(const vec3& XYZ, const vec3& whitePointXYZ = D65WhiteP
 IVW_CORE_API vec3 Luv2XYZ(const vec3& Luv, const vec3& whitePointXYZ = D65WhitePoint);
 
 /**
- * \brief Return a lighter color by adjusting the brightness
+ * @brief Return a lighter color by adjusting the brightness
  *
  * The brightness is modified by multiplying \p rgb input in HSV colorspace with \p factor. A factor
  * > 1.0 will return a lighter color, e.g. a 50% increase is achieved by a factor of 1.5. Instead of
@@ -447,7 +447,7 @@ constexpr uvec3 lighter(const uvec3& rgb, float factor = 1.5f) {
     return uvec3{lighter(vec3{rgb} / 255.0f, factor) * 255.0f};
 }
 /**
- * \brief Return a darker color by adjusting the brightness
+ * @brief Return a darker color by adjusting the brightness
  *
  * The brightness is modified by dividing \p rgb input in HSV colorspace by  \p factor. A factor
  * > 1.0 will return a darker color, e.g. a factor of 2 yields a color with half the brightness.

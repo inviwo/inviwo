@@ -45,7 +45,7 @@ class Layer;
 class Volume;
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A CompositeProperty holding value axis name and unit for DataMapper holders like volumes and
  * layers, and optional overrides
  */
@@ -70,30 +70,30 @@ public:
     virtual ~ValueAxisProperty() = default;
 
     /**
-     * \brief update value axis name and unit using \p volume
+     * @brief update value axis name and unit using \p volume
      */
     void updateFromVolume(std::shared_ptr<Volume> volume);
     /**
-     * \brief update value axis name and unit using \p layer
+     * @brief update value axis name and unit using \p layer
      */
     void updateFromLayer(std::shared_ptr<Layer> layer);
     /**
-     * \brief update the value axis name
+     * @brief update the value axis name
      */
     void setValueName(std::string_view name);
     /**
-     * \brief update the value axis unit
+     * @brief update the value axis unit
      */
     void setValueUnit(Unit unit);
     /**
-     * \brief returns the currently selected value axis name
+     * @brief returns the currently selected value axis name
      *
      * @return custom value axis name if enabled, otherwise input value axis name
      */
     std::string_view getValueName() const;
     std::string_view getCustomValueName() const;
     /**
-     * \brief returns the currently selected value range
+     * @brief returns the currently selected value range
      *
      * @return custom value axis unit if enabled, otherwise input value axis unit
      */

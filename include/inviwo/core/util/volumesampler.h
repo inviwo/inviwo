@@ -40,9 +40,6 @@
 
 namespace inviwo {
 
-/**
- * \class VolumeSampler
- */
 template <typename ReturnType = dvec4>
 class VolumeSampler : public SpatialSampler<ReturnType> {
 public:

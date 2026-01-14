@@ -39,7 +39,7 @@ class Mesh;
 class BufferRAM;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API MeshRAM : public MeshRepresentation {
 

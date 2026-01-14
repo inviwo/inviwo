@@ -42,8 +42,7 @@ namespace inviwo {
 class InviwoApplication;
 
 /**
- * \class InviwoCore
- * \brief Module which registers all module related functionality available in the core.
+ * @brief Module which registers all module related functionality available in the core.
  */
 class IVW_CORE_API InviwoCore : public InviwoModule {
 public:

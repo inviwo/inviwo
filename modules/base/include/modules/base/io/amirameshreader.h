@@ -39,8 +39,8 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
- * \brief Basic AmiraMesh reader
+ * @ingroup dataio
+ * @brief Basic AmiraMesh reader
  * Supports line sets ("HxLineSet") and triangle meshes ("HxTriangularGrid"). Materials and colors
  * are not supported since these are defined per primitive and not per vertex.
  */

@@ -47,8 +47,7 @@ class Shader;
 namespace algorithm {
 
 /**
- * \class LineRenderer
- * \brief Helper class for rendering a mesh as lines.
+ * @brief Helper class for rendering a mesh as lines.
  * Only renders Mesh with DrawType::Lines
  */
 class IVW_MODULE_BASEGL_API LineRenderer {
@@ -58,7 +57,7 @@ public:
     ~LineRenderer() = default;
 
     /**
-     * \brief Render lines according to currently set LineSettingsInterface settings
+     * @brief Render lines according to currently set LineSettingsInterface settings
      * Only meshes with DrawType::Lines will be rendered.
      *
      * @param mesh to render as lines, must

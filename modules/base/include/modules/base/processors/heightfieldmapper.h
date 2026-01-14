@@ -49,7 +49,7 @@ enum Mode {
 }
 
 /**
- * \brief Maps a 2D input texture to a single channel heightfield and scales the data values.
+ * @brief Maps a 2D input texture to a single channel heightfield and scales the data values.
  *
  * Maps a heightfield onto a geometry and renders it to an image.
  * The Height Field Mapper converts an arbitrary 2D input image to a grayscale float

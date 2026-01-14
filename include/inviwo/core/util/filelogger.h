@@ -38,8 +38,7 @@
 namespace inviwo {
 
 /**
- * \class FileLogger
- * \brief A logger class that logs to a file in html format.
+ * @brief A logger class that logs to a file in html format.
  */
 class IVW_CORE_API FileLogger : public Logger {
 public:

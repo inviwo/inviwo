@@ -99,8 +99,8 @@ public:
      * for the normalization of 8bit signed integers instead of [-128, 127].
      * It appears that OpenGL 4.1 on Apple also uses symmetric ranges. 
      *
-     * \see DataMapper::SignedNormalization
-     * \see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
+     * @see DataMapper::SignedNormalization
+     * @see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
      */
     static bool isSignedIntNormalizationSymmetric();
 

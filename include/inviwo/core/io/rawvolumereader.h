@@ -44,7 +44,7 @@ namespace inviwo {
 class MetaDataOwner;
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  */
 class IVW_CORE_API RawVolumeReader : public DataReaderType<Volume> {
 public:

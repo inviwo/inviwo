@@ -138,7 +138,7 @@ struct IVW_CORE_API StrBuffer {
 namespace util {
 
 /**
- * \brief convert the given std::string to std::wstring.
+ * @brief convert the given std::string to std::wstring.
  * On Windows, MultiByteToWideChar is used for this conversion assuming utf8 encoding.
  * Otherwise, std::mbsrtowcs is used.
  *
@@ -148,7 +148,7 @@ namespace util {
 IVW_CORE_API std::wstring toWstring(std::string_view str);
 
 /**
- * \brief convert the given std::wstring to std::string.
+ * @brief convert the given std::wstring to std::string.
  * On Windows, WideCharToMultiByte is used for this conversion assuming utf8 encoding.
  * Otherwise, std::wcsrtombs is used.
  *
@@ -194,7 +194,7 @@ void forEachLine(std::string_view str, Func&& func) {
 }
 
 /**
- * \brief trims \p str from beginning and end by removing white spaces
+ * @brief trims \p str from beginning and end by removing white spaces
  *
  * @param str   input string
  * @return trimmed stringview without leading/trailing white space
@@ -207,7 +207,7 @@ constexpr std::string_view trim(std::string_view str) noexcept {
 }
 
 /**
- * \brief trims \p str from beginning removing white spaces
+ * @brief trims \p str from beginning removing white spaces
  *
  * @param str   input string
  * @return trimmed stringview without leading white space
@@ -219,7 +219,7 @@ constexpr std::string_view ltrim(std::string_view str) noexcept {
 }
 
 /**
- * \brief trims \p str from end by removing white spaces
+ * @brief trims \p str from end by removing white spaces
  *
  * @param str   input string
  * @return trimmed stringview without trailing white space
@@ -285,7 +285,7 @@ constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_
 }
 
 /**
- * \brief Split string into substrings based on separating delimiter character.
+ * @brief Split string into substrings based on separating delimiter character.
  * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
  *
  * @note Empty substrings are not skipped, ";;" will generate an element.
@@ -296,7 +296,7 @@ constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_
 IVW_CORE_API std::vector<std::string> splitString(std::string_view str, char delimiter = ' ');
 
 /**
- * \brief Split string into substrings based on separating delimiter character.
+ * @brief Split string into substrings based on separating delimiter character.
  * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
  *
  * @note Empty substrings are not skipped, ";;" will generate an element.
@@ -369,7 +369,7 @@ constexpr bool iCaseContains(std::string_view str, std::string_view s) {
 }
 
 /**
- * \brief Checks if provided string ends with suffix using case insensitive equal comparison.
+ * @brief Checks if provided string ends with suffix using case insensitive equal comparison.
  * @param str string to check last part of. Allowed to be smaller than suffix.
  * @param suffix Ending to match.
  * @return True if last part of str is equal to suffix, false otherwise.
@@ -377,7 +377,7 @@ constexpr bool iCaseContains(std::string_view str, std::string_view s) {
 IVW_CORE_API bool iCaseEndsWith(std::string_view str, std::string_view suffix);
 
 /**
- * \brief Elide parts of lines in \p str which are longer than \p maxLineLength and append \p abbrev
+ * @brief Elide parts of lines in \p str which are longer than \p maxLineLength and append \p abbrev
  * instead.
  * @param str            string with lines to abbreviate
  * @param abbrev         placeholder that gets added at the end of abbreviated lines
@@ -446,20 +446,20 @@ IVW_CORE_API std::string camelCaseToHeader(std::string_view s);
 IVW_CORE_API void camelCaseToHeader(std::string_view s, std::string& dest);
 
 /**
- * \brief Case insensitive equal comparison of two strings.
+ * @brief Case insensitive equal comparison of two strings.
  * @return true if all the elements in the two containers are the same.
  * @see CaseInsensitiveCompare
  */
 IVW_CORE_API bool iCaseCmp(std::string_view l, std::string_view r);
 /**
- * \brief Case insensitive alphabetical less than comparison of two strings, i.e. "aa" < "ab" =
+ * @brief Case insensitive alphabetical less than comparison of two strings, i.e. "aa" < "ab" =
  * true. Compares letters from left to right using std::lexicographical_compare.
  * @return true if the alphabetical order in the first string is less than the second string.
  */
 IVW_CORE_API bool iCaseLess(std::string_view l, std::string_view r);
 
 /**
- * \brief Case insensitive less comparison of two strings to be used for template arguments.
+ * @brief Case insensitive less comparison of two strings to be used for template arguments.
  */
 struct IVW_CORE_API CaseInsensitiveLess {
     bool operator()(std::string_view l, std::string_view r) const {
@@ -472,7 +472,7 @@ struct IVW_CORE_API CaseInsensitiveLess {
     using is_transparent = int;
 };
 /**
- * \brief Case insensitive equal comparison of two strings to be used for template arguments.
+ * @brief Case insensitive equal comparison of two strings to be used for template arguments.
  */
 struct IVW_CORE_API CaseInsensitiveEqual {
     bool operator()(std::string_view l, std::string_view r) const {
@@ -485,7 +485,7 @@ struct IVW_CORE_API CaseInsensitiveEqual {
 };
 
 /**
- * \brief Transparent string case insensitive hashing for use in unordered containers with string
+ * @brief Transparent string case insensitive hashing for use in unordered containers with string
  * keys
  */
 struct IVW_CORE_API CaseInsensitiveStringHash {

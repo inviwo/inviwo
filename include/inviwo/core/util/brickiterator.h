@@ -41,8 +41,7 @@ namespace inviwo {
 namespace util {
 
 /**
- * \class BrickIterator
- * \brief An iterator providing access to a subregion, or brick, within linearized 3D data.
+ * @brief An iterator providing access to a subregion, or brick, within linearized 3D data.
  *
  * This iterator provides access to and iterates over a subregion within 3D data. The 3D data
  * is assumed to be contiguous, i.e. linearized, in x, then y, then z similar to `IndexMapper3D`.
@@ -51,10 +50,10 @@ namespace util {
  *
  * `BrickIterator::end()` provides the matching end iterator
  *
- * \see util::IndexMapper3D
+ * @see util::IndexMapper3D
  *
  * Example:
- * \code{.cpp}
+ * @code{.cpp}
  * std::vector<int> data(27); // linearized data of a 3x3x3 volume
  *
  * // create a brick iterator starting at (1,1,1) with an extent of (2,2,2)
@@ -64,18 +63,18 @@ namespace util {
  * // copy the data elements of the brick iterator into a std::vector,
  * // the vector will contain the corresponding 8 voxels
  * std::vector<int> block(it, it.end());
- * \endcode
+ * @endcode
  *
  * Here, a single voxel at position (2,0,0) of a VolumeRAM is extracted.
- * \code{.cpp}
+ * @code{.cpp}
  * auto volume = VolumeRAMPrecision<float>(size3_t{3, 3, 3});
  *
  * int value = *util::BrickIterator{volume.getDataTyped(), volume.getDimensions(),
  *                                  size3_t{2, 0, 0}, size3_t{1, 1, 1}};
- * \endcode
+ * @endcode
  *
  * Modify a subregion within a volume.
- * \code{.cpp}
+ * @code{.cpp}
  * std::vector<int> data(5 * 4 * 6);
  *
  * auto it = util::BrickIterator{data.begin(), size3_t{5, 4, 6},
@@ -83,7 +82,7 @@ namespace util {
  * for (auto& elem : it) {
  *   elem *= 2;
  * }
- * \endcode
+ * @endcode
  */
 template <typename Iter>
 class BrickIterator {

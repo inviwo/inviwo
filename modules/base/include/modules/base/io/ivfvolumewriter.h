@@ -39,14 +39,14 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
- * \brief Writer for *.ivf volume files
+ * @ingroup dataio
+ * @brief Writer for *.ivf volume files
  *
  * Supports writing a single volume to disk. Creates one main file ([name].ivf) and one raw file
  * ([name].raw or [name]xx.raw.gz if zlib compression is available).
  *
  * The output structure of the ivf file is:
- * \verbatim
+ * @verbatim
 <?xml version="1.0" ?>
 <InviwoVolume version="2">
     <RawFiles>
@@ -81,7 +81,7 @@ namespace inviwo {
     <ValueRange x="0" y="0.00332" />
     <ValueUnit content="kg/kg" />
 </InviwoVolume>
- * \endverbatim
+ * @endverbatim
  *
  * @see inviwo::IvfVolumeReader inviwo::util::writeIvfVolume
  */
@@ -99,15 +99,15 @@ public:
 };
 
 /**
- * \ingroup dataio
- * \brief Writer for *.ivfs volume sequence files
+ * @ingroup dataio
+ * @brief Writer for *.ivfs volume sequence files
  *
  * Supports writing a volume sequence to disk. Creates one main file ([name].ivfs) and a series
  * of raw files ([name]xx.raw or [name]xx.raw.gz if zlib compression is available), one for each
  * volume.
  *
  * The output structure of the ivfs sequence files is:
- * \verbatim
+ * @verbatim
 <?xml version="1.0" ?>
 <InviwoVolume version="2">
     <RawFiles>
@@ -132,7 +132,7 @@ public:
     <Format content="FLOAT32" />
     ...
 </InviwoVolume>
- * \endverbatim
+ * @endverbatim
  *
  * @see inviwo::IvfVolumeSequenceReader inviwo::util::writeIvfVolumeSequence
  */
@@ -155,7 +155,7 @@ IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::filesyste
                                         Overwrite overwrite = Overwrite::Yes);
 
 /**
- * \brief Writes a volume sequence to disk
+ * @brief Writes a volume sequence to disk
  *
  * Supports writing a volume sequence to disk. Creates one main file (<tt>[name].ivfs</tt>) and a
  * series of raw files (<tt>[name]xx.raw</tt> or <tt>[name]xx.raw.gz</tt> if zlib compression is
@@ -168,7 +168,7 @@ IVW_MODULE_BASE_API void writeIvfVolume(const Volume& data, const std::filesyste
  * @param overwrite       whether or not to overwrite existing files.
  * @return path to the created main file
  *
- * \see inviwo::IvfVolumeSequenceWriter inviwo::IvfVolumeSequenceReader
+ * @see inviwo::IvfVolumeSequenceWriter inviwo::IvfVolumeSequenceReader
  */
 IVW_MODULE_BASE_API std::filesystem::path writeIvfVolumeSequence(
     const VolumeSequence& data, std::string_view name, const std::filesystem::path& parentFolder,

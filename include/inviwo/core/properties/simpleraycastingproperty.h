@@ -36,7 +36,7 @@
 
 namespace inviwo {
 /**
- * \ingroup properties
+ * @ingroup properties
  * A CompositeProperty holding simple raycasting properties.
  */
 class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty {

@@ -47,8 +47,8 @@ namespace inviwo {
 class Layer;
 
 /**
- * \ingroup properties
- * \brief A CompositeProperty holding properties to show a information about an image layer
+ * @ingroup properties
+ * @brief A CompositeProperty holding properties to show a information about an image layer
  */
 class IVW_MODULE_BASE_API LayerInformationProperty : public BoolCompositeProperty {
 public:

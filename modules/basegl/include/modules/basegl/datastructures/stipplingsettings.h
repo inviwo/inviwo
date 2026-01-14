@@ -35,7 +35,7 @@
 namespace inviwo {
 
 /**
- * \brief Basic implementation of the StipplingSettingsInterface
+ * @brief Basic implementation of the StipplingSettingsInterface
  */
 class IVW_MODULE_BASEGL_API StipplingSettings : public StipplingSettingsInterface {
 public:

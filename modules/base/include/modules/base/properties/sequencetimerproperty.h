@@ -46,7 +46,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  * A CompositeProperty holding the properties needed to animate over a sequence.
  */
 class IVW_MODULE_BASE_API SequenceTimerProperty : public CompositeProperty {

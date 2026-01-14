@@ -39,7 +39,7 @@
 namespace inviwo {
 
 /**
- * \brief A convenience class to generate transformation matrices between
+ * @brief A convenience class to generate transformation matrices between
  *        the different coordinate systems in use.
  *
  *  Spatial meta data in Inviwo uses 4 different coordinate systems, they are defined as

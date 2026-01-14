@@ -63,8 +63,7 @@ public:
 };
 
 /**
- * \class RenderContext
- * \brief Keeper of the default render context.
+ * @brief Keeper of the default render context.
  */
 class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
 public:

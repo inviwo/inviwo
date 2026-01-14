@@ -58,8 +58,8 @@ class BasePropertyTrack;
 class Keyframe;
 class KeyframeSequence;
 
-/** \class Animation
- * Animation data structure, owns a list of tracks.
+/**
+ * @brief Animation data structure, owns a list of tracks.
  * Each Track usually represents a value to be animated.
  */
 class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,

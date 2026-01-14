@@ -53,9 +53,8 @@ namespace inviwo {
 class Camera;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  *
- * \class Volume
  * Data structure for volumetric data in form of a structured three-dimensional grid. Basis and
  * offset determine the position and extent of the volume in model space. Skewed volumes are
  * represented by providing a non-orthogonal basis.
@@ -115,7 +114,7 @@ public:
     const DataFormatBase* getDataFormat() const;
 
     /**
-     * \brief update the swizzle mask of the color channels when sampling the volume
+     * @brief update the swizzle mask of the color channels when sampling the volume
      *
      * @param mask new swizzle mask
      */
@@ -129,7 +128,7 @@ public:
     Wrapping3D getWrapping() const;
 
     /**
-     * \brief Computes the spacing to be used for gradient computation. Also works for volume with
+     * @brief Computes the spacing to be used for gradient computation. Also works for volume with
      * non-orthogonal basis.
      *
      * For orthogonal lattices this will be equal to the world space voxel spacing.

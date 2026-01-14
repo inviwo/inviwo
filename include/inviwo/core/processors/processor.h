@@ -56,19 +56,19 @@ class NetworkVisitor;
 class InviwoApplication;
 
 /**
- * \defgroup processors Processors
+ * @defgroup processors Processors
  */
 
 /**
- * \ingroup processors
- * \brief A processor generally performs operation on input data and outputs the new result.
+ * @ingroup processors
+ * @brief A processor generally performs operation on input data and outputs the new result.
  *
  * It can hold arbitrary number of inports and outports, as well as properties which can be used
  * to customize the processors behavior.
  *
  * A typical flow for processing Processor 1 is shown below.
  *
- * \verbatim
+ * @verbatim
  *     ┌─────────────┐
  *     │             │
  *     │ Processor 2 │
@@ -163,7 +163,7 @@ class InviwoApplication;
  *           ◀───────Done───────┤                  │                  │
  *           ▼                  ▼                  ▼                  ▼
  *
- * \endverbatim
+ * @endverbatim
  */
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,

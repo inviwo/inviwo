@@ -38,8 +38,8 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
- * \brief  The StringProperty holds a string as value.
+ * @ingroup properties
+ * @brief  The StringProperty holds a string as value.
  *
  * The string property has 2 different widgets, one that just displays
  * the value of the string. The other one makes it possible to edit the string.
@@ -56,7 +56,7 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.StringProperty"};
 
     /**
-     *  \brief Constructor for the StringProperty
+     *  @brief Constructor for the StringProperty
      *  The PropertySemantics can be set to Editor.
      *  Then a TextEditorWidget will be used instead of a StringPropertyWidget
      */
@@ -66,7 +66,7 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     /**
-     *  \brief Constructor for the StringProperty
+     *  @brief Constructor for the StringProperty
      *  The PropertySemantics can be set to Editor.
      *  Then a TextEditorWidget will be used instead of a StringPropertyWidget
      */

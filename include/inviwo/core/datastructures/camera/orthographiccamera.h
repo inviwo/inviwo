@@ -35,9 +35,7 @@
 namespace inviwo {
 
 /**
- * \class OrthographicCamera
- *
- * \brief Camera with no perspective projection.
+ * @brief Camera with no perspective projection.
  * Objects far away will appear as large as objects close.
  * @see Camera
  * @see OrthographicCamera

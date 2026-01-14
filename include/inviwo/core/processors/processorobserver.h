@@ -40,8 +40,7 @@ class ProcessorObservable;
 class ProcessorNetworkEvaluator;
 class Property;
 
-/** \class ProcessorObserver
- *
+/**
  * Processor observer that knows which processor did the notification.
  * Has notification for begin and end of it's invalidation.
  * Inherits from VoidObserver.
@@ -94,7 +93,7 @@ public:
     virtual void onProcessorProgressChanged(Processor*, std::optional<double>) {};
 };
 
-/** \class ProcessorObservable
+/**
  * @see ProcessorObserver
  */
 class IVW_CORE_API ProcessorObservable : public Observable<ProcessorObserver> {

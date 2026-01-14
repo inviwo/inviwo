@@ -35,7 +35,7 @@
 namespace inviwo {
 
 /**
- * \brief Camera with off axis perspective projection.
+ * @brief Camera with off axis perspective projection.
  *
  * The camera with unsymmetrical frustum for stereo in VR
  * Kooima, Robert. "Generalized perspective projection." School of Elect. Eng. and Computer Science

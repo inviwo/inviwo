@@ -54,7 +54,7 @@ std::span<const std::string_view, N> defaultValues() {
 }  // namespace util
 
 /**
- * \brief CompositeProperty for a fixed set of StringProperties
+ * @brief CompositeProperty for a fixed set of StringProperties
  */
 template <size_t N>
 class StringsProperty : public CompositeProperty {

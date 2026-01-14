@@ -51,12 +51,12 @@ namespace inviwo {
 class MultilineTextEdit;
 class MultiFileProperty;
 
-/*! \class StringMultilinePropertyWidgetQt
-    \brief Property widget for string properties which shows the contents spread over
-    multiple lines. The height of the text editor is adjusted based on the contents and
-    given defaults (2 to 10 lines). Changes are committed when the focus changes or
-    CTRL + Return or CTRL + Enter is pressed.
-*/
+/**
+ * @brief Property widget for string properties which shows the contents spread over
+ * multiple lines. The height of the text editor is adjusted based on the contents and
+ * given defaults (2 to 10 lines). Changes are committed when the focus changes or
+ * CTRL + Return or CTRL + Enter is pressed.
+ */
 class IVW_MODULE_QTWIDGETS_API StringMultilinePropertyWidgetQt : public PropertyWidgetQt {
 public:
     StringMultilinePropertyWidgetQt(StringProperty* property);
@@ -83,11 +83,11 @@ private:
     EditableLabelQt* label_;
 };
 
-/*! \class MultilineTextEdit
-\brief Basic text editor based on QPlainTextEdit for showing strings in multiple lines.
-The height is automatically adjusted. The editingFinished signal is emitted when the
-widget looses focus or CTRL + Return or CTRL + Enter is pressed.
-*/
+/**
+ * @brief Basic text editor based on QPlainTextEdit for showing strings in multiple lines.
+ * The height is automatically adjusted. The editingFinished signal is emitted when the
+ **widget looses focus or CTRL + Return or CTRL + Enter is pressed.
+ */
 class IVW_MODULE_QTWIDGETS_API MultilineTextEdit : public QPlainTextEdit {
 #include <warn/push>
 #include <warn/ignore/all>

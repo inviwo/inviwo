@@ -41,8 +41,7 @@
 namespace inviwo {
 
 /**
- * \class EventMatcher
- * \brief A class to represent a event matcher for use in event properties.
+ * @brief A class to represent a event matcher for use in event properties.
  */
 class IVW_CORE_API EventMatcher : public Serializable {
 public:

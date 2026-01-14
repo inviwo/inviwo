@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  */
 class IVW_MODULE_BASE_API IvfVolumeReader : public DataReaderType<Volume> {
 public:
@@ -56,7 +56,7 @@ public:
 };
 
 /**
- * \ingroup dataio
+ * @ingroup dataio
  */
 class IVW_MODULE_BASE_API IvfVolumeSequenceReader : public DataReaderType<VolumeSequence> {
 public:

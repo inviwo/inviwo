@@ -48,7 +48,7 @@ class ColormapProperty;
 class DataFrame;
 
 /**
- * \brief Property for selecting which column to apply colormapping to.
+ * @brief Property for selecting which column to apply colormapping to.
  * Allows the user to select a column and options for the color map.
  * A ColormapProperty for each column will be added to this property, but only the
  * one corresponding to the selected axis will be visible.

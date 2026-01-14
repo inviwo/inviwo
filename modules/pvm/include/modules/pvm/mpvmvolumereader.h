@@ -40,7 +40,7 @@
 namespace inviwo {
 class MetaDataOwner;
 
-/** \brief Reader for *.mpvm files
+/** @brief Reader for *.mpvm files
  *
  *  Format consists of a configuration filenames to multiple PVM files
  */

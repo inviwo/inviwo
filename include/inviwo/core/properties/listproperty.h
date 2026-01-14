@@ -66,7 +66,7 @@ using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
  * refers to no limit.
  *
  * Example:
- * \code{.cpp}
+ * @code{.cpp}
  * // using a single prefab object and at most 10 elements
  * ListProperty listProperty("myListProperty", "My ListProperty",
  *     std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
@@ -79,10 +79,10 @@ using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
  *         v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
  *         return v;
  *     }());
- * \endcode
+ * @endcode
  *
  * This also works when using different types of properties as prefab objects:
- * \code{.cpp}
+ * @code{.cpp}
  * ListProperty listProperty("myListProperty", "My List Property",
  *     []() {
  *         std::vector<std::unique_ptr<Property>> v;
@@ -91,7 +91,7 @@ using ListPropertyUIFlags = flags::flags<ListPropertyUIFlag>;
  *         v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
  *         return v;
  *     }());
- * \endcode
+ * @endcode
  */
 class IVW_CORE_API ListProperty : public CompositeProperty {
 public:

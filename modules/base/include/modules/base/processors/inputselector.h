@@ -49,7 +49,7 @@ namespace inviwo {
 class Outport;
 
 /**
- * \brief processor for selecting one of n connected inputs
+ * @brief processor for selecting one of n connected inputs
  */
 template <typename InportType, typename OutportType>
 class InputSelector : public Processor {

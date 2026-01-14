@@ -36,8 +36,7 @@ namespace inviwo {
 
 namespace util {
 /**
- * \class cloneable_ptr
- * A resource handle for classes that should be cloned on copy and assignment
+ * @brief A resource handle for classes that should be cloned on copy and assignment
  */
 template <typename T>
 class cloneable_ptr {

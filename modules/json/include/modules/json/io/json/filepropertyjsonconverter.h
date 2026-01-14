@@ -44,10 +44,10 @@ class FileProperty;
  * @see FileExtension
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * FileExtension p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const FileExtension& p);
 
@@ -59,9 +59,9 @@ IVW_MODULE_JSON_API void to_json(json& j, const FileExtension& p);
  * @see FileExtension
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<FileExtension>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void from_json(const json& j, FileExtension& p);
 
@@ -78,10 +78,10 @@ IVW_MODULE_JSON_API void from_json(const json& j, FileExtension& p);
  * @see FileProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * FileProperty p;
  * json j = p;
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const FileProperty& p);
 
@@ -99,9 +99,9 @@ IVW_MODULE_JSON_API void to_json(json& j, const FileProperty& p);
  * @see FileProperty
  *
  * Usage example:
- * \code{.cpp}
+ * @code{.cpp}
  * auto p = j.get<FileProperty>();
- * \endcode
+ * @endcode
  */
 IVW_MODULE_JSON_API void from_json(const json& j, FileProperty& p);
 

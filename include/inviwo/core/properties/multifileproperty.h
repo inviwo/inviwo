@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \ingroup properties
+ * @ingroup properties
  *  A class for a list of file/directory paths
  * @see FileProperty
  */

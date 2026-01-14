@@ -61,7 +61,7 @@ namespace filesystem {
  * @param mode      mode to open the file (input or output)
  * @return file handle for the given file, i.e. `fopen(filename, mode);`
  *
- * \see fopen, _wfopen
+ * @see fopen, _wfopen
  */
 IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode);
 
@@ -82,7 +82,7 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  * @param mode      mode to open the file (input or output)
  * @return stream for the given file, i.e. `std::fstream(filename, mode);`
  *
- * \see std::fstream
+ * @see std::fstream
  */
 [[deprecated("use std::fstream")]] IVW_CORE_API std::fstream fstream(
     const std::filesystem::path& filename,
@@ -105,7 +105,7 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  * @param mode       mode to open the file (input or output)
  * @return stream for the given file, i.e. `std::ifstream(filename, mode);`
  *
- * \see std::ifstream
+ * @see std::ifstream
  */
 [[deprecated("use std::ifstream")]] IVW_CORE_API std::ifstream ifstream(
     const std::filesystem::path& filename, std::ios_base::openmode mode = std::ios_base::in);
@@ -127,7 +127,7 @@ IVW_CORE_API FILE* fopen(const std::filesystem::path& filename, const char* mode
  * @param mode       mode to open the file (input or output)
  * @return stream for the given file, i.e. `std::ofstream(filename, mode);`
  *
- * \see std::ofstream
+ * @see std::ofstream
  */
 [[deprecated("use std::ofstream")]] IVW_CORE_API std::ofstream ofstream(
     const std::filesystem::path& filename, std::ios_base::openmode mode = std::ios_base::out);
@@ -181,7 +181,7 @@ IVW_CORE_API int getCurrentProcessId();
 IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
 
 /**
- * \brief Check if a file exists.
+ * @brief Check if a file exists.
  * @see directoryExists for directories
  * @param filePath The path to the file
  * @return true if file exists, false otherwise
@@ -200,7 +200,7 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
     const std::filesystem::path& path);
 
 /**
- * \brief Get last time file was modified.
+ * @brief Get last time file was modified.
  * Error can occur if the file does not exist for example.
  * @param filePath The path to the file
  * @return Time of last modification, or 0 if an error occured (00:00, Jan 1 1970 UTC).
@@ -209,7 +209,7 @@ IVW_CORE_API std::filesystem::path getInviwoUserSettingsPath();
 fileModificationTime(const std::filesystem::path& filePath);
 
 /**
- * \brief Copy an existing file to a new file. Overwrites existing file.
+ * @brief Copy an existing file to a new file. Overwrites existing file.
  * @param src Path to the file to the existing file
  * @param dst Path to the new file
  * @return True if source file exists and the copy is successful, false otherwise
@@ -321,7 +321,7 @@ IVW_CORE_API std::filesystem::path getPath(PathType pathType, std::string_view s
 createDirectoryRecursively(const std::filesystem::path& path);
 
 /**
- * \brief Adds the InviwoApplication base path before the url
+ * @brief Adds the InviwoApplication base path before the url
  *
  * @see InviwoApplication::getBasePath
  * @param url Relative path
@@ -336,7 +336,7 @@ getFileNameWithExtension(const std::filesystem::path& url);
 [[deprecated("use std::filesystem::path::stem")]] IVW_CORE_API std::filesystem::path
 getFileNameWithoutExtension(const std::filesystem::path& url);
 /**
- * \brief Returns the characters after last dot (.).
+ * @brief Returns the characters after last dot (.).
  *
  * @note Avoid using this function for extracting file extensions if you are not sure that the
  * expected extension only contains one dot. In general, there is no way to safely consider cases
@@ -361,7 +361,7 @@ IVW_CORE_API std::filesystem::path replaceFileExtension(const std::filesystem::p
                                                         std::string_view newFileExtension);
 
 /**
- * \brief Make a path relative to basePath.
+ * @brief Make a path relative to basePath.
  * Requirement: basePath and absulutePath has to be absolute paths.
  * basePath should point at directory.
  *
@@ -379,7 +379,7 @@ getCanonicalPath(const std::filesystem::path& url);
     const std::filesystem::path& path);
 
 /**
- * \brief Checks whether the second path is on the same drive as the first path
+ * @brief Checks whether the second path is on the same drive as the first path
  *
  * If both paths are relative, this function returns true. If only refPath is relative
  * InviwoApplication::getBasePath is used instead as reference.
@@ -394,7 +394,7 @@ getCanonicalPath(const std::filesystem::path& url);
     const std::filesystem::path& refPath, const std::filesystem::path& queryPath);
 
 /**
- * \brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
+ * @brief clean up path by replacing backslashes with forward slash and removing surrounding quotes
  *
  * @param path given path to be cleaned up
  * @return non-quoted path containing no backslashes as directory separators

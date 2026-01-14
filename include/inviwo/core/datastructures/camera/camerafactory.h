@@ -36,9 +36,6 @@
 
 namespace inviwo {
 
-/**
- * \class CameraFactory
- */
 class IVW_CORE_API CameraFactory : public StandardFactory<Camera, CameraFactoryObject> {
 public:
     CameraFactory() = default;

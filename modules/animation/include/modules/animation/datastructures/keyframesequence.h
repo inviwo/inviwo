@@ -45,7 +45,7 @@ class Serializer;
 namespace animation {
 class Keyframe;
 
-/** \class KeyframeSequence
+/**
  * Interface for a sequence of keyframes, which will be evaluated during an animation.
  * The KeyframeSequence is a part of a Track and owns Keyframes.
  * All keyframes in the sequence are interpolated using the same Interpolation method.

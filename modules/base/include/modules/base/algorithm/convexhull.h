@@ -49,7 +49,7 @@ concept RangeOfVec =
     util::extent<std::ranges::range_value_t<C>>::value == N;
 
 /**
- * \brief check whether the given polygon is convex
+ * @brief check whether the given polygon is convex
  *
  * @param polygon   polygon consisting of points
  * @return true if the polygon is convex, false otherwise
@@ -71,7 +71,7 @@ bool isConvex(const T& polygon) {
 }
 
 /**
- * \brief check whether a given point lies within the convex hull
+ * @brief check whether a given point lies within the convex hull
  *
  * @param hull  convex hull
  * @param p     point
@@ -98,7 +98,7 @@ bool isInside(const C& hull, const std::ranges::range_value_t<C>& p) {
 }
 
 /**
- * \brief compute the area of a simple polygon, i.e. non-self intersecting
+ * @brief compute the area of a simple polygon, i.e. non-self intersecting
  *
  * @param polygon   points ordered counter-clockwise
  * @return area of polygon
@@ -118,9 +118,9 @@ double getArea(const C& polygon) {
 }
 
 /**
- * \brief compute the complex hull from a given set of 2D points using
+ * @brief compute the complex hull from a given set of 2D points using
  * the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm
- * \see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
+ * @see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
  *
  * @param points   set of 2D points
  * @return complex hull of input points
@@ -175,9 +175,9 @@ std::vector<std::ranges::range_value_t<C>> convexHull(const C& points) {
 }
 
 /**
- * \brief compute the complex hull from a given set of 2D points using
+ * @brief compute the complex hull from a given set of 2D points using
  * the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm
- * \see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
+ * @see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
  *
  * This version avoids unnecessary allocations by passing in the container @p hull where the result
  * is written. Note that the hull is of size <tt>N+1</tt>.

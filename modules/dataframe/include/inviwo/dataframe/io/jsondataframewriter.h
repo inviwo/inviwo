@@ -39,8 +39,7 @@ namespace inviwo {
 class DataFrame;
 
 /**
- * \class JSONDataFrameWriter
- * \ingroup dataio
+ * @ingroup dataio
  * Writes a DataFrame into a json file
  * Expects object layout:
  * [ {"Col1": val11, "Col2": val12 },

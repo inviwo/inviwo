@@ -47,8 +47,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class Slider
- * \brief glui::element representing a slider, the label is positioned to the right
+ * @brief glui::element representing a slider, the label is positioned to the right
  */
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:
@@ -72,7 +71,7 @@ protected:
     int getPreviousValue() const;
 
     /**
-     * \brief transform mouse movements from pixel to normalized slider range while also
+     * @brief transform mouse movements from pixel to normalized slider range while also
      * considering the slider orientation
      *
      * @param delta   (in screen coords, i.e. pixel)

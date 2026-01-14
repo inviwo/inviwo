@@ -45,7 +45,7 @@ namespace util {
 
 /**
  * \struct BuildInfo
- * \brief Provides information on build time and date as well as git hashes
+ * @brief Provides information on build time and date as well as git hashes
  */
 struct IVW_CORE_API BuildInfo {
     int year = 0;
@@ -64,7 +64,7 @@ struct IVW_CORE_API BuildInfo {
 };
 
 /**
- * \brief Accesses build information via an INI file or compile-time definitions
+ * @brief Accesses build information via an INI file or compile-time definitions
  *
  * @return build information
  */

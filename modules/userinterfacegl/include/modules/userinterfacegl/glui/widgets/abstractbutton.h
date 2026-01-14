@@ -47,7 +47,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \brief glui::Element representing a generic button
+ * @brief glui::Element representing a generic button
  */
 class IVW_MODULE_USERINTERFACEGL_API AbstractButton : public Element {
 public:

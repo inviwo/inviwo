@@ -48,7 +48,7 @@ namespace inviwo {
 
 namespace plot {
 /**
- * \brief Settings for rectangle selection/filtering
+ * @brief Settings for rectangle selection/filtering
  *
  */
 class IVW_MODULE_PLOTTING_API BoxSelectionProperty : public BoxSelectionSettingsInterface,

@@ -34,9 +34,6 @@
 
 namespace inviwo {
 
-/**
- * \class SpatialSampler
- */
 template <typename ReturnType>
 class SpatialSampler {
 public:

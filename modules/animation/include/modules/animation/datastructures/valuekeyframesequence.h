@@ -125,7 +125,7 @@ public:
     virtual void setEasingType(Easing easing) = 0;
 };
 
-/** \class KeyframeSequenceTyped
+/**
  * KeyframeSequence for a given type of KeyFames.
  * Keyframes are expected to be interpolated so a InterpolationTyped<Key> must be defined for the
  * given Keyframe.

@@ -77,7 +77,7 @@
 namespace inviwo {
 
 /**
- * \brief A loader of Nifti files. Used to create VolumeRAM representations.
+ * @brief A loader of Nifti files. Used to create VolumeRAM representations.
  * This class us used by the NiftiReader.
  */
 class NiftiVolumeRAMLoader : public DiskRepresentationLoader<VolumeRepresentation> {
@@ -111,7 +111,7 @@ NiftiReader::NiftiReader() : DataReaderType<VolumeSequence>() {
 
 NiftiReader* NiftiReader::clone() const { return new NiftiReader(*this); }
 /**
- * \brief Convert from Nifti defined data types to inviwo DataFormat.
+ * @brief Convert from Nifti defined data types to inviwo DataFormat.
  *
  * @param niftiDataType nifti_image::datatype.
  * @return Equivalent data type, null if not found.

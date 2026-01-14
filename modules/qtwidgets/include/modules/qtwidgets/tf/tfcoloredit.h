@@ -42,8 +42,7 @@ class QWidget;
 namespace inviwo {
 
 /**
- * \class TFColorEdit
- * \brief widget in TF dialog for entering six digit HTML hex color codes
+ * @brief widget in TF dialog for entering six digit HTML hex color codes
  */
 class IVW_MODULE_QTWIDGETS_API TFColorEdit : public ColorLineEdit {
     Q_OBJECT

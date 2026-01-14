@@ -42,8 +42,7 @@
 namespace inviwo {
 
 /**
- * \class BinarySTLWriter
- * \brief Export Meshes in the binary STL format
+ * @brief Export Meshes in the binary STL format
  */
 class IVW_MODULE_BASE_API BinarySTLWriter : public DataWriterType<Mesh> {
 public:

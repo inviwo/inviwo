@@ -59,7 +59,7 @@ class KeyframeSequence;
 class Track;
 
 /**
- * \brief Responsible for animations saved in the workspace and ensuring that there always is at
+ * @brief Responsible for animations saved in the workspace and ensuring that there always is at
  * least one main Animation.
  *
  * One of its animations is set to be the MainAnimation. The Animation used by MainAnimation must

@@ -100,11 +100,11 @@ public:
 
     virtual void updateFromProperty() override;
     /**
-     * \brief shows the widget and registers the widget with the property
+     * @brief shows the widget and registers the widget with the property
      */
     void showWidget();
     /**
-     * \brief hides the widget and deregisters it from the property
+     * @brief hides the widget and deregisters it from the property
      */
     void hideWidget();
     bool getVisible() const;
@@ -375,11 +375,11 @@ public:
 
     virtual void updateFromProperty() override;
     /**
-     * \brief shows the widget and registers the widget with the property
+     * @brief shows the widget and registers the widget with the property
      */
     void showWidget();
     /**
-     * \brief hides the widget and deregisters it from the property
+     * @brief hides the widget and deregisters it from the property
      */
     void hideWidget();
     bool getVisible() const;

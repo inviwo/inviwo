@@ -51,7 +51,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \brief GLUI property widget for a button property using a glui Button
+ * @brief GLUI property widget for a button property using a glui Button
  */
 class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
                                                             public PropertyWidget,
@@ -76,7 +76,7 @@ private:
 };
 
 /**
- * \brief GLUI property widget for a button property using a glui ToolButton
+ * @brief GLUI property widget for a button property using a glui ToolButton
  */
 class IVW_MODULE_USERINTERFACEGL_API ToolButtonPropertyWidget : public ToolButton,
                                                                 public PropertyWidget,

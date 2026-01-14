@@ -51,7 +51,7 @@ namespace inviwo {
 class DataFormatBase;
 
 /**
- * \ingroup datastructures
+ * @ingroup datastructures
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:
@@ -106,7 +106,7 @@ public:
     // clang-format on
 
     /**
-     * \brief update the swizzle mask of the channels for sampling color layers
+     * @brief update the swizzle mask of the channels for sampling color layers
      * The swizzle mask is only affecting Color layers.
      *
      * @param mask new swizzle mask
@@ -121,7 +121,7 @@ public:
     Wrapping2D getWrapping() const;
 
     /**
-     * \brief encode the layer contents to a buffer considering the requested image format
+     * @brief encode the layer contents to a buffer considering the requested image format
      *
      * @param fileExtension   file extension of the requested image format
      * @return encoded layer contents as std::vector
@@ -130,7 +130,7 @@ public:
         const std::string& fileExtension) const;
 
     /**
-     * \brief Computes the spacing to be used for gradient computation. Also works for layers with
+     * @brief Computes the spacing to be used for gradient computation. Also works for layers with
      * non-orthogonal basis.
      *
      * For orthogonal lattices this will be equal to the world space texel spacing.

@@ -86,11 +86,11 @@ private:
     void updateFromSpinBox();
 
     /**
-     * \brief updates the value of the spin box from the slider value
+     * @brief updates the value of the spin box from the slider value
      */
     void updateSpinBox();
     /**
-     * \brief updates the value of the slider from the spin box value
+     * @brief updates the value of the slider from the spin box value
      */
     void updateSlider();
 

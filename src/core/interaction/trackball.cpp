@@ -260,7 +260,7 @@ const vec3 Trackball::getLookRight() const {
     return glm::normalize(glm::cross(getLookTo() - getLookFrom(), getLookUp()));
 }
 
-/* \brief Returns the World Up Vector according to `worldUp_` property. */
+/* @brief Returns the World Up Vector according to `worldUp_` property. */
 const vec3 Trackball::getWorldUp() const {
     switch (worldUp_) {
         case 0:
@@ -326,7 +326,7 @@ std::pair<bool, vec3> Trackball::getTrackBallIntersection(const vec2 pos) const 
     return {res.first, rayOrigin + direction * res.second};
 }
 
-/* \brief Passes the mouse event (no touch events!) on to the chosen rotation method */
+/* @brief Passes the mouse event (no touch events!) on to the chosen rotation method */
 void Trackball::rotate(MouseEvent* event) {
     switch (trackballMethod_) {
         case 0:  // Virtual Trackball
@@ -346,7 +346,7 @@ void Trackball::rotate(MouseEvent* event) {
     }
 }
 
-/* \brief Maps the mouse inputs to camera movement according to the Two Axis Valuator method */
+/* @brief Maps the mouse inputs to camera movement according to the Two Axis Valuator method */
 void Trackball::rotateTAV(MouseEvent* mouseEvent) {
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
 
@@ -392,7 +392,7 @@ void Trackball::rotateTAV(MouseEvent* mouseEvent) {
     mouseEvent->markAsUsed();
 }
 
-/* \brief Maps the mouse inputs to camera movement according to the Arcball method
+/* @brief Maps the mouse inputs to camera movement according to the Arcball method
  *
  * @param followObjectDuringRotation Ensures the finger stays on the same position on the object
  * surface
@@ -441,7 +441,7 @@ void Trackball::rotateArc(MouseEvent* mouseEvent, bool followObjectDuringRotatio
     mouseEvent->markAsUsed();
 }
 
-/* \brief Maps the mouse inputs to first person camera movement */
+/* @brief Maps the mouse inputs to first person camera movement */
 void Trackball::rotateFPS(MouseEvent* mouseEvent) {
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
 
@@ -487,49 +487,49 @@ mat4 Trackball::roll(const float radians) const {
            glm::translate(-getLookFrom());  // translate back
 }
 
-/* \brief Moves camera along -cam_right */
+/* @brief Moves camera along -cam_right */
 void Trackball::moveLeft(Event*) {
     const vec3 right = getLookRight();
     setLook(getLookFrom() - movementSpeed_.get() * right,
             getLookTo() - movementSpeed_.get() * right, getLookUp());
 }
 
-/* \brief Moves camera along cam_right */
+/* @brief Moves camera along cam_right */
 void Trackball::moveRight(Event*) {
     const vec3 right = getLookRight();
     setLook(getLookFrom() + movementSpeed_.get() * right,
             getLookTo() + movementSpeed_.get() * right, getLookUp());
 }
 
-/* \brief Moves camera along cam_up */
+/* @brief Moves camera along cam_up */
 void Trackball::moveUp(Event*) {
     const vec3 up = getLookUp();
     setLook(getLookFrom() + movementSpeed_.get() * up, getLookTo() + movementSpeed_.get() * up,
             getLookUp());
 }
 
-/* \brief Moves camera along -cam_up */
+/* @brief Moves camera along -cam_up */
 void Trackball::moveDown(Event*) {
     const vec3 up = getLookUp();
     setLook(getLookFrom() - movementSpeed_.get() * up, getLookTo() - movementSpeed_.get() * up,
             getLookUp());
 }
 
-/* \brief Moves camera along view_dir */
+/* @brief Moves camera along view_dir */
 void Trackball::moveForward(Event*) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
     setLook(getLookFrom() + movementSpeed_.get() * viewDir,
             getLookTo() + movementSpeed_.get() * viewDir, getLookUp());
 }
 
-/* \brief Moves camera along -view_dir */
+/* @brief Moves camera along -view_dir */
 void Trackball::moveBackward(Event*) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
     setLook(getLookFrom() - movementSpeed_.get() * viewDir,
             getLookTo() - movementSpeed_.get() * viewDir, getLookUp());
 }
 
-/* \brief zoom based on mouse move event
+/* @brief zoom based on mouse move event
  */
 void Trackball::zoom(MouseEvent* event) {
     if (!allowZooming_) return;
@@ -675,7 +675,7 @@ void Trackball::stepPan(Direction dir) {
     setLook(getLookFrom() - boundedTranslation, getLookTo() - boundedTranslation, getLookUp());
 }
 
-/* \brief Maps touch input to rotation
+/* @brief Maps touch input to rotation
  * This implicitly uses the Object follows Finger method.
  * The Trackball Method Dropdown is NOT influencing touch inputs!
  */
@@ -978,7 +978,7 @@ void Trackball::panDown(Event* event) {
     event->markAsUsed();
 }
 
-/* \brief Zooms on mouse wheel event
+/* @brief Zooms on mouse wheel event
  *
  * Uses the step zoom functions and triggers one
  * step per mouse wheel tick. Horizontal scrolling is disregarded

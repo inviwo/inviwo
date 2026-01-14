@@ -41,8 +41,7 @@
 namespace inviwo {
 
 /**
- * \class MeshInformation
- * \brief provides information on the input mesh
+ * @brief provides information on the input mesh
  */
 class IVW_MODULE_BASE_API MeshInformation : public Processor {
 public:

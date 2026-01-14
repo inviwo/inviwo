@@ -44,8 +44,7 @@ namespace glui {
 class Renderer;
 
 /**
- * \class Button
- * \brief glui::Element representing a button with the label centered within
+ * @brief glui::Element representing a button with the label centered within
  */
 class IVW_MODULE_USERINTERFACEGL_API Button : public AbstractButton {
 public:

@@ -46,8 +46,7 @@ class Shader;
 class Texture2D;
 
 /**
- * \class TextureQuadRenderer
- * \brief This class provides functionality for rendering an image, a layer, or a texture
+ * @brief This class provides functionality for rendering an image, a layer, or a texture
  * onto the current render target.
  */
 class IVW_MODULE_OPENGL_API TextureQuadRenderer {
@@ -61,7 +60,7 @@ public:
     const Shader& getShader() const;
 
     /**
-     * \brief renders an image at position pos onto the current canvas. The image
+     * @brief renders an image at position pos onto the current canvas. The image
      * dimensions determine the covered area in pixel. The anchor point of the
      * image is in the lower left corner. By default, the first color layer is rendered.
      *
@@ -89,7 +88,7 @@ public:
                 LayerType layerType = LayerType::Color, const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders a color layer of an image at position pos onto the current canvas. The layer
+     * @brief renders a color layer of an image at position pos onto the current canvas. The layer
      * dimensions determine the covered area in pixel. The anchor point of the image is in the lower
      * left corner. By default, the first color layer is rendered.
      *
@@ -116,7 +115,7 @@ public:
                 std::size_t colorLayerIndex, const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders a layer at position pos onto the current canvas. The layer
+     * @brief renders a layer at position pos onto the current canvas. The layer
      * dimensions determine the covered area in pixel. The anchor point of the
      * image is in the lower left corner.
      *
@@ -140,7 +139,7 @@ public:
                 const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders a texture at position pos onto the current canvas. The texture
+     * @brief renders a texture at position pos onto the current canvas. The texture
      * dimensions determine the covered area in pixel. The anchor point of the
      * texture is in the lower left corner.
      *
@@ -165,7 +164,7 @@ public:
                 const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders an image at position pos onto the current canvas with the given
+     * @brief renders an image at position pos onto the current canvas with the given
      * extent. The covered area is defined by the extent (in pixel). The anchor point
      * of the image is in the lower left corner. By default, the first color layer is
      * rendered.
@@ -197,7 +196,7 @@ public:
                       const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders a color layer of an image at position pos onto the current canvas
+     * @brief renders a color layer of an image at position pos onto the current canvas
      * with the given extent. The covered area is defined by the extent (in pixel).
      * The anchor point of the image is in the lower left corner. By default,
      * the first color layer is rendered.
@@ -228,7 +227,7 @@ public:
                       const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders a layer at position pos onto the current canvas with the given
+     * @brief renders a layer at position pos onto the current canvas with the given
      * extent. The covered area is defined by the extent (in pixel). The anchor point
      * of the layer is in the lower left corner.
      *
@@ -255,7 +254,7 @@ public:
                       const size2_t& canvasSize, const mat4& transformation = mat4(1));
 
     /**
-     * \brief renders a texture at position pos onto the current canvas with the given
+     * @brief renders a texture at position pos onto the current canvas with the given
      * extent. The covered area is defined by the extent (in pixel). The anchor point
      * of the texture is in the lower left corner.
      *
@@ -286,7 +285,7 @@ public:
                       const size2_t& canvasSize, const std::vector<mat4>& transformation);
 
     /**
-     * \brief renders a texture at world position pos onto the current canvas with the given
+     * @brief renders a texture at world position pos onto the current canvas with the given
      * extent. The covered area is defined by the extent (in pixel). The anchor point
      * of the texture is defined by anchor (-1 to 1).
      *
