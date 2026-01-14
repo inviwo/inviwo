@@ -74,7 +74,6 @@ set(HEADER_FILES
     include/modules/base/processors/imagedistancetransform.h
     include/modules/base/processors/imageexport.h
     include/modules/base/processors/imageinformation.h
-    include/modules/base/processors/imagesequenceelementselectorprocessor.h
     include/modules/base/processors/imagesnapshot.h
     include/modules/base/processors/imagesource.h
     include/modules/base/processors/imagesourceseries.h
@@ -89,7 +88,6 @@ set(HEADER_FILES
     include/modules/base/processors/layerdistancetransform.h
     include/modules/base/processors/layerexport.h
     include/modules/base/processors/layerinformation.h
-    include/modules/base/processors/layersequenceelementselector.h
     include/modules/base/processors/layersequencesource.h
     include/modules/base/processors/layerseriessource.h
     include/modules/base/processors/layersource.h
@@ -103,7 +101,6 @@ set(HEADER_FILES
     include/modules/base/processors/meshinformation.h
     include/modules/base/processors/meshmapping.h
     include/modules/base/processors/meshplaneclipping.h
-    include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsequencesource.h
     include/modules/base/processors/meshsource.h
     include/modules/base/processors/noisegenerator2d.h
@@ -125,7 +122,6 @@ set(HEADER_FILES
     include/modules/base/processors/tfselector.h
     include/modules/base/processors/transform.h
     include/modules/base/processors/trianglestowireframe.h
-    include/modules/base/processors/vectorelementselectorprocessor.h
     include/modules/base/processors/vectortobuffer.h
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundaryplanes.h
@@ -141,7 +137,6 @@ set(HEADER_FILES
     include/modules/base/processors/volumehistogram2d.h
     include/modules/base/processors/volumeinformation.h
     include/modules/base/processors/volumelaplacianprocessor.h
-    include/modules/base/processors/volumesequenceelementselectorprocessor.h
     include/modules/base/processors/volumesequenceexport.h
     include/modules/base/processors/volumesequencesingletimestepsampler.h
     include/modules/base/processors/volumesequencesource.h
@@ -237,7 +232,6 @@ set(SOURCE_FILES
     src/processors/imagedistancetransform.cpp
     src/processors/imageexport.cpp
     src/processors/imageinformation.cpp
-    src/processors/imagesequenceelementselectorprocessor.cpp
     src/processors/imagesnapshot.cpp
     src/processors/imagesource.cpp
     src/processors/imagesourceseries.cpp
@@ -252,7 +246,6 @@ set(SOURCE_FILES
     src/processors/layerdistancetransform.cpp
     src/processors/layerexport.cpp
     src/processors/layerinformation.cpp
-    src/processors/layersequenceelementselector.cpp
     src/processors/layersequencesource.cpp
     src/processors/layerseriessource.cpp
     src/processors/layersource.cpp
@@ -266,7 +259,6 @@ set(SOURCE_FILES
     src/processors/meshinformation.cpp
     src/processors/meshmapping.cpp
     src/processors/meshplaneclipping.cpp
-    src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsequencesource.cpp
     src/processors/meshsource.cpp
     src/processors/noisegenerator2d.cpp
@@ -302,7 +294,6 @@ set(SOURCE_FILES
     src/processors/volumehistogram2d.cpp
     src/processors/volumeinformation.cpp
     src/processors/volumelaplacianprocessor.cpp
-    src/processors/volumesequenceelementselectorprocessor.cpp
     src/processors/volumesequenceexport.cpp
     src/processors/volumesequencesingletimestepsampler.cpp
     src/processors/volumesequencesource.cpp

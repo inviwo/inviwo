@@ -49,48 +49,49 @@
 #include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>                     // for OrdinalProperty
 #include <inviwo/core/rendering/datavisualizer.h>                       // for DataVisualizer
-#include <inviwo/core/util/foreacharg.h>                                // for for_each_type
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <inviwo/core/util/stringconversion.h>                          // for dotSeperated...
-#include <modules/base/datavisualizer/imageinformationvisualizer.h>     // for ImageInforma...
-#include <modules/base/datavisualizer/meshinformationvisualizer.h>      // for MeshInformat...
-#include <modules/base/datavisualizer/volumeinformationvisualizer.h>    // for VolumeInform...
+#include <inviwo/core/util/charconv.h>
+#include <inviwo/core/util/foreacharg.h>        // for for_each_type
+#include <inviwo/core/util/glmvec.h>            // for vec3, vec4
+#include <inviwo/core/util/staticstring.h>      // for operator+
+#include <inviwo/core/util/stringconversion.h>  // for dotSeperated...
+
+#include <modules/base/datavisualizer/imageinformationvisualizer.h>
+#include <modules/base/datavisualizer/meshinformationvisualizer.h>
+#include <modules/base/datavisualizer/volumeinformationvisualizer.h>
 #include <modules/base/datavisualizer/layerinformationvisualizer.h>
 #include <modules/base/datavisualizer/layertoimagevisualizer.h>
 #include <modules/base/datavisualizer/imagetolayervisualizer.h>
 // Io
-#include <modules/base/io/amirameshreader.h>          // for AmiraMeshReader
-#include <modules/base/io/amiravolumereader.h>        // for AmiraVolumeReader
-#include <modules/base/io/binarystlwriter.h>          // for BinarySTLWriter
-#include <modules/base/io/datvolumesequencereader.h>  // for DatVolumeSeq...
-#include <modules/base/io/datvolumewriter.h>          // for DatVolumeWriter
-#include <modules/base/io/ivfvolumereader.h>          // for IvfVolumeReader
-#include <modules/base/io/ivfvolumewriter.h>          // for IvfVolumeWriter
-#include <modules/base/io/stlwriter.h>                // for StlWriter
-#include <modules/base/io/wavefrontwriter.h>          // for WaveFrontWriter
+#include <modules/base/io/amirameshreader.h>
+#include <modules/base/io/amiravolumereader.h>
+#include <modules/base/io/binarystlwriter.h>
+#include <modules/base/io/datvolumesequencereader.h>
+#include <modules/base/io/datvolumewriter.h>
+#include <modules/base/io/ivfvolumereader.h>
+#include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/io/stlwriter.h>
+#include <modules/base/io/wavefrontwriter.h>
 // Processors
-#include <modules/base/processors/buffertomeshprocessor.h>            // for BufferToMesh...
-#include <modules/base/processors/camerafrustum.h>                    // for CameraFrustum
-#include <modules/base/processors/convexhull2dprocessor.h>            // for ConvexHull2D...
-#include <modules/base/processors/cubeproxygeometryprocessor.h>       // for CubeProxyGeo...
-#include <modules/base/processors/diffuselightsourceprocessor.h>      // for DiffuseLight...
-#include <modules/base/processors/directionallightsourceprocessor.h>  // for DirectionalL...
-#include <modules/base/processors/distancetransformram.h>             // for DistanceTran...
+#include <modules/base/processors/buffertomeshprocessor.h>
+#include <modules/base/processors/camerafrustum.h>
+#include <modules/base/processors/convexhull2dprocessor.h>
+#include <modules/base/processors/cubeproxygeometryprocessor.h>
+#include <modules/base/processors/diffuselightsourceprocessor.h>
+#include <modules/base/processors/directionallightsourceprocessor.h>
+#include <modules/base/processors/distancetransformram.h>
 #include <modules/base/processors/filecache.h>
-#include <modules/base/processors/gridplanes.h>                             // for GridPlanes
-#include <modules/base/processors/heightfieldmapper.h>                      // for HeightFieldM...
-#include <modules/base/processors/imagecontourprocessor.h>                  // for ImageContour...
-#include <modules/base/processors/imageexport.h>                            // for ImageExport
-#include <modules/base/processors/imageinformation.h>                       // for ImageInforma...
-#include <modules/base/processors/imagesequenceelementselectorprocessor.h>  // for ImageSequenc...
-#include <modules/base/processors/imagesnapshot.h>                          // for ImageSnapshot
-#include <modules/base/processors/imagesource.h>                            // for ImageSource
-#include <modules/base/processors/imagesourceseries.h>                      // for ImageSourceS...
-#include <modules/base/processors/imagestackvolumesource.h>                 // for ImageStackVo...
+#include <modules/base/processors/gridplanes.h>
+#include <modules/base/processors/heightfieldmapper.h>
+#include <modules/base/processors/imagecontourprocessor.h>
+#include <modules/base/processors/imageexport.h>
+#include <modules/base/processors/imageinformation.h>
+#include <modules/base/processors/imagesnapshot.h>
+#include <modules/base/processors/imagesource.h>
+#include <modules/base/processors/imagesourceseries.h>
+#include <modules/base/processors/imagestackvolumesource.h>
 #include <modules/base/processors/imagetolayer.h>
-#include <modules/base/processors/imagetospatialsampler.h>  // for ImageToSpati...
-#include <modules/base/processors/inputselector.h>          // for InputSelector
+#include <modules/base/processors/imagetospatialsampler.h>
+#include <modules/base/processors/inputselector.h>
 #include <modules/base/processors/layerboundingbox.h>
 #include <modules/base/processors/layercombiner.h>
 #include <modules/base/processors/layercontour.h>
@@ -99,100 +100,97 @@
 #include <modules/base/processors/imagedistancetransform.h>
 #include <modules/base/processors/layerexport.h>
 #include <modules/base/processors/layerinformation.h>
-#include <modules/base/processors/layersequenceelementselector.h>
 #include <modules/base/processors/layersequencesource.h>
 #include <modules/base/processors/layerseriessource.h>
 #include <modules/base/processors/layersource.h>
 #include <modules/base/processors/layertoimage.h>
 #include <modules/base/processors/layertospatialsampler.h>
-#include <modules/base/processors/meshclipping.h>                          // for MeshClipping
-#include <modules/base/processors/meshcolorfromnormals.h>                  // for MeshColorFro...
-#include <modules/base/processors/meshconverterprocessor.h>                // for MeshConverte...
-#include <modules/base/processors/meshcreator.h>                           // for MeshCreator
-#include <modules/base/processors/meshexport.h>                            // for MeshExport
-#include <modules/base/processors/meshinformation.h>                       // for MeshInformation
-#include <modules/base/processors/meshmapping.h>                           // for MeshMapping
-#include <modules/base/processors/meshplaneclipping.h>                     // for MeshPlaneCli...
-#include <modules/base/processors/meshsequenceelementselectorprocessor.h>  // for MeshSequence...
+#include <modules/base/processors/meshclipping.h>
+#include <modules/base/processors/meshcolorfromnormals.h>
+#include <modules/base/processors/meshconverterprocessor.h>
+#include <modules/base/processors/meshcreator.h>
+#include <modules/base/processors/meshexport.h>
+#include <modules/base/processors/meshinformation.h>
+#include <modules/base/processors/meshmapping.h>
+#include <modules/base/processors/meshplaneclipping.h>
 #include <modules/base/processors/meshsequencesource.h>
-#include <modules/base/processors/meshsource.h>                            // for MeshSource
-#include <modules/base/processors/noisegenerator2d.h>                      // for NoiseGenerator2D
-#include <modules/base/processors/noisegenerator3d.h>                      // for NoiseGenerator3D
-#include <modules/base/processors/ordinalpropertyanimator.h>               // for OrdinalPrope...
-#include <modules/base/processors/orientationindicator.h>                  // for OrientationI...
-#include <modules/base/processors/pixeltobufferprocessor.h>                // for PixelToBuffe...
-#include <modules/base/processors/pixelvalue.h>                            // for PixelValue
-#include <modules/base/processors/pointgenerationprocessor.h>              // for Point3DGener...
-#include <modules/base/processors/pointlightsourceprocessor.h>             // for PointLightSo...
-#include <modules/base/processors/randommeshgenerator.h>                   // for RandomMeshGe...
-#include <modules/base/processors/randomspheregenerator.h>                 // for RandomSphere...
-#include <modules/base/processors/singlevoxel.h>                           // for SingleVoxel
-#include <modules/base/processors/spotlightsourceprocessor.h>              // for SpotLightSou...
-#include <modules/base/processors/stereocamerasyncer.h>                    // for StereoCamera...
-#include <modules/base/processors/surfaceextractionprocessor.h>            // for SurfaceExtra...
+#include <modules/base/processors/meshsource.h>
+#include <modules/base/processors/noisegenerator2d.h>
+#include <modules/base/processors/noisegenerator3d.h>
+#include <modules/base/processors/ordinalpropertyanimator.h>
+#include <modules/base/processors/orientationindicator.h>
+#include <modules/base/processors/pixeltobufferprocessor.h>
+#include <modules/base/processors/pixelvalue.h>
+#include <modules/base/processors/pointgenerationprocessor.h>
+#include <modules/base/processors/pointlightsourceprocessor.h>
+#include <modules/base/processors/randommeshgenerator.h>
+#include <modules/base/processors/randomspheregenerator.h>
+#include <modules/base/processors/singlevoxel.h>
+#include <modules/base/processors/spotlightsourceprocessor.h>
+#include <modules/base/processors/stereocamerasyncer.h>
+#include <modules/base/processors/surfaceextractionprocessor.h>
 #include <modules/base/processors/testvolumecreator.h>
-#include <modules/base/processors/tfselector.h>                            // for TFSelector
-#include <modules/base/processors/transform.h>                             // for Transform
-#include <modules/base/processors/trianglestowireframe.h>                  // for TrianglesToW...
-#include <modules/base/processors/vectortobuffer.h>                        // for VectorToBuffer
-#include <modules/base/processors/volumebasistransformer.h>                // for BasisTransform
-#include <modules/base/processors/volumeboundaryplanes.h>                  // for VolumeBounda...
-#include <modules/base/processors/volumeboundingbox.h>                     // for VolumeBoundi...
+#include <modules/base/processors/tfselector.h>
+#include <modules/base/processors/transform.h>
+#include <modules/base/processors/trianglestowireframe.h>
+#include <modules/base/processors/vectortobuffer.h>
+#include <modules/base/processors/volumebasistransformer.h>
+#include <modules/base/processors/volumeboundaryplanes.h>
+#include <modules/base/processors/volumeboundingbox.h>
 #include <modules/base/processors/volumechannelcombiner.h>
-#include <modules/base/processors/volumeconverter.h>                         // for VolumeConverter
-#include <modules/base/processors/volumecreator.h>                           // for VolumeCreator
-#include <modules/base/processors/volumecurlcpuprocessor.h>                  // for VolumeCurlCP...
-#include <modules/base/processors/volumedivergencecpuprocessor.h>            // for VolumeDiverg...
-#include <modules/base/processors/volumeexport.h>                            // for VolumeExport
-#include <modules/base/processors/volumegradientcpuprocessor.h>              // for VolumeGradie...
-#include <modules/base/processors/volumehistogram2d.h>                       // for VolumeHistog...
-#include <modules/base/processors/volumeinformation.h>                       // for VolumeInform...
-#include <modules/base/processors/volumelaplacianprocessor.h>                // for VolumeLaplac...
-#include <modules/base/processors/volumesequenceelementselectorprocessor.h>  // for VolumeSequen...
+#include <modules/base/processors/volumeconverter.h>
+#include <modules/base/processors/volumecreator.h>
+#include <modules/base/processors/volumecurlcpuprocessor.h>
+#include <modules/base/processors/volumedivergencecpuprocessor.h>
+#include <modules/base/processors/volumeexport.h>
+#include <modules/base/processors/volumegradientcpuprocessor.h>
+#include <modules/base/processors/volumehistogram2d.h>
+#include <modules/base/processors/volumeinformation.h>
+#include <modules/base/processors/volumelaplacianprocessor.h>
 #include <modules/base/processors/volumesequenceexport.h>
-#include <modules/base/processors/volumesequencesingletimestepsampler.h>  // for VolumeSequen...
-#include <modules/base/processors/volumesequencesource.h>                 // for VolumeSequen...
-#include <modules/base/processors/volumesequencetospatial4dsampler.h>     // for VolumeSequen...
-#include <modules/base/processors/volumeshifter.h>                        // for VolumeShifter
-#include <modules/base/processors/volumesliceextractor.h>                 // for VolumeSliceE...
+#include <modules/base/processors/volumesequencesingletimestepsampler.h>
+#include <modules/base/processors/volumesequencesource.h>
+#include <modules/base/processors/volumesequencetospatial4dsampler.h>
+#include <modules/base/processors/volumeshifter.h>
+#include <modules/base/processors/volumesliceextractor.h>
 #include <modules/base/processors/volumeslicetolayer.h>
-#include <modules/base/processors/volumesource.h>                         // for VolumeSource
-#include <modules/base/processors/volumedownsample.h>                     // for VolumeDownsample
-#include <modules/base/processors/volumesubset.h>                         // for VolumeSubset
-#include <modules/base/processors/volumetospatialsampler.h>               // for VolumeToSpat...
-#include <modules/base/processors/worldtransformdeprecated.h>             // for WorldTransfo...
+#include <modules/base/processors/volumesource.h>
+#include <modules/base/processors/volumedownsample.h>
+#include <modules/base/processors/volumesubset.h>
+#include <modules/base/processors/volumetospatialsampler.h>
+#include <modules/base/processors/worldtransformdeprecated.h>
 // Properties
-#include <modules/base/properties/basisproperty.h>              // for BasisProperty
-#include <modules/base/properties/bufferinformationproperty.h>  // for BufferInform...
-#include <modules/base/properties/datarangeproperty.h>          // for DataRangePro...
-#include <modules/base/properties/gaussianproperty.h>           // for Gaussian1DPr...
-#include <modules/base/properties/imageinformationproperty.h>   // for ImageInforma...
-#include <modules/base/properties/layerinformationproperty.h>   // for LayerInforma...
-#include <modules/base/properties/meshinformationproperty.h>    // for MeshInformat...
-#include <modules/base/properties/sequencetimerproperty.h>      // for SequenceTime...
-#include <modules/base/properties/transformlistproperty.h>      // for CustomTransf...
+#include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/bufferinformationproperty.h>
+#include <modules/base/properties/datarangeproperty.h>
+#include <modules/base/properties/gaussianproperty.h>
+#include <modules/base/properties/imageinformationproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/meshinformationproperty.h>
+#include <modules/base/properties/sequencetimerproperty.h>
+#include <modules/base/properties/transformlistproperty.h>
 #include <modules/base/properties/valueaxisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInform...
+#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <functional>        // for __base, func...
-#include <initializer_list>  // for initializer_...
-#include <string>            // for string, oper...
-#include <tuple>             // for make_tuple, get
-#include <unordered_map>     // for unordered_map
-#include <unordered_set>     // for unordered_set
-#include <vector>            // for vector
+#include <functional>
+#include <initializer_list>
+#include <string>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
-#include <fmt/core.h>                    // for basic_string...
-#include <fmt/format.h>                  // for formatbuf<>:...
-#include <glm/common.hpp>                // for clamp
-#include <glm/ext/scalar_constants.hpp>  // for pi
-#include <glm/ext/vector_uint3.hpp>      // for uvec3
-#include <glm/gtx/io.hpp>                // for operator<<
-#include <glm/mat4x4.hpp>                // for operator*
-#include <glm/vec2.hpp>                  // for operator*
-#include <glm/vec3.hpp>                  // for operator*
-#include <glm/vec4.hpp>                  // for operator*
-#include <glm/vector_relational.hpp>     // for greaterThanE...
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <glm/common.hpp>
+#include <glm/ext/scalar_constants.hpp>
+#include <glm/ext/vector_uint3.hpp>
+#include <glm/gtx/io.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 class InviwoApplication;
@@ -224,7 +222,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageDistanceTransform>();
     registerProcessor<ImageExport>();
     registerProcessor<ImageInformation>();
-    registerProcessor<ImageSequenceElementSelectorProcessor>();
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
@@ -238,7 +235,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerDistanceTransform>();
     registerProcessor<LayerExport>();
     registerProcessor<LayerInformation>();
-    registerProcessor<LayerSequenceElementSelector>();
     registerProcessor<LayerSequenceSource>();
     registerProcessor<LayerSeriesSource>();
     registerProcessor<LayerSource>();
@@ -252,7 +248,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
     registerProcessor<MeshPlaneClipping>();
-    registerProcessor<MeshSequenceElementSelectorProcessor>();
     registerProcessor<MeshSequenceSource>();
     registerProcessor<MeshSource>();
     registerProcessor<NoiseGenerator2D>();
@@ -292,7 +287,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeGradientCPUProcessor>();
     registerProcessor<VolumeInformation>();
     registerProcessor<VolumeLaplacianProcessor>();
-    registerProcessor<VolumeSequenceElementSelectorProcessor>();
     registerProcessor<VolumeSequenceExport>();
     registerProcessor<VolumeSequenceSingleTimestepSamplerProcessor>();
     registerProcessor<VolumeSequenceSource>();
@@ -365,7 +359,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 11; }
+int BaseModule::getVersion() const { return 12; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -620,7 +614,56 @@ bool BaseModule::Converter::convert(TxElement* root) {
             res |= xml::changeAttributeRecursive(
                 root, {{xml::Kind::processor("org.inviwo.Histogram2D")}}, "type",
                 "org.inviwo.Histogram2D", "org.inviwo.VolumeHistogram2D");
+            [[fallthrough]];
+        }
+        case 11: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Processor") return true;
+                const auto& type = node->GetAttribute("type");
+                if (type != "org.inviwo.ImageTimeStepSelector" &&
+                    type != "org.inviwo.LayerSequenceElementSelector" &&
+                    type != "org.inviwo.MeshTimeStepSelector" &&
+                    type != "org.inviwo.TimeStepSelector") {
+                    return true;
+                }
 
+                if (type == "org.inviwo.ImageTimeStepSelector") {
+                    node->SetAttribute("type", "org.inviwo.Image.sequence.select");
+                } else if (type == "org.inviwo.LayerSequenceElementSelector") {
+                    node->SetAttribute("type", "org.inviwo.Layer.sequence.select");
+                } else if (type == "org.inviwo.MeshTimeStepSelector") {
+                    node->SetAttribute("type", "org.inviwo.Mesh.sequence.select");
+                } else if (type == "org.inviwo.TimeStepSelector") {
+                    node->SetAttribute("type", "org.inviwo.Volume.sequence.select");
+                }
+
+                // replace the timeStep.selectedSequenceIndex property with a
+                // index property and decrease the index by 1
+                if (auto* props = xml::getElement(node, "Properties")) {
+                    if (auto* elem =
+                            xml::getElement(props,
+                                            "Property&identifier=timeStep/Properties/"
+                                            "Property&identifier=selectedSequenceIndex/value")) {
+                        if (auto maybeIndex = elem->Attribute("content")) {
+                            if (auto index = util::fromStr<int>(*maybeIndex)) {
+                                TxElement indexNode{"Property"};
+                                indexNode.SetAttribute("type", "org.inviwo.Size_tProperty");
+                                indexNode.SetAttribute("identifier", "index");
+                                TxElement value{"value"};
+                                value.SetAttribute("content",
+                                                   fmt::to_string(std::max(0, *index - 1)));
+                                indexNode.InsertEndChild(value);
+                                props->InsertEndChild(indexNode);
+                            }
+                        }
+                    }
+                }
+                res = true;
+                return true;
+            }};
+
+            conv.convert(root);
             return res;
         }
 
