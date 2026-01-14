@@ -424,11 +424,11 @@ template <typename T>
 std::tuple<std::optional<double>, BaseNumberWidget::PercentageBar>
 NumberWidget<T>::getPercentageBar() const {
     const auto state = [&]() {
-        if (minValue_ == std::numeric_limits<T>::lowest() ||
+        if ((std::is_signed_v<T> && minValue_ == std::numeric_limits<T>::lowest()) ||
             maxValue_ == std::numeric_limits<T>::max()) {
             return PercentageBar::Invalid;
         }
-        if constexpr (std::is_floating_point_v<T> || std::is_signed_v<T>) {
+        if constexpr (std::is_signed_v<T>) {
             return (maxValue_ == -minValue_) ? PercentageBar::Symmetric : PercentageBar::Regular;
         } else {
             return PercentageBar::Regular;
@@ -460,7 +460,7 @@ double NumberWidget<T>::getUIIncrement() const {
         return static_cast<double>(increment_);
     }
 
-    if (minValue_ == std::numeric_limits<T>::lowest() ||
+    if ((std::is_signed_v<T> && minValue_ == std::numeric_limits<T>::lowest()) ||
         maxValue_ == std::numeric_limits<T>::max()) {
         return static_cast<double>(increment_);
     }
