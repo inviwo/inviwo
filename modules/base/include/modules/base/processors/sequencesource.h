@@ -110,7 +110,8 @@ private:
     void loadFile(bool deserialize = false);
     void loadFolder(bool deserialize = false);
 
-    void loadAndAddToSequence(const std::filesystem::path& file, Sequence& sequence);
+    static void loadAndAddToSequence(const std::filesystem::path& file, Sequence& sequence,
+                                     DataReaderFactory& rf, MetaDataOwner* md);
 
     DataReaderFactory* rf_;
     std::shared_ptr<Sequence> sequence_;
@@ -276,17 +277,18 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
 
 template <typename Conf>
 void SequenceSource<Conf>::loadAndAddToSequence(const std::filesystem::path& file,
-                                                Sequence& sequence) {
+                                                Sequence& sequence, DataReaderFactory& rf,
+                                                MetaDataOwner* md) {
 
-    if (auto reader1 = rf_->getReaderForTypeAndExtension<Type>(file)) {
-        auto data1 = reader1->readData(file, this);
+    if (auto reader1 = rf.getReaderForTypeAndExtension<Type>(file)) {
+        auto data1 = reader1->readData(file, md);
         data1->template setMetaData<StringMetaData>(fileMetaData, file.generic_string());
-        sequence_->push_back(data1);
-    } else if (auto reader2 = rf_->getReaderForTypeAndExtension<Sequence>(file)) {
-        auto tempSequence = reader2->readData(file, this);
+        sequence.push_back(data1);
+    } else if (auto reader2 = rf.getReaderForTypeAndExtension<Sequence>(file)) {
+        auto tempSequence = reader2->readData(file, md);
         for (auto&& data2 : *tempSequence) {
             data2->template setMetaData<StringMetaData>(fileMetaData, file.generic_string());
-            sequence_->push_back(data2);
+            sequence.push_back(data2);
         }
     } else {
         throw DataReaderException(SourceContext{}, "Could not find a data reader for file: {}",
@@ -305,7 +307,7 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
         auto file = folder_.get() / f;
         if (filesystem::wildcardStringMatch(filter_, file.generic_string())) {
             try {
-                loadAndAddToSequence(file, *sequence_);
+                loadAndAddToSequence(file, *sequence_, *rf_, this);
             } catch (const DataReaderException& e) {
                 log::exception(e);
                 sequence_.reset();
