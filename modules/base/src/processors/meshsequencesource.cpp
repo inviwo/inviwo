@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumesequencesource.h>
+#include <modules/base/processors/meshsequencesource.h>
 
 namespace inviwo {}  // namespace inviwo

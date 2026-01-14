@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,37 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/volumesequencesource.h>
+#pragma once
 
-namespace inviwo {}  // namespace inviwo
+#include <modules/base/basemoduledefine.h>
+
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/meshport.h>
+
+#include <modules/base/processors/sequencesource.h>
+#include <modules/base/properties/meshinformationproperty.h>
+
+namespace inviwo {
+
+namespace detail {
+struct MeshConf {
+    using Type = Mesh;
+    using Sequence = DataSequence<Type>;
+    using Info = MeshInformationProperty;
+    using Outport = MeshSequenceOutport;
+    static constexpr auto name = DataTraits<Type>::dataName();
+    static constexpr auto plural = "es";
+    static constexpr size_t dim = 3;
+
+    static void updateForNew(Info& info, const Type& data, util::OverwriteState) {
+        info.updateForNewMesh(data);
+    }
+};
+}  // namespace detail
+
+/**
+ * @brief Loads a sequence of meshes
+ */
+using MeshSequenceSource = SequenceSource<detail::MeshConf>;
+
+}  // namespace inviwo

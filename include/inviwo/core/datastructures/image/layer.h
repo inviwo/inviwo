@@ -40,6 +40,7 @@
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/datastructures/histogramtools.h>
 #include <inviwo/core/datastructures/datasequence.h>
+#include <inviwo/core/metadata/metadataowner.h>
 
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
@@ -53,7 +54,9 @@ class DataFormatBase;
 /**
  * @ingroup datastructures
  */
-class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
+class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>,
+                           public StructuredGridEntity<2>,
+                           public MetaDataOwner {
 public:
     using Config = LayerConfig;
 

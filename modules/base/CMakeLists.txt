@@ -104,6 +104,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshmapping.h
     include/modules/base/processors/meshplaneclipping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
+    include/modules/base/processors/meshsequencesource.h
     include/modules/base/processors/meshsource.h
     include/modules/base/processors/noisegenerator2d.h
     include/modules/base/processors/noisegenerator3d.h
@@ -115,6 +116,7 @@ set(HEADER_FILES
     include/modules/base/processors/pointlightsourceprocessor.h
     include/modules/base/processors/randommeshgenerator.h
     include/modules/base/processors/randomspheregenerator.h
+    include/modules/base/processors/sequencesource.h
     include/modules/base/processors/singlevoxel.h
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
@@ -265,6 +267,7 @@ set(SOURCE_FILES
     src/processors/meshmapping.cpp
     src/processors/meshplaneclipping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
+    src/processors/meshsequencesource.cpp
     src/processors/meshsource.cpp
     src/processors/noisegenerator2d.cpp
     src/processors/noisegenerator3d.cpp
@@ -276,6 +279,7 @@ set(SOURCE_FILES
     src/processors/pointlightsourceprocessor.cpp
     src/processors/randommeshgenerator.cpp
     src/processors/randomspheregenerator.cpp
+    src/processors/sequencesource.cpp
     src/processors/singlevoxel.cpp
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp

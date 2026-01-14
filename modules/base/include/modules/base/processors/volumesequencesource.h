@@ -31,70 +31,32 @@
 
 #include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
 
-#include <inviwo/core/datastructures/volume/volume.h>           // for VolumeSequence
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeSequenceOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
-#include <inviwo/core/properties/directoryproperty.h>           // for DirectoryProperty
-#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
-#include <inviwo/core/properties/stringproperty.h>              // for StringProperty
-#include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
-#include <inviwo/core/util/staticstring.h>                      // for operator+
-#include <modules/base/properties/basisproperty.h>              // for BasisProperty
-#include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
 
-#include <functional>   // for __base
-#include <memory>       // for shared_ptr
-#include <string>       // for operator==, string
-#include <string_view>  // for operator==
-#include <vector>       // for operator!=, vector, opera...
+#include <modules/base/processors/sequencesource.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 
 namespace inviwo {
-class DataReaderFactory;
-class Deserializer;
-class InviwoApplication;
+namespace detail {
+struct VolumeConf {
+    using Type = Volume;
+    using Sequence = DataSequence<Type>;
+    using Info = VolumeInformationProperty;
+    using Outport = VolumeSequenceOutport;
+    static constexpr auto name = DataTraits<Type>::dataName();
+    static constexpr auto plural = "s";
+    static constexpr size_t dim = 3;
+
+    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
+        info.updateForNewVolume(data, overwrite);
+    }
+};
+}  // namespace detail
 
 /**
- * \class VolumeSequenceSource
- * \brief Loads a vector of volumes
+ * @brief Loads a sequence of volumes
  */
-class IVW_MODULE_BASE_API VolumeSequenceSource : public Processor {
-    enum class InputType { SingleFile, Folder };
-
-public:
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    VolumeSequenceSource(InviwoApplication* app);
-    virtual ~VolumeSequenceSource() = default;
-
-    virtual void deserialize(Deserializer& d) override;
-    virtual void process() override;
-
-private:
-    void load(bool deserialize = false);
-    void loadFile(bool deserialize = false);
-    void loadFolder(bool deserialize = false);
-
-    DataReaderFactory* rf_;
-    std::shared_ptr<VolumeSequence> volumes_;
-
-    VolumeSequenceOutport outport_;
-
-    OptionProperty<InputType> inputType_;
-    FileProperty file_;
-    DirectoryProperty folder_;
-    StringProperty filter_;
-
-    OptionProperty<FileExtension> reader_;
-    ButtonProperty reload_;
-
-    BasisProperty basis_;
-    VolumeInformationProperty information_;
-
-    bool deserialized_ = false;
-    bool loadingFailed_ = false;
-};
+using VolumeSequenceSource = SequenceSource<detail::VolumeConf>;
 
 }  // namespace inviwo

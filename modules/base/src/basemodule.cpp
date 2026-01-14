@@ -114,6 +114,7 @@
 #include <modules/base/processors/meshmapping.h>                           // for MeshMapping
 #include <modules/base/processors/meshplaneclipping.h>                     // for MeshPlaneCli...
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>  // for MeshSequence...
+#include <modules/base/processors/meshsequencesource.h>
 #include <modules/base/processors/meshsource.h>                            // for MeshSource
 #include <modules/base/processors/noisegenerator2d.h>                      // for NoiseGenerator2D
 #include <modules/base/processors/noisegenerator3d.h>                      // for NoiseGenerator3D
@@ -252,6 +253,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshMapping>();
     registerProcessor<MeshPlaneClipping>();
     registerProcessor<MeshSequenceElementSelectorProcessor>();
+    registerProcessor<MeshSequenceSource>();
     registerProcessor<MeshSource>();
     registerProcessor<NoiseGenerator2D>();
     registerProcessor<NoiseGenerator3D>();
