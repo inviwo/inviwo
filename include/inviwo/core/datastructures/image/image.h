@@ -61,7 +61,8 @@ public:
      * @param dimensions of the new image
      * @param format of the new image
      */
-    Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+    explicit Image(size2_t dimensions = LayerConfig::defaultDimensions,
+                   const DataFormatBase* format = LayerConfig::defaultFormat);
 
     /**
      * @brief Create an Image from the given layers.
@@ -71,14 +72,14 @@ public:
      * @pre All Layers in the list must have the same dimensions.
      * @param layers to use
      */
-    Image(std::vector<std::shared_ptr<Layer>> layers);
+    explicit Image(std::vector<std::shared_ptr<Layer>> layers);
 
     /**
      * @brief Create a new image from the given layer.
      * Default layers will be added for the other two LayerTypes
      * @param layer to use
      */
-    Image(std::shared_ptr<Layer> layer);
+    explicit Image(std::shared_ptr<Layer> layer);
 
     Image(const Image& rhs);
     /**
@@ -176,11 +177,14 @@ public:
 
 protected:
     static std::shared_ptr<Layer> createColorLayer(
-        size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
+        size2_t dimensions = LayerConfig::defaultDimensions,
+        const DataFormatBase* format = LayerConfig::defaultFormat);
     static std::vector<std::shared_ptr<Layer>> createColorLayers(
         const Image& srcImage, const DataFormatBase* format = nullptr);
-    static std::shared_ptr<Layer> createDepthLayer(size2_t dimensions = size2_t(8, 8));
-    static std::shared_ptr<Layer> createPickingLayer(size2_t dimensions = size2_t(8, 8));
+    static std::shared_ptr<Layer> createDepthLayer(
+        size2_t dimensions = LayerConfig::defaultDimensions);
+    static std::shared_ptr<Layer> createPickingLayer(
+        size2_t dimensions = LayerConfig::defaultDimensions);
 
     std::vector<std::shared_ptr<Layer>> colorLayers_;
     std::shared_ptr<Layer> depthLayer_;
@@ -200,7 +204,7 @@ void Image::forEachLayer(C callback) {
 
 template <typename C>
 void Image::forEachLayer(C callback) const {
-    for (auto& layer : colorLayers_) callback(static_cast<const Layer&>(*layer));
+    for (const auto& layer : colorLayers_) callback(static_cast<const Layer&>(*layer));
     if (depthLayer_) callback(static_cast<const Layer&>(*depthLayer_));
     if (pickingLayer_) callback(static_cast<const Layer&>(*pickingLayer_));
 }
