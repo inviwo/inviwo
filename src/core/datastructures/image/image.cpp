@@ -71,7 +71,7 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
     }
 
     if (auto it = std::ranges::find_if_not(
-            layers, [](auto& layer) { return layer->getLayerType() != LayerType::Color; });
+            layers, [](auto& layer) { return layer->getLayerType() == LayerType::Color; });
         it != layers.end()) {
         throw Exception(SourceContext{}, "Multiple layers of type {} found", (*it)->getLayerType());
     }
