@@ -86,7 +86,7 @@ class InviwoApplication;
  */
 template <typename Conf>
 class SequenceSource : public Processor {
-    enum class InputType { SingleFile, Folder };
+    enum class InputType : std::uint8_t { SingleFile, Folder };
 
 public:
     using Type = typename Conf::Type;
@@ -95,7 +95,11 @@ public:
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    SequenceSource(InviwoApplication* app);
+    explicit SequenceSource(InviwoApplication* app);
+    SequenceSource(const SequenceSource&) = delete;
+    SequenceSource(SequenceSource&&) = delete;
+    SequenceSource& operator=(const SequenceSource&) = delete;
+    SequenceSource& operator=(SequenceSource&&) = delete;
     virtual ~SequenceSource() = default;
 
     virtual void deserialize(Deserializer& d) override;
@@ -105,6 +109,8 @@ private:
     void load(bool deserialize = false);
     void loadFile(bool deserialize = false);
     void loadFolder(bool deserialize = false);
+
+    void loadAndAddToSequence(const std::filesystem::path& file, Sequence& sequence);
 
     DataReaderFactory* rf_;
     std::shared_ptr<Sequence> sequence_;
@@ -247,17 +253,15 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
     const auto sext = file_.getSelectedExtension();
-    if (auto reader = rf_->getReaderForTypeAndExtension<Sequence>(sext, file_.get())) {
-        try {
+    try {
+        if (auto reader = rf_->getReaderForTypeAndExtension<Sequence>(sext, file_.get())) {
             sequence_ = reader->readData(file_.get(), this);
-        } catch (const DataReaderException& e) {
-            log::exception(e);
-            sequence_.reset();
-            loadingFailed_ = true;
-            isReady_.update();
+        } else {
+            throw DataReaderException(SourceContext{}, "Could not find a data reader for file: {}",
+                                      file_.get());
         }
-    } else {
-        log::error("Could not find a data reader for file: {}", file_.get());
+    } catch (const DataReaderException& e) {
+        log::exception(e);
         sequence_.reset();
         loadingFailed_ = true;
         isReady_.update();
@@ -271,36 +275,37 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
 }
 
 template <typename Conf>
+void SequenceSource<Conf>::loadAndAddToSequence(const std::filesystem::path& file,
+                                                Sequence& sequence) {
+
+    if (auto reader1 = rf_->getReaderForTypeAndExtension<Type>(file)) {
+        auto data1 = reader1->readData(file, this);
+        data1->template setMetaData<StringMetaData>(fileMetaData, file.generic_string());
+        sequence_->push_back(data1);
+    } else if (auto reader2 = rf_->getReaderForTypeAndExtension<Sequence>(file)) {
+        auto tempSequence = reader2->readData(file, this);
+        for (auto&& data2 : *tempSequence) {
+            data2->template setMetaData<StringMetaData>(fileMetaData, file.generic_string());
+            sequence_->push_back(data2);
+        }
+    } else {
+        throw DataReaderException(SourceContext{}, "Could not find a data reader for file: {}",
+                                  file);
+    }
+}
+
+template <typename Conf>
 void SequenceSource<Conf>::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
     sequence_ = std::make_shared<Sequence>();
 
-    auto files = filesystem::getDirectoryContents(folder_.get());
-    for (auto f : files) {
+    const auto files = filesystem::getDirectoryContents(folder_.get());
+    for (const auto& f : files) {
         auto file = folder_.get() / f;
         if (filesystem::wildcardStringMatch(filter_, file.generic_string())) {
             try {
-                if (auto reader1 = rf_->getReaderForTypeAndExtension<Type>(file)) {
-                    auto data1 = reader1->readData(file, this);
-                    data1->template setMetaData<StringMetaData>(fileMetaData,
-                                                                file.generic_string());
-                    sequence_->push_back(data1);
-
-                } else if (auto reader2 = rf_->getReaderForTypeAndExtension<Sequence>(file)) {
-                    auto sequence = reader2->readData(file, this);
-                    for (auto&& data2 : *sequence) {
-                        data2->template setMetaData<StringMetaData>(fileMetaData,
-                                                                    file.generic_string());
-                        sequence_->push_back(data2);
-                    }
-                } else {
-                    log::error("Could not find a data reader for file: {}", file);
-                    sequence_.reset();
-                    loadingFailed_ = true;
-                    isReady_.update();
-                    break;
-                }
+                loadAndAddToSequence(file, sequence_);
             } catch (const DataReaderException& e) {
                 log::exception(e);
                 sequence_.reset();

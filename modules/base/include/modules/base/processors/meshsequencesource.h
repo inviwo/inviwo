@@ -49,7 +49,7 @@ struct MeshConf {
     static constexpr auto plural = "es";
     static constexpr size_t dim = 3;
 
-    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {
+    static void updateForNew(Info& info, const Type& data, util::OverwriteState) {
         info.updateForNewMesh(data);
     }
 };

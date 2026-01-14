@@ -29,6 +29,4 @@
 
 #include <modules/base/processors/meshsequencesource.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

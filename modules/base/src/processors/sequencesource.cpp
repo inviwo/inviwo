@@ -34,7 +34,7 @@ namespace inviwo {
 std::optional<std::filesystem::path> util::getFirstFileInFolder(const std::filesystem::path& folder,
                                                                 const std::string& filter) {
     auto files = filesystem::getDirectoryContents(folder);
-    for (auto f : files) {
+    for (const auto& f : files) {
         auto file = folder / f;
         if (filesystem::wildcardStringMatch(filter, file.generic_string())) {
             return file;
