@@ -231,7 +231,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 
-int BaseGLModule::getVersion() const { return 11; }
+int BaseGLModule::getVersion() const { return 12; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -618,6 +618,39 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                                                  "zeroCentered", "signNormalized");
             res |= xml::renamePropertyIdentifier(root, "org.inviwo.ImageNormalization",
                                                  "zeroCentered", "signNormalized");
+            [[fallthrough]];
+        }
+        case 11: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Processor") return true;
+                const auto& type = node->GetAttribute("type");
+
+                if (type == "org.inviwo.RowLayout") {
+                    node->SetAttribute("type", "org.inviwo.ColumnLayout");
+                    node->SetAttribute("displayName", "Column Layout");
+
+                    if (auto* splitters =
+                            xml::getElement(node, "Properties/Property&identifier=splitters")) {
+                        splitters->SetAttribute("identifier", "horizontalSplitters");
+                    }
+                }
+
+                if (type == "org.inviwo.ColumnLayout") {
+                    node->SetAttribute("type", "org.inviwo.RowLayout");
+                    node->SetAttribute("displayName", "Row Layout");
+
+                    if (auto* splitters =
+                            xml::getElement(node, "Properties/Property&identifier=splitters")) {
+                        splitters->SetAttribute("identifier", "verticalSplitters");
+                    }
+                }
+
+                res = true;
+                return true;
+            }};
+            conv.convert(root);
+
             return res;
         }
 

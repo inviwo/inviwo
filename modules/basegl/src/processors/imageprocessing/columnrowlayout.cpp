@@ -205,8 +205,7 @@ const std::vector<std::shared_ptr<const Image>>& Input::getData() {
     return std::visit([&](auto& i) -> decltype(auto) { return i.getData(); }, input_);
 }
 
-void Input::propagateSizes(ViewManager& vm);
-{
+void Input::propagateSizes(ViewManager& vm) {
     std::visit([&](auto& i) { i.propagateSizes(vm); }, input_);
 }
 
@@ -278,7 +277,7 @@ bool SplitterPositions::updateSize(size_t newSize) {
     for (size_t i = 0; i < newSize; ++i) {
         if (splitters_.size() <= i) {
             auto* prop = new FloatProperty{
-                fmt::format("splitter{}", i + 1), fmt::format("Splitter {}", i + 1),
+                fmt::format("splitter{}", i), fmt::format("Splitter {}", i + 1),
                 OrdinalPropertyState<float>{
                     .value = static_cast<float>(i + 1) / static_cast<float>(newSize + 1),
                     .min = 0.0f,
@@ -533,12 +532,12 @@ const ProcessorInfo ColumnLayout::processorInfo_{
     "Image Operation",          // Category
     CodeState::Stable,          // Code state
     Tags::GL | Tag("Layout"),   // Tags
-    "Horizontal layout which puts multiple input images next to each other. "
+    "Vertical layout which puts multiple input images on top of each other. "
     "Interactions are forwarded to the respective areas."_help,
 };
 const ProcessorInfo& ColumnLayout::getProcessorInfo() const { return processorInfo_; }
 ColumnLayout::ColumnLayout() : Layout() {}
-ivec2 ColumnLayout::getGrid(size_t inputs) const { return {inputs, 1}; }
+ivec2 ColumnLayout::getGrid(size_t inputs) const { return {1, inputs}; }
 
 const ProcessorInfo RowLayout::processorInfo_{
     "org.inviwo.RowLayout",    // Class identifier
@@ -551,7 +550,7 @@ const ProcessorInfo RowLayout::processorInfo_{
 };
 const ProcessorInfo& RowLayout::getProcessorInfo() const { return processorInfo_; }
 RowLayout::RowLayout() : Layout() {}
-ivec2 RowLayout::getGrid(size_t inputs) const { return {1, inputs}; }
+ivec2 RowLayout::getGrid(size_t inputs) const { return {inputs, 1}; }
 
 const ProcessorInfo GridLayout::processorInfo_{
     "org.inviwo.GridLayout",   // Class identifier
