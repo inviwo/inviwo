@@ -230,6 +230,11 @@ bool contains(T& cont, const V& elem) {
     return std::ranges::find(cont, elem) != std::ranges::end(cont);
 }
 
+template <typename V>
+bool contains(std::initializer_list<V>& cont, const V& elem) {
+    return std::ranges::find(cont, elem) != std::ranges::end(cont);
+}
+
 template <typename T, typename Pred>
 bool contains_if(T& cont, Pred pred) {
     return std::ranges::find_if(cont, pred) != std::ranges::end(cont);
@@ -237,6 +242,11 @@ bool contains_if(T& cont, Pred pred) {
 
 template <typename T, typename V>
 bool contains(const T& cont, const V& elem) {
+    return std::ranges::find(cont, elem) != std::ranges::end(cont);
+}
+
+template <typename V>
+bool contains(const std::initializer_list<V>& cont, const V& elem) {
     return std::ranges::find(cont, elem) != std::ranges::end(cont);
 }
 
