@@ -436,9 +436,9 @@ NumberWidget<T>::getPercentageBar() const {
     }();
 
     std::optional<double> percentage;
-    if (state == PercentageBar::Symmetric) {
+    if (state == PercentageBar::Symmetric && maxValue_ != T{0}) {
         percentage = static_cast<double>(value_) / static_cast<double>(maxValue_);
-    } else if (state == PercentageBar::Regular) {
+    } else if (state == PercentageBar::Regular && maxValue_ != minValue_) {
         percentage =
             static_cast<double>(value_ - minValue_) / static_cast<double>(maxValue_ - minValue_);
     }
