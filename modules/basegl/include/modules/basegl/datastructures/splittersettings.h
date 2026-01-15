@@ -37,13 +37,10 @@ namespace inviwo {
 
 namespace splitter {
 
-enum class Direction {
-    Vertical = 0,
-    Horizontal = 1 << 0
-};
+enum class Direction : std::uint8_t { Vertical = 0, Horizontal = 1 << 0 };
 using Directions = flags::flags<Direction>;
 
-enum class Style { Handle, Divider, Line, Invisible };
+enum class Style : std::uint8_t { Handle, Divider, Line, Invisible };
 
 }  // namespace splitter
 

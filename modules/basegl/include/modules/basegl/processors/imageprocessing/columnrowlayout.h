@@ -55,13 +55,13 @@ namespace layout {
 enum class InputMode : std::uint8_t { Multi, Sequence };
 
 struct IVW_MODULE_BASEGL_API MultiInput {
-    explicit MultiInput(std::function<void(bool)> update);
+    explicit MultiInput(const std::function<void(bool)>& update);
 
     void addPorts(Processor* p);
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateEvent(ResizeEvent* event, ViewManager& vm);
+    void propagateSizes(ViewManager& vm);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
@@ -72,16 +72,16 @@ private:
 };
 
 struct IVW_MODULE_BASEGL_API SequenceInput {
-    explicit SequenceInput(std::function<void(bool)> update);
+    explicit SequenceInput(const std::function<void(bool)>& update);
 
     void addPorts(Processor* p);
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateEvent(ResizeEvent* event, ViewManager& vm);
+    void propagateSizes(ViewManager& vm);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
-    size_t indexOf(Outport* to) const;
+    static size_t indexOf(Outport*);
 
 private:
     DataInport<DataSequence<Image>> inport;
@@ -89,18 +89,18 @@ private:
 };
 
 struct IVW_MODULE_BASEGL_API Input {
-    explicit Input(std::function<void(bool)> update);
+    explicit Input(const std::function<void(bool)>& update);
 
     void addPorts(Processor* p);
     void removePorts(Processor* p);
     size_t size() const;
     const std::vector<std::shared_ptr<const Image>>& getData();
-    void propagateEvent(ResizeEvent* event, ViewManager& vm);
+    void propagateSizes(ViewManager& vm);
     void propagateEvent(Event* event, size_t index);
     void propagateEvent(Event* event, Processor* p, Outport* source);
     size_t indexOf(Outport* to) const;
 
-    void setMode(Processor* p, InputMode mode, std::function<void(bool)> update);
+    void setMode(Processor* p, InputMode mode, const std::function<void(bool)>& update);
 
 private:
     std::variant<MultiInput, SequenceInput> input_;
@@ -116,8 +116,12 @@ struct IVW_MODULE_BASEGL_API SplitterPositions {
     }
 
     float position(size_t i) const { return i >= size() ? 1.0f : get(i)->get(); }
-    FloatProperty* get(size_t i) { return static_cast<FloatProperty*>(splitters_[i]); }
+    FloatProperty* get(size_t i) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+        return static_cast<FloatProperty*>(splitters_[i]);
+    }
     const FloatProperty* get(size_t i) const {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         return static_cast<const FloatProperty*>(splitters_[i]);
     }
     void set(size_t i, float pos) {
@@ -138,6 +142,7 @@ private:
     bool isEnforcing_;
 
     static constexpr auto toFloat = [](const Property* prop) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         return static_cast<const FloatProperty*>(prop);
     };
     static constexpr auto visible = [](const Property* prop) { return prop->getVisible(); };
@@ -149,6 +154,11 @@ private:
 class IVW_MODULE_BASEGL_API Layout : public Processor {
 public:
     explicit Layout();
+    Layout(const Layout&) = delete;
+    Layout(Layout&&) = delete;
+    Layout& operator=(const Layout&) = delete;
+    Layout& operator=(Layout&&) = delete;
+
     virtual ~Layout() = default;
 
     virtual void process() override;
@@ -185,6 +195,11 @@ protected:
 class IVW_MODULE_BASEGL_API ColumnLayout : public Layout {
 public:
     ColumnLayout();
+    ColumnLayout(const ColumnLayout&) = delete;
+    ColumnLayout(ColumnLayout&&) = delete;
+    ColumnLayout& operator=(const ColumnLayout&) = delete;
+    ColumnLayout& operator=(ColumnLayout&&) = delete;
+
     virtual ~ColumnLayout() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -197,6 +212,10 @@ private:
 class IVW_MODULE_BASEGL_API RowLayout : public Layout {
 public:
     RowLayout();
+    RowLayout(const RowLayout&) = delete;
+    RowLayout(RowLayout&&) = delete;
+    RowLayout& operator=(const RowLayout&) = delete;
+    RowLayout& operator=(RowLayout&&) = delete;
     virtual ~RowLayout() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -209,6 +228,10 @@ private:
 class IVW_MODULE_BASEGL_API GridLayout : public Layout {
 public:
     GridLayout();
+    GridLayout(const GridLayout&) = delete;
+    GridLayout(GridLayout&&) = delete;
+    GridLayout& operator=(const GridLayout&) = delete;
+    GridLayout& operator=(GridLayout&&) = delete;
     virtual ~GridLayout() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

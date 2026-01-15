@@ -78,10 +78,11 @@ class Deserializer;
 
 namespace layout {
 
-MultiInput::MultiInput(std::function<void(bool)> update) : inport("inport") {
+MultiInput::MultiInput(const std::function<void(bool)>& update) : inport("inport") {
     inport.setIsReadyUpdater([this]() {
         // Ports with dimensions (1,1) or less are considered to be inactive
         return inport.isConnected() && util::all_of(inport.getConnectedOutports(), [](Outport* p) {
+                   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
                    auto* ip = static_cast<ImageOutport*>(p);
                    return (ip->hasData() &&
                            glm::any(glm::lessThanEqual(ip->getDimensions(), size2_t(1))))
@@ -105,12 +106,12 @@ const std::vector<std::shared_ptr<const Image>>& MultiInput::getData() {
     return data;
 }
 
-void MultiInput::propagateEvent(ResizeEvent* event, ViewManager& vm) {
+void MultiInput::propagateSizes(ViewManager& vm) {
     const auto& outports = inport.getConnectedOutports();
-    for (size_t i = 0; i < vm.size(); ++i) {
-        if (!vm[i].empty() && i < outports.size()) {
-            ResizeEvent e{vm[i].size};
-            inport.propagateEvent(&e, outports[i]);
+    for (auto&& [view, outport] : std::views::zip(vm.getViews(), outports)) {
+        if (!view.empty()) {
+            ResizeEvent e{view.size};
+            inport.propagateEvent(&e, outport);
         }
     }
 }
@@ -130,11 +131,11 @@ void MultiInput::propagateEvent(Event* event, Processor* p, Outport* source) {
 
 size_t MultiInput::indexOf(Outport* to) const {
     const auto& ports = inport.getConnectedOutports();
-    auto portIt = std::find(ports.begin(), ports.end(), to);
+    auto portIt = std::ranges::find(ports, to);
     return static_cast<size_t>(std::distance(ports.begin(), portIt));
 }
 
-SequenceInput::SequenceInput(std::function<void(bool)> update) : inport("inport") {
+SequenceInput::SequenceInput(const std::function<void(bool)>& update) : inport("inport") {
     inport.setIsReadyUpdater([this]() {
         return (inport.isConnected() && util::all_of(inport.getConnectedOutports(),
                                                      [](Outport* p) { return p->isReady(); }));
@@ -163,7 +164,7 @@ const std::vector<std::shared_ptr<const Image>>& SequenceInput::getData() {
     return data;
 }
 
-void SequenceInput::propagateEvent(ResizeEvent* event, ViewManager& vm) {
+void SequenceInput::propagateSizes(ViewManager& vm) {
     const auto max = std::ranges::fold_left(
         vm.getViews() | std::views::transform([](const auto& v) { return v.size; }), ivec2{1, 1},
         [](const ivec2& a, const ivec2& b) { return glm::max(a, b); });
@@ -184,10 +185,10 @@ void SequenceInput::propagateEvent(Event* event, Processor* p, Outport* source) 
     }
 }
 
-size_t SequenceInput::indexOf(Outport* to) const { return 0; }
+size_t SequenceInput::indexOf(Outport*) { return 0; }
 
-Input::Input(std::function<void(bool)> update)
-    : input_{std::in_place_type_t<MultiInput>{}, std::move(update)} {}
+Input::Input(const std::function<void(bool)>& update)
+    : input_{std::in_place_type_t<MultiInput>{}, update} {}
 
 void Input::addPorts(Processor* p) {
     std::visit([&](auto& i) { i.addPorts(p); }, input_);
@@ -204,8 +205,9 @@ const std::vector<std::shared_ptr<const Image>>& Input::getData() {
     return std::visit([&](auto& i) -> decltype(auto) { return i.getData(); }, input_);
 }
 
-void Input::propagateEvent(ResizeEvent* event, ViewManager& vm) {
-    std::visit([&](auto& i) { i.propagateEvent(event, vm); }, input_);
+void Input::propagateSizes(ViewManager& vm);
+{
+    std::visit([&](auto& i) { i.propagateSizes(vm); }, input_);
 }
 
 void Input::propagateEvent(Event* event, size_t index) {
@@ -220,16 +222,16 @@ size_t Input::indexOf(Outport* to) const {
     return std::visit([&](auto& i) { return i.indexOf(to); }, input_);
 }
 
-void Input::setMode(Processor* p, InputMode mode, std::function<void(bool)> update) {
+void Input::setMode(Processor* p, InputMode mode, const std::function<void(bool)>& update) {
     if (input_.index() == static_cast<size_t>(mode)) return;
 
     removePorts(p);
     switch (mode) {
         case InputMode::Multi:
-            input_.emplace<MultiInput>(std::move(update));
+            input_.emplace<MultiInput>(update);
             break;
         case InputMode::Sequence:
-            input_.emplace<SequenceInput>(std::move(update));
+            input_.emplace<SequenceInput>(update);
             break;
     }
     addPorts(p);
@@ -275,10 +277,16 @@ bool SplitterPositions::updateSize(size_t newSize) {
 
     for (size_t i = 0; i < newSize; ++i) {
         if (splitters_.size() <= i) {
-            auto* prop = new FloatProperty(
+            auto* prop = new FloatProperty{
                 fmt::format("splitter{}", i + 1), fmt::format("Splitter {}", i + 1),
-                {(i + 1) / static_cast<float>(newSize + 1), 0.0f, ConstraintBehavior::Immutable,
-                 1.0f, ConstraintBehavior::Immutable, 0.01f, InvalidationLevel::InvalidOutput});
+                OrdinalPropertyState<float>{
+                    .value = static_cast<float>(i + 1) / static_cast<float>(newSize + 1),
+                    .min = 0.0f,
+                    .minConstraint = ConstraintBehavior::Immutable,
+                    .max = 1.0f,
+                    .maxConstraint = ConstraintBehavior::Immutable,
+                    .increment = 0.01f,
+                    .invalidationLevel = InvalidationLevel::InvalidOutput}};
             prop->onChange([i, this]() { enforceOrder(i); });
             splitters_.addProperty(prop);
         }
@@ -297,7 +305,8 @@ void SplitterPositions::spaceEvenly() {
     const auto minSpacing = minSpacing_();
 
     for (size_t i = 0; i < size(); i++) {
-        set(i, std::max((i + 1) * minSpacing, (i + 1) / static_cast<float>(size() + 1)));
+        set(i, std::max(static_cast<float>(i + 1) * minSpacing,
+                        static_cast<float>(i + 1) / static_cast<float>(size() + 1)));
     }
 }
 
@@ -336,9 +345,15 @@ Layout::Layout()
     , minWidth_("minWidth", "Minimum Width (px)", 10, 0, 4096, 1, InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox)
     , horizontalSplitters_("horizontalSplitters", "Horizontal Splits",
-                           [this]() { return static_cast<float>(minWidth_.get()) / currentDim_.x; })
+                           [this]() {
+                               return static_cast<float>(minWidth_.get()) /
+                                      static_cast<float>(currentDim_.x);
+                           })
     , verticalSplitters_("verticalSplitters", "Vertical Splits",
-                         [this]() { return static_cast<float>(minWidth_.get()) / currentDim_.y; })
+                         [this]() {
+                             return static_cast<float>(minWidth_.get()) /
+                                    static_cast<float>(currentDim_.y);
+                         })
     , horizontalRenderer_(this)
     , verticalRenderer_(this)
     , splitEvenly_{"splitEvenly", "Split Evenly",
@@ -405,13 +420,13 @@ void Layout::process() {
     glViewport(0, 0, dim.x, dim.y);
 
     if (splitterSettings_.enabled()) {
-        splits_.clear();
-        splits_.append_range(horizontalSplitters_.splits());
+        auto hs = horizontalSplitters_.splits();
+        splits_.assign(hs.begin(), hs.end());
         horizontalRenderer_.render(splitterSettings_, splitter::Direction::Horizontal, splits_,
                                    outport_.getDimensions());
 
-        splits_.clear();
-        splits_.append_range(verticalSplitters_.splits());
+        auto vs = verticalSplitters_.splits();
+        splits_.assign(vs.begin(), vs.end());
         verticalRenderer_.render(splitterSettings_, splitter::Direction::Vertical, splits_,
                                  outport_.getDimensions());
     }
@@ -430,7 +445,7 @@ void Layout::propagateEvent(Event* event, Outport* source) {
     if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
         currentDim_ = resizeEvent->size();
         calculateViews(currentDim_);
-        input_.propagateEvent(resizeEvent, viewManager_);
+        input_.propagateSizes(viewManager_);
 
     } else {
         auto propagated = viewManager_.propagateEvent(
@@ -480,16 +495,20 @@ void Layout::updateSplitters(bool connect) {
 
 void Layout::calculateViews(ivec2 imgSize) {
     std::vector<float> xpos;
-    xpos.emplace_back(0.0f);
-    xpos.append_range(verticalSplitters_.splits());
-    xpos.emplace_back(1.0f);
-
+    {
+        xpos.emplace_back(0.0f);
+        auto vs = verticalSplitters_.splits();
+        xpos.insert(xpos.end(), vs.begin(), vs.end());
+        xpos.emplace_back(1.0f);
+    }
     std::vector<float> ypos;
-    ypos.emplace_back(1.0f);
-    ypos.append_range(horizontalSplitters_.splits() |
-                      std::views::transform([](float y) { return 1.0f - y; }));
-    ypos.emplace_back(0.0f);
-
+    {
+        ypos.emplace_back(1.0f);
+        auto hs =
+            horizontalSplitters_.splits() | std::views::transform([](float y) { return 1.0f - y; });
+        ypos.insert(ypos.end(), hs.begin(), hs.end());
+        ypos.emplace_back(0.0f);
+    }
     viewManager_.clear();
     for (auto&& [xStart, xStop] : std::views::zip(xpos, xpos | std::views::drop(1))) {
         for (auto&& [yStop, yStart] : std::views::zip(ypos, ypos | std::views::drop(1))) {
