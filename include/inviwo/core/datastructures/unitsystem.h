@@ -159,12 +159,14 @@ constexpr std::array<UnitDesc, 4> atomic = {{
     {.unit=elementary_charge,                   .name="elementary charge",  .abbr="e",      .flags=UnitFlag::None}
 }};
 
-constexpr std::array<UnitDesc, 4> astronomical = {{
+constexpr std::array<UnitDesc, 6> astronomical = {{
     {.unit=units::precise::distance::parsec,  .name="parsec",            .abbr="pc", .flags=UnitFlag::None},
     {.unit=units::precise::distance::au,      .name="astronomical unit", .abbr="au", .flags=UnitFlag::None},
     {.unit=units::precise::distance::ly,      .name="light-year",        .abbr="ly", .flags=UnitFlag::None},
     {.unit=units::precise_unit{1e-26, units::precise::W / units::precise::m / units::precise::m / units::precise::Hz},
                                               .name="Jansky",            .abbr="Jy", .flags=UnitFlag::UsesPrefix},
+    {.unit=units::precise::angle::arcmin,     .name="arcminute",         .abbr="'",  .flags=UnitFlag::None},
+    {.unit=units::precise::angle::arcsec,     .name="arcsecond",         .abbr="\"", .flags=UnitFlag::None},
 }};
 
 
