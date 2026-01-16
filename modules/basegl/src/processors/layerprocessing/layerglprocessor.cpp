@@ -51,7 +51,6 @@ LayerGLProcessor::LayerGLProcessor(Shader shader)
     , shader_{std::move(shader)} {
 
     addPorts(inport_, outport_);
-    addProperty(enabled_);
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 

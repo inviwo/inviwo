@@ -49,6 +49,8 @@ const ProcessorInfo LayerInvert::processorInfo_{
 
 const ProcessorInfo& LayerInvert::getProcessorInfo() const { return processorInfo_; }
 
-LayerInvert::LayerInvert() : LayerGLProcessor{utilgl::findShaderResource("img_invert.frag")} {}
+LayerInvert::LayerInvert() : LayerGLProcessor{utilgl::findShaderResource("img_invert.frag")} {
+    addProperty(enabled_);
+}
 
 }  // namespace inviwo

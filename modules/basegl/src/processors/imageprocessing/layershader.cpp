@@ -172,8 +172,8 @@ LayerShader::LayerShader()
     valueRange_.comp.addProperties(valueRange_.input, valueRange_.mode, valueRange_.output);
     valueAxis_.comp.addProperties(valueAxis_.input, valueAxis_.mode, valueAxis_.output);
 
-    addProperties(fragmentShaderSource_, inputFormat_, format_, channels_, dataRange_.comp,
-                  valueRange_.comp, valueAxis_.comp);
+    addProperties(enabled_, fragmentShaderSource_, inputFormat_, format_, channels_,
+                  dataRange_.comp, valueRange_.comp, valueAxis_.comp);
 
     inputFormat_.setReadOnly(true);
     dataRange_.input.setReadOnly(true);
