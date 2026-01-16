@@ -30,48 +30,47 @@
 #include <modules/oit/processors/meshrasterizer.h>
 
 #include <inviwo/core/algorithm/boundingbox.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for IndexBuffer
-#include <inviwo/core/datastructures/data.h>                            // for noData
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for Connectivit...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh:...
-#include <inviwo/core/ports/datainport.h>                               // for DataInport
-#include <inviwo/core/ports/meshport.h>                                 // for MeshFlatMul...
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::GL
-#include <inviwo/core/properties/boolcompositeproperty.h>               // for BoolComposi...
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/buttonproperty.h>                      // for ButtonProperty
-#include <inviwo/core/properties/compositeproperty.h>                   // for CompositePr...
-#include <inviwo/core/properties/invalidationlevel.h>                   // for Invalidatio...
-#include <inviwo/core/properties/listproperty.h>                        // for ListProperty
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for IntProperty
-#include <inviwo/core/properties/property.h>                            // for Property
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySem...
-#include <inviwo/core/properties/transferfunctionproperty.h>            // for TransferFun...
-#include <inviwo/core/util/document.h>                                  // for Document
-#include <inviwo/core/util/glmmat.h>                                    // for mat4
-#include <inviwo/core/util/glmvec.h>                                    // for vec4, ivec2
-#include <inviwo/core/util/logcentral.h>                                // for LogCentral
-#include <inviwo/core/util/rendercontext.h>                             // for RenderContext
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <modules/oit/algorithm/calcnormals.h>                          // for CalculateMe...
-#include <modules/oit/datastructures/halfedges.h>                       // for HalfEdges
-#include <modules/oit/datastructures/transformedrasterization.h>        // for Transformed...
-#include <modules/opengl/geometry/meshgl.h>                             // for MeshGL
-#include <modules/opengl/image/layergl.h>                               // for LayerGL
-#include <modules/opengl/inviwoopengl.h>                                // for GL_BACK
-#include <modules/opengl/openglutils.h>                                 // for BlendModeState
-#include <modules/opengl/rendering/meshdrawergl.h>                      // for MeshDrawerG...
-#include <modules/opengl/shader/shader.h>                               // for Shader, Sha...
-#include <modules/opengl/shader/shaderobject.h>                         // for ShaderObject
-#include <modules/opengl/shader/shaderutils.h>                          // for addShaderDe...
-#include <modules/opengl/texture/textureunit.h>                         // for TextureUnit
+#include <inviwo/core/datastructures/buffer/buffer.h>             // for IndexBuffer
+#include <inviwo/core/datastructures/data.h>                      // for noData
+#include <inviwo/core/datastructures/geometry/geometrytype.h>     // for Connectivit...
+#include <inviwo/core/datastructures/geometry/mesh.h>             // for Mesh, Mesh:...
+#include <inviwo/core/ports/datainport.h>                         // for DataInport
+#include <inviwo/core/ports/meshport.h>                           // for MeshFlatMul...
+#include <inviwo/core/processors/processor.h>                     // for Processor
+#include <inviwo/core/processors/processorinfo.h>                 // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                // for CodeState
+#include <inviwo/core/processors/processortags.h>                 // for Tags, Tags::GL
+#include <inviwo/core/properties/boolcompositeproperty.h>         // for BoolComposi...
+#include <inviwo/core/properties/boolproperty.h>                  // for BoolProperty
+#include <inviwo/core/properties/buttonproperty.h>                // for ButtonProperty
+#include <inviwo/core/properties/compositeproperty.h>             // for CompositePr...
+#include <inviwo/core/properties/invalidationlevel.h>             // for Invalidatio...
+#include <inviwo/core/properties/listproperty.h>                  // for ListProperty
+#include <inviwo/core/properties/optionproperty.h>                // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>               // for IntProperty
+#include <inviwo/core/properties/property.h>                      // for Property
+#include <inviwo/core/properties/propertysemantics.h>             // for PropertySem...
+#include <inviwo/core/properties/transferfunctionproperty.h>      // for TransferFun...
+#include <inviwo/core/util/document.h>                            // for Document
+#include <inviwo/core/util/glmmat.h>                              // for mat4
+#include <inviwo/core/util/glmvec.h>                              // for vec4, ivec2
+#include <inviwo/core/util/logcentral.h>                          // for LogCentral
+#include <inviwo/core/util/staticstring.h>                        // for operator+
+#include <modules/oit/algorithm/calcnormals.h>                    // for CalculateMe...
+#include <modules/oit/datastructures/halfedges.h>                 // for HalfEdges
+#include <modules/oit/datastructures/transformedrasterization.h>  // for Transformed...
+#include <modules/opengl/geometry/meshgl.h>                       // for MeshGL
+#include <modules/opengl/image/layergl.h>                         // for LayerGL
+#include <modules/opengl/inviwoopengl.h>                          // for GL_BACK
+#include <modules/opengl/openglutils.h>                           // for BlendModeState
+#include <modules/opengl/rendering/meshdrawergl.h>                // for MeshDrawerG...
+#include <modules/opengl/shader/shader.h>                         // for Shader, Sha...
+#include <modules/opengl/shader/shaderobject.h>                   // for ShaderObject
+#include <modules/opengl/shader/shaderutils.h>                    // for addShaderDe...
+#include <modules/opengl/texture/textureunit.h>                   // for TextureUnit
 
-#include <utility>        // for pair
-#include <variant>        // for visit, variant
+#include <utility>  // for pair
+#include <variant>  // for visit, variant
 
 #include <fmt/core.h>      // for format
 #include <glm/mat4x4.hpp>  // for operator*
@@ -142,9 +141,7 @@ MeshRasterizer::MeshRasterizer()
     , shader_{"fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag",
               Shader::Build::No} {
     // input and output ports
-    addPort(inport_).onChange([this]() { updateMeshes(); });
-
-    drawSilhouette_.onChange([this]() { updateMeshes(); });
+    addPort(inport_);
 
     addProperties(forceOpaque_, drawSilhouette_, silhouetteColor_, normalSource_,
                   normalComputationMode_, alphaSettings_, edgeSettings_, faceSettings_[0].show_,
@@ -156,7 +153,7 @@ MeshRasterizer::MeshRasterizer()
 
     alphaSettings_.visibilityDependsOn(forceOpaque_, [](const auto& p) { return !p.get(); });
 
-    auto edgeVis = [this](auto) {
+    auto edgeVis = [this](const auto&) {
         return drawSilhouette_.get() || faceSettings_[0].showEdges_.get() ||
                faceSettings_[1].showEdges_.get();
     };
@@ -351,7 +348,7 @@ MeshRasterizer::FaceSettings::FaceSettings(bool frontFace)
 }
 
 void MeshRasterizer::FaceSettings::copyFrontToBack() {
-    for (auto* src : frontPart_->show_) {
+    for (const auto* src : frontPart_->show_) {
         if (auto* dst = show_.getPropertyByIdentifier(src->getIdentifier())) {
             dst->set(src);
         }
@@ -424,7 +421,7 @@ void MeshRasterizer::setUniforms(Shader& shader) {
     // update face render settings
     for (size_t j = 0; j < faceSettings_.size(); ++j) {
         const std::string prefix = fmt::format("renderSettings[{}].", j);
-        auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
+        const auto& face = faceSettings_[faceSettings_[1].sameAsFrontFace_.get() ? 0 : j];
         face.setUniforms(shader_, prefix);
     }
 
@@ -441,6 +438,9 @@ void MeshRasterizer::setUniforms(Shader& shader) {
 }
 
 void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+    if (inport_.isChanged() || drawSilhouette_.isModified()) {
+        updateMeshes();
+    }
 
     if (!faceSettings_[0].show_ && !faceSettings_[1].show_) {
         outport_.setData(nullptr);
@@ -471,9 +471,15 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
     const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, forceOpaque_);
     const utilgl::DepthMaskState depthMask(forceOpaque_ ? GL_TRUE : GL_FALSE);
 
-    const utilgl::CullFaceState culling(!showFace[0] && showFace[1]   ? GL_FRONT
-                                        : showFace[0] && !showFace[1] ? GL_BACK
-                                                                      : GL_NONE);
+    const utilgl::CullFaceState culling([&showFace]() -> GLint {
+        if (!showFace[0] && showFace[1]) {
+            return GL_FRONT;
+        } else if (showFace[0] && !showFace[1]) {
+            return GL_BACK;
+        } else {
+            return GL_NONE;
+        }
+    }());
     const utilgl::BlendModeState blendModeState(forceOpaque_ ? GL_ONE : GL_SRC_ALPHA,
                                                 forceOpaque_ ? GL_ZERO : GL_ONE_MINUS_SRC_ALPHA);
 
@@ -491,8 +497,6 @@ void MeshRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTr
 }
 
 void MeshRasterizer::updateMeshes() {
-    RenderContext::getPtr()->activateDefaultRenderContext();
-
     enhancedMeshes_.clear();
     for (auto mesh : inport_) {
         std::shared_ptr<Mesh> copy = nullptr;
@@ -508,7 +512,7 @@ void MeshRasterizer::updateMeshes() {
 
             // add new index buffer with adjacency information
             copy->addIndices(
-                {DrawType::Triangles, ConnectivityType::Adjacency},
+                {.dt = DrawType::Triangles, .ct = ConnectivityType::Adjacency},
                 std::make_shared<IndexBuffer>(halfEdges.createIndexBufferWithAdjacency()));
 
             if (!meshHasAdjacency_) {
