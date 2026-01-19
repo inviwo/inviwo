@@ -182,11 +182,11 @@ template <>
 struct fmt::formatter<inviwo::Wrapping> : inviwo::FlagFormatter<inviwo::Wrapping> {};
 
 template <>
-struct fmt::formatter<inviwo::SwizzleMask> : inviwo::FlagsFormatter<inviwo::SwizzleMask> {};
+struct fmt::formatter<inviwo::SwizzleMask> : inviwo::FlagArrayFormatter<inviwo::SwizzleMask> {};
 template <>
-struct fmt::formatter<inviwo::Wrapping1D> : inviwo::FlagsFormatter<inviwo::Wrapping1D> {};
+struct fmt::formatter<inviwo::Wrapping1D> : inviwo::FlagArrayFormatter<inviwo::Wrapping1D> {};
 template <>
-struct fmt::formatter<inviwo::Wrapping2D> : inviwo::FlagsFormatter<inviwo::Wrapping2D> {};
+struct fmt::formatter<inviwo::Wrapping2D> : inviwo::FlagArrayFormatter<inviwo::Wrapping2D> {};
 template <>
-struct fmt::formatter<inviwo::Wrapping3D> : inviwo::FlagsFormatter<inviwo::Wrapping3D> {};
+struct fmt::formatter<inviwo::Wrapping3D> : inviwo::FlagArrayFormatter<inviwo::Wrapping3D> {};
 #endif
