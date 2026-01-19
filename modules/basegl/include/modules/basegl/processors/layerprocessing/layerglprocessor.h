@@ -101,9 +101,9 @@ protected:
 
     LayerInport inport_;
     LayerOutport outport_;
+    BoolProperty enabled_;
 
 private:
-    BoolProperty enabled_;
     LayerConfig config;
     Shader shader_;
     std::vector<std::pair<FrameBufferObject, std::shared_ptr<Layer>>> cache_;

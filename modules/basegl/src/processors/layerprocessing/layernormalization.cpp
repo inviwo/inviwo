@@ -65,7 +65,7 @@ LayerNormalization::LayerNormalization()
                    .set(InvalidationLevel::Valid)
                    .set("Maximum value of the input layer (read-only)"_help)} {
 
-    addProperties(normalizeIndividually_, signNormalized_, dataMin_, dataMax_);
+    addProperties(enabled_, normalizeIndividually_, signNormalized_, dataMin_, dataMax_);
     dataMin_.setReadOnly(true);
     dataMax_.setReadOnly(true);
 }

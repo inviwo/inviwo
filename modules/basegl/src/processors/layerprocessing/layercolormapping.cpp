@@ -59,7 +59,7 @@ LayerColorMapping::LayerColorMapping()
               {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)},
           }},
           &inport_) {
-    addProperties(channel_, transferFunction_);
+    addProperties(enabled_, channel_, transferFunction_);
 }
 
 void LayerColorMapping::preProcess(TextureUnitContainer& container, Shader& shader, const Layer&,
