@@ -32,13 +32,17 @@
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glm.h>
-#include <modules/opengl/texture/textureutils.h>
 
 #include <fmt/core.h>
+#include <algorithm>
+#include <ranges>
 
-namespace inviwo {
+namespace inviwo::plot {
 
 namespace {
 
@@ -59,20 +63,20 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
     // clang-format off
     constexpr std::array<std::array<AI, 4>, 3> meta =
         {{{
-            AI{{0, 4}, {dvec3{0, -1, 0}, dvec3{0, 0, -1}}},
-            AI{{1, 5}, {dvec3{0, -1, 0}, dvec3{0, 0,  1}}},
-            AI{{2, 6}, {dvec3{0, 0, -1}, dvec3{0, 1,  0}}},
-            AI{{3, 7}, {dvec3{0, 1,  0}, dvec3{0, 0,  1}}}
+            AI{.idx={0, 4}, .faceNormals={dvec3{0, -1, 0}, dvec3{0, 0, -1}}},
+            AI{.idx={1, 5}, .faceNormals={dvec3{0, -1, 0}, dvec3{0, 0,  1}}},
+            AI{.idx={2, 6}, .faceNormals={dvec3{0, 0, -1}, dvec3{0, 1,  0}}},
+            AI{.idx={3, 7}, .faceNormals={dvec3{0, 1,  0}, dvec3{0, 0,  1}}}
         },{
-            AI{{0, 2}, {dvec3{-1, 0, 0}, dvec3{0, 0, -1}}},
-            AI{{1, 3}, {dvec3{-1, 0, 0}, dvec3{0, 0,  1}}},
-            AI{{4, 6}, {dvec3{0, 0, -1}, dvec3{1, 0,  0}}},
-            AI{{5, 7}, {dvec3{1, 0,  0}, dvec3{0, 0,  1}}}
+            AI{.idx={0, 2}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0, 0, -1}}},
+            AI{.idx={1, 3}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0, 0,  1}}},
+            AI{.idx={4, 6}, .faceNormals={dvec3{0, 0, -1}, dvec3{1, 0,  0}}},
+            AI{.idx={5, 7}, .faceNormals={dvec3{1, 0,  0}, dvec3{0, 0,  1}}}
         },{
-            AI{{0, 1}, {dvec3{-1, 0, 0}, dvec3{0, -1, 0}}},
-            AI{{2, 3}, {dvec3{-1, 0, 0}, dvec3{0,  1, 0}}},
-            AI{{4, 5}, {dvec3{0, -1, 0}, dvec3{1,  0, 0}}},
-            AI{{6, 7}, {dvec3{1,  0, 0}, dvec3{0,  1, 0}}}
+            AI{.idx={0, 1}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0, -1, 0}}},
+            AI{.idx={2, 3}, .faceNormals={dvec3{-1, 0, 0}, dvec3{0,  1, 0}}},
+            AI{.idx={4, 5}, .faceNormals={dvec3{0, -1, 0}, dvec3{1,  0, 0}}},
+            AI{.idx={6, 7}, .faceNormals={dvec3{1,  0, 0}, dvec3{0,  1, 0}}}
         }}};
     // clang-format on
 
@@ -90,24 +94,22 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
         const auto normal = glm::dot(edge.faceNormals[0], viewDirection) > 0 ? edge.faceNormals[0]
                                                                              : edge.faceNormals[1];
         const auto axis = corners[edge.idx[1]] - corners[edge.idx[0]];
-        auto tickDir = glm::cross(axis, normal);
-        return tickDir * glm::sign(glm::dot(center - corners[edge.idx[1]], tickDir));
+        auto dir = glm::cross(axis, normal);
+        return dir * glm::sign(glm::dot(center - corners[edge.idx[1]], dir));
     };
 
     const auto find = [&](const std::array<AI, 4>& axis) -> AxisParams {
-        const auto min = *std::max_element(axis.begin(), axis.end(), [&](const AI& a, const AI& b) {
+        const auto& min = *std::ranges::max_element(axis, [&](const AI& a, const AI& b) {
             return (dist(a) + (onEdge(a) ? 0 : -100.0)) < (dist(b) + (onEdge(b) ? 0 : -100.0));
         });
 
-        return {corners[min.idx[0]], corners[min.idx[1]], tickDir(min)};
+        return {.start = corners[min.idx[0]], .stop = corners[min.idx[1]], .tickDir = tickDir(min)};
     };
 
     return {find(meta[0]), find(meta[1]), find(meta[2])};
 }
 
 }  // namespace
-
-namespace plot {
 
 Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
                                              DimsRangeMode useDimsRange)
@@ -169,10 +171,11 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
              false}
     , zAxis_{"zAxis", "Z Axis", "Axis properties for y"_help, AxisSettings::Orientation::Horizontal,
              false}
-    , camera_{"camera", "Camera", std::move(getBoundingBox)}
+    , camera_{"camera", "Camera", getBoundingBox}
     , trackball_{&camera_}
     , axisRenderers_{xAxis_, yAxis_, zAxis_}
-    , propertyUpdate_{false} {
+    , propertyUpdate_{false}
+    , getBoundingBox_{getBoundingBox ? std::optional{getBoundingBox} : std::nullopt} {
 
     rangeXaxis_.setSemantics(PropertySemantics::Text);
     rangeYaxis_.setSemantics(PropertySemantics::Text);
@@ -188,8 +191,16 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
         {"world", "Model & World Transform", AxisRangeMode::World},
         {"custom", "Custom", AxisRangeMode::Custom}};
     if (useDimsRange == DimsRangeMode::Yes) {
-        rangeOptions.insert(rangeOptions.begin(),
-                            {"dims", "Volume Dimensions (voxel)", AxisRangeMode::Dims});
+        rangeOptions.emplace(rangeOptions.begin(), "dims", "Volume Dimensions (voxel)",
+                             AxisRangeMode::Dims);
+    }
+    if (getBoundingBox_.has_value()) {
+        const std::array<OptionPropertyOption<AxisRangeMode>, 3> options = {{
+            {"dataBoundingBox", "Data Bounding Box", AxisRangeMode::DataBoundingBox},
+            {"modelBoundingBox", "Model Bounding Box", AxisRangeMode::ModelBoundingBox},
+            {"boundingBox", "World Bounding Box", AxisRangeMode::WorldBoundingBox},
+        }};
+        rangeOptions.insert(rangeOptions.end() - 1, std::begin(options), std::end(options));
     }
     rangeMode_.replaceOptions(rangeOptions);
 
@@ -197,8 +208,8 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
     customRanges_.setCollapsed(true);
 
     presets_.setSerializationMode(PropertySerializationMode::None);
-    presets_.onChange([&]() {
-        NetworkLock lock(&visibility_);
+    presets_.onChange([this]() {
+        const NetworkLock lock(&visibility_);
         if (presets_.getSelectedValue() == "all") {
             for (auto& p : visibleAxes_) {
                 p.set(true);
@@ -228,7 +239,7 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
     trackball_.setCollapsed(true);
 
     // initialize axes
-    for (auto property : {&xAxis_, &yAxis_, &zAxis_}) {
+    for (auto* property : {&xAxis_, &yAxis_, &zAxis_}) {
         property->majorTicks_.tickWidth_.set(1.5f);
         property->majorTicks_.style_.set(TickStyle::Outside);
 
@@ -236,10 +247,10 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
         property->minorTicks_.style_.set(TickStyle::Outside);
     }
 
-    auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
+    auto linkAxisRanges = [this](const DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
         auto func = [&]() {
             if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
-                util::KeepTrueWhileInScope b(&propertyUpdate_);
+                const util::KeepTrueWhileInScope b(&propertyUpdate_);
                 to.set(from.get());
             }
         };
@@ -258,7 +269,7 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
 
 void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& entity) {
 
-    const dmat4 m = entity.getCoordinateTransformer().getDataToWorldMatrix();
+    const dmat4 m = getDataToWorldMatrix(entity);
     const dmat3 nm = glm::transpose(glm::inverse(m));
     // the mean length of the three basis vectors is used for a relative axis offset (%)
     const double offset = axisOffset_.get() * xAxis_.getScalingFactor();
@@ -276,7 +287,7 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     if (visibility_.isChecked()) {  // automatic selection
         // transform camera to data space since findAxisPositions uses a uniform cube centered at
         // the origin to determine the visible faces
-        const mat4 trafo{entity.getCoordinateTransformer().getWorldToDataMatrix()};
+        const mat4 trafo{glm::inverse(m)};
         const auto axes =
             findAxisPositions(glm::normalize(vec3(trafo * vec4(camera_.getLookFrom(), 1.0f)) -
                                              vec3(trafo * vec4(camera_.getLookTo(), 1.0f))));
@@ -286,20 +297,20 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
     } else {
         constexpr std::array<AxisParams, 12> axes{{
             // x axis
-            {{0., 0., 0.}, {1., 0., 0.}, {0., 1., 1.}},
-            {{0., 1., 0.}, {1., 1., 0.}, {0., -1., 1.}},
-            {{0., 1., 1.}, {1., 1., 1.}, {0., -1., -1.}},
-            {{0., 0., 1.}, {1., 0., 1.}, {0., 1., -1.}},
+            {.start = {0., 0., 0.}, .stop = {1., 0., 0.}, .tickDir = {0., 1., 1.}},
+            {.start = {0., 1., 0.}, .stop = {1., 1., 0.}, .tickDir = {0., -1., 1.}},
+            {.start = {0., 1., 1.}, .stop = {1., 1., 1.}, .tickDir = {0., -1., -1.}},
+            {.start = {0., 0., 1.}, .stop = {1., 0., 1.}, .tickDir = {0., 1., -1.}},
             // y axis
-            {{0., 0., 0.}, {0., 1., 0.}, {1., 0., 1.}},
-            {{1., 0., 0.}, {1., 1., 0.}, {-1., 0., 1.}},
-            {{1., 0., 1.}, {1., 1., 1.}, {-1., 0., -1.}},
-            {{0., 0., 1.}, {0., 1., 1.}, {1., 0., -1.}},
+            {.start = {0., 0., 0.}, .stop = {0., 1., 0.}, .tickDir = {1., 0., 1.}},
+            {.start = {1., 0., 0.}, .stop = {1., 1., 0.}, .tickDir = {-1., 0., 1.}},
+            {.start = {1., 0., 1.}, .stop = {1., 1., 1.}, .tickDir = {-1., 0., -1.}},
+            {.start = {0., 0., 1.}, .stop = {0., 1., 1.}, .tickDir = {1., 0., -1.}},
             // z axis
-            {{0., 0., 0.}, {0., 0., 1.}, {1., 1., 0.}},
-            {{1., 0., 0.}, {1., 0., 1.}, {-1., 1., 0.}},
-            {{1., 1., 0.}, {1., 1., 1.}, {-1., -1., 0.}},
-            {{0., 1., 0.}, {0., 1., 1.}, {1., -1., 0.}},
+            {.start = {0., 0., 0.}, .stop = {0., 0., 1.}, .tickDir = {1., 1., 0.}},
+            {.start = {1., 0., 0.}, .stop = {1., 0., 1.}, .tickDir = {-1., 1., 0.}},
+            {.start = {1., 1., 0.}, .stop = {1., 1., 1.}, .tickDir = {-1., -1., 0.}},
+            {.start = {0., 1., 0.}, .stop = {0., 1., 1.}, .tickDir = {1., -1., 0.}},
         }};
         for (auto&& [i, axis] : util::enumerate(axes)) {
             if (!visibleAxes_[i].get()) continue;
@@ -310,10 +321,10 @@ void Axis3DProcessorHelper::renderAxes(size2_t outputDims, const SpatialEntity& 
 
 void Axis3DProcessorHelper::adjustScalingFactor(const SpatialEntity* entity) {
     if (entity) {
-        const mat4 m{entity->getCoordinateTransformer().getDataToWorldMatrix()};
+        const mat4 m{getDataToWorldMatrix(*entity)};
 
-        float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])}, &m,
-                        mode = offsetScaling_.get()]() {
+        const float factor = [l = vec3{glm::length(m[0]), glm::length(m[1]), glm::length(m[2])}, &m,
+                              mode = offsetScaling_.get()]() {
             switch (mode) {
                 case OffsetScaling::MinExtent:
                     return glm::compMin(l) / 100.0f;
@@ -342,7 +353,7 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
     dvec3 volDims(1.0);
     dvec3 offset(0.0);
     dvec3 basisLen(1.0);
-    mat4 worldTrafo{1.0f};
+    dmat4 worldTrafo{1.0f};
 
     if (entity) {
         for (size_t i = 0; i < 3; ++i) {
@@ -350,11 +361,11 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
         }
         offset = entity->getOffset();
 
-        worldTrafo = entity->getCoordinateTransformer().getDataToWorldMatrix();
+        worldTrafo = getDataToWorldMatrix(*entity);
 
         std::array<AxisProperty*, 3> axes = {&xAxis_, &yAxis_, &zAxis_};
         for (size_t i = 0; i < 3; ++i) {
-            if (auto axis = entity->getAxis(i)) {
+            if (const auto* axis = entity->getAxis(i)) {
                 util::updateDefaultState(axes[i]->captionSettings_.title_,
                                          fmt::format("{}{: [}", axis->name, axis->unit),
                                          util::OverwriteState::No);
@@ -365,37 +376,68 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
         }
     }
 
-    if (auto grid2d = dynamic_cast<const StructuredGridEntity<2>*>(entity)) {
+    if (const auto* grid2d = dynamic_cast<const StructuredGridEntity<2>*>(entity)) {
         volDims = dvec3(grid2d->getDimensions(), 0.0);
-    } else if (auto grid3d = dynamic_cast<const StructuredGridEntity<3>*>(entity)) {
+    } else if (const auto* grid3d = dynamic_cast<const StructuredGridEntity<3>*>(entity)) {
         volDims = dvec3(grid3d->getDimensions());
     }
 
-    util::KeepTrueWhileInScope b(&propertyUpdate_);
+    const util::KeepTrueWhileInScope b(&propertyUpdate_);
     switch (rangeMode_.get()) {
         case AxisRangeMode::Dims:
-            xAxis_.range_.set(dvec2(0.0, volDims.x));
-            yAxis_.range_.set(dvec2(0.0, volDims.y));
-            zAxis_.range_.set(dvec2(0.0, volDims.z));
+            xAxis_.range_.set(dvec2{0.0, volDims.x});
+            yAxis_.range_.set(dvec2{0.0, volDims.y});
+            zAxis_.range_.set(dvec2{0.0, volDims.z});
             break;
         case AxisRangeMode::Basis:
-            xAxis_.range_.set(dvec2(0.0, basisLen.x));
-            yAxis_.range_.set(dvec2(0.0, basisLen.y));
-            zAxis_.range_.set(dvec2(0.0, basisLen.z));
+            xAxis_.range_.set(dvec2{0.0, basisLen.x});
+            yAxis_.range_.set(dvec2{0.0, basisLen.y});
+            zAxis_.range_.set(dvec2{0.0, basisLen.z});
             break;
         case AxisRangeMode::BasisOffset:
-            xAxis_.range_.set(dvec2(offset.x, offset.x + basisLen.x));
-            yAxis_.range_.set(dvec2(offset.y, offset.y + basisLen.y));
-            zAxis_.range_.set(dvec2(offset.z, offset.z + basisLen.z));
+            xAxis_.range_.set(dvec2{offset.x, offset.x + basisLen.x});
+            yAxis_.range_.set(dvec2{offset.y, offset.y + basisLen.y});
+            zAxis_.range_.set(dvec2{offset.z, offset.z + basisLen.z});
             break;
         case AxisRangeMode::World:
-            xAxis_.range_.set(
-                dvec2(worldTrafo[3].x, worldTrafo[3].x + glm::length(vec3(worldTrafo[0]))));
-            yAxis_.range_.set(
-                dvec2(worldTrafo[3].y, worldTrafo[3].y + glm::length(vec3(worldTrafo[1]))));
-            zAxis_.range_.set(
-                dvec2(worldTrafo[3].z, worldTrafo[3].z + glm::length(vec3(worldTrafo[2]))));
+            xAxis_.range_.set(dvec2{worldTrafo[3].x, worldTrafo[3].x + glm::length(worldTrafo[0])});
+            yAxis_.range_.set(dvec2{worldTrafo[3].y, worldTrafo[3].y + glm::length(worldTrafo[1])});
+            zAxis_.range_.set(dvec2{worldTrafo[3].z, worldTrafo[3].z + glm::length(worldTrafo[2])});
             break;
+        case AxisRangeMode::DataBoundingBox: {
+            dmat4 m = getBoundingBox_.and_then([](auto&& func) { return func(); })
+                          .transform([](const mat4& bbox) { return dmat4{bbox}; })
+                          .value_or(worldTrafo);
+            if (entity) {
+                m = dmat4{entity->getCoordinateTransformer().getModelToDataMatrix()} * m;
+            }
+            xAxis_.range_.set(dvec2{m[3].x, m[3].x + glm::length(m[0])});
+            yAxis_.range_.set(dvec2{m[3].y, m[3].y + glm::length(m[1])});
+            zAxis_.range_.set(dvec2{m[3].z, m[3].z + glm::length(m[2])});
+            break;
+        }
+        case AxisRangeMode::ModelBoundingBox: {
+            dmat4 m = getBoundingBox_.and_then([](auto&& func) { return func(); })
+                          .transform([](const mat4& bbox) { return dmat4{bbox}; })
+                          .value_or(worldTrafo);
+            if (entity) {
+                m = glm::inverse(dmat4{entity->getWorldMatrix()}) * m;
+            }
+            xAxis_.range_.set(dvec2{m[3].x, m[3].x + glm::length(m[0])});
+            yAxis_.range_.set(dvec2{m[3].y, m[3].y + glm::length(m[1])});
+            zAxis_.range_.set(dvec2{m[3].z, m[3].z + glm::length(m[2])});
+            break;
+        }
+        case AxisRangeMode::WorldBoundingBox: {
+            const dmat4 m = getBoundingBox_.and_then([](auto&& func) { return func(); })
+                                .transform([](const mat4& bbox) { return dmat4{bbox}; })
+                                .value_or(worldTrafo);
+
+            xAxis_.range_.set(dvec2{m[3].x, m[3].x + glm::length(m[0])});
+            yAxis_.range_.set(dvec2{m[3].y, m[3].y + glm::length(m[1])});
+            zAxis_.range_.set(dvec2{m[3].z, m[3].z + glm::length(m[2])});
+            break;
+        }
         case AxisRangeMode::Custom:
             xAxis_.range_.set(rangeXaxis_.get());
             yAxis_.range_.set(rangeYaxis_.get());
@@ -408,6 +450,17 @@ void Axis3DProcessorHelper::adjustRanges(const SpatialEntity* entity) {
     customRanges_.setVisible(rangeMode_.getSelectedValue() == AxisRangeMode::Custom);
 }
 
-}  // namespace plot
+dmat4 Axis3DProcessorHelper::getDataToWorldMatrix(const SpatialEntity& entity) const {
+    const auto& coordinateTransformer = entity.getCoordinateTransformer();
+    const dmat4 m = coordinateTransformer.getDataToWorldMatrix();
+    using enum AxisRangeMode;
+    if (util::contains({DataBoundingBox, ModelBoundingBox, WorldBoundingBox}, rangeMode_.get())) {
+        return getBoundingBox_.and_then([](auto&& func) { return func(); })
+            .transform([](const mat4& bbox) { return dmat4{bbox}; })
+            .value_or(m);
+    } else {
+        return m;
+    }
+}
 
-}  // namespace inviwo
+}  // namespace inviwo::plot

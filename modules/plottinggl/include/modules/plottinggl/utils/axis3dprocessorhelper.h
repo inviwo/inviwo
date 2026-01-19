@@ -44,20 +44,28 @@
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 #include <tuple>
+#include <optional>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API Axis3DProcessorHelper {
 public:
-    enum class AxisRangeMode { Dims, Basis, BasisOffset, World, Custom };
-    enum class OffsetScaling { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
+    enum class AxisRangeMode : unsigned char {
+        Dims,
+        Basis,
+        BasisOffset,
+        World,
+        DataBoundingBox,
+        ModelBoundingBox,
+        WorldBoundingBox,
+        Custom
+    };
+    enum class OffsetScaling : unsigned char { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
 
-    enum class DimsRangeMode { No, Yes };
+    enum class DimsRangeMode : std::uint8_t { No, Yes };
 
-    Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
-                          DimsRangeMode useDimsRange = DimsRangeMode::No);
+    explicit Axis3DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
+                                   DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
@@ -98,9 +106,10 @@ public:
     std::array<AxisRenderer3D, 3> axisRenderers_;
 
 protected:
+    dmat4 getDataToWorldMatrix(const SpatialEntity& entity) const;
+
     bool propertyUpdate_;
+    std::optional<std::function<std::optional<mat4>()>> getBoundingBox_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot
