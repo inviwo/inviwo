@@ -96,19 +96,22 @@ $(function(){initNavTree('classinviwo_1_1plot_1_1Axis3DProcessorHelper.html','',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a030f6f53e0d651cf2447b7a26d21abf6" id="r_a030f6f53e0d651cf2447b7a26d21abf6"><td class="memItemLeft"><a id="a030f6f53e0d651cf2447b7a26d21abf6" name="a030f6f53e0d651cf2447b7a26d21abf6"></a>enum class &#160;</td><td class="memItemRight"><b>AxisRangeMode</b> { <br />
+<tr class="memitem:aec4cc0e604ddac50568d1721afbadef8" id="r_aec4cc0e604ddac50568d1721afbadef8"><td class="memItemLeft"><a id="aec4cc0e604ddac50568d1721afbadef8" name="aec4cc0e604ddac50568d1721afbadef8"></a>enum class &#160;</td><td class="memItemRight"><b>AxisRangeMode</b> : unsigned char { <br />
 &#160;&#160;<b>Dims</b>
 , <b>Basis</b>
 , <b>BasisOffset</b>
 , <b>World</b>
 , <br />
-&#160;&#160;<b>Custom</b>
+&#160;&#160;<b>DataBoundingBox</b>
+, <b>ModelBoundingBox</b>
+, <b>WorldBoundingBox</b>
+, <b>Custom</b>
 <br />
  }</td></tr>
-<tr class="memitem:a5f45c79c4f6114cfe686769b53ccf18d" id="r_a5f45c79c4f6114cfe686769b53ccf18d"><td class="memItemLeft"><a id="a5f45c79c4f6114cfe686769b53ccf18d" name="a5f45c79c4f6114cfe686769b53ccf18d"></a>enum class &#160;</td><td class="memItemRight"><b>DimsRangeMode</b> { <b>No</b>
+<tr class="memitem:aa4346b6a5cd616effda0c5efed5add32" id="r_aa4346b6a5cd616effda0c5efed5add32"><td class="memItemLeft"><a id="aa4346b6a5cd616effda0c5efed5add32" name="aa4346b6a5cd616effda0c5efed5add32"></a>enum class &#160;</td><td class="memItemRight"><b>DimsRangeMode</b> : std::uint8_t { <b>No</b>
 , <b>Yes</b>
  }</td></tr>
-<tr class="memitem:a013cf66e187b7ca5ed66fca3eb3e4f75" id="r_a013cf66e187b7ca5ed66fca3eb3e4f75"><td class="memItemLeft"><a id="a013cf66e187b7ca5ed66fca3eb3e4f75" name="a013cf66e187b7ca5ed66fca3eb3e4f75"></a>enum class &#160;</td><td class="memItemRight"><b>OffsetScaling</b> { <br />
+<tr class="memitem:aadcc9f1da42720c1dd933df0a159f03a" id="r_aadcc9f1da42720c1dd933df0a159f03a"><td class="memItemLeft"><a id="aadcc9f1da42720c1dd933df0a159f03a" name="aadcc9f1da42720c1dd933df0a159f03a"></a>enum class &#160;</td><td class="memItemRight"><b>OffsetScaling</b> : unsigned char { <br />
 &#160;&#160;<b>None</b>
 , <b>MinExtent</b>
 , <b>MaxExtent</b>
@@ -170,8 +173,15 @@ std::array&lt; <a class="el" href="classinviwo_1_1BoolProperty.html">BoolPropert
 <tr class="memitem:a2ad411c04c4f9df05a8f8970da742a3e" id="r_a2ad411c04c4f9df05a8f8970da742a3e"><td class="memItemLeft"><a id="a2ad411c04c4f9df05a8f8970da742a3e" name="a2ad411c04c4f9df05a8f8970da742a3e"></a>
 <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a>&#160;</td><td class="memItemRight"><b>zAxis_</b></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a66d11d4b4e963d918fed3adc05ca7f55" id="r_a66d11d4b4e963d918fed3adc05ca7f55"><td class="memItemLeft"><a id="a66d11d4b4e963d918fed3adc05ca7f55" name="a66d11d4b4e963d918fed3adc05ca7f55"></a>
+dmat4&#160;</td><td class="memItemRight"><b>getDataToWorldMatrix</b> (const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;entity) const</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:abd4a35b9f3aa9e94afb68410fdbefd20" id="r_abd4a35b9f3aa9e94afb68410fdbefd20"><td class="memItemLeft"><a id="abd4a35b9f3aa9e94afb68410fdbefd20" name="abd4a35b9f3aa9e94afb68410fdbefd20"></a>
+std::optional&lt; std::function&lt; std::optional&lt; mat4 &gt;()&gt; &gt;&#160;</td><td class="memItemRight"><b>getBoundingBox_</b></td></tr>
 <tr class="memitem:ac75284509414f2a0936b3d9ad91ea7f5" id="r_ac75284509414f2a0936b3d9ad91ea7f5"><td class="memItemLeft"><a id="ac75284509414f2a0936b3d9ad91ea7f5" name="ac75284509414f2a0936b3d9ad91ea7f5"></a>
 bool&#160;</td><td class="memItemRight"><b>propertyUpdate_</b></td></tr>
 </table>
