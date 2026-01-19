@@ -227,9 +227,18 @@ vec2 PropertyDistanceSorter::getPosition(const Processor* processor) {
 
 void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                        const std::filesystem::path& refPath) {
-    Serializer serializer(refPath);
+    std::vector<Processor*> selected;
+    util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
+        const auto* m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        return m->isSelected();
+    });
+    serializePartial(network, std::move(selected), os, refPath);
+}
 
-    detail::PartialProcessorNetwork ppc(network);
+void serializePartial(ProcessorNetwork* network, std::vector<Processor*> processors,
+                      std::ostream& os, const std::filesystem::path& refPath) {
+    Serializer serializer(refPath);
+    detail::PartialProcessorNetwork ppc(network, std::move(processors));
     serializer.serialize("ProcessorNetwork", ppc);
     serializer.writeFile(os);
 }
@@ -241,15 +250,15 @@ std::vector<Processor*> appendPartialProcessorNetwork(ProcessorNetwork* network,
     const NetworkLock lock(network);
     auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(is, refPath);
 
-    detail::PartialProcessorNetwork ppc(network, std::move(callback));
+    detail::PartialProcessorNetwork ppc(network, {}, std::move(callback));
     deserializer.deserialize("ProcessorNetwork", ppc);
 
     return ppc.getAddedProcessors();
 }
-
 detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* network,
+                                                         std::vector<Processor*> processors,
                                                          OffsetCallback callback)
-    : network_(network), callback_{std::move(callback)} {}
+    : network_(network), processors_{std::move(processors)}, callback_{std::move(callback)} {}
 
 std::vector<Processor*> detail::PartialProcessorNetwork::getAddedProcessors() const {
     return addedProcessors_;
@@ -275,19 +284,13 @@ struct PathPair : Serializable {
 }  // namespace
 
 void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
-    std::vector<Processor*> selected;
-    util::copy_if(network_->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-        const auto* m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
-        return m->isSelected();
-    });
-
     std::vector<NetworkEdge> internalConnections;
     std::vector<NetworkEdge> externalConnections;
     for (const auto& connection : network_->getConnections()) {
         const auto in = connection.getInport()->getProcessor();
         const auto out = connection.getOutport()->getProcessor();
-        if (util::contains(selected, in)) {
-            if (util::contains(selected, out)) {
+        if (util::contains(processors_, in)) {
+            if (util::contains(processors_, out)) {
                 internalConnections.emplace_back(connection);
             } else {
                 externalConnections.emplace_back(connection);
@@ -301,8 +304,8 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     for (const auto& link : network_->getLinks()) {
         const auto src = link.getSource()->getOwner()->getProcessor();
         const auto dst = link.getDestination()->getOwner()->getProcessor();
-        const auto srcInt = util::contains(selected, src);
-        const auto dstInt = util::contains(selected, dst);
+        const auto srcInt = util::contains(processors_, src);
+        const auto dstInt = util::contains(processors_, dst);
 
         if (srcInt && dstInt) {
             internalLinks.emplace_back(link);
@@ -314,7 +317,7 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     }
 
     s.serialize("ProcessorNetworkVersion", network_->getVersion());
-    s.serialize("Processors", selected, "Processor");
+    s.serialize("Processors", processors_, "Processor");
     s.serialize("InternalConnections", internalConnections, "Connection");
     s.serialize("ExternalConnections", externalConnections, "Connection");
     s.serialize("InternalPropertyLinks", internalLinks, "PropertyLink");
@@ -342,11 +345,16 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
             m->setSelected(false);
         }
 
-        for (auto& p : processors) {
-            addedProcessors_.push_back(p.get());
-        }
+        addedProcessors_ = processors | std::views::transform([](auto& p) { return p.get(); }) |
+                           std::ranges::to<std::vector>();
+
         if (callback_) {
-            const ivec2 offset = callback_(addedProcessors_);
+            const auto sources = externalConnections | std::views::transform([&](NetworkEdge& e) {
+                                     return network_->getOutport(e.srcPath)->getProcessor();
+                                 }) |
+                                 std::ranges::to<std::vector>();
+
+            const ivec2 offset = callback_(addedProcessors_, sources);
             offsetPosition(addedProcessors_, offset);
         }
 

@@ -39,6 +39,7 @@
 #include <inviwo/core/processors/processorpair.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/network/networkutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -52,6 +53,7 @@
 #include <warn/pop>
 
 #include <filesystem>
+#include <span>
 
 namespace inviwo {
 
@@ -59,6 +61,8 @@ class Inport;
 class Outport;
 class PortInspector;
 class ProcessorNetwork;
+class CompositeProcessor;
+class SequenceProcessor;
 class EditorGraphicsItem;
 class ProcessorGraphicsItem;
 class ProcessorOutportGraphicsItem;
@@ -77,6 +81,7 @@ class ConnectionOutDragHelper;
 class ConnectionInDragHelper;
 class LinkDragHelper;
 class TextLabelOverlay;
+class DataVisualizer;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -96,9 +101,12 @@ public:
     explicit NetworkEditor(InviwoMainWindow* mainWindow);
     virtual ~NetworkEditor() = default;
 
+    std::unique_ptr<QMimeData> copy(const QList<QGraphicsItem*>& items) const;
     std::unique_ptr<QMimeData> copy() const;
+    std::unique_ptr<QMimeData> cut(const QList<QGraphicsItem*>& items);
     std::unique_ptr<QMimeData> cut();
-    void paste(const QMimeData& data);
+    void paste(const QMimeData& mimeData);
+    void paste(const QMimeData& mimeData, const ivec2& position);
     void append(const std::filesystem::path& workspace);
     void selectAll();
     void deleteSelection();
@@ -144,6 +152,8 @@ public:
     void updateSceneSize();
     QRectF getProcessorsBoundingRect() const;
 
+    void ensureVisible(const std::vector<Processor*>& processors);
+
     static std::string getMimeTag();
     void resetAllTimeMeasurements();
 
@@ -165,6 +175,19 @@ protected:
     void deleteAndKeepConnections(ProcessorGraphicsItem* processor);
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
+    void addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* ogi);
+    void addVisualizer(DataVisualizer* vis, Outport* outport);
+    void addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem*);
+    void addCompositeMenuItems(QMenu& menu, const std::vector<Processor*>& selectedProcessors,
+                               const std::unordered_set<CompositeProcessor*>& selectedComposites);
+    void addSequenceMenuItems(QMenu& menu, const std::vector<Processor*>& selectedProcessors,
+                              const std::unordered_set<SequenceProcessor*>& selectedSequences);
+
+    static ivec2 findSpaceForProcessors(QPoint startPos, std::vector<Processor*> added,
+                                        std::vector<Processor*> current);
+
+    void addCopyPasteManuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
+                               const ivec2& position);
 
     // Override for tooltips
     virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
@@ -226,6 +249,12 @@ private:
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
 
     void deleteItems(QList<QGraphicsItem*> items);
+    std::unique_ptr<QMimeData> copyError(const QList<QGraphicsItem*>& items) const;
+
+    void paste(const QMimeData& mimeData, util::OffsetCallback offsetCallback);
+
+    static std::unique_ptr<QMimeData> createMineData(const std::string& content,
+                                                     std::span<const QString> mimetypes);
 
     using ProcessorMap = std::map<Processor*, ProcessorGraphicsItem*>;
     using ConnectionMap = std::map<PortConnection, ConnectionGraphicsItem*>;
@@ -244,8 +273,6 @@ private:
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
 
-    QList<QGraphicsItem*> clickedOnItems_;
-    std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 
     InviwoMainWindow* mainWindow_;

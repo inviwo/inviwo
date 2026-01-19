@@ -33,6 +33,7 @@
 #include <inviwo/core/network/lambdanetworkvisitor.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/compositeprocessor.h>
+#include <inviwo/core/processors/sequenceprocessor.h>
 #include <inviwo/core/processors/compositesink.h>
 #include <inviwo/core/processors/compositesource.h>
 #include <inviwo/core/properties/propertyowner.h>
@@ -434,8 +435,28 @@ protected:
     std::vector<Processor*> processors_;
 };
 
+struct SuperPropertyOwner {
+
+    Property* addSuperProperty(Property* subProperty) const {
+        return std::visit([&](auto* p) { return p->addSuperProperty(subProperty); }, processor);
+    }
+    Property* getSuperProperty(Property* subProperty) const {
+        return std::visit([&](auto* p) { return p->getSuperProperty(subProperty); }, processor);
+    }
+    void removeSuperProperty(Property* subProperty) const {
+        std::visit([&](auto* p) { p->removeSuperProperty(subProperty); }, processor);
+    }
+    Property* getSubProperty(Property* superProperty) const {
+        return std::visit([&](auto* p) { return p->getSubProperty(superProperty); }, processor);
+    }
+
+    std::variant<CompositeProcessor*, SequenceProcessor*> processor;
+};
+
 class CompositeProcessorTreeModel : public NetworkTreeModel {
 public:
+    CompositeProcessorTreeModel(SequenceProcessor* cp, QObject* parent)
+        : NetworkTreeModel{{cp}, parent}, cp_{cp} {}
     CompositeProcessorTreeModel(CompositeProcessor* cp, QObject* parent)
         : NetworkTreeModel{{cp}, parent}, cp_{cp} {}
 
@@ -468,7 +489,7 @@ public:
             switch (role) {
                 case Qt::DecorationRole: {
                     if (auto prop = toProperty(index)) {
-                        if (cp_->getSubProperty(prop)) {
+                        if (cp_.getSubProperty(prop)) {
                             return QIcon(":/svgicons/close.svg");
                         }
                     }
@@ -476,7 +497,7 @@ public:
                 }
                 case Qt::ToolTipRole: {
                     if (auto prop = toProperty(index)) {
-                        if (cp_->getSubProperty(prop)) {
+                        if (cp_.getSubProperty(prop)) {
                             return "Remove";
                         }
                     }
@@ -521,7 +542,7 @@ public:
 
         for (int i = 0; i < count; ++i) {
             if (auto prop = toProperty(index(row, 0, parent))) {
-                if (cp_->getSubProperty(prop)) {
+                if (cp_.getSubProperty(prop)) {
                     toRemove.emplace_back(prop);
                 }
             }
@@ -535,7 +556,7 @@ public:
             auto i = index(prop);
 
             beginRemoveRows(i.parent(), i.row(), i.row());
-            cp_->removeSuperProperty(cp_->getSubProperty(prop));
+            cp_.removeSuperProperty(cp_.getSubProperty(prop));
             endRemoveRows();
         }
 
@@ -548,7 +569,7 @@ public:
         try {
             if (auto* propData = SuperPropertyMimeData::toSuperPropertyMimeData(data)) {
                 for (auto* subProperty : propData->properties) {
-                    cp_->addSuperProperty(subProperty);
+                    cp_.addSuperProperty(subProperty);
                 }
                 return true;
             } else {
@@ -560,8 +581,7 @@ public:
         }
     }
 
-protected:
-    CompositeProcessor* cp_;
+    SuperPropertyOwner cp_;
 };
 
 class ItemDelegate : public QStyledItemDelegate {
@@ -598,6 +618,17 @@ class ItemDelegate : public QStyledItemDelegate {
 };
 
 SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* processor,
+                                                       QWidget* parent)
+    : SubPropertySelectionDialog(processor, processor->getSubNetwork(),
+                                 new CompositeProcessorTreeModel(processor, parent), parent) {}
+
+SubPropertySelectionDialog::SubPropertySelectionDialog(SequenceProcessor* processor,
+                                                       QWidget* parent)
+    : SubPropertySelectionDialog(processor, processor->getSubNetwork(),
+                                 new CompositeProcessorTreeModel(processor, parent), parent) {}
+
+SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, ProcessorNetwork& net,
+                                                       CompositeProcessorTreeModel* superModel,
                                                        QWidget* parent)
     : InviwoDockWidget(
           utilqt::toQString(fmt::format("Configure Properties ({})", processor->getIdentifier())),
@@ -649,7 +680,6 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
     layout->addWidget(new QLabel("Exposed Properties"), 0, 2);
 
     // Sub tree
-    auto& net = processor->getSubNetwork();
     auto subModel = new NetworkTreeModel(net, this);
     auto subTree = new QTreeView(this);
     subTree->setModel(subModel);
@@ -658,7 +688,6 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
     layout->addWidget(subTree, 1, 0);
 
     // Super tree
-    auto superModel = new CompositeProcessorTreeModel(processor, this);
     auto superTree = new QTreeView(this);
     superTree->setModel(superModel);
     superTree->setDragDropMode(QAbstractItemView::DragDrop);
@@ -681,10 +710,10 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(CompositeProcessor* proce
                 add->setDisabled(empty);
             });
 
-    connect(add, &QToolButton::clicked, this, [processor, subTree, subModel]() {
+    connect(add, &QToolButton::clicked, this, [subTree, subModel, superModel]() {
         for (auto index : subTree->selectionModel()->selectedIndexes()) {
             if (auto prop = subModel->toProperty(index)) {
-                processor->addSuperProperty(prop);
+                superModel->cp_.addSuperProperty(prop);
             }
         }
         subTree->selectionModel()->clearSelection();

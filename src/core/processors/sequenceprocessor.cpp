@@ -310,7 +310,7 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     }();
 
     auto superId = subProperty->getPath();
-    replaceInString(superId, ".", "-");
+    replaceInString(superId, ".", "_");
     superProperty->setIdentifier(superId);
     superProperty->setSerializationMode(PropertySerializationMode::All);
     superProperty->setMetaData<IntMetaData>(meta::index, index);
@@ -374,7 +374,7 @@ SequenceProcessor::PropertyHandler::~PropertyHandler() {
 void SequenceProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
     if (auto superProperty = getSuperProperty(orgProp)) {
         auto superId = orgProp->getPath();
-        replaceInString(superId, ".", "-");
+        replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
     }
 }

@@ -1718,10 +1718,16 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                             openWorkspaceAskToSave(filename);
                         }
                     } else {
-                        util::insertNetworkForData(
+                        const auto added = util::insertNetworkForData(
                             filename, app_->getProcessorNetwork(),
                             static_cast<bool>(keyModifiers & Qt::ControlModifier),
                             static_cast<bool>(keyModifiers & Qt::AltModifier), this);
+
+                        if (!added.empty()) {
+                            networkEditor_->ensureVisible(added);
+                            networkEditor_->clearSelection();
+                            util::setSelected(added, true);
+                        }
                     }
                     first = false;
                 }

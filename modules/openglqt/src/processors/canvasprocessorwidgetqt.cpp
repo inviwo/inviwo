@@ -89,6 +89,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
     setAttribute(Qt::WA_OpaquePaintEvent);
+    setAttribute(Qt::WA_ShowWithoutActivating);
 
     const ivec2 pysicalDim = CanvasProcessorWidget::getDimensions();
     const ivec2 pos = CanvasProcessorWidget::getPosition();
