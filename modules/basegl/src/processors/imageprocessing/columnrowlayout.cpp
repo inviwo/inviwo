@@ -237,7 +237,7 @@ void Input::setMode(Processor* p, InputMode mode, const std::function<void(bool)
 }
 
 SplitterPositions::SplitterPositions(std::string_view identifier, std::string_view displayName,
-                                     std::function<float()> minSpacing)
+                                     std::function<double()> minSpacing)
     : splitters_{identifier, displayName}
     , nSplitters_{0}
     , minSpacing_{std::move(minSpacing)}
@@ -250,7 +250,7 @@ void SplitterPositions::enforceOrder(size_t fixedSliderIndex) {
     const auto minSpacing = minSpacing_();
 
     // push everything to the left if necessary
-    float sliderPos = position(fixedSliderIndex);
+    double sliderPos = position(fixedSliderIndex);
     for (auto i : std::views::iota(0uz, fixedSliderIndex) | std::views::reverse) {
         if (position(i) + minSpacing >= sliderPos) {
             set(i, sliderPos - minSpacing);
@@ -276,15 +276,15 @@ bool SplitterPositions::updateSize(size_t newSize) {
 
     for (size_t i = 0; i < newSize; ++i) {
         if (splitters_.size() <= i) {
-            auto* prop = new FloatProperty{
+            auto* prop = new DoubleProperty{
                 fmt::format("splitter{}", i), fmt::format("Splitter {}", i + 1),
-                OrdinalPropertyState<float>{
-                    .value = static_cast<float>(i + 1) / static_cast<float>(newSize + 1),
-                    .min = 0.0f,
+                OrdinalPropertyState<double>{
+                    .value = static_cast<double>(i + 1) / static_cast<double>(newSize + 1),
+                    .min = 0.0,
                     .minConstraint = ConstraintBehavior::Immutable,
-                    .max = 1.0f,
+                    .max = 1.0,
                     .maxConstraint = ConstraintBehavior::Immutable,
-                    .increment = 0.01f,
+                    .increment = 0.001,
                     .invalidationLevel = InvalidationLevel::InvalidOutput}};
             prop->onChange([i, this]() { enforceOrder(i); });
             splitters_.addProperty(prop);
@@ -304,8 +304,8 @@ void SplitterPositions::spaceEvenly() {
     const auto minSpacing = minSpacing_();
 
     for (size_t i = 0; i < size(); i++) {
-        set(i, std::max(static_cast<float>(i + 1) * minSpacing,
-                        static_cast<float>(i + 1) / static_cast<float>(size() + 1)));
+        set(i, std::max(static_cast<double>(i + 1) * minSpacing,
+                        static_cast<double>(i + 1) / static_cast<double>(size() + 1)));
     }
 }
 
@@ -345,13 +345,13 @@ Layout::Layout()
                 PropertySemantics::SpinBox)
     , horizontalSplitters_("horizontalSplitters", "Horizontal Splits",
                            [this]() {
-                               return static_cast<float>(minWidth_.get()) /
-                                      static_cast<float>(currentDim_.x);
+                               return static_cast<double>(minWidth_.get()) /
+                                      static_cast<double>(currentDim_.x);
                            })
     , verticalSplitters_("verticalSplitters", "Vertical Splits",
                          [this]() {
-                             return static_cast<float>(minWidth_.get()) /
-                                    static_cast<float>(currentDim_.y);
+                             return static_cast<double>(minWidth_.get()) /
+                                    static_cast<double>(currentDim_.y);
                          })
     , horizontalRenderer_(this)
     , verticalRenderer_(this)
@@ -493,26 +493,28 @@ void Layout::updateSplitters(bool connect) {
 }
 
 void Layout::calculateViews(ivec2 imgSize) {
-    std::vector<float> xpos;
+    std::vector<double> xpos;
     {
-        xpos.emplace_back(0.0f);
+        xpos.emplace_back(0.0);
         auto vs = verticalSplitters_.splits();
         xpos.insert(xpos.end(), vs.begin(), vs.end());
-        xpos.emplace_back(1.0f);
+        xpos.emplace_back(1.0);
     }
-    std::vector<float> ypos;
+    std::vector<double> ypos;
     {
-        ypos.emplace_back(1.0f);
+        ypos.emplace_back(1.0);
         auto hs =
-            horizontalSplitters_.splits() | std::views::transform([](float y) { return 1.0f - y; });
+            horizontalSplitters_.splits() | std::views::transform([](double y) { return 1.0 - y; });
         ypos.insert(ypos.end(), hs.begin(), hs.end());
-        ypos.emplace_back(0.0f);
+        ypos.emplace_back(0.0);
     }
     viewManager_.clear();
     for (auto&& [xStart, xStop] : std::views::zip(xpos, xpos | std::views::drop(1))) {
         for (auto&& [yStop, yStart] : std::views::zip(ypos, ypos | std::views::drop(1))) {
-            const auto pos = ivec2{vec2{imgSize} * vec2{xStart, yStart}};
-            const auto size = ivec2{vec2{imgSize} * vec2{xStop - xStart, yStop - yStart}};
+            const auto fracPos = dvec2{xStart, yStart};
+            const auto pos = ivec2{glm::round(dvec2{imgSize} * fracPos)};
+            const auto fracViewSize = dvec2{xStop - xStart, yStop - yStart};
+            const auto size = ivec2{glm::round(dvec2{imgSize} * fracViewSize)};
             viewManager_.push_back({pos, size});
         }
     }

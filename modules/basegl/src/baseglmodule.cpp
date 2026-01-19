@@ -633,6 +633,10 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                     if (auto* splitters =
                             xml::getElement(node, "Properties/Property&identifier=splitters")) {
                         splitters->SetAttribute("identifier", "horizontalSplitters");
+
+                        xml::changeAttributeRecursive(
+                            splitters, {{xml::Kind::property("org.inviwo.FloatProperty")}}, "type",
+                            "org.inviwo.FloatProperty", "org.inviwo.DoubleProperty");
                     }
                 }
 
@@ -643,6 +647,10 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                     if (auto* splitters =
                             xml::getElement(node, "Properties/Property&identifier=splitters")) {
                         splitters->SetAttribute("identifier", "verticalSplitters");
+
+                        xml::changeAttributeRecursive(
+                            splitters, {{xml::Kind::property("org.inviwo.FloatProperty")}}, "type",
+                            "org.inviwo.FloatProperty", "org.inviwo.DoubleProperty");
                     }
                 }
 

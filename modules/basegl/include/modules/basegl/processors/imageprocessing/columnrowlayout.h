@@ -108,24 +108,24 @@ private:
 
 struct IVW_MODULE_BASEGL_API SplitterPositions {
     SplitterPositions(std::string_view identifier, std::string_view displayName,
-                      std::function<float()> minSpacing);
+                      std::function<double()> minSpacing);
 
     auto splits() const {
         return splitters_ | std::views::take(nSplitters_) | std::views::transform(toFloat) |
                std::views::transform(getter);
     }
 
-    float position(size_t i) const { return i >= size() ? 1.0f : get(i)->get(); }
-    FloatProperty* get(size_t i) {
+    double position(size_t i) const { return i >= size() ? 1.0 : get(i)->get(); }
+    DoubleProperty* get(size_t i) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-        return static_cast<FloatProperty*>(splitters_[i]);
+        return static_cast<DoubleProperty*>(splitters_[i]);
     }
-    const FloatProperty* get(size_t i) const {
+    const DoubleProperty* get(size_t i) const {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-        return static_cast<const FloatProperty*>(splitters_[i]);
+        return static_cast<const DoubleProperty*>(splitters_[i]);
     }
-    void set(size_t i, float pos) {
-        if (i < size()) get(i)->set(std::clamp(pos, 0.0f, 1.0f));
+    void set(size_t i, double pos) {
+        if (i < size()) get(i)->set(std::clamp(pos, 0.0, 1.0));
     }
     size_t size() const { return nSplitters_; }
 
@@ -138,15 +138,15 @@ struct IVW_MODULE_BASEGL_API SplitterPositions {
 
 private:
     size_t nSplitters_;
-    std::function<float()> minSpacing_;
+    std::function<double()> minSpacing_;
     bool isEnforcing_;
 
     static constexpr auto toFloat = [](const Property* prop) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-        return static_cast<const FloatProperty*>(prop);
+        return static_cast<const DoubleProperty*>(prop);
     };
     static constexpr auto visible = [](const Property* prop) { return prop->getVisible(); };
-    static constexpr auto getter = [](const FloatProperty* prop) { return prop->get(); };
+    static constexpr auto getter = [](const DoubleProperty* prop) { return prop->get(); };
 };
 
 }  // namespace layout
