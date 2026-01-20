@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,10 +68,10 @@ public:
 /**
  * Processor used to connect inports in a sub network inside of a SequenceProcessor to outports in
  * the network it is in (referred as the super network). The SequenceProcessor will find all
- * SourceProcessors in its sub network and add the SourceProcessors super inports to it self.
+ * SourceProcessors in its sub network and add the SourceProcessors super inports to itself.
  * Whenever the sub network gets evaluated the SourceProcessors will pass through super inport data
- * to its outport, thus making the data available to the sub network. Note that the actual data will
- * not be copied since shared pointers are used.
+ * to their outport, thus making the data available to the sub network. Note that the actual data
+ * will not be copied since shared pointers are used.
  *
  * The inport type should be a sequence version of the outport type.
  *

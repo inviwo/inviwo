@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -166,45 +166,45 @@ void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
     }
 }
 
-void SequenceProcessor::registerProperty(Property* orgProp) {
-    orgProp->addObserver(this);
-    if (orgProp->getMetaData<BoolMetaData>(meta::exposed, false)) {
-        addSuperProperty(orgProp);
+void SequenceProcessor::registerProperty(Property* subProperty) {
+    subProperty->addObserver(this);
+    if (subProperty->getMetaData<BoolMetaData>(meta::exposed, false)) {
+        addSuperProperty(subProperty);
     }
 }
 
-void SequenceProcessor::unregisterProperty(Property* orgProp) {
-    orgProp->removeObserver(this);
-    handlers_.erase(orgProp);
+void SequenceProcessor::unregisterProperty(Property* subProperty) {
+    subProperty->removeObserver(this);
+    handlers_.erase(subProperty);
 }
 
-Property* SequenceProcessor::addSuperProperty(Property* orgProp) {
-    auto it = handlers_.find(orgProp);
+Property* SequenceProcessor::addSuperProperty(Property* subProperty) {
+    auto it = handlers_.find(subProperty);
     if (it != handlers_.end()) {
         return it->second->superProperty;
     } else {
-        if (orgProp->getOwner()->getProcessor()->getNetwork() == subNetwork_.get()) {
-            handlers_[orgProp] = std::make_unique<PropertyHandler>(*this, orgProp);
-            return handlers_[orgProp]->superProperty;
+        if (subProperty->getOwner()->getProcessor()->getNetwork() == subNetwork_.get()) {
+            handlers_[subProperty] = std::make_unique<PropertyHandler>(*this, subProperty);
+            return handlers_[subProperty]->superProperty;
         } else {
-            throw Exception(SourceContext{}, "Could not find property {}", orgProp->getPath());
+            throw Exception(SourceContext{}, "Could not find property {}", subProperty->getPath());
         }
     }
 }
 
-void SequenceProcessor::removeSuperProperty(Property* orgProp) {
-    orgProp->unsetMetaData<BoolMetaData>(meta::exposed);
-    handlers_.erase(orgProp);
+void SequenceProcessor::removeSuperProperty(Property* subProperty) {
+    subProperty->unsetMetaData<BoolMetaData>(meta::exposed);
+    handlers_.erase(subProperty);
 
-    orgProp->unsetMetaData<IntMetaData>(meta::index);
+    subProperty->unsetMetaData<IntMetaData>(meta::index);
     for (auto&& [index, superProp] : util::enumerate<int>(*this)) {
         superProp->setMetaData<IntMetaData>(meta::index, index);
         getSubProperty(superProp)->setMetaData<IntMetaData>(meta::index, index);
     }
 }
 
-Property* SequenceProcessor::getSuperProperty(Property* orgProp) {
-    auto it = handlers_.find(orgProp);
+Property* SequenceProcessor::getSuperProperty(Property* subProperty) {
+    auto it = handlers_.find(subProperty);
     if (it != handlers_.end()) {
         return it->second->superProperty;
     } else {
@@ -315,9 +315,8 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     superProperty->setSerializationMode(PropertySerializationMode::All);
     superProperty->setMetaData<IntMetaData>(meta::index, index);
 
-    auto it = std::lower_bound(comp.begin(), comp.end(), index, [&](Property* prop, int b) {
-        const auto a = prop->getMetaData<IntMetaData>(meta::index, 0);
-        return a < b;
+    auto it = std::ranges::lower_bound(comp, index, std::ranges::less{}, [&](Property* prop) {
+        return prop->getMetaData<IntMetaData>(meta::index, 0);
     });
 
     comp.insertProperty(std::distance(comp.begin(), it), superProperty, false);
@@ -337,7 +336,7 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     };
 
     LambdaNetworkVisitor visitor{[&](Property& superProp) {
-        auto subProp = findSub(&superProp);
+        auto* subProp = findSub(&superProp);
         if (auto* meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
             superProp.setDisplayName(meta->get());
         }
@@ -371,34 +370,34 @@ SequenceProcessor::PropertyHandler::~PropertyHandler() {
     delete comp.removeProperty(superProperty);
 }
 
-void SequenceProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
-    if (auto* superProperty = getSuperProperty(orgProp)) {
-        auto superId = orgProp->getPath();
+void SequenceProcessor::onSetIdentifier(Property* subProperty, const std::string&) {
+    if (auto* superProperty = getSuperProperty(subProperty)) {
+        auto superId = subProperty->getPath();
         replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
     }
 }
 
-void SequenceProcessor::onSetDisplayName(Property* orgProp, const std::string& displayName) {
-    if (auto* superProperty = getSuperProperty(orgProp)) {
+void SequenceProcessor::onSetDisplayName(Property* subProperty, const std::string& displayName) {
+    if (auto* superProperty = getSuperProperty(subProperty)) {
         superProperty->setDisplayName(displayName);
     }
 }
 
-void SequenceProcessor::onSetSemantics(Property* orgProp, const PropertySemantics& semantics) {
-    if (auto* superProperty = getSuperProperty(orgProp)) {
+void SequenceProcessor::onSetSemantics(Property* subProperty, const PropertySemantics& semantics) {
+    if (auto* superProperty = getSuperProperty(subProperty)) {
         superProperty->setSemantics(semantics);
     }
 }
 
-void SequenceProcessor::onSetReadOnly(Property* orgProp, bool readonly) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+void SequenceProcessor::onSetReadOnly(Property* subProperty, bool readonly) {
+    if (auto* superProperty = getSuperProperty(subProperty)) {
         superProperty->setReadOnly(readonly);
     }
 }
 
-void SequenceProcessor::onSetVisible(Property* orgProp, bool visible) {
-    if (auto* superProperty = getSuperProperty(orgProp)) {
+void SequenceProcessor::onSetVisible(Property* subProperty, bool visible) {
+    if (auto* superProperty = getSuperProperty(subProperty)) {
         superProperty->setVisible(visible);
     }
 }

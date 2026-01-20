@@ -249,7 +249,7 @@ private:
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
 
     void deleteItems(QList<QGraphicsItem*> items);
-    std::unique_ptr<QMimeData> copyError(const QList<QGraphicsItem*>& items) const;
+    static std::unique_ptr<QMimeData> copyError(const QList<QGraphicsItem*>& items);
 
     void paste(const QMimeData& mimeData, util::OffsetCallback offsetCallback);
 

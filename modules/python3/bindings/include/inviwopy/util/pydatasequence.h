@@ -63,10 +63,10 @@ void exportDataSequenceFor(pybind11::module& m, std::string_view name) {
 
         .def("__getitem__",
              [](const DataSequence<T>& v, std::ptrdiff_t i) -> std::shared_ptr<const T> {
-                 if (i < 0 && (i += v.size()) < 0) {
-                     throw py::index_error();
+                 if (i < 0) {
+                     i += v.size();
                  }
-                 if (static_cast<size_t>(i) >= v.size()) {
+                 if (i < 0 || static_cast<size_t>(i) >= v.size()) {
                      throw py::index_error();
                  }
                  return v[static_cast<size_t>(i)];
@@ -110,7 +110,7 @@ void exportDataSequenceFor(pybind11::module& m, std::string_view name) {
         .def(
             "front",
             [](DataSequence<T>& v) {
-                if (v.size()) {
+                if (!v.empty()) {
                     return v.front();
                 } else {
                     throw py::index_error();
@@ -121,7 +121,7 @@ void exportDataSequenceFor(pybind11::module& m, std::string_view name) {
         .def(
             "back",
             [](DataSequence<T>& v) {
-                if (v.size()) {
+                if (!v.empty()) {
                     return v.back();
                 } else {
                     throw py::index_error();

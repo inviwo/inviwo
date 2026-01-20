@@ -469,8 +469,8 @@ bool updateV2(TxElement* root) {
                                  std::make_tuple(2, "C", 0.0), std::make_tuple(3, "Offset", 1.0)}) {
             const auto path =
                 fmt::format("Properties/Property&identifier=override{}/value", std::get<1>(item));
-            if (auto elem = xml::getElement(node, path)) {
-                auto data = elem->Clone();
+            if (auto* elem = xml::getElement(node, path)) {
+                auto* data = elem->Clone();
                 data->SetValue(fmt::format("col{}", std::get<0>(item)));
                 data->ToElement()->SetAttribute("w", fmt::format("{:f}", std::get<2>(item)));
                 newNode.InsertEndChild(*data);
@@ -535,18 +535,18 @@ bool updateV8(TxElement* root) {
     TraversingVersionConverter conv{[&](TxElement* node) -> bool {
         const auto& key = node->Value();
         if (key != "Processor") return true;
-        std::string type = node->GetAttribute("type");
+        const auto type = node->GetAttribute("type");
         if (type != "org.inviwo.TransformLayer" && type != "org.inviwo.TransformMesh" &&
             type != "org.inviwo.TransformVolume") {
             return true;
         }
 
         bool replaceTrafo = false;
-        if (auto value = xml::getElement(node, "Properties/Property&identifier=replace/value")) {
+        if (auto* value = xml::getElement(node, "Properties/Property&identifier=replace/value")) {
             replaceTrafo = (value->GetAttribute("content") == "1");
         }
 
-        if (auto elem =
+        if (auto* elem =
                 xml::getElement(node, "Properties/Property&identifier=space/selectedIdentifier")) {
 
             if (elem->GetAttribute("content") == "model") {

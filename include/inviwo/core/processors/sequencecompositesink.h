@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ public:
 /**
  * Processor used to connect outports in a sub network inside of a SequenceProcessor to inports in
  * the network it is in (referred as the super network). The SequenceProcessor will find all
- * SinkProcessors in its sub network and add the SinkProcessors super outports to it self. Whenever
+ * SinkProcessors in its sub network and add the SinkProcessors' super outports to itself. Whenever
  * the sub network gets evaluated the SequenceCompositeSink will pass through inport data to its
  * super outport, thus making the data available to the super network. Note that the actual data
  * will not be copied since shared pointers are used.

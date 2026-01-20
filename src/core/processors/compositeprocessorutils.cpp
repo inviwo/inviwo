@@ -57,7 +57,7 @@ or use the convenience function:
 registerDefaultsForDataType<DataType>();
 )";
 
-}
+}  // namespace
 
 void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
     try {

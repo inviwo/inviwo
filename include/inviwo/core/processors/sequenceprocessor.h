@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,47 +45,40 @@ class SequenceCompositeSinkBase;
 class SequenceCompositeSourceBase;
 
 /**
- * @brief A processor containing a network of processors, i.e. it will act as a sub network within a
- * processor network. A SequenceProcessor can be used to reduce cluttering in the network. Also
- * makes it easy to reuse groups of processors inside of a network, and across network since they
- * can be saved in the processor list. A SequenceProcessor is usually created by selecting a group
- * of processors that are closely related in the network editor and then clicking "create
- * composite" in the context menu.  Use InviwoModule::registerSequenceProcessor to register a saved
- * composite in your module.
+ * @brief A processor that contains and manages a sub network and evaluates that sub network once
+ * per item in an input sequence.
  *
- * The network inside of the SequenceProcessors is called the sub network and the network of the
- * SequenceProcessor the super network. The SequenceProcessor will only evaluate its sub network
- * when its process function is called, and otherwise keep it locked.
+ * The SequenceProcessor encapsulates a group of processors (the sub network) and applies the same
+ * sub network computation to every element of an input sequence. Unlike a standard composite
+ * processor that evaluates its sub network exactly once per call to process(), the
+ * SequenceProcessor iterates over an input sequence and evaluates the sub network for each item in
+ * turn. This is useful when you want to run identical processing steps for each element in a
+ * collection (e.g., frames, volumes, or any sequence of data).
  *
- * <b>How it works</b>
- * The SequenceProcessor will observe its sub network and when a processor gets added to the sub
- * network the SequenceProcessor will check if it's a CompositeSource or a CompositeSink. In the
- * case it's a CompositeSource, which acts as data inputs in the sub network, in will get the
- * special "super" inport and add it to it self. If it's a CompositeSink, which acts as data
- * outputs, it will get the "super" outport and add it to it self.
+ * Typical workflow:
+ *  - Create a sequence composite by selecting a group of processors in the network editor and
+ *    choosing "create sequence".
+ *  - The SequenceProcessor exposes special "super" inports and outports that bridge the super
+ *    network (the enclosing network) and the sub network. SequenceCompositeSourceBase processors
+ *    inside the sub network act as per-item inputs: for each item the SequenceProcessor places the
+ *    current item on the super inport and the source processor forwards it into the sub network.
+ *    SequenceCompositeSinkBase processors act as per-item outputs: after processing a single item
+ *    the sink processors forward the result back to the super network.
  *
- * When the CompositeSource gets evaluated in the sub network it will take the data from its super
- * inport and put in its outport, moving the data from the super network to the sub network. At the
- * end of the sub network evaluation the SinkProcessors will be evaluated and take the data on its
- * inport and put on its super outport, moving the data from the sub network into the super network.
+ * Behavior when running:
+ *  - The SequenceProcessor iterates the input sequence.
+ *  - For each item it provides the item to the sub network via SequenceCompositeSourceBase(s),
+ *    evaluates the sub network for that single item, and collects per-item outputs from
+ *    SequenceCompositeSinkBase(s) back to the super network.
  *
- * Properties in the sub network that are marked with application usage mode, or added by calling
- * addSuperProperty, will be cloned and added to the composite processor with mutual onChange
- * callbacks to keep them in sync, exposing the sub property's state to the super network.
+ * Properties in the sub network added via addSuperProperty, are cloned and exposed on the
+ * SequenceProcessor. The cloned properties are synchronized with the originals using mutual
+ * onChange callbacks so that state is kept consistent between the super and sub networks.
  *
- * Events are propagated through the sub network using the super inport and outports in the Source
- * and Sink Processors.
+ * Events are forwarded through the sub network using the super inports and outports.
  *
- * <b>Design considerations</b>
- * Many designs for composite processors were considered, including implementing it as a pure GUI
- * feature having all the processors in the same network. The current design of completely
- * encapsulating the sub network was chosen since it minimizes the amount of logic in the GUI. Hence
- * keeping the simple mapping from processor network to GUI. It also completely hides the sub
- * network from the super network making it possible to compose sub network in several layers out of
- * the box.
- *
- * @see CompositeSource
- * @see CompositeSink
+ * @see SequenceCompositeSourceBase
+ * @see SequenceCompositeSinkBase
  */
 class IVW_CORE_API SequenceProcessor : public Processor,
                                        public ProcessorNetworkObserver,
@@ -93,12 +86,12 @@ class IVW_CORE_API SequenceProcessor : public Processor,
                                        public PropertyObserver {
 public:
     /**
-     * Construct a SequenceProcessor, an optional workspace file can be supplied in which case it
-     * is deserialized as the SequenceProcessors sub network. otherwise the network is left empty.
-     * getSubNetwork can then be use to add processors etc.
+     * Construct a SequenceProcessor. An optional workspace file can be supplied in which case it
+     * is deserialized as the SequenceProcessor's sub network; otherwise the sub network is left
+     * empty. Call getSubNetwork() to add processors programmatically.
      */
     SequenceProcessor(std::string_view identifier, std::string_view displayName,
-                      InviwoApplication* app, const std::filesystem::path& filename = "");
+                      InviwoApplication* app, const std::filesystem::path& filename = {});
     SequenceProcessor(const SequenceProcessor&) = delete;
     SequenceProcessor(SequenceProcessor&&) = delete;
     SequenceProcessor& operator=(const SequenceProcessor&) = delete;
@@ -106,19 +99,20 @@ public:
     virtual ~SequenceProcessor();
 
     /**
-     * Evaluates the sub network
+     * Evaluate the sub network for each item in the input sequence.
      */
     virtual void process() override;
 
     /**
-     * Propagates events through the sub network using the sink and source processors
+     * Propagate events for the current sequence item through the sub network using the sink and
+     * source processors.
      */
     virtual void propagateEvent(Event* event, Outport* source) override;
 
     /**
-     * Save the current network into the composites folder of the user settings dir. The current
-     * display name will be used as filename. Saved networks will automatically appear as Processors
-     * in the processor list, with the same display name.
+     * Save the current sub network into the sequence composites folder of the user settings dir.
+     * The current display name will be used as filename. Saved networks will automatically appear
+     * as Processors in the processor list with the same display name.
      */
     void saveSubNetwork(const std::filesystem::path& file);
 
@@ -179,11 +173,11 @@ private:
     void unregisterProperty(Property* prop);
 
     // PropertyObserver overrides
-    virtual void onSetIdentifier(Property* property, const std::string& identifier) override;
-    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
-    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
-    virtual void onSetReadOnly(Property* property, bool readonly) override;
-    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetIdentifier(Property* subProperty, const std::string& identifier) override;
+    virtual void onSetDisplayName(Property* subProperty, const std::string& displayName) override;
+    virtual void onSetSemantics(Property* subProperty, const PropertySemantics& semantics) override;
+    virtual void onSetReadOnly(Property* subProperty, bool readonly) override;
+    virtual void onSetVisible(Property* subProperty, bool visible) override;
 
     // ProcessorNetworkObserver overrides
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override;

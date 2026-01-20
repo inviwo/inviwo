@@ -559,8 +559,8 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
     auto* pim = app->getPortInspectorManager();
 
     if (pim->isPortInspectorSupported(outport)) {
-        auto pos = ogi->mapPosToSceen(ogi->rect().center());
-        bool hasInspector = pim->hasPortInspector(outport);
+        const auto pos = ogi->mapPosToSceen(ogi->rect().center());
+        const bool hasInspector = pim->hasPortInspector(outport);
         auto* showPortInsector =
             menu.addAction(tr(hasInspector ? "Hide Port Inspector" : "Show Port &Inspector"));
         showPortInsector->setCheckable(true);
@@ -820,7 +820,7 @@ void NetworkEditor::addCompositeMenuItems(
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
     selectPropAction->setEnabled(selectedComposites.size() == 1);
     connect(selectPropAction, &QAction::triggered, this, [this, selectedComposites]() {
-        auto dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainWindow_);
+        auto* dialog = new SubPropertySelectionDialog(*selectedComposites.begin(), mainWindow_);
         dialog->show();
     });
 
@@ -874,7 +874,7 @@ void NetworkEditor::addSequenceMenuItems(
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
     selectPropAction->setEnabled(selectedSequences.size() == 1);
     connect(selectPropAction, &QAction::triggered, this, [this, selectedSequences]() {
-        auto dialog = new SubPropertySelectionDialog(*selectedSequences.begin(), mainWindow_);
+        auto* dialog = new SubPropertySelectionDialog(*selectedSequences.begin(), mainWindow_);
         dialog->show();
     });
 }
@@ -882,31 +882,26 @@ void NetworkEditor::addSequenceMenuItems(
 void NetworkEditor::addCopyPasteManuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                           const ivec2& position) {
 
-    auto cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
-    cutAction->setEnabled(activeItems.size() > 0);
+    auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
+    cutAction->setEnabled(!activeItems.empty());
     connect(cutAction, &QAction::triggered, this, [this, items = activeItems]() {
         auto mimeData = cut(items);
         QApplication::clipboard()->setMimeData(mimeData.release());
     });
 
-    auto copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"));
-    copyAction->setEnabled(activeItems.size() > 0);
+    auto* copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"));
+    copyAction->setEnabled(!activeItems.empty());
     connect(copyAction, &QAction::triggered, this, [this, items = activeItems]() {
         auto mimeData = copy(items);
         QApplication::clipboard()->setMimeData(mimeData.release());
     });
 
-    auto pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), tr("&Paste"));
-    auto* mimeData = QApplication::clipboard()->mimeData();
-    if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
-        pasteAction->setEnabled(true);
-    } else if (mimeData->formats().contains(QString("text/plain"))) {
-        pasteAction->setEnabled(true);
-    } else {
-        pasteAction->setEnabled(false);
-    }
+    auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), tr("&Paste"));
+    const auto* mimeData = QApplication::clipboard()->mimeData();
+    pasteAction->setEnabled(mimeData->formats().contains(utilqt::toQString(getMimeTag())) ||
+                            mimeData->formats().contains(QString("text/plain")));
     connect(pasteAction, &QAction::triggered, this, [this, position]() {
-        if (auto mimeData = QApplication::clipboard()->mimeData()) {
+        if (const auto* mimeData = QApplication::clipboard()->mimeData()) {
             paste(*mimeData, position);
         }
     });
@@ -932,7 +927,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                                   std::views::transform([](auto* p) { return p->getProcessor(); }) |
                                   std::ranges::to<std::vector>();
 
-    for (auto& item : clickedOnItems) {
+    for (auto* item : clickedOnItems) {
         if (auto* outport = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item)) {
             addVisualizers(menu, outport);
             break;
@@ -999,7 +994,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addSeparator();
 
     auto deleteAction = menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
-    deleteAction->setEnabled(activeItems.size() > 0);
+    deleteAction->setEnabled(!activeItems.empty());
     connect(deleteAction, &QAction::triggered, this,
             [this, items = activeItems]() { deleteItems(items); });
 
@@ -1069,7 +1064,7 @@ void NetworkEditor::deleteItems(QList<QGraphicsItem*> items) {
 
 std::unique_ptr<QMimeData> NetworkEditor::createMineData(const std::string& content,
                                                          std::span<const QString> mimetypes) {
-    QByteArray byteArray(content.c_str(), static_cast<int>(content.length()));
+    const QByteArray byteArray(content.c_str(), static_cast<int>(content.length()));
     auto mimeData = std::make_unique<QMimeData>();
     for (const auto& type : mimetypes) {
         mimeData->setData(type, byteArray);
@@ -1077,7 +1072,7 @@ std::unique_ptr<QMimeData> NetworkEditor::createMineData(const std::string& cont
     return mimeData;
 }
 
-std::unique_ptr<QMimeData> NetworkEditor::copyError(const QList<QGraphicsItem*>& items) const {
+std::unique_ptr<QMimeData> NetworkEditor::copyError(const QList<QGraphicsItem*>& items) {
     if (items.size() == 1) {
         if (auto* error = qgraphicsitem_cast<ProcessorErrorItem*>(items.front())) {
             return createMineData(utilqt::fromQString(error->text()),
@@ -1169,11 +1164,11 @@ void NetworkEditor::ensureVisible(const std::vector<Processor*>& processors) {
     if (processors.empty()) return;
 
     QRectF rect;
-    for (auto item : processors) {
+    for (auto* item : processors) {
         auto pgi = getProcessorGraphicsItem(item);
         rect = rect.united(pgi->sceneBoundingRect());
     }
-    for (auto v : views()) {
+    for (auto* v : views()) {
         v->ensureVisible(rect);
     }
 }
