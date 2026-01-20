@@ -6,7 +6,7 @@
   "vcpkg-configuration": {
     "default-registry": {
       "kind": "builtin",
-      "baseline": "f5cbc726b123896eef77f5acc1b9047a28a0731e"
+      "baseline": "7c11b72a6f810293d0ce234de126b99e9ab6fa7a"
     },
     "overlay-ports": [
       "./tools/vcpkg"
