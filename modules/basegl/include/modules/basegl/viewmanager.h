@@ -41,6 +41,7 @@
 
 #include <glm/vec2.hpp>  // for vec
 #include <glm/vec4.hpp>  // for vec<>::(anonymous)
+#include <glm/vector_relational.hpp>
 
 namespace inviwo {
 
@@ -75,12 +76,14 @@ public:
     using Propagator = std::function<void(Event*, size_t ind)>;
 
     struct View {
-        View(const ivec2& p, const ivec2& s) : pos(p), size(s) {};
+        View(const ivec2& p, const ivec2& s) : pos(p), size(s){};
         View(const ivec4& m)  // NOLINT(google-explicit-constructor)
-            : pos(m.x, m.y), size(m.z, m.w) {};
+            : pos(m.x, m.y), size(m.z, m.w){};
 
         ivec2 pos;
         ivec2 size;
+
+        bool empty() const { return glm::any(glm::lessThanEqual(size, ivec2(0))); }
     };
     using ViewList = std::vector<View>;
     using ViewId = size_t;
@@ -88,13 +91,13 @@ public:
     ViewManager();
 
     /**
-     * \brief maps a propagates event to the selected view
+     * @brief maps a propagates event to the selected view
      * return whether the event found a view was found
      */
     bool propagateEvent(Event* event, Propagator propagator);
 
     /**
-     * \brief Returns a pair with a bool of whether a view was found, and the index of the found
+     * @brief Returns a pair with a bool of whether a view was found, and the index of the found
      * view.
      */
     std::pair<bool, ViewId> getSelectedView() const;
@@ -102,7 +105,7 @@ public:
     const ViewList& getViews() const;
 
     /**
-     * \brief Add a viewport (x,y width,height) using the following coordinate system:
+     * @brief Add a viewport (x,y width,height) using the following coordinate system:
      * y ^
      *   |
      *   |
@@ -113,7 +116,7 @@ public:
     void push_back(View view);
 
     /**
-     * \brief Erase a previously defined viewport (x,y width,height). If the viewport was not added
+     * @brief Erase a previously defined viewport (x,y width,height). If the viewport was not added
      * before, nothing happens.
      *
      * @see ViewManager
@@ -121,21 +124,21 @@ public:
     void erase(View view);
 
     /**
-     * \brief Erase a previously defined viewport using index ind.
+     * @brief Erase a previously defined viewport using index ind.
      *
      * @param ind Viewport index [0 size()-1]
      */
     void erase(ViewId ind);
 
     /**
-    * \brief replace a previously defined viewport at index ind with a new viewport using the
+    * @brief replace a previously defined viewport at index ind with a new viewport using the
     * following coordinate system:
-    \verbatim
+    @verbatim
      y ^
        |
        |
        ------> x
-    \endverbatim
+    @endverbatim
     * @see ViewManager
     * @param ind Viewport index [0 size()-1]
     * @param view the view to replace with
@@ -143,12 +146,13 @@ public:
     void replace(ViewId ind, View view);
 
     /**
-     * \brief Return viewport using index ind.
+     * @brief Return viewport using index ind.
      *
      * @param ind Viewport index [0 size()-1]
      * @return ivec4&
      */
     View& operator[](ViewId ind);
+    const View& operator[](ViewId ind) const;
     size_t size() const;
     void clear();
 

@@ -31,15 +31,21 @@
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
+#include <flags/flags.h>
 
 namespace inviwo {
 
 namespace splitter {
 
-enum class Direction { Vertical, Horizontal };
-enum class Style { Handle, Divider, Line, Invisible };
+enum class Direction : std::uint8_t { Vertical = 0, Horizontal = 1 << 0 };
+using Directions = flags::flags<Direction>;
+
+enum class Style : std::uint8_t { Handle, Divider, Line, Invisible };
 
 }  // namespace splitter
+
+// This needs to be in the inviwo namespace
+ALLOW_FLAGS_FOR_ENUM(splitter::Direction)
 
 class IVW_MODULE_BASEGL_API SplitterSettings {
 public:
