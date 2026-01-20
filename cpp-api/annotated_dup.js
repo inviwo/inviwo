@@ -297,6 +297,12 @@ var annotated_dup =
         [ "GL", "structinviwo_1_1kind_1_1GL.html", null ],
         [ "RAM", "structinviwo_1_1kind_1_1RAM.html", null ]
       ] ],
+      [ "layout", null, [
+        [ "Input", "structinviwo_1_1layout_1_1Input.html", null ],
+        [ "MultiInput", "structinviwo_1_1layout_1_1MultiInput.html", null ],
+        [ "SequenceInput", "structinviwo_1_1layout_1_1SequenceInput.html", null ],
+        [ "SplitterPositions", "structinviwo_1_1layout_1_1SplitterPositions.html", null ]
+      ] ],
       [ "log", "namespaceinviwo_1_1log.html", [
         [ "error", "structinviwo_1_1log_1_1error.html", null ],
         [ "info", "structinviwo_1_1log_1_1info.html", null ],
@@ -904,6 +910,7 @@ var annotated_dup =
       [ "GLUITestProcessor", "classinviwo_1_1GLUITestProcessor.html", "classinviwo_1_1GLUITestProcessor" ],
       [ "GlyphClipping", "classinviwo_1_1GlyphClipping.html", "classinviwo_1_1GlyphClipping" ],
       [ "GraphicsItemData", "classinviwo_1_1GraphicsItemData.html", null ],
+      [ "GridLayout", "classinviwo_1_1GridLayout.html", null ],
       [ "GridPlanes", "classinviwo_1_1GridPlanes.html", "classinviwo_1_1GridPlanes" ],
       [ "HalfEdges", "classinviwo_1_1HalfEdges.html", "classinviwo_1_1HalfEdges" ],
       [ "HDF5Module", "classinviwo_1_1HDF5Module.html", null ],

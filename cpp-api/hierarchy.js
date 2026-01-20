@@ -737,6 +737,7 @@ var hierarchy =
         [ "inviwo::LayerToSpatialSampler", "classinviwo_1_1LayerToSpatialSampler.html", null ],
         [ "inviwo::Layout", "classinviwo_1_1Layout.html", [
           [ "inviwo::ColumnLayout", "classinviwo_1_1ColumnLayout.html", null ],
+          [ "inviwo::GridLayout", "classinviwo_1_1GridLayout.html", null ],
           [ "inviwo::RowLayout", "classinviwo_1_1RowLayout.html", null ]
         ] ],
         [ "inviwo::LightVolumeGL", "classinviwo_1_1LightVolumeGL.html", null ],
@@ -1425,6 +1426,9 @@ var hierarchy =
     [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::DataSequence&lt; Image &gt;, 1, false &gt;, inviwo::DataSequence&lt; Image &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< inviwo::DataSequence< Image > >", "classinviwo_1_1DataInport.html", null ]
     ] ],
+    [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::DataSequence&lt; inviwo::Image &gt;, 1, false &gt;, inviwo::DataSequence&lt; inviwo::Image &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
+      [ "inviwo::DataInport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataInport.html", null ]
+    ] ],
     [ "inviwo::InportIterable&lt; DataInport&lt; inviwo::DataSequence&lt; Layer &gt;, 1, false &gt;, inviwo::DataSequence&lt; Layer &gt;, false &gt;", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< inviwo::DataSequence< Layer > >", "classinviwo_1_1DataInport.html", null ]
     ] ],
@@ -1475,6 +1479,7 @@ var hierarchy =
     [ "inviwo::InportIterable&lt; DataInport&lt; typename Tracer::Sampler, N, false &gt;, typename Tracer::Sampler, false &gt;", "classinviwo_1_1InportIterable.html", [
       [ "inviwo::DataInport< typename Tracer::Sampler, 0 >", "classinviwo_1_1DataInport.html", null ]
     ] ],
+    [ "inviwo::layout::Input", "structinviwo_1_1layout_1_1Input.html", null ],
     [ "std::integral_constant", null, [
       [ "inviwo::util::detail::flat_extent_impl< T, util::rank< T >::value >", "structinviwo_1_1util_1_1detail_1_1flat__extent__impl.html", [
         [ "inviwo::util::flat_extent< T >", "structinviwo_1_1util_1_1flat__extent.html", null ]
@@ -1814,6 +1819,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< Wrapping >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< cimgutil::InterpolationType >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Sizing >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< layout::InputMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ShadingMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ClipSide >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Transform >", "classinviwo_1_1OptionProperty.html", null ],
@@ -1908,6 +1914,7 @@ var hierarchy =
     [ "inviwo::InviwoSetupInfo::ModuleSetupInfo", "structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html", null ],
     [ "inviwo::approximations::MomentSettingsGL", "structinviwo_1_1approximations_1_1MomentSettingsGL.html", null ],
     [ "inviwo::MoveOnlyValue&lt; T &gt;", "classinviwo_1_1MoveOnlyValue.html", null ],
+    [ "inviwo::layout::MultiInput", "structinviwo_1_1layout_1_1MultiInput.html", null ],
     [ "inviwo::NetworkAutomation", "classinviwo_1_1NetworkAutomation.html", null ],
     [ "inviwo::NetworkEdge", "structinviwo_1_1NetworkEdge.html", null ],
     [ "inviwo::NetworkLock", "structinviwo_1_1NetworkLock.html", null ],
@@ -3146,6 +3153,7 @@ var hierarchy =
     [ "inviwo::animation::SequenceEditorFactoryObject", "classinviwo_1_1animation_1_1SequenceEditorFactoryObject.html", [
       [ "inviwo::animation::SequenceEditorFactoryObjectTemplate< T >", "classinviwo_1_1animation_1_1SequenceEditorFactoryObjectTemplate.html", null ]
     ] ],
+    [ "inviwo::layout::SequenceInput", "structinviwo_1_1layout_1_1SequenceInput.html", null ],
     [ "inviwo::Serializable", "classinviwo_1_1Serializable.html", [
       [ "inviwo::OptionPropertyOption< unsigned int >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< int >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3198,6 +3206,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< Wrapping >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< cimgutil::InterpolationType >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Sizing >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< layout::InputMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ShadingMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ClipSide >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Transform >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3363,6 +3372,7 @@ var hierarchy =
           [ "inviwo::DataInport< inviwo::DataSequence< T > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< std::vector< T > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< inviwo::Volume >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< inviwo::DataSequence< inviwo::Image > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::BrushingAndLinkingInport", "classinviwo_1_1BrushingAndLinkingInport.html", null ],
           [ "inviwo::DataInport< T, N, Flat >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::PythonInport", "classinviwo_1_1PythonInport.html", null ]
@@ -3543,6 +3553,7 @@ var hierarchy =
       [ "inviwo::VolumeSampler< ReturnType >", "classinviwo_1_1VolumeSampler.html", null ]
     ] ],
     [ "inviwo::SphereConfig", "classinviwo_1_1SphereConfig.html", null ],
+    [ "inviwo::layout::SplitterPositions", "structinviwo_1_1layout_1_1SplitterPositions.html", null ],
     [ "inviwo::SplitterRenderer", "classinviwo_1_1SplitterRenderer.html", null ],
     [ "inviwo::SplitterSettings", "classinviwo_1_1SplitterSettings.html", [
       [ "inviwo::SplitterProperty", "classinviwo_1_1SplitterProperty.html", null ]

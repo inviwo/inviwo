@@ -478,6 +478,7 @@ var namespaceinviwo =
     [ "GLUITestProcessor", "classinviwo_1_1GLUITestProcessor.html", "classinviwo_1_1GLUITestProcessor" ],
     [ "GlyphClipping", "classinviwo_1_1GlyphClipping.html", "classinviwo_1_1GlyphClipping" ],
     [ "GraphicsItemData", "classinviwo_1_1GraphicsItemData.html", null ],
+    [ "GridLayout", "classinviwo_1_1GridLayout.html", null ],
     [ "GridPlanes", "classinviwo_1_1GridPlanes.html", "classinviwo_1_1GridPlanes" ],
     [ "HalfEdges", "classinviwo_1_1HalfEdges.html", "classinviwo_1_1HalfEdges" ],
     [ "HDF5Module", "classinviwo_1_1HDF5Module.html", null ],

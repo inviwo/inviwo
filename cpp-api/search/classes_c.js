@@ -127,6 +127,7 @@ var searchData=
   ['multifileproperty_124',['MultiFileProperty',['../classinviwo_1_1MultiFileProperty.html',1,'inviwo']]],
   ['multifilepropertywidgetqt_125',['MultiFilePropertyWidgetQt',['../classinviwo_1_1MultiFilePropertyWidgetQt.html',1,'inviwo']]],
   ['multifilestringpropertywidgetqt_126',['MultiFileStringPropertyWidgetQt',['../classinviwo_1_1MultiFileStringPropertyWidgetQt.html',1,'inviwo']]],
-  ['multilinetextedit_127',['MultilineTextEdit',['../classinviwo_1_1MultilineTextEdit.html',1,'inviwo']]],
-  ['multiraycastingcomponent_128',['MultiRaycastingComponent',['../classinviwo_1_1MultiRaycastingComponent.html',1,'inviwo']]]
+  ['multiinput_127',['MultiInput',['../structinviwo_1_1layout_1_1MultiInput.html',1,'inviwo::layout']]],
+  ['multilinetextedit_128',['MultilineTextEdit',['../classinviwo_1_1MultilineTextEdit.html',1,'inviwo']]],
+  ['multiraycastingcomponent_129',['MultiRaycastingComponent',['../classinviwo_1_1MultiRaycastingComponent.html',1,'inviwo']]]
 ];
