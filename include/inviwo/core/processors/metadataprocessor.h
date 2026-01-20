@@ -53,6 +53,10 @@ template <typename T, typename TInport = DataInport<T>, typename TOutport = Data
 class MetaDataProcessor : public Processor, public PropertyObserver, public PropertyOwnerObserver {
 public:
     MetaDataProcessor();
+    MetaDataProcessor(const MetaDataProcessor&) = delete;
+    MetaDataProcessor(MetaDataProcessor&&) = delete;
+    MetaDataProcessor& operator=(const MetaDataProcessor&) = delete;
+    MetaDataProcessor& operator=(MetaDataProcessor&&) = delete;
     virtual ~MetaDataProcessor() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -115,7 +119,7 @@ void MetaDataProcessor<T, TInport, TOutport>::onSetDisplayName(Property*, const 
 
 template <typename T, typename TInport, typename TOutport>
     requires std::derived_from<T, MetaDataOwner>
-void MetaDataProcessor<T, TInport, TOutport>::onDidAddProperty(Property* property, size_t index) {
+void MetaDataProcessor<T, TInport, TOutport>::onDidAddProperty(Property* property, size_t) {
     property->addObserver(this);
     property->setIdentifier(fmt::format("meta{}", metadata_.size()));
 }

@@ -171,6 +171,9 @@ IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, ivec
  */
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 
+
+IVW_CORE_API std::vector<Processor*> getSelected(ProcessorNetwork* network);
+
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::filesystem::path& refPath);
 

@@ -57,9 +57,7 @@ IVW_CORE_API void replaceSelectionWithCompositeProcessor(ProcessorNetwork& netwo
  */
 IVW_CORE_API void expandCompositeProcessorIntoNetwork(CompositeProcessor& composite);
 
-
 IVW_CORE_API void replaceSelectionWithSequenceProcessor(ProcessorNetwork& network);
-
 
 }  // namespace util
 

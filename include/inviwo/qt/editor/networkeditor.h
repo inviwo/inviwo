@@ -183,8 +183,8 @@ protected:
     void addSequenceMenuItems(QMenu& menu, const std::vector<Processor*>& selectedProcessors,
                               const std::unordered_set<SequenceProcessor*>& selectedSequences);
 
-    static ivec2 findSpaceForProcessors(QPoint startPos, std::vector<Processor*> added,
-                                        std::vector<Processor*> current);
+    static ivec2 findSpaceForProcessors(QPoint startPos, const std::vector<Processor*>& added,
+                                        const std::vector<Processor*>& current);
 
     void addCopyPasteManuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                const ivec2& position);

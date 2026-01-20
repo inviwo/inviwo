@@ -46,6 +46,10 @@ template <typename T, typename OutportType = DataOutport<T>>
 class SequenceSelect : public Processor {
 public:
     SequenceSelect();
+    SequenceSelect(const SequenceSelect&) = delete;
+    SequenceSelect& operator=(const SequenceSelect&) = delete;
+    SequenceSelect(SequenceSelect&&) = delete;
+    SequenceSelect& operator=(SequenceSelect&&) = delete;
     virtual ~SequenceSelect() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -69,9 +73,9 @@ SequenceSelect<T, OutportType>::SequenceSelect()
     , inport_{"inport", "Sequence of data to select from"_help}
     , outport_{"outport", "The selected item"_help}
     , index_{"index", "Index", util::ordinalCount(0uz)}
-    , next_{"next", "Next", [this](Event* e) { index_.set(index_.get() + 1uz); }, IvwKey::Up,
+    , next_{"next", "Next", [this](Event*) { index_.set(index_.get() + 1uz); }, IvwKey::Up,
             KeyState::Press}
-    , prev_{"prev", "Prev", [this](Event* e) { index_.set(std::max(index_.get(), 1uz) - 1uz); },
+    , prev_{"prev", "Prev", [this](Event*) { index_.set(std::max(index_.get(), 1uz) - 1uz); },
             IvwKey::Down, KeyState::Press} {
 
     addPorts(inport_, outport_);

@@ -47,6 +47,10 @@ public:
     DataToSequence() : Processor(), inport_{"inport"}, outport_{"outport"} {
         addPorts(inport_, outport_);
     }
+    DataToSequence(const DataToSequence&) = delete;
+    DataToSequence& operator=(const DataToSequence&) = delete;
+    DataToSequence(DataToSequence&&) = delete;
+    DataToSequence& operator=(DataToSequence&&) = delete;
     virtual ~DataToSequence() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -72,6 +76,10 @@ public:
     DataToSequence() : Processor(), inport_{"inport"}, outport_{"outport"} {
         addPorts(inport_, outport_);
     }
+    DataToSequence(const DataToSequence&) = delete;
+    DataToSequence& operator=(const DataToSequence&) = delete;
+    DataToSequence(DataToSequence&&) = delete;
+    DataToSequence& operator=(DataToSequence&&) = delete;
     virtual ~DataToSequence() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

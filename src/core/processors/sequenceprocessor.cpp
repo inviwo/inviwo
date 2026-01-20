@@ -87,20 +87,20 @@ SequenceProcessor::SequenceProcessor(std::string_view identifier, std::string_vi
 SequenceProcessor::~SequenceProcessor() = default;
 
 void SequenceProcessor::process() {
-    util::KeepTrueWhileInScope processing{&isProcessing_};
+    const util::KeepTrueWhileInScope processing{&isProcessing_};
 
     static constexpr auto deref = [](auto&& item) -> decltype(auto) { return *item; };
 
     std::ranges::for_each(sinks_, &SequenceCompositeSinkBase::superProcessStart, deref);
 
     if (!sources_.empty()) {
-        const auto shortest = std::ranges::min(sources_, std::less<>{},
-                                               [](auto& source) { return source->sequenceSize(); });
+        const auto* shortest = std::ranges::min(
+            sources_, std::less<>{}, [](auto& source) { return source->sequenceSize(); });
         const auto size = shortest->sequenceSize();
 
         for (size_t i = 0; i < size; ++i) {
             std::ranges::for_each(sources_, [&](auto& source) { source->setSequenceIndex(i); });
-            util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
+            const util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
             subNetwork_->unlock();  // This will trigger an evaluation of the sub network.
         }
     }
@@ -140,7 +140,7 @@ void SequenceProcessor::saveSubNetwork(const std::filesystem::path& file) {
 
     // The SequenceProcessorFactoryObject will deserialize the DisplayName and Tags to use in the
     // ProcessorInfo which will be displayed in the processor list
-    InviwoSetupInfo info(*app_, *subNetwork_);
+    const InviwoSetupInfo info(*app_, *subNetwork_);
     s.serialize("InviwoSetup", info);
     s.serialize("DisplayName", getDisplayName());
     s.serialize("Tags", tags.getString());
@@ -155,7 +155,7 @@ ProcessorNetwork& SequenceProcessor::getSubNetwork() { return *subNetwork_; }
 void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {
         subNetwork_->clear();
-        auto wm = app_->getWorkspaceManager();
+        auto* wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
             ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
@@ -236,14 +236,14 @@ void SequenceProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
                                  [this](Property& prop) { registerProperty(&prop); }};
     p->accept(visitor);
 
-    if (auto sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+    if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
         auto& port = sink->getSuperOutport();
         const auto id = util::findUniqueIdentifier(
             port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
         port.setIdentifier(id);
         addPort(port);
         sinks_.push_back(sink);
-    } else if (auto source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+    } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
         auto& port = source->getSuperInport();
         const auto id = util::findUniqueIdentifier(
             port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
@@ -261,10 +261,10 @@ void SequenceProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
                                  [this](Property& prop) { unregisterProperty(&prop); }};
     p->accept(visitor);
 
-    if (auto sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
+    if (auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p)) {
         removePort(&sink->getSuperOutport());
         std::erase(sinks_, sink);
-    } else if (auto source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
+    } else if (auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p)) {
         removePort(&source->getSuperInport());
         std::erase(sources_, source);
     }
@@ -289,19 +289,19 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     , superProperty{subProperty->clone()}
     , subCallback{subProperty->onChange([this]() {
         if (onChangeActive) return;
-        util::KeepTrueWhileInScope active{&onChangeActive};
+        const util::KeepTrueWhileInScope active{&onChangeActive};
         superProperty->set(subProperty);
     })}
     , superCallback{superProperty->onChange([this]() {
         if (onChangeActive) return;
-        util::KeepTrueWhileInScope active{&onChangeActive};
+        const util::KeepTrueWhileInScope active{&onChangeActive};
         subProperty->set(superProperty);
     })} {
 
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
 
     const auto index = [&]() {
-        if (auto meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
+        if (auto* meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
             return meta->get();
         } else {
             subProperty->setMetaData<IntMetaData>(meta::index, static_cast<int>(comp.size()));
@@ -327,8 +327,8 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
             if (superProp == superProperty) {
                 return subProperty;
             } else {
-                auto superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
-                auto subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
+                auto* superOwner = dynamic_cast<CompositeProperty*>(superProp->getOwner());
+                auto* subOwner = dynamic_cast<CompositeProperty*>(self(self, superOwner));
                 auto pos = std::distance(superOwner->cbegin(), superOwner->find(superProp));
                 return (*subOwner)[pos];
             }
@@ -338,13 +338,13 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
 
     LambdaNetworkVisitor visitor{[&](Property& superProp) {
         auto subProp = findSub(&superProp);
-        if (auto meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
+        if (auto* meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
             superProp.setDisplayName(meta->get());
         }
-        if (auto meta = subProp->getMetaData<BoolMetaData>(meta::visible)) {
+        if (auto* meta = subProp->getMetaData<BoolMetaData>(meta::visible)) {
             superProp.setVisible(meta->get());
         }
-        if (auto meta = subProp->getMetaData<BoolMetaData>(meta::readOnly)) {
+        if (auto* meta = subProp->getMetaData<BoolMetaData>(meta::readOnly)) {
             superProp.setReadOnly(meta->get());
         }
         superProp.addObserver(&superObserver);
@@ -352,15 +352,15 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     superProperty->accept(visitor);
 
     superObserver.onDisplayNameChange = [findSub](Property* superProp, std::string_view name) {
-        auto subProp = findSub(superProp);
+        auto* subProp = findSub(superProp);
         subProp->setMetaData<StringMetaData>(meta::displayName, std::string{name});
     };
     superObserver.onVisibleChange = [findSub](Property* superProp, bool visible) {
-        auto subProp = findSub(superProp);
+        auto* subProp = findSub(superProp);
         subProp->setMetaData<BoolMetaData>(meta::visible, visible);
     };
     superObserver.onReadOnlyChange = [findSub](Property* superProp, bool readOnly) {
-        auto subProp = findSub(superProp);
+        auto* subProp = findSub(superProp);
         subProp->setMetaData<BoolMetaData>(meta::readOnly, readOnly);
     };
 }
@@ -372,7 +372,7 @@ SequenceProcessor::PropertyHandler::~PropertyHandler() {
 }
 
 void SequenceProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         auto superId = orgProp->getPath();
         replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
@@ -380,13 +380,13 @@ void SequenceProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
 }
 
 void SequenceProcessor::onSetDisplayName(Property* orgProp, const std::string& displayName) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setDisplayName(displayName);
     }
 }
 
 void SequenceProcessor::onSetSemantics(Property* orgProp, const PropertySemantics& semantics) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setSemantics(semantics);
     }
 }
@@ -398,7 +398,7 @@ void SequenceProcessor::onSetReadOnly(Property* orgProp, bool readonly) {
 }
 
 void SequenceProcessor::onSetVisible(Property* orgProp, bool visible) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setVisible(visible);
     }
 }

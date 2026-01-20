@@ -47,29 +47,35 @@
 
 namespace inviwo {
 
+namespace {
+
+constexpr std::string_view missingMessage =
+    R"(Unable to find a {1} Processor for outport: "{0}"
+Probably need to register a {1} Processor for the port:
+registerProcessor<{2}<InportType, OutportType>>();
+or use the convenience function:
+registerDefaultsForDataType<DataType>();
+)";
+
+}
+
 void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
     try {
-        NetworkLock lock(&network);
+        const NetworkLock lock(&network);
 
-        std::vector<Processor*> selected;
-        util::copy_if(
-            network.getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
-                return m->isSelected();
-            });
+        const auto selected = util::getSelected(&network);
+        const auto connections = network.getConnections();
+        const auto links = network.getLinks();
 
-        std::vector<PortConnection> connections = network.getConnections();
-        std::vector<PropertyLink> links = network.getLinks();
-
-        auto app = network.getApplication();
+        auto* app = network.getApplication();
         auto comp = std::make_shared<CompositeProcessor>("composite", "Composite", app);
         auto* meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         auto center = util::getCenterPosition(selected);
         meta->setPosition(center);
 
         auto& subNetwork = comp->getSubNetwork();
-        NetworkLock subLock(&subNetwork);
-        for (auto p : selected) {
+        const NetworkLock subLock(&subNetwork);
+        for (auto* p : selected) {
             subNetwork.addProcessor(network.removeProcessor(p));
         }
         network.addProcessor(comp);
@@ -80,8 +86,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         std::unordered_map<Outport*, std::vector<Inport*>> inConnections;
         std::unordered_map<Outport*, std::vector<Inport*>> outConnections;
 
-        auto pf = app->getProcessorFactory();
-        for (auto& c : connections) {
+        auto* pf = app->getProcessorFactory();
+        for (const auto& c : connections) {
             auto out = util::contains(selected, c.getOutport()->getProcessor());
             auto in = util::contains(selected, c.getInport()->getProcessor());
             if (out && in) {
@@ -100,7 +106,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                 if (auto* metasouce = dynamic_cast<CompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
-                    for (auto inport : inports) {
+                    for (auto* inport : inports) {
                         optional &= inport->isOptional();
                         subNetwork.addConnection(metasouce->getOutports().front(), inport);
                     }
@@ -118,27 +124,10 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                     metasouce->getSuperInport().setIdentifier(id);
                     network.addConnection(outport, &metasouce->getSuperInport());
                 } else {
-                    LogErrorCustom(
-                        "CompositeProcessor",
-                        "Unable to find a Composite Source Processor for outport: \""
-                            << portId
-                            << "\"\n"
-                               "Probably need to register a Composite Source Processor for the "
-                               "port:\n"
-                               "registerProcessor<CompositeSource<InportType, OutportType>>();\n"
-                               "or use the convenience function:\n"
-                               "registerDefaultsForDataType<DataType>();");
+                    log::error(missingMessage, portId, "Composite Source", "CompositeSource");
                 }
             } else {
-                LogErrorCustom(
-                    "CompositeProcessor",
-                    "Unable to find a Composite Source Processor for outport: \""
-                        << portId
-                        << "\"\n"
-                           "Probably need to register a Composite Source Processor for the port:\n"
-                           "registerProcessor<CompositeSource<InportType, OutportType>>();\n"
-                           "or use the convenience function:\n"
-                           "registerDefaultsForDataType<DataType>();");
+                log::error(missingMessage, portId, "Composite Source", "CompositeSource");
             }
         }
 
@@ -150,7 +139,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                 if (auto* metasink = dynamic_cast<CompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
                     subNetwork.addConnection(outport, metasink->getInports().front());
-                    for (auto inport : inports) {
+                    for (auto* inport : inports) {
                         network.addConnection(&metasink->getSuperOutport(), inport);
                     }
                     auto portIdentifier = outport->getIdentifier();
@@ -164,34 +153,17 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
                                                     portIdentifier);
                     metasink->getSuperOutport().setIdentifier(id);
                 } else {
-                    LogErrorCustom(
-                        "CompositeProcessor",
-                        "Unable to find a Composite Sink Processor for outport: \""
-                            << portId
-                            << "\"\n"
-                               "Probably need to register a Composite Sink Processor for the "
-                               "port:\n"
-                               "registerProcessor<CompositeSink<InportType, OutportType>>();\n"
-                               "or use the convenience function:\n"
-                               "registerDefaultsForDataType<DataType>();");
+                    log::error(missingMessage, portId, "Composite Sink", "CompositeSink");
                 }
             } else {
-                LogErrorCustom(
-                    "CompositeProcessor",
-                    "Unable to find a Composite Sink Processor for outport: \""
-                        << portId
-                        << "\"\n"
-                           "Probably need to register a Composite Sink Processor for the port:\n"
-                           "registerProcessor<CompositeSink<InportType, OutportType>>();\n"
-                           "or use the convenience function:\n"
-                           "registerDefaultsForDataType<DataType>();");
+                log::error(missingMessage, portId, "Composite Sink", "CompositeSink");
             }
         }
 
         // Links
         std::unordered_map<Property*, std::vector<Property*>> inLinks;
         std::unordered_map<Property*, std::vector<Property*>> outLinks;
-        for (auto& l : links) {
+        for (const auto& l : links) {
             auto out = util::contains(selected, l.getSource()->getOwner()->getProcessor());
             auto in = util::contains(selected, l.getDestination()->getOwner()->getProcessor());
             if (out && in) {
@@ -204,15 +176,15 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         }
 
         for (auto& item : inLinks) {
-            for (auto p : item.second) {
-                auto prop = comp->addSuperProperty(p);
+            for (auto* p : item.second) {
+                auto* prop = comp->addSuperProperty(p);
                 network.addLink(item.first, prop);
             }
         }
 
         for (auto& item : outLinks) {
-            auto prop = comp->addSuperProperty(item.first);
-            for (auto p : item.second) {
+            auto* prop = comp->addSuperProperty(item.first);
+            for (auto* p : item.second) {
                 network.addLink(prop, p);
             }
         }
@@ -228,33 +200,33 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
         auto holder = composite.shared_from_this();
         auto& network = *composite.getNetwork();
         auto& subNetwork = composite.getSubNetwork();
-        NetworkLock lock(&network);
-        NetworkLock subLock(&subNetwork);
+        const NetworkLock lock(&network);
+        const NetworkLock subLock(&subNetwork);
 
-        std::vector<Processor*> subProcessors = subNetwork.getProcessors();
-        std::vector<PortConnection> subConnections = subNetwork.getConnections();
-        std::vector<PropertyLink> subLinks = subNetwork.getLinks();
+        const auto subProcessors = subNetwork.getProcessors();
+        const auto subConnections = subNetwork.getConnections();
+        const auto connections = network.getConnections();
 
-        std::vector<PortConnection> connections = network.getConnections();
         // Gather Links
+        auto subLinks = subNetwork.getLinks();
         for (auto& l : network.getLinks()) {
             if (l.getSource()->getOwner()->getProcessor() == &composite) {
-                if (auto orgSource = composite.getSubProperty(l.getSource())) {
+                if (auto* orgSource = composite.getSubProperty(l.getSource())) {
                     network.removeLink(l);
-                    subLinks.push_back(PropertyLink(orgSource, l.getDestination()));
+                    subLinks.emplace_back(orgSource, l.getDestination());
                 }
             } else if (l.getDestination()->getOwner()->getProcessor() == &composite) {
-                if (auto orgDest = composite.getSubProperty(l.getDestination())) {
+                if (auto* orgDest = composite.getSubProperty(l.getDestination())) {
                     network.removeLink(l);
-                    subLinks.push_back(PropertyLink(l.getSource(), orgDest));
+                    subLinks.emplace_back(l.getSource(), orgDest);
                 }
             }
         }
 
         // Move Processors
-        for (auto p : subProcessors) {
-            auto sink = dynamic_cast<CompositeSinkBase*>(p);
-            auto source = dynamic_cast<CompositeSourceBase*>(p);
+        for (auto* p : subProcessors) {
+            auto* sink = dynamic_cast<CompositeSinkBase*>(p);
+            auto* source = dynamic_cast<CompositeSourceBase*>(p);
             if (!sink && !source) {
                 network.addProcessor(subNetwork.removeProcessor(p));
             }
@@ -266,14 +238,14 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
         // Connections
         for (auto& c : subConnections) {
-            if (auto sink = dynamic_cast<CompositeSinkBase*>(c.getInport()->getProcessor())) {
+            if (auto* sink = dynamic_cast<CompositeSinkBase*>(c.getInport()->getProcessor())) {
                 for (auto& con : connections) {
                     if (con.getOutport() == &sink->getSuperOutport()) {
                         network.removeConnection(con);
                         network.addConnection(c.getOutport(), con.getInport());
                     }
                 }
-            } else if (auto source =
+            } else if (auto* source =
                            dynamic_cast<CompositeSourceBase*>(c.getOutport()->getProcessor())) {
                 for (auto& con : connections) {
                     if (con.getInport() == &source->getSuperInport()) {
@@ -299,27 +271,21 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
 void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
     try {
-        NetworkLock lock(&network);
+        const NetworkLock lock(&network);
 
-        std::vector<Processor*> selected;
-        util::copy_if(
-            network.getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-                auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
-                return m->isSelected();
-            });
+        const auto selected = util::getSelected(&network);
+        const auto connections = network.getConnections();
+        const auto links = network.getLinks();
 
-        std::vector<PortConnection> connections = network.getConnections();
-        std::vector<PropertyLink> links = network.getLinks();
-
-        auto app = network.getApplication();
+        auto* app = network.getApplication();
         auto comp = std::make_shared<SequenceProcessor>("sequence", "Sequence", app);
-        auto meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        auto* meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         auto center = util::getCenterPosition(selected);
         meta->setPosition(center);
 
         auto& subNetwork = comp->getSubNetwork();
-        NetworkLock subLock(&subNetwork);
-        for (auto p : selected) {
+        const NetworkLock subLock(&subNetwork);
+        for (auto* p : selected) {
             subNetwork.addProcessor(network.removeProcessor(p));
         }
         network.addProcessor(comp);
@@ -330,8 +296,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         std::unordered_map<Outport*, std::vector<Inport*>> inConnections;
         std::unordered_map<Outport*, std::vector<Inport*>> outConnections;
 
-        auto pf = app->getProcessorFactory();
-        for (auto& c : connections) {
+        auto* pf = app->getProcessorFactory();
+        for (const auto& c : connections) {
             auto out = util::contains(selected, c.getOutport()->getProcessor());
             auto in = util::contains(selected, c.getInport()->getProcessor());
             if (out && in) {
@@ -348,10 +314,10 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
             if (auto source = pf->createShared(
                     fmt::format("{}{}", portId, SequenceCompositeSourceBase::identifierSuffix()))) {
-                if (auto metasouce = dynamic_cast<SequenceCompositeSourceBase*>(source.get())) {
+                if (auto* metasouce = dynamic_cast<SequenceCompositeSourceBase*>(source.get())) {
                     subNetwork.addProcessor(source);
                     bool optional = true;
-                    for (auto inport : inports) {
+                    for (auto* inport : inports) {
                         optional &= inport->isOptional();
                         subNetwork.addConnection(metasouce->getOutports().front(), inport);
                     }
@@ -369,29 +335,11 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
                     metasouce->getSuperInport().setIdentifier(id);
                     // network.addConnection(c.first, &metasouce->getSuperInport());
                 } else {
-                    LogErrorCustom(
-                        "SequenceProcessor",
-                        "Unable to find a Sequence Source Processor for outport: \""
-                            << portId
-                            << "\"\n"
-                               "Probably need to register a Sequence Source Processor for the "
-                               "port:\n"
-                               "registerProcessor<SequenceCompositeSource<InportType, "
-                               "OutportType>>();\n"
-                               "or use the convenience function:\n"
-                               "registerDefaultsForDataType<DataType>();");
+                    log::error(missingMessage, portId, "Sequence Source",
+                               "SequenceCompositeSource");
                 }
             } else {
-                LogErrorCustom(
-                    "SequenceProcessor",
-                    "Unable to find a Sequence Source Processor for outport: \""
-                        << portId
-                        << "\"\n"
-                           "Probably need to register a Sequence Source Processor for the port:\n"
-                           "registerProcessor<SequenceCompositeSource<InportType, "
-                           "OutportType>>();\n"
-                           "or use the convenience function:\n"
-                           "registerDefaultsForDataType<DataType>();");
+                log::error(missingMessage, portId, "Sequence Source", "SequenceCompositeSource");
             }
         }
 
@@ -400,7 +348,7 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
             if (auto sink = pf->createShared(
                     fmt::format("{}{}", portId, SequenceCompositeSinkBase::identifierSuffix()))) {
-                if (auto metasink = dynamic_cast<SequenceCompositeSinkBase*>(sink.get())) {
+                if (auto* metasink = dynamic_cast<SequenceCompositeSinkBase*>(sink.get())) {
                     subNetwork.addProcessor(sink);
                     subNetwork.addConnection(outport, metasink->getInports().front());
                     // for (auto inport : inports) {
@@ -417,35 +365,17 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
                                                     portIdentifier);
                     metasink->getSuperOutport().setIdentifier(id);
                 } else {
-                    LogErrorCustom(
-                        "SequenceProcessor",
-                        "Unable to find a Sequence Sink Processor for outport: \""
-                            << portId
-                            << "\"\n"
-                               "Probably need to register a Sequence Sink Processor for the "
-                               "port:\n"
-                               "registerProcessor<SequenceCompositeSink<InportType, "
-                               "OutportType>>();\n"
-                               "or use the convenience function:\n"
-                               "registerDefaultsForDataType<DataType>();");
+                    log::error(missingMessage, portId, "Sequence Sink", "SequenceCompositeSink");
                 }
             } else {
-                LogErrorCustom(
-                    "SequenceProcessor",
-                    "Unable to find a Sequence Sink Processor for outport: \""
-                        << portId
-                        << "\"\n"
-                           "Probably need to register a Sequence Sink Processor for the port:\n"
-                           "registerProcessor<SequenceCompositeSink<InportType, OutportType>>();\n"
-                           "or use the convenience function:\n"
-                           "registerDefaultsForDataType<DataType>();");
+                log::error(missingMessage, portId, "Sequence Sink", "SequenceCompositeSink");
             }
         }
 
         // Links
         std::unordered_map<Property*, std::vector<Property*>> inLinks;
         std::unordered_map<Property*, std::vector<Property*>> outLinks;
-        for (auto& l : links) {
+        for (const auto& l : links) {
             auto out = util::contains(selected, l.getSource()->getOwner()->getProcessor());
             auto in = util::contains(selected, l.getDestination()->getOwner()->getProcessor());
             if (out && in) {
@@ -458,15 +388,15 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         }
 
         for (auto& item : inLinks) {
-            for (auto p : item.second) {
-                auto prop = comp->addSuperProperty(p);
+            for (auto* p : item.second) {
+                auto* prop = comp->addSuperProperty(p);
                 network.addLink(item.first, prop);
             }
         }
 
         for (auto& item : outLinks) {
-            auto prop = comp->addSuperProperty(item.first);
-            for (auto p : item.second) {
+            auto* prop = comp->addSuperProperty(item.first);
+            for (auto* p : item.second) {
                 network.addLink(prop, p);
             }
         }

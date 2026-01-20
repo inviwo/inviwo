@@ -204,6 +204,14 @@ void setSelected(const std::vector<Processor*>& processors, bool selected) {
     }
 }
 
+std::vector<Processor*> getSelected(ProcessorNetwork* network) {
+    return network->processorRange() | std::views::filter([](Processor& p) {
+               const auto* m = p.getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+               return m->isSelected();
+           }) |
+           std::views::transform([](Processor& p) { return &p; }) | std::ranges::to<std::vector>();
+}
+
 PropertyDistanceSorter::PropertyDistanceSorter() {}
 
 void PropertyDistanceSorter::setTarget(vec2 pos) { pos_ = pos; }
@@ -227,18 +235,14 @@ vec2 PropertyDistanceSorter::getPosition(const Processor* processor) {
 
 void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                        const std::filesystem::path& refPath) {
-    std::vector<Processor*> selected;
-    util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-        const auto* m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
-        return m->isSelected();
-    });
+    auto selected = getSelected(network);
     serializePartial(network, std::move(selected), os, refPath);
 }
 
 void serializePartial(ProcessorNetwork* network, std::vector<Processor*> processors,
                       std::ostream& os, const std::filesystem::path& refPath) {
     Serializer serializer(refPath);
-    detail::PartialProcessorNetwork ppc(network, std::move(processors));
+    const detail::PartialProcessorNetwork ppc(network, std::move(processors));
     serializer.serialize("ProcessorNetwork", ppc);
     serializer.writeFile(os);
 }
@@ -340,8 +344,8 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
         d.deserialize("OutPropertyLinks", outLinks, "PropertyLink");
         d.deserialize("InPropertyLinks", inLinks, "PropertyLink");
 
-        for (auto p : network_->getProcessors()) {
-            auto* m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        for (auto& p : network_->processorRange()) {
+            auto* m = p.getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
             m->setSelected(false);
         }
 

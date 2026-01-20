@@ -50,6 +50,10 @@ namespace inviwo {
 class IVW_CORE_API SequenceCompositeSinkBase : public Processor {
 public:
     SequenceCompositeSinkBase();
+    SequenceCompositeSinkBase(const SequenceCompositeSinkBase&) = delete;
+    SequenceCompositeSinkBase(SequenceCompositeSinkBase&&) = delete;
+    SequenceCompositeSinkBase& operator=(const SequenceCompositeSinkBase&) = delete;
+    SequenceCompositeSinkBase& operator=(SequenceCompositeSinkBase&&) = delete;
     virtual ~SequenceCompositeSinkBase() = default;
 
     static constexpr std::string_view identifierSuffix() { return ".metasequencesink"; };
@@ -77,11 +81,17 @@ public:
  */
 template <typename InportType, typename OutportSequenceType>
 class SequenceCompositeSink : public SequenceCompositeSinkBase {
+    using InportData = typename InportType::type;
+    using OutportSequenceData = typename OutportSequenceType::type;
+    static_assert(std::is_same_v<InportData, typename OutportSequenceData::type>,
+                  "InportType and OutportSequenceType must work with the same data type");
+
 public:
-    // static_assert(
-    //     std::is_same<typename InportType::type, typename OutportSequenceType::type>::value,
-    //     "InportType and OutportSequenceType must work with the same data type");
     SequenceCompositeSink();
+    SequenceCompositeSink(const SequenceCompositeSink&) = delete;
+    SequenceCompositeSink(SequenceCompositeSink&&) = delete;
+    SequenceCompositeSink& operator=(const SequenceCompositeSink&) = delete;
+    SequenceCompositeSink& operator=(SequenceCompositeSink&&) = delete;
     virtual ~SequenceCompositeSink() = default;
 
     virtual void process() override;
@@ -102,9 +112,6 @@ public:
     virtual void superProcessEnd() override { superOutport_.setData(sequenceData_); }
 
 private:
-    using InportData = typename InportType::type;
-    using OutportSequenceData = typename OutportSequenceType::type;
-
     std::shared_ptr<OutportSequenceData> sequenceData_;
     InportType inport_;
     OutportSequenceType superOutport_;  ///< To be added to SequenceProcessor, not itself
@@ -113,10 +120,11 @@ private:
 template <typename InportType, typename OutportSequenceType>
 struct ProcessorTraits<SequenceCompositeSink<InportType, OutportSequenceType>> {
     static ProcessorInfo getProcessorInfo() {
-        using intype = typename InportType::type;
-        using outtype = typename InportType::type;
-        static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-        auto name = fmt::format("{} Meta Sink", DataTraits<intype>::dataName());
+        using inType = typename InportType::type;
+        using sequenceType = typename OutportSequenceType::type;
+        using outType = typename sequenceType::type;
+        static_assert(std::is_same_v<inType, outType>, "type mismatch");
+        auto name = fmt::format("{} Meta Sink", DataTraits<inType>::dataName());
         auto id = util::appendIfNotEmpty(PortTraits<InportType>::classIdentifier(),
                                          SequenceCompositeSinkBase::identifierSuffix());
         return {

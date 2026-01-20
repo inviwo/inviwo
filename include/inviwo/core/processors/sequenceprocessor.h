@@ -99,6 +99,10 @@ public:
      */
     SequenceProcessor(std::string_view identifier, std::string_view displayName,
                       InviwoApplication* app, const std::filesystem::path& filename = "");
+    SequenceProcessor(const SequenceProcessor&) = delete;
+    SequenceProcessor(SequenceProcessor&&) = delete;
+    SequenceProcessor& operator=(const SequenceProcessor&) = delete;
+    SequenceProcessor& operator=(SequenceProcessor&&) = delete;
     virtual ~SequenceProcessor();
 
     /**
@@ -152,8 +156,12 @@ public:
 
 private:
     // Keeps track of the sup/super property pairs.
-    struct PropertyHandler {
+    struct IVW_CORE_API PropertyHandler {
         PropertyHandler(SequenceProcessor& composite, Property* subProperty);
+        PropertyHandler(const PropertyHandler&) = delete;
+        PropertyHandler(PropertyHandler&&) = delete;
+        PropertyHandler& operator=(const PropertyHandler&) = delete;
+        PropertyHandler& operator=(PropertyHandler&&) = delete;
         ~PropertyHandler();
 
         SequenceProcessor& comp;

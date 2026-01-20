@@ -367,7 +367,9 @@ std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
 
 BaseModule::Converter::Converter(int version) : version_(version) {}
 
-bool BaseModule::Converter::convert(TxElement* root) {
+namespace {
+
+bool updateV0(TxElement* root) {
     std::vector<xml::IdentifierReplacement> repl = {
         // CubeProxyGeometry
         {{xml::Kind::processor("org.inviwo.CubeProxyGeometry"),
@@ -451,6 +453,42 @@ bool BaseModule::Converter::convert(TxElement* root) {
         repl.push_back(ir2);
     }
 
+    return xml::changeIdentifiers(root, repl);
+}
+
+bool updateV2(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        const auto& key = node->Value();
+        if (key != "Property") return true;
+        const auto& type = node->GetAttribute("type");
+        if (type != "org.inviwo.VolumeBasisProperty") return true;
+
+        TxElement newNode{"overrideModel"};
+        for (const auto& item : {std::make_tuple(0, "A", 0.0), std::make_tuple(1, "B", 0.0),
+                                 std::make_tuple(2, "C", 0.0), std::make_tuple(3, "Offset", 1.0)}) {
+            const auto path =
+                fmt::format("Properties/Property&identifier=override{}/value", std::get<1>(item));
+            if (auto elem = xml::getElement(node, path)) {
+                auto data = elem->Clone();
+                data->SetValue(fmt::format("col{}", std::get<0>(item)));
+                data->ToElement()->SetAttribute("w", fmt::format("{:f}", std::get<2>(item)));
+                newNode.InsertEndChild(*data);
+            }
+        }
+
+        res = true;
+        node->InsertEndChild(newNode);
+
+        return true;
+    }};
+
+    conv.convert(root);
+    return res;
+}
+
+bool updateV3(TxElement* root) {
+
     std::vector<xml::IdentifierReplacement> replV3 = {
         // WorldTransform (Deprecated)
         {{xml::Kind::processor("org.inviwo.WorldTransformMeshDeprecated")},
@@ -461,9 +499,134 @@ bool BaseModule::Converter::convert(TxElement* root) {
          "World Transform Volume (Deprecated)"}};
 
     bool res = false;
+    res |= xml::changeAttributeRecursive(
+        root, {{xml::Kind::processor("org.inviwo.WorldTransformGeometry")}}, "type",
+        "org.inviwo.WorldTransformGeometry", "org.inviwo.WorldTransformMeshDeprecated");
+    res |= xml::changeAttributeRecursive(
+        root, {{xml::Kind::processor("org.inviwo.WorldTransformVolume")}}, "type",
+        "org.inviwo.WorldTransformVolume", "org.inviwo.WorldTransformVolumeDeprecated");
+    res |= xml::changeIdentifiers(root, replV3);
+    return res;
+}
+
+bool updateV7(TxElement* root) {
+    bool res = false;
+
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        const auto& key = node->Value();
+        if (key != "Processor") return true;
+        if (node->GetAttribute("type") != "org.inviwo.VolumeCreator") {
+            return true;
+        }
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=dimensions")) {
+
+            elem->SetAttribute("identifier", "dims");
+            res = true;
+        }
+        return true;
+    }};
+    conv.convert(root);
+
+    return res;
+}
+
+bool updateV8(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        const auto& key = node->Value();
+        if (key != "Processor") return true;
+        std::string type = node->GetAttribute("type");
+        if (type != "org.inviwo.TransformLayer" && type != "org.inviwo.TransformMesh" &&
+            type != "org.inviwo.TransformVolume") {
+            return true;
+        }
+
+        bool replaceTrafo = false;
+        if (auto value = xml::getElement(node, "Properties/Property&identifier=replace/value")) {
+            replaceTrafo = (value->GetAttribute("content") == "1");
+        }
+
+        if (auto elem =
+                xml::getElement(node, "Properties/Property&identifier=space/selectedIdentifier")) {
+
+            if (elem->GetAttribute("content") == "model") {
+                if (replaceTrafo) {
+                    elem->SetAttribute("content", "worldTransform");
+                } else {
+                    elem->SetAttribute("content", "world_TransformModel");
+                }
+            } else {
+                if (replaceTrafo) {
+                    elem->SetAttribute("content", "TransformModel");
+                } else {
+                    elem->SetAttribute("content", "worldTransform_Model");
+                }
+            }
+            res = true;
+        }
+        return true;
+    }};
+    conv.convert(root);
+    return res;
+}
+
+bool updateV11(TxElement* root) {
+    bool res = false;
+    TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+        const auto& key = node->Value();
+        if (key != "Processor") return true;
+        const auto& type = node->GetAttribute("type");
+        if (type != "org.inviwo.ImageTimeStepSelector" &&
+            type != "org.inviwo.LayerSequenceElementSelector" &&
+            type != "org.inviwo.MeshTimeStepSelector" && type != "org.inviwo.TimeStepSelector") {
+            return true;
+        }
+
+        if (type == "org.inviwo.ImageTimeStepSelector") {
+            node->SetAttribute("type", "org.inviwo.Image.sequence.select");
+        } else if (type == "org.inviwo.LayerSequenceElementSelector") {
+            node->SetAttribute("type", "org.inviwo.Layer.sequence.select");
+        } else if (type == "org.inviwo.MeshTimeStepSelector") {
+            node->SetAttribute("type", "org.inviwo.Mesh.sequence.select");
+        } else if (type == "org.inviwo.TimeStepSelector") {
+            node->SetAttribute("type", "org.inviwo.Volume.sequence.select");
+        }
+
+        // replace the timeStep.selectedSequenceIndex property with a
+        // index property and decrease the index by 1
+        if (auto* props = xml::getElement(node, "Properties")) {
+            if (auto* elem = xml::getElement(props,
+                                             "Property&identifier=timeStep/Properties/"
+                                             "Property&identifier=selectedSequenceIndex/value")) {
+                if (auto maybeIndex = elem->Attribute("content")) {
+                    if (auto index = util::fromStr<int>(*maybeIndex)) {
+                        TxElement indexNode{"Property"};
+                        indexNode.SetAttribute("type", "org.inviwo.Size_tProperty");
+                        indexNode.SetAttribute("identifier", "index");
+                        TxElement value{"value"};
+                        value.SetAttribute("content", fmt::to_string(std::max(0, *index - 1)));
+                        indexNode.InsertEndChild(value);
+                        props->InsertEndChild(indexNode);
+                    }
+                }
+            }
+        }
+        res = true;
+        return true;
+    }};
+
+    conv.convert(root);
+
+    return res;
+}
+
+}  // namespace
+
+bool BaseModule::Converter::convert(TxElement* root) {
+    bool res = false;
     switch (version_) {
         case 0: {
-            res |= xml::changeIdentifiers(root, repl);
+            res |= updateV0(root);
             [[fallthrough]];
         }
         case 1: {
@@ -473,45 +636,11 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 2: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto& key = node->Value();
-                if (key != "Property") return true;
-                const auto& type = node->GetAttribute("type");
-                if (type != "org.inviwo.VolumeBasisProperty") return true;
-
-                TxElement newNode{"overrideModel"};
-                for (const auto& item :
-                     {std::make_tuple(0, "A", 0.0), std::make_tuple(1, "B", 0.0),
-                      std::make_tuple(2, "C", 0.0), std::make_tuple(3, "Offset", 1.0)}) {
-                    const auto path = fmt::format("Properties/Property&identifier=override{}/value",
-                                                  std::get<1>(item));
-                    if (auto elem = xml::getElement(node, path)) {
-                        auto data = elem->Clone();
-                        data->SetValue(fmt::format("col{}", std::get<0>(item)));
-                        data->ToElement()->SetAttribute("w",
-                                                        fmt::format("{:f}", std::get<2>(item)));
-                        newNode.InsertEndChild(*data);
-                    }
-                }
-
-                res = true;
-                node->InsertEndChild(newNode);
-
-                return true;
-            }};
-
-            conv.convert(root);
+            res |= updateV2(root);
             [[fallthrough]];
         }
         case 3: {
-            res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::processor("org.inviwo.WorldTransformGeometry")}}, "type",
-                "org.inviwo.WorldTransformGeometry", "org.inviwo.WorldTransformMeshDeprecated");
-            res |= xml::changeAttributeRecursive(
-                root, {{xml::Kind::processor("org.inviwo.WorldTransformVolume")}}, "type",
-                "org.inviwo.WorldTransformVolume", "org.inviwo.WorldTransformVolumeDeprecated");
-            res |= xml::changeIdentifiers(root, replV3);
-
+            res |= updateV3(root);
             [[fallthrough]];
         }
         case 4: {
@@ -542,60 +671,11 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 7: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto& key = node->Value();
-                if (key != "Processor") return true;
-                if (node->GetAttribute("type") != "org.inviwo.VolumeCreator") {
-                    return true;
-                }
-                if (auto elem =
-                        xml::getElement(node, "Properties/Property&identifier=dimensions")) {
-
-                    elem->SetAttribute("identifier", "dims");
-                    res = true;
-                }
-                return true;
-            }};
-            conv.convert(root);
+            res |= updateV7(root);
             [[fallthrough]];
         }
         case 8: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto& key = node->Value();
-                if (key != "Processor") return true;
-                std::string type = node->GetAttribute("type");
-                if (type != "org.inviwo.TransformLayer" && type != "org.inviwo.TransformMesh" &&
-                    type != "org.inviwo.TransformVolume") {
-                    return true;
-                }
-
-                bool replaceTrafo = false;
-                if (auto value =
-                        xml::getElement(node, "Properties/Property&identifier=replace/value")) {
-                    replaceTrafo = (value->GetAttribute("content") == "1");
-                }
-
-                if (auto elem = xml::getElement(
-                        node, "Properties/Property&identifier=space/selectedIdentifier")) {
-
-                    if (elem->GetAttribute("content") == "model") {
-                        if (replaceTrafo) {
-                            elem->SetAttribute("content", "worldTransform");
-                        } else {
-                            elem->SetAttribute("content", "world_TransformModel");
-                        }
-                    } else {
-                        if (replaceTrafo) {
-                            elem->SetAttribute("content", "TransformModel");
-                        } else {
-                            elem->SetAttribute("content", "worldTransform_Model");
-                        }
-                    }
-                    res = true;
-                }
-                return true;
-            }};
-            conv.convert(root);
+            res |= updateV8(root);
             [[fallthrough]];
         }
         case 9: {
@@ -617,53 +697,7 @@ bool BaseModule::Converter::convert(TxElement* root) {
             [[fallthrough]];
         }
         case 11: {
-            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                const auto& key = node->Value();
-                if (key != "Processor") return true;
-                const auto& type = node->GetAttribute("type");
-                if (type != "org.inviwo.ImageTimeStepSelector" &&
-                    type != "org.inviwo.LayerSequenceElementSelector" &&
-                    type != "org.inviwo.MeshTimeStepSelector" &&
-                    type != "org.inviwo.TimeStepSelector") {
-                    return true;
-                }
-
-                if (type == "org.inviwo.ImageTimeStepSelector") {
-                    node->SetAttribute("type", "org.inviwo.Image.sequence.select");
-                } else if (type == "org.inviwo.LayerSequenceElementSelector") {
-                    node->SetAttribute("type", "org.inviwo.Layer.sequence.select");
-                } else if (type == "org.inviwo.MeshTimeStepSelector") {
-                    node->SetAttribute("type", "org.inviwo.Mesh.sequence.select");
-                } else if (type == "org.inviwo.TimeStepSelector") {
-                    node->SetAttribute("type", "org.inviwo.Volume.sequence.select");
-                }
-
-                // replace the timeStep.selectedSequenceIndex property with a
-                // index property and decrease the index by 1
-                if (auto* props = xml::getElement(node, "Properties")) {
-                    if (auto* elem =
-                            xml::getElement(props,
-                                            "Property&identifier=timeStep/Properties/"
-                                            "Property&identifier=selectedSequenceIndex/value")) {
-                        if (auto maybeIndex = elem->Attribute("content")) {
-                            if (auto index = util::fromStr<int>(*maybeIndex)) {
-                                TxElement indexNode{"Property"};
-                                indexNode.SetAttribute("type", "org.inviwo.Size_tProperty");
-                                indexNode.SetAttribute("identifier", "index");
-                                TxElement value{"value"};
-                                value.SetAttribute("content",
-                                                   fmt::to_string(std::max(0, *index - 1)));
-                                indexNode.InsertEndChild(value);
-                                props->InsertEndChild(indexNode);
-                            }
-                        }
-                    }
-                }
-                res = true;
-                return true;
-            }};
-
-            conv.convert(root);
+            res |= updateV11(root);
             return res;
         }
 

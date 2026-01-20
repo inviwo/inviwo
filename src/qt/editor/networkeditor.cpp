@@ -446,10 +446,10 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
     const auto modifiers = QApplication::keyboardModifiers();
     if (modifiers.testFlag(Qt::ShiftModifier) || modifiers.testFlag(Qt::AltModifier)) {
-        for (auto item : selectedItems()) {
-            if (auto gp = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+        for (auto* item : selectedItems()) {
+            if (auto* gp = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                 if (modifiers.testFlag(Qt::ShiftModifier)) {
-                    for (auto proc : util::getDirectSuccessors(gp->getProcessor())) {
+                    for (auto* proc : util::getDirectSuccessors(gp->getProcessor())) {
                         if (auto it = processorGraphicsItems_.find(proc);
                             it != processorGraphicsItems_.end()) {
                             it->second->setSelected(true);
@@ -457,7 +457,7 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
                     }
                 }
                 if (modifiers.testFlag(Qt::AltModifier)) {
-                    for (auto proc : util::getDirectPredecessors(gp->getProcessor())) {
+                    for (auto* proc : util::getDirectPredecessors(gp->getProcessor())) {
                         if (auto it = processorGraphicsItems_.find(proc);
                             it != processorGraphicsItems_.end()) {
                             it->second->setSelected(true);
@@ -472,9 +472,9 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    if (auto p = getProcessorGraphicsItemAt(e->scenePos())) {
-        if (auto processor = p->getProcessor()) {
-            if (auto widget = processor->getProcessorWidget()) {
+    if (auto* p = getProcessorGraphicsItemAt(e->scenePos())) {
+        if (auto* processor = p->getProcessor()) {
+            if (auto* widget = processor->getProcessorWidget()) {
                 widget->setVisible(!widget->isVisible());
             }
         }
@@ -560,8 +560,8 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
 
     if (pim->isPortInspectorSupported(outport)) {
         auto pos = ogi->mapPosToSceen(ogi->rect().center());
-        auto hasInspector = pim->hasPortInspector(outport);
-        auto showPortInsector =
+        bool hasInspector = pim->hasPortInspector(outport);
+        auto* showPortInsector =
             menu.addAction(tr(hasInspector ? "Hide Port Inspector" : "Show Port &Inspector"));
         showPortInsector->setCheckable(true);
         showPortInsector->setChecked(hasInspector);
@@ -596,8 +596,8 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
 // in steps of the grid size.
 // Then we check a grid size lower down, and continue until we have found the closest
 // location.
-ivec2 NetworkEditor::findSpaceForProcessors(QPoint srcPos, std::vector<Processor*> added,
-                                            std::vector<Processor*> current) {
+ivec2 NetworkEditor::findSpaceForProcessors(QPoint srcPos, const std::vector<Processor*>& added,
+                                            const std::vector<Processor*>& current) {
     constexpr auto pSize = ProcessorGraphicsItem::size.toSize();
     constexpr QRect processorRect{QPoint{-pSize.width() / 2, -pSize.height() / 2}, pSize};
 
@@ -810,13 +810,13 @@ void NetworkEditor::addCompositeMenuItems(
     auto* expandAction =
         menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
     connect(expandAction, &QAction::triggered, this, [selectedComposites]() {
-        for (auto& p : selectedComposites) {
+        for (auto* p : selectedComposites) {
             util::expandCompositeProcessorIntoNetwork(*p);
         }
     });
     expandAction->setDisabled(selectedComposites.empty());
 
-    auto selectPropAction =
+    auto* selectPropAction =
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
     selectPropAction->setEnabled(selectedComposites.size() == 1);
     connect(selectPropAction, &QAction::triggered, this, [this, selectedComposites]() {
@@ -824,14 +824,14 @@ void NetworkEditor::addCompositeMenuItems(
         dialog->show();
     });
 
-    auto saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
+    auto* saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
     connect(saveCompAction, &QAction::triggered, this, [selectedComposites]() {
-        for (auto& p : selectedComposites) {
+        for (auto* p : selectedComposites) {
             const auto compDir = filesystem::getPath(PathType::Settings, "/composites", true);
             const auto filename = util::findUniqueIdentifier(
                 util::stripIdentifier(p->getDisplayName()),
                 [&](std::string_view basename) {
-                    auto path = compDir / fmt::format("{}.inv", basename);
+                    const auto path = compDir / fmt::format("{}.inv", basename);
                     return !std::filesystem::is_regular_file(path);
                 },
                 "");
@@ -859,7 +859,7 @@ void NetworkEditor::addSequenceMenuItems(
     });
     sequenceAction->setEnabled(selectedProcessors.size() > 1);
 
-    // TODO
+    // TODO(Peter)
     //
     // auto* expandAction =
     //    menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Sequence"));
@@ -870,7 +870,7 @@ void NetworkEditor::addSequenceMenuItems(
     //});
     // expandAction->setDisabled(selectedSequences.empty());
 
-    auto selectPropAction =
+    auto* selectPropAction =
         menu.addAction(QIcon(":/svgicons/developermode.svg"), tr("Configure Properties"));
     selectPropAction->setEnabled(selectedSequences.size() == 1);
     connect(selectPropAction, &QAction::triggered, this, [this, selectedSequences]() {
@@ -1120,7 +1120,7 @@ std::unique_ptr<QMimeData> NetworkEditor::cut(const QList<QGraphicsItem*>& items
 void NetworkEditor::paste(const QMimeData& mimeData, const ivec2& position) {
     paste(mimeData,
           [position](const std::vector<Processor*>& added,
-                     const std::vector<Processor*>& sources) -> ivec2 {
+                     const std::vector<Processor*>& /*sources*/) -> ivec2 {
               auto bounds = util::getBoundingBox(added);
               const ivec2 offset =
                   position - bounds.first + ivec2(0.5 * utilqt::toGLM(ProcessorGraphicsItem::size));

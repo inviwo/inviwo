@@ -31,6 +31,8 @@
 
 namespace inviwo::detail {
 
+namespace {
+
 template <typename... Types, typename F>
 auto expand_each_type(const F& func) {
     (func.template operator()<Types>(), ...);
@@ -52,6 +54,8 @@ struct TypeMap<std::string> {
     using Property = StringProperty;
     using MetaData = MetaDataType<std::string>;
 };
+
+}  // namespace
 
 std::vector<std::unique_ptr<Property>> createPrefabs() {
     std::vector<std::unique_ptr<Property>> vec;

@@ -48,6 +48,10 @@ namespace inviwo {
 class IVW_CORE_API SequenceCompositeSourceBase : public Processor {
 public:
     SequenceCompositeSourceBase();
+    SequenceCompositeSourceBase(const SequenceCompositeSourceBase&) = delete;
+    SequenceCompositeSourceBase(SequenceCompositeSourceBase&&) = delete;
+    SequenceCompositeSourceBase& operator=(const SequenceCompositeSourceBase&) = delete;
+    SequenceCompositeSourceBase& operator=(SequenceCompositeSourceBase&&) = delete;
     virtual ~SequenceCompositeSourceBase() = default;
 
     static constexpr std::string_view identifierSuffix() { return ".metasequencesource"; };
@@ -76,11 +80,18 @@ public:
  */
 template <typename InportSequenceType, typename OutportType>
 class SequenceCompositeSource : public SequenceCompositeSourceBase {
+    using OutportData = typename OutportType::type;
+    using InportSequenceData = typename InportSequenceType::type;
+
+    static_assert(std::is_same_v<typename InportSequenceData::type, OutportData>,
+                  "InportSequenceType and OutportType must work with the same data type");
+
 public:
-    // static_assert(
-    //     std::is_same<typename InportSequenceType::type, typename OutportType::type>::value,
-    //     "InportSequenceType and OutportType must work with the same data type");
     SequenceCompositeSource();
+    SequenceCompositeSource(const SequenceCompositeSource&) = delete;
+    SequenceCompositeSource(SequenceCompositeSource&&) = delete;
+    SequenceCompositeSource& operator=(const SequenceCompositeSource&) = delete;
+    SequenceCompositeSource& operator=(SequenceCompositeSource&&) = delete;
     virtual ~SequenceCompositeSource() = default;
 
     virtual void process() override;
@@ -120,9 +131,10 @@ private:
 template <typename InportSequenceType, typename OutportType>
 struct ProcessorTraits<SequenceCompositeSource<InportSequenceType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
-        using intype = typename InportSequenceType::type;
-        using outtype = typename InportSequenceType::type;
-        static_assert(std::is_same<intype, outtype>::value, "type mismatch");
+        using sequenceType = typename InportSequenceType::type;
+        using intype = typename sequenceType::type;
+        using outtype = typename sequenceType::type;
+        static_assert(std::is_same_v<intype, outtype>, "type mismatch");
         auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
         auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
                                          SequenceCompositeSourceBase::identifierSuffix());
