@@ -507,7 +507,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     if (version != processorNetworkVersion_) {
         log::message(d, LogLevel::Warn,
-                     "Loading old workspace ({}) Processor Network version: {}. "
+                     "Loading old workspace ({}). Processor Network version: {}. "
                      "Updating to version: {}.",
                      d.getFileName(), version, processorNetworkVersion_);
         ProcessorNetworkConverter nv(version);

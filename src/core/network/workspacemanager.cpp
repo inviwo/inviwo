@@ -368,7 +368,7 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
                 deserializer.convertVersion(converter.get());
                 log::message(
                     deserializer, LogLevel::Warn,
-                    "Loading old workspace ({}) Module version: {}. Updating to version: {}.",
+                    "Loading old workspace ({}). {} module version: {}. Updating to version: {}.",
                     deserializer.getFileName(), inviwoModule.getIdentifier(), moduleInfo->version,
                     inviwoModule.getVersion());
             }
