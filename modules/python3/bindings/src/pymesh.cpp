@@ -30,6 +30,7 @@
 #include <inviwopy/pymesh.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/util/pydatasequence.h>
 
 #include <pybind11/functional.h>
 #include <pybind11/stl_bind.h>
@@ -299,9 +300,7 @@ void exposeMesh(pybind11::module& m) {
             return self.addVertex(vertex);
         });
 
-    using MeshSequence = std::vector<std::shared_ptr<Mesh>>;
-    py::bind_vector<MeshSequence, py::smart_holder>(m, "MeshSequence");
-
+    util::exportDataSequenceFor<Mesh>(m, "Mesh");
     exposeStandardDataPorts<Mesh>(m, "Mesh");
     exposeStandardDataPorts<MeshSequence>(m, "MeshSequence");
 }

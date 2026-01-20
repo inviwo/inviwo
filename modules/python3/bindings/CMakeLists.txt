@@ -45,6 +45,7 @@ set(HEADER_FILES
     include/inviwopy/pyspatialdata.h
     include/inviwopy/pytfprimitiveset.h
     include/inviwopy/pyvolume.h
+    include/inviwopy/util/pydatasequence.h
     include/inviwopy/util/pyglmhelper.h
     include/inviwopy/util/pypropertyhelper.h
     include/inviwopy/vectoridentifierwrapper.h
@@ -98,6 +99,7 @@ set(SOURCE_FILES
     src/pyspatialdata.cpp
     src/pytfprimitiveset.cpp
     src/pyvolume.cpp
+    src/util/pydatasequence.cpp
     src/util/pyglmhelper.cpp
     src/util/pypropertyhelper.cpp
     src/vectoridentifierwrapper.cpp
