@@ -96,6 +96,10 @@
             {
              "name": "wayland",
              "platform": "linux"
+            },
+            {
+             "name": "egl",
+             "platform": "linux"
             }
           ]
         },
