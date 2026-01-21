@@ -55,7 +55,7 @@ runs:
                          autoconf autoconf-archive automake libtool libltdl-dev \
                          '^libxcb.*-dev' libx11-xcb-dev libxrender-dev \
                          libxi-dev libxkbcommon-dev libxkbcommon-x11-dev libegl1-mesa-dev \
-                         libwayland-dev wayland-protocols
+                         libwayland-dev wayland-protocols libwayland-egl1-mesa libgles2-mesa-dev mesa-common-dev
 
     - name: "Setup GCC ${{ inputs.gcc-version }}"
       shell: bash
