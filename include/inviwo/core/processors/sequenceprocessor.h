@@ -169,8 +169,8 @@ private:
 
     void loadSubNetwork(const std::filesystem::path& file);
 
-    void registerProperty(Property* prop);
-    void unregisterProperty(Property* prop);
+    void registerProperty(Property* subProperty);
+    void unregisterProperty(Property* subProperty);
 
     // PropertyObserver overrides
     virtual void onSetIdentifier(Property* subProperty, const std::string& identifier) override;

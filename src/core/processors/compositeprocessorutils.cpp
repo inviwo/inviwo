@@ -57,8 +57,8 @@ or use the convenience function:
 registerDefaultsForDataType<DataType>();
 )";
 
-auto partitionConnections(const std::vector<PortConnection> connections,
-                          const std::vector<Processor*> selected)
+auto partitionConnections(const std::vector<PortConnection>& connections,
+                          const std::vector<Processor*>& selected)
     -> std::tuple<std::vector<PortConnection>, std::unordered_map<Outport*, std::vector<Inport*>>,
                   std::unordered_map<Outport*, std::vector<Inport*>>> {
 
@@ -81,7 +81,7 @@ auto partitionConnections(const std::vector<PortConnection> connections,
     return {internal, inConnections, outConnections};
 }
 
-auto partitionLinks(const std::vector<PropertyLink> links, const std::vector<Processor*> selected)
+auto partitionLinks(const std::vector<PropertyLink>& links, const std::vector<Processor*>& selected)
     -> std::tuple<std::vector<PropertyLink>, std::unordered_map<Property*, std::vector<Property*>>,
                   std::unordered_map<Property*, std::vector<Property*>>> {
 
@@ -135,9 +135,8 @@ std::shared_ptr<Source> addMetaSource(const std::vector<Inport*>& inports,
 }
 
 template <typename Sink>
-std::shared_ptr<Sink> addMetaSink(Outport* outport, const std::vector<Inport*>& inports,
-                                  ProcessorNetwork& subNetwork, std::string_view portId,
-                                  const ProcessorFactory* pf) {
+std::shared_ptr<Sink> addMetaSink(Outport* outport, ProcessorNetwork& subNetwork,
+                                  std::string_view portId, const ProcessorFactory* pf) {
     if (auto metasink = std::dynamic_pointer_cast<Sink>(std::shared_ptr<Processor>(
             pf->createShared(fmt::format("{}{}", portId, Sink::identifierSuffix()))))) {
         subNetwork.addProcessor(metasink);
@@ -192,7 +191,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
             subNetwork.addConnection(c);
         }
 
-        for (auto& [outport, inports] : inConnections) {
+        for (const auto& [outport, inports] : inConnections) {
             const auto portId = outport->getClassIdentifier();
             if (auto metaSource =
                     addMetaSource<CompositeSourceBase>(inports, subNetwork, portId, pf)) {
@@ -202,10 +201,9 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
             }
         }
 
-        for (auto& [outport, inports] : outConnections) {
+        for (const auto& [outport, inports] : outConnections) {
             const auto portId = outport->getClassIdentifier();
-            if (auto metasink =
-                    addMetaSink<CompositeSinkBase>(outport, inports, subNetwork, portId, pf)) {
+            if (auto metasink = addMetaSink<CompositeSinkBase>(outport, subNetwork, portId, pf)) {
                 for (auto* inport : inports) {
                     network.addConnection(&metasink->getSuperOutport(), inport);
                 }
@@ -217,15 +215,15 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         // Links
         const auto [internalLinks, inLinks, outLinks] = partitionLinks(links, selected);
 
-        for (auto l : internalLinks) {
+        for (const auto& l : internalLinks) {
             subNetwork.addLink(l);
         }
-        for (auto& [src, dests] : inLinks) {
+        for (const auto& [src, dests] : inLinks) {
             for (auto* dst : dests) {
                 network.addLink(src, comp->addSuperProperty(dst));
             }
         }
-        for (auto& [src, dests] : outLinks) {
+        for (const auto& [src, dests] : outLinks) {
             auto* superSrc = comp->addSuperProperty(src);
             for (auto* dst : dests) {
                 network.addLink(superSrc, dst);
@@ -345,20 +343,22 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
             subNetwork.addConnection(c);
         }
 
-        for (auto& [outport, inports] : inConnections) {
+        for (const auto& [outport, inports] : inConnections) {
             const auto portId = outport->getClassIdentifier();
             if (auto metaSource =
                     addMetaSource<SequenceCompositeSourceBase>(inports, subNetwork, portId, pf)) {
+                // TODO(Peter)
                 // network.addConnection(outport, &metaSource->getSuperInport());
             } else {
                 log::error(missingMessage, portId, "Sequence Source", "SequenceCompositeSource");
             }
         }
 
-        for (auto& [outport, inports] : outConnections) {
+        for (const auto& [outport, inports] : outConnections) {
             const auto portId = inports.front()->getClassIdentifier();
-            if (auto metasink = addMetaSink<SequenceCompositeSinkBase>(outport, inports, subNetwork,
-                                                                       portId, pf)) {
+            if (auto metasink =
+                    addMetaSink<SequenceCompositeSinkBase>(outport, subNetwork, portId, pf)) {
+                // TODO(Peter)
                 // for (auto* inport : inports) {
                 //     network.addConnection(&metasink->getSuperOutport(), inport);
                 // }
@@ -370,15 +370,15 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         // Links
         const auto [internalLinks, inLinks, outLinks] = partitionLinks(links, selected);
 
-        for (auto l : internalLinks) {
+        for (const auto& l : internalLinks) {
             subNetwork.addLink(l);
         }
-        for (auto& [src, dests] : inLinks) {
+        for (const auto& [src, dests] : inLinks) {
             for (auto* dst : dests) {
                 network.addLink(src, comp->addSuperProperty(dst));
             }
         }
-        for (auto& [src, dests] : outLinks) {
+        for (const auto& [src, dests] : outLinks) {
             auto* superSrc = comp->addSuperProperty(src);
             for (auto* dst : dests) {
                 network.addLink(superSrc, dst);

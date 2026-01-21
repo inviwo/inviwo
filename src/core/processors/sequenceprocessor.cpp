@@ -60,7 +60,7 @@ constexpr std::string_view displayName = "SequenceProcessorDisplayName";
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SequenceProcessor::processorInfo_{
     "org.inviwo.SequenceProcessor",  // Class identifier
-    "Composite",                     // Display name
+    "Sequence",                      // Display name
     "Meta",                          // Category
     CodeState::Stable,               // Code state
     "Composites",                    // Tags
