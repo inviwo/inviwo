@@ -153,7 +153,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     using MetaDataTypes = std::tuple<int, ivec2, ivec3, ivec4,
                                      unsigned int, uvec2, uvec3, uvec4,
                                      size_t, size2_t, size3_t, size4_t,
-                                     float, vec3, vec3, vec4, mat2, mat3, mat4,
+                                     float, vec2, vec3, vec4, mat2, mat3, mat4,
                                      double, dvec2, dvec3, dvec4, dmat2, dmat3, dmat4,
                                      bool, std::string>;
     // clang-format on
