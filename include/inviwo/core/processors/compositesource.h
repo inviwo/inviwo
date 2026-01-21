@@ -49,7 +49,13 @@ namespace inviwo {
 class IVW_CORE_API CompositeSourceBase : public Processor {
 public:
     CompositeSourceBase();
+    CompositeSourceBase(const CompositeSourceBase&) = delete;
+    CompositeSourceBase(CompositeSourceBase&&) = delete;
+    CompositeSourceBase& operator=(const CompositeSourceBase&) = delete;
+    CompositeSourceBase& operator=(CompositeSourceBase&&) = delete;
     virtual ~CompositeSourceBase() = default;
+
+    static constexpr std::string_view identifierSuffix() { return ".metasource"; };
 
     /**
      * Inport to be used by the CompositeProcessor to put data into its sub network.
@@ -73,6 +79,11 @@ public:
     static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
                   "InportType and OutportType must work with the same data type");
     CompositeSource();
+    CompositeSource(const CompositeSource&) = delete;
+    CompositeSource(CompositeSource&&) = delete;
+    CompositeSource& operator=(const CompositeSource&) = delete;
+    CompositeSource& operator=(CompositeSource&&) = delete;
+
     virtual ~CompositeSource() = default;
 
     virtual void process() override;
@@ -101,7 +112,8 @@ struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
         auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
-        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(), ".metasource");
+        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
+                                         CompositeSourceBase::identifierSuffix());
         return {
             id,                 // Class identifier
             name,               // Display name

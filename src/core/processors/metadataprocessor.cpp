@@ -59,12 +59,13 @@ struct TypeMap<std::string> {
 
 std::vector<std::unique_ptr<Property>> createPrefabs() {
     std::vector<std::unique_ptr<Property>> vec;
-    detail::expand_each_type<bool, int, float, double, vec2, vec3, vec4, dvec2, dvec3, dvec4, ivec2,
-                             ivec3, ivec4, uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3,
-                             dmat4, std::string>([&]<typename Type>() {
-        using Prop = detail::TypeMap<Type>::Property;
-        vec.emplace_back(std::make_unique<Prop>("meta", Defaultvalues<Type>::getName()));
-    });
+    detail::expand_each_type<int, ivec2, ivec3, ivec4, unsigned int, uvec2, uvec3, uvec4, size_t,
+                             size2_t, size3_t, size4_t, float, vec3, vec3, vec4, mat2, mat3, mat4,
+                             double, dvec2, dvec3, dvec4, dmat2, dmat3, dmat4, bool, std::string>(
+        [&]<typename Type>() {
+            using Prop = detail::TypeMap<Type>::Property;
+            vec.emplace_back(std::make_unique<Prop>("meta", Defaultvalues<Type>::getName()));
+        });
     return vec;
 }
 

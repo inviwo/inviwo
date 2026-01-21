@@ -149,33 +149,17 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::registerCoreRepresentations(*this);
 
     // Register MetaData
-    registerMetaData(std::make_unique<BoolMetaData>());
-    registerMetaData(std::make_unique<IntMetaData>());
-    registerMetaData(std::make_unique<FloatMetaData>());
-    registerMetaData(std::make_unique<DoubleMetaData>());
-    registerMetaData(std::make_unique<StringMetaData>());
-    registerMetaData(std::make_unique<SizeMetaData>());
-    registerMetaData(std::make_unique<FloatVec2MetaData>());
-    registerMetaData(std::make_unique<FloatVec3MetaData>());
-    registerMetaData(std::make_unique<FloatVec4MetaData>());
-    registerMetaData(std::make_unique<DoubleVec2MetaData>());
-    registerMetaData(std::make_unique<DoubleVec3MetaData>());
-    registerMetaData(std::make_unique<DoubleVec4MetaData>());
-    registerMetaData(std::make_unique<IntVec2MetaData>());
-    registerMetaData(std::make_unique<IntVec3MetaData>());
-    registerMetaData(std::make_unique<IntVec4MetaData>());
-    registerMetaData(std::make_unique<UIntVec2MetaData>());
-    registerMetaData(std::make_unique<UIntVec3MetaData>());
-    registerMetaData(std::make_unique<UIntVec4MetaData>());
-    registerMetaData(std::make_unique<FloatMat2MetaData>());
-    registerMetaData(std::make_unique<FloatMat3MetaData>());
-    registerMetaData(std::make_unique<FloatMat4MetaData>());
-    registerMetaData(std::make_unique<DoubleMat2MetaData>());
-    registerMetaData(std::make_unique<DoubleMat4MetaData>());
-    registerMetaData(std::make_unique<DoubleMat3MetaData>());
-    registerMetaData(std::make_unique<Size2MetaData>());
-    registerMetaData(std::make_unique<Size3MetaData>());
-    registerMetaData(std::make_unique<Size4MetaData>());
+    // clang-format off
+    using MetaDataTypes = std::tuple<int, ivec2, ivec3, ivec4,
+                                     unsigned int, uvec2, uvec3, uvec4,
+                                     size_t, size2_t, size3_t, size4_t,
+                                     float, vec3, vec3, vec4, mat2, mat3, mat4,
+                                     double, dvec2, dvec3, dvec4, dmat2, dmat3, dmat4,
+                                     bool, std::string>;
+    // clang-format on
+    util::for_each_type<MetaDataTypes>{}(
+        [&]<typename T>() { registerMetaData(std::make_unique<MetaDataType<T>>()); });
+
     registerMetaData(std::make_unique<PositionMetaData>());
     registerMetaData(std::make_unique<ProcessorMetaData>());
     registerMetaData(std::make_unique<ProcessorWidgetMetaData>());
@@ -273,10 +257,14 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<DirectoryProperty>();
 
     // Register ordinal property
-    using OrdinalTypes =
-        std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
-                   dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
-                   uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
+    // clang-format off
+    using OrdinalTypes = std::tuple<int, ivec2, ivec3, ivec4,
+                                    unsigned int, uvec2, uvec3, uvec4,
+                                    size_t, size2_t, size3_t, size4_t,
+                                    float, vec2, vec3, vec4, mat2, mat3, mat4,
+                                    double, dvec2, dvec3, dvec4, dmat2, dmat3, dmat4,
+                                    glm::i64, glm::fquat, glm::dquat>;
+    // clang-format on
     util::for_each_type<OrdinalTypes>{}([&]<typename T>() {
         registerProperty<OrdinalProperty<T>>();
         registerProperty<OrdinalRefProperty<T>>();

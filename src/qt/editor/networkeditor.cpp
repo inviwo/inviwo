@@ -993,7 +993,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
     menu.addSeparator();
 
-    auto deleteAction = menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
+    auto* deleteAction = menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
     deleteAction->setEnabled(!activeItems.empty());
     connect(deleteAction, &QAction::triggered, this,
             [this, items = activeItems]() { deleteItems(items); });
@@ -1165,7 +1165,7 @@ void NetworkEditor::ensureVisible(const std::vector<Processor*>& processors) {
 
     QRectF rect;
     for (auto* item : processors) {
-        auto pgi = getProcessorGraphicsItem(item);
+        auto* pgi = getProcessorGraphicsItem(item);
         rect = rect.united(pgi->sceneBoundingRect());
     }
     for (auto* v : views()) {

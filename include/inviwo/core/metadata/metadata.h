@@ -136,39 +136,38 @@ void MetaDataType<T>::deserialize(Deserializer& d) {
     d.deserialize("MetaData", value_);
 }
 
-using BoolMetaData = MetaDataType<bool>;
 using IntMetaData = MetaDataType<int>;
-using FloatMetaData = MetaDataType<float>;
-using DoubleMetaData = MetaDataType<double>;
-using StringMetaData = MetaDataType<std::string>;
-using SizeMetaData = MetaDataType<size_t>;
-
-using FloatVec2MetaData = MetaDataType<vec2>;
-using FloatVec3MetaData = MetaDataType<vec3>;
-using FloatVec4MetaData = MetaDataType<vec4>;
-
-using DoubleVec2MetaData = MetaDataType<dvec2>;
-using DoubleVec3MetaData = MetaDataType<dvec3>;
-using DoubleVec4MetaData = MetaDataType<dvec4>;
-
 using IntVec2MetaData = MetaDataType<ivec2>;
 using IntVec3MetaData = MetaDataType<ivec3>;
 using IntVec4MetaData = MetaDataType<ivec4>;
 
+using UIntMetaData = MetaDataType<unsigned int>;
 using UIntVec2MetaData = MetaDataType<uvec2>;
 using UIntVec3MetaData = MetaDataType<uvec3>;
 using UIntVec4MetaData = MetaDataType<uvec4>;
 
+using SizeMetaData = MetaDataType<size_t>;
+using Size2MetaData = MetaDataType<size2_t>;
+using Size3MetaData = MetaDataType<size3_t>;
+using Size4MetaData = MetaDataType<size4_t>;
+
+using FloatMetaData = MetaDataType<float>;
+using FloatVec2MetaData = MetaDataType<vec2>;
+using FloatVec3MetaData = MetaDataType<vec3>;
+using FloatVec4MetaData = MetaDataType<vec4>;
 using FloatMat2MetaData = MetaDataType<mat2>;
 using FloatMat3MetaData = MetaDataType<mat3>;
 using FloatMat4MetaData = MetaDataType<mat4>;
 
+using DoubleMetaData = MetaDataType<double>;
+using DoubleVec2MetaData = MetaDataType<dvec2>;
+using DoubleVec3MetaData = MetaDataType<dvec3>;
+using DoubleVec4MetaData = MetaDataType<dvec4>;
 using DoubleMat2MetaData = MetaDataType<dmat2>;
 using DoubleMat3MetaData = MetaDataType<dmat3>;
 using DoubleMat4MetaData = MetaDataType<dmat4>;
 
-using Size2MetaData = MetaDataType<size2_t>;
-using Size3MetaData = MetaDataType<size3_t>;
-using Size4MetaData = MetaDataType<size4_t>;
+using BoolMetaData = MetaDataType<bool>;
+using StringMetaData = MetaDataType<std::string>;
 
 }  // namespace inviwo
