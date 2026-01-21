@@ -188,7 +188,8 @@ protected:
 
     void addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                const ivec2& position);
-    static void editName(std::string_view type, const std::function<std::string()>& get, const std::function<void(std::string_view)& set);
+    static void editLabel(std::string_view type, const std::function<std::string()>& get,
+                         const std::function<void(std::string_view)>& set);
 
     // Override for tooltips
     virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;

@@ -664,13 +664,13 @@ void NetworkEditor::addVisualizer(DataVisualizer* vis, Outport* outport) {
     util::offsetPosition(added, offset);
 }
 
-static void NetworkEditor::editName(std::string_view type, const std::function<std::string()>& get,
-                                    const std::function < void(std::string_view) & set) {
+void NetworkEditor::editLabel(std::string_view type, const std::function<std::string()>& get,
+                              const std::function<void(std::string_view)>& set) {
 
     bool ok{false};
-    const auto text =
-        QInputDialog::getText(nullptr, "Rename", type, QLineEdit::Normal, utilqt::toQString(get()),
-                              &ok, Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+    const auto text = QInputDialog::getText(nullptr, "Rename", utilqt::toQString(type),
+                                            QLineEdit::Normal, utilqt::toQString(get()), &ok,
+                                            Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
     if (ok && !text.isEmpty()) {
         try {
             set(utilqt::fromQString(text));
@@ -708,7 +708,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
     connect(editName, &QAction::triggered, [this, processor]() {
         clearSelection();
         processor->setSelected(true);
-        editName(
+        editLabel(
             "Name:", [&]() { return processor->getProcessor()->getDisplayName(); },
             [&](std::string_view name) { processor->getProcessor()->setDisplayName(name); });
     });
@@ -717,7 +717,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
     connect(editIdentifier, &QAction::triggered, [this, processor]() {
         clearSelection();
         processor->setSelected(true);
-        editName(
+        editLabel(
             "Identifier:", [&]() { return processor->getProcessor()->getIdentifier(); },
             [&](std::string_view name) { processor->getProcessor()->setIdentifier(name); });
     });
