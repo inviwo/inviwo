@@ -71,6 +71,7 @@ inviwopy.data
       ImageInport
       ImageMultiInport
       ImageOutport
+      ImageSequence
       IndexBufferFLOAT32
       IndexBufferFLOAT64
       IndexBufferINT16
@@ -120,6 +121,11 @@ inviwopy.data
       LayerOutport
       LayerPy
       LayerRepresentation
+      LayerSequence
+      LayerSequenceFlatMultiInport
+      LayerSequenceInport
+      LayerSequenceMultiInport
+      LayerSequenceOutport
       LayerType
       Mesh
       MeshFlatMultiInport
