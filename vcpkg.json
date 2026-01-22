@@ -166,6 +166,12 @@
             "features" : ["freetype"]
         }
       ]
+    },
+    "or-tools" : {
+      "description": "Google Optimization Tools",
+      "dependencies": [
+       "or-tools"
+      ]
     }
   }
 }
