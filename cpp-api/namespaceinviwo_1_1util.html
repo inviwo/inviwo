@@ -215,8 +215,7 @@ template&lt;class To, template&lt; class... &gt; class Op, class... Args&gt; </t
 <tr class="memitem:af02640c3ccedb60dbd31db0de44adb4d" id="r_af02640c3ccedb60dbd31db0de44adb4d"><td class="memTemplParams" colspan="2"><a id="af02640c3ccedb60dbd31db0de44adb4d" name="af02640c3ccedb60dbd31db0de44adb4d"></a>
 template&lt;class Expected, template&lt; class... &gt; class Op, class... Args&gt; </td></tr>
 <tr class="memitem:af02640c3ccedb60dbd31db0de44adb4d template"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><b>is_detected_exact</b> = std::is_same&lt;Expected, detected_t&lt;Op, Args...&gt;&gt;</td></tr>
-<tr class="memitem:a720b22362c67c273e303d812cb5a7911" id="r_a720b22362c67c273e303d812cb5a7911"><td class="memItemLeft"><a id="a720b22362c67c273e303d812cb5a7911" name="a720b22362c67c273e303d812cb5a7911"></a>
-using&#160;</td><td class="memItemRight"><b>OffsetCallback</b> = std::function&lt;ivec2(std::vector&lt;<a class="el" href="classinviwo_1_1Processor.html">Processor</a>*&gt;)&gt;</td></tr>
+<tr class="memitem:a7360ab546fb383b780b7a0781574706c" id="r_a7360ab546fb383b780b7a0781574706c"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a7360ab546fb383b780b7a0781574706c">OffsetCallback</a></td></tr>
 <tr class="memitem:aeffcad88ef543f547a0278933e620c06" id="r_aeffcad88ef543f547a0278933e620c06"><td class="memTemplParams" colspan="2"><a id="aeffcad88ef543f547a0278933e620c06" name="aeffcad88ef543f547a0278933e620c06"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:aeffcad88ef543f547a0278933e620c06 template"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><b>PMRUnique</b> = std::unique_ptr&lt;T, <a class="el" href="structinviwo_1_1util_1_1PMRDeleter.html">PMRDeleter</a>&gt;</td></tr>
@@ -793,6 +792,8 @@ IVW_CORE_API std::unordered_set&lt; <a class="el" href="classinviwo_1_1Processor
 <tr class="memdesc:a1edb2ff6faa4d51610458290ed1f45c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find which module that registered a processor.  <br /></td></tr>
 <tr class="memitem:a818812ab794f5de214f651c8b9e04137" id="r_a818812ab794f5de214f651c8b9e04137"><td class="memItemLeft">IVW_CORE_API std::optional&lt; std::string_view &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a818812ab794f5de214f651c8b9e04137">getProcessorModuleIdentifier</a> (std::string_view classIdentifier, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;app)</td></tr>
 <tr class="memdesc:a818812ab794f5de214f651c8b9e04137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the module identifier of a registered processor.  <br /></td></tr>
+<tr class="memitem:a70c9996d5f877af7cab070568d760780" id="r_a70c9996d5f877af7cab070568d760780"><td class="memItemLeft"><a id="a70c9996d5f877af7cab070568d760780" name="a70c9996d5f877af7cab070568d760780"></a>
+IVW_CORE_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight"><b>getSelected</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network)</td></tr>
 <tr class="memitem:a0bb8d1b84ba1196842c236e7e45b6cd9" id="r_a0bb8d1b84ba1196842c236e7e45b6cd9"><td class="memItemLeft"><a id="a0bb8d1b84ba1196842c236e7e45b6cd9" name="a0bb8d1b84ba1196842c236e7e45b6cd9"></a>
 IVW_CORE_API std::unordered_set&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight"><b>getSuccessors</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor)</td></tr>
 <tr class="memitem:a5a9501a7975eb778dadfdf84c36b2e42" id="r_a5a9501a7975eb778dadfdf84c36b2e42"><td class="memItemLeft"><a id="a5a9501a7975eb778dadfdf84c36b2e42" name="a5a9501a7975eb778dadfdf84c36b2e42"></a>
@@ -891,8 +892,8 @@ template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a1ee41d732a5626da3a086161c7d83c33" id="r_a1ee41d732a5626da3a086161c7d83c33"><td class="memTemplParams" colspan="2"><a id="a1ee41d732a5626da3a086161c7d83c33" name="a1ee41d732a5626da3a086161c7d83c33"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a1ee41d732a5626da3a086161c7d83c33 template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><b>insert_unique</b> (T &amp;map, const typename T::key_type &amp;key, typename T::mapped_type &amp;value)</td></tr>
-<tr class="memitem:a35e7bd2ae4735fa0fdbbfb8d3e0d5b28" id="r_a35e7bd2ae4735fa0fdbbfb8d3e0d5b28"><td class="memItemLeft"><a id="a35e7bd2ae4735fa0fdbbfb8d3e0d5b28" name="a35e7bd2ae4735fa0fdbbfb8d3e0d5b28"></a>
-void IVW_QTEDITOR_API&#160;</td><td class="memItemRight"><b>insertNetworkForData</b> (const std::filesystem::path &amp;dataFile, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *net, bool alwaysFirst=false, bool onlySource=false, QWidget *parent=nullptr)</td></tr>
+<tr class="memitem:aa7301d0a249a8d42b7611c081387f18c" id="r_aa7301d0a249a8d42b7611c081387f18c"><td class="memItemLeft"><a id="aa7301d0a249a8d42b7611c081387f18c" name="aa7301d0a249a8d42b7611c081387f18c"></a>
+IVW_QTEDITOR_API std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt;&#160;</td><td class="memItemRight"><b>insertNetworkForData</b> (const std::filesystem::path &amp;dataFile, <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *net, bool alwaysFirst=false, bool onlySource=false, QWidget *parent=nullptr)</td></tr>
 <tr class="memitem:a7669f35617341a0ec4465acb3a0b4a93" id="r_a7669f35617341a0ec4465acb3a0b4a93"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#a7669f35617341a0ec4465acb3a0b4a93">interpolateAlpha</a> (const std::vector&lt; <a class="el" href="classinviwo_1_1TFPrimitive.html">TFPrimitive</a> * &gt; &amp;selection)</td></tr>
 <tr class="memitem:adec58641a7840aa2c70d53dbbf4c7bcf" id="r_adec58641a7840aa2c70d53dbbf4c7bcf"><td class="memItemLeft"><a id="adec58641a7840aa2c70d53dbbf4c7bcf" name="adec58641a7840aa2c70d53dbbf4c7bcf"></a>
 IVW_CORE_API vec4&#160;</td><td class="memItemRight"><b>interpolateColor</b> (const <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &amp;p1, const <a class="el" href="structinviwo_1_1TFPrimitiveData.html">TFPrimitiveData</a> &amp;p2, double x)</td></tr>
@@ -1196,6 +1197,8 @@ IVW_CORE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.ht
 <tr class="memitem:a8469c3a2db5ca517b8c6ca21d4af2611" id="r_a8469c3a2db5ca517b8c6ca21d4af2611"><td class="memItemLeft"><a id="a8469c3a2db5ca517b8c6ca21d4af2611" name="a8469c3a2db5ca517b8c6ca21d4af2611"></a>
 IVW_CORE_API std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt;&#160;</td><td class="memItemRight"><b>replaceProcessor</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &gt; newProcessor, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *oldProcessor)</td></tr>
 <tr class="memitem:ac526048b608d9c8b31251eb6d4c633e4" id="r_ac526048b608d9c8b31251eb6d4c633e4"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#ac526048b608d9c8b31251eb6d4c633e4">replaceSelectionWithCompositeProcessor</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network)</td></tr>
+<tr class="memitem:af90c3aaa66b8c710b641d4de42c2f61a" id="r_af90c3aaa66b8c710b641d4de42c2f61a"><td class="memItemLeft"><a id="af90c3aaa66b8c710b641d4de42c2f61a" name="af90c3aaa66b8c710b641d4de42c2f61a"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight"><b>replaceSelectionWithSequenceProcessor</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> &amp;network)</td></tr>
 <tr class="memitem:ac1a7add893c040adf20aa7bfb32b6aa7" id="r_ac1a7add893c040adf20aa7bfb32b6aa7"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#ac1a7add893c040adf20aa7bfb32b6aa7">reverse</a> (<a class="el" href="classinviwo_1_1BufferBase.html">BufferBase</a> &amp;b)</td></tr>
 <tr class="memitem:a2212b8323ef0cad0985bb8032a8c3e32" id="r_a2212b8323ef0cad0985bb8032a8c3e32"><td class="memTemplParams" colspan="2"><a id="a2212b8323ef0cad0985bb8032a8c3e32" name="a2212b8323ef0cad0985bb8032a8c3e32"></a>
 template&lt;typename T&gt; </td></tr>
@@ -1222,6 +1225,8 @@ IVW_CORE_API void&#160;</td><td class="memItemRight"><b>saveLayer</b> (const <a 
 IVW_CORE_API void&#160;</td><td class="memItemRight"><b>saveLayer</b> (const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, const std::filesystem::path &amp;path, const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;extension=<a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a>())</td></tr>
 <tr class="memitem:a8f3a0ae0e3b7f2982ed95511e8fd53ac" id="r_a8f3a0ae0e3b7f2982ed95511e8fd53ac"><td class="memItemLeft"><a id="a8f3a0ae0e3b7f2982ed95511e8fd53ac" name="a8f3a0ae0e3b7f2982ed95511e8fd53ac"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight"><b>saveNetwork</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::string_view filename)</td></tr>
+<tr class="memitem:a842448080c33367aa82d98679d32110a" id="r_a842448080c33367aa82d98679d32110a"><td class="memItemLeft"><a id="a842448080c33367aa82d98679d32110a" name="a842448080c33367aa82d98679d32110a"></a>
+IVW_CORE_API void&#160;</td><td class="memItemRight"><b>serializePartial</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; processors, std::ostream &amp;os, const std::filesystem::path &amp;refPath)</td></tr>
 <tr class="memitem:a11a34e87ebb373c7632a3308144a1fc8" id="r_a11a34e87ebb373c7632a3308144a1fc8"><td class="memItemLeft"><a id="a11a34e87ebb373c7632a3308144a1fc8" name="a11a34e87ebb373c7632a3308144a1fc8"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight"><b>serializeSelected</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network, std::ostream &amp;os, const std::filesystem::path &amp;refPath)</td></tr>
 <tr class="memitem:a164993d46bdb58f8b16a943c65ae4b9c" id="r_a164993d46bdb58f8b16a943c65ae4b9c"><td class="memItemLeft">IVW_CORE_API void&#160;</td><td class="memItemRight"><a class="el" href="#a164993d46bdb58f8b16a943c65ae4b9c">setPosition</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, ivec2 pos)</td></tr>
@@ -1495,6 +1500,22 @@ template&lt;class T&gt; </td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>util </p>
 </div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="a7360ab546fb383b780b7a0781574706c" name="a7360ab546fb383b780b7a0781574706c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7360ab546fb383b780b7a0781574706c">&#9670;&#160;</a></span>OffsetCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using inviwo::util::OffsetCallback</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">std::function&lt;ivec2(<span class="keyword">const</span> std::vector&lt;Processor*&gt;&amp; ,</div>
+<div class="line">                                          <span class="keyword">const</span> std::vector&lt;Processor*&gt;&amp; )&gt;</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="ab1e4eff95e999c0f37072af916d5d93b" name="ab1e4eff95e999c0f37072af916d5d93b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab1e4eff95e999c0f37072af916d5d93b">&#9670;&#160;</a></span>PrecisionType <span class="overload">[1/2]</span></h2>
 

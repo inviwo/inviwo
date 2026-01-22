@@ -117,10 +117,16 @@ void&#160;</td><td class="memItemRight"><b>addPropertyWidgets</b> (<a class="el"
 void&#160;</td><td class="memItemRight"><b>append</b> (const std::filesystem::path &amp;workspace)</td></tr>
 <tr class="memitem:a904c948bb24b0cb2fe1c3ce93b4620d1" id="r_a904c948bb24b0cb2fe1c3ce93b4620d1"><td class="memItemLeft"><a id="a904c948bb24b0cb2fe1c3ce93b4620d1" name="a904c948bb24b0cb2fe1c3ce93b4620d1"></a>
 std::unique_ptr&lt; QMimeData &gt;&#160;</td><td class="memItemRight"><b>copy</b> () const</td></tr>
+<tr class="memitem:a0be3c50678dabf448abc86ea1c8ebcdb" id="r_a0be3c50678dabf448abc86ea1c8ebcdb"><td class="memItemLeft"><a id="a0be3c50678dabf448abc86ea1c8ebcdb" name="a0be3c50678dabf448abc86ea1c8ebcdb"></a>
+std::unique_ptr&lt; QMimeData &gt;&#160;</td><td class="memItemRight"><b>copy</b> (const QList&lt; QGraphicsItem * &gt; &amp;items) const</td></tr>
 <tr class="memitem:a1b98bf566763126bdb3c1b26590d626d" id="r_a1b98bf566763126bdb3c1b26590d626d"><td class="memItemLeft"><a id="a1b98bf566763126bdb3c1b26590d626d" name="a1b98bf566763126bdb3c1b26590d626d"></a>
 std::unique_ptr&lt; QMimeData &gt;&#160;</td><td class="memItemRight"><b>cut</b> ()</td></tr>
+<tr class="memitem:ab9007ea9a4ce84b8f87cda1922041a1a" id="r_ab9007ea9a4ce84b8f87cda1922041a1a"><td class="memItemLeft"><a id="ab9007ea9a4ce84b8f87cda1922041a1a" name="ab9007ea9a4ce84b8f87cda1922041a1a"></a>
+std::unique_ptr&lt; QMimeData &gt;&#160;</td><td class="memItemRight"><b>cut</b> (const QList&lt; QGraphicsItem * &gt; &amp;items)</td></tr>
 <tr class="memitem:a7d3dceafed74e0d004f7c0749bb0ce4e" id="r_a7d3dceafed74e0d004f7c0749bb0ce4e"><td class="memItemLeft"><a id="a7d3dceafed74e0d004f7c0749bb0ce4e" name="a7d3dceafed74e0d004f7c0749bb0ce4e"></a>
 void&#160;</td><td class="memItemRight"><b>deleteSelection</b> ()</td></tr>
+<tr class="memitem:a0e7ae6bbbcf0a5b072fd773aad7a767e" id="r_a0e7ae6bbbcf0a5b072fd773aad7a767e"><td class="memItemLeft"><a id="a0e7ae6bbbcf0a5b072fd773aad7a767e" name="a0e7ae6bbbcf0a5b072fd773aad7a767e"></a>
+void&#160;</td><td class="memItemRight"><b>ensureVisible</b> (const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;processors)</td></tr>
 <tr class="memitem:a831328085b4dc0068b41d81e2224d425" id="r_a831328085b4dc0068b41d81e2224d425"><td class="memItemLeft"><a id="a831328085b4dc0068b41d81e2224d425" name="a831328085b4dc0068b41d81e2224d425"></a>
 ConnectionGraphicsItem *&#160;</td><td class="memItemRight"><b>getConnectionGraphicsItem</b> (const <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> &amp;key) const</td></tr>
 <tr class="memitem:a446544f7873ff1f2c58d363390d04bda" id="r_a446544f7873ff1f2c58d363390d04bda"><td class="memItemLeft"><a id="a446544f7873ff1f2c58d363390d04bda" name="a446544f7873ff1f2c58d363390d04bda"></a>
@@ -157,8 +163,10 @@ void&#160;</td><td class="memItemRight"><b>initiateLink</b> (<a class="el" href=
 bool&#160;</td><td class="memItemRight"><b>isBackgroundVisible</b> () const</td></tr>
 <tr class="memitem:a15a6ad93082a828d94c12b546a32f23c" id="r_a15a6ad93082a828d94c12b546a32f23c"><td class="memItemLeft"><a id="a15a6ad93082a828d94c12b546a32f23c" name="a15a6ad93082a828d94c12b546a32f23c"></a>
 &#160;</td><td class="memItemRight"><b>NetworkEditor</b> (<a class="el" href="classinviwo_1_1InviwoMainWindow.html">InviwoMainWindow</a> *mainWindow)</td></tr>
-<tr class="memitem:a5448fa3b4d9c4c86a3de8253fbc86dc0" id="r_a5448fa3b4d9c4c86a3de8253fbc86dc0"><td class="memItemLeft"><a id="a5448fa3b4d9c4c86a3de8253fbc86dc0" name="a5448fa3b4d9c4c86a3de8253fbc86dc0"></a>
-void&#160;</td><td class="memItemRight"><b>paste</b> (const QMimeData &amp;data)</td></tr>
+<tr class="memitem:a977dff08aef51763415f2341ff41097e" id="r_a977dff08aef51763415f2341ff41097e"><td class="memItemLeft"><a id="a977dff08aef51763415f2341ff41097e" name="a977dff08aef51763415f2341ff41097e"></a>
+void&#160;</td><td class="memItemRight"><b>paste</b> (const QMimeData &amp;mimeData)</td></tr>
+<tr class="memitem:ab09c6bd3b4d3b92e9c566babb2002e64" id="r_ab09c6bd3b4d3b92e9c566babb2002e64"><td class="memItemLeft"><a id="ab09c6bd3b4d3b92e9c566babb2002e64" name="ab09c6bd3b4d3b92e9c566babb2002e64"></a>
+void&#160;</td><td class="memItemRight"><b>paste</b> (const QMimeData &amp;mimeData, const ivec2 &amp;position)</td></tr>
 <tr class="memitem:aac0d1bce5a024120687be87563b3fd7a" id="r_aac0d1bce5a024120687be87563b3fd7a"><td class="memItemLeft"><a id="aac0d1bce5a024120687be87563b3fd7a" name="aac0d1bce5a024120687be87563b3fd7a"></a>
 void&#160;</td><td class="memItemRight"><b>releaseConnection</b> (<a class="el" href="classinviwo_1_1ProcessorInportGraphicsItem.html">ProcessorInportGraphicsItem</a> *item)</td></tr>
 <tr class="memitem:a622558c229c58146d331abe5957b6d01" id="r_a622558c229c58146d331abe5957b6d01"><td class="memItemLeft"><a id="a622558c229c58146d331abe5957b6d01" name="a622558c229c58146d331abe5957b6d01"></a>
@@ -237,6 +245,18 @@ static constexpr std::string_view&#160;</td><td class="memItemRight"><b>name</b>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a81b30644347e278607bb9a371083fd3f" id="r_a81b30644347e278607bb9a371083fd3f"><td class="memItemLeft"><a id="a81b30644347e278607bb9a371083fd3f" name="a81b30644347e278607bb9a371083fd3f"></a>
+void&#160;</td><td class="memItemRight"><b>addCompositeMenuItems</b> (QMenu &amp;menu, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;selectedProcessors, const std::unordered_set&lt; <a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> * &gt; &amp;selectedComposites)</td></tr>
+<tr class="memitem:a5cf894a30c06eb90eed0dcbc697c750d" id="r_a5cf894a30c06eb90eed0dcbc697c750d"><td class="memItemLeft"><a id="a5cf894a30c06eb90eed0dcbc697c750d" name="a5cf894a30c06eb90eed0dcbc697c750d"></a>
+void&#160;</td><td class="memItemRight"><b>addCopyPasteMenuItems</b> (QMenu &amp;menu, const QList&lt; QGraphicsItem * &gt; &amp;activeItems, const ivec2 &amp;position)</td></tr>
+<tr class="memitem:abf6317d4b0eb5c7b48414b67a4623255" id="r_abf6317d4b0eb5c7b48414b67a4623255"><td class="memItemLeft"><a id="abf6317d4b0eb5c7b48414b67a4623255" name="abf6317d4b0eb5c7b48414b67a4623255"></a>
+void&#160;</td><td class="memItemRight"><b>addProcessorMenuItems</b> (QMenu &amp;menu, ProcessorGraphicsItem *)</td></tr>
+<tr class="memitem:a11ad2849e5c66728e697fe96e54da583" id="r_a11ad2849e5c66728e697fe96e54da583"><td class="memItemLeft"><a id="a11ad2849e5c66728e697fe96e54da583" name="a11ad2849e5c66728e697fe96e54da583"></a>
+void&#160;</td><td class="memItemRight"><b>addSequenceMenuItems</b> (QMenu &amp;menu, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;selectedProcessors, const std::unordered_set&lt; <a class="el" href="classinviwo_1_1SequenceProcessor.html">SequenceProcessor</a> * &gt; &amp;selectedSequences)</td></tr>
+<tr class="memitem:a46d58f9a7aeb71313d6c66a79c76fd9c" id="r_a46d58f9a7aeb71313d6c66a79c76fd9c"><td class="memItemLeft"><a id="a46d58f9a7aeb71313d6c66a79c76fd9c" name="a46d58f9a7aeb71313d6c66a79c76fd9c"></a>
+void&#160;</td><td class="memItemRight"><b>addVisualizer</b> (<a class="el" href="classinviwo_1_1DataVisualizer.html">DataVisualizer</a> *vis, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *outport)</td></tr>
+<tr class="memitem:aa2088910422829f4f980620be85c0824" id="r_aa2088910422829f4f980620be85c0824"><td class="memItemLeft"><a id="aa2088910422829f4f980620be85c0824" name="aa2088910422829f4f980620be85c0824"></a>
+void&#160;</td><td class="memItemRight"><b>addVisualizers</b> (QMenu &amp;menu, <a class="el" href="classinviwo_1_1ProcessorOutportGraphicsItem.html">ProcessorOutportGraphicsItem</a> *ogi)</td></tr>
 <tr class="memitem:a7ad57f9a94e21d613d74251fbb1e60d4" id="r_a7ad57f9a94e21d613d74251fbb1e60d4"><td class="memItemLeft"><a id="a7ad57f9a94e21d613d74251fbb1e60d4" name="a7ad57f9a94e21d613d74251fbb1e60d4"></a>
 virtual void&#160;</td><td class="memItemRight"><b>contextMenuEvent</b> (QGraphicsSceneContextMenuEvent *e) override</td></tr>
 <tr class="memitem:afbbe9be6c1c66d13cfe65c668ddb3150" id="r_afbbe9be6c1c66d13cfe65c668ddb3150"><td class="memItemLeft"><a id="afbbe9be6c1c66d13cfe65c668ddb3150" name="afbbe9be6c1c66d13cfe65c668ddb3150"></a>
@@ -277,6 +297,13 @@ void&#160;</td><td class="memItemRight"><b>removeObservationHelper</b> (Observer
 virtual void&#160;</td><td class="memItemRight"><b>removeObserver</b> (Observer *observer)=0</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observer.html">inviwo::Observer</a></td></tr>
 <tr class="memitem:aa62add49e9cc4b358f61aa9d38aee991 inherit pro_methods_classinviwo_1_1Observer" id="r_aa62add49e9cc4b358f61aa9d38aee991"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Observer.html#aa62add49e9cc4b358f61aa9d38aee991">addObservation</a> (ObservableInterface *observable)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-static-methods" class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:a462c6a1f9b0c3d9f6d2dab4e2b1c9b17" id="r_a462c6a1f9b0c3d9f6d2dab4e2b1c9b17"><td class="memItemLeft"><a id="a462c6a1f9b0c3d9f6d2dab4e2b1c9b17" name="a462c6a1f9b0c3d9f6d2dab4e2b1c9b17"></a>
+static void&#160;</td><td class="memItemRight"><b>editLabel</b> (std::string_view type, const std::function&lt; std::string()&gt; &amp;get, const std::function&lt; void(std::string_view)&gt; &amp;set)</td></tr>
+<tr class="memitem:a37e736f3e1cf85eb90d9eca948a248c9" id="r_a37e736f3e1cf85eb90d9eca948a248c9"><td class="memItemLeft"><a id="a37e736f3e1cf85eb90d9eca948a248c9" name="a37e736f3e1cf85eb90d9eca948a248c9"></a>
+static ivec2&#160;</td><td class="memItemRight"><b>findSpaceForProcessors</b> (QPoint startPos, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;added, const std::vector&lt; <a class="el" href="classinviwo_1_1Processor.html">Processor</a> * &gt; &amp;current)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
