@@ -29,6 +29,7 @@
 
 #include <inviwopy/pyimage.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/util/pydatasequence.h>
 
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
@@ -95,5 +96,7 @@ void exposeImage(pybind11::module& m) {
         .def_property_readonly("dimensions", &ImageOutport::getDimensions)
         .def("setDimensions", &ImageOutport::setDimensions)
         .def("setHandleResizeEvents", &ImageOutport::setHandleResizeEvents);
+
+    util::exportDataSequenceFor<Image>(m, "Image");
 }
 }  // namespace inviwo

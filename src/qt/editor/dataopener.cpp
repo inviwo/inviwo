@@ -84,7 +84,7 @@ public:
 
         for (auto visualizer : visualizers) {
             auto use = new QCheckBox(utilqt::toQString(visualizer->getName()));
-            useVisualuzers.push_back(use);
+            useVisualizers.push_back(use);
             mainLayout->addWidget(use, ++row, 0, 1, 1);
             const std::string info = visualizer->getDescription();
             auto text = new QLabel(utilqt::toQString(info));
@@ -99,25 +99,23 @@ public:
     }
     virtual ~SelectVisualizerDialog() = default;
 
-    std::vector<QCheckBox*> useVisualuzers;
+    std::vector<QCheckBox*> useVisualizers;
     QCheckBox* loader_;
 };
 
 }  // namespace
 
-void util::insertNetworkForData(const std::filesystem::path& dataFile, ProcessorNetwork* net,
-                                bool alwaysFirst, bool onlySource, QWidget* parent) {
+std::vector<Processor*> util::insertNetworkForData(const std::filesystem::path& dataFile,
+                                                   ProcessorNetwork* net, bool alwaysFirst,
+                                                   bool onlySource, QWidget* parent) {
     auto app = net->getApplication();
-
     const NetworkLock lock{net};
 
     auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForFile(dataFile);
-
-    if (visualizers.empty()) return;
+    if (visualizers.empty()) return {};
 
     auto addVisualizer = [&](DataVisualizer* visualizer, bool onlySource) {
         const auto orgBounds = util::getBoundingBox(net);
-
         // position visualizer to the top right, add spacing of one grid cell
         const ivec2 initialPos{ivec2{orgBounds.second.x, orgBounds.first.y} + ivec2{25, 0} +
                                ivec2{150, 0}};
@@ -129,28 +127,27 @@ void util::insertNetworkForData(const std::filesystem::path& dataFile, Processor
         } else {
             added = visualizer->addSourceAndVisualizerNetwork(dataFile, net, initialPos);
         }
-
-        // offset all added processors
-        const auto bounds = util::getBoundingBox(added);
-        const auto offset = -ivec2{bounds.first.x, bounds.first.y};
-        util::offsetPosition(added, offset);
+        return added;
     };
 
     if (visualizers.size() == 1 || alwaysFirst) {
-        addVisualizer(visualizers.front(), onlySource);
-
+        return addVisualizer(visualizers.front(), onlySource);
     } else {
         auto dialog = new SelectVisualizerDialog(dataFile, visualizers, parent);
+        std::vector<Processor*> added;
         if (dialog->exec() == QDialog::Accepted) {
             if (dialog->loader_->isChecked()) {
-                addVisualizer(visualizers.front(), true);
+                auto tmp = addVisualizer(visualizers.front(), true);
+                added.insert(added.end(), tmp.begin(), tmp.end());
             }
             for (size_t i = 0; i < visualizers.size(); ++i) {
-                if (dialog->useVisualuzers[i]->isChecked()) {
-                    addVisualizer(visualizers[i], false);
+                if (dialog->useVisualizers[i]->isChecked()) {
+                    auto tmp = addVisualizer(visualizers[i], false);
+                    added.insert(added.end(), tmp.begin(), tmp.end());
                 }
             }
         }
+        return added;
     }
 }
 

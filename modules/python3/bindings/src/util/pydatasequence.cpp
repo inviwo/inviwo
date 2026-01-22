@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2026 Inviwo Foundation
+ * Copyright (c) 2023-2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwopy/util/pydatasequence.h>
 
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/datastructures/volume/volume.h>                // for DataInport
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/util/glmvec.h>                                 // for uvec3
-#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
-
-#include <string>  // for string
-
-namespace inviwo {
-class IVW_MODULE_BASE_API VolumeSequenceElementSelectorProcessor
-    : public VectorElementSelectorProcessor<Volume> {
-public:
-    VolumeSequenceElementSelectorProcessor();
-    virtual ~VolumeSequenceElementSelectorProcessor() = default;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}

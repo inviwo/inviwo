@@ -49,7 +49,13 @@ namespace inviwo {
 class IVW_CORE_API CompositeSinkBase : public Processor {
 public:
     CompositeSinkBase();
+    CompositeSinkBase(const CompositeSinkBase&) = delete;
+    CompositeSinkBase(CompositeSinkBase&&) = delete;
+    CompositeSinkBase& operator=(const CompositeSinkBase&) = delete;
+    CompositeSinkBase& operator=(CompositeSinkBase&&) = delete;
     virtual ~CompositeSinkBase() = default;
+
+    static constexpr std::string_view identifierSuffix() { return ".metasink"; };
 
     /**
      * Outport to be used by the CompositeProcessor to get data from its sub network.
@@ -73,6 +79,10 @@ public:
     static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
                   "InportType and OutportType must work with the same data type");
     CompositeSink();
+    CompositeSink(const CompositeSink&) = delete;
+    CompositeSink(CompositeSink&&) = delete;
+    CompositeSink& operator=(const CompositeSink&) = delete;
+    CompositeSink& operator=(CompositeSink&&) = delete;
     virtual ~CompositeSink() = default;
 
     virtual void process() override;
@@ -99,9 +109,10 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
         auto name = fmt::format("{} Meta Sink", DataTraits<intype>::dataName());
-        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(), ".metasink");
+        auto cid = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
+                                          CompositeSinkBase::identifierSuffix());
         return {
-            id,                 // Class identifier
+            cid,                // Class identifier
             name,               // Display name
             "Composite",        // Category
             CodeState::Stable,  // Code state

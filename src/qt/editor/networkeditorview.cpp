@@ -157,7 +157,6 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     return;
                 }
                 case MenuItemType::del:
-                    if (editor_->selectedItems().empty()) return;
                     editor_->deleteSelection();
                     return;
                 case MenuItemType::select:

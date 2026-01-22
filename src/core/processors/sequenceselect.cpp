@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/base/processors/layersequenceelementselector.h>
+#include <inviwo/core/processors/sequenceselect.h>
 
 namespace inviwo {
-
-const ProcessorInfo LayerSequenceElementSelector::processorInfo_{
-    "org.inviwo.LayerSequenceElementSelector",  // Class identifier
-    "Layer Sequence Element Selector",          // Display name
-    "Data Selector",                            // Category
-    CodeState::Stable,                          // Code state
-    Tags::CPU,                                  // Tags
-    R"(Select a specific layer out of a sequence of layers)"_unindentHelp};
-const ProcessorInfo& LayerSequenceElementSelector::getProcessorInfo() const {
-    return processorInfo_;
-}
-LayerSequenceElementSelector::LayerSequenceElementSelector()
-    : VectorElementSelectorProcessor<Layer, LayerOutport>() {
-    timeStep_.index_.autoLinkToProperty<LayerSequenceElementSelector>(
-        "timeStep.selectedSequenceIndex");
-}
 
 }  // namespace inviwo

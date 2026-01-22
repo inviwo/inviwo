@@ -29,6 +29,7 @@
 
 #include <inviwopy/pylayer.h>
 #include <inviwopy/pyglmtypes.h>
+#include <inviwopy/util/pydatasequence.h>
 
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
@@ -173,7 +174,9 @@ void exposeLayer(pybind11::module& m) {
                 self.getSwizzleMask(), self.getInterpolation(), self.getWrapping());
         });
 
+    util::exportDataSequenceFor<Layer>(m, "Layer");
     exposeStandardDataPorts<Layer>(m, "Layer");
+    exposeStandardDataPorts<LayerSequence>(m, "LayerSequence");
 }
 
 }  // namespace inviwo

@@ -42,7 +42,10 @@
 namespace inviwo {
 
 class CompositeProcessor;
+class SequenceProcessor;
 class Property;
+class CompositeProcessorTreeModel;
+class ProcessorNetwork;
 
 class SuperPropertyMimeData : public QMimeData {
 #include <warn/push>
@@ -60,12 +63,15 @@ class IVW_QTEDITOR_API SubPropertySelectionDialog : public InviwoDockWidget,
                                                     public ProcessorNetworkObserver {
 public:
     SubPropertySelectionDialog(CompositeProcessor* processor, QWidget* parent);
+    SubPropertySelectionDialog(SequenceProcessor* processor, QWidget* parent);
     virtual ~SubPropertySelectionDialog() = default;
 
 protected:
+    SubPropertySelectionDialog(Processor* processor, ProcessorNetwork& subNetwork,
+                               CompositeProcessorTreeModel* superModel, QWidget* parent);
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 
-    CompositeProcessor* cp_;
+    Processor* cp_;
 };
 
 }  // namespace inviwo

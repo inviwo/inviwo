@@ -387,7 +387,7 @@ CompositeProcessor::PropertyHandler::~PropertyHandler() {
 void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
     if (auto superProperty = getSuperProperty(orgProp)) {
         auto superId = orgProp->getPath();
-        replaceInString(superId, ".", "-");
+        replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
     }
 }

@@ -45,9 +45,9 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameMetaData::processorInfo_{
     "org.inviwo.DataFrameMetaData",  // Class identifier
-    "DataFrame MetaData",            // Display name
+    "DataFrame Column MetaData",     // Display name
     "DataFrame",                     // Category
-    CodeState::Experimental,         // Code state
+    CodeState::Stable,               // Code state
     "CPU, DataFrame",                // Tags
     "Augment a DataFrame with column-specific metadata like minimum and maximum values."_help,
 };

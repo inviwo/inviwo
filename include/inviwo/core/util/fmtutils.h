@@ -62,8 +62,24 @@ template <typename T>
 struct FlagsFormatter : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
     auto format(T val, FormatContext& ctx) const {
+        if (val == T{flags::any}) {
+            return formatter<fmt::string_view>::format("Any", ctx);
+        }
+        if (val == T{flags::none}) {
+            formatter<fmt::string_view>::format("None", ctx);
+        }
         fmt::memory_buffer buff;
         fmt::format_to(std::back_inserter(buff), "{}", fmt::join(val, "+"));
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
+
+template <typename T>
+struct FlagArrayFormatter : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(T val, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "[{}]", fmt::join(val, ", "));
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };

@@ -63,17 +63,17 @@ class CompositeSourceBase;
  * The CompositeProcessor will observe its sub network and when a processor gets added to the sub
  * network the CompositeProcessor will check if it's a CompositeSource or a CompositeSink. In the
  * case it's a CompositeSource, which acts as data inputs in the sub network, in will get the
- * special "super" inport and add it to it self. If it's a CompositeSink, which acts as data
- * outputs, it will get the "super" outport and add it to it self.
+ * special "super" inport and add it to itself. If it's a CompositeSink, which acts as data
+ * outputs, it will get the "super" outport and add it to itself.
  *
  * When the CompositeSource gets evaluated in the sub network it will take the data from its super
  * inport and put in its outport, moving the data from the super network to the sub network. At the
  * end of the sub network evaluation the SinkProcessors will be evaluated and take the data on its
  * inport and put on its super outport, moving the data from the sub network into the super network.
  *
- * Properties in the sub network that are marked with application usage mode, or added by calling
- * addSuperProperty, will be cloned and added to the composite processor with mutual onChange
- * callbacks to keep them in sync, exposing the sub property's state to the super network.
+ * Properties in the sub network that are added by calling addSuperProperty, will be cloned and
+ * added to the composite processor with mutual onChange callbacks to keep them in sync, exposing
+ * the sub property's state to the super network.
  *
  * Events are propagated through the sub network using the super inport and outports in the Source
  * and Sink Processors.
@@ -96,7 +96,7 @@ class IVW_CORE_API CompositeProcessor : public Processor,
 public:
     /**
      * Construct a CompositeProcessor, an optional workspace file can be supplied in which case it
-     * is deserialized as the CompositeProcessors sub network. otherwise the network is left empty.
+     * is deserialized as the CompositeProcessors sub network. Otherwise the network is left empty.
      * getSubNetwork can then be use to add processors etc.
      */
     CompositeProcessor(std::string_view identifier, std::string_view displayName,

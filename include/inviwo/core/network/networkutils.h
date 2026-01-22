@@ -38,7 +38,8 @@
 
 namespace inviwo::util {
 
-using OffsetCallback = std::function<ivec2(std::vector<Processor*>)>;
+using OffsetCallback = std::function<ivec2(const std::vector<Processor*>& /*added*/,
+                                           const std::vector<Processor*>& /*sources*/)>;
 
 namespace detail {
 
@@ -46,8 +47,8 @@ namespace detail {
  * Helper class for Copy/Pasting a network with sub parts referring to stuff outside of the network.
  */
 struct PartialProcessorNetwork : public Serializable {
-    explicit PartialProcessorNetwork(ProcessorNetwork* network, OffsetCallback callback = nullptr);
-
+    explicit PartialProcessorNetwork(ProcessorNetwork* network, std::vector<Processor*> processors,
+                                     OffsetCallback callback = nullptr);
     std::vector<Processor*> getAddedProcessors() const;
 
     virtual void serialize(Serializer& s) const override;
@@ -55,6 +56,7 @@ struct PartialProcessorNetwork : public Serializable {
 
 private:
     ProcessorNetwork* network_;
+    std::vector<Processor*> processors_;
     std::vector<Processor*> addedProcessors_;
     OffsetCallback callback_;
 };
@@ -169,8 +171,14 @@ IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, ivec
  */
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 
+
+IVW_CORE_API std::vector<Processor*> getSelected(ProcessorNetwork* network);
+
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::filesystem::path& refPath);
+
+IVW_CORE_API void serializePartial(ProcessorNetwork* network, std::vector<Processor*> processors,
+                                   std::ostream& os, const std::filesystem::path& refPath);
 
 /**
  * Append a PartialProcessorNetwork to the network

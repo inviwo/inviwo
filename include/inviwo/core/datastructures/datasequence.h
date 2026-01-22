@@ -66,6 +66,7 @@ class DataSequence {
     std::shared_ptr<Data> get(DataVariant& v) { return DataAccess{}(v); }
 
 public:
+    using type = Data;
     using value_type = std::shared_ptr<Data>;
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;

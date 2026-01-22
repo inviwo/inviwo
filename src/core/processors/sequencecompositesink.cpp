@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,10 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/datastructures/geometry/mesh.h>                // for Mesh
-#include <inviwo/core/ports/meshport.h>                              // for MeshOutport
-#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterable
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/util/glmvec.h>                                 // for uvec3
-#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
-
-#include <string>  // for string
-#include <vector>  // for vector
-
-#include <fmt/core.h>    // for format, format_to
-#include <glm/vec3.hpp>  // for operator+
+#include <inviwo/core/processors/sequencecompositesink.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API MeshSequenceElementSelectorProcessor
-    : public VectorElementSelectorProcessor<Mesh, MeshOutport> {
-public:
-    MeshSequenceElementSelectorProcessor();
-    virtual ~MeshSequenceElementSelectorProcessor() = default;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-};
+SequenceCompositeSinkBase::SequenceCompositeSinkBase() : Processor() {}
 
 }  // namespace inviwo

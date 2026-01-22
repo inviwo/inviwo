@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,13 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/base/basemoduledefine.h>  // for IVW_MODULE_BASE_API
-
-#include <inviwo/core/datastructures/image/image.h>                  // for Image
-#include <inviwo/core/ports/imageport.h>                             // for ImageOutport
-#include <inviwo/core/ports/outportiterable.h>                       // for OutportIterable
-#include <inviwo/core/processors/processorinfo.h>                    // for ProcessorInfo
-#include <inviwo/core/util/glmvec.h>                                 // for uvec3
-#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
-
-#include <string>  // for string
-#include <vector>  // for vector
-
-#include <fmt/core.h>    // for format, format_to
-#include <glm/vec3.hpp>  // for operator+
+#include <inviwo/core/processors/datatosequence.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API ImageSequenceElementSelectorProcessor
-    : public VectorElementSelectorProcessor<Image, ImageOutport> {
-public:
-    ImageSequenceElementSelectorProcessor();
-    virtual ~ImageSequenceElementSelectorProcessor() = default;
+const ProcessorInfo& DataToSequence<Image>::getProcessorInfo() const {
+    static const ProcessorInfo info{ProcessorTraits<DataToSequence<Image>>::getProcessorInfo()};
+    return info;
+}
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-};
 }  // namespace inviwo

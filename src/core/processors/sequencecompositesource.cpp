@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2024-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,10 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/ports/layerport.h>
-
-#include <modules/base/processors/vectorelementselectorprocessor.h>  // for VectorElementSelecto...
+#include <inviwo/core/processors/sequencecompositesource.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API LayerSequenceElementSelector
-    : public VectorElementSelectorProcessor<Layer, LayerOutport> {
-public:
-    LayerSequenceElementSelector();
-    virtual ~LayerSequenceElementSelector() = default;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-};
+SequenceCompositeSourceBase::SequenceCompositeSourceBase() : Processor() {}
 
 }  // namespace inviwo
