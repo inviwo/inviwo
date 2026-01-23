@@ -23,11 +23,10 @@ env:
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
-  # Windows code signing - set to 'true' to enable signing when secrets are configured
+  # Windows code signing - automatically enabled when signing secrets are configured
   # Requires one of the following secret sets:
   # Option 1 (PFX certificate): WINDOWS_SIGNING_CERT, WINDOWS_SIGNING_CERT_PASSWORD
   # Option 2 (Azure Key Vault): AZURE_KEY_VAULT_URI, AZURE_CERT_NAME, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID
-  WINDOWS_SIGNING_ENABLED: ${{ secrets.WINDOWS_SIGNING_CERT != '' || secrets.AZURE_KEY_VAULT_URI != '' }}
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -178,7 +177,7 @@ jobs:
         echo "::remove-matcher owner=linker::"
 
     - name: "Sign Windows Binaries"
-      if: matrix.system == 'windows' && matrix.linkage == 'dynamic' && matrix.configuration == 'Release' && env.WINDOWS_SIGNING_ENABLED == 'true'
+      if: matrix.system == 'windows' && matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
       shell: pwsh
       env:
         WINDOWS_SIGNING_CERT: ${{ secrets.WINDOWS_SIGNING_CERT }}
@@ -209,14 +208,23 @@ jobs:
               $installer.FullName
           } elseif ($env:WINDOWS_SIGNING_CERT) {
             # Use SignTool with PFX certificate
+            # Import certificate to Windows certificate store for more secure signing
             $certBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERT)
             $certPath = Join-Path $env:RUNNER_TEMP "cert.pfx"
             [IO.File]::WriteAllBytes($certPath, $certBytes)
             
-            & signtool sign /f $certPath /p $env:WINDOWS_SIGNING_CERT_PASSWORD `
+            # Import to certificate store with password (more secure than command line)
+            $securePassword = ConvertTo-SecureString -String $env:WINDOWS_SIGNING_CERT_PASSWORD -AsPlainText -Force
+            $cert = Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePassword
+            $thumbprint = $cert.Thumbprint
+            
+            # Sign using certificate thumbprint (no password on command line)
+            & signtool sign /sha1 $thumbprint `
               /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v `
               $installer.FullName
             
+            # Cleanup - remove certificate from store and temp file
+            Remove-Item -Path "Cert:\CurrentUser\My\$thumbprint" -Force
             Remove-Item $certPath -Force
           } else {
             Write-Host "No signing credentials available, skipping signing"

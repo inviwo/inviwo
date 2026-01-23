@@ -68,11 +68,18 @@ if(WIN32 AND IVW_SIGN_WINDOWS_BINARIES)
         set(_arch "x86")
     endif()
     
-    # Common Windows SDK paths
-    set(_sdk_paths
-        "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/10.0.22621.0/${_arch}"
-        "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/10.0.22000.0/${_arch}"
-        "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/10.0.19041.0/${_arch}"
+    # Dynamically find Windows SDK paths
+    set(_sdk_paths "")
+    set(_sdk_base "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin")
+    if(IS_DIRECTORY "${_sdk_base}")
+        file(GLOB _sdk_versions LIST_DIRECTORIES true "${_sdk_base}/10.*")
+        list(SORT _sdk_versions ORDER DESCENDING)
+        foreach(_ver IN LISTS _sdk_versions)
+            list(APPEND _sdk_paths "${_ver}/${_arch}")
+        endforeach()
+    endif()
+    # Fallback paths
+    list(APPEND _sdk_paths
         "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/${_arch}"
         "$ENV{ProgramFiles\(x86\)}/Windows Kits/8.1/bin/${_arch}"
     )
@@ -238,6 +245,8 @@ endfunction()
 # Function to add post-build signing command to a target
 # Arguments:
 #   TARGET_NAME - Name of the CMake target to sign
+# Note: For Azure SignTool, environment variables must be set at build time.
+#       This function uses a wrapper script to read credentials securely at runtime.
 function(ivw_sign_target TARGET_NAME)
     if(NOT IVW_SIGN_WINDOWS_BINARIES OR NOT WIN32)
         return()
@@ -253,29 +262,19 @@ function(ivw_sign_target TARGET_NAME)
     endif()
     
     # Build signing command based on method
-    if(IVW_WINDOWS_SIGN_METHOD STREQUAL "azuresigntool" AND AZURESIGNTOOL_EXECUTABLE)
-        set(sign_cmd "${AZURESIGNTOOL_EXECUTABLE}" sign
-            -kvu "${IVW_AZURE_KEY_VAULT_URI}"
-            -kvi "$ENV{AZURE_CLIENT_ID}"
-            -kvs "$ENV{AZURE_CLIENT_SECRET}"
-            -kvt "$ENV{AZURE_TENANT_ID}"
-            -kvc "${IVW_AZURE_CERT_NAME}"
-            -tr "${IVW_WINDOWS_TIMESTAMP_URL}"
-            -td sha256
-            "$<TARGET_FILE:${TARGET_NAME}>"
-        )
+    # Note: For post-build signing, we use SignTool with auto-select (/a) or thumbprint
+    # Azure SignTool is better suited for CPack-time signing via the sign-windows.cmake.in script
+    # where environment variables can be properly accessed at packaging time
+    set(sign_cmd "${SIGNTOOL_EXECUTABLE}" sign)
+    if(IVW_WINDOWS_SIGN_IDENTITY)
+        list(APPEND sign_cmd /sha1 "${IVW_WINDOWS_SIGN_IDENTITY}")
     else()
-        set(sign_cmd "${SIGNTOOL_EXECUTABLE}" sign)
-        if(IVW_WINDOWS_SIGN_IDENTITY)
-            list(APPEND sign_cmd /sha1 "${IVW_WINDOWS_SIGN_IDENTITY}")
-        else()
-            list(APPEND sign_cmd /a)
-        endif()
-        if(IVW_WINDOWS_TIMESTAMP_URL)
-            list(APPEND sign_cmd /tr "${IVW_WINDOWS_TIMESTAMP_URL}" /td sha256)
-        endif()
-        list(APPEND sign_cmd /fd sha256 /v "$<TARGET_FILE:${TARGET_NAME}>")
+        list(APPEND sign_cmd /a)
     endif()
+    if(IVW_WINDOWS_TIMESTAMP_URL)
+        list(APPEND sign_cmd /tr "${IVW_WINDOWS_TIMESTAMP_URL}" /td sha256)
+    endif()
+    list(APPEND sign_cmd /fd sha256 /v "$<TARGET_FILE:${TARGET_NAME}>")
     
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${sign_cmd}
