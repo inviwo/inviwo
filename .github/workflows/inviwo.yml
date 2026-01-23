@@ -188,50 +188,69 @@ jobs:
         AZURE_KEY_VAULT_URI: ${{ secrets.AZURE_KEY_VAULT_URI }}
         AZURE_CERT_NAME: ${{ secrets.AZURE_CERT_NAME }}
       run: |
-        # Sign the installer after CPack has created it
+        # Sign the installer after CPack has created it (package target runs during Build step)
+        # List files in build directory for debugging
+        Write-Host "Looking for installer in build directory..."
+        Get-ChildItem -Path "build" -Filter "*.exe" | ForEach-Object { Write-Host "  Found: $($_.Name)" }
+        
         $installer = Get-ChildItem -Path "build" -Filter "inviwo-*.exe" | Select-Object -First 1
-        if ($installer) {
-          Write-Host "Signing installer: $($installer.FullName)"
+        if (-not $installer) {
+          Write-Host "::warning::No installer found. Make sure the 'package' target was built successfully."
+          exit 0  # Don't fail the build, just skip signing
+        }
+        
+        Write-Host "Signing installer: $($installer.FullName)"
+        
+        # Check which signing method to use
+        if ($env:AZURE_KEY_VAULT_URI -and $env:AZURE_CERT_NAME) {
+          # Use Azure SignTool for EV certificates
+          Write-Host "Using Azure SignTool for code signing"
+          dotnet tool install --global AzureSignTool --version 6.0.0
+          AzureSignTool sign `
+            -kvu $env:AZURE_KEY_VAULT_URI `
+            -kvi $env:AZURE_CLIENT_ID `
+            -kvs $env:AZURE_CLIENT_SECRET `
+            -kvt $env:AZURE_TENANT_ID `
+            -kvc $env:AZURE_CERT_NAME `
+            -tr http://timestamp.digicert.com `
+            -td sha256 `
+            $installer.FullName
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::Azure SignTool signing failed"
+            exit 1
+          }
+        } elseif ($env:WINDOWS_SIGNING_CERT) {
+          # Use SignTool with PFX certificate
+          Write-Host "Using SignTool with PFX certificate"
+          # Import certificate to Windows certificate store for more secure signing
+          $certBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERT)
+          $certPath = Join-Path $env:RUNNER_TEMP "cert.pfx"
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
           
-          # Check which signing method to use
-          if ($env:AZURE_KEY_VAULT_URI -and $env:AZURE_CERT_NAME) {
-            # Use Azure SignTool for EV certificates
-            dotnet tool install --global AzureSignTool --version 6.0.0
-            AzureSignTool sign `
-              -kvu $env:AZURE_KEY_VAULT_URI `
-              -kvi $env:AZURE_CLIENT_ID `
-              -kvs $env:AZURE_CLIENT_SECRET `
-              -kvt $env:AZURE_TENANT_ID `
-              -kvc $env:AZURE_CERT_NAME `
-              -tr http://timestamp.digicert.com `
-              -td sha256 `
-              $installer.FullName
-          } elseif ($env:WINDOWS_SIGNING_CERT) {
-            # Use SignTool with PFX certificate
-            # Import certificate to Windows certificate store for more secure signing
-            $certBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERT)
-            $certPath = Join-Path $env:RUNNER_TEMP "cert.pfx"
-            [IO.File]::WriteAllBytes($certPath, $certBytes)
-            
-            # Import to certificate store with password (more secure than command line)
-            $securePassword = ConvertTo-SecureString -String $env:WINDOWS_SIGNING_CERT_PASSWORD -AsPlainText -Force
-            $cert = Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePassword
-            $thumbprint = $cert.Thumbprint
-            
-            # Sign using certificate thumbprint (no password on command line)
-            & signtool sign /sha1 $thumbprint `
-              /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v `
-              $installer.FullName
-            
-            # Cleanup - remove certificate from store and temp file
-            Remove-Item -Path "Cert:\CurrentUser\My\$thumbprint" -Force
-            Remove-Item $certPath -Force
-          } else {
-            Write-Host "No signing credentials available, skipping signing"
+          # Import to certificate store with password (more secure than command line)
+          $securePassword = ConvertTo-SecureString -String $env:WINDOWS_SIGNING_CERT_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePassword
+          $thumbprint = $cert.Thumbprint
+          
+          # Sign using certificate thumbprint (no password on command line)
+          & signtool sign /sha1 $thumbprint `
+            /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v `
+            $installer.FullName
+          $signResult = $LASTEXITCODE
+          
+          # Cleanup - remove certificate from store and temp file
+          Remove-Item -Path "Cert:\CurrentUser\My\$thumbprint" -Force
+          Remove-Item $certPath -Force
+          
+          if ($signResult -ne 0) {
+            Write-Host "::error::SignTool signing failed"
+            exit 1
           }
         } else {
-          Write-Host "No installer found to sign"
+          Write-Host "::notice::No signing credentials configured - skipping code signing"
         }
+        
+        Write-Host "Code signing completed successfully"
 
     - name: "Run"
       shell: bash

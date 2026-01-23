@@ -30,7 +30,8 @@ function(sign_file file_path)
             return()
         endif()
         
-        set(sign_cmd "${AZURESIGNTOOL}" sign
+        set(sign_cmd
+            "${AZURESIGNTOOL}" sign
             -kvu "${AZURE_KEY_VAULT_URI}"
             -kvi "${AZURE_CLIENT_ID}"
             -kvs "${AZURE_CLIENT_SECRET}"
