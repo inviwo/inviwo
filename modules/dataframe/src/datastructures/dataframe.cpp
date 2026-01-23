@@ -292,4 +292,13 @@ std::vector<std::shared_ptr<Column>>::const_iterator DataFrame::begin() const {
 
 std::vector<std::shared_ptr<Column>>::iterator DataFrame::end() { return columns_.end(); }
 
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataInport<DataFrame>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataInport<DataFrame, 0, false>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataInport<DataFrame, 0, true>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataInport<DataSequence<DataFrame>>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataInport<DataSequence<DataFrame>, 0, false>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataInport<DataSequence<DataFrame>, 0, true>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataOutport<DataFrame>;
+template class IVW_MODULE_DATAFRAME_TMPL_INST DataOutport<DataSequence<DataFrame>>;
+
 }  // namespace inviwo

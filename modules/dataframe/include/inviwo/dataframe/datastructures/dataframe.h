@@ -360,4 +360,13 @@ struct DataTraits<DataFrame> {
     }
 };
 
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataInport<DataFrame>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataInport<DataFrame, 0, false>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataInport<DataFrame, 0, true>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataInport<DataSequence<DataFrame>>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataInport<DataSequence<DataFrame>, 0, false>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataInport<DataSequence<DataFrame>, 0, true>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataOutport<DataFrame>;
+extern template class IVW_MODULE_DATAFRAME_TMPL_EXP DataOutport<DataSequence<DataFrame>>;
+
 }  // namespace inviwo
