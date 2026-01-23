@@ -26,6 +26,10 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #################################################################################
+
+# Include code signing support
+include(codesign)
+
 set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
 set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT Application)
@@ -115,6 +119,12 @@ if(WIN32 AND NOT "qt" IN_LIST VCPKG_MANIFEST_FEATURES)
     find_program(WINDEPLOYQT windeployqt HINTS "${qt_bin_dir}")
     configure_file("${IVW_ROOT_DIR}/cmake/deploy-windows.cmake.in" "${PROJECT_BINARY_DIR}/deploy-windows.cmake" @ONLY)
     set(CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/deploy-windows.cmake")
+    
+    # Add code signing script if enabled
+    if(IVW_SIGN_WINDOWS_BINARIES)
+        configure_file("${IVW_ROOT_DIR}/cmake/sign-windows.cmake.in" "${PROJECT_BINARY_DIR}/sign-windows.cmake" @ONLY)
+        list(APPEND CPACK_PRE_BUILD_SCRIPTS "${PROJECT_BINARY_DIR}/sign-windows.cmake")
+    endif()
 elseif(APPLE)
     get_target_property(qmake_executable Qt::qmake IMPORTED_LOCATION)
     get_filename_component(qt_bin_dir "${qmake_executable}" DIRECTORY)

@@ -23,6 +23,12 @@ env:
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
+  # Windows code signing - set to 'true' to enable signing when secrets are configured
+  # Requires one of the following secret sets:
+  # Option 1 (PFX certificate): WINDOWS_SIGNING_CERT, WINDOWS_SIGNING_CERT_PASSWORD
+  # Option 2 (Azure Key Vault): AZURE_KEY_VAULT_URI, AZURE_CERT_NAME, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID
+  WINDOWS_SIGNING_ENABLED: ${{ secrets.WINDOWS_SIGNING_CERT != '' || secrets.AZURE_KEY_VAULT_URI != '' }}
+
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
 
@@ -170,6 +176,54 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
+
+    - name: "Sign Windows Binaries"
+      if: matrix.system == 'windows' && matrix.linkage == 'dynamic' && matrix.configuration == 'Release' && env.WINDOWS_SIGNING_ENABLED == 'true'
+      shell: pwsh
+      env:
+        WINDOWS_SIGNING_CERT: ${{ secrets.WINDOWS_SIGNING_CERT }}
+        WINDOWS_SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_KEY_VAULT_URI: ${{ secrets.AZURE_KEY_VAULT_URI }}
+        AZURE_CERT_NAME: ${{ secrets.AZURE_CERT_NAME }}
+      run: |
+        # Sign the installer after CPack has created it
+        $installer = Get-ChildItem -Path "build" -Filter "inviwo-*.exe" | Select-Object -First 1
+        if ($installer) {
+          Write-Host "Signing installer: $($installer.FullName)"
+          
+          # Check which signing method to use
+          if ($env:AZURE_KEY_VAULT_URI -and $env:AZURE_CERT_NAME) {
+            # Use Azure SignTool for EV certificates
+            dotnet tool install --global AzureSignTool --version 6.0.0
+            AzureSignTool sign `
+              -kvu $env:AZURE_KEY_VAULT_URI `
+              -kvi $env:AZURE_CLIENT_ID `
+              -kvs $env:AZURE_CLIENT_SECRET `
+              -kvt $env:AZURE_TENANT_ID `
+              -kvc $env:AZURE_CERT_NAME `
+              -tr http://timestamp.digicert.com `
+              -td sha256 `
+              $installer.FullName
+          } elseif ($env:WINDOWS_SIGNING_CERT) {
+            # Use SignTool with PFX certificate
+            $certBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERT)
+            $certPath = Join-Path $env:RUNNER_TEMP "cert.pfx"
+            [IO.File]::WriteAllBytes($certPath, $certBytes)
+            
+            & signtool sign /f $certPath /p $env:WINDOWS_SIGNING_CERT_PASSWORD `
+              /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v `
+              $installer.FullName
+            
+            Remove-Item $certPath -Force
+          } else {
+            Write-Host "No signing credentials available, skipping signing"
+          }
+        } else {
+          Write-Host "No installer found to sign"
+        }
 
     - name: "Run"
       shell: bash
