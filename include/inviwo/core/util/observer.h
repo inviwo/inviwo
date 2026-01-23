@@ -285,7 +285,7 @@ void Observable<T>::removeObserver(T* observer) {
 
 template <typename T>
 bool Observable<T>::isObservedBy(T* observer) const {
-    return std::find(observers_.begin(), observers_.end(), observer) != observers_.end();
+    return std::ranges::contains(observers_, observer);
 }
 
 template <typename T>
@@ -309,8 +309,7 @@ void Observable<T>::forEachObserver(C callback) {
         // Add and remove any observers that were added/removed while we invoked the callbacks.
         if (invocationCount_ == 0) {
             if (toRemove) {
-                observers_.erase(std::remove(observers_.begin(), observers_.end(), nullptr),
-                                 observers_.end());
+                std::erase(observers_, nullptr);
             }
             observers_.insert(observers_.end(), toAdd_.begin(), toAdd_.end());
             toAdd_.clear();
@@ -339,11 +338,10 @@ void Observable<T>::removeObserver(Observer* observer) {
 template <typename T>
 bool Observable<T>::addObserverInternal(Observer* aObserver) {
     auto observer = static_cast<T*>(aObserver);
-    const auto it = std::find(observers_.begin(), observers_.end(), observer);
-    if (it == observers_.end()) {
+    if (!std::ranges::contains(observers_, observer)) {
         if (invocationCount_ == 0) {
             observers_.push_back(observer);
-        } else {
+        } else if (!std::ranges::contains(toAdd_, observer)) {
             toAdd_.push_back(observer);
         }
         return true;
@@ -354,14 +352,17 @@ bool Observable<T>::addObserverInternal(Observer* aObserver) {
 
 template <typename T>
 bool Observable<T>::removeObserverInternal(Observer* aObserver) {
-    auto observer = static_cast<T*>(aObserver);
-    auto it = std::find(observers_.begin(), observers_.end(), observer);
-    if (it != observers_.end()) {
+    auto* observer = static_cast<T*>(aObserver);
+
+    if (auto it = std::ranges::find(observers_, observer); it != observers_.end()) {
         if (invocationCount_ == 0) {
             observers_.erase(it);
         } else {
             *it = nullptr;
         }
+        return true;
+    } else if (auto it2 = std::ranges::find(toAdd_, observer); it != toAdd_.end()) {
+        toAdd_.erase(it2);
         return true;
     } else {
         return false;
