@@ -24,9 +24,7 @@ env:
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
   # Windows code signing - automatically enabled when signing secrets are configured
-  # Requires one of the following secret sets:
-  # Option 1 (PFX certificate): WINDOWS_SIGNING_CERT, WINDOWS_SIGNING_CERT_PASSWORD
-  # Option 2 (Azure Key Vault): AZURE_KEY_VAULT_URI, AZURE_CERT_NAME, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID
+  # Required secrets: WINDOWS_SIGNING_CERT (base64-encoded PFX), WINDOWS_SIGNING_CERT_PASSWORD
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -182,11 +180,6 @@ jobs:
       env:
         WINDOWS_SIGNING_CERT: ${{ secrets.WINDOWS_SIGNING_CERT }}
         WINDOWS_SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
-        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        AZURE_KEY_VAULT_URI: ${{ secrets.AZURE_KEY_VAULT_URI }}
-        AZURE_CERT_NAME: ${{ secrets.AZURE_CERT_NAME }}
       run: |
         # Sign the installer after CPack has created it (package target runs during Build step)
         # List files in build directory for debugging
@@ -201,25 +194,7 @@ jobs:
         
         Write-Host "Signing installer: $($installer.FullName)"
         
-        # Check which signing method to use
-        if ($env:AZURE_KEY_VAULT_URI -and $env:AZURE_CERT_NAME) {
-          # Use Azure SignTool for EV certificates
-          Write-Host "Using Azure SignTool for code signing"
-          dotnet tool install --global AzureSignTool --version 6.0.0
-          AzureSignTool sign `
-            -kvu $env:AZURE_KEY_VAULT_URI `
-            -kvi $env:AZURE_CLIENT_ID `
-            -kvs $env:AZURE_CLIENT_SECRET `
-            -kvt $env:AZURE_TENANT_ID `
-            -kvc $env:AZURE_CERT_NAME `
-            -tr http://timestamp.digicert.com `
-            -td sha256 `
-            $installer.FullName
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "::error::Azure SignTool signing failed"
-            exit 1
-          }
-        } elseif ($env:WINDOWS_SIGNING_CERT) {
+        if ($env:WINDOWS_SIGNING_CERT) {
           # Use SignTool with PFX certificate
           Write-Host "Using SignTool with PFX certificate"
           # Import certificate to Windows certificate store for more secure signing
@@ -246,11 +221,10 @@ jobs:
             Write-Host "::error::SignTool signing failed"
             exit 1
           }
+          Write-Host "Code signing completed successfully"
         } else {
           Write-Host "::notice::No signing credentials configured - skipping code signing"
         }
-        
-        Write-Host "Code signing completed successfully"
 
     - name: "Run"
       shell: bash

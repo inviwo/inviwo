@@ -13,11 +13,6 @@ When distributing Windows applications and installers, users may see warnings li
 
 ## How Windows Code Signing Works
 
-### Certificate Types
-
-1. **Standard Code Signing Certificate**: Signs applications and shows your organization name
-2. **EV (Extended Validation) Code Signing Certificate**: Provides immediate SmartScreen reputation and is required for kernel-mode drivers
-
 ### The Signing Process
 
 1. **Obtain a code signing certificate** from a trusted Certificate Authority (CA):
@@ -26,7 +21,7 @@ When distributing Windows applications and installers, users may see warnings li
    - GlobalSign
    - SSL.com
 
-2. **Sign executables and DLLs** using Microsoft's SignTool or similar tools
+2. **Sign executables and DLLs** using Microsoft's SignTool
 3. **Timestamp the signature** to ensure validity even after certificate expiration
 4. **Sign the installer** (NSIS, MSI, etc.) for an additional layer of trust
 
@@ -43,8 +38,7 @@ For Inviwo, the following files should be signed:
 ### Prerequisites
 
 1. **Code Signing Certificate**: Purchase from a trusted CA
-2. **Certificate Storage**: EV certificates typically require a Hardware Security Module (HSM) or cloud-based signing service
-3. **GitHub Secrets**: Store certificate and credentials securely
+2. **GitHub Secrets**: Store certificate and credentials securely
 
 ### GitHub Secrets Required
 
@@ -52,56 +46,19 @@ Add these secrets to your GitHub repository:
 
 | Secret Name | Description |
 |-------------|-------------|
-| `WINDOWS_SIGNING_CERT` | Base64-encoded PFX certificate (for standard certificates) |
+| `WINDOWS_SIGNING_CERT` | Base64-encoded PFX certificate |
 | `WINDOWS_SIGNING_CERT_PASSWORD` | Password for the PFX certificate |
-| `WINDOWS_SIGNING_TIMESTAMP_URL` | Timestamp server URL (e.g., `http://timestamp.digicert.com`) |
 
-For EV certificates with cloud signing services (recommended):
-
-| Secret Name | Description |
-|-------------|-------------|
-| `AZURE_KEY_VAULT_URI` | Azure Key Vault URI |
-| `AZURE_CLIENT_ID` | Azure AD application client ID |
-| `AZURE_CLIENT_SECRET` | Azure AD application client secret |
-| `AZURE_TENANT_ID` | Azure AD tenant ID |
-| `AZURE_CERT_NAME` | Certificate name in Key Vault |
-
-### Signing Methods
-
-#### Method 1: SignTool with PFX Certificate (Standard Certificates)
+### Signing with SignTool
 
 ```powershell
 # Sign a single file
-signtool sign /f certificate.pfx /p $password /t http://timestamp.digicert.com /fd sha256 /v myapp.exe
+signtool sign /f certificate.pfx /p $password /tr http://timestamp.digicert.com /fd sha256 /v myapp.exe
 
 # Sign multiple files
 Get-ChildItem -Path "build/bin" -Include "*.exe","*.dll" -Recurse | ForEach-Object {
-    signtool sign /f certificate.pfx /p $password /t http://timestamp.digicert.com /fd sha256 /v $_.FullName
+    signtool sign /f certificate.pfx /p $password /tr http://timestamp.digicert.com /fd sha256 /v $_.FullName
 }
-```
-
-#### Method 2: Azure Key Vault (EV Certificates - Recommended)
-
-Azure Key Vault provides secure cloud-based signing for EV certificates:
-
-```powershell
-# Install Azure SignTool
-dotnet tool install --global AzureSignTool
-
-# Sign files
-AzureSignTool sign -kvu $AZURE_KEY_VAULT_URI -kvi $AZURE_CLIENT_ID -kvs $AZURE_CLIENT_SECRET -kvt $AZURE_TENANT_ID -kvc $AZURE_CERT_NAME -tr http://timestamp.digicert.com -td sha256 myapp.exe
-```
-
-#### Method 3: SSL.com eSigner (Cloud-based EV Signing)
-
-SSL.com offers cloud-based signing without hardware requirements:
-
-```powershell
-# Install CodeSignTool
-# Download from SSL.com
-
-# Sign files
-CodeSignTool sign -username=$USERNAME -password=$PASSWORD -totp_secret=$TOTP_SECRET -credential_id=$CREDENTIAL_ID -input_file_path=myapp.exe
 ```
 
 ## Workflow Integration
@@ -155,31 +112,20 @@ Get-AuthenticodeSignature myapp.exe
    - Check the certificate thumbprint/identity
 
 4. **SmartScreen warnings still appear**
-   - Standard certificates require reputation building
-   - Consider upgrading to an EV certificate
+   - Certificates require reputation building over time
    - Ensure proper timestamping
 
 ## Best Practices
 
-1. **Use EV certificates** for immediate SmartScreen trust
-2. **Always timestamp signatures** to maintain validity after certificate expiration
-3. **Sign all executables and DLLs**, not just the main application
-4. **Sign the installer** as the final step
-5. **Store certificates securely** using HSM or cloud-based solutions
-6. **Rotate credentials regularly** and use short-lived tokens where possible
-7. **Test signed installers** on a clean Windows machine
-
-## Cost Considerations
-
-| Certificate Type | Approximate Annual Cost | SmartScreen Impact |
-|-----------------|------------------------|-------------------|
-| Standard Code Signing | $200-400/year | Builds reputation over time |
-| EV Code Signing | $400-600/year | Immediate trust |
-| Azure Key Vault | Usage-based | N/A (certificate storage only) |
+1. **Always timestamp signatures** to maintain validity after certificate expiration
+2. **Sign all executables and DLLs**, not just the main application
+3. **Sign the installer** as the final step
+4. **Store certificates securely**
+5. **Rotate credentials regularly** and use short-lived tokens where possible
+6. **Test signed installers** on a clean Windows machine
 
 ## References
 
 - [Microsoft Code Signing Documentation](https://docs.microsoft.com/en-us/windows/win32/seccrypto/cryptography-tools)
 - [SignTool Documentation](https://docs.microsoft.com/en-us/windows/win32/seccrypto/signtool)
-- [Azure Key Vault Code Signing](https://docs.microsoft.com/en-us/azure/key-vault/)
 - [NSIS Code Signing](https://nsis.sourceforge.io/Signing_NSIS_installers)

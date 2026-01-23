@@ -5,12 +5,8 @@
 # they are packaged into the installer.
 
 set(SIGNTOOL "@SIGNTOOL_EXECUTABLE@")
-set(AZURESIGNTOOL "@AZURESIGNTOOL_EXECUTABLE@")
-set(SIGN_METHOD "@IVW_WINDOWS_SIGN_METHOD@")
 set(SIGN_IDENTITY "@IVW_WINDOWS_SIGN_IDENTITY@")
 set(TIMESTAMP_URL "@IVW_WINDOWS_TIMESTAMP_URL@")
-set(AZURE_KEY_VAULT_URI "@IVW_AZURE_KEY_VAULT_URI@")
-set(AZURE_CERT_NAME "@IVW_AZURE_CERT_NAME@")
 
 # Get staging directory from CPack
 set(STAGING_DIR "${CPACK_TEMPORARY_INSTALL_DIRECTORY}")
@@ -19,43 +15,21 @@ message(STATUS "Code signing files in: ${STAGING_DIR}")
 
 # Function to sign a single file
 function(sign_file file_path)
-    if(SIGN_METHOD STREQUAL "azuresigntool" AND AZURESIGNTOOL)
-        # Get Azure credentials from environment
-        set(AZURE_CLIENT_ID "$ENV{AZURE_CLIENT_ID}")
-        set(AZURE_CLIENT_SECRET "$ENV{AZURE_CLIENT_SECRET}")
-        set(AZURE_TENANT_ID "$ENV{AZURE_TENANT_ID}")
-        
-        if(NOT AZURE_CLIENT_ID OR NOT AZURE_CLIENT_SECRET OR NOT AZURE_TENANT_ID)
-            message(WARNING "Azure credentials not available, skipping signing")
-            return()
-        endif()
-        
-        set(sign_cmd
-            "${AZURESIGNTOOL}" sign
-            -kvu "${AZURE_KEY_VAULT_URI}"
-            -kvi "${AZURE_CLIENT_ID}"
-            -kvs "${AZURE_CLIENT_SECRET}"
-            -kvt "${AZURE_TENANT_ID}"
-            -kvc "${AZURE_CERT_NAME}"
-            -tr "${TIMESTAMP_URL}"
-            -td sha256
-            "${file_path}"
-        )
-    elseif(SIGNTOOL)
-        set(sign_cmd "${SIGNTOOL}" sign)
-        if(SIGN_IDENTITY)
-            list(APPEND sign_cmd /sha1 "${SIGN_IDENTITY}")
-        else()
-            list(APPEND sign_cmd /a)
-        endif()
-        if(TIMESTAMP_URL)
-            list(APPEND sign_cmd /tr "${TIMESTAMP_URL}" /td sha256)
-        endif()
-        list(APPEND sign_cmd /fd sha256 /v "${file_path}")
-    else()
-        message(WARNING "No signing tool available")
+    if(NOT SIGNTOOL)
+        message(WARNING "SignTool not available")
         return()
     endif()
+    
+    set(sign_cmd "${SIGNTOOL}" sign)
+    if(SIGN_IDENTITY)
+        list(APPEND sign_cmd /sha1 "${SIGN_IDENTITY}")
+    else()
+        list(APPEND sign_cmd /a)
+    endif()
+    if(TIMESTAMP_URL)
+        list(APPEND sign_cmd /tr "${TIMESTAMP_URL}" /td sha256)
+    endif()
+    list(APPEND sign_cmd /fd sha256 /v "${file_path}")
     
     message(STATUS "Signing: ${file_path}")
     execute_process(
