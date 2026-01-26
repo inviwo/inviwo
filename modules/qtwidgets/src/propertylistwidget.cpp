@@ -60,6 +60,7 @@
 #include <QStyleOption>  // for QStyleOption
 #include <QVBoxLayout>   // for QVBoxLayout
 #include <Qt>            // for AlignTop, operator|
+#include <QApplication>
 
 class QPaintEvent;
 
@@ -114,7 +115,7 @@ void PropertyListFrame::add(Processor* processor) {
         setUpdatesEnabled(true);
     });
 
-    if (auto widget = get(processor)) {
+    if (auto* widget = get(processor)) {
         widget->show();
     }
 }
@@ -142,7 +143,7 @@ void PropertyListFrame::add(Property* property) {
         setUpdatesEnabled(true);
     });
 
-    if (auto widget = get(property)) {
+    if (auto* widget = get(property)) {
         widget->show();
     }
 }
@@ -188,14 +189,19 @@ QWidget* PropertyListFrame::get(Processor* processor) {
 
 QWidget* PropertyListFrame::create(Processor* processor) {
     // create property widget and store it in the map
-    auto widget = new CollapsibleGroupBoxWidgetQt(processor);
+    auto* widget = new CollapsibleGroupBoxWidgetQt(processor);
     widget->hide();
     listLayout_->insertWidget(-1, widget, 0, Qt::AlignTop);
-    for (auto prop : processor->getProperties()) {
+    for (auto* prop : processor->getProperties()) {
         widget->addProperty(prop);
     }
     processorMap_[processor] = widget;
     processor->getNetwork()->addObserver(this);
+
+    // this is a hack for a qt issue on windows and linux where the widget created does not get the
+    // full stylesheet applied. This started in Qt 6.8.x and was still an issue in 6.10 
+    widget->setStyleSheet(qApp->styleSheet());
+
     return widget;
 }
 
@@ -210,13 +216,18 @@ QWidget* PropertyListFrame::get(Property* property) {
 }
 QWidget* PropertyListFrame::create(Property* property) {
     // create property widget and store it in the map
-    if (auto widget = static_cast<PropertyWidgetQt*>(factory_->create(property).release())) {
+    if (auto* widget = static_cast<PropertyWidgetQt*>(factory_->create(property).release())) {
         widget->hide();
         listLayout_->insertWidget(-1, widget, 0, Qt::AlignTop);
         widget->initState();
         propertyMap_[property] = widget;
         property->getOwner()->addObserver(this);
         RenderContext::getPtr()->activateDefaultRenderContext();
+
+        // this is a hack for a qt issue on windows and linux where the widget created does not get
+        // the full stylesheet applied. This started in Qt 6.8.x and was still an issue in 6.10 
+        widget->setStyleSheet(qApp->styleSheet());
+
         return widget;
     }
     return nullptr;
