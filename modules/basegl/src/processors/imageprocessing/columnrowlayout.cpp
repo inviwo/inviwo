@@ -83,7 +83,7 @@ MultiInput::MultiInput(const std::function<void(bool)>& update) : inport("inport
         // Ports with dimensions (1,1) or less are considered to be inactive
         return inport.isConnected() && util::all_of(inport.getConnectedOutports(), [](Outport* p) {
                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-                   auto* ip = static_cast<ImageOutport*>(p);
+                   const auto* ip = static_cast<ImageOutport*>(p);
                    return (ip->hasData() &&
                            glm::any(glm::lessThanEqual(ip->getDimensions(), size2_t(1))))
                               ? true
@@ -276,7 +276,7 @@ bool SplitterPositions::updateSize(size_t newSize) {
 
     for (size_t i = 0; i < newSize; ++i) {
         if (splitters_.size() <= i) {
-            auto* prop = new DoubleProperty{
+            auto prop = std::make_unique<DoubleProperty>(
                 fmt::format("splitter{}", i), fmt::format("Splitter {}", i + 1),
                 OrdinalPropertyState<double>{
                     .value = static_cast<double>(i + 1) / static_cast<double>(newSize + 1),
@@ -285,9 +285,9 @@ bool SplitterPositions::updateSize(size_t newSize) {
                     .max = 1.0,
                     .maxConstraint = ConstraintBehavior::Immutable,
                     .increment = 0.001,
-                    .invalidationLevel = InvalidationLevel::InvalidOutput}};
+                    .invalidationLevel = InvalidationLevel::InvalidOutput});
             prop->onChange([i, this]() { enforceOrder(i); });
-            splitters_.addProperty(prop);
+            splitters_.addProperty(std::move(prop));
         }
         get(i)->setVisible(true);
     }
@@ -401,7 +401,9 @@ void Layout::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
-    TextureUnit colorUnit, depthUnit, pickingUnit;
+    const TextureUnit colorUnit;
+    const TextureUnit depthUnit;
+    const TextureUnit pickingUnit;
     shader_.setUniform("color_", colorUnit.getUnitNumber());
     shader_.setUniform("depth_", depthUnit.getUnitNumber());
     shader_.setUniform("picking_", pickingUnit.getUnitNumber());
@@ -419,12 +421,14 @@ void Layout::process() {
     glViewport(0, 0, dim.x, dim.y);
 
     if (splitterSettings_.enabled()) {
-        auto hs = horizontalSplitters_.splits();
+        auto toFloat = [](auto val) { return static_cast<float>(val); };
+
+        auto hs = horizontalSplitters_.splits() | std::views::transform(toFloat);
         splits_.assign(hs.begin(), hs.end());
         horizontalRenderer_.render(splitterSettings_, splitter::Direction::Horizontal, splits_,
                                    outport_.getDimensions());
 
-        auto vs = verticalSplitters_.splits();
+        auto vs = verticalSplitters_.splits() | std::views::transform(toFloat);
         splits_.assign(vs.begin(), vs.end());
         verticalRenderer_.render(splitterSettings_, splitter::Direction::Vertical, splits_,
                                  outport_.getDimensions());
@@ -441,7 +445,7 @@ void Layout::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
+    if (const auto* resizeEvent = event->getAs<ResizeEvent>()) {
         currentDim_ = resizeEvent->size();
         calculateViews(currentDim_);
         input_.propagateSizes(viewManager_);
