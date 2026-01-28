@@ -361,7 +361,7 @@ bool Observable<T>::removeObserverInternal(Observer* aObserver) {
             *it = nullptr;
         }
         return true;
-    } else if (auto it2 = std::ranges::find(toAdd_, observer); it != toAdd_.end()) {
+    } else if (auto it2 = std::ranges::find(toAdd_, observer); it2 != toAdd_.end()) {
         toAdd_.erase(it2);
         return true;
     } else {
