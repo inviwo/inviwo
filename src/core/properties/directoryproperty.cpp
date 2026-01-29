@@ -40,7 +40,7 @@ DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : FileProperty(identifier, displayName, std::move(help), value, AcceptMode::Open,
-                   FileMode::Directory, contentType, invalidationLevel, semantics) {}
+                   FileMode::Directory, contentType, invalidationLevel, std::move(semantics)) {}
 
 DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_view displayName,
                                      const std::filesystem::path& value,
