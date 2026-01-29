@@ -63,6 +63,7 @@
 #include <inviwo/dataframe/processors/filelist.h>
 #include <inviwo/dataframe/processors/histogram1dtodataframe.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>
+#include <inviwo/dataframe/processors/pathsequencetodataframe.h>
 #include <inviwo/dataframe/processors/sequencetodataframe.h>
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
 #include <inviwo/dataframe/processors/tffromdataframecolumn.h>
@@ -118,6 +119,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<FileList>();
     registerProcessor<Histogram1DToDataFrame>();
     registerProcessor<ImageToDataFrame>();
+    registerProcessor<PathSequenceToDataFrame>();
     registerProcessor<SequenceToDataFrame<Volume>>();
     registerProcessor<SequenceToDataFrame<Layer>>();
     registerProcessor<SequenceToDataFrame<Image>>();
