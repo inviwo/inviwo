@@ -77,12 +77,25 @@ public:
 
     DataSequence() = default;
 
-    explicit DataSequence(std::span<std::shared_ptr<Data>> data) {
+    template <std::ranges::input_range R>
+        requires std::same_as<std::ranges::range_value_t<R>, std::shared_ptr<Data>>
+    explicit DataSequence(R data) {
         for (auto item : data) {
             data_.emplace_back(item);
         }
     }
-    explicit DataSequence(std::span<std::shared_ptr<const Data>> data) {
+    template <std::ranges::input_range R>
+        requires std::same_as<std::ranges::range_value_t<R>, std::shared_ptr<const Data>>
+    explicit DataSequence(R data) {
+        for (auto item : data) {
+            data_.emplace_back(item);
+        }
+    }
+
+    template <std::ranges::input_range R>
+        requires std::same_as<std::ranges::range_value_t<R>, std::shared_ptr<const Data>> ||
+                 std::same_as<std::ranges::range_value_t<R>, std::shared_ptr<const Data>>
+    explicit DataSequence(std::from_range_t, R data) {
         for (auto item : data) {
             data_.emplace_back(item);
         }
