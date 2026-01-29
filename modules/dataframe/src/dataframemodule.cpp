@@ -62,6 +62,7 @@
 #include <inviwo/dataframe/processors/dataframetomesh.h>
 #include <inviwo/dataframe/processors/filelist.h>
 #include <inviwo/dataframe/processors/imagetodataframe.h>           // for ImageToDataFrame
+#include <inviwo/dataframe/processors/pathsequencetodataframe.h>
 #include <inviwo/dataframe/processors/syntheticdataframe.h>         // for SyntheticDataFrame
 #include <inviwo/dataframe/processors/tffromdataframecolumn.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>  // for VolumeSequenceToData...
@@ -115,6 +116,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerProcessor<DataFrameToVector>();
     registerProcessor<FileList>();
     registerProcessor<ImageToDataFrame>();
+    registerProcessor<PathSequenceToDataFrame>();
     registerProcessor<SyntheticDataFrame>();
     registerProcessor<TFFromDataFrameColumn>();
     registerProcessor<VolumeToDataFrame>();
