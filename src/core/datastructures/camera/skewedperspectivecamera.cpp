@@ -137,10 +137,10 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
 
     } else {
         if (auto fov = util::getCameraFovProperty(cp)) {
-            fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});
+            fov->disconnectSetAndGet();
         }
         if (auto offset = util::getCameraEyeOffsetProperty(cp)) {
-            offset->setGetAndSet([val = offset->get()]() { return val; }, [](const vec2&) {});
+            offset->disconnectSetAndGet();
         }
     }
 }

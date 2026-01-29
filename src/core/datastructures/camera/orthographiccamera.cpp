@@ -94,7 +94,7 @@ void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
                 }
             });
     } else if (auto width = util::getCameraWidthProperty(cp)) {
-        width->setGetAndSet([val = width->get()]() { return val; }, [](const float&) {});
+        width->disconnectSetAndGet();
     }
 }
 

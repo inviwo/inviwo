@@ -96,7 +96,7 @@ void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
             });
 
     } else if (auto fov = util::getCameraFovProperty(cp)) {
-        fov->setGetAndSet([val = fov->get()]() { return val; }, [](const float&) {});
+        fov->disconnectSetAndGet();
     }
 }
 
