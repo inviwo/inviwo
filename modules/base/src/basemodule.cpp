@@ -120,6 +120,8 @@
 #include <modules/base/processors/noisegenerator3d.h>
 #include <modules/base/processors/ordinalpropertyanimator.h>
 #include <modules/base/processors/orientationindicator.h>
+#include <modules/base/processors/pathsequencesource.h>
+#include <modules/base/processors/pathsource.h>
 #include <modules/base/processors/pixeltobufferprocessor.h>
 #include <modules/base/processors/pixelvalue.h>
 #include <modules/base/processors/pointgenerationprocessor.h>
@@ -160,6 +162,7 @@
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumetospatialsampler.h>
 #include <modules/base/processors/worldtransformdeprecated.h>
+#include <modules/base/processors/pathtodata.h>
 // Properties
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/bufferinformationproperty.h>
@@ -255,6 +258,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<NoiseGenerator3D>();
     registerProcessor<OrdinalPropertyAnimator>();
     registerProcessor<OrientationIndicator>();
+    registerProcessor<PathSequenceSource>();
+    registerProcessor<PathSource>();
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<PixelValue>();
     registerProcessor<Point3DGenerationProcessor>();
@@ -312,6 +317,12 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<FileCache<Mesh>>();
     registerProcessor<FileCache<Layer>>();
     registerProcessor<FileCache<Image, ImageInport, ImageOutport>>();
+
+    // PathToData
+    registerProcessor<PathToData<Volume>>();
+    registerProcessor<PathToData<Mesh>>();
+    registerProcessor<PathToData<Layer>>();
+    registerProcessor<PathToData<Image, ImageOutport>>();
 
     registerProperty<BasisProperty>();
     registerProperty<BufferInformationProperty>();

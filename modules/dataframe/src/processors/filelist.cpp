@@ -33,36 +33,13 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 
+#include <inviwo/core/datastructures/path.h>
+
 #include <filesystem>
 #include <ranges>
 #include <vector>
 #include <regex>
 #include <chrono>
-
-#include <fmt/format.h>
-#include <fmt/std.h>
-#include <fmt/chrono.h>
-
-template <>
-struct fmt::formatter<std::filesystem::file_time_type, char> {
-    fmt::formatter<std::chrono::sys_time<std::filesystem::file_time_type::duration>> formatter;
-
-    template <class ParseContext>
-    constexpr ParseContext::iterator parse(ParseContext& ctx) {
-        return formatter.parse(ctx);
-    }
-
-    template <class FmtContext>
-    constexpr FmtContext::iterator format(std::filesystem::file_time_type time,
-                                          FmtContext& ctx) const {
-#ifdef WIN32
-        const auto systime = std::chrono::clock_cast<std::chrono::system_clock>(time);
-#else
-        const auto systime = std::filesystem::file_time_type::clock::to_sys(time);
-#endif
-        return formatter.format(systime, ctx);
-    }
-};
 
 namespace inviwo {
 
