@@ -123,6 +123,7 @@
 
 #include <inviwo/core/util/stdextensions.h>
 
+#include <inviwo/core/datastructures/path.h>
 #include <inviwo/core/datastructures/representationutil.h>
 
 namespace inviwo {
@@ -204,6 +205,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerDefaultsForScalarDataType<VolumeSequence>();
     registerDefaultsForDataType<BufferBase>();
     registerDefaultsForDataType<LightSource>();
+    registerDefaultsForDataType<std::filesystem::path>();
 
     // Register Defaults for Datatypes
     // clang-format off
