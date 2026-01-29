@@ -107,6 +107,9 @@ set(HEADER_FILES
     include/modules/base/processors/noisegenerator3d.h
     include/modules/base/processors/ordinalpropertyanimator.h
     include/modules/base/processors/orientationindicator.h
+    include/modules/base/processors/pathsequencesource.h
+    include/modules/base/processors/pathsource.h
+    include/modules/base/processors/pathtodata.h
     include/modules/base/processors/pixeltobufferprocessor.h
     include/modules/base/processors/pixelvalue.h
     include/modules/base/processors/pointgenerationprocessor.h
@@ -265,6 +268,9 @@ set(SOURCE_FILES
     src/processors/noisegenerator3d.cpp
     src/processors/ordinalpropertyanimator.cpp
     src/processors/orientationindicator.cpp
+    src/processors/pathsequencesource.cpp
+    src/processors/pathsource.cpp
+    src/processors/pathtodata.cpp
     src/processors/pixeltobufferprocessor.cpp
     src/processors/pixelvalue.cpp
     src/processors/pointgenerationprocessor.cpp
