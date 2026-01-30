@@ -56,7 +56,7 @@ public:
 
     void process() override;
 
-    static constexpr std::string_view identifierSuffix() { return ".sequence.select"; };
+    static constexpr std::string_view identifierSuffix() { return ".sequence.select"; }
 
 protected:
     DataInport<DataSequence<T>> inport_;
