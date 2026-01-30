@@ -129,7 +129,7 @@ void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
         }
         sizeProp->setVisible(true);
     } else if (auto* sizeProp = dynamic_cast<FloatVec2RefProperty*>(cp.getCameraProperty("size"))) {
-        sizeProp->setGetAndSet([val = sizeProp->get()]() { return val; }, [](const vec2&) {});
+        sizeProp->disconnectSetAndGet();
     }
 }
 

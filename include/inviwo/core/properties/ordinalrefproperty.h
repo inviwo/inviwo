@@ -252,6 +252,12 @@ public:
             propertyModified();
         }
     }
+    void disconnectSetAndGet() {
+        auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", get_());
+        get_ = [val]() { return *val; };
+        set_ = [val](const T& newVal) { *val = newVal; };
+        fallbackValue_ = val;
+    }
 
 private:
     std::function<T()> get_;

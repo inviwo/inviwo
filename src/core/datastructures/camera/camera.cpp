@@ -227,15 +227,12 @@ void Camera::configureProperties(CameraProperty& cp, bool attach) {
             set<&Camera::farPlaneDist_, &Camera::invalidateProjectionMatrix>(this));
     } else {
         camprop_ = nullptr;
-        cp.lookFrom_.setGetAndSet([val = cp.lookFrom_.get()]() { return val; }, [](const vec3&) {});
-        cp.lookTo_.setGetAndSet([val = cp.lookTo_.get()]() { return val; }, [](const vec3&) {});
-        cp.lookUp_.setGetAndSet([val = cp.lookUp_.get()]() { return val; }, [](const vec3&) {});
-        cp.aspectRatio_.setGetAndSet([val = cp.aspectRatio_.get()]() { return val; },
-                                     [](const float&) {});
-        cp.nearPlane_.setGetAndSet([val = cp.nearPlane_.get()]() { return val; },
-                                   [](const float&) {});
-        cp.farPlane_.setGetAndSet([val = cp.farPlane_.get()]() { return val; },
-                                  [](const float&) {});
+        cp.lookFrom_.disconnectSetAndGet();
+        cp.lookTo_.disconnectSetAndGet();
+        cp.lookUp_.disconnectSetAndGet();
+        cp.aspectRatio_.disconnectSetAndGet();
+        cp.nearPlane_.disconnectSetAndGet();
+        cp.farPlane_.disconnectSetAndGet();
     }
 }
 
