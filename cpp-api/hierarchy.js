@@ -412,6 +412,7 @@ var hierarchy =
     [ "inviwo::DataTraits&lt; Rasterization &gt;", "structinviwo_1_1DataTraits_3_01Rasterization_01_4.html", null ],
     [ "inviwo::DataTraits&lt; Spatial4DSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html", null ],
     [ "inviwo::DataTraits&lt; SpatialSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01SpatialSampler_3_01ReturnType_01_4_01_4.html", null ],
+    [ "inviwo::DataTraits&lt; std::filesystem::path &gt;", "structinviwo_1_1DataTraits_3_01std_1_1filesystem_1_1path_01_4.html", null ],
     [ "inviwo::DataTraits&lt; std::string &gt;", "structinviwo_1_1DataTraits_3_01std_1_1string_01_4.html", null ],
     [ "inviwo::DataTraits&lt; std::vector&lt; const T *, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html", null ],
     [ "inviwo::DataTraits&lt; std::vector&lt; const T, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html", null ],
@@ -1276,6 +1277,7 @@ var hierarchy =
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
     ] ],
+    [ "fmt::formatter&lt; std::filesystem::file_time_type, char &gt;", "structfmt_1_1formatter_3_01std_1_1filesystem_1_1file__time__type_00_01char_01_4.html", null ],
     [ "inviwo::util::FovBounds", "structinviwo_1_1util_1_1FovBounds.html", null ],
     [ "inviwo::FragmentListRenderer", "classinviwo_1_1FragmentListRenderer.html", null ],
     [ "inviwo::ffmpeg::Frame", "classinviwo_1_1ffmpeg_1_1Frame.html", null ],
@@ -1383,6 +1385,8 @@ var hierarchy =
       [ "inviwo::InportFactoryObjectTemplate< T >", "classinviwo_1_1InportFactoryObjectTemplate.html", null ]
     ] ],
     [ "inviwo::InportIterable&lt; InportType, T, Flat &gt;", "classinviwo_1_1InportIterable.html", [
+      [ "inviwo::DataInport< std::filesystem::path >", "classinviwo_1_1DataInport.html", null ],
+      [ "inviwo::DataInport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataInport.html", null ],
       [ "inviwo::DataInport< BufferBase >", "classinviwo_1_1DataInport.html", null ],
       [ "inviwo::DataInport< T, 0, false >", "classinviwo_1_1DataInport.html", null ],
       [ "inviwo::DataInport< T, 0, true >", "classinviwo_1_1DataInport.html", null ],
@@ -2539,6 +2543,8 @@ var hierarchy =
       [ "inviwo::OutportIterableImpl< Derived, std::vector< std::shared_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
       [ "inviwo::OutportIterableImpl< Derived, std::vector< std::unique_ptr< T >, Alloc > >", "structinviwo_1_1OutportIterableImpl_3_01Derived_00_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_01_4_00_01Alloc_01_4_01_4.html", null ],
       [ "inviwo::OutportIterableImpl< Derived, T, Enable >", "structinviwo_1_1OutportIterableImpl.html", [
+        [ "inviwo::DataOutport< std::filesystem::path >", "classinviwo_1_1DataOutport.html", null ],
+        [ "inviwo::DataOutport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataOutport.html", null ],
         [ "inviwo::DataOutport< BufferBase >", "classinviwo_1_1DataOutport.html", null ],
         [ "inviwo::DataOutport< Layer >", "classinviwo_1_1DataOutport.html", null ],
         [ "inviwo::DataOutport< LayerSequence >", "classinviwo_1_1DataOutport.html", null ],
@@ -3331,6 +3337,8 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< T >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::Port", "classinviwo_1_1Port.html", [
         [ "inviwo::Inport", "classinviwo_1_1Inport.html", [
+          [ "inviwo::DataInport< std::filesystem::path >", "classinviwo_1_1DataInport.html", null ],
+          [ "inviwo::DataInport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< BufferBase >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< T, 0, false >", "classinviwo_1_1DataInport.html", null ],
           [ "inviwo::DataInport< T, 0, true >", "classinviwo_1_1DataInport.html", null ],
@@ -3379,6 +3387,8 @@ var hierarchy =
           [ "inviwo::PythonInport", "classinviwo_1_1PythonInport.html", null ]
         ] ],
         [ "inviwo::Outport", "classinviwo_1_1Outport.html", [
+          [ "inviwo::DataOutport< std::filesystem::path >", "classinviwo_1_1DataOutport.html", null ],
+          [ "inviwo::DataOutport< DataSequence< std::filesystem::path > >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< BufferBase >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< Layer >", "classinviwo_1_1DataOutport.html", null ],
           [ "inviwo::DataOutport< LayerSequence >", "classinviwo_1_1DataOutport.html", null ],

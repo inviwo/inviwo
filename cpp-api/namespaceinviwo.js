@@ -340,6 +340,7 @@ var namespaceinviwo =
     [ "DataTraits&lt; Rasterization &gt;", "structinviwo_1_1DataTraits_3_01Rasterization_01_4.html", null ],
     [ "DataTraits&lt; Spatial4DSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html", null ],
     [ "DataTraits&lt; SpatialSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01SpatialSampler_3_01ReturnType_01_4_01_4.html", null ],
+    [ "DataTraits&lt; std::filesystem::path &gt;", "structinviwo_1_1DataTraits_3_01std_1_1filesystem_1_1path_01_4.html", null ],
     [ "DataTraits&lt; std::string &gt;", "structinviwo_1_1DataTraits_3_01std_1_1string_01_4.html", null ],
     [ "DataTraits&lt; std::vector&lt; const T *, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html", null ],
     [ "DataTraits&lt; std::vector&lt; const T, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html", null ],

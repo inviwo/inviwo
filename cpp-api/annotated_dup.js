@@ -1,5 +1,8 @@
 var annotated_dup =
 [
+    [ "fmt", null, [
+      [ "formatter&lt; std::filesystem::file_time_type, char &gt;", "structfmt_1_1formatter_3_01std_1_1filesystem_1_1file__time__type_00_01char_01_4.html", null ]
+    ] ],
     [ "inviwo", "namespaceinviwo.html", [
       [ "algorithm", null, [
         [ "EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper" ],
@@ -772,6 +775,7 @@ var annotated_dup =
       [ "DataTraits&lt; Rasterization &gt;", "structinviwo_1_1DataTraits_3_01Rasterization_01_4.html", null ],
       [ "DataTraits&lt; Spatial4DSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html", null ],
       [ "DataTraits&lt; SpatialSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01SpatialSampler_3_01ReturnType_01_4_01_4.html", null ],
+      [ "DataTraits&lt; std::filesystem::path &gt;", "structinviwo_1_1DataTraits_3_01std_1_1filesystem_1_1path_01_4.html", null ],
       [ "DataTraits&lt; std::string &gt;", "structinviwo_1_1DataTraits_3_01std_1_1string_01_4.html", null ],
       [ "DataTraits&lt; std::vector&lt; const T *, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html", null ],
       [ "DataTraits&lt; std::vector&lt; const T, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html", null ],
