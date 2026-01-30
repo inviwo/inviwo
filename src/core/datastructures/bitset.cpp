@@ -31,6 +31,7 @@
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/algorithm/base64.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,14 +40,27 @@
 
 namespace inviwo {
 
-BitSet::BitSetIterator::BitSetIterator() = default;
+BitSet::BitSetIterator::BitSetIterator() : it_(nullptr) {};
 
 BitSet::BitSetIterator::BitSetIterator(const BitSetIterator& rhs)
-    : it_(std::make_unique<RoaringIt>(*rhs.it_)) {}
+    : it_{rhs.it_ ? std::make_unique<RoaringIt>(*rhs.it_) : nullptr} {}
+BitSet::BitSetIterator::BitSetIterator(BitSetIterator&& rhs) noexcept : it_{std::move(rhs.it_)} {}
 
 auto BitSet::BitSetIterator::operator=(const BitSetIterator& rhs) -> BitSetIterator& {
     if (this != &rhs) {
-        *it_ = *rhs.it_;
+        if (it_ && rhs.it_) {
+            *it_ = *rhs.it_;
+        } else if (rhs.it_) {
+            it_ = std::make_unique<RoaringIt>(*rhs.it_);
+        } else {
+            it_.reset();
+        }
+    }
+    return *this;
+}
+auto BitSet::BitSetIterator::operator=(BitSetIterator&& rhs) noexcept -> BitSetIterator& {
+    if (this != &rhs) {
+        it_ = std::move(rhs.it_);
     }
     return *this;
 }
@@ -60,35 +74,54 @@ BitSet::BitSetIterator::BitSetIterator(const RoaringIt& it)
     : it_(std::make_unique<RoaringIt>(it)) {}
 
 BitSet::BitSetIterator& BitSet::BitSetIterator::operator++() {
-    it_->operator++();
+    if (it_) it_->operator++();
     return *this;
 }
 
 BitSet::BitSetIterator BitSet::BitSetIterator::operator++(int) {
-    BitSet::BitSetIterator it(*it_);
-    it_->operator++();
-    return it;
+    if (it_) {
+        BitSet::BitSetIterator it(*it_);
+        it_->operator++();
+        return it;
+    } else {
+        return {};
+    }
 }
 
 BitSet::BitSetIterator& BitSet::BitSetIterator::operator--() {
-    it_->operator--();
+    if (it_) it_->operator--();
     return *this;
 }
 
 BitSet::BitSetIterator BitSet::BitSetIterator::operator--(int) {
-    BitSetIterator it(*it_);
-    it_->operator--();
-    return it;
+    if (it_) {
+        BitSetIterator it(*it_);
+        it_->operator--();
+        return it;
+    } else {
+        return {};
+    }
 }
 
-auto BitSet::BitSetIterator::operator*() const -> value_type { return **it_; }
+auto BitSet::BitSetIterator::operator*() const -> value_type {
+    IVW_ASSERT(it_, "Dereferencing an invalid BitSetIterator");
+    return **it_;
+}
 
 bool BitSet::BitSetIterator::operator==(const BitSetIterator& rhs) const {
-    return it_->operator==(*rhs.it_);
+    if (it_ && rhs.it_) {
+        return it_->operator==(*rhs.it_);
+    } else {
+        return !it_ && !rhs.it_;
+    }
 }
 
 bool BitSet::BitSetIterator::operator!=(const BitSetIterator& rhs) const {
-    return it_->operator!=(*rhs.it_);
+    if (it_ && rhs.it_) {
+        return it_->operator!=(*rhs.it_);
+    } else {
+        return it_ || rhs.it_;
+    }
 }
 
 BitSet::BitSet() : roaring_(std::make_unique<roaring::Roaring>()) {}
