@@ -288,7 +288,7 @@ void MultiRaycastingComponent::initializeResources(Shader& shader) {
 }
 
 auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     const auto renderingType = raycasting_.renderingType_;
 
     std::vector<Segment> segments{
