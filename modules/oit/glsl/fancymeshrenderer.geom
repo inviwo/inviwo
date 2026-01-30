@@ -134,7 +134,6 @@ void main(void) {
     vec3 triNormal =
         normalize(cross(vertices[IDX1].worldPosition.xyz - vertices[IDX0].worldPosition.xyz,
                         vertices[IDX2].worldPosition.xyz - vertices[IDX0].worldPosition.xyz));
-    triNormal = geometry.dataToWorldNormalMatrix * triNormal;
 
     //==================================================
     // EDGES
@@ -196,11 +195,7 @@ void main(void) {
         int i = vIdx[j];
         frag.worldPosition = vertices[i].worldPosition;
         frag.position = vertices[i].position;
-        if (geomSettings.triangleNormal) {
-            frag.normal = triNormal;
-        } else {
-            frag.normal = vertices[i].normal;
-        }
+        frag.normal = mix(triNormal, vertices[i].normal, bvec3(geomSettings.triangleNormal));
 #ifdef SEND_COLOR
         frag.color = vertices[i].color;
 #endif
