@@ -234,7 +234,8 @@ TEST(bitset, iteratorNullptrHandling) {
     // Test move constructor with nullptr iterator
     BitSet::BitSetIterator movedDefault(std::move(copiedDefault));
     EXPECT_EQ(defaultIt, movedDefault);
-    EXPECT_EQ(defaultIt, copiedDefault);  // Verify moved-from state
+    // unique_ptr move semantics ensure moved-from iterator has nullptr
+    EXPECT_EQ(defaultIt, copiedDefault);
 
     // Test copy assignment with nullptr iterator
     BitSet::BitSetIterator assignTarget;
@@ -245,7 +246,8 @@ TEST(bitset, iteratorNullptrHandling) {
     BitSet::BitSetIterator moveAssignTarget;
     moveAssignTarget = std::move(assignTarget);
     EXPECT_EQ(defaultIt, moveAssignTarget);
-    EXPECT_EQ(defaultIt, assignTarget);  // Verify moved-from state
+    // unique_ptr move semantics ensure moved-from iterator has nullptr
+    EXPECT_EQ(defaultIt, assignTarget);
 
     // Test moved-from iterator (it_ == nullptr after move)
     BitSet b(1, 2, 3);
@@ -258,7 +260,8 @@ TEST(bitset, iteratorNullptrHandling) {
 
     BitSet::BitSetIterator movedMovedFrom(std::move(copiedMovedFrom));
     EXPECT_EQ(validIt, movedMovedFrom);
-    EXPECT_EQ(validIt, copiedMovedFrom);  // Verify moved-from state
+    // unique_ptr move semantics ensure moved-from iterator has nullptr
+    EXPECT_EQ(validIt, copiedMovedFrom);
 
     // Test comparison operators with nullptr iterators
     BitSet::BitSetIterator it1;
