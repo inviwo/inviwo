@@ -8,6 +8,8 @@ pyconfig.ini
 compile_commands.json
 CMakeUserPresets.json
 build/
+build-*/
 out/
 .vs/
 .cache/
+*.bak
