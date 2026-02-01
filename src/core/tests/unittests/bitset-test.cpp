@@ -272,13 +272,11 @@ TEST(bitset, iteratorNullptrHandling) {
     BitSet::BitSetIterator it4;
     it3 = it4;  // Assign nullptr to valid iterator
     EXPECT_EQ(it3, it4);
-    EXPECT_TRUE(it3 == it4);
 
     BitSet::BitSetIterator it5;
     BitSet::BitSetIterator it6 = b.begin();
     it5 = it6;  // Assign valid to nullptr iterator
     EXPECT_EQ(it5, it6);
-    EXPECT_TRUE(it5 == it6);
 }
 
 }  // namespace inviwo
