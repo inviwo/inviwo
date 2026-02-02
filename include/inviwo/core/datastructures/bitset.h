@@ -70,7 +70,9 @@ public:
 
         BitSetIterator();
         BitSetIterator(const BitSetIterator& rhs);
+        BitSetIterator(BitSetIterator&& rhs) noexcept;
         BitSetIterator& operator=(const BitSetIterator& rhs);
+        BitSetIterator& operator=(BitSetIterator&& rhs) noexcept;
         ~BitSetIterator();
 
         BitSetIterator& operator++();
