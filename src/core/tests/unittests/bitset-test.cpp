@@ -223,4 +223,63 @@ TEST(bitset, iterators) {
     }
 }
 
+TEST(bitset, iteratorNullptrHandling) {
+    // Test default-constructed iterator (it_ == nullptr)
+    BitSet::BitSetIterator defaultIt;
+
+    // Test copy constructor with nullptr iterator
+    BitSet::BitSetIterator copiedDefault(defaultIt);
+    EXPECT_EQ(defaultIt, copiedDefault);
+
+    // Test move constructor with nullptr iterator
+    BitSet::BitSetIterator movedDefault(std::move(copiedDefault));
+    EXPECT_EQ(defaultIt, movedDefault);
+    EXPECT_EQ(defaultIt, copiedDefault);  // Source should compare equal to default-constructed
+
+    // Test copy assignment with nullptr iterator
+    BitSet::BitSetIterator assignTarget;
+    assignTarget = defaultIt;
+    EXPECT_EQ(defaultIt, assignTarget);
+
+    // Test move assignment with nullptr iterator
+    BitSet::BitSetIterator moveAssignTarget;
+    moveAssignTarget = std::move(assignTarget);
+    EXPECT_EQ(defaultIt, moveAssignTarget);
+    EXPECT_EQ(defaultIt, assignTarget);  // Source should compare equal to default-constructed
+
+    // Test moved-from iterator (it_ == nullptr after move)
+    BitSet b(1, 2, 3);
+    BitSet::BitSetIterator validIt = b.begin();
+    BitSet::BitSetIterator movedTo(std::move(validIt));
+
+    // validIt should now have nullptr, test copy/move/assignment
+    BitSet::BitSetIterator copiedMovedFrom(validIt);
+    EXPECT_EQ(validIt, copiedMovedFrom);
+
+    BitSet::BitSetIterator movedMovedFrom(std::move(copiedMovedFrom));
+    EXPECT_EQ(validIt, movedMovedFrom);
+    EXPECT_EQ(validIt, copiedMovedFrom);  // Source should compare equal to moved-from iterator
+
+    // Test comparison operators with nullptr iterators
+    BitSet::BitSetIterator it1;
+    BitSet::BitSetIterator it2;
+    EXPECT_TRUE(it1 == it2);   // Both nullptr should be equal
+    EXPECT_FALSE(it1 != it2);  // Both nullptr should not be not-equal
+
+    BitSet::BitSetIterator validIt2 = b.begin();
+    EXPECT_FALSE(it1 == validIt2);  // nullptr != valid
+    EXPECT_TRUE(it1 != validIt2);   // nullptr should be not-equal to valid
+
+    // Test assignment from nullptr to valid and vice versa
+    BitSet::BitSetIterator it3 = b.begin();
+    BitSet::BitSetIterator it4;
+    it3 = it4;  // Assign nullptr to valid iterator
+    EXPECT_EQ(it3, it4);
+
+    BitSet::BitSetIterator it5;
+    BitSet::BitSetIterator it6 = b.begin();
+    it5 = it6;  // Assign valid to nullptr iterator
+    EXPECT_EQ(it5, it6);
+}
+
 }  // namespace inviwo
