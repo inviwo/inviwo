@@ -138,7 +138,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                                            return OptionPropertyOption<FileExtension>{ext};
                                        });
                         auto it = std::find_if(exts.begin(), exts.end(),
-                                               [&](auto& e) { return e.extension_ == "png"; });
+                                               [&](auto& e) { return e.extension == "png"; });
                         if (it != exts.end()) {
                             state.selectedIndex = std::distance(exts.begin(), it);
                         }

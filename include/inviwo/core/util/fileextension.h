@@ -35,7 +35,6 @@
 
 #include <string>
 #include <string_view>
-#include <iosfwd>
 #include <filesystem>
 
 #include <fmt/core.h>
@@ -48,13 +47,12 @@ class Deserializer;
 class IVW_CORE_API FileExtension {
 public:
     FileExtension();
+    FileExtension(std::string_view extension, std::string_view description);
+
     FileExtension(const FileExtension&) = default;
     FileExtension(FileExtension&&) = default;
     FileExtension& operator=(FileExtension&&) = default;
     FileExtension& operator=(const FileExtension&) = default;
-
-    FileExtension(std::string_view extension, std::string_view description);
-    virtual ~FileExtension() = default;
 
     /**
      * @brief extracts a FileExtension object from a string. This function assumes
@@ -90,10 +88,8 @@ public:
 
     static FileExtension all();
 
-    std::string extension_;  ///< File extension in lower case letters.
-    std::string description_;
-
-    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const FileExtension& ext);
+    std::string extension;  ///< File extension in lower case letters.
+    std::string description;
 
     IVW_CORE_API friend bool operator==(const FileExtension&, const FileExtension&);
     IVW_CORE_API friend bool operator!=(const FileExtension&, const FileExtension&);
@@ -117,8 +113,8 @@ template <>
 struct std::hash<inviwo::FileExtension> {
     size_t operator()(const inviwo::FileExtension& f) const {
         size_t h = 0;
-        inviwo::util::hash_combine(h, f.extension_);
-        inviwo::util::hash_combine(h, f.description_);
+        inviwo::util::hash_combine(h, f.extension);
+        inviwo::util::hash_combine(h, f.description);
         return h;
     }
 };
@@ -130,10 +126,10 @@ struct fmt::formatter<inviwo::FileExtension> : fmt::formatter<fmt::string_view> 
     auto format(const inviwo::FileExtension& ext, FormatContext& ctx) const {
         fmt::memory_buffer buff;
 
-        if (ext.extension_ == "*") {
-            fmt::format_to(std::back_inserter(buff), "{} (*)", ext.description_);
-        } else if (!ext.extension_.empty()) {
-            fmt::format_to(std::back_inserter(buff), "{} (*.{})", ext.description_, ext.extension_);
+        if (ext.extension == "*") {
+            fmt::format_to(std::back_inserter(buff), "{} (*)", ext.description);
+        } else if (!ext.extension.empty()) {
+            fmt::format_to(std::back_inserter(buff), "{} (*.{})", ext.description, ext.extension);
         }
 
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);

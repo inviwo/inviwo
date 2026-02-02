@@ -160,9 +160,9 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
     const std::filesystem::path& path) const {
     std::vector<std::pair<size_t, DataWriterType<T>*>> candidates;
     for (auto& [ext, writer] : map_) {
-        if (util::iCaseEndsWith(path.string(), ext.extension_)) {
+        if (util::iCaseEndsWith(path.string(), ext.extension)) {
             if (auto r = dynamic_cast<DataWriterType<T>*>(writer)) {
-                candidates.emplace_back(ext.extension_.size(), r);
+                candidates.emplace_back(ext.extension.size(), r);
             }
         }
     }

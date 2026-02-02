@@ -143,13 +143,13 @@ struct ReaderWriter {
     std::unique_ptr<DataReaderType<DataType>> getReader() {
         if (extensions.empty()) return nullptr;
 
-        const auto& sext = extensions.getSelectedValue().extension_;
+        const auto& sext = extensions.getSelectedValue();
         return rf->template getReaderForTypeAndExtension<DataType>(sext);
     }
     std::unique_ptr<DataWriterType<DataType>> getWriter() {
         if (extensions.empty()) return nullptr;
 
-        const auto& sext = extensions.getSelectedValue().extension_;
+        const auto& sext = extensions.getSelectedValue();
         return wf->template getWriterForTypeAndExtension<DataType>(sext);
     }
 
@@ -230,7 +230,7 @@ private:
     std::optional<std::filesystem::path> pathForKey(std::string_view key) {
         if (rw_.extensions.empty() || cacheDir_.get().empty()) return std::nullopt;
         return cacheDir_.get() /
-               fmt::format("{}.{}", key, rw_.extensions.getSelectedValue().extension_);
+               fmt::format("{}.{}", key, rw_.extensions.getSelectedValue().extension);
     }
 
     virtual bool hasCache(std::string_view key) override {

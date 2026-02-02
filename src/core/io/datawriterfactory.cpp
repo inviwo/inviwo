@@ -63,7 +63,7 @@ bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
 
 std::unique_ptr<DataWriter> DataWriterFactory::create(std::string_view key) const {
     for (auto& elem : map_) {
-        if (iCaseCmp(elem.first.extension_, key)) {
+        if (iCaseCmp(elem.first.extension, key)) {
             return std::unique_ptr<DataWriter>(elem.second->clone());
         }
     }
@@ -79,7 +79,7 @@ bool DataWriterFactory::hasKey(const FileExtension& key) const { return util::ha
 
 bool DataWriterFactory::hasKey(std::string_view key) const {
     for (auto& elem : map_) {
-        if (iCaseCmp(elem.first.extension_, key)) return true;
+        if (iCaseCmp(elem.first.extension, key)) return true;
     }
     return false;
 }

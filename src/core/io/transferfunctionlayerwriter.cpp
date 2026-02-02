@@ -41,7 +41,7 @@ TransferFunctionLayerWriter::TransferFunctionLayerWriter(
     : layerWriter_{std::move(layerWriter)} {
 
     for (const auto& ext : layerWriter_->getExtensions()) {
-        addExtension({ext.extension_, fmt::format("TransferFunction to {}", ext.description_)});
+        addExtension({ext.extension, fmt::format("TransferFunction to {}", ext.description)});
     }
 }
 

@@ -39,12 +39,12 @@
 namespace inviwo {
 
 void to_json(json& j, const FileExtension& p) {
-    j = json{{"extension", p.extension_}, {"description", p.description_}};
+    j = json{{"extension", p.extension}, {"description", p.description}};
 }
 
 void from_json(const json& j, FileExtension& p) {
-    j["extension"].get_to(p.extension_);
-    j["description"].get_to(p.description_);
+    j["extension"].get_to(p.extension);
+    j["description"].get_to(p.description);
 }
 
 void to_json(json& j, const FileProperty& p) {

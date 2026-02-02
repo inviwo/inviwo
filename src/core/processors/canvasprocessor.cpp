@@ -116,7 +116,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                                        });
                         if (const auto it =
                                 std::find_if(exts.begin(), exts.end(),
-                                             [](auto& ext) { return ext.extension_ == "png"; });
+                                             [](auto& ext) { return ext.extension == "png"; });
                             it == exts.end()) {
                             opts.selectedIndex = std::distance(exts.begin(), it);
                         }
@@ -314,9 +314,9 @@ size2_t CanvasProcessor::calcScaledSize(size2_t size, float scale) {
 void CanvasProcessor::saveImageLayer() {
     if (saveLayerDirectory_.get().empty()) saveLayerDirectory_.requestFile();
 
-    const auto snapshotPath(
-        saveLayerDirectory_.get() /
-        (toLower(getIdentifier()) + "-" + currentDateTime() + "." + imageTypeExt_->extension_));
+    const auto snapshotPath =
+        saveLayerDirectory_.get() / fmt::format("{}-{}.{}", toLower(getIdentifier()),
+                                                currentDateTime(), imageTypeExt_->extension);
     saveImageLayer(snapshotPath, imageTypeExt_);
 }
 

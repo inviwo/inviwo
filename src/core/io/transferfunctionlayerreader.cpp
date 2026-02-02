@@ -41,7 +41,7 @@ TransferFunctionLayerReader::TransferFunctionLayerReader(
     : layerReader_{std::move(layerReader)} {
 
     for (auto& ext : layerReader_->getExtensions()) {
-        addExtension({ext.extension_, fmt::format("TransferFunction from {}", ext.description_)});
+        addExtension({ext.extension, fmt::format("TransferFunction from {}", ext.description)});
     }
 }
 

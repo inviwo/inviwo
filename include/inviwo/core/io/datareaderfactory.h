@@ -152,9 +152,9 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
     const std::filesystem::path& path) const {
     std::vector<std::pair<size_t, DataReaderType<T>*>> candidates;
     for (auto& [ext, reader] : map_) {
-        if (util::iCaseEndsWith(path.string(), ext.extension_)) {
+        if (util::iCaseEndsWith(path.string(), ext.extension)) {
             if (auto r = dynamic_cast<DataReaderType<T>*>(reader)) {
-                candidates.emplace_back(ext.extension_.size(), r);
+                candidates.emplace_back(ext.extension.size(), r);
             }
         }
     }

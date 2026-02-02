@@ -348,8 +348,8 @@ void exposeProperties(pybind11::module& m) {
         .def("matchesAll", &FileExtension::matchesAll)
         .def("matches", &FileExtension::matches)
         .def_static("all", &FileExtension::all)
-        .def_readwrite("extension", &FileExtension::extension_)
-        .def_readwrite("description", &FileExtension::description_);
+        .def_readwrite("extension", &FileExtension::extension)
+        .def_readwrite("description", &FileExtension::description);
 
     py::classh<FileProperty, Property> fileProperty(m, "FileProperty");
     fileProperty
