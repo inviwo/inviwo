@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-BitSet::BitSetIterator::BitSetIterator() : it_(nullptr) {};
+BitSet::BitSetIterator::BitSetIterator() : it_(nullptr) {}
 
 BitSet::BitSetIterator::BitSetIterator(const BitSetIterator& rhs)
     : it_{rhs.it_ ? std::make_unique<RoaringIt>(*rhs.it_) : nullptr} {}
