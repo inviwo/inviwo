@@ -82,6 +82,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/isovaluecollection.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/lcstring.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
@@ -504,6 +505,7 @@ set(SOURCE_FILES
     datastructures/image/layerrepresentation.cpp
     datastructures/image/layerutil.cpp
     datastructures/isovaluecollection.cpp
+    datastructures/lcstring.cpp
     datastructures/light/baselightsource.cpp
     datastructures/light/diffuselight.cpp
     datastructures/light/directionallight.cpp

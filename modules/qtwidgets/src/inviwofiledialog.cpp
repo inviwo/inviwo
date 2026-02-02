@@ -230,13 +230,11 @@ void InviwoFileDialog::addExtension(const FileExtension& fileExt) {
 }
 
 void InviwoFileDialog::addExtension(std::string_view ext, std::string_view description) {
-    FileExtension fileExt{ext, description};
-    addExtension(fileExt);
+    addExtension(FileExtension{.extension = ext, .description = std::string{description}});
 }
 
 void InviwoFileDialog::addExtension(std::string_view extString) {
-    FileExtension fileExt{FileExtension::createFileExtensionFromString(extString)};
-    addExtension(fileExt);
+    addExtension(FileExtension::createFileExtensionFromString(extString));
 }
 
 void InviwoFileDialog::addExtensions(const std::vector<FileExtension>& extensions) {
