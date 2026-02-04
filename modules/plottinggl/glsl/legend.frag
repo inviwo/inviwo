@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include "utils/structs.glsl"
+
 uniform sampler2D transferFunction;
 
 // orientation of the legend
@@ -50,6 +52,7 @@ uniform vec4 color = vec4(0, 0, 0, 1);
 uniform int borderWidth = 1;
 uniform ivec4 viewport = ivec4(0, 128, 128, 128);
 
+uniform RangeConversionMap tfRange = RangeConversionMap(0.0, 1.0, 0.0);
 
 // modified checkerboard for this specific shader
 vec4 checkerBoard(vec2 pos) {
@@ -90,6 +93,9 @@ void main() {
     vec2 normPos = (texCoord - vec2(borderWidth)) / outputDim;
 
     float tfSamplePos = mix(normPos.x, normPos.y, legendOrientation);
+    // renormalize sampling position with respect to selected TF range
+    tfSamplePos = (tfSamplePos - tfRange.inputOffset) * tfRange.scale + tfRange.outputOffset;
+
     vec4 colorTF = texture(transferFunction, vec2(tfSamplePos, 0.0));
 
     // increase alpha for better visibility by 1 - (1 - a)^4

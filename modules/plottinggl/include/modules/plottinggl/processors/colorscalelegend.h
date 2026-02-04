@@ -41,26 +41,21 @@
 #include <inviwo/core/properties/isotfproperty.h>          // for IsoTFProperty
 #include <inviwo/core/properties/optionproperty.h>         // for OptionProperty, OptionPropert...
 #include <inviwo/core/properties/ordinalproperty.h>        // for IntProperty, FloatProperty
+#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
 #include <inviwo/core/properties/stringproperty.h>         // for StringProperty
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>       // for Mesh
 #include <inviwo/core/util/glmvec.h>                        // for ivec2
-#include <inviwo/core/util/staticstring.h>                  // for operator+
 #include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
 #include <modules/opengl/shader/shader.h>                   // for Shader
 #include <modules/plotting/properties/axisproperty.h>       // for AxisProperty
 #include <modules/plotting/properties/axisstyleproperty.h>  // for AxisStyleProperty
 #include <modules/plottinggl/utils/axisrenderer.h>          // for AxisRenderer
 
-#include <functional>   // for __base
-#include <string>       // for operator==, operator+
-#include <string_view>  // for operator==
-#include <tuple>        // for tuple
-#include <vector>       // for operator!=, vector, operator==
+#include <tuple>   // for tuple
+#include <vector>  // for operator!=, vector, operator==
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API ColorScaleLegend : public Processor {
 public:
@@ -75,15 +70,15 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class BackgroundStyle {
+    enum class BackgroundStyle : unsigned char {
         NoBackground,
         SolidColor,
         CheckerBoard,
         CheckerboardAndOpaque,
         Opaque
     };
-    enum class LabelType { String, Data, Custom };
-    enum class Placement {
+    enum class LabelType : unsigned char { String, Data, Custom };
+    enum class Placement : std::uint8_t {
         OutsideLeft,
         OutsideTop,
         OutsideRight,
@@ -98,12 +93,18 @@ private:
     std::vector<ButtonGroupProperty::Button> buttons();
     void setPlacement(Placement placement);
 
+    void updateTitle(std::shared_ptr<const Volume> volume);
+
     ImageInport inport_;
     VolumeInport volumeInport_;
     ImageOutport outport_;
 
     BoolProperty enabled_;
     IsoTFProperty isotfComposite_;
+
+    BoolCompositeProperty overrideTFRange_;
+    DoubleMinMaxProperty dataValueRange_;
+    DoubleMinMaxProperty customTFValueRange_;
 
     // position properties
     CompositeProperty positioning_;
@@ -135,6 +136,4 @@ private:
     Mesh isovalueMesh_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot
