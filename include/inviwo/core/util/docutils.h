@@ -34,6 +34,7 @@
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/isstreaminsertable.h>
 #include <inviwo/core/util/transparentmaps.h>
+#include <inviwo/core/util/glmfmt.h>
 
 #include <functional>
 #include <sstream>
@@ -45,18 +46,16 @@ namespace inviwo::utildoc {
 namespace detail {
 
 template <typename T>
-std::string convert(T&& val)
-    requires util::is_stream_insertable<T>::value
-{
-    std::stringstream value;
-    value << std::boolalpha << std::forward<T>(val);
-    return value.str();
-}
-template <typename T>
-std::string convert(T&& /*val*/)
-    requires(!util::is_stream_insertable<T>::value)
-{
-    return "???";
+std::string convert(T&& val) {
+    if constexpr (fmt::formattable<T>) {
+        return fmt::to_string(val);
+    } else if constexpr (util::is_stream_insertable<T>::value) {
+        std::stringstream value;
+        value << std::boolalpha << std::forward<T>(val);
+        return std::move(value).str();
+    } else {
+        return "???";
+    }
 }
 
 }  // namespace detail
