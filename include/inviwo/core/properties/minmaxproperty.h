@@ -43,6 +43,77 @@
 namespace inviwo {
 
 /**
+ * A helper struct to construct minmax properties @see MinMaxProperty
+ */
+template <typename T>
+struct MinMaxPropertyState {
+    using value_type = glm::tvec2<T, glm::defaultp>;
+
+    T valueMin{};
+    T valueMax{};
+    T rangeMin = Defaultvalues<T>::getMin();
+    T rangeMax = Defaultvalues<T>::getMax();
+    T increment = Defaultvalues<T>::getInc();
+    T minSeparation = T{0};
+    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput;
+    PropertySemantics semantics = defaultSemantics();
+    Document help = {};
+    ReadOnly readOnly = ReadOnly::No;
+
+    auto set(T start, T end) -> MinMaxPropertyState& {
+        valueMin = start;
+        valueMax = end;
+        return *this;
+    }
+    auto set(value_type value) -> MinMaxPropertyState& {
+        valueMin = value.x;
+        valueMax = value.y;
+        return *this;
+    }
+    auto setRange(value_type range) -> MinMaxPropertyState& {
+        rangeMin = range.x;
+        rangeMax = range.y;
+        return *this;
+    }
+    auto setRangeMin(T newMin) -> MinMaxPropertyState& {
+        rangeMin = newMin;
+        return *this;
+    }
+    auto setRangeMax(T newMax) -> MinMaxPropertyState& {
+        rangeMax = newMax;
+        return *this;
+    }
+    auto setInc(T newIncrement) -> MinMaxPropertyState& {
+        increment = newIncrement;
+        return *this;
+    }
+    auto set(InvalidationLevel newInvalidationLevel) -> MinMaxPropertyState& {
+        invalidationLevel = newInvalidationLevel;
+        return *this;
+    }
+    auto set(PropertySemantics newSemantics) -> MinMaxPropertyState& {
+        semantics = std::move(newSemantics);
+        return *this;
+    }
+    auto set(Document newHelp) -> MinMaxPropertyState& {
+        help = std::move(newHelp);
+        return *this;
+    }
+    auto set(ReadOnly newReadOnly) -> MinMaxPropertyState& {
+        readOnly = newReadOnly;
+        return *this;
+    }
+
+    static PropertySemantics defaultSemantics() {
+        if constexpr (util::extent<T, 1>::value > 1) {
+            return PropertySemantics::Text;
+        } else {
+            return PropertySemantics::Default;
+        }
+    }
+};
+
+/**
  * @ingroup properties
  * A property representing a range.
  */
@@ -57,14 +128,18 @@ public:
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
                    T increment = Defaultvalues<T>::getInc(), T minSeparation = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                   PropertySemantics semantics = PropertySemantics::Default);
+                   PropertySemantics semantics = MinMaxPropertyState<T>::defaultSemantics(),
+                   ReadOnly readOnly = ReadOnly::No);
 
     MinMaxProperty(std::string_view identifier, std::string_view displayName,
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
                    T increment = Defaultvalues<T>::getInc(), T minSeparation = 0,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                   PropertySemantics semantics = PropertySemantics::Default);
+                   PropertySemantics semantics = MinMaxPropertyState<T>::defaultSemantics());
+
+    MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                   MinMaxPropertyState<T> state);
 
     MinMaxProperty(const MinMaxProperty& rhs) = default;
     MinMaxProperty& operator=(const value_type& value);
@@ -171,12 +246,12 @@ template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
                                   Document help, T valueMin, T valueMax, T rangeMin, T rangeMax,
                                   T increment, T minSeparation, InvalidationLevel invalidationLevel,
-                                  PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
-    , value_("value", value_type(valueMin, valueMax))
-    , range_("range", value_type(rangeMin, rangeMax))
-    , increment_("increment", increment)
-    , minSeparation_("minSeparation", minSeparation) {
+                                  PropertySemantics semantics, ReadOnly readOnly)
+    : Property{identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly}
+    , value_{"value", value_type(valueMin, valueMax)}
+    , range_{"range", value_type(rangeMin, rangeMax)}
+    , increment_{"increment", increment}
+    , minSeparation_{"minSeparation", minSeparation} {
     // invariant: range_.x <= value_.x <= value_.y + minseparation <= range_.y
     // Assume minimum range, i.e. range_.x, is correct.
     value_.value.x = std::max(value_.value.x, range_.value.x);
@@ -189,8 +264,19 @@ MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view 
                                   T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
                                   T minSeparation, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics)
-    : MinMaxProperty(identifier, displayName, {}, valueMin, valueMax, rangeMin, rangeMax, increment,
-                     minSeparation, invalidationLevel, semantics) {}
+    : MinMaxProperty{identifier,    displayName,       {},       valueMin,
+                     valueMax,      rangeMin,          rangeMax, increment,
+                     minSeparation, invalidationLevel, semantics} {}
+
+template <typename T>
+MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                                  MinMaxPropertyState<T> state)
+    : MinMaxProperty{identifier,          displayName,
+                     state.help,          state.valueMin,
+                     state.valueMax,      state.rangeMin,
+                     state.rangeMax,      state.increment,
+                     state.minSeparation, state.invalidationLevel,
+                     state.semantics,     state.readOnly} {}
 
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::operator=(const value_type& value) {

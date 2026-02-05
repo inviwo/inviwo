@@ -57,8 +57,8 @@ class TextureUnitContainer;
 class IVW_MODULE_BASEGL_API VolumeComponent : public ShaderComponent {
 public:
     enum class Gradients { None, Single, All };
-    VolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
-                    Document help = {});
+    explicit VolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
+                             Document help = {});
 
     virtual std::string_view getName() const override;
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;

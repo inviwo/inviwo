@@ -704,50 +704,54 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
         }
     }
 
-    auto* editName = menu.addAction(tr("Edit Name"));
+    const auto* editName = menu.addAction(tr("Edit Name"));
     connect(editName, &QAction::triggered, [this, processor]() {
         clearSelection();
         processor->setSelected(true);
         editLabel(
-            "Name:", [&]() { return processor->getProcessor()->getDisplayName(); },
-            [&](std::string_view name) { processor->getProcessor()->setDisplayName(name); });
+            "Name:", [processor]() { return processor->getProcessor()->getDisplayName(); },
+            [processor](std::string_view displayName) {
+                processor->getProcessor()->setDisplayName(displayName);
+            });
     });
 
-    auto* editIdentifier = menu.addAction(tr("Edit Identifier"));
+    const auto* editIdentifier = menu.addAction(tr("Edit Identifier"));
     connect(editIdentifier, &QAction::triggered, [this, processor]() {
         clearSelection();
         processor->setSelected(true);
         editLabel(
-            "Identifier:", [&]() { return processor->getProcessor()->getIdentifier(); },
-            [&](std::string_view name) { processor->getProcessor()->setIdentifier(name); });
+            "Identifier:", [processor]() { return processor->getProcessor()->getIdentifier(); },
+            [processor](std::string_view identifier) {
+                processor->getProcessor()->setIdentifier(identifier);
+            });
     });
 
 #if IVW_PROFILING
-    auto* resetTimeMeasurementsAction =
+    const auto* resetTimeMeasurementsAction =
         menu.addAction(QIcon(":svgicons/timer.svg"), tr("Reset &Time Measurements"));
     connect(resetTimeMeasurementsAction, &QAction::triggered,
             [processor]() { processor->resetTimeMeasurements(); });
 #endif
 
-    auto* delprocessor =
+    const auto* delprocessor =
         menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("Delete && &Keep Connections"));
     connect(delprocessor, &QAction::triggered,
             [this, processor]() { deleteAndKeepConnections(processor); });
 
     menu.addSeparator();
-    auto* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
+    const auto* invalidateOutputAction = menu.addAction(tr("Invalidate &Output"));
     connect(invalidateOutputAction, &QAction::triggered, [processor]() {
         processor->getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
     });
 
-    auto* invalidateResourcesAction = menu.addAction(tr("Invalidate &Resources"));
+    const auto* invalidateResourcesAction = menu.addAction(tr("Invalidate &Resources"));
     connect(invalidateResourcesAction, &QAction::triggered, [processor]() {
         processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
     });
 
     menu.addSeparator();
 
-    auto* showPropAction = menu.addAction(tr("Show &Properties"));
+    const auto* showPropAction = menu.addAction(tr("Show &Properties"));
     connect(showPropAction, &QAction::triggered, [this, processor]() {
         auto plw =
             std::make_unique<PropertyListWidget>(mainWindow_, mainWindow_->getInviwoApplication());
@@ -758,7 +762,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
         processor->adoptWidget(std::move(plw));
     });
 
-    auto* internalLink = menu.addAction(tr("Show Internal &Links"));
+    const auto* internalLink = menu.addAction(tr("Show Internal &Links"));
     connect(internalLink, &QAction::triggered, [this, processor = processor->getProcessor()]() {
         auto* dialog = new LinkDialog(processor, processor, mainWindow_);
         dialog->show();
@@ -766,7 +770,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
 
     menu.addSeparator();
 
-    auto* selectPre = menu.addAction(tr("Select Predecessors"));
+    const auto* selectPre = menu.addAction(tr("Select Predecessors"));
     connect(selectPre, &QAction::triggered, [this, processor = processor->getProcessor()]() {
         for (auto* p : util::getPredecessors(processor)) {
             if (auto it = processorGraphicsItems_.find(p); it != processorGraphicsItems_.end()) {
@@ -774,7 +778,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
             }
         }
     });
-    auto* selectSuc = menu.addAction(tr("Select Successors"));
+    const auto* selectSuc = menu.addAction(tr("Select Successors"));
     connect(selectSuc, &QAction::triggered, [this, processor = processor->getProcessor()]() {
         for (auto* p : util::getSuccessors(processor)) {
             if (auto it = processorGraphicsItems_.find(p); it != processorGraphicsItems_.end()) {
@@ -785,7 +789,7 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
 
     menu.addSeparator();
 
-    QAction* helpAction = menu.addAction(QIcon(":/svgicons/help.svg"), tr("Show &Help"));
+    const QAction* helpAction = menu.addAction(QIcon(":/svgicons/help.svg"), tr("Show &Help"));
     connect(helpAction, &QAction::triggered, [this, processor]() {
         showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
     });

@@ -92,7 +92,7 @@ void main() {
 
     // Current position along the ray
     float rayPosition = 0.5 * rayStep;
-    // Current sample position in texture spcase
+    // Current sample position in texture space
     vec3 samplePosition = entryPoint + rayPosition * rayDirection;
 
     #pragma IVW_SHADER_SEGMENT_PLACEHOLDER_FIRST
