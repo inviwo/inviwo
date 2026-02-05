@@ -1892,6 +1892,7 @@ var hierarchy =
     ] ],
     [ "inviwo::util::MetaDataToProperty", "classinviwo_1_1util_1_1MetaDataToProperty.html", null ],
     [ "inviwo::util::detail::min&lt; T &gt;", "structinviwo_1_1util_1_1detail_1_1min.html", null ],
+    [ "inviwo::MinMaxPropertyState&lt; T &gt;", "structinviwo_1_1MinMaxPropertyState.html", null ],
     [ "inviwo::plot::MinorTickSettings", "classinviwo_1_1plot_1_1MinorTickSettings.html", [
       [ "inviwo::plot::MinorTickData", "classinviwo_1_1plot_1_1MinorTickData.html", null ],
       [ "inviwo::plot::MinorTickProperty", "classinviwo_1_1plot_1_1MinorTickProperty.html", null ],

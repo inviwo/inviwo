@@ -774,6 +774,7 @@ var namespaceinviwo =
     [ "MetaDataType", "classinviwo_1_1MetaDataType.html", null ],
     [ "MinMaxProperty", "classinviwo_1_1MinMaxProperty.html", "classinviwo_1_1MinMaxProperty" ],
     [ "MinMaxPropertySettingsWidgetQt", "classinviwo_1_1MinMaxPropertySettingsWidgetQt.html", "classinviwo_1_1MinMaxPropertySettingsWidgetQt" ],
+    [ "MinMaxPropertyState", "structinviwo_1_1MinMaxPropertyState.html", null ],
     [ "MinMaxPropertyWidgetCEF", "classinviwo_1_1MinMaxPropertyWidgetCEF.html", "classinviwo_1_1MinMaxPropertyWidgetCEF" ],
     [ "MissingRepresentation", "classinviwo_1_1MissingRepresentation.html", null ],
     [ "ModuleCallback", "classinviwo_1_1ModuleCallback.html", null ],
