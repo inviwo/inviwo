@@ -190,8 +190,14 @@ std::pair<ivec2, ivec2> getBoundingBox(ProcessorNetwork* network) {
     }
 }
 
+void offsetPosition(Processor* processor, ivec2 offset) {
+    if (auto meta = getMetaData(processor)) {
+        meta->setPosition(meta->getPosition() + offset);
+    }
+}
+
 void offsetPosition(const std::vector<Processor*>& processors, ivec2 offset) {
-    for (auto p : processors) {
+    for (auto* p : processors) {
         if (auto meta = getMetaData(p)) {
             meta->setPosition(meta->getPosition() + offset);
         }
