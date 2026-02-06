@@ -38,6 +38,7 @@
 #include <unordered_map>
 #include <functional>
 #include <optional>
+#include <any>
 
 #include <fmt/format.h>
 
@@ -51,14 +52,15 @@ public:
         std::string shortcut;
         std::string description;
         bool global;
-        std::function<bool(std::string_view, const Ts&...)> match;
+        std::function<bool(std::string_view, const std::any&, const Ts&...)> match;
+        std::function<std::any(std::string_view)> onToken = nullptr;
     };
 
     SearchDSL(std::vector<Item> items)
         : global_{"global", "*", "", true,
-                  [this](std::string_view str, const Ts&... things) -> bool {
+                  [this](std::string_view str, const std::any& data, const Ts&... things) -> bool {
                       for (const auto& item : items_) {
-                          if (item.global && item.match(str, things...)) {
+                          if (item.global && item.match(str, data, things...)) {
                               return true;
                           }
                       }
@@ -113,33 +115,40 @@ public:
     }
 
     bool match(const Ts&... things) const {
-        for (const auto& [item, str] : current_) {
-            if (!item->match(str, things...)) return false;
+        for (const auto& [item, str, data] : current_) {
+            if (!item->match(str, data, things...)) return false;
         }
         return true;
     }
 
-    const std::vector<std::pair<const Item*, std::string_view>>& currentItems() const {
+    const std::vector<std::tuple<const Item*, std::string_view, std::any>>& currentItems() const {
         return current_;
     }
 
-    std::optional<std::pair<const Item&, std::string_view>> current(std::string_view name) {
+    std::optional<std::tuple<const Item*, std::string_view, std::any>> current(
+        std::string_view name) {
         for (const auto& [item, str] : current_) {
             if (item->name == name) return {item, str};
         }
         return std::nullopt;
     }
     std::optional<std::string_view> currentStr(std::string_view name) {
-        for (const auto& [item, str] : current_) {
+        for (const auto& [item, str, data] : current_) {
             if (item->name == name) return str;
         }
         return std::nullopt;
     }
     const Item* currentItem(std::string_view name) {
-        for (const auto& [item, str] : current_) {
+        for (const auto& [item, str, data] : current_) {
             if (item->name == name) return item;
         }
         return nullptr;
+    }
+    std::any currentData(std::string_view name) {
+        for (const auto& [item, str, data] : current_) {
+            if (item->name == name) return data;
+        }
+        return {};
     }
 
 private:
@@ -150,7 +159,8 @@ private:
             str = str.substr(1);
         }
         if (auto it = map_.find(key); it != map_.end()) {
-            current_.emplace_back(it->second, str);
+            current_.emplace_back(it->second, str,
+                                  it->second->onToken ? it->second->onToken(str) : std::any{});
         }
     }
 
@@ -191,7 +201,7 @@ private:
     std::unordered_map<std::string_view, const Item*> map_;
 
     std::string searchStr_;
-    std::vector<std::pair<const Item*, std::string_view>> current_;
+    std::vector<std::tuple<const Item*, std::string_view, std::any>> current_;
 };
 
 }  // namespace inviwo

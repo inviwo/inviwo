@@ -197,7 +197,7 @@ bool contains(std::string_view str, std::string_view substr) {
 }
 
 auto annotationMatcher = [](auto getter) {
-    return [getter](std::string_view str, const QModelIndex& i) -> bool {
+    return [getter](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
         QVariant variant = utilqt::getData(i, Role::Annotations);
         if (variant.isValid()) {
             WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
@@ -209,7 +209,7 @@ auto annotationMatcher = [](auto getter) {
 };
 
 auto matcher = [](Role role) {
-    return [role](std::string_view str, const QModelIndex& i) -> bool {
+    return [role](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
         return utilqt::getData(i, role).toString().contains(utilqt::toQString(str),
                                                             Qt::CaseInsensitive);
     };
@@ -232,7 +232,7 @@ public:
                  annotationMatcher(&WorkspaceAnnotationsQt::getCategories)},
                 {"processors", "p",
                  "search processor identifiers, display names, and class identifiers", false,
-                 [](std::string_view str, const QModelIndex& i) -> bool {
+                 [](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
                      QVariant variant = utilqt::getData(i, Role::Annotations);
                      if (variant.isValid()) {
                          WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
