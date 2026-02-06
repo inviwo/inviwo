@@ -54,7 +54,7 @@ public:
     void reset();
 
 private:
-    std::map<LogLevel, size_t> messageCount_;
+    std::array<std::atomic<size_t>, 3> messageCounts_{0};
 };
 
 }  // namespace inviwo
