@@ -118,6 +118,10 @@ Tags getPlatformTags(const Tags& t) {
             result.addTag(tag);
         } else if (Tags::PY == tag) {
             result.addTag(tag);
+        } else if (Tag{"VTK"} == tag) {
+            result.addTag(tag);
+        } else if (Tag{"TTK"} == tag) {
+            result.addTag(tag);
         }
     }
     return result;
