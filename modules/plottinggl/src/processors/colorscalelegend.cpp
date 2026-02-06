@@ -344,7 +344,7 @@ void ColorScaleLegend::process() {
                 isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.z, view.w));
             } else {
                 isoValueShader_.setUniform(
-                    "trafo", glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f)));
+                    "trafo", glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f)));
                 isoValueShader_.setUniform("screenDim", vec2(view.w, view.z));
                 isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.w, view.z));
             }
