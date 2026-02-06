@@ -34,6 +34,7 @@
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <QApplication>
 #include <QGuiApplication>
@@ -50,6 +51,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <mutex>
 
 #ifdef WIN32
 #include <windows.h>
@@ -84,16 +86,20 @@ public:
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
 
 private:
-    virtual void startFileObservation(const std::filesystem::path& fileName) override;
-    virtual void stopFileObservation(const std::filesystem::path& fileName) override;
+    virtual void startFileObservation(const std::filesystem::path& fileName,
+                                      FileObserver* source) override;
+    virtual void stopFileObservation(const std::filesystem::path& fileName,
+                                     FileObserver* source) override;
 
     void fileChanged(QString fileName);
 
+    std::mutex mutex_;
     std::vector<FileObserver*> fileObservers_;
     QFileSystemWatcher* fileWatcher_;
 };
 
 void FileSystemObserverQt::registerFileObserver(FileObserver* fileObserver) {
+    const std::scoped_lock lock{mutex_};
     IVW_ASSERT(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
                    fileObservers_.cend(),
                "File observer already registered.");
@@ -101,18 +107,24 @@ void FileSystemObserverQt::registerFileObserver(FileObserver* fileObserver) {
 }
 
 void FileSystemObserverQt::unRegisterFileObserver(FileObserver* fileObserver) {
+    const std::scoped_lock lock{mutex_};
     std::erase(fileObservers_, fileObserver);
 }
 
-void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fileName) {
+void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fileName,
+                                                FileObserver*) {
+    const std::scoped_lock lock{mutex_};
     // Will add the path if file exists and is not already being watched.
     fileWatcher_->addPath(toQString(fileName));
 }
 
-void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName) {
-    auto it =
-        std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
-                     [fileName](const auto observer) { return observer->isObserved(fileName); });
+void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName,
+                                               FileObserver* source) {
+    const std::scoped_lock lock{mutex_};
+    auto it = std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
+                           [fileName, source](const FileObserver* observer) {
+                               return observer != source && observer->isObserved(fileName);
+                           });
     // Make sure that no observer is observing the file
     if (it == std::end(fileObservers_)) {
         fileWatcher_->removePath(toQString(fileName));
@@ -121,16 +133,21 @@ void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& file
 
 void FileSystemObserverQt::fileChanged(QString fileName) {
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
     if (QFile::exists(fileName)) {
 
         const auto fileNameStd = toPath(fileName);
-
+        std::unique_lock lock{mutex_};
         // don't use iterators here, they might be invalidated.
         size_t size = fileObservers_.size();
         for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
             if (fileObservers_[i]->isObserved(fileNameStd)) {
-                fileObservers_[i]->fileChanged(fileNameStd);
+                lock.unlock();
+                util::OnScopeExit relock{[&]() { lock.lock(); }};
+                try {
+                    fileObservers_[i]->fileChanged(fileNameStd);
+                } catch (const Exception& e) {
+                    log::exception(e);
+                }
             }
         }
 

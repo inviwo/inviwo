@@ -261,7 +261,8 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
     }
 }
 
-void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {
+void FileWatcher::startFileObservation(const std::filesystem::path& fileName,
+                                       FileObserver* source) {
     const bool isDirectory = std::filesystem::is_directory(fileName);
     const auto dir = isDirectory ? fileName : fileName.parent_path();
 
@@ -276,10 +277,11 @@ void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {
     }
 }
 
-void FileWatcher::stopFileObservation(const std::filesystem::path& fileName) {
-    auto observerit =
-        std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
-                     [fileName](const auto observer) { return observer->isObserved(fileName); });
+void FileWatcher::stopFileObservation(const std::filesystem::path& fileName, FileObserver* source) {
+    auto observerit = std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
+                                   [fileName](const auto observer) {
+                                       return observer != source && observer->isObserved(fileName);
+                                   });
     // Make sure that no observer is observing the file
     if (observerit == std::end(fileObservers_)) {
         const bool isDirectory = std::filesystem::is_directory(fileName);
@@ -321,8 +323,10 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
     std::erase(fileObservers_, fileObserver);
 }
 
-void FileWatcher::stopFileObservation(const std::filesystem::path& fileName) {}
-void FileWatcher::startFileObservation(const std::filesystem::path& fileName) {}
+void FileWatcher::stopFileObservation(const std::filesystem::path& fileName, FileObserver* source) {
+}
+void FileWatcher::startFileObservation(const std::filesystem::path& fileName,
+                                       FileObserver* source) {}
 
 #endif
 

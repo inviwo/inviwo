@@ -61,8 +61,10 @@ public:
     virtual void unRegisterFileObserver(FileObserver* fileObserver) override;
 
 private:
-    virtual void startFileObservation(const std::filesystem::path& fileName) override;
-    virtual void stopFileObservation(const std::filesystem::path& fileName) override;
+    virtual void startFileObservation(const std::filesystem::path& fileName,
+                                      FileObserver* source) override;
+    virtual void stopFileObservation(const std::filesystem::path& fileName,
+                                     FileObserver* source) override;
 
     InviwoApplication* app_;
     std::unique_ptr<WatcherThread> watcher_;

@@ -36,6 +36,7 @@
 #include <utility>
 #include <vector>
 #include <filesystem>
+#include <mutex>
 
 namespace inviwo {
 
@@ -84,7 +85,6 @@ public:
      */
     void stopAllObservation();
 
-    const std::unordered_set<std::filesystem::path, PathHash>& getFiles() const;
     bool isObserved(const std::filesystem::path& fileName) const;
 
     virtual void fileChanged(const std::filesystem::path& fileName) = 0;
@@ -93,6 +93,7 @@ protected:
     FileSystemObserver* fileSystemObserver_;
 
 private:
+    mutable std::mutex mutex_;
     std::unordered_set<std::filesystem::path, PathHash> observedFiles_;
 };
 

@@ -60,20 +60,23 @@ FileObserver& FileObserver::operator=(FileObserver&& that) {
 FileObserver::~FileObserver() {
     if (fileSystemObserver_) {
         fileSystemObserver_->unRegisterFileObserver(this);
-
+        const std::scoped_lock lock{mutex_};
         for (auto file : observedFiles_) {
-            fileSystemObserver_->stopFileObservation(file);
+            fileSystemObserver_->stopFileObservation(file, this);
         }
     }
 }
 
 bool FileObserver::startFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
+
+    std::unique_lock lock{mutex_};
     auto it = observedFiles_.find(fileName);
     if (it == observedFiles_.end()) {
         if (std::filesystem::is_regular_file(fileName) || std::filesystem::is_directory(fileName)) {
             observedFiles_.insert(fileName);
-            fileSystemObserver_->startFileObservation(fileName);
+            lock.unlock();
+            fileSystemObserver_->startFileObservation(fileName, this);
             return true;
         }
     }
@@ -83,10 +86,12 @@ bool FileObserver::startFileObservation(const std::filesystem::path& fileName) {
 bool FileObserver::stopFileObservation(const std::filesystem::path& fileName) {
     if (!fileSystemObserver_) return false;
 
+    std::unique_lock lock{mutex_};
     auto it = observedFiles_.find(fileName);
     if (it != observedFiles_.end()) {
         observedFiles_.erase(it);
-        fileSystemObserver_->stopFileObservation(fileName);
+        lock.unlock();
+        fileSystemObserver_->stopFileObservation(fileName, this);
         return true;
     }
     return false;
@@ -95,18 +100,19 @@ bool FileObserver::stopFileObservation(const std::filesystem::path& fileName) {
 void FileObserver::stopAllObservation() {
     if (!fileSystemObserver_) return;
 
-    for (auto file : observedFiles_) {
-        fileSystemObserver_->stopFileObservation(file);
+    std::unordered_set<std::filesystem::path, PathHash> files;
+    {
+        const std::scoped_lock lock{mutex_};
+        files = std::move(observedFiles_);
     }
-    observedFiles_.clear();
+    for (auto file : files) {
+        fileSystemObserver_->stopFileObservation(file, this);
+    }
 }
 
 bool FileObserver::isObserved(const std::filesystem::path& fileName) const {
+    const std::scoped_lock lock{mutex_};
     return observedFiles_.find(fileName) != observedFiles_.end();
-}
-
-const std::unordered_set<std::filesystem::path, PathHash>& FileObserver::getFiles() const {
-    return observedFiles_;
 }
 
 }  // namespace inviwo
