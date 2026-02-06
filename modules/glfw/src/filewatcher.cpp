@@ -279,7 +279,7 @@ void FileWatcher::startFileObservation(const std::filesystem::path& fileName,
 
 void FileWatcher::stopFileObservation(const std::filesystem::path& fileName, FileObserver* source) {
     auto observerit = std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
-                                   [fileName](const auto observer) {
+                                   [&](const auto observer) {
                                        return observer != source && observer->isObserved(fileName);
                                    });
     // Make sure that no observer is observing the file
