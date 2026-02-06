@@ -34,6 +34,7 @@
 #include <functional>
 #include <algorithm>
 #include <mutex>
+#include <iterator>
 
 namespace inviwo {
 
