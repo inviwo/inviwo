@@ -36,22 +36,22 @@
 #include <inviwo/core/io/datareaderexception.h>        // for DataReaderException
 #include <inviwo/core/io/datareaderfactory.h>          // for DataReaderFactory
 #include <inviwo/core/io/curlutils.h>
-#include <inviwo/core/metadata/metadata.h>                      // for StringMetaData
-#include <inviwo/core/ports/volumeport.h>                       // for VolumeOutport
-#include <inviwo/core/processors/processor.h>                   // for Processor
-#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeState::Stable
-#include <inviwo/core/processors/processortags.h>               // for Tags, Tags::CPU
-#include <inviwo/core/properties/buttonproperty.h>              // for ButtonProperty
-#include <inviwo/core/properties/fileproperty.h>                // for FileProperty
-#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>             // for IntSizeTProperty
-#include <inviwo/core/properties/property.h>                    // for OverwriteState, Overwrite...
-#include <inviwo/core/util/fileextension.h>                     // for FileExtension, operator==
+#include <inviwo/core/metadata/metadata.h>           // for StringMetaData
+#include <inviwo/core/ports/volumeport.h>            // for VolumeOutport
+#include <inviwo/core/processors/processor.h>        // for Processor
+#include <inviwo/core/processors/processorinfo.h>    // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>   // for CodeState, CodeState::Stable
+#include <inviwo/core/processors/processortags.h>    // for Tags, Tags::CPU
+#include <inviwo/core/properties/buttonproperty.h>   // for ButtonProperty
+#include <inviwo/core/properties/fileproperty.h>     // for FileProperty
+#include <inviwo/core/properties/optionproperty.h>   // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>  // for IntSizeTProperty
+#include <inviwo/core/properties/property.h>         // for OverwriteState, Overwrite...
+#include <inviwo/core/util/fileextension.h>          // for FileExtension, operator==
+#include <inviwo/core/util/fileextensionutils.h>
 #include <inviwo/core/util/filesystem.h>                        // for fileExists
 #include <inviwo/core/util/logcentral.h>                        // for LogCentral, LogProcessorE...
 #include <inviwo/core/util/statecoordinator.h>                  // for StateCoordinator
-#include <modules/base/processors/datasource.h>                 // for updateFilenameFilters
 #include <modules/base/properties/basisproperty.h>              // for BasisProperty
 #include <modules/base/properties/sequencetimerproperty.h>      // for SequenceTimerProperty
 #include <modules/base/properties/volumeinformationproperty.h>  // for VolumeInformationProperty
@@ -68,47 +68,6 @@
 
 namespace inviwo {
 class Deserializer;
-
-namespace {
-
-template <typename T>
-auto getReaderFor(const FileProperty& filePath, OptionProperty<FileExtension>& extensions,
-                  const DataReaderFactory& rf) {
-
-    const auto& opts = extensions.getOptions();
-    const auto it =
-        std::find_if(opts.begin(), opts.end(), [&](const OptionPropertyOption<FileExtension>& opt) {
-            if (opt.value_.matches(filePath.get())) {
-                return rf.hasReaderForTypeAndExtension<T>(opt.value_);
-            }
-            return false;
-        });
-    return it;
-}
-
-template <typename... Types>
-inline void updateReaderFromFileAndType(const FileProperty& filePath,
-                                        OptionProperty<FileExtension>& extensions,
-                                        const DataReaderFactory& rf) {
-    if (extensions.empty()) return;
-
-    if ((filePath.getSelectedExtension() == FileExtension::all() &&
-         !extensions.getSelectedValue().matches(filePath)) ||
-        filePath.getSelectedExtension().empty()) {
-
-        for (auto& it : {getReaderFor<Types>(filePath, extensions, rf)...}) {
-            if (it != extensions.getOptions().end()) {
-                extensions.setSelectedValue(it->value_);
-                return;
-            }
-        }
-        extensions.setSelectedValue(FileExtension{});
-    } else {
-        extensions.setSelectedValue(filePath.getSelectedExtension());
-    }
-}
-
-}  // namespace
 
 const ProcessorInfo VolumeSource::processorInfo_{
     "org.inviwo.VolumeSource",  // Class identifier
@@ -130,7 +89,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     , outport_("data", "The loaded volume"_help)
     , file_("filename", "Volume file", "File to load"_help, filePath, AcceptMode::Open,
             FileMode::ExistingFile, "volume")
-    , reader_("reader", "Data Reader", "The selected reader used for loading the Volume"_help)
+    , reader_("reader", "Data Reader", "The selected reader used for loading the Volume"_help,
+              util::optionsForTypes<VolumeSequence, Volume>(*util::getDataReaderFactory(app_)))
     , reload_("reload", "Reload data",
               "Reload the date from disk, will not use the resource manager"_help)
     , basis_("Basis", "Basis and offset")
@@ -141,12 +101,10 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     addProperties(file_, reader_, reload_, information_, basis_, volumeSequence_);
     volumeSequence_.setVisible(false);
 
-    util::updateFilenameFilters<VolumeSequence, Volume>(*util::getDataReaderFactory(app), file_,
-                                                        reader_);
-    reader_.setCurrentStateAsDefault();
+    util::updateNameFilters<VolumeSequence, Volume>(*util::getDataReaderFactory(app), file_);
 
     auto* rf = util::getDataReaderFactory(app_);
-    updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
+    util::updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
@@ -168,7 +126,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     });
     file_.onChange([this]() {
         auto* rf = util::getDataReaderFactory(app_);
-        updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
+        util::updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
         error_.clear();
         isReady_.update();
     });

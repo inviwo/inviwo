@@ -352,6 +352,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialog.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filedialogstate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextension.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/fileextensionutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filelogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/fileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/filesystem.h
@@ -743,6 +744,7 @@ set(SOURCE_FILES
     util/filedialog.cpp
     util/filedialogstate.cpp
     util/fileextension.cpp
+    util/fileextensionutils.cpp
     util/filelogger.cpp
     util/fileobserver.cpp
     util/filesystem.cpp

@@ -48,6 +48,7 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/transparentmaps.h>
+#include <inviwo/core/util/fileextensionutils.h>
 
 #include <fstream>
 #include <ranges>
@@ -71,36 +72,10 @@ void updateFilenameFilters(const DataReaderFactory& rf, const DataWriterFactory&
 
     auto readExts = rf.getExtensionsForTypesView<Types...>();
     auto writeExts = wf.getExtensionsForTypesView<Types...>();
-
     std::vector<FileExtension> intersection;
     std::ranges::set_intersection(readExts, writeExts, std::back_inserter(intersection));
 
-    if (std::ranges::equal(extensions.getOptions(), intersection, std::ranges::equal_to{},
-                           &OptionPropertyOption<FileExtension>::value_)) {
-        return;
-    }
-
-    extensions.updateOptions([&](std::vector<OptionPropertyOption<FileExtension>>& opts) -> bool {
-        bool modified = false;
-        for (std::pair<OptionPropertyOption<FileExtension>&, const FileExtension&> item :
-             std::views::zip(opts, intersection)) {
-            auto&& [opt, ext] = item;
-            if (opt.value_ != ext) {
-                opt = ext;
-                modified = true;
-            }
-        }
-        const auto size = std::ranges::distance(intersection);
-        if (std::ssize(opts) > size) {
-            opts.erase(opts.begin() + size, opts.end());
-            modified = true;
-        }
-        for (auto&& item : intersection | std::views::drop(opts.size())) {
-            opts.emplace_back(item);
-            modified = true;
-        }
-        return modified;
-    });
+    util::updateOptions(extensions, intersection);
 }
 
 }  // namespace detail

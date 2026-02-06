@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/fileextensionutils.h>
 #include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/std.h>
@@ -48,79 +49,6 @@
 #include <ranges>
 
 namespace inviwo {
-
-namespace util {
-inline void updateReaderFromFile(const FileProperty& filePath,
-                                 OptionProperty<FileExtension>& extensions) {
-    if (extensions.empty()) return;
-
-    if ((filePath.getSelectedExtension() == FileExtension::all() &&
-         !extensions.getSelectedValue().matches(filePath)) ||
-        filePath.getSelectedExtension().empty()) {
-        const auto& opts = extensions.getOptions();
-        const auto it = std::find_if(opts.begin(), opts.end(),
-                                     [&](const OptionPropertyOption<FileExtension>& opt) {
-                                         return opt.value_.matches(filePath.get());
-                                     });
-        extensions.setSelectedValue(it != opts.end() ? it->value_ : FileExtension{});
-    } else {
-        extensions.setSelectedValue(filePath.getSelectedExtension());
-    }
-}
-
-template <typename... Types>
-void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& filePath,
-                           OptionProperty<FileExtension>& optionProperty) {
-
-    if (std::ranges::equal(optionProperty.getOptions(), rf.getExtensionsForTypesView<Types...>(),
-                           std::ranges::equal_to{}, &OptionPropertyOption<FileExtension>::value_)) {
-        return;
-    }
-
-    optionProperty.updateOptions(
-        [&](std::vector<OptionPropertyOption<FileExtension>>& opts) -> bool {
-            auto extensions = rf.getExtensionsForTypesView<Types...>();
-            bool modified = false;
-            for (std::pair<OptionPropertyOption<FileExtension>&, const FileExtension&> item :
-                 std::views::zip(opts, extensions)) {
-                auto&& [opt, ext] = item;
-                if (opt.value_ != ext) {
-                    opt = ext;
-                    modified = true;
-                }
-            }
-            const auto size = std::ranges::distance(extensions);
-            if (std::ssize(opts) > size) {
-                opts.erase(opts.begin() + size, opts.end());
-                modified = true;
-            }
-            for (auto&& item : extensions | std::views::drop(opts.size())) {
-                opts.emplace_back(item);
-                modified = true;
-            }
-            return modified;
-        });
-
-    auto& nameFilters = filePath.getNameFilters();
-
-    if (nameFilters.empty()) {
-        nameFilters.push_back(FileExtension::all());
-    } else {
-        nameFilters.front() = FileExtension::all();
-    }
-
-    size_t i = 1;
-    for (auto&& ext : rf.getExtensionsForTypesView<Types...>()) {
-        if (i < nameFilters.size()) {
-            nameFilters[i] = ext;
-        } else {
-            nameFilters.push_back(ext);
-        }
-        ++i;
-    }
-}
-
-}  // namespace util
 
 /**
  * A base class for simple source processors.
@@ -158,9 +86,9 @@ protected:
     virtual std::shared_ptr<DataType> transform(std::shared_ptr<ReaderType> data);
 
     // Called when we load new data.
-    virtual void dataLoaded([[maybe_unused]] std::shared_ptr<DataType> data) {};
+    virtual void dataLoaded([[maybe_unused]] std::shared_ptr<DataType> data){};
     // Called when we deserialized old data.
-    virtual void dataDeserialized([[maybe_unused]] std::shared_ptr<DataType> data) {};
+    virtual void dataDeserialized([[maybe_unused]] std::shared_ptr<DataType> data){};
 
     DataReaderFactory* rf_;
     PortType port_;
@@ -174,7 +102,7 @@ DataSource<DataType, PortType, ReaderType>::DataSource(DataReaderFactory* rf,
                                                        std::string_view content)
     : Processor()
     , filePath{"filename", "File", aFilePath, content}
-    , extensions{"reader", "Data Reader"}
+    , extensions{"reader", "Data Reader", util::optionsForTypes<ReaderType>(*rf)}
     , reload{"reload", "Reload data",
              [this]() {
                  error_.clear();
@@ -186,7 +114,7 @@ DataSource<DataType, PortType, ReaderType>::DataSource(DataReaderFactory* rf,
     addPort(port_);
     addProperties(filePath, extensions, reload);
 
-    util::updateFilenameFilters<ReaderType>(*rf_, filePath, extensions);
+    util::updateNameFilters<ReaderType>(*rf_, filePath);
     util::updateReaderFromFile(filePath, extensions);
 
     // make sure that we always process even if not connected

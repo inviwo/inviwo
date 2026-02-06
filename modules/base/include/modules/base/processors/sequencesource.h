@@ -46,12 +46,12 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/fileextensionutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/statecoordinator.h>
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <modules/base/processors/datasource.h>
 #include <modules/base/properties/basisproperty.h>
 
 #include <functional>   // for __base
