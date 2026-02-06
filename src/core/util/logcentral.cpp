@@ -81,6 +81,14 @@ void LogCentral::setVerbosity(LogVerbosity verbosity) { logVerbosity_ = verbosit
 
 LogVerbosity LogCentral::getVerbosity() { return logVerbosity_; }
 
+void LogCentral::setLocalVerbosity(LogVerbosity v) { localVerbosity() = v; }
+LogVerbosity LogCentral::getLocalVerbosity() const { return localVerbosity(); }
+
+LogVerbosity& LogCentral::localVerbosity() const {
+    thread_local LogVerbosity v = LogVerbosity::Info;
+    return v;
+}
+
 void LogCentral::registerLogger(std::weak_ptr<Logger> logger) { loggers_.push_back(logger); }
 
 void LogCentral::log(std::string_view source, LogLevel level, LogAudience audience,
@@ -101,7 +109,7 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
         msg = ss.str();
     }
 
-    if (level >= logVerbosity_) {
+    if (level >= std::max(logVerbosity_, localVerbosity())) {
         // use remove if here to remove expired weak pointers while calling the loggers.
         std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
             if (auto l = logger.lock()) {
@@ -198,6 +206,15 @@ void log::detail::logDirectly(LogLevel level, SourceContext context, std::string
     const auto time = std::chrono::system_clock::now();
     fmt::print(os, "{:%H:%M:06.3%S} {:5} {:35} {}:{}\n{}", time, level, context.source(),
                context.file(), context.line(), message);
+}
+
+log::SuppressLoggingLocal::SuppressLoggingLocal(LogVerbosity verbosity, LogCentral* lc)
+    : lc_{lc}, old_{lc ? lc->getLocalVerbosity() : LogVerbosity::Info} {
+    if (lc_) lc_->setLocalVerbosity(verbosity);
+}
+
+log::SuppressLoggingLocal::~SuppressLoggingLocal() {
+    if (lc_) lc_->setLocalVerbosity(old_);
 }
 
 }  // namespace inviwo

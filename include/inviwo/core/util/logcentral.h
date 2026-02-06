@@ -95,17 +95,19 @@ IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
                     __LINE__, stream__.str());                                                \
     }
 
-#define LogInfo(message) {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message)}
-#define LogWarn(message) {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message)}
+#define LogInfo(message) \
+    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
+#define LogWarn(message) \
+    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message) }
 #define LogError(message) \
-    {LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message)}
+    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message) }
 
 #define LogInfoCustom(source, message) \
-    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message)}
+    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message) }
 #define LogWarnCustom(source, message) \
-    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message)}
+    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message) }
 #define LogErrorCustom(source, message) \
-    {LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message)}
+    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message) }
 
 class IVW_CORE_API Logger {
 public:
@@ -125,6 +127,9 @@ public:
     void setVerbosity(LogVerbosity verbosity);
     LogVerbosity getVerbosity();
 
+    void setLocalVerbosity(LogVerbosity v);
+    LogVerbosity getLocalVerbosity() const;
+
     /**
      * @brief Register logger for use. LogCentral does not take ownership
      * of registered loggers.
@@ -143,6 +148,8 @@ public:
     MessageBreakLevel getMessageBreakLevel() const;
 
 private:
+    LogVerbosity& localVerbosity() const;
+
     friend Singleton<LogCentral>;
     static LogCentral* instance_;
 
@@ -303,6 +310,23 @@ struct error {
 };
 template <typename... Args>
 error(fmt::format_string<Args...>, Args&&...) -> error<Args...>;
+
+struct IVW_CORE_API SuppressLoggingLocal {
+    explicit SuppressLoggingLocal(LogVerbosity verbosity = LogVerbosity::None,
+                                  LogCentral* lc = LogCentral::isInitialized()
+                                                       ? LogCentral::getPtr()
+                                                       : nullptr);
+    SuppressLoggingLocal(const SuppressLoggingLocal&) = delete;
+    SuppressLoggingLocal(SuppressLoggingLocal&& rhs) = delete;
+    SuppressLoggingLocal& operator=(const SuppressLoggingLocal&) = delete;
+    SuppressLoggingLocal& operator=(SuppressLoggingLocal&& that) = delete;
+
+    ~SuppressLoggingLocal();
+
+private:
+    LogCentral* lc_;
+    LogVerbosity old_;
+};
 
 }  // namespace log
 
