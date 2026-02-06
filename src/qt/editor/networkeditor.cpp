@@ -52,6 +52,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/processors/sequenceprocessor.h>
+#include <inviwo/core/processors/processordocs.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -72,6 +73,7 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/processormimedata.h>
+#include <inviwo/qt/editor/editorutils.h>
 #include <modules/qtwidgets/eventconverterqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/propertylistwidget.h>
@@ -100,8 +102,6 @@
 #include <fmt/std.h>
 
 namespace inviwo {
-
-const int NetworkEditor::gridSpacing_ = 25;
 
 NetworkEditor::NetworkEditor(InviwoMainWindow* mainWindow)
     : QGraphicsScene()
@@ -496,11 +496,29 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
                          *processorItem_->getProcessor());
     }
 
+    if (keyEvent->key() == Qt::Key_D) {
+        keyEvent->accept();
+
+        const auto selected = selectedItems() | std::views::transform([](auto* p) {
+                                  return qgraphicsitem_cast<ProcessorGraphicsItem*>(p);
+                              }) |
+                              std::views::filter([](auto* p) { return p != nullptr; }) |
+                              std::views::take(1) |
+                              std::views::transform([](auto* p) { return p->getProcessor(); }) |
+                              std::ranges::to<std::vector>();
+
+        if (!selected.empty()) {
+            mainWindow_->getProcessorTreeWidget()->setPredecessorProcessor(
+                selected.front()->getIdentifier());
+            mainWindow_->getProcessorTreeWidget()->focusSearch(false);
+        }
+    }
+
     if (!keyEvent->isAccepted()) {
         KeyboardEvent pressKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Press,
                                     utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                     utilqt::fromQString(keyEvent->text()));
-        propagateEventToSelectedProcessors(pressKeyEvent);
+        propagateEventToSelectedProcessorsAndSettings(pressKeyEvent);
     }
 }
 
@@ -516,7 +534,7 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
         KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                       utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                       utilqt::fromQString(keyEvent->text()));
-        propagateEventToSelectedProcessors(releaseKeyEvent);
+        propagateEventToSelectedProcessorsAndSettings(releaseKeyEvent);
     }
 }
 
@@ -584,71 +602,40 @@ void NetworkEditor::addVisualizers(QMenu& menu, ProcessorOutportGraphicsItem* og
         }
     }
 
+    {
+        auto* subMenu = menu.addMenu("Add Processor");
+        const auto docs = mainWindow_->getDocs();
+
+        const auto outClassId = outport->getClassIdentifier();
+
+        auto items = docs->map | std::views::values |
+                     std::views::filter([&](const help::HelpProcessor& doc) {
+                         return help::matchOutportToInports(outClassId, doc);
+                     }) |
+                     std::views::transform([&](const help::HelpProcessor& doc) {
+                         return std::tuple{doc.classIdentifier, doc.displayName};
+                     }) |
+                     std::ranges::to<std::vector>();
+
+        std::ranges::sort(items, std::ranges::less{},
+                          [](const auto& item) -> decltype(auto) { return std::get<1>(item); });
+
+        for (const auto& [classIdentifier, displayName] : items) {
+            auto* action = subMenu->addAction(utilqt::toQString(displayName));
+            connect(action, &QAction::triggered, this, [app, outport, pcid = classIdentifier]() {
+                if (auto p = app->getProcessorFactory()->createShared(pcid)) {
+                    utilqt::addProcessorAndConnect(p, app->getProcessorNetwork(), outport);
+                }
+            });
+        }
+    }
+
     if (auto* imagePort = dynamic_cast<ImageOutport*>(outport)) {
         if (auto image = imagePort->getData()) {
             menu.addSeparator();
             utilqt::addImageActions(menu, *image);
         }
     }
-}
-
-// We start just below srcPos and search for free space, to the left and the right
-// in steps of the grid size.
-// Then we check a grid size lower down, and continue until we have found the closest
-// location.
-ivec2 NetworkEditor::findSpaceForProcessors(QPoint srcPos, const std::vector<Processor*>& added,
-                                            const std::vector<Processor*>& current) {
-    constexpr auto pSize = ProcessorGraphicsItem::size.toSize();
-    constexpr QRect processorRect{QPoint{-pSize.width() / 2, -pSize.height() / 2}, pSize};
-
-    constexpr auto grid = QSize{gridSpacing_, gridSpacing_};
-    constexpr auto delta = pSize + grid;
-
-    const auto bounds = util::getBoundingBox(added);
-    const auto size = utilqt::toQSize(bounds.second - bounds.first) + pSize;
-    const QRect addedRect{
-        QPoint{-pSize.width() / 2 - grid.width(), -pSize.height() / 2 - grid.height()},
-        size + 2 * grid};
-    const auto positions = util::getPositions(current);
-
-    auto targetPos =
-        QPoint{std::numeric_limits<int>::max() / 2, std::numeric_limits<int>::max() / 2};
-
-    const auto distance = [&](QPoint targetPos) -> float {
-        return glm::length(
-            vec2{utilqt::toGLM(targetPos) + utilqt::toGLM(size) / 2 - utilqt::toGLM(srcPos)});
-    };
-
-    const auto overlapping = [&](QPoint addedPos) {
-        const auto bb = addedRect.translated(addedPos);
-        return std::ranges::any_of(positions, [&](auto p) {
-            return bb.intersects(processorRect.translated(utilqt::toQPoint(p)));
-        });
-    };
-
-    const auto searchLeft = [&](QPoint startPos) -> QPoint {
-        while (overlapping(startPos) && distance(startPos) < distance(targetPos)) {
-            startPos.rx() -= gridSpacing_;
-        }
-        return startPos;
-    };
-    const auto searchRight = [&](QPoint startPos) -> QPoint {
-        while (overlapping(startPos) && distance(startPos) < distance(targetPos)) {
-            startPos.rx() += gridSpacing_;
-        }
-        return startPos;
-    };
-
-    for (auto startPos = QPoint{srcPos.x(), srcPos.y() + delta.height()};
-         distance(startPos) < distance(targetPos); startPos.ry() += gridSpacing_) {
-        const auto left = searchLeft(startPos);
-        const auto right = searchRight(startPos);
-        if (distance(left) < distance(targetPos)) targetPos = left;
-        if (distance(right) < distance(targetPos)) targetPos = right;
-    }
-    const auto offset = utilqt::toGLM(targetPos) - bounds.first;
-
-    return offset;
 }
 
 void NetworkEditor::addVisualizer(DataVisualizer* vis, Outport* outport) {
@@ -660,7 +647,7 @@ void NetworkEditor::addVisualizer(DataVisualizer* vis, Outport* outport) {
     const auto added = vis->addVisualizerNetwork(outport, network_);
 
     // We will place the DataVisualizer network, below the outport.
-    const auto offset = findSpaceForProcessors(srcPos, added, current);
+    const auto offset = utilqt::findSpaceForProcessors(srcPos, added, current);
     util::offsetPosition(added, offset);
 }
 
@@ -1010,15 +997,21 @@ void NetworkEditor::showProcessorHelp(const std::string& classIdentifier, bool r
     help->showDocForClassName(classIdentifier);
 }
 
-void NetworkEditor::propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent) {
+void NetworkEditor::propagateEventToSelectedProcessorsAndSettings(KeyboardEvent& event) {
     try {
         for (auto& item : selectedItems()) {
             if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                 Processor* p = pgi->getProcessor();
-                p->propagateEvent(&pressKeyEvent, nullptr);
-                if (pressKeyEvent.hasBeenUsed()) break;
+                p->propagateEvent(&event, nullptr);
+                if (event.hasBeenUsed()) return;
             }
         }
+
+        for (auto* s : mainWindow_->getInviwoApplication()->getModuleSettings()) {
+            s->invokeEvent(&event);
+            if (event.hasBeenUsed()) return;
+        }
+
     } catch (const Exception& e) {
         log::exception(e);
     }
@@ -1132,14 +1125,14 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
 
             if (!sources.empty()) {
                 auto srcPos = utilqt::toQPoint(util::getCenterPosition(sources));
-                offset = findSpaceForProcessors(srcPos, added, current);
+                offset = utilqt::findSpaceForProcessors(srcPos, added, current);
 
             } else if (pastePos_.first) {
                 const auto center = util::getCenterPosition(added);
                 const auto bounds = util::getBoundingBox(added);
                 pastePos_.second.x += (bounds.second.x - bounds.first.x) +
                                       static_cast<int>(ProcessorGraphicsItem::size.width()) +
-                                      gridSpacing_;
+                                      gridSpacing;
                 offset = pastePos_.second - center;
             } else {  // add to bottom left
                 const auto orgBounds = util::getBoundingBox(current);
@@ -1150,7 +1143,7 @@ void NetworkEditor::paste(const QMimeData& mimeData) {
                 pastePos_.second = ivec2{orgBounds.first.x, orgBounds.second.y} +
                                    ivec2{(bounds.second.x - bounds.first.x) / 2,
                                          (bounds.second.y - bounds.first.y) / 2} +
-                                   ivec2{0, gridSpacing_} +
+                                   ivec2{0, gridSpacing} +
                                    ivec2{0, ProcessorGraphicsItem::size.height()};
                 offset = pastePos_.second - center;
             }
@@ -1229,8 +1222,8 @@ QPointF NetworkEditor::snapToGrid(QPointF pos) {
     float ox = pos.x() > 0.0f ? 0.5f : -0.5f;
     float oy = pos.y() > 0.0f ? 0.5f : -0.5f;
 
-    result.setX((int(pos.x() / gridSpacing_ + ox)) * gridSpacing_);
-    result.setY((int(pos.y() / gridSpacing_ + oy)) * gridSpacing_);
+    result.setX((int(pos.x() / gridSpacing + ox)) * gridSpacing);
+    result.setY((int(pos.y() / gridSpacing + oy)) * gridSpacing);
     return result;
 }
 
@@ -1242,17 +1235,17 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->save();
     painter->setWorldMatrixEnabled(true);
     painter->fillRect(rect, QColor(0x7d, 0x80, 0x83));
-    qreal left = int(rect.left()) - (int(rect.left()) % gridSpacing_);
-    qreal top = int(rect.top()) - (int(rect.top()) % gridSpacing_);
+    qreal left = int(rect.left()) - (int(rect.left()) % gridSpacing);
+    qreal top = int(rect.top()) - (int(rect.top()) % gridSpacing);
     QVarLengthArray<QLineF, 100> linesX;
     painter->setPen(QColor(153, 153, 153));
 
-    for (qreal x = left; x < rect.right(); x += gridSpacing_)
+    for (qreal x = left; x < rect.right(); x += gridSpacing)
         linesX.append(QLineF(x, rect.top(), x, rect.bottom()));
 
     QVarLengthArray<QLineF, 100> linesY;
 
-    for (qreal y = top; y < rect.bottom(); y += gridSpacing_)
+    for (qreal y = top; y < rect.bottom(); y += gridSpacing)
         linesY.append(QLineF(rect.left(), y, rect.right(), y));
 
     painter->drawLines(linesX.data(), static_cast<int>(linesX.size()));
