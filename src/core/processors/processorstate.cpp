@@ -35,14 +35,14 @@ namespace inviwo {
 
 std::string_view enumToStr(CodeState cs) {
     switch (cs) {
-        case CodeState::Broken:
-            return "Broken";
-        case CodeState::Experimental:
-            return "Experimental";
         case CodeState::Stable:
             return "Stable";
+        case CodeState::Experimental:
+            return "Experimental";
         case CodeState::Deprecated:
             return "Deprecated";
+        case CodeState::Broken:
+            return "Broken";
     }
     throw Exception(SourceContext{}, "Found invalid CodeState enum value '{}'",
                     static_cast<int>(cs));
