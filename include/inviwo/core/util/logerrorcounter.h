@@ -34,6 +34,8 @@
 
 #include <map>
 #include <string>
+#include <atomic>
+#include <array>
 
 namespace inviwo {
 
