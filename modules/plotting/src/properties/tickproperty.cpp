@@ -122,7 +122,7 @@ MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_vi
                   util::ordinalLength(6.0f, 20.0f).set("Length of the ticks"_help))
     , tickWidth_("tickWidth", "Width",
                  util::ordinalLength(1.5f, 20.0f).set("Line width of the ticks"_help))
-    , tickFrequency_("tickFrequency_", "Frequency", 2, 2, 20) {
+    , tickFrequency_("tickFrequency_", "Frequency", 2, 1, 20) {
 
     addProperties(style_, fillAxis_, color_, tickLength_, tickWidth_, tickFrequency_);
 }
