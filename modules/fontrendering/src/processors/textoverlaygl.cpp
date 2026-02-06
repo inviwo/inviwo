@@ -133,7 +133,7 @@ TextOverlayGL::TextOverlayGL()
             0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
     , textRenderer_{[]() {
         // ensure the default context is active when creating the TextRenderer
-        RenderContext::getPtr()->activateDefaultRenderContext();
+        rendercontext::activateLocal();
         return TextRenderer{};
     }()} {
 
