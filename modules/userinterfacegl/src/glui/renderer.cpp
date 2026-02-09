@@ -229,9 +229,9 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     const std::filesystem::path& sourcePath) const {
     // read in textures
     std::vector<std::shared_ptr<Layer>> textureLayers;
-    auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>("png")) {
-        for (auto filename : textureFiles) {
+    auto* factory = InviwoApplication::getPtr()->getDataReaderFactory();
+    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(LCString{"png"})) {
+        for (const auto& filename : textureFiles) {
             auto layer = reader->readData(sourcePath / filename);
             textureLayers.push_back(layer);
         }

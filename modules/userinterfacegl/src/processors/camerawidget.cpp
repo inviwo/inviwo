@@ -643,7 +643,8 @@ void CameraWidget::loadMesh() {
             throw Exception("Could not locate module 'UserInterfaceGL'");
         }
 
-        auto reader = app->getDataReaderFactory()->getReaderForTypeAndExtension<Mesh>("fbx");
+        auto reader =
+            app->getDataReaderFactory()->getReaderForTypeAndExtension<Mesh>(LCString{"fbx"});
         if (!reader) {
             throw Exception("Could not fbx mesh reader");
         }

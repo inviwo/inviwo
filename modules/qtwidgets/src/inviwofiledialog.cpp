@@ -230,7 +230,8 @@ void InviwoFileDialog::addExtension(const FileExtension& fileExt) {
 }
 
 void InviwoFileDialog::addExtension(std::string_view ext, std::string_view description) {
-    addExtension(FileExtension{.extension = ext, .description = std::string{description}});
+    addExtension(
+        FileExtension{.extension = LCString{ext}, .description = std::string{description}});
 }
 
 void InviwoFileDialog::addExtension(std::string_view extString) {

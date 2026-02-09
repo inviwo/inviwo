@@ -117,7 +117,7 @@ AssimpReader::AssimpReader()
         for (std::string_view e :
              util::splitStringView(std::string_view(desc->mFileExtensions), ' ')) {
             addExtension(
-                {.extension = e,
+                {.extension = LCString{e},
                  .description = std::string{util::trim(removeSubString(desc->mName, "Importer"))}});
         }
     }

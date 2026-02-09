@@ -40,8 +40,9 @@ TransferFunctionLayerReader::TransferFunctionLayerReader(
     std::unique_ptr<DataReaderType<Layer>> layerReader)
     : layerReader_{std::move(layerReader)} {
 
-    for (auto& ext : layerReader_->getExtensions()) {
-        addExtension({ext.extension, fmt::format("TransferFunction from {}", ext.description)});
+    for (auto& [ext, desc] : layerReader_->getExtensions()) {
+        addExtension(
+            {.extension = ext, .description = fmt::format("TransferFunction from {}", desc)});
     }
 }
 

@@ -78,8 +78,14 @@ public:
     template <typename T>
     std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(
         const std::filesystem::path& filePathOrExtension) const;
+
     template <typename T>
-    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext) const;
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(
+        const LCString& extension) const;
+
+    template <typename T>
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(
+        const FileExtension& extension) const;
 
     /**
      * First look for a reader using the FileExtension ext, and if no reader was found look for a
@@ -94,6 +100,10 @@ public:
 
     template <typename T>
     bool hasReaderForTypeAndExtension(const std::filesystem::path& filePathOrExtension) const;
+
+    template <typename T>
+    bool hasReaderForTypeAndExtension(const LCString& extension) const;
+
     template <typename T>
     bool hasReaderForTypeAndExtension(const FileExtension& ext) const;
 
@@ -171,8 +181,21 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const FileExtension& ext) const {
-    return util::map_find_or_null(map_, ext, [](DataReader* o) {
+    const LCString& extension) const {
+    for (auto& [ext, reader] : map_) {
+        if (ext.extension == extension) {
+            if (auto r = dynamic_cast<DataReaderType<T>*>(reader)) {
+                return std::unique_ptr<DataReaderType<T>>(r->clone());
+            }
+        }
+    }
+    return {};
+}
+
+template <typename T>
+std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
+    const FileExtension& extension) const {
+    return util::map_find_or_null(map_, extension, [](DataReader* o) {
         if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
             return std::unique_ptr<DataReaderType<T>>(r->clone());
         } else {
@@ -196,8 +219,13 @@ bool DataReaderFactory::hasReaderForTypeAndExtension(const std::filesystem::path
 }
 
 template <typename T>
-bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) const {
-    return getReaderForTypeAndExtension<T>(ext) != nullptr;
+bool DataReaderFactory::hasReaderForTypeAndExtension(const LCString& extension) const {
+    return getReaderForTypeAndExtension<T>(extension) != nullptr;
+}
+
+template <typename T>
+bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& extension) const {
+    return getReaderForTypeAndExtension<T>(extension) != nullptr;
 }
 
 }  // namespace inviwo

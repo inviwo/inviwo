@@ -34,7 +34,7 @@
 namespace inviwo {
 
 IsoValueCollectionIIVReader::IsoValueCollectionIIVReader() {
-    addExtension({"iiv", "Inviwo Isovalues"});
+    addExtension({.extension = "iiv", .description = "Inviwo Isovalues"});
 }
 
 IsoValueCollectionIIVReader* IsoValueCollectionIIVReader::clone() const {
@@ -45,7 +45,6 @@ std::shared_ptr<IsoValueCollection> IsoValueCollectionIIVReader::readData(
     const std::filesystem::path& filePath) {
     checkExists(filePath);
 
-    
     auto data = std::make_shared<IsoValueCollection>();
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
     Deserializer deserializer(filePath, "InviwoIsovalues", &mbr);

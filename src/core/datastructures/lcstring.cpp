@@ -34,8 +34,8 @@
 namespace inviwo {
 
 void LCString::makeLowerCase() {
-    std::transform(data_.begin(), data_.end(), data_.begin(),
-                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    std::ranges::transform(data_, data_.begin(),
+                           [](char c) { return static_cast<char>(std::tolower(c)); });
 }
 
 }  // namespace inviwo

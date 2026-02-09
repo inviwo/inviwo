@@ -35,7 +35,7 @@
 namespace inviwo {
 
 IsoValueCollectionIIVWriter::IsoValueCollectionIIVWriter() {
-    addExtension({"iiv", "Inviwo Isovalues"});
+    addExtension({.extension = "iiv", .description = "Inviwo Isovalues"});
 }
 
 IsoValueCollectionIIVWriter* IsoValueCollectionIIVWriter::clone() const {

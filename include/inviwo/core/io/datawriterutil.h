@@ -85,7 +85,7 @@ std::optional<std::filesystem::path> saveData(const T& data, const std::filesyst
     auto factory = util::getDataWriterFactory();
 
     for (const auto& extension : extensions) {
-        if (auto writer = factory->getWriterForTypeAndExtension<T>(extension)) {
+        if (auto writer = factory->getWriterForTypeAndExtension<T>(extension.extension)) {
             writer->setOverwrite(overwrite);
             const auto file = path / fmt::format("{}.{}", name, extension.extension);
             writer->writeData(&data, file);

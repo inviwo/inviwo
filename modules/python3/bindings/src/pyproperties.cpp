@@ -342,7 +342,10 @@ void exposeProperties(pybind11::module& m) {
 
     py::classh<FileExtension>(m, "FileExtension")
         .def(py::init<>())
-        .def(py::init<std::string, std::string>(), py::arg("ext"), py::arg("desc"))
+        .def(py::init([](std::string_view ext, std::string_view desc) {
+                 return FileExtension{.extension = LCString{ext}, .description = std::string{desc}};
+             }),
+             py::arg("ext"), py::arg("desc"))
         .def("toString", &FileExtension::toString)
         .def("empty", &FileExtension::empty)
         .def("matchesAll", &FileExtension::matchesAll)

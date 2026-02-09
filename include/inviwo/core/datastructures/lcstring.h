@@ -52,10 +52,11 @@ public:
     using const_reverse_iterator = std::string::const_reverse_iterator;
 
     LCString() = default;
+    // NOLINTNEXTLINE(google-explicit-constructor)
     LCString(const char* s) : data_{s} { makeLowerCase(); }
-    LCString(std::string_view s) : data_{s} { makeLowerCase(); }
-    LCString(const std::string& s) : data_{s} { makeLowerCase(); }
-    LCString(std::string&& s) : data_{std::move(s)} { makeLowerCase(); }
+    explicit LCString(std::string_view s) : data_{s} { makeLowerCase(); }
+    explicit LCString(const std::string& s) : data_{s} { makeLowerCase(); }
+    explicit LCString(std::string&& s) : data_{std::move(s)} { makeLowerCase(); }
 
     LCString& operator=(std::string_view s) {
         data_.assign(s.begin(), s.end());
@@ -79,8 +80,10 @@ public:
     std::string_view view() const noexcept { return std::string_view(data_); }
 
     // Implicit conversion to string_view
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator std::string_view() const noexcept { return view(); }
     // For compatibility with APIs expecting const std::string&
+    // NOLINTNEXTLINE(google-explicit-constructor)
     operator const std::string&() const noexcept { return data_; }
 
     bool empty() const noexcept { return data_.empty(); }
@@ -106,6 +109,7 @@ public:
     // Defaulted three-way comparison and equality (member-wise on data_)
     auto operator<=>(const LCString& other) const noexcept = default;
     bool operator==(const LCString& other) const noexcept = default;
+
     auto operator<=>(std::string_view b) const noexcept { return view() <=> b; }
     bool operator==(std::string_view b) const noexcept { return view() == b; }
     auto operator<=>(const char* b) const noexcept { return view() <=> std::string_view{b}; }
@@ -116,13 +120,11 @@ private:
     std::string data_;
 };
 
+// Enable use of LCString in the serializers.
 namespace detail {
 inline void fromStr(std::string_view value, LCString& dest) { dest = value; }
-// inline void formatTo(const LCString& value, std::pmr::string& out) { out.append(value.view()); }
 }  // namespace detail
-
 namespace util::detail {
-
 template <>
 struct is_string<LCString, void> : std::true_type {};
 }  // namespace util::detail

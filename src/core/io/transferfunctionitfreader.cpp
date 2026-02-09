@@ -34,7 +34,7 @@
 namespace inviwo {
 
 TransferFunctionITFReader::TransferFunctionITFReader() {
-    addExtension({"itf", "Inviwo Transfer Function"});
+    addExtension({.extension = "itf", .description = "Inviwo Transfer Function"});
 }
 
 TransferFunctionITFReader* TransferFunctionITFReader::clone() const {
