@@ -165,6 +165,10 @@ IVW_CORE_API std::pair<ivec2, ivec2> getBoundingBox(ProcessorNetwork* network);
  * Offset all the positions of the processors in the list by offset
  */
 IVW_CORE_API void offsetPosition(const std::vector<Processor*>& processors, ivec2 offset);
+/**
+ * Offset the position of the processors by offset
+ */
+IVW_CORE_API void offsetPosition(Processor* processors, ivec2 offset);
 
 /**
  * Set the listed processors as selected or unSelected.
