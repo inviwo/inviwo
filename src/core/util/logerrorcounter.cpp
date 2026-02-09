@@ -38,13 +38,11 @@ void LogErrorCounter::log(std::string_view /*logSource*/, LogLevel logLevel,
                           LogAudience /*audience*/, std::string_view /*fileName*/,
                           std::string_view /*functionName*/, int /*lineNumber*/,
                           std::string_view /*logMsg*/) {
-    messageCount_[static_cast<LogLevel>(logLevel)]++;
+    ++messageCounts_[static_cast<int>(logLevel)];
 }
 
 size_t LogErrorCounter::getCount(const LogLevel& level) const {
-    std::map<LogLevel, size_t>::const_iterator it = messageCount_.find(level);
-    if (it == messageCount_.end()) return 0;
-    return it->second;
+    return messageCounts_[static_cast<int>(level)];
 }
 
 size_t LogErrorCounter::getInfoCount() const { return getCount(LogLevel::Info); }
@@ -54,8 +52,8 @@ size_t LogErrorCounter::getWarnCount() const { return getCount(LogLevel::Warn); 
 size_t LogErrorCounter::getErrorCount() const { return getCount(LogLevel::Error); }
 
 void LogErrorCounter::reset() {
-    for (auto& item : messageCount_) {
-        item.second = 0;
+    for (auto& item : messageCounts_) {
+        item = 0;
     }
 }
 
