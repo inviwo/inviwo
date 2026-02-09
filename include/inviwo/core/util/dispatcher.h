@@ -29,82 +29,115 @@
 
 #pragma once
 
-#include <inviwo/core/util/raiiutils.h>
-
 #include <vector>
 #include <memory>
 #include <functional>
 #include <algorithm>
+#include <mutex>
+#include <iterator>
 
 namespace inviwo {
 
-// Based on:
-// http://nercury.github.io/c++/interesting/2016/02/22/weak_ptr-and-event-cleanup.html
-
 /**
- * Dispatches function on a number of callbacks and cleans up callbacks when
- * they are dead.
- * Copy or assign will clear any callback
- * Move or move assign will move the callback
+ * Dispatches functions to a number of callbacks and cleans up callbacks when
+ * they are dead. Thread-safe via copy-on-write semantics on the callback vector.
+ *
+ * - add() is implemented with a CAS loop that copies the callback vector,
+ *   appends the new callback and attempts to swap it in.
+ * - invoke() performs a single load of the callback vector and
+ *   invokes all live callbacks. No locks are held during invocation.
+ *
  */
 template <typename C>
 class Dispatcher final {
 public:
-    Dispatcher() = default;
-    Dispatcher(const Dispatcher&) : callbacks{}, concurrent_dispatcher_count{0} {}
-    Dispatcher(Dispatcher&&) = default;
+    Dispatcher() noexcept = default;
+
+    // Copying will reset the callbacks
+    Dispatcher(const Dispatcher&) : callbacks_{} {}
     Dispatcher& operator=(const Dispatcher& that) {
         if (this != &that) {
-            callbacks.clear();
+            const std::scoped_lock lock{mutex_};
+            callbacks_.reset();
         }
         return *this;
     }
-    Dispatcher& operator=(Dispatcher&) = default;
+
+    // Allow move semantics
+    Dispatcher(Dispatcher&&) noexcept = default;
+    Dispatcher& operator=(Dispatcher&&) noexcept = default;
     ~Dispatcher() = default;
 
     using Function = C;
     using Callback = std::function<C>;
-    using Handle = std::shared_ptr<std::function<C>>;
+    using Handle = std::shared_ptr<Callback>;
 
     template <typename T>
-    std::shared_ptr<std::function<C>> add(T&& callback) {
-        removeExpiredCallbacks();
+    Handle add(T&& callback) {
+        auto shared = std::make_shared<Callback>(std::forward<T>(callback));
+        auto newVec = std::make_shared<std::vector<std::weak_ptr<Callback>>>();
+        // CAS loop: load current vector, copy-and-modify, try to swap
+        for (;;) {
+            std::shared_ptr<const std::vector<std::weak_ptr<Callback>>> currentVec;
+            newVec->clear();
+            {
+                const std::scoped_lock lock{mutex_};
+                currentVec = callbacks_;
+            }
+            if (currentVec) {
+                newVec->reserve(currentVec->size());
+                std::ranges::copy_if(
+                    *currentVec, std::back_inserter(*newVec),
+                    [](const std::weak_ptr<Callback>& wcb) { return !wcb.expired(); });
+            }
+            newVec->emplace_back(shared);
 
-        auto shared = std::make_shared<std::function<C>>(std::forward<T>(callback));
-        callbacks.push_back(shared);
-        return shared;
+            {
+                const std::scoped_lock lock{mutex_};
+                if (currentVec == callbacks_) {  // nothing changed we can swap in the new one
+                    callbacks_ = newVec;
+                    return shared;
+                }
+            }
+        }
     }
 
     template <typename... A>
     void invoke(A&&... args) {
-        ++concurrent_dispatcher_count;
-        util::OnScopeExit decreaseCount{[this]() {
-            --concurrent_dispatcher_count;
-            removeExpiredCallbacks();
-        }};
+        std::shared_ptr<const std::vector<std::weak_ptr<Callback>>> currentVec;
+        {
+            const std::scoped_lock lock{mutex_};
+            currentVec = callbacks_;
+        }
+        if (!currentVec) return;
 
-        // Go over all callbacks and dispatch on those that are still available.
-        // don't use iterators here, they might be invalidated.
-        const size_t size = callbacks.size();
-        for (size_t i = 0; i < size; ++i) {
-            if (auto callback = callbacks.at(i).lock()) {
-                std::invoke(*callback, std::forward<A>(args)...);
+        bool hasExpired = false;
+        for (auto& wcb : *currentVec) {
+            if (auto cb = wcb.lock()) {
+                std::invoke(*cb, std::forward<A>(args)...);
+            } else {
+                hasExpired = true;
+            }
+        }
+
+        if (hasExpired) {
+            auto newVec = std::make_shared<std::vector<std::weak_ptr<Callback>>>();
+            newVec->reserve(currentVec->size());
+            std::ranges::copy_if(*currentVec, std::back_inserter(*newVec),
+                                 [](const std::weak_ptr<Callback>& wcb) { return !wcb.expired(); });
+
+            // We only try once here.
+            std::unique_lock<std::mutex> lock(mutex_, std::defer_lock);
+            if (lock.try_lock() && currentVec == callbacks_) {
+                callbacks_ = newVec;
             }
         }
     }
 
 private:
-    void removeExpiredCallbacks() {
-        // Remove all callbacks that are gone, only if we are not dispatching.
-        if (concurrent_dispatcher_count == 0) {
-            std::erase_if(callbacks, [](const std::weak_ptr<std::function<C>>& callback) {
-                return callback.expired();
-            });
-        }
-    }
-
-    std::vector<std::weak_ptr<std::function<C>>> callbacks;
-    int32_t concurrent_dispatcher_count = 0;
+    // Note std::atomic<std::shared_ptr<>> is not supported as of clang 21
+    std::mutex mutex_;
+    std::shared_ptr<const std::vector<std::weak_ptr<Callback>>> callbacks_;
 };
 
 template <typename C>
