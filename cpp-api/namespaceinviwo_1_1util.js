@@ -269,6 +269,7 @@ var namespaceinviwo_1_1util =
     [ "minExtentBoundingBox", "namespaceinviwo_1_1util.html#a4dd2955122b137fe4ce5e573d25a4e27", null ],
     [ "msToString", "namespaceinviwo_1_1util.html#af1136c71f85d4df4b2b2449aee7121b0", null ],
     [ "offsetPosition", "namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779", null ],
+    [ "offsetPosition", "namespaceinviwo_1_1util.html#a0b01efe52d3fccfcb1e43569e46c94ef", null ],
     [ "ordinalColor", "namespaceinviwo_1_1util.html#ada3f90c8cfa64a0898b021cca551de05", null ],
     [ "ordinalCount", "namespaceinviwo_1_1util.html#ae6c3c7230deaaaa556873e2684e4303f", null ],
     [ "ordinalLength", "namespaceinviwo_1_1util.html#aec0d6260ee968193442da41efb8fff79", null ],

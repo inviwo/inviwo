@@ -1,5 +1,6 @@
 var NAVTREEINDEX34 =
 {
+"structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01true_01_4.html":[4,0,1,30,1,5],
 "structinviwo_1_1util_1_1detail__indirect_1_1is__const__iterator.html":[4,0,1,30,1,6],
 "structinviwo_1_1util_1_1detail__indirect_1_1require.html":[4,0,1,30,1,7],
 "structinviwo_1_1util_1_1detailzip_1_1get__iterator.html":[4,0,1,30,2,0],

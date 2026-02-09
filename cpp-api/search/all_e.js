@@ -49,7 +49,7 @@ var searchData=
   ['offset_46',['offset',['../classinviwo_1_1StipplingSettings.html#aead0a4b5e60834a0fb0b33694a0828bf',1,'inviwo::StipplingSettings']]],
   ['offset_5f_47',['offset_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5',1,'inviwo::plot::PlotTextProperty']]],
   ['offsetandpicking_48',['OffsetAndPicking',['../structinviwo_1_1util_1_1ColumnMapper_1_1OffsetAndPicking.html',1,'inviwo::util::ColumnMapper']]],
-  ['offsetposition_49',['offsetPosition',['../namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779',1,'inviwo::util']]],
+  ['offsetposition_49',['offsetPosition',['../namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779',1,'inviwo::util::offsetPosition(const std::vector&lt; Processor * &gt; &amp;processors, ivec2 offset)'],['../namespaceinviwo_1_1util.html#a0b01efe52d3fccfcb1e43569e46c94ef',1,'inviwo::util::offsetPosition(Processor *processors, ivec2 offset)']]],
   ['offsetwidget_50',['offsetWidget',['../namespaceinviwo_1_1utilqt.html#aefd4e18f9567dfe5d5d636bd33b15e47',1,'inviwo::utilqt']]],
   ['ofstream_51',['ofstream',['../namespaceinviwo_1_1filesystem.html#a158fd5afc4f5f47dc6cc6da15e0836b3',1,'inviwo::filesystem']]],
   ['oitmodule_52',['OITModule',['../classinviwo_1_1OITModule.html',1,'inviwo']]],

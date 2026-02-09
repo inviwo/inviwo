@@ -1,7 +1,7 @@
 var searchData=
 [
   ['observable_0',['Observable',['../classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8',1,'inviwo::Observable::Observable(const Observable&lt; T &gt; &amp;other)'],['../classinviwo_1_1Observable.html#ada2b69f3049d663bda3c981fed8ad466',1,'inviwo::Observable::Observable(Observable&lt; T &gt; &amp;&amp;other) noexcept']]],
-  ['offsetposition_1',['offsetPosition',['../namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779',1,'inviwo::util']]],
+  ['offsetposition_1',['offsetPosition',['../namespaceinviwo_1_1util.html#a1341a5fe91b0d7f378da017b90eb3779',1,'inviwo::util::offsetPosition(const std::vector&lt; Processor * &gt; &amp;processors, ivec2 offset)'],['../namespaceinviwo_1_1util.html#a0b01efe52d3fccfcb1e43569e46c94ef',1,'inviwo::util::offsetPosition(Processor *processors, ivec2 offset)']]],
   ['offsetwidget_2',['offsetWidget',['../namespaceinviwo_1_1utilqt.html#aefd4e18f9567dfe5d5d636bd33b15e47',1,'inviwo::utilqt']]],
   ['ofstream_3',['ofstream',['../namespaceinviwo_1_1filesystem.html#a158fd5afc4f5f47dc6cc6da15e0836b3',1,'inviwo::filesystem']]],
   ['onafterbufferinitialization_4',['onAfterBufferInitialization',['../classinviwo_1_1BufferObjectObserver.html#af6095f5dff767b383c0b1245335f0358',1,'inviwo::BufferObjectObserver']]],
