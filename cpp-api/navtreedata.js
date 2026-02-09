@@ -89,7 +89,7 @@ var NAVTREEINDEX =
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html",
 "structinviwo_1_1ProcessorTraits_3_01SequenceCompositeSource_3_01InportSequenceType_00_01OutportType_01_4_01_4.html",
 "structinviwo_1_1conversion__tester.html",
-"structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01true_01_4.html"
+"structinviwo_1_1util_1_1detail__indirect_1_1asPointer.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

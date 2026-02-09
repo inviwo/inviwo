@@ -3596,6 +3596,7 @@ var hierarchy =
     [ "inviwo::StringComparePMR", "structinviwo_1_1StringComparePMR.html", null ],
     [ "inviwo::StringHash", "structinviwo_1_1StringHash.html", null ],
     [ "inviwo::StringLessPMR", "structinviwo_1_1StringLessPMR.html", null ],
+    [ "inviwo::log::SuppressLoggingLocal", "structinviwo_1_1log_1_1SuppressLoggingLocal.html", null ],
     [ "inviwo::utildoc::TableBuilder", "classinviwo_1_1utildoc_1_1TableBuilder.html", null ],
     [ "inviwo::Tag", "classinviwo_1_1Tag.html", null ],
     [ "inviwo::Tags", "classinviwo_1_1Tags.html", null ],

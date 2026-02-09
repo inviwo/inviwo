@@ -117,14 +117,16 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1layout_1_1MultiInput.html":[4,0,1,19,1],
 "structinviwo_1_1layout_1_1SequenceInput.html":[4,0,1,19,2],
 "structinviwo_1_1layout_1_1SplitterPositions.html":[4,0,1,19,3],
+"structinviwo_1_1log_1_1SuppressLoggingLocal.html":[2,0,0,13,3],
+"structinviwo_1_1log_1_1SuppressLoggingLocal.html":[4,0,1,20,3],
 "structinviwo_1_1log_1_1error.html":[2,0,0,13,0],
 "structinviwo_1_1log_1_1error.html":[4,0,1,20,0],
 "structinviwo_1_1log_1_1info.html":[2,0,0,13,1],
 "structinviwo_1_1log_1_1info.html":[4,0,1,20,1],
 "structinviwo_1_1log_1_1message.html":[2,0,0,13,2],
 "structinviwo_1_1log_1_1message.html":[4,0,1,20,2],
-"structinviwo_1_1log_1_1warn.html":[2,0,0,13,3],
-"structinviwo_1_1log_1_1warn.html":[4,0,1,20,3],
+"structinviwo_1_1log_1_1warn.html":[2,0,0,13,4],
+"structinviwo_1_1log_1_1warn.html":[4,0,1,20,4],
 "structinviwo_1_1marching_1_1Config.html":[4,0,1,21,0],
 "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html":[2,0,0,15,37,0],
 "structinviwo_1_1plot_1_1ScatterPlotGL_1_1Points.html":[4,0,1,22,38,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1detail_1_1wrap_3_01Wrapper_00_01List_3_01Ts_8_8_8_01_4_01_4.html":[4,0,1,30,0,25],
 "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference.html":[4,0,1,30,1,0],
 "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_01_4.html":[4,0,1,30,1,1],
-"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_6_01_4.html":[4,0,1,30,1,2],
-"structinviwo_1_1util_1_1detail__indirect_1_1asPointer.html":[4,0,1,30,1,3],
-"structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01false_01_4.html":[4,0,1,30,1,4]
+"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_6_01_4.html":[4,0,1,30,1,2]
 };
