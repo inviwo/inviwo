@@ -44,6 +44,8 @@
 #include <utility>      // for forward
 #include <vector>       // for vector
 #include <filesystem>
+#include <thread>
+#include <mutex>
 
 namespace inviwo {
 
@@ -87,6 +89,10 @@ public:
 
 private:
     bool addShaderSearchPathImpl(const std::filesystem::path& path);
+
+    std::thread::id mainThread_;
+    std::mutex mutex_;
+
     std::vector<Shader*> shaders_;
     std::vector<std::filesystem::path> shaderSearchPaths_;
 

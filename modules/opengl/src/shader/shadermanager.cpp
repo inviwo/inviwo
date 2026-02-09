@@ -55,7 +55,10 @@ namespace inviwo {
 
 ShaderManager* ShaderManager::instance_ = nullptr;
 
-ShaderManager::ShaderManager() : uniformWarnings_(nullptr), shaderObjectErrors_{nullptr} {}
+ShaderManager::ShaderManager()
+    : mainThread_{std::this_thread::get_id()}
+    , uniformWarnings_(nullptr)
+    , shaderObjectErrors_{nullptr} {}
 
 void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
@@ -75,17 +78,20 @@ void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
 Shader::OnError ShaderManager::getOnShaderError() const { return shaderObjectErrors_->get(); }
 
 void ShaderManager::registerShader(Shader* shader) {
+    if (mainThread_ != std::this_thread::get_id()) return;
     shaders_.push_back(shader);
     if (uniformWarnings_) shader->setUniformWarningLevel(uniformWarnings_->get());
     shaderAddCallbacks_.invoke(shader->getID());
 }
 
 void ShaderManager::unregisterShader(Shader* shader) {
+    if (mainThread_ != std::this_thread::get_id()) return;
     shaderRemoveCallbacks_.invoke(shader->getID());
     std::erase(shaders_, shader);
 }
 
 bool ShaderManager::isRegistered(Shader* shader) const {
+    if (mainThread_ != std::this_thread::get_id()) return false;
     return std::find(shaders_.begin(), shaders_.end(), shader) != shaders_.end();
 }
 
@@ -102,22 +108,29 @@ void ShaderManager::addShaderSearchPath(const std::filesystem::path& shaderSearc
 void ShaderManager::addShaderResource(std::string key, std::string src) {
     replaceInString(src, "NEWLINE", "\n");
     auto resource = std::make_shared<StringShaderResource>(key, src);
+
+    const std::scoped_lock lock{mutex_};
     ownedResources_.push_back(resource);
     shaderResources_[key] = std::weak_ptr<ShaderResource>(resource);
 }
 
 void ShaderManager::addShaderResource(std::unique_ptr<ShaderResource> resource) {
     std::shared_ptr<ShaderResource> res(std::move(resource));
+
+    const std::scoped_lock lock{mutex_};
     ownedResources_.push_back(res);
     shaderResources_[res->key()] = std::weak_ptr<ShaderResource>(res);
 }
 
 void ShaderManager::addShaderResource(std::shared_ptr<ShaderResource> resource) {
+    const std::scoped_lock lock{mutex_};
     ownedResources_.push_back(resource);
     shaderResources_[resource->key()] = std::weak_ptr<ShaderResource>(resource);
 }
 
 std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_view key) {
+    const std::scoped_lock lock{mutex_};
+    
     auto it1 = shaderResources_.find(key);
     if (it1 != shaderResources_.end()) {
         if (!it1->second.expired()) {
