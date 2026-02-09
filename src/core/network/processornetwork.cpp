@@ -132,7 +132,7 @@ std::shared_ptr<Processor> ProcessorNetwork::removeProcessor(Processor* processo
 
     const NetworkLock lock(this);
 
-    rendercontext::activateDefault();
+    rendercontext::activateLocal();
     removeProcessorHelper(processor);
 
     // remove processor itself
@@ -516,7 +516,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
 
     // Processors
     try {
-        rendercontext::activateDefault();
+        rendercontext::activateLocal();
 
         d.deserialize(
             "Processors", processors_, "Processor",
@@ -525,7 +525,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                 .idTransform = [](std::string_view id) { return util::stripIdentifier(id); },
                 .makeNew =
                     []() {
-                        rendercontext::activateDefault();
+                        rendercontext::activateLocal();
                         return std::shared_ptr<Processor>{};
                     },
                 .onNew = [&](const std::string&,

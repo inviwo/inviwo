@@ -63,11 +63,8 @@ public:
     virtual bool hasKey(std::string_view key) const override;
     virtual bool hasKey(const FileExtension& key) const override;
 
-    auto getKeyView() const {
-        constexpr auto getFirst = [](auto&& pair) -> decltype(auto) { return pair.first; };
-        return util::as_range(util::makeTransformIterator(getFirst, map_.begin()),
-                              util::makeTransformIterator(getFirst, map_.end()));
-    }
+    auto getKeyView() const { return map_ | std::views::keys; }
+    auto getValueView() const { return map_ | std::views::values; }
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType() const;

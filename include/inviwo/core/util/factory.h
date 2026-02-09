@@ -31,16 +31,15 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/iterrange.h>
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/transformiterator.h>
 
 #include <string>
 #include <string_view>
 #include <memory>
 #include <map>
+#include <ranges>
 
 #include <fmt/base.h>
 
@@ -139,11 +138,8 @@ public:
     bool hasKey(LookUpKey key) const;
     std::vector<Key> getKeys() const;
 
-    auto getKeyView() const {
-        constexpr auto getFirst = [](auto&& pair) -> decltype(auto) { return pair.first; };
-        return util::as_range(util::makeTransformIterator(getFirst, map_.begin()),
-                              util::makeTransformIterator(getFirst, map_.end()));
-    }
+    auto getKeyView() const { return map_ | std::views::keys; }
+    auto getValueView() const { return map_ | std::views::values; }
 
     FactoryObject* getFactoryObject(LookUpKey key) const;
 
