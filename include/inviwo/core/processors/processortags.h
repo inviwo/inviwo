@@ -45,13 +45,17 @@ class IVW_CORE_API Tag {
 public:
     constexpr Tag() = default;
     constexpr Tag(std::string_view tag) : tag_{0} {
-        if (tag.size() >= tag_.size()) {
+        if (tag.size() < tag_.size() - 2) {
+            std::copy(tag.begin(), tag.end(), tag_.begin());
+            tag_[31] = static_cast<char>(tag.size());
+        } else {
             throw Exception(SourceContext{}, "Tag can only have {} chars. Found {} in {}",
-                            tag_.size() - 1, tag.size(), tag);
+                            tag_.size() - 2, tag.size(), tag);
         }
-        std::copy(tag.begin(), tag.end(), tag_.begin());
     }
-    constexpr std::string_view getString() const { return std::string_view(tag_.data()); }
+    constexpr std::string_view getString() const {
+        return {tag_.data(), static_cast<size_t>(tag_.back())};
+    }
 
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
 
@@ -60,18 +64,8 @@ public:
     friend constexpr bool operator==(const Tag& lhs, const Tag& rhs) {
         return lhs.getString() == rhs.getString();
     }
-    friend constexpr bool operator<(const Tag& lhs, const Tag& rhs) {
-        return lhs.getString() < rhs.getString();
-    }
-    friend constexpr bool operator!=(const Tag& lhs, const Tag& rhs) {
-        return !operator==(lhs, rhs);
-    }
-    friend constexpr bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
-    friend constexpr bool operator<=(const Tag& lhs, const Tag& rhs) {
-        return !operator>(lhs, rhs);
-    }
-    friend constexpr bool operator>=(const Tag& lhs, const Tag& rhs) {
-        return !operator<(lhs, rhs);
+    friend constexpr auto operator<=>(const Tag& lhs, const Tag& rhs) {
+        return lhs.getString() <=> rhs.getString();
     }
 
 private:
@@ -133,16 +127,12 @@ public:
     static constexpr Tag CPU{"CPU"};
     static constexpr Tag PY{"PY"};
 
-    friend inline bool operator==(const Tags& lhs, const Tags& rhs) {
+    friend constexpr bool operator==(const Tags& lhs, const Tags& rhs) {
         return lhs.tags_ == rhs.tags_;
     }
-    friend inline bool operator<(const Tags& lhs, const Tags& rhs) { return lhs.tags_ < rhs.tags_; }
-    friend inline bool operator!=(const Tags& lhs, const Tags& rhs) {
-        return !operator==(lhs, rhs);
+    friend constexpr auto operator<=>(const Tags& lhs, const Tags& rhs) {
+        return lhs.tags_ <=> rhs.tags_;
     }
-    friend inline bool operator>(const Tags& lhs, const Tags& rhs) { return operator<(rhs, lhs); }
-    friend inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
-    friend inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
 
     Tags& operator|=(const Tag& rhs) {
         this->addTag(rhs);
@@ -160,7 +150,7 @@ public:
 
 namespace util {
 
-Tags IVW_CORE_API getPlatformTags(const Tags& t);
+IVW_CORE_API Tags getPlatformTags(const Tags& t);
 
 }  // namespace util
 
