@@ -102,29 +102,33 @@ Public Types</h2></td></tr>
 using&#160;</td><td class="memItemRight"><b>Callback</b> = std::function&lt;C&gt;</td></tr>
 <tr class="memitem:a876fd8948a25eb45b6831cdc31c3777c" id="r_a876fd8948a25eb45b6831cdc31c3777c"><td class="memItemLeft"><a id="a876fd8948a25eb45b6831cdc31c3777c" name="a876fd8948a25eb45b6831cdc31c3777c"></a>
 using&#160;</td><td class="memItemRight"><b>Function</b> = C</td></tr>
-<tr class="memitem:ab3eae7cbb43f2226e3e9a84a0493016f" id="r_ab3eae7cbb43f2226e3e9a84a0493016f"><td class="memItemLeft"><a id="ab3eae7cbb43f2226e3e9a84a0493016f" name="ab3eae7cbb43f2226e3e9a84a0493016f"></a>
-using&#160;</td><td class="memItemRight"><b>Handle</b> = std::shared_ptr&lt;std::function&lt;C&gt;&gt;</td></tr>
+<tr class="memitem:a9e613cd312ca642be2a733c6607cc917" id="r_a9e613cd312ca642be2a733c6607cc917"><td class="memItemLeft"><a id="a9e613cd312ca642be2a733c6607cc917" name="a9e613cd312ca642be2a733c6607cc917"></a>
+using&#160;</td><td class="memItemRight"><b>Handle</b> = std::shared_ptr&lt;Callback&gt;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aab712d3ce2d8d1e91faf910bce38ef6b" id="r_aab712d3ce2d8d1e91faf910bce38ef6b"><td class="memTemplParams" colspan="2"><a id="aab712d3ce2d8d1e91faf910bce38ef6b" name="aab712d3ce2d8d1e91faf910bce38ef6b"></a>
+<tr class="memitem:a2a01187193c21049e865978140ef1f4e" id="r_a2a01187193c21049e865978140ef1f4e"><td class="memTemplParams" colspan="2"><a id="a2a01187193c21049e865978140ef1f4e" name="a2a01187193c21049e865978140ef1f4e"></a>
 template&lt;typename T&gt; </td></tr>
-<tr class="memitem:aab712d3ce2d8d1e91faf910bce38ef6b template"><td class="memItemLeft">std::shared_ptr&lt; std::function&lt; C &gt; &gt;&#160;</td><td class="memItemRight"><b>add</b> (T &amp;&amp;callback)</td></tr>
+<tr class="memitem:a2a01187193c21049e865978140ef1f4e template"><td class="memItemLeft">Handle&#160;</td><td class="memItemRight"><b>add</b> (T &amp;&amp;callback)</td></tr>
 <tr class="memitem:adaa946ac29161bce600643be29f5996b" id="r_adaa946ac29161bce600643be29f5996b"><td class="memItemLeft"><a id="adaa946ac29161bce600643be29f5996b" name="adaa946ac29161bce600643be29f5996b"></a>
 &#160;</td><td class="memItemRight"><b>Dispatcher</b> (const Dispatcher &amp;)</td></tr>
-<tr class="memitem:a1a43bcf5b2e1ab42a490613228b10b7a" id="r_a1a43bcf5b2e1ab42a490613228b10b7a"><td class="memItemLeft"><a id="a1a43bcf5b2e1ab42a490613228b10b7a" name="a1a43bcf5b2e1ab42a490613228b10b7a"></a>
-&#160;</td><td class="memItemRight"><b>Dispatcher</b> (Dispatcher &amp;&amp;)=default</td></tr>
+<tr class="memitem:a641ab686ca76716cc119a47da6950f26" id="r_a641ab686ca76716cc119a47da6950f26"><td class="memItemLeft"><a id="a641ab686ca76716cc119a47da6950f26" name="a641ab686ca76716cc119a47da6950f26"></a>
+&#160;</td><td class="memItemRight"><b>Dispatcher</b> (Dispatcher &amp;&amp;) noexcept=default</td></tr>
 <tr class="memitem:ab0eb3a8674d5f5a5da650b927afa8e1f" id="r_ab0eb3a8674d5f5a5da650b927afa8e1f"><td class="memTemplParams" colspan="2"><a id="ab0eb3a8674d5f5a5da650b927afa8e1f" name="ab0eb3a8674d5f5a5da650b927afa8e1f"></a>
 template&lt;typename... A&gt; </td></tr>
 <tr class="memitem:ab0eb3a8674d5f5a5da650b927afa8e1f template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><b>invoke</b> (A &amp;&amp;... args)</td></tr>
 <tr class="memitem:a67d213f013311c69454f1626c593974a" id="r_a67d213f013311c69454f1626c593974a"><td class="memItemLeft"><a id="a67d213f013311c69454f1626c593974a" name="a67d213f013311c69454f1626c593974a"></a>
 Dispatcher &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Dispatcher &amp;that)</td></tr>
-<tr class="memitem:a3ab9ebc8306782185bb79b09fc17b069" id="r_a3ab9ebc8306782185bb79b09fc17b069"><td class="memItemLeft"><a id="a3ab9ebc8306782185bb79b09fc17b069" name="a3ab9ebc8306782185bb79b09fc17b069"></a>
-Dispatcher &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (Dispatcher &amp;)=default</td></tr>
+<tr class="memitem:a097895e1d70faad74633882dff26d437" id="r_a097895e1d70faad74633882dff26d437"><td class="memItemLeft"><a id="a097895e1d70faad74633882dff26d437" name="a097895e1d70faad74633882dff26d437"></a>
+Dispatcher &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (Dispatcher &amp;&amp;) noexcept=default</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename C&gt;<br />
-class inviwo::Dispatcher&lt; C &gt;</div><p>Dispatches function on a number of callbacks and cleans up callbacks when they are dead. Copy or assign will clear any callback Move or move assign will move the callback </p>
+class inviwo::Dispatcher&lt; C &gt;</div><p>Dispatches functions to a number of callbacks and cleans up callbacks when they are dead. Thread-safe via copy-on-write semantics on the callback vector.</p>
+<ul>
+<li>add() is implemented with a CAS loop that copies the callback vector, appends the new callback and attempts to swap it in.</li>
+<li>invoke() performs a single load of the callback vector and invokes all live callbacks. No locks are held during invocation. </li>
+</ul>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/inviwo/core/util/<b>dispatcher.h</b></li>
 </ul>
