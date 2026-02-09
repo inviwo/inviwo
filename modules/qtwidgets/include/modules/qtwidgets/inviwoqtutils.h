@@ -60,6 +60,7 @@
 #include <QSize>       // for QSize
 #include <QSizeF>      // for QSizeF
 #include <QString>     // for QString
+#include <QModelIndex>
 #include <QPen>
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous), operator*
@@ -405,6 +406,12 @@ struct Save {
 private:
     T* item_;
 };
+
+template <typename Enum>
+QVariant getData(const QModelIndex& index, Enum e) {
+    return index.data(static_cast<std::underlying_type_t<Enum>>(e));
+}
+inline QVariant getData(const QModelIndex& index, Qt::ItemDataRole r) { return index.data(r); }
 
 }  // namespace utilqt
 

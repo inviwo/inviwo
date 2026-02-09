@@ -56,14 +56,4 @@ inline bool operator!=(const QVariant& v, WorkspaceModelType t) {
 }
 inline bool operator!=(WorkspaceModelType t, const QVariant& v) { return operator!=(v, t); }
 
-namespace utilqt {
-
-template <typename Enum>
-QVariant getData(const QModelIndex& index, Enum e) {
-    return index.data(static_cast<std::underlying_type_t<Enum>>(e));
-}
-inline QVariant getData(const QModelIndex& index, Qt::ItemDataRole r) { return index.data(r); }
-
-}  // namespace utilqt
-
 }  // namespace inviwo
