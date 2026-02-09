@@ -148,7 +148,7 @@ public:
     MessageBreakLevel getMessageBreakLevel() const;
 
 private:
-    LogVerbosity& localVerbosity() const;
+    static LogVerbosity& localVerbosity();
 
     friend Singleton<LogCentral>;
     static LogCentral* instance_;

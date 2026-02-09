@@ -84,9 +84,9 @@ LogVerbosity LogCentral::getVerbosity() { return logVerbosity_; }
 void LogCentral::setLocalVerbosity(LogVerbosity v) { localVerbosity() = v; }
 LogVerbosity LogCentral::getLocalVerbosity() const { return localVerbosity(); }
 
-LogVerbosity& LogCentral::localVerbosity() const {
-    thread_local LogVerbosity v = LogVerbosity::Info;
-    return v;
+LogVerbosity& LogCentral::localVerbosity() {
+    static thread_local LogVerbosity verbosity = LogVerbosity::Info;
+    return verbosity;
 }
 
 void LogCentral::registerLogger(std::weak_ptr<Logger> logger) { loggers_.push_back(logger); }
