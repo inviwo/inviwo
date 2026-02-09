@@ -47,6 +47,7 @@
 #include <QFont>
 #include <QSurfaceFormat>
 #include <QThread>
+#include <QTimer>
 
 #include <string>
 #include <string_view>
@@ -77,9 +78,14 @@ public:
     FileSystemObserverQt() : fileWatcher_{new QFileSystemWatcher(this)} {
 
         connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
-                &FileSystemObserverQt::fileChanged);
+                [this](const QString& fileName) {
+                    QTimer::singleShot(200, this, [this, fileName]() { fileChanged(fileName); });
+                });
+
         connect(fileWatcher_, &QFileSystemWatcher::directoryChanged, this,
-                &FileSystemObserverQt::fileChanged);
+                [this](const QString& fileName) {
+                    QTimer::singleShot(200, this, [this, fileName]() { fileChanged(fileName); });
+                });
     }
 
     virtual void registerFileObserver(FileObserver* fileObserver) override;
@@ -91,7 +97,7 @@ private:
     virtual void stopFileObservation(const std::filesystem::path& fileName,
                                      FileObserver* source) override;
 
-    void fileChanged(QString fileName);
+    void fileChanged(const QString& fileName);
 
     std::mutex mutex_;
     std::vector<FileObserver*> fileObservers_;
@@ -121,39 +127,37 @@ void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fil
 void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName,
                                                FileObserver* source) {
     const std::scoped_lock lock{mutex_};
-    auto it = std::find_if(std::begin(fileObservers_), std::end(fileObservers_),
-                           [fileName, source](const FileObserver* observer) {
-                               return observer != source && observer->isObserved(fileName);
-                           });
+    auto it = std::ranges::find_if(fileObservers_, [&](const FileObserver* observer) {
+        return observer != source && observer->isObserved(fileName);
+    });
     // Make sure that no observer is observing the file
     if (it == std::end(fileObservers_)) {
         fileWatcher_->removePath(toQString(fileName));
     }
 }
 
-void FileSystemObserverQt::fileChanged(QString fileName) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    if (QFile::exists(fileName)) {
+void FileSystemObserverQt::fileChanged(const QString& fileName) {
+    if (!QFile::exists(fileName)) return;
 
-        const auto fileNameStd = toPath(fileName);
-        std::unique_lock lock{mutex_};
-        // don't use iterators here, they might be invalidated.
-        size_t size = fileObservers_.size();
-        for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
-            if (fileObservers_[i]->isObserved(fileNameStd)) {
-                lock.unlock();
-                util::OnScopeExit relock{[&]() { lock.lock(); }};
-                try {
-                    fileObservers_[i]->fileChanged(fileNameStd);
-                } catch (const Exception& e) {
-                    log::exception(e);
-                }
+    const auto fileNameStd = toPath(fileName);
+    std::unique_lock lock{mutex_};
+    // don't use iterators here, they might be invalidated.
+    size_t size = fileObservers_.size();
+    for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
+        if (fileObservers_[i]->isObserved(fileNameStd)) {
+            auto* observer = fileObservers_[i];
+            lock.unlock();
+            const util::OnScopeExit relock{[&]() { lock.lock(); }};
+            try {
+                observer->fileChanged(fileNameStd);
+            } catch (const Exception& e) {
+                log::exception(e);
             }
         }
+    }
 
-        if (!fileWatcher_->files().contains(fileName)) {
-            fileWatcher_->addPath(fileName);
-        }
+    if (!fileWatcher_->files().contains(fileName)) {
+        fileWatcher_->addPath(fileName);
     }
 }
 

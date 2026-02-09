@@ -261,8 +261,7 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
     }
 }
 
-void FileWatcher::startFileObservation(const std::filesystem::path& fileName,
-                                       FileObserver* source) {
+void FileWatcher::startFileObservation(const std::filesystem::path& fileName, FileObserver*) {
     const bool isDirectory = std::filesystem::is_directory(fileName);
     const auto dir = isDirectory ? fileName : fileName.parent_path();
 
@@ -323,10 +322,8 @@ void FileWatcher::unRegisterFileObserver(FileObserver* fileObserver) {
     std::erase(fileObservers_, fileObserver);
 }
 
-void FileWatcher::stopFileObservation(const std::filesystem::path& fileName, FileObserver* source) {
-}
-void FileWatcher::startFileObservation(const std::filesystem::path& fileName,
-                                       FileObserver* source) {}
+void FileWatcher::stopFileObservation(const std::filesystem::path&, FileObserver*) {}
+void FileWatcher::startFileObservation(const std::filesystem::path&, FileObserver*) {}
 
 #endif
 

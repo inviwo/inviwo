@@ -46,7 +46,7 @@ public:
     constexpr Tag() = default;
     constexpr Tag(std::string_view tag) : tag_{0} {
         if (tag.size() < tag_.size() - 2) {
-            std::copy(tag.begin(), tag.end(), tag_.begin());
+            std::ranges::copy(tag, tag_.begin());
             tag_[31] = static_cast<char>(tag.size());
         } else {
             throw Exception(SourceContext{}, "Tag can only have {} chars. Found {} in {}",

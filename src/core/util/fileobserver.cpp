@@ -105,7 +105,7 @@ void FileObserver::stopAllObservation() {
         const std::scoped_lock lock{mutex_};
         files = std::move(observedFiles_);
     }
-    for (auto file : files) {
+    for (const auto& file : files) {
         fileSystemObserver_->stopFileObservation(file, this);
     }
 }
