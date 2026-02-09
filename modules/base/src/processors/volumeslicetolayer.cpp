@@ -233,6 +233,7 @@ void VolumeSliceToLayer::process() {
                 [&]<typename T>(const VolumeRAMPrecision<T>* vrprecision) {
                     return extractSlice(vrprecision, sliceAlongAxis_, sliceNumber_.get() - 1);
                 });
+    layer->setWorldMatrix(vol->getWorldMatrix());
     outport_.setData(layer);
 }
 

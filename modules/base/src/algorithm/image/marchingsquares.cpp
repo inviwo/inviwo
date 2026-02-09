@@ -426,6 +426,7 @@ constexpr auto dispatcher = []<typename T>(const LayerRAM* in, const IsoValueCol
 
     lineCache.addBuffers(*mesh, dim);
     mesh->setModelMatrix(in->getOwner()->getModelMatrix());
+    mesh->setWorldMatrix(in->getOwner()->getWorldMatrix());
     return mesh;
 };
 
