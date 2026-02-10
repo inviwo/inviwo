@@ -38,14 +38,13 @@
 #include <inviwo/png/pngwriter.h>             // for PNGLayerWriter
 
 #include <memory>   // for make_unique
-#include <ostream>  // for operator<<, char_traits
 
 namespace inviwo {
 class InviwoApplication;
 
 pngModule::pngModule(InviwoApplication* app) : InviwoModule(app, "png") {
 
-    log::info("Using LibPNG Version {}", pngutil::getLibPNGVesrion());
+    log::info("Using LibPNG Version {}", pngutil::getLibPNGVersion());
 
     registerDataReader(std::make_unique<PNGLayerReader>());
     registerDataWriter(std::make_unique<PNGLayerWriter>());

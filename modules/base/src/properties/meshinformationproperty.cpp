@@ -210,7 +210,7 @@ void allocateBufferProps(CompositeProperty* composite, const std::string& namepr
 
 void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     const auto meshInfo = mesh.getDefaultMeshInfo();
-    defaultDrawType_.set(toString(meshInfo.dt));
+    defaultDrawType_.set(fmt::to_string(meshInfo.dt));
     defaultConnectivity_.set(toString(meshInfo.ct));
 
     const auto numBuffers = mesh.getNumberOfBuffers();

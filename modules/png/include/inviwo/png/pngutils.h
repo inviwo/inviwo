@@ -32,10 +32,7 @@
 
 #include <string>
 
-namespace inviwo {
+namespace inviwo::pngutil {
+IVW_MODULE_PNG_API std::string getLibPNGVersion();
 
-namespace pngutil {
-IVW_MODULE_PNG_API std::string getLibPNGVesrion();
-}
-
-}  // namespace inviwo
+}  // namespace inviwo::pngutil

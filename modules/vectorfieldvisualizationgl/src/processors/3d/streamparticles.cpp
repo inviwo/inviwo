@@ -193,7 +193,7 @@ void StreamParticles::initializeResources() {
     }
 
     shader_.getShaderObject(ShaderType::Compute)
-        ->setShaderDefine("NUM_ADVECTIONS", true, toString(internalSteps_.get()));
+        ->setShaderDefine("NUM_ADVECTIONS", true, fmt::to_string(internalSteps_.get()));
     shader_.build();
 }
 

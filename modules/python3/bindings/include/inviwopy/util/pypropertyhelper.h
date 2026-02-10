@@ -39,7 +39,7 @@ template <typename T, typename P, typename C>
 void pyTemplateProperty(C& prop) {
     prop.def_property(
             "value", [](P& p) { return p.get(); }, [](P& p, T t) { p.set(t); })
-        .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+        .def("__repr__", [](P& v) { return fmt::to_string(v.get()); });
 }
 
 }  // namespace inviwo

@@ -122,7 +122,7 @@ LineRasterizer::LineRasterizer()
                            : 0;
             },
             [](int mode, Shader& shader) {
-                shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
+                shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", fmt::to_string(mode));
             }}},
           [this](Shader& shader) -> void {
               shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

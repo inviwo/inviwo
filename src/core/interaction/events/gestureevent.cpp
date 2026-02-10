@@ -76,8 +76,8 @@ void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posN
 
 uint64_t GestureEvent::hash() const { return chash(); }
 
-void GestureEvent::print(std::ostream& ss) const {
-    util::printEvent(ss, "GestureEvent", std::make_pair("state", state_),
+void GestureEvent::print(fmt::memory_buffer& buff) const {
+    util::printEvent(buff, "GestureEvent", std::make_pair("state", state_),
                      std::make_pair("type", type_), std::make_pair("pos", screenPosNorm_),
                      std::make_pair("depth", depth_), std::make_pair("canvasSize", canvasSize_),
                      std::make_pair("deltaPos", deltaPos_),

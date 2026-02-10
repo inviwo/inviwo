@@ -136,54 +136,55 @@ void MeshMappingVolume::process() {
     // fill color vector
     std::vector<vec4> colorsOut(srcBuffer->getSize());
     bool accessOutsideBounds = false;
-    srcBuffer->dispatch<void, dispatching::filter::Vec3s>([comp = channel_.getSelectedIndex(),
-                                                           &dst = colorsOut, &tf = tf_.get(),
-                                                           dm = volume->dataMap, volumeRAM,
-                                                           transform = worldToIndex * dataToWorld,
-                                                           &accessOutsideBounds](auto pBuffer) {
-        const auto& vecs = pBuffer->getDataContainer();
-        const auto dims = volumeRAM->getDimensions();
-        const auto dimsM1 = dims - size3_t(1);
+    srcBuffer->dispatch<void, dispatching::filter::Vec3s>(
+        [comp = channel_.getSelectedIndex(), &dst = colorsOut, &tf = tf_.get(),
+         dm = volume->dataMap, volumeRAM, transform = worldToIndex * dataToWorld,
+         &accessOutsideBounds](auto pBuffer) {
+            const auto& vecs = pBuffer->getDataContainer();
+            const auto dims = volumeRAM->getDimensions();
+            const auto dimsM1 = dims - size3_t(1);
 
-        if (volumeRAM->getInterpolation() == InterpolationType::Linear) {
-            std::transform(vecs.begin(), vecs.end(), dst.begin(), [&](auto& vec) {
-                const auto texPos = vec3(transform * vec4{vec, 1.0f});
+            if (volumeRAM->getInterpolation() == InterpolationType::Linear) {
+                std::transform(vecs.begin(), vecs.end(), dst.begin(), [&](auto& vec) {
+                    const auto texPos = vec3(transform * vec4{vec, 1.0f});
 
-                if (glm::any(glm::lessThan(glm::floor(texPos), vec3{0.0f})) ||
-                    glm::any(glm::greaterThanEqual(glm::ceil(texPos), glm::vec3(dims)))) {
-                    accessOutsideBounds = true;
-                }
+                    if (glm::any(glm::lessThan(glm::floor(texPos), vec3{0.0f})) ||
+                        glm::any(glm::greaterThanEqual(glm::ceil(texPos), glm::vec3(dims)))) {
+                        accessOutsideBounds = true;
+                    }
 
-                // trilinear interpolation
-                std::array<double, 8> c{};
-                for (int i = 0; i < 8; i++) {
-                    const size3_t samplePos =
-                        size3_t(texPos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
-                    c[i] = volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
-                }
-                vec3 integerPart{};
-                const auto res = triInterp(c, glm::modf(texPos, integerPart));
-                const auto normalized = dm.mapFromDataToNormalized(res);
-                return tf.sample(normalized);
-            });
-        } else {
-            std::transform(vecs.begin(), vecs.end(), dst.begin(), [&](auto& vec) {
-                const auto texPos = vec3(transform * vec4{vec, 1.0f});
+                    // trilinear interpolation
+                    std::array<double, 8> c{};
+                    for (int i = 0; i < 8; i++) {
+                        const size3_t samplePos =
+                            size3_t(texPos) + size3_t((i >> 2) & 1, (i >> 1) & 1, i & 1);
+                        c[i] =
+                            volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
+                    }
+                    vec3 integerPart{};
+                    const auto res = triInterp(c, glm::modf(texPos, integerPart));
+                    const auto normalized = dm.mapFromDataToNormalized(res);
+                    return tf.sample(normalized);
+                });
+            } else {
+                std::transform(vecs.begin(), vecs.end(), dst.begin(), [&](auto& vec) {
+                    const auto texPos = vec3(transform * vec4{vec, 1.0f});
 
-                if (glm::any(glm::lessThan(glm::floor(texPos), vec3{0.0f})) ||
-                    glm::any(glm::greaterThanEqual(glm::ceil(texPos), glm::vec3(dims)))) {
-                    accessOutsideBounds = true;
-                }
+                    if (glm::any(glm::lessThan(glm::floor(texPos), vec3{0.0f})) ||
+                        glm::any(glm::greaterThanEqual(glm::ceil(texPos), glm::vec3(dims)))) {
+                        accessOutsideBounds = true;
+                    }
 
-                const auto samplePos = size3_t(glm::round(texPos));
-                const auto res = volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
-                const auto normalized = dm.mapFromDataToNormalized(res);
-                return tf.sample(normalized);
-            });
-        }
-    });
+                    const auto samplePos = size3_t(glm::round(texPos));
+                    const auto res =
+                        volumeRAM->getAsDVec4(glm::clamp(samplePos, size3_t{0}, dimsM1))[comp];
+                    const auto normalized = dm.mapFromDataToNormalized(res);
+                    return tf.sample(normalized);
+                });
+            }
+        });
     if (accessOutsideBounds) {
-        LogWarn(
+        log::warn(
             "The volume is being sampled out of bounds one or more times. The mesh and volume "
             "may not be aligned.");
     }

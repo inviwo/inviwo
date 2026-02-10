@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
-
-#include <sstream>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -70,11 +69,7 @@ double MouseInteractionEvent::depth() const { return depth_; }
 
 void MouseInteractionEvent::setDepth(double depth) { depth_ = depth; }
 
-std::string MouseInteractionEvent::buttonName() const {
-    std::stringstream ss;
-    ss << buttonState_;
-    return ss.str();
-}
+std::string MouseInteractionEvent::buttonName() const { return fmt::to_string(buttonState_); }
 
 void MouseInteractionEvent::setMouseCursor(MouseCursor cursor) const {
     if (mousecursor_) mousecursor_(cursor);

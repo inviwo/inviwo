@@ -159,9 +159,9 @@ std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
     ss >> str;
     str = toLower(str);
 
-    if (str == toLower(toString(InterpolationType::Nearest))) {
+    if (str == toLower(fmt::to_string(InterpolationType::Nearest))) {
         interpolation = InterpolationType::Nearest;
-    } else if (str == toLower(toString(InterpolationType::Linear))) {
+    } else if (str == toLower(fmt::to_string(InterpolationType::Linear))) {
         interpolation = InterpolationType::Linear;
     } else {
         ss.setstate(std::ios_base::failbit);
@@ -177,11 +177,11 @@ std::istream& operator>>(std::istream& ss, Wrapping& wrapping) {
     ss >> str;
     str = toLower(str);
 
-    if (str == toLower(toString(Wrapping::Mirror))) {
+    if (str == toLower(fmt::to_string(Wrapping::Mirror))) {
         wrapping = Wrapping::Mirror;
-    } else if (str == toLower(toString(Wrapping::Repeat))) {
+    } else if (str == toLower(fmt::to_string(Wrapping::Repeat))) {
         wrapping = Wrapping::Repeat;
-    } else if (str == toLower(toString(Wrapping::Clamp))) {
+    } else if (str == toLower(fmt::to_string(Wrapping::Clamp))) {
         wrapping = Wrapping::Clamp;
     } else {
         ss.setstate(std::ios_base::failbit);

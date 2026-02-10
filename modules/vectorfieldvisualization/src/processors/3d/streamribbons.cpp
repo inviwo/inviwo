@@ -261,8 +261,8 @@ void StreamRibbonsDeprecated::process() {
             }
         }
 
-        maxVelocity_.set(toString(maxVelocity));
-        maxVorticity_.set(toString(maxVorticity));
+        maxVelocity_.set(fmt::to_string(maxVelocity));
+        maxVorticity_.set(fmt::to_string(maxVorticity));
     }
     mesh->addVertices(vertices);
     mesh_.setData(mesh);

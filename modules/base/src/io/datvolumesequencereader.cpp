@@ -506,8 +506,8 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         }
 
         if (enableLogOutput_) {
-            const auto size = util::formatBytesToString(bytes * state.sequences);
-            log::info("Loaded volume sequence: {} size: {}", filePath, size);
+            log::info("Loaded volume sequence: {} size: {}", filePath,
+                      ByteSize{bytes * state.sequences});
         }
     }
     return volumes;
@@ -553,8 +553,7 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
             perfWarning(*volume, filePath);
         }
     }
-    const auto size = util::formatBytesToString(bytes);
-    log::info("Loaded volume sequence: {} size: {}", filePath, size);
+    log::info("Loaded volume sequence: {} size: {}", filePath, ByteSize{bytes});
 
     return volume;
 }

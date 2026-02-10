@@ -98,7 +98,7 @@ template <typename SrcProperty>
 class ScalarToStringConverter : public TemplatePropertyConverter<SrcProperty, StringProperty> {
 protected:
     virtual void convertimpl(const SrcProperty* src, StringProperty* dst) const override {
-        dst->set(toString(src->get()));
+        dst->set(fmt::to_string(src->get()));
     }
 };
 

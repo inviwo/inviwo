@@ -79,7 +79,7 @@ bool PropertyWidgetCEF::onQuery(
             callback->Success(converter_.toJSON(*p).dump());
         }
     } catch (json::exception& ex) {
-        LogError(ex.what());
+        log::exception(ex);
         callback->Failure(0, ex.what());
     }
 

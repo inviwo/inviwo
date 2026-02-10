@@ -31,6 +31,7 @@
 #include <inviwo/core/util/fileextension.h>
 
 #include <fstream>
+#include <sstream>
 #include <string>
 
 namespace inviwo {

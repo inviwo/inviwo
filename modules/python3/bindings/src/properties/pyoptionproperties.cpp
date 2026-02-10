@@ -126,7 +126,7 @@ struct OptionPropertyHelper {
                  [](P* p, std::vector<OptionPropertyOption<T>> options) {
                      p->replaceOptions(options);
                  })
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+            .def("__repr__", [](P& v) { return fmt::to_string(v.get()); });
 
         return prop;
     }

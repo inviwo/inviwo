@@ -288,7 +288,7 @@ void PathLinesDeprecated::process() {
     util::tortuosity(*lines);
 
     lines_.setData(lines);
-    maxVelocity_.set(toString(maxVelocity));
+    maxVelocity_.set(fmt::to_string(maxVelocity));
 }
 
 void PathLinesDeprecated::deserialize(Deserializer& d) {

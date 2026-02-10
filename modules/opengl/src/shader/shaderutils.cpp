@@ -771,7 +771,7 @@ std::string getGLSLTypeName(const DataFormatBase* format) {
                 return "";
         }
     } else {
-        const auto comp = toString(format->getComponents());
+        const auto comp = fmt::to_string(format->getComponents());
         switch (format->getNumericType()) {
             case NumericType::Float: {
                 switch (format->getPrecision()) {

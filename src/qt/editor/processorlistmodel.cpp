@@ -220,7 +220,7 @@ std::pair<std::string, QVariant> ProcessorListModel::categoryAndSort(const Item&
         case Categorical:
             return {item.info.category, utilqt::toQString(item.info.category)};
         case CodeState:
-            return {toString(item.info.codeState), static_cast<int>(item.info.codeState)};
+            return {fmt::to_string(item.info.codeState), static_cast<int>(item.info.codeState)};
         case Module:
             return {item.moduleId, utilqt::toQString(item.moduleId)};
         case LastUsed: {

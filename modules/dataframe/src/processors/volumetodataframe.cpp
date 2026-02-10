@@ -134,7 +134,7 @@ void VolumeToDataFrame::process() {
             std::vector<std::vector<float>*> channelBuffer_;
             const auto numCh = volume->getDataFormat()->getComponents();
             for (size_t c = 0; c < numCh; c++) {
-                auto col = dataFrame->addColumn<float>("Channel " + toString(c + 1), size);
+                auto col = dataFrame->addColumn<float>(fmt::format("Channel {}", c + 1), size);
                 channelBuffer_.push_back(
                     &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
             }

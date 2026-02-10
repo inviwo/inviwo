@@ -34,7 +34,7 @@
 namespace inviwo {
 
 KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
-                             uint32_t nativeVirtualKey, const std::string& text)
+                             uint32_t nativeVirtualKey, std::string_view text)
     : InteractionEvent(modifiers)
     , text_(text)
     , state_(state)
@@ -57,8 +57,8 @@ void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key;
 
 uint64_t KeyboardEvent::hash() const { return chash(); }
 
-void KeyboardEvent::print(std::ostream& ss) const {
-    util::printEvent(ss, "KeyboardEvent", std::make_pair("state", state_),
+void KeyboardEvent::print(fmt::memory_buffer& buff) const {
+    util::printEvent(buff, "KeyboardEvent", std::make_pair("state", state_),
                      std::make_pair("key", key_), std::make_pair("modifiers", modifiers_));
 }
 

@@ -49,7 +49,6 @@
 #include <inviwo/sys/moduleloading.h>
 #include <inviwo/py/pythonhelper.h>
 
-#include <sstream>
 #include <algorithm>
 #include <array>
 

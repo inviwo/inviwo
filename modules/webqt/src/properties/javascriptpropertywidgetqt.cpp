@@ -67,7 +67,7 @@ JavascriptPropertyWidgetQt::JavascriptPropertyWidgetQt(StringProperty* property)
 
     if (property->getSemantics() != PropertySemantics("JavascriptEditor")) {
         throw Exception(
-            IVW_CONTEXT,
+            SourceContext{},
             "Invalid semantics for JavascriptPropertyWidgetQt, expected JavascriptEditor, got {}",
             property->getSemantics().getString());
     }
@@ -86,7 +86,7 @@ JavascriptFilePropertyWidgetQt::JavascriptFilePropertyWidgetQt(FileProperty* pro
 
     if (property->getSemantics() != PropertySemantics("JavascriptEditor")) {
         throw Exception(
-            IVW_CONTEXT,
+            SourceContext{},
             "Invalid semantics for JavascriptPropertyWidgetQt, expected JavascriptEditor, got {}",
             property->getSemantics().getString());
     }

@@ -31,6 +31,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <inviwo/core/util/exception.h>
+
 #include <glm/fwd.hpp>
 
 #include <memory>
@@ -48,6 +50,24 @@ enum class Side { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositi
 enum class UpdateNearFar { Yes, No };
 enum class UpdateLookRanges { Yes, No };
 
+constexpr std::string_view format_as(Side s) {
+    switch (s) {
+        case Side::XNegative:
+            return "XNegative";
+        case Side::XPositive:
+            return "XPositive";
+        case Side::YNegative:
+            return "YNegative";
+        case Side::YPositive:
+            return "YPositive";
+        case Side::ZNegative:
+            return "ZNegative";
+        case Side::ZPositive:
+            return "ZPositive";
+    }
+    throw Exception(SourceContext{}, "Found invalid Side");
+}
+
 static constexpr float defaultZoomFactor = 125.f;
 static constexpr float defaultFarNearRatio = 2000.f;
 
@@ -63,10 +83,11 @@ IVW_CORE_API float fovxDegreesFrom(float fovyDegrees, float aspect);
  *                    view frustum
  * @param viewDir    the view direction of when viewing the bounding box
  * @param lookUp     the up direction of when viewing the bounding box
- * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
- *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view
+ * frustum. A fit ratio of 1 means a perfect fit, no space between frustum and volume. The
  *                   aspect ratio is taken into account.
- * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see setCameraNearFar
+ * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see
+ * setCameraNearFar
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
@@ -84,10 +105,11 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBo
  * @param cam       the Camera to update
  * @param boundingBox the basis and offset of the bounding box that will fit inside the new
  *                    view frustum
- * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
- *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view
+ * frustum. A fit ratio of 1 means a perfect fit, no space between frustum and volume. The
  *                   aspect ratio is taken into account.
- * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see setCameraNearFar
+ * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see
+ * setCameraNearFar
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
@@ -106,10 +128,11 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBo
  * @param boundingBox the basis and offset of the bounding box that will fit inside the new
  * view frustum
  * @param side       this side of the bounding box will be facing the camera afterward
- * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
- *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view
+ * frustum. A fit ratio of 1 means a perfect fit, no space between frustum and volume. The
  * aspect ratio is taken into account.
- * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see setCameraNearFar
+ * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see
+ * setCameraNearFar
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
@@ -121,21 +144,23 @@ IVW_CORE_API void setCameraView(CameraProperty& cam, const glm::mat4& boundingBo
                                 float farNearRatio = defaultFarNearRatio);
 
 /**
- * Set the ranges of the look to and look from properties of the camera. Will center around the mid
- * point of dataToWorld. The lookTo will be set to ranges to stay within the volume. The lookFrom
- * will be set to the mid point +- the basis vector of boundingBox times the zoom factor. That is
- * a zoom factor of 25 will allow to zoom out to a distance of "25 volumes".
+ * Set the ranges of the look to and look from properties of the camera. Will center around the
+ * mid point of dataToWorld. The lookTo will be set to ranges to stay within the volume. The
+ * lookFrom will be set to the mid point +- the basis vector of boundingBox times the zoom
+ * factor. That is a zoom factor of 25 will allow to zoom out to a distance of "25 volumes".
  *
  * @param cam           camera to update
  * @param boundingBox  basis and offset of the bounding box used to determine the ranges
- * @param maxZoomFactor determines how far away from the volume the user will be able to zoom out.
+ * @param maxZoomFactor determines how far away from the volume the user will be able to zoom
+ * out.
  */
 IVW_CORE_API void setCameraLookRanges(CameraProperty& cam, const glm::mat4& boundingBox,
                                       float maxZoomFactor = defaultZoomFactor);
 
 /**
  * Computes appropriate near and far clip distances for the given bounding box and zoom factor.
- * Makes sure that the far plane is distant enough to avoid clipping given to current zoom factor.
+ * Makes sure that the far plane is distant enough to avoid clipping given to current zoom
+ * factor.
  * @see setCameraLookRanges
  */
 IVW_CORE_API std::pair<float, float> computeCameraNearFar(const glm::mat4& boundingBox,
@@ -143,8 +168,8 @@ IVW_CORE_API std::pair<float, float> computeCameraNearFar(const glm::mat4& bound
                                                           float farNearRatio = defaultFarNearRatio);
 
 /**
- * Sets the near and far clip distances of the camera based on the given bounding volume and zoom
- * factor. Ensures that the far plane is distant enough to avoid clipping given to current
+ * Sets the near and far clip distances of the camera based on the given bounding volume and
+ * zoom factor. Ensures that the far plane is distant enough to avoid clipping given to current
  * zoom factor.
  * @see computeCameraNearFar
  * @see setCameraLookRanges

@@ -37,7 +37,6 @@
 #include <inviwo/meta/creator.hpp>
 
 #include <filesystem>
-#include <sstream>
 
 #include <warn/push>
 #include <warn/ignore/all>

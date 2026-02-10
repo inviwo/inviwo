@@ -231,7 +231,7 @@ auto generateColumnPrinters(const DataFrame& df) {
                 ->dispatch<void, dispatching::filter::Vecs>(
                     [&printers, header = col->getHeader()](auto br) {
                         printers.push_back([br, header](json& list, size_t index) {
-                            list.emplace_back(toString(br->getDataContainer()[index]));
+                            list.emplace_back(fmt::to_string(br->getDataContainer()[index]));
                         });
                     });
         }

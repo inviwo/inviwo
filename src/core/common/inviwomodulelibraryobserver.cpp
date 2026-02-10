@@ -35,7 +35,6 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 
-#include <sstream>
 #include <fmt/std.h>
 
 namespace inviwo {

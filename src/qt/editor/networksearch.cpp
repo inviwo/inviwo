@@ -82,7 +82,7 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
              }},
             {"state", "s", "processor state", true,
              [](std::string_view s, const std::any&, const Processor& p) -> bool {
-                 return find(toString(p.getCodeState()), s);
+                 return find(fmt::to_string(p.getCodeState()), s);
              }},
             {"inport", "", "search inport class identifiers", true,
              [](std::string_view s, const std::any&, const Processor& p) -> bool {

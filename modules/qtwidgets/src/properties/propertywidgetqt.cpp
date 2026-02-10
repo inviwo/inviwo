@@ -355,7 +355,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                                                      Property* property, PropertyPresetType type) {
             auto action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);
-            action->setToolTip(utilqt::toQString(toString(type) + " Preset"));
+            action->setToolTip(utilqt::toQString(fmt::format("{} Preset", type)));
             this->connect(action, &QAction::triggered, menu,
                           [presetManager, name, property, type]() {
                               presetManager->loadPreset(name, property, type);

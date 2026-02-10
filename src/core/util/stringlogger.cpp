@@ -35,23 +35,10 @@ void StringLogger::log(std::string_view logSource, LogLevel logLevel, LogAudienc
                        std::string_view fileName, std::string_view /*functionName*/, int lineNumber,
                        std::string_view logMsg) {
 
-    switch (logLevel) {
-        case LogLevel::Info:
-            logstream_ << "Info: ";
-            break;
-
-        case LogLevel::Warn:
-            logstream_ << "Warn: ";
-            break;
-
-        case LogLevel::Error:
-            logstream_ << "Error: ";
-            break;
-    }
-
-    logstream_ << logSource << " (" << fileName << ":" << lineNumber << ") " << logMsg << "\n";
+    fmt::format_to(std::back_inserter(log_), "{}: {} ({}:{}) {}\n", logLevel, logSource, fileName,
+                   lineNumber, logMsg);
 }
 
-std::string StringLogger::getLog() const { return logstream_.str(); }
+const std::string& StringLogger::getLog() const { return log_; }
 
 }  // namespace inviwo

@@ -126,7 +126,7 @@ void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                         ->template dispatch<ValueFunc, dispatching::filter::Vecs>([](auto br) {
                             return [br](int row) {
                                 return QVariant{
-                                    utilqt::toQString(toString(br->getDataContainer()[row]))};
+                                    utilqt::toQString(fmt::to_string(br->getDataContainer()[row]))};
                             };
                         });
                 }

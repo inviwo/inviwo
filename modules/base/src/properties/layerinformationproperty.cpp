@@ -158,11 +158,11 @@ LayerInformationProperty* LayerInformationProperty::clone() const {
 
 void LayerInformationProperty::updateForNewLayer(const Layer& layer,
                                                  util::OverwriteState overwrite) {
-    layerType.set(toString(layer.getLayerType()));
+    layerType.set(fmt::to_string(layer.getLayerType()));
     dimensions.set(layer.getDimensions());
     format.set(layer.getDataFormat()->getString());
     channels.set(layer.getDataFormat()->getComponents());
-    swizzleMask.set(toString(layer.getSwizzleMask()));
+    swizzleMask.set(fmt::to_string(layer.getSwizzleMask()));
     util::for_each_in_tuple([&](auto& e) { e.setCurrentStateAsDefault(); }, props(*this));
 
     overwrite = (overwrite == util::OverwriteState::Yes && !isChecked()) ? util::OverwriteState::Yes

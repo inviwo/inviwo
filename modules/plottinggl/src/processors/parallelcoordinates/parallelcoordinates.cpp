@@ -270,7 +270,7 @@ ParallelCoordinates::ParallelCoordinates()
         vs->addInDeclaration("in_Picking", buffertraits::PickingBuffer::bi().location, "uint");
         vs->addInDeclaration("in_ScalarMeta", buffertraits::ScalarMetaBuffer::bi().location,
                              "float");
-        vs->addShaderDefine("NUMBER_OF_AXIS", toString(1));
+        vs->addShaderDefine("NUMBER_OF_AXIS", fmt::to_string(1));
 
         lineShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
         lineShader_.build();
@@ -480,7 +480,8 @@ void ParallelCoordinates::buildLineMesh() {
         }
     }
 
-    lineShader_.getVertexShaderObject()->addShaderDefine("NUMBER_OF_AXIS", toString(numberOfAxis));
+    lineShader_.getVertexShaderObject()->addShaderDefine("NUMBER_OF_AXIS",
+                                                         fmt::to_string(numberOfAxis));
     lineShader_.build();
 
     buildLineIndices();
@@ -735,13 +736,9 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
         if (axes_[id].pcp->catCol_) return;
 
         if (pt == PickType::Upper) {
-            std::ostringstream oss;
-            oss << axes_[id].pcp->range.getEnd();
-            p->setToolTip(oss.str());
+            p->setToolTip(fmt::to_string(axes_[id].pcp->range.getEnd()));
         } else if (pt == PickType::Lower) {
-            std::ostringstream oss;
-            oss << axes_[id].pcp->range.getStart();
-            p->setToolTip(oss.str());
+            p->setToolTip(fmt::to_string(axes_[id].pcp->range.getStart()));
         }
     };
 

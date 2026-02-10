@@ -381,16 +381,12 @@ void exposeEvents(pybind11::module& m) {
         .def("markAsVisited", static_cast<void (Event::*)(Event&)>(&Event::markAsVisited))
         .def("hasVisitedProcessor", &Event::hasVisitedProcessor)
         .def("getVisitedProcessors", &Event::getVisitedProcessors)
-        .def("__repr__", [](Event* event) {
-            std::ostringstream oss;
-            event->print(oss);
-            return oss.str();
-        });
+        .def("__repr__",
+             [](Event* event) { return event ? fmt::to_string(*event) : std::string{"Empty"}; });
 
     py::classh<InteractionEvent, Event>(m, "InteractionEvent")
         .def("modifiers", &InteractionEvent::modifiers)
         .def("setModifiers", &InteractionEvent::setModifiers)
-        .def("modifierNames", &InteractionEvent::modifierNames)
         .def("setToolTip", &InteractionEvent::setToolTip)
         .def(
             "showContextMenu",

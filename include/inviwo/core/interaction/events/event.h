@@ -30,12 +30,9 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/serializable.h>
+
 #include <vector>
 #include <cstdint>
-#include <ostream>
-#include <sstream>
-
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -90,12 +87,7 @@ public:
     template <typename EventType>
     const EventType* getAs() const;
 
-    friend std::ostream& operator<<(std::ostream& ss, const Event& e) {
-        e.print(ss);
-        return ss;
-    }
-
-    virtual void print(std::ostream& ss) const;
+    virtual void print(fmt::memory_buffer& buff) const = 0;
 
 protected:
     Event() = default;
@@ -145,8 +137,6 @@ inline bool Event::setUsed(bool isUsed) {
     return curr;
 }
 
-IVW_CORE_API std::string format_as(const Event& e);
-
 }  // namespace inviwo
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -155,10 +145,9 @@ template <>
 struct fmt::formatter<::inviwo::Event> : fmt::formatter<fmt::string_view> {
     template <typename FormatContext>
     auto format(const ::inviwo::Event& event, FormatContext& ctx) const {
-        std::stringstream ss;
-        event.print(ss);
-        auto str = std::move(ss).str();
-        return formatter<fmt::string_view>::format(str, ctx);
+        fmt::memory_buffer buff;
+        event.print(buff);
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
     }
 };
 

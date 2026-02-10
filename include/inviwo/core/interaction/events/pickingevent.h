@@ -223,7 +223,7 @@ public:
 
     const InteractionEvent::ToolTipCallback& getToolTipCallback() const;
 
-    virtual void print(std::ostream& ss) const override;
+    virtual void print(fmt::memory_buffer& buff) const override;
 
 private:
     const PickingAction* pickingAction_;

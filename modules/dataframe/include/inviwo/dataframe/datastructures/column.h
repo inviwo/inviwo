@@ -51,12 +51,10 @@
 #include <cstddef>        // for size_t
 #include <cstdint>        // for uint32_t
 #include <functional>     // for less
-#include <iosfwd>         // for stringstream, ost...
 #include <limits>         // for numeric_limits
 #include <map>            // for map
 #include <memory>         // for shared_ptr, make_...
 #include <optional>       // for optional, nullopt
-#include <ostream>        // for operator<<, basic...
 #include <string>         // for string, char_traits
 #include <string_view>    // for string_view
 #include <type_traits>    // for enable_if, is_flo...
@@ -744,9 +742,7 @@ void TemplateColumn<T>::setBuffer(std::shared_ptr<Buffer<T>> buffer) {
 
 template <typename T>
 std::string TemplateColumn<T>::getAsString(size_t idx) const {
-    std::ostringstream ss;
-    ss << buffer_->getRAMRepresentation()->get(idx);
-    return ss.str();
+    return fmt::to_string(buffer_->getRAMRepresentation()->get(idx));
 }
 
 template <typename T>

@@ -67,7 +67,7 @@ const std::string& OpenGLCapabilities::GLSLShaderVersion::getProfile() const { r
 int OpenGLCapabilities::GLSLShaderVersion::getVersion() const { return number_; }
 
 std::string OpenGLCapabilities::GLSLShaderVersion::getVersionAsString() const {
-    return toString<int>(number_);
+    return fmt::to_string(number_);
 }
 
 std::string OpenGLCapabilities::GLSLShaderVersion::getVersionAndProfileAsString() const {
@@ -186,10 +186,10 @@ void OpenGLCapabilities::printDetailedInfo() {
         log::info("Max number of texture units: {}", getNumTexUnits());
         auto totalMem = getTotalAvailableTextureMem();
         log::info("Total available texture memory: {}",
-                  (totalMem > 0 ? util::formatBytesToString(totalMem) : "UNKNOWN"));
+                  (totalMem > 0 ? fmt::to_string(ByteSize{totalMem}) : "UNKNOWN"));
         auto curMem = getCurrentAvailableTextureMem();
         log::info("Current available texture memory: {}",
-                  (curMem > 0 ? util::formatBytesToString(curMem) : "UNKNOWN"));
+                  (curMem > 0 ? fmt::to_string(ByteSize{curMem}) : "UNKNOWN"));
     }
 }
 
@@ -410,9 +410,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
 
         for (int i = 0; i < numberOfSupportedVersions; i++) {
-            parseAndAddShaderVersion(
-                toString<const GLubyte*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)),
-                glslVersion);
+            parseAndAddShaderVersion(toString(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)),
+                                     glslVersion);
         }
 
         std::sort(supportedShaderVersions_.begin(), supportedShaderVersions_.end(),

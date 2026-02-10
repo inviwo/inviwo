@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/viewevent.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -37,7 +38,16 @@ Event* ViewEvent::clone() const { return new ViewEvent(*this); }
 
 uint64_t ViewEvent::hash() const { return chash(); }
 
-void ViewEvent::print(std::ostream& ss) const { ss << "ViewEvent"; }
+void ViewEvent::print(fmt::memory_buffer& buff) const {
+    fmt::format_to(std::back_inserter(buff), "ViewEvent: action=");
+
+    std::visit(util::overloaded{
+                   [&](camerautil::Side s) { fmt::format_to(std::back_inserter(buff), "{}", s); },
+                   [&](FlipView) { fmt::format_to(std::back_inserter(buff), "FlipView"); },
+                   [&](FlipUp) { fmt::format_to(std::back_inserter(buff), "FlipUp"); },
+                   [&](FitData) { fmt::format_to(std::back_inserter(buff), "FitData"); }},
+               action_);
+}
 
 auto ViewEvent::getAction() const -> Action { return action_; }
 

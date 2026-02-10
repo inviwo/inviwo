@@ -238,12 +238,12 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
 
 uint64_t TouchEvent::hash() const { return chash(); }
 
-void TouchEvent::print(std::ostream& ss) const {
-    util::printEvent(ss, "TouchEvent", std::make_pair("points", touchPoints_.size()),
+void TouchEvent::print(fmt::memory_buffer& buff) const {
+    util::printEvent(buff, "TouchEvent", std::make_pair("points", touchPoints_.size()),
                      std::make_pair("size", canvasSize()), std::make_pair("modifiers", modifiers_));
 
     for (const auto& p : touchPoints()) {
-        util::printEvent(ss, "\n  TouchPoint", std::make_tuple("id", p.id(), 2),
+        util::printEvent(buff, "\n  TouchPoint", std::make_tuple("id", p.id(), 2),
                          std::make_pair("state", p.state()), std::make_pair("depth", p.depth()),
                          std::make_pair("pos", p.pos()), std::make_pair("prev", p.prevPos()));
     }

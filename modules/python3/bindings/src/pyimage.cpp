@@ -86,8 +86,9 @@ void exposeImage(pybind11::module& m) {
                 "  format = {}\n  dimensions = {}\n  aspect ratio = {}>",
                 self.getNumberOfColorLayers(), self.getDepthLayer() ? "yes" : "no",
                 self.getPickingLayer() ? "yes" : "no", self.getDataFormat()->getString(), dims,
-                dims.y == 0 ? "Invalid"
-                            : toString(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
+                dims.y == 0
+                    ? "Invalid"
+                    : fmt::to_string(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
         });
 
     exposeInport<ImageInport>(m, "Image");

@@ -31,8 +31,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>
 
-#include <sstream>
-
 namespace inviwo {
 
 bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outport* /*source*/) {
@@ -53,13 +51,5 @@ bool Event::hasVisitedProcessor(Processor* p) const {
 }
 
 const std::vector<Processor*>& Event::getVisitedProcessors() const { return visitedProcessors_; }
-
-void Event::print(std::ostream& ss) const { ss << "Unknown Event. Hash:" << hash(); }
-
-std::string format_as(const Event& e) {
-    std::ostringstream oss;
-    e.print(oss);
-    return oss.str();
-}
 
 }  // namespace inviwo

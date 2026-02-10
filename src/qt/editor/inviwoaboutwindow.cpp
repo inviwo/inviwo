@@ -138,7 +138,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
 
         auto cell = table.append("td");
         cell.append("h1", "Inviwo", {{"style", "color:white;"}});
-        cell.append("p", "Interactive Visualization Workshop. Version " + toString(build::version));
+        cell.append(
+            "p", "Interactive Visualization Workshop. Version " + fmt::to_string(build::version));
         cell.append("p", "&copy; 2012-" + toString(static_cast<int>(ymd.year())) +
                              " The Inviwo Foundation");
         cell.append("a", "http://www.inviwo.org", {{"href", "http://www.inviwo.org"}});

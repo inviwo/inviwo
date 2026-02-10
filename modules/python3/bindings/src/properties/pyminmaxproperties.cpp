@@ -97,7 +97,7 @@ struct MinMaxHelper {
             .def_property("increment", &P::getIncrement, &P::setIncrement)
             .def_property("minSeparation", &P::getMinSeparation, &P::setMinSeparation)
             .def_property("range", &P::getRange, &P::setRange)
-            .def("__repr__", [](P& v) { return inviwo::toString(v.get()); });
+            .def("__repr__", [](P& v) { return fmt::to_string(v.get()); });
 
         return prop;
     }

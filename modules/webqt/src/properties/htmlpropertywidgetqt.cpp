@@ -55,8 +55,7 @@ public:
         : TextEditorDockWidget(property)
         , callbacks_{utilqt::setHtmlSyntaxHighlight(
               getSyntaxHighlighter(),
-              *util::getInviwoApplication(property)->getSettingsByType<HtmlSyntaxHighlight>())} {
-    }
+              *util::getInviwoApplication(property)->getSettingsByType<HtmlSyntaxHighlight>())} {}
 
 private:
     std::vector<std::shared_ptr<std::function<void()>>> callbacks_;
@@ -68,7 +67,7 @@ HtmlPropertyWidgetQt::HtmlPropertyWidgetQt(StringProperty* property)
     : StringPropertyWidgetQt(property) {
 
     if (property->getSemantics() != PropertySemantics("HtmlEditor")) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Invalid semantics for HtmlPropertyWidgetQt, expected HtmlEditor, got {}",
                         property->getSemantics().getString());
     }
@@ -86,7 +85,7 @@ HtmlFilePropertyWidgetQt::HtmlFilePropertyWidgetQt(FileProperty* property)
     : FilePropertyWidgetQt(property) {
 
     if (property->getSemantics() != PropertySemantics("HtmlEditor")) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Invalid semantics for HtmlPropertyWidgetQt, expected HtmlEditor, got {}",
                         property->getSemantics().getString());
     }

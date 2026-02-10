@@ -64,4 +64,8 @@ RasterizeHandle RasterizeEvent::addInitializeShaderCallback(std::function<void()
 
 uint64_t RasterizeEvent::hash() const { return chash(); }
 
+void RasterizeEvent::print(fmt::memory_buffer& buff) const {
+    fmt::format_to(std::back_inserter(buff), "RasterizeEvent");
+}
+
 }  // namespace inviwo

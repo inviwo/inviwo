@@ -69,7 +69,7 @@ ProcessorListFilter::ProcessorListFilter(ProcessorNetwork* net, QObject* parent)
              }},
             {"state", "", "processor category", false,
              [](std::string_view str, const std::any&, const Item& item) {
-                 return strMatch(toString(item.info.codeState), str);
+                 return strMatch(fmt::to_string(item.info.codeState), str);
              }},
             {"module", "m", "processor module", false,
              [](std::string_view str, const std::any&, const Item& item) {

@@ -110,12 +110,32 @@ struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
     }
 };
 
+struct LevelFilter : QSortFilterProxyModel {
+    LevelFilter(QObject* parent) : QSortFilterProxyModel(parent) {}
+
+    virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override {
+        const auto index = sourceModel()->index(source_row, 0, source_parent);
+        const auto level = utilqt::getData(index, LogTableModel::Role::Level).value<LogLevel>();
+        return levels[static_cast<size_t>(level)];
+    }
+
+    void setFilter(const std::array<ConsoleWidget::Level, 3>& newLevels) {
+        beginResetModel();
+        for (const auto& item : newLevels) {
+            levels[static_cast<size_t>(item.level)] = item.action->isChecked();
+        }
+        endResetModel();
+    }
+
+    std::array<bool, 4> levels{true};
+};
+
 ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     : InviwoDockWidget(tr("Console"), parent, "ConsoleWidget")
     , tableView_(new QTableView(this))
     , model_()
     , filter_(new QSortFilterProxyModel(this))
-    , levelFilter_(new QSortFilterProxyModel(this))
+    , levelFilter_(new LevelFilter(this))
     , textSelectionDelegate_(new TextSelectionDelegate(this))
     , filterPattern_(new QLineEdit(this))
     , mainWindow_(parent)
@@ -130,7 +150,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     filter_->setFilterKeyColumn(static_cast<int>(LogTableModelEntry::ColumnID::Message));
 
     levelFilter_->setSourceModel(filter_);
-    levelFilter_->setFilterKeyColumn(static_cast<int>(LogTableModelEntry::ColumnID::Level));
 
     filterPattern_->setClearButtonEnabled(true);
 
@@ -214,17 +233,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     };
 
     auto levelCallback = [this](bool /*checked*/) {
-        if (util::all_of(levels, [](const auto& level) { return level.action->isChecked(); })) {
-            levelFilter_->setFilterRegularExpression("");
-        } else {
-            std::stringstream ss;
-            auto joiner = util::make_ostream_joiner(ss, "|");
-            joiner = "None";
-            for (const auto& level : levels) {
-                if (level.action->isChecked()) joiner = level.level;
-            }
-            levelFilter_->setFilterRegularExpression(QString::fromStdString(ss.str()));
-        }
+        levelFilter_->setFilter(levels);
         applyRowHeights(0, tableView_->verticalHeader()->count());
     };
 
@@ -426,7 +435,7 @@ void ConsoleWidget::clear() {
 void ConsoleWidget::updateIndicators(LogLevel level) {
     auto it = util::find_if(levels, [&](const auto& l) { return l.level == level; });
     if (it != levels.end()) {
-        it->label->setText(toString(++(it->count)).c_str());
+        it->label->setText(fmt::to_string(++(it->count)).c_str());
     }
 }
 
@@ -652,6 +661,9 @@ QVariant LogTableModel::data(const QModelIndex& index, int role) const {
             } else {
                 return {};
             }
+
+        case static_cast<int>(Role::Level):
+            return QVariant::fromValue(entry.level);
 
         default:
             return {};
