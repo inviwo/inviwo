@@ -115,13 +115,6 @@ private:
     std::uint32_t column_;
 };
 
-#define IVW_CONTEXT ::inviwo::SourceContext()
-#define IVW_CONTEXT_CUSTOM(source)                   \
-    []() {                                           \
-        using namespace inviwo;                      \
-        return ::inviwo::SourceContext(source##_sl); \
-    }()
-
 }  // namespace inviwo
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
