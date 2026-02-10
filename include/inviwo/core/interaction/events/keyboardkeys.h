@@ -34,8 +34,6 @@
 
 #include <string_view>
 #include <flags/flags.h>
-#include <iosfwd>
-
 #include <fmt/core.h>
 
 namespace inviwo {
@@ -212,12 +210,6 @@ enum class IvwKey {
     LeftMeta = 349,
     RightMeta = 350,
 };
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, KeyModifier m);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, KeyModifiers ms);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, KeyState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, KeyStates s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, IvwKey k);
 
 IVW_CORE_API std::string_view enumToStr(KeyModifier m);
 IVW_CORE_API std::string_view enumToStr(KeyState s);
