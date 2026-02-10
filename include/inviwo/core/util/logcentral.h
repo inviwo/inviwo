@@ -67,9 +67,6 @@ inline std::string_view format_as(LogLevel ll) { return enumToStr(ll); }
 inline std::string_view format_as(LogAudience la) { return enumToStr(la); }
 inline std::string_view format_as(MessageBreakLevel ll) { return enumToStr(ll); }
 
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogLevel ll);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LogAudience la);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll);
 
 #define LogSpecial(logger, logLevel, message)                                                   \
     {                                                                                           \

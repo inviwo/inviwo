@@ -37,7 +37,6 @@
 #include <inviwo/core/util/rendercontext.h>         // for RenderContext, ContextHolder
 #include <modules/opengl/openglsettings.h>          // for OpenGLSettings
 
-#include <ostream>        // for operator<<, basic_ostream
 #include <string>         // for char_traits, string
 #include <thread>         // for get_id, operator==, __thread_id, thread
 #include <type_traits>    // for __underlying_type_impl<>::type, under...
@@ -310,12 +309,6 @@ std::string_view enumToStr(Severity s) {
             return "";
     }
 }
-
-std::ostream& operator<<(std::ostream& ss, Mode m) { return ss << enumToStr(m); }
-std::ostream& operator<<(std::ostream& ss, BreakLevel b) { return ss << enumToStr(b); }
-std::ostream& operator<<(std::ostream& ss, Source s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, Type t) { return ss << enumToStr(t); }
-std::ostream& operator<<(std::ostream& ss, Severity s) { return ss << enumToStr(s); }
 
 }  // namespace debug
 

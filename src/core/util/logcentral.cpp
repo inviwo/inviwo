@@ -192,10 +192,6 @@ std::string_view enumToStr(MessageBreakLevel ll) {
                     static_cast<int>(ll));
 }
 
-std::ostream& operator<<(std::ostream& ss, LogLevel ll) { return ss << enumToStr(ll); }
-std::ostream& operator<<(std::ostream& ss, LogAudience la) { return ss << enumToStr(la); }
-std::ostream& operator<<(std::ostream& ss, MessageBreakLevel ll) { return ss << enumToStr(ll); }
-
 void log::detail::logDirectly(LogLevel level, SourceContext context, std::string_view message) {
     auto& os = level == LogLevel::Error ? std::cerr : std::cout;
     const auto time = std::chrono::system_clock::now();
