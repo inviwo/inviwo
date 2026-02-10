@@ -50,6 +50,7 @@ namespace inviwo {
 
 class InviwoApplication;
 class NetworkVisitor;
+class ProcessorNetworkEvaluator;
 
 /**
  * This class manages the current processor network. It can be thought of as a container of
@@ -415,6 +416,10 @@ public:
     bool isPropertyInNetwork(Property* prop) const;
 
     InviwoApplication* getApplication() const;
+
+    ProcessorNetworkEvaluator* getEvaluator() const;
+    void setEvaluator(ProcessorNetworkEvaluator* evaluator);
+
     static int getVersion();
 
     void evaluateLinksFromProperty(Property*);
@@ -488,6 +493,7 @@ private:
     int backgoundJobs_ = 0;
 
     InviwoApplication* application_;
+    ProcessorNetworkEvaluator* evaluator_;
 
     UnorderedStringMap<std::shared_ptr<Processor>> processors_;
     std::unordered_set<PortConnection> connections_;
