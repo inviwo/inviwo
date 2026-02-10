@@ -357,16 +357,4 @@ std::string_view enumToStr(IvwKey k) {
     throw Exception(SourceContext{}, "Found invalid IvwKey enum value '{}'", static_cast<int>(k));
 }
 
-std::ostream& operator<<(std::ostream& ss, KeyModifier m) { return ss << enumToStr(m); }
-std::ostream& operator<<(std::ostream& ss, KeyModifiers ms) {
-    std::copy(ms.begin(), ms.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-std::ostream& operator<<(std::ostream& ss, KeyState s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, KeyStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-std::ostream& operator<<(std::ostream& ss, IvwKey k) { return ss << enumToStr(k); }
-
 }  // namespace inviwo

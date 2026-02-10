@@ -31,9 +31,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/core/util/isstreaminsertable.h>
-
-#include <iosfwd>
 
 namespace inviwo {
 
@@ -82,11 +79,6 @@ protected:
     TemplateProperty(const TemplateProperty& rhs) = default;
     ValueWrapper<T> value_;
 };
-
-template <typename T, typename = std::enable_if_t<util::is_stream_insertable<T>::value>>
-std::ostream& operator<<(std::ostream& os, const TemplateProperty<T>& prop) {
-    return os << prop.get();
-}
 
 template <typename T>
 TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_view displayName,

@@ -33,7 +33,6 @@
 #include <inviwo/core/util/transparentmaps.h>
 
 #include <functional>
-#include <iosfwd>
 #include <string>
 #include <memory>
 #include <vector>
@@ -216,8 +215,6 @@ public:
             traverser(traverser, e.get(), stack);
         }
     }
-
-    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const Document& doc);
 
     std::string str() const;
     operator std::string() const;

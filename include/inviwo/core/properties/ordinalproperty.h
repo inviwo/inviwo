@@ -43,7 +43,6 @@
 #include <type_traits>
 
 #include <fmt/core.h>
-#include <ostream>
 #include <utility>
 
 namespace inviwo {
@@ -434,11 +433,6 @@ struct PropertyTraits<OrdinalProperty<T>> {
         return identifier;
     }
 };
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const OrdinalProperty<T>& prop) {
-    return os << prop.get();
-}
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,

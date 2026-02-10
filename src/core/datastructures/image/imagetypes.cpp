@@ -30,6 +30,8 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/exception.h>
 
+#include <ostream>
+
 namespace inviwo {
 
 std::string_view enumToStr(ImageType type) {
@@ -100,14 +102,6 @@ std::string_view enumToStr(Wrapping type) {
                     static_cast<int>(type));
 }
 
-std::ostream& operator<<(std::ostream& ss, ImageType type) { return ss << enumToStr(type); }
-
-std::ostream& operator<<(std::ostream& ss, LayerType type) { return ss << enumToStr(type); }
-
-std::ostream& operator<<(std::ostream& ss, ImageChannel channel) {
-    return ss << enumToStr(channel);
-}
-
 std::istream& operator>>(std::istream& ss, ImageChannel& channel) {
     char c{0};
     ss >> c;
@@ -137,13 +131,6 @@ std::istream& operator>>(std::istream& ss, ImageChannel& channel) {
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, SwizzleMask mask) {
-    for (const auto c : mask) {
-        ss << c;
-    }
-    return ss;
-}
-
 std::istream& operator>>(std::istream& ss, SwizzleMask& mask) {
     for (auto& c : mask) {
         ss >> c;
@@ -151,8 +138,6 @@ std::istream& operator>>(std::istream& ss, SwizzleMask& mask) {
     }
     return ss;
 }
-
-std::ostream& operator<<(std::ostream& ss, InterpolationType type) { return ss << enumToStr(type); }
 
 std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
     std::string str;
@@ -170,8 +155,6 @@ std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
     return ss;
 }
 
-std::ostream& operator<<(std::ostream& ss, Wrapping type) { return ss << enumToStr(type); }
-
 std::istream& operator>>(std::istream& ss, Wrapping& wrapping) {
     std::string str;
     ss >> str;
@@ -187,6 +170,28 @@ std::istream& operator>>(std::istream& ss, Wrapping& wrapping) {
         ss.setstate(std::ios_base::failbit);
     }
 
+    return ss;
+}
+
+std::istream& operator>>(std::istream& ss, Wrapping1D& wrapping) {
+    for (auto& w : wrapping) {
+        ss >> w;
+        if (!ss) return ss;
+    }
+    return ss;
+}
+std::istream& operator>>(std::istream& ss, Wrapping2D& wrapping) {
+    for (auto& w : wrapping) {
+        ss >> w;
+        if (!ss) return ss;
+    }
+    return ss;
+}
+std::istream& operator>>(std::istream& ss, Wrapping3D& wrapping) {
+    for (auto& w : wrapping) {
+        ss >> w;
+        if (!ss) return ss;
+    }
     return ss;
 }
 

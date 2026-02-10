@@ -28,10 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/touchstate.h>
-#include <inviwo/core/util/ostreamjoiner.h>
-
 #include <inviwo/core/util/exception.h>
-#include <ostream>
 
 namespace inviwo {
 
@@ -50,13 +47,6 @@ std::string_view enumToStr(TouchState s) {
     }
     throw Exception(SourceContext{}, "Found invalid TouchState enum value '{}'",
                     static_cast<int>(s));
-}
-
-std::ostream& operator<<(std::ostream& ss, TouchState s) { return ss << enumToStr(s); }
-
-std::ostream& operator<<(std::ostream& ss, TouchStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
 }
 
 }  // namespace inviwo

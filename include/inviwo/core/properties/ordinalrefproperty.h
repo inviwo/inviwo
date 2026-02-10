@@ -358,11 +358,6 @@ struct PropertyTraits<OrdinalRefProperty<T>> {
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const OrdinalRefProperty<T>& prop) {
-    return os << prop.get();
-}
-
-template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
                                           Document help, std::function<T()> get,
                                           std::function<void(const T&)> set,

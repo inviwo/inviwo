@@ -28,13 +28,5 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/sourcecontext.h>
-#include <ostream>
 
-namespace inviwo {
-
-std::ostream& operator<<(std::ostream& ss, const SourceContext& ec) {
-    ss << ec.source() << " (" << ec.file() << ":" << ec.line() << ")";
-    return ss;
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

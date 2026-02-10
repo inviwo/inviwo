@@ -34,8 +34,6 @@
 
 #include <flags/flags.h>
 
-#include <iosfwd>
-
 namespace inviwo {
 
 enum class PickingState {
@@ -74,15 +72,6 @@ IVW_CORE_API std::string_view enumToStr(PickingState b);
 IVW_CORE_API std::string_view enumToStr(PickingPressItem b);
 IVW_CORE_API std::string_view enumToStr(PickingPressState b);
 IVW_CORE_API std::string_view enumToStr(PickingHoverState b);
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingStates s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressItem s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressItems s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingPressStates s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingHoverState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, PickingHoverStates s);
 
 }  // namespace inviwo
 

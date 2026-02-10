@@ -31,8 +31,6 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/util/assertion.h>
-
-#include <inviwo/core/util/ostreamjoiner.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
@@ -94,30 +92,6 @@ std::string_view enumToStr(PickingHoverState s) {
     }
     throw Exception(SourceContext{}, "Found invalid PickingHoverState enum value '{}'",
                     static_cast<int>(s));
-}
-
-std::ostream& operator<<(std::ostream& ss, PickingState s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, PickingStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
-std::ostream& operator<<(std::ostream& ss, PickingPressItem s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, PickingPressItems s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
-std::ostream& operator<<(std::ostream& ss, PickingPressState s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, PickingPressStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
-std::ostream& operator<<(std::ostream& ss, PickingHoverState s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, PickingHoverStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
 }
 
 }  // namespace inviwo
