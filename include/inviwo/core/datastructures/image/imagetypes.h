@@ -35,7 +35,7 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <array>
-#include <ostream>
+#include <iosfwd>
 
 namespace inviwo {
 
@@ -66,31 +66,13 @@ IVW_CORE_API std::string_view enumToStr(ImageChannel b);
 IVW_CORE_API std::string_view enumToStr(InterpolationType b);
 IVW_CORE_API std::string_view enumToStr(Wrapping b);
 
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ImageType type);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LayerType type);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ImageChannel channel);
 IVW_CORE_API std::istream& operator>>(std::istream& ss, ImageChannel& channel);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, SwizzleMask mask);
 IVW_CORE_API std::istream& operator>>(std::istream& ss, SwizzleMask& mask);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, InterpolationType type);
 IVW_CORE_API std::istream& operator>>(std::istream& ss, InterpolationType& interpolation);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, Wrapping type);
 IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping& wrapping);
-
-template <size_t N>
-std::ostream& operator<<(std::ostream& ss, const std::array<Wrapping, N>& wrapping) {
-    std::copy(wrapping.begin(), wrapping.end(), util::make_ostream_joiner(ss, ", "));
-    return ss;
-}
-
-template <size_t N>
-std::istream& operator>>(std::istream& ss, std::array<Wrapping, N>& wrapping) {
-    for (auto& w : wrapping) {
-        ss >> w;
-        if (!ss) return ss;
-    }
-    return ss;
-}
+IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping1D& wrapping);
+IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping2D& wrapping);
+IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping3D& wrapping);
 
 namespace swizzlemasks {
 constexpr SwizzleMask rgb = {

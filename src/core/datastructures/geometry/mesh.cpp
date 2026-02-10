@@ -426,11 +426,6 @@ Document Mesh::getInfo() const {
     return doc;
 }
 
-std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info) {
-    ss << info.type << " (location = " << info.location << ")";
-    return ss;
-}
-
 std::string format_as(const Mesh::BufferInfo& info) {
     return fmt::format("{} (location = {})", info.type, info.location);
 }
