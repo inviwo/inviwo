@@ -37,12 +37,6 @@ InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_
 KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
 void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
-}
-
 void InteractionEvent::setToolTip(std::string_view tooltip) const {
     if (tooltip_) tooltip_(tooltip);
 }
