@@ -1,5 +1,6 @@
 var NAVTREEINDEX31 =
 {
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html":[2,0,0,242],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html":[4,0,1,251],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[2,0,0,245],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,254],
@@ -248,6 +249,5 @@ var NAVTREEINDEX31 =
 "structinviwo_1_1ProcessorTraits_3_01MetaDataProcessor_3_01T_00_01TInport_00_01TOutport_01_4_01_4.html":[4,0,1,876],
 "structinviwo_1_1ProcessorTraits_3_01PathLines3D_01_4.html":[2,0,0,868],
 "structinviwo_1_1ProcessorTraits_3_01PathLines3D_01_4.html":[4,0,1,877],
-"structinviwo_1_1ProcessorTraits_3_01SequenceCompositeSink_3_01InportType_00_01OutportSequenceType_01_4_01_4.html":[2,0,0,869],
-"structinviwo_1_1ProcessorTraits_3_01SequenceCompositeSink_3_01InportType_00_01OutportSequenceType_01_4_01_4.html":[4,0,1,878]
+"structinviwo_1_1ProcessorTraits_3_01SequenceCompositeSink_3_01InportType_00_01OutportSequenceType_01_4_01_4.html":[2,0,0,869]
 };

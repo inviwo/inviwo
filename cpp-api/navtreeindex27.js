@@ -1,5 +1,6 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#ac3bef1a79c2ddc439373362cf52d23a7":[2,0,0,15,10,7],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#ac3bef1a79c2ddc439373362cf52d23a7":[4,0,1,22,11,7],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#accb9f3e3c03396e7cf4a46c262740c14":[2,0,0,15,10,3],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#accb9f3e3c03396e7cf4a46c262740c14":[4,0,1,22,11,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX27 =
 "conceptinviwo_1_1RepresentationOf.html":[2,0,0,1384],
 "conceptinviwo_1_1RepresentationOf.html":[3,0,7],
 "conceptinviwo_1_1Settable.html":[2,0,0,1385],
-"conceptinviwo_1_1Settable.html":[3,0,8],
-"conceptinviwo_1_1animation_1_1detail_1_1Scalar.html":[3,0,0,0,0]
+"conceptinviwo_1_1Settable.html":[3,0,8]
 };

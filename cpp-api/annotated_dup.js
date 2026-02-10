@@ -292,7 +292,8 @@ var annotated_dup =
         [ "HelpInport", "structinviwo_1_1help_1_1HelpInport.html", null ],
         [ "HelpOutport", "structinviwo_1_1help_1_1HelpOutport.html", null ],
         [ "HelpProcessor", "structinviwo_1_1help_1_1HelpProcessor.html", null ],
-        [ "HelpProperty", "structinviwo_1_1help_1_1HelpProperty.html", null ]
+        [ "HelpProperty", "structinviwo_1_1help_1_1HelpProperty.html", null ],
+        [ "ProcessorDocs", "classinviwo_1_1help_1_1ProcessorDocs.html", null ]
       ] ],
       [ "kind", "namespaceinviwo_1_1kind.html", [
         [ "Base", "structinviwo_1_1kind_1_1Base.html", null ],

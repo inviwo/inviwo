@@ -1,5 +1,6 @@
 var NAVTREEINDEX33 =
 {
+"structinviwo_1_1comparePtr.html":[4,0,1,159],
 "structinviwo_1_1conversion__tester.html":[2,0,0,174],
 "structinviwo_1_1conversion__tester.html":[4,0,1,183],
 "structinviwo_1_1csvfilters_1_1Filters.html":[2,0,0,5,0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1util_1_1detail_1_1wrap.html":[4,0,1,30,0,24],
 "structinviwo_1_1util_1_1detail_1_1wrap_3_01Wrapper_00_01List_3_01Ts_8_8_8_01_4_01_4.html":[4,0,1,30,0,25],
 "structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference.html":[4,0,1,30,1,0],
-"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_01_4.html":[4,0,1,30,1,1],
-"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_6_01_4.html":[4,0,1,30,1,2]
+"structinviwo_1_1util_1_1detail__indirect_1_1add__const__to__reference_3_01T_01_6_01_4.html":[4,0,1,30,1,1]
 };
