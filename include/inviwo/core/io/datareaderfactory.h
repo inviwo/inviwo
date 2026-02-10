@@ -49,6 +49,10 @@ class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExte
                                        public FactoryObservable<DataReader> {
 public:
     DataReaderFactory() = default;
+    DataReaderFactory(const DataReaderFactory&) = delete;
+    DataReaderFactory(DataReaderFactory&&) = delete;
+    DataReaderFactory& operator=(const DataReaderFactory&) = delete;
+    DataReaderFactory& operator=(DataReaderFactory&&) = delete;
     virtual ~DataReaderFactory() = default;
 
     bool registerObject(DataReader* reader);
@@ -126,7 +130,7 @@ protected:
 template <typename T>
 std::vector<FileExtension> DataReaderFactory::getExtensionsForType() const {
     std::vector<FileExtension> extensions;
-    for (auto&& [ext, reader] : map_) {
+    for (const auto& [ext, reader] : map_) {
         if (reader->readsType<T>()) {
             extensions.push_back(ext);
         }
@@ -138,7 +142,7 @@ template <typename... Ts>
 std::vector<FileExtension> DataReaderFactory::getExtensionsForTypes() const {
     std::vector<FileExtension> extensions;
 
-    for (auto&& [ext, reader] : map_) {
+    for (const auto& [ext, reader] : map_) {
         if ((reader->readsType<Ts>() || ...)) {
             extensions.push_back(ext);
         }
@@ -159,11 +163,11 @@ auto DataReaderFactory::getExtensionsForTypesView() const {
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const std::filesystem::path& path) const {
+    const std::filesystem::path& filePathOrExtension) const {
     std::vector<std::pair<size_t, DataReaderType<T>*>> candidates;
-    for (auto& [ext, reader] : map_) {
-        if (util::iCaseEndsWith(path.string(), ext.extension)) {
-            if (auto r = dynamic_cast<DataReaderType<T>*>(reader)) {
+    for (const auto& [ext, reader] : map_) {
+        if (util::iCaseEndsWith(filePathOrExtension.string(), ext.extension)) {
+            if (auto* r = dynamic_cast<DataReaderType<T>*>(reader)) {
                 candidates.emplace_back(ext.extension.size(), r);
             }
         }
@@ -182,9 +186,9 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     const LCString& extension) const {
-    for (auto& [ext, reader] : map_) {
+    for (const auto& [ext, reader] : map_) {
         if (ext.extension == extension) {
-            if (auto r = dynamic_cast<DataReaderType<T>*>(reader)) {
+            if (auto* r = dynamic_cast<DataReaderType<T>*>(reader)) {
                 return std::unique_ptr<DataReaderType<T>>(r->clone());
             }
         }
@@ -196,7 +200,7 @@ template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     const FileExtension& extension) const {
     return util::map_find_or_null(map_, extension, [](DataReader* o) {
-        if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
+        if (auto* r = dynamic_cast<DataReaderType<T>*>(o)) {
             return std::unique_ptr<DataReaderType<T>>(r->clone());
         } else {
             return std::unique_ptr<DataReaderType<T>>{};
@@ -214,8 +218,9 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 }
 
 template <typename T>
-bool DataReaderFactory::hasReaderForTypeAndExtension(const std::filesystem::path& path) const {
-    return getReaderForTypeAndExtension<T>(path) != nullptr;
+bool DataReaderFactory::hasReaderForTypeAndExtension(
+    const std::filesystem::path& filePathOrExtension) const {
+    return getReaderForTypeAndExtension<T>(filePathOrExtension) != nullptr;
 }
 
 template <typename T>
