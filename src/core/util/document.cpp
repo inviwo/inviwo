@@ -30,8 +30,6 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <algorithm>
-#include <iomanip>
-#include <ostream>
 
 namespace inviwo {
 
@@ -316,9 +314,28 @@ Document::DocumentHandle Document::appendText(std::string_view text) {
 Document::DocumentHandle Document::append(Document doc) { return handle().append(std::move(doc)); }
 
 std::string Document::str() const {
-    std::stringstream ss;
-    ss << *this;
-    return std::move(ss).str();
+    std::string buff;
+
+    using Element = Document::Element;
+    visit(
+        [&](Element* elem, std::vector<Element*>&) {
+            if (elem->isNode()) {
+                fmt::format_to(std::back_inserter(buff), "<{}", elem->name());
+                for (const auto& item : elem->attributes()) {
+                    fmt::format_to(std::back_inserter(buff), " {}='{}'", item.first, item.second);
+                }
+                fmt::format_to(std::back_inserter(buff), ">");
+            } else if (elem->isText() && !elem->content().empty()) {
+                std::ranges::copy(elem->content(), std::back_inserter(buff));
+            }
+        },
+        [&](Element* elem, std::vector<Element*>&) {
+            if (elem->isNode() && !elem->emptyTag()) {
+                fmt::format_to(std::back_inserter(buff), "</{}>", elem->name());
+            }
+        });
+
+    return buff;
 }
 
 Document::operator std::string() const { return str(); }
@@ -327,29 +344,6 @@ void Document::serialize(Serializer& s) const { root_->serialize(s); }
 void Document::deserialize(Deserializer& d) {
     static_assert(std::is_default_constructible_v<Document::Element>);
     root_->deserialize(d);
-}
-
-std::ostream& operator<<(std::ostream& ss, const Document& doc) {
-    using Element = Document::Element;
-    doc.visit(
-        [&](Element* elem, std::vector<Element*>&) {
-            if (elem->isNode()) {
-                ss << '<' << elem->name();
-                for (const auto& item : elem->attributes()) {
-                    ss << ' ' << item.first << "='" << item.second << '\'';
-                }
-                ss << '>';
-            } else if (elem->isText() && !elem->content().empty()) {
-                ss << elem->content();
-            }
-        },
-        [&](Element* elem, std::vector<Element*>&) {
-            if (elem->isNode() && !elem->emptyTag()) {
-                ss << "</" << elem->name() << ">";
-            }
-        });
-
-    return ss;
 }
 
 }  // namespace inviwo

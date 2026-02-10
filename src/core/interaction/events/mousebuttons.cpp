@@ -65,15 +65,4 @@ std::string_view enumToStr(MouseState s) {
                     static_cast<int>(s));
 }
 
-std::ostream& operator<<(std::ostream& ss, MouseButton b) { return ss << enumToStr(b); }
-std::ostream& operator<<(std::ostream& ss, MouseState s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, MouseButtons bs) {
-    std::copy(bs.begin(), bs.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-std::ostream& operator<<(std::ostream& ss, MouseStates s) {
-    std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
-    return ss;
-}
-
 }  // namespace inviwo

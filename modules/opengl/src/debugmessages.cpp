@@ -37,7 +37,6 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/opengl/openglsettings.h>
 
-#include <ostream>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -310,12 +309,6 @@ std::string_view enumToStr(Severity s) {
             return "";
     }
 }
-
-std::ostream& operator<<(std::ostream& ss, Mode m) { return ss << enumToStr(m); }
-std::ostream& operator<<(std::ostream& ss, BreakLevel b) { return ss << enumToStr(b); }
-std::ostream& operator<<(std::ostream& ss, Source s) { return ss << enumToStr(s); }
-std::ostream& operator<<(std::ostream& ss, Type t) { return ss << enumToStr(t); }
-std::ostream& operator<<(std::ostream& ss, Severity s) { return ss << enumToStr(s); }
 
 }  // namespace debug
 

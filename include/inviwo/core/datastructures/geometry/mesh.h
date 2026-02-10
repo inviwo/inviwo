@@ -73,7 +73,6 @@ public:
         int location = static_cast<int>(BufferType::PositionAttrib);
 
         auto operator<=>(const BufferInfo&) const = default;
-        IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, Mesh::BufferInfo info);
     };
 
     using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<IndexBuffer>>>;

@@ -33,7 +33,6 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <string_view>
-#include <iosfwd>
 
 namespace inviwo {
 
@@ -61,7 +60,6 @@ enum class MouseCursor {
 };
 
 IVW_CORE_API std::string_view enumToStr(MouseCursor b);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseCursor c);
 
 }  // namespace inviwo
 

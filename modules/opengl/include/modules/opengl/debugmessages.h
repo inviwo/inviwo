@@ -36,8 +36,6 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/fmtutils.h>
 
-#include <iosfwd>
-
 namespace inviwo {
 
 namespace utilgl {
@@ -162,14 +160,6 @@ IVW_MODULE_OPENGL_API std::string_view enumToStr(BreakLevel t);
 IVW_MODULE_OPENGL_API std::string_view enumToStr(Source s);
 IVW_MODULE_OPENGL_API std::string_view enumToStr(Type t);
 IVW_MODULE_OPENGL_API std::string_view enumToStr(Severity s);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Mode m);
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, BreakLevel b);
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Source s);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Type t);
-
-IVW_MODULE_OPENGL_API std::ostream& operator<<(std::ostream& ss, Severity s);
 
 }  // namespace debug
 

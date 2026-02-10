@@ -49,11 +49,6 @@ enum class MouseState { Press = 1 << 0, Move = 1 << 1, Release = 1 << 2, DoubleC
 ALLOW_FLAGS_FOR_ENUM(MouseState)
 using MouseStates = flags::flags<MouseState>;
 
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseButton b);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseState s);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseButtons bs);
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, MouseStates s);
-
 IVW_CORE_API std::string_view enumToStr(MouseButton b);
 IVW_CORE_API std::string_view enumToStr(MouseState b);
 
