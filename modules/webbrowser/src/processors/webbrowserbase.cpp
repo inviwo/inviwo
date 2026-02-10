@@ -69,6 +69,10 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor& processor, Ima
     browser_ = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient, url_, browserSettings,
                                                  nullptr, nullptr);
 
+    if (!browser_) {
+        throw Exception("Unable to create CefBrowser");
+    }
+
     renderHandler_->onRender(browser_, [this, onNewRender](Texture2D& htmlTex) {
         cefToInviwoImageConverter_.convert(htmlTex, outport_, background_);
         if (onNewRender) {
