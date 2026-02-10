@@ -43,85 +43,68 @@
 
 namespace inviwo {
 
-bool operator==(const LogLevel& lhs, const LogVerbosity& rhs) {
-    return static_cast<LogVerbosity>(lhs) == rhs;
-}
-
-bool operator!=(const LogLevel& lhs, const LogVerbosity& rhs) { return !operator==(lhs, rhs); }
-
-bool operator<(const LogLevel& lhs, const LogVerbosity& rhs) {
-    return static_cast<LogVerbosity>(lhs) < rhs;
-}
-
-bool operator>(const LogLevel& lhs, const LogVerbosity& rhs) { return rhs < lhs; }
-
-bool operator<=(const LogLevel& lhs, const LogVerbosity& rhs) { return !(rhs < lhs); }
-
-bool operator>=(const LogLevel& lhs, const LogVerbosity& rhs) { return !(lhs < rhs); }
-
-bool operator==(const LogVerbosity& lhs, const LogLevel& rhs) {
-    return lhs == static_cast<LogVerbosity>(rhs);
-}
-
-bool operator!=(const LogVerbosity& lhs, const LogLevel& rhs) { return !operator==(lhs, rhs); }
-
-bool operator<(const LogVerbosity& lhs, const LogLevel& rhs) {
-    return lhs < static_cast<LogVerbosity>(rhs);
-}
-
-bool operator>(const LogVerbosity& lhs, const LogLevel& rhs) { return rhs < lhs; }
-
-bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(rhs < lhs); }
-
-bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs) { return !(lhs < rhs); }
-
 LogCentral::LogCentral() : logVerbosity_(LogVerbosity::Info), logStacktrace_(false) {}
 
-void LogCentral::setVerbosity(LogVerbosity verbosity) { logVerbosity_ = verbosity; }
+void LogCentral::setVerbosity(LogVerbosity verbosity) {
+    const std::scoped_lock lock{mutex_};
+    logVerbosity_ = verbosity;
+}
 
-LogVerbosity LogCentral::getVerbosity() { return logVerbosity_; }
+LogVerbosity LogCentral::getVerbosity() {
+    const std::scoped_lock lock{mutex_};
+    return logVerbosity_;
+}
 
 void LogCentral::setLocalVerbosity(LogVerbosity v) { localVerbosity() = v; }
-LogVerbosity LogCentral::getLocalVerbosity() const { return localVerbosity(); }
+LogVerbosity LogCentral::getLocalVerbosity() { return localVerbosity(); }
 
 LogVerbosity& LogCentral::localVerbosity() {
     static thread_local LogVerbosity verbosity = LogVerbosity::Info;
     return verbosity;
 }
 
-void LogCentral::registerLogger(std::weak_ptr<Logger> logger) { loggers_.push_back(logger); }
+void LogCentral::registerLogger(std::weak_ptr<Logger> logger) {
+    const std::scoped_lock lock{mutex_};
+    loggers_.push_back(logger);
+}
 
 void LogCentral::log(std::string_view source, LogLevel level, LogAudience audience,
                      std::string_view file, std::string_view function, int line,
                      std::string_view msg) {
-    if (logStacktrace_ && level == LogLevel::Error && audience == LogAudience::Developer) {
-        std::stringstream ss;
-        ss << msg;
 
-        const auto stacktrace = getStackTrace();
-        // start at i == 3 to remove log and getStacktrace from stack trace
-        for (size_t i = 3; i < stacktrace.size(); ++i) {
-            ss << '\n' << stacktrace[i];
-        }
-        // append an extra line break to easier separate several stack traces in a row
-        ss << '\n';
+    auto breakLevel = MessageBreakLevel::Off;
+    {
+        const std::scoped_lock lock{mutex_};
+        fmt::memory_buffer buff;
+        if (logStacktrace_ && level == LogLevel::Error && audience == LogAudience::Developer) {
+            fmt::format_to(std::back_inserter(buff), "{}", msg);
 
-        msg = ss.str();
-    }
-
-    if (level >= std::max(logVerbosity_, localVerbosity())) {
-        // use remove if here to remove expired weak pointers while calling the loggers.
-        std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-            if (auto l = logger.lock()) {
-                l->log(source, level, audience, file, function, line, msg);
-                return false;
-            } else {
-                return true;
+            const auto stacktrace = getStackTrace();
+            // start at i == 3 to remove log and getStacktrace from stack trace
+            for (size_t i = 3; i < stacktrace.size(); ++i) {
+                fmt::format_to(std::back_inserter(buff), "\n{}", stacktrace[i]);
             }
-        });
+            // append an extra line break to easier separate several stack traces in a row
+            fmt::format_to(std::back_inserter(buff), "\n");
+            msg = std::string_view{buff.data(), buff.size()};
+        }
+
+        if (level >= std::max(logVerbosity_, localVerbosity())) {
+            // use remove if here to remove expired weak pointers while calling the loggers.
+            std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
+                if (auto l = logger.lock()) {
+                    l->log(source, level, audience, file, function, line, msg);
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+        }
+
+        breakLevel = breakLevel_;
     }
 
-    switch (breakLevel_) {
+    switch (breakLevel) {
         case MessageBreakLevel::Off:
             break;
         case MessageBreakLevel::Error:
@@ -138,12 +121,24 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
     }
 }
 
-void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }
+void LogCentral::setLogStacktrace(const bool& logStacktrace) {
+    const std::scoped_lock lock{mutex_};
+    logStacktrace_ = logStacktrace;
+}
 
-bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
+bool LogCentral::getLogStacktrace() const {
+    const std::scoped_lock lock{mutex_};
+    return logStacktrace_;
+}
 
-void LogCentral::setMessageBreakLevel(MessageBreakLevel level) { breakLevel_ = level; }
-MessageBreakLevel LogCentral::getMessageBreakLevel() const { return breakLevel_; }
+void LogCentral::setMessageBreakLevel(MessageBreakLevel level) {
+    const std::scoped_lock lock{mutex_};
+    breakLevel_ = level;
+}
+MessageBreakLevel LogCentral::getMessageBreakLevel() const {
+    const std::scoped_lock lock{mutex_};
+    return breakLevel_;
+}
 
 LogCentral* LogCentral::instance_ = nullptr;
 
