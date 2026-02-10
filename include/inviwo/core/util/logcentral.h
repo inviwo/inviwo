@@ -34,8 +34,6 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/demangle.h>
 
-#include <ostream>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -66,39 +64,6 @@ IVW_CORE_API std::string_view enumToStr(MessageBreakLevel ll);
 inline std::string_view format_as(LogLevel ll) { return enumToStr(ll); }
 inline std::string_view format_as(LogAudience la) { return enumToStr(la); }
 inline std::string_view format_as(MessageBreakLevel ll) { return enumToStr(ll); }
-
-
-#define LogSpecial(logger, logLevel, message)                                                   \
-    {                                                                                           \
-        std::ostringstream stream__;                                                            \
-        stream__ << message;                                                                    \
-        logger->log(                                                                            \
-            inviwo::util::parseTypeIdName(typeid(std::remove_const_t<decltype(*this)>).name()), \
-            logLevel, inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, __LINE__,         \
-            stream__.str());                                                                    \
-    }
-
-#define LogCustomSpecial(logger, logLevel, source, message)                                   \
-    {                                                                                         \
-        std::ostringstream stream__;                                                          \
-        stream__ << message;                                                                  \
-        logger->log(source, logLevel, inviwo::LogAudience::Developer, __FILE__, __FUNCTION__, \
-                    __LINE__, stream__.str());                                                \
-    }
-
-#define LogInfo(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, message) }
-#define LogWarn(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, message) }
-#define LogError(message) \
-    { LogSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, message) }
-
-#define LogInfoCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Info, source, message) }
-#define LogWarnCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Warn, source, message) }
-#define LogErrorCustom(source, message) \
-    { LogCustomSpecial(inviwo::LogCentral::getPtr(), inviwo::LogLevel::Error, source, message) }
 
 class IVW_CORE_API Logger {
 public:
