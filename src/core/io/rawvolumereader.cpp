@@ -111,9 +111,8 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& p
             readerDialog->setDimensions(metadata->getMetaData<Size3MetaData>(
                 "rawReaderData.dimensions", readerDialog->getDimensions()));
 
-            readerDialog->setByteOrder(
-                static_cast<ByteOrder>(metadata->getMetaData<IntMetaData>(
-                    "rawReaderData.byteOrder", static_cast<int>(readerDialog->getByteOrder()))));
+            readerDialog->setByteOrder(static_cast<ByteOrder>(metadata->getMetaData<IntMetaData>(
+                "rawReaderData.byteOrder", static_cast<int>(readerDialog->getByteOrder()))));
             readerDialog->setCompression(
                 static_cast<Compression>(metadata->getMetaData<IntMetaData>(
                     "rawReaderData.compression",
@@ -190,9 +189,9 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& p
         volume->addRepresentation(vd);
 
         volume->dataMap = dataMapper_;
-        const auto size = util::formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
-                                                    format_->getSizeInBytes());
-        log::info("Loaded volume: {:?g}  size: {}", filePath, size);
+        const auto bytes =
+            dimensions_.x * dimensions_.y * dimensions_.z * format_->getSizeInBytes();
+        log::info("Loaded volume: {:?g}  size: {}", filePath, ByteSize{bytes});
         return volume;
     } else {
         throw DataReaderException("Raw data import could not determine format");

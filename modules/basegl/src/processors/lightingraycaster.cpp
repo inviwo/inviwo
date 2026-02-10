@@ -63,6 +63,7 @@
 #include <string_view>  // for string_view
 #include <type_traits>  // for remove_extent_t
 #include <vector>       // for vector
+#include <fmt/core.h>   // for format
 
 namespace inviwo {
 
@@ -116,8 +117,9 @@ LightingRaycaster::LightingRaycaster()
 
             std::vector<OptionPropertyIntOption> channelOptions;
             for (size_t i = 0; i < channels; i++) {
-                channelOptions.emplace_back("Channel " + toString(i + 1),
-                                            "Channel " + toString(i + 1), static_cast<int>(i));
+                channelOptions.emplace_back(fmt::format("Channel {}", i + 1),
+                                            fmt::format("Channel {}", i + 1),
+                                            static_cast<int>(i));
             }
             channel_.replaceOptions(channelOptions);
             channel_.setCurrentStateAsDefault();

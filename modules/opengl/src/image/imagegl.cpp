@@ -210,8 +210,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         shader_->setUniform("picking_", pickingUnit.getUnitNumber());
     }
     for (size_t i = 0; i < additionalColorUnits.size(); ++i) {
-        shader_->setUniform("color" + toString<size_t>(i + 1),
-                            additionalColorUnits[i].getUnitNumber());
+        shader_->setUniform(fmt::format("color{}", i + 1), additionalColorUnits[i].getUnitNumber());
     }
     shader_->setUniform("dataToClip", scale);
     utilgl::singleDrawImagePlaneRect();

@@ -58,7 +58,7 @@ public:
 
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.ViewEvent"); }
 
-    virtual void print(std::ostream& ss) const override;
+    virtual void print(fmt::memory_buffer& buff) const override;
 
     Action getAction() const;
 

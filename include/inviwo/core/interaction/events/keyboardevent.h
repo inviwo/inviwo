@@ -50,7 +50,7 @@ public:
      */
     KeyboardEvent(IvwKey key = IvwKey::Unknown, KeyState state = KeyState::Press,
                   KeyModifiers modifiers = KeyModifiers(flags::empty),
-                  uint32_t nativeVirtualKey = 0, const std::string& utfText = "");
+                  uint32_t nativeVirtualKey = 0, std::string_view utfText = "");
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;
@@ -78,13 +78,13 @@ public:
     /*
      * Returns Unicode representation of pressed keys
      */
-    std::string text() const { return text_; };
+    std::string_view text() const { return text_; };
     void setText(const std::string& text) { text_ = text; }
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.KeyboardEvent"); }
 
-    virtual void print(std::ostream& ss) const override;
+    virtual void print(fmt::memory_buffer& buff) const override;
 
 private:
     std::string text_;  ///< Unicode representation of pressed keys

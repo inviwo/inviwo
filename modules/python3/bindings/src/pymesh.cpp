@@ -75,9 +75,7 @@ void exposeMesh(pybind11::module& m) {
         .def(py::init<BufferType, int>())
         .def("__repr__",
              [](Mesh::BufferInfo& bi) {
-                 std::ostringstream oss;
-                 oss << "BufferInfo (" << bi.type << ", " << bi.location << ")";
-                 return oss.str();
+                 return fmt::format("BufferInfo ({}, {})", bi.type, bi.location);
              })
         .def_readwrite("type", &Mesh::BufferInfo::type)
         .def_readwrite("location", &Mesh::BufferInfo::location);
@@ -135,35 +133,33 @@ void exposeMesh(pybind11::module& m) {
         .def_property_readonly(
             "indexBuffers", [&](Mesh* mesh) { return getBuffers(mesh->getIndexBuffers(), mesh); })
         .def("__repr__", [](const Mesh& self) {
-            std::ostringstream ossBuffers;
-            ossBuffers << "\n  <Buffers (" << self.getNumberOfBuffers() << ")";
+            auto meshinfo = self.getDefaultMeshInfo();
+            auto str = fmt::format("<Mesh:\n  default mesh info = MeshInfo({}, {})", meshinfo.dt,
+                                   meshinfo.ct);
+            fmt::format_to(std::back_inserter(str), "\n  <Buffers ({})", self.getNumberOfBuffers());
+
             for (const auto& elem : self.getBuffers()) {
-                ossBuffers << "\n    " << elem.first << ", " << elem.second->getBufferUsage()
-                           << " (" << elem.second->getSize() << ")";
+                fmt::format_to(std::back_inserter(str), "\n    {}, {} ({})", elem.first,
+                               elem.second->getBufferUsage(), elem.second->getSize());
             }
-            ossBuffers << ">";
+            fmt::format_to(std::back_inserter(str), ">");
 
             if (self.getNumberOfIndices() > 0) {
-                const size_t maxLines = 10;
-                const size_t numIndexBuffers = self.getNumberOfIndices();
-
-                ossBuffers << "\n  <Indexbuffers (" << self.getNumberOfIndices() << ")";
-                size_t line = 0;
-                for (const auto& elem : self.getIndexBuffers()) {
-                    ossBuffers << "\n    " << elem.first.dt << ", " << elem.first.ct << " ("
-                               << elem.second->getSize() << ")";
-                    ++line;
-                    if (line >= maxLines) break;
+                constexpr size_t maxLines = 10;
+                fmt::format_to(std::back_inserter(str), "\n  <Indexbuffers ({})",
+                               self.getNumberOfIndices());
+                for (const auto& elem : self.getIndexBuffers() | std::views::take(maxLines)) {
+                    fmt::format_to(std::back_inserter(str), "\n    {}, {} ({})", elem.first.dt,
+                                   elem.first.ct, elem.second->getSize());
                 }
-                if (line < numIndexBuffers) {
-                    ossBuffers << "\n    ... (" << (numIndexBuffers - line)
-                               << " additional buffers)";
+                if (self.getNumberOfIndices() > maxLines) {
+                    fmt::format_to(std::back_inserter(str), "\n    ... ({}) additional buffers)",
+                                   self.getNumberOfIndices() - maxLines);
                 }
-                ossBuffers << ">";
+                fmt::format_to(std::back_inserter(str), ">");
             }
-            auto meshinfo = self.getDefaultMeshInfo();
-            return fmt::format("<Mesh:\n  default mesh info = MeshInfo({}, {}){}>",
-                               toString(meshinfo.dt), toString(meshinfo.ct), ossBuffers.str());
+            fmt::format_to(std::back_inserter(str), ">");
+            return str;
         });
 
     auto buffertraits = m.def_submodule("buffertraits", "Module containing mesh buffertraits");

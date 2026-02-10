@@ -179,7 +179,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             &TFPropertyDialog::changeVerticalZoom);
 
     zoomVSlider_->setTooltipFormat([range = verticalSliderRange_](int /*handle*/, int val) {
-        return toString(1.0f - static_cast<float>(val) / range);
+        return fmt::to_string(1.0f - static_cast<float>(val) / range);
     });
 
     zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
@@ -473,7 +473,7 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
     primitivePos_->setValueMapping(allRelative, valueRange, incr * (valueRange.y - valueRange.x));
 
     zoomHSlider_->setTooltipFormat([sliderRange = sliderRange_, valueRange](int, int val) {
-        return toString(
+        return fmt::to_string(
             glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
     });
 }

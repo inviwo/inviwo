@@ -152,8 +152,8 @@ public:
             } else if (index.column() == 1) {
                 return static_cast<int>(manager_->size(static_cast<size_t>(index.row())));
             } else if (index.column() == 3) {
-                return utilqt::toQString(util::formatBytesToString(
-                    manager_->totalByteSize(static_cast<size_t>(index.row()))));
+                return utilqt::toQString(fmt::to_string(
+                    ByteSize{manager_->totalByteSize(static_cast<size_t>(index.row()))}));
             }
         }
         return {};

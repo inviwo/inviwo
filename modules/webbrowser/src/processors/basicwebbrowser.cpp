@@ -220,7 +220,7 @@ BasicWebBrowser::BasicWebBrowser(InviwoApplication* app)
     , name_{"name", "Property Name", "extraProperty"}
     , add_("add", "Add extra property",
            [this, app]() {
-               LogInfo(propertyTypes_.getSelectedValue());
+               log::info("{}", propertyTypes_.getSelectedValue());
                auto prop = util::getPropertyFactory(app)->create(propertyTypes_.getSelectedValue());
                prop->setIdentifier(name_.get());
                prop->setDisplayName(name_.get());

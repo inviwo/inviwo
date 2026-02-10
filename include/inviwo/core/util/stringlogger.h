@@ -30,10 +30,8 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
 #include <inviwo/core/util/logcentral.h>
 
-#include <sstream>
 #include <string>
 
 namespace inviwo {
@@ -49,10 +47,10 @@ public:
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
                      std::string_view fileName, std::string_view functionName, int lineNumber,
                      std::string_view logMsg) override;
-    std::string getLog() const;
+    const std::string& getLog() const;
 
 private:
-    std::stringstream logstream_;
+    std::string log_;
 };
 
 }  // namespace inviwo

@@ -39,7 +39,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>  // for SystemSettings
 #include <inviwo/core/util/staticstring.h>             // for operator+
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/util/timer.h>               // for Timer, Timer::...
+#include <inviwo/core/util/timer.h>  // for Timer, Timer::...
 #include <inviwo/core/util/threadutil.h>
 #include <modules/opengl/shader/shadermanager.h>  // for ShaderManager
 #include <modules/webbrowser/processors/basicwebbrowser.h>
@@ -80,7 +80,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     registerSettings(std::move(moduleSettings));
 
     if (!app->getSystemSettings().enablePickingProperty_) {
-        LogInfo(
+        log::info(
             "Enabling picking system setting since it is required for interaction "
             "(View->Settings->System settings->Enable picking).");
         app->getSystemSettings().enablePickingProperty_.set(true);

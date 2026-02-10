@@ -56,7 +56,7 @@ MeshShaderCache::Requirement::Requirement(BufferType bufferType, RequireBuffer r
             return -1;
         }
     }}
-    , updateShader{[glslType, name = name.empty() ? toString(bufferType) : name](
+    , updateShader{[glslType, name = name.empty() ? fmt::to_string(bufferType) : name](
                        int location, Shader& shader) -> void {
         if (location >= 0) {
             const auto& buffername = name;

@@ -117,14 +117,15 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
     }
 
     // convert TF primitives to "position alpha #RRGGBB"
-    std::ostringstream ss;
+    std::string str;
     std::ranges::for_each(propertyPtr_->get(), [&](const TFPrimitive& p) {
         const auto pos = performMapping ? util::linearMapFromNormalized(p.getPosition(), range)
                                         : p.getPosition();
-        ss << pos << " " << p.getAlpha() << " " << color::rgb2hex(p.getColor()) << "\n";
+        fmt::format_to(std::back_inserter(str), "{} {} {}\n", pos, p.getAlpha(),
+                       color::rgb2hex(p.getColor()));
     });
 
-    const QString newContents(utilqt::toQString(ss.str()));
+    const QString newContents(utilqt::toQString(str));
     if (textEdit_->toPlainText() != newContents) {
         textEdit_->setPlainText(newContents);
         textEdit_->moveCursor(QTextCursor::Start);

@@ -152,7 +152,7 @@ void SplitImage::process() {
                 for (size_t i = 1; i < imageGL->getNumberOfColorLayers(); ++i) {
                     TextureUnit unit;
                     imageGL->getColorLayerGL(i)->bindTexture(unit.getEnum());
-                    shader->setUniform("color" + toString<size_t>(i), unit.getUnitNumber());
+                    shader->setUniform(fmt::format("color{}", i), unit.getUnitNumber());
                     additionalColorUnits.push_back(std::move(unit));
                 }
             } else {

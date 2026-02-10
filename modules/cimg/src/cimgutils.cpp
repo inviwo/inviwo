@@ -470,13 +470,11 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target,
 
 std::string getLibJPGVersion() {
 #ifdef cimg_use_jpeg
-    std::ostringstream oss;
 #if defined(JPEG_LIB_VERSION_MAJOR) && defined(JPEG_LIB_VERSION_MINOR)
-    oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
+    return fmt::format("{}.{}", JPEG_LIB_VERSION_MAJOR, JPEG_LIB_VERSION_MINOR);
 #else
-    oss << JPEG_LIB_VERSION;
+    return fmt::format("{}", JPEG_LIB_VERSION);
 #endif
-    return oss.str();
 #else
     return "LibJPG not available";
 #endif
@@ -484,9 +482,8 @@ std::string getLibJPGVersion() {
 
 std::string getOpenEXRVersion() {
 #ifdef cimg_use_openexr
-    std::ostringstream oss;
-    oss << OPENEXR_VERSION_MAJOR << "." << OPENEXR_VERSION_MINOR << "." << OPENEXR_VERSION_PATCH;
-    return oss.str();
+    return fmt::format("{}.{}.{}", OPENEXR_VERSION_MAJOR, OPENEXR_VERSION_MINOR,
+                       OPENEXR_VERSION_PATCH);
 #else
     return "OpenEXR not available";
 #endif

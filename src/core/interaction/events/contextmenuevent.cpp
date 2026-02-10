@@ -49,4 +49,9 @@ void ContextMenuEvent::setData(std::any data) { data_ = std::move(data); }
 KeyModifiers ContextMenuEvent::modifiers() const { return modifiers_; }
 void ContextMenuEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
+void ContextMenuEvent::print(fmt::memory_buffer& buff) const {
+    fmt::format_to(std::back_inserter(buff), "ContextMenuEvent id: {}, modifiers: {})", id_,
+                   modifiers_);
+}
+
 }  // namespace inviwo

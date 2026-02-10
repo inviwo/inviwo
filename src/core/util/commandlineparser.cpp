@@ -87,7 +87,7 @@ CommandLineParser::~CommandLineParser() = default;
 void CommandLineParser::parseInternal(std::vector<std::string> args, Mode mode) {
     if (args.empty()) return;
 
-    TCLAP::CmdLine cmd{std::string{info}, ' ', toString(build::version), false};
+    TCLAP::CmdLine cmd{std::string{info}, ' ', fmt::to_string(build::version), false};
 
     cmd.ignoreUnmatched(mode == Mode::Quiet);
 

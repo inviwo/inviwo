@@ -97,8 +97,8 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
         auto id = base;
         auto displayname = base;
         while (getPropertyByIdentifier(id) != nullptr) {
-            id = base + toString(count);
-            displayname = base + " " + toString(count);
+            id = fmt::format("{}{}", base, count);
+            displayname = fmt::format("{} {}", base, count);
             ++count;
         }
         p->setIdentifier(id);

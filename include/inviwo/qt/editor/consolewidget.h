@@ -62,6 +62,7 @@ namespace inviwo {
 class MenuItem;
 class InviwoMainWindow;
 class InviwoEditMenu;
+class LevelFilter;
 
 class LogTableModelEntry {
 public:
@@ -124,6 +125,8 @@ class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
 public:
     LogTableModel();
 
+    enum class Role { Level = Qt::UserRole + 100 };
+
     QString getName(LogTableModelEntry::ColumnID ind) const;
 
     void clear();
@@ -157,6 +160,15 @@ public:
     QAction* getClearAction();
     QTableView* view() { return tableView_; }
 
+    struct Level {
+        LogLevel level;
+        std::string name;
+        std::string icon;
+        int count;
+        QAction* action;
+        QLabel* label;
+    };
+
 public slots:
     void updateIndicators(LogLevel level);
     void clear();
@@ -188,17 +200,8 @@ private:
     QTableView* tableView_;
     LogTableModel model_;
     QSortFilterProxyModel* filter_;
-    QSortFilterProxyModel* levelFilter_;
+    LevelFilter* levelFilter_;
     TextSelectionDelegate* textSelectionDelegate_;
-
-    struct Level {
-        LogLevel level;
-        std::string name;
-        std::string icon;
-        int count;
-        QAction* action;
-        QLabel* label;
-    };
 
     std::array<Level, 3> levels = {{{LogLevel::Error, "Errors", "error", 0, nullptr, nullptr},
                                     {LogLevel::Warn, "Warnings", "warning", 0, nullptr, nullptr},
@@ -217,3 +220,4 @@ private:
 }  // namespace inviwo
 
 Q_DECLARE_METATYPE(inviwo::LogTableModelEntry)
+Q_DECLARE_METATYPE(inviwo::LogLevel);

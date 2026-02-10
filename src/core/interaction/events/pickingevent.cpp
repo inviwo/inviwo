@@ -294,9 +294,9 @@ void PickingEvent::showContextMenu(std::span<ContextMenuEntry> entries,
 
 const PickingAction* PickingEvent::getPickingAction() const { return pickingAction_; }
 
-void PickingEvent::print(std::ostream& ss) const {
+void PickingEvent::print(fmt::memory_buffer& buff) const {
     util::printEvent(
-        ss, "PickingEvent", std::make_pair("state", state_),
+        buff, "PickingEvent", std::make_pair("state", state_),
         std::make_pair("pressState", pressState_), std::make_pair("pressItem", pressItem_),
         std::make_pair("hoverState", hoverState_), std::make_pair("pressedState", pressedState_),
         std::make_tuple("GlobalID"), std::make_tuple("pick", pickedGlobalId_, 4),

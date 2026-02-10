@@ -95,8 +95,8 @@ BufferInformationProperty* BufferInformationProperty::clone() const {
 void BufferInformationProperty::updateFromBuffer(const BufferBase& buffer) {
     format_.set(buffer.getDataFormat()->getString());
     size_.set(buffer.getSize());
-    usage_.set(toString(buffer.getBufferUsage()));
-    target_.set(toString(buffer.getBufferTarget()));
+    usage_.set(fmt::to_string(buffer.getBufferUsage()));
+    target_.set(fmt::to_string(buffer.getBufferTarget()));
 }
 
 MeshBufferInformationProperty::MeshBufferInformationProperty(std::string_view identifier,
@@ -134,7 +134,7 @@ MeshBufferInformationProperty* MeshBufferInformationProperty::clone() const {
 void MeshBufferInformationProperty::updateFromBuffer(Mesh::BufferInfo info,
                                                      const BufferBase& buffer) {
     BufferInformationProperty::updateFromBuffer(buffer);
-    type_.set(toString(info.type));
+    type_.set(fmt::to_string(info.type));
     location_.set(info.location);
 }
 
@@ -173,7 +173,7 @@ IndexBufferInformationProperty* IndexBufferInformationProperty::clone() const {
 void IndexBufferInformationProperty::updateFromBuffer(Mesh::MeshInfo info,
                                                       const BufferBase& buffer) {
     BufferInformationProperty::updateFromBuffer(buffer);
-    drawType_.set(toString(info.dt));
+    drawType_.set(fmt::to_string(info.dt));
     connectivity_.set(toString(info.ct));
 }
 

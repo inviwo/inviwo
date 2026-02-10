@@ -62,6 +62,9 @@
 #include <glm/vec3.hpp>              // for operator+, operator/
 #include <glm/vec4.hpp>              // for operator*, operator+
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 namespace inviwo {
 
 StlWriter::StlWriter() : DataWriterType<Mesh>() {
@@ -117,7 +120,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
                 return [&proj, pb](std::ostream& fs, size_t i) {
                     auto& pos = *pb;
                     const auto v = proj(pos[i]);
-                    fs << v.x << " " << v.y << " " << v.z << "\n";
+                    fmt::print(fs, "{} {} {}\n", v.x, v.y, v.z);
                 };
             });
 
@@ -140,14 +143,16 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
                                     const auto n2 = modelNormal * norm[i2];
                                     const auto n3 = modelNormal * norm[i3];
                                     const auto n = glm::normalize(n1 + n2 + n3);
-                                    fs << n.x << " " << n.y << " " << n.z << "\n";
+                                    fmt::print(fs, "{} {} {}\n", n.x, n.y, n.z);
                                 };
                             });
                 }
             }
         }
         return std::function<void(std::ostream&, size_t, size_t, size_t)>(
-            [](std::ostream& fs, size_t, size_t, size_t) -> void { fs << "0.0 0.0 0.0\n"; });
+            [](std::ostream& fs, size_t, size_t, size_t) -> void {
+                fmt::print(fs, "0.0 0.0 0.0\n");
+            });
     }();
 
     const auto triangle = [&](const auto& i1, const auto& i2, const auto& i3) {
