@@ -45,14 +45,24 @@ const HelpProcessor* ProcessorDocs::get(std::string_view classId) const {
 ProcessorDocs generateDocs(ProcessorFactory& pf) {
     UnorderedStringMap<HelpProcessor> docs;
 
-    log::SuppressLoggingLocal suppress{};
-    for (auto& classId : pf.getKeyView()) {
+    const log::SuppressLoggingLocal suppress{};
+    std::string errorMessage;
+    for (const auto& classId : pf.getKeyView()) {
         try {
             if (auto processor = pf.createShared(classId)) {
                 docs.try_emplace(classId, buildProcessorHelp(*processor));
             }
         } catch (...) {
+            fmt::format_to(std::back_inserter(errorMessage), "{}, ", classId);
+            // we don't care about any failures here, just skip the processor and move on to the
+            // next one.
         }
+    }
+    if (!errorMessage.empty()) {
+        errorMessage.pop_back();  // remove last space
+        errorMessage.pop_back();  // remove last comma
+        log::warn("Failed to generate documentation for the following processors: {}",
+                  errorMessage);
     }
 
     return {docs};
