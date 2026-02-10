@@ -107,7 +107,7 @@ struct PortTraits<DataInport<T, N, Flat>> {
             if constexpr (N == 0) {
                 return StaticString{".multi"};
             } else if constexpr (N != 1) {
-                return util::toStaticString<N>(FMT_COMPILE("{.}"));
+                return util::toStaticString<N>(IVW_COMPILE_STRING("{.}"));
             } else {
                 return StaticString{};
             }
