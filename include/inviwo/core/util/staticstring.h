@@ -40,6 +40,7 @@
 
 // Workaround for FMT_COMPILE not being on when using clang-tidy
 // See https://github.com/fmtlib/fmt/blob/f99d53024782bf928b07839140862163f15ade5b/include/fmt/format.h#L4288-L4307
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define IVW_COMPILE_STRING(s)                                                  \
     [] {                                                                       \
         struct IVW_COMPILE_STRING : fmt::compiled_string {                     \
