@@ -155,7 +155,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
 
 }  // namespace detail
 
-CacheBase::CacheBase(InviwoApplication* app)
+CacheBase::CacheBase()
     : Processor()
     , enabled_{"enabled", "Enabled", "Toggles the usage of the file cache"_help, true}
     , cacheDir_{"cacheDir", "Cache Dir",
@@ -178,14 +178,22 @@ CacheBase::CacheBase(InviwoApplication* app)
 
     currentKey_.setReadOnly(true);
     currentKey_.setSerializationMode(PropertySerializationMode::None);
+}
 
-    app->getProcessorNetworkEvaluator()->addObserver(this);
+void CacheBase::setNetwork(ProcessorNetwork* network) {
+    ProcessorNetworkEvaluationObserver::removeObservations();
+    if (network) {
+        network->getEvaluator()->addObserver(this);
+    }
 }
 
 void CacheBase::onProcessorNetworkEvaluationBegin() {
     if (isValid()) return;
 
-    key_ = detail::cacheState(this, *getNetwork(), refDir_.get(), xml_);
+    auto* net = getNetwork();
+    if (!net) return;
+
+    key_ = detail::cacheState(this, *net, refDir_.get(), xml_);
     currentKey_.set(key_);
 
     const auto isCached = hasCache(key_) && enabled_;

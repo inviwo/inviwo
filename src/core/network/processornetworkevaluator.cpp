@@ -46,6 +46,13 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
     , exceptionHandler_(StandardEvaluationErrorHandler()) {
 
     processorNetwork_->addObserver(this);
+    processorNetwork_->setEvaluator(this);
+}
+
+ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {
+    if (processorNetwork_) {
+        processorNetwork_->setEvaluator(nullptr);
+    }
 }
 
 void ProcessorNetworkEvaluator::setExceptionHandler(EvaluationErrorHandler handler) {
