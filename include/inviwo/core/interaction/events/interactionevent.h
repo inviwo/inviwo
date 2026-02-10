@@ -51,7 +51,6 @@ public:
 
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
-    std::string modifierNames() const;
 
     /**
      * Display a tool tip using the optionally set tool tip callback.
