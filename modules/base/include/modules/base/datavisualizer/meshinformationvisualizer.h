@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-class FileExtension;
+struct FileExtension;
 class InviwoApplication;
 class Outport;
 class Processor;

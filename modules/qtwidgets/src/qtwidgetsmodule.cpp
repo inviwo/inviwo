@@ -120,7 +120,7 @@ struct InitQtResources {
 
 namespace inviwo {
 
-class FileExtension;
+struct FileExtension;
 class InviwoApplication;
 
 namespace {

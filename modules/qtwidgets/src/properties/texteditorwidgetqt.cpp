@@ -63,7 +63,7 @@ class QCloseEvent;
 
 namespace inviwo {
 
-class FileExtension;
+struct FileExtension;
 
 TextEditorDockWidget::TextEditorDockWidget(Property* property)
     : PropertyEditorWidgetQt(property, "Edit", "TextEditorDockWidget")
