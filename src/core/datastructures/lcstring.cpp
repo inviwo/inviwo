@@ -29,13 +29,4 @@
 
 #include <inviwo/core/datastructures/lcstring.h>
 
-#include <algorithm>
-
-namespace inviwo {
-
-void LCString::makeLowerCase() {
-    std::ranges::transform(data_, data_.begin(),
-                           [](char c) { return static_cast<char>(std::tolower(c)); });
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

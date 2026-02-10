@@ -33,6 +33,9 @@
 
 #include <string>
 #include <string_view>
+#include <algorithm>
+
+#include <fmt/ranges.h>
 
 namespace inviwo {
 
@@ -51,74 +54,83 @@ public:
     using const_iterator = std::string::const_iterator;
     using const_reverse_iterator = std::string::const_reverse_iterator;
 
-    LCString() = default;
+    constexpr LCString() noexcept = default;
     // NOLINTNEXTLINE(google-explicit-constructor)
-    LCString(const char* s) : data_{s} { makeLowerCase(); }
-    explicit LCString(std::string_view s) : data_{s} { makeLowerCase(); }
-    explicit LCString(const std::string& s) : data_{s} { makeLowerCase(); }
-    explicit LCString(std::string&& s) : data_{std::move(s)} { makeLowerCase(); }
+    constexpr LCString(const char* s) : data_{s} { makeLowerCase(); }
+    constexpr explicit LCString(std::string_view s) : data_{s} { makeLowerCase(); }
+    constexpr explicit LCString(const std::string& s) : data_{s} { makeLowerCase(); }
+    constexpr explicit LCString(std::string&& s) : data_{std::move(s)} { makeLowerCase(); }
 
-    LCString& operator=(std::string_view s) {
+    constexpr LCString& operator=(std::string_view s) {
         data_.assign(s.begin(), s.end());
         makeLowerCase();
         return *this;
     }
-    LCString& operator=(const std::string& s) {
+    constexpr LCString& operator=(const std::string& s) {
         data_ = s;
         makeLowerCase();
         return *this;
     }
-    LCString& operator=(std::string&& s) {
+    constexpr LCString& operator=(std::string&& s) {
         data_ = std::move(s);
         makeLowerCase();
         return *this;
     }
 
     // Owning copy
-    std::string str() const { return data_; }
+    constexpr std::string str() const { return data_; }
     // Non-owning view
-    std::string_view view() const noexcept { return std::string_view(data_); }
+    constexpr std::string_view view() const noexcept { return std::string_view(data_); }
 
     // Implicit conversion to string_view
     // NOLINTNEXTLINE(google-explicit-constructor)
-    operator std::string_view() const noexcept { return view(); }
+    constexpr operator std::string_view() const noexcept { return view(); }
     // For compatibility with APIs expecting const std::string&
     // NOLINTNEXTLINE(google-explicit-constructor)
-    operator const std::string&() const noexcept { return data_; }
+    constexpr operator const std::string&() const noexcept { return data_; }
 
-    bool empty() const noexcept { return data_.empty(); }
-    const char* c_str() const noexcept { return data_.c_str(); }
-    size_t size() const noexcept { return data_.size(); }
+    constexpr bool empty() const noexcept { return data_.empty(); }
+    constexpr const char* c_str() const noexcept { return data_.c_str(); }
+    constexpr size_t size() const noexcept { return data_.size(); }
 
     // const iterators
-    const_iterator begin() const noexcept { return data_.begin(); }
-    const_iterator end() const noexcept { return data_.end(); }
-    const_iterator cbegin() const noexcept { return data_.cbegin(); }
-    const_iterator cend() const noexcept { return data_.cend(); }
-    const_reverse_iterator rbegin() const noexcept { return data_.rbegin(); }
-    const_reverse_iterator rend() const noexcept { return data_.rend(); }
+    constexpr const_iterator begin() const noexcept { return data_.begin(); }
+    constexpr const_iterator end() const noexcept { return data_.end(); }
+    constexpr const_iterator cbegin() const noexcept { return data_.cbegin(); }
+    constexpr const_iterator cend() const noexcept { return data_.cend(); }
+    constexpr const_reverse_iterator rbegin() const noexcept { return data_.rbegin(); }
+    constexpr const_reverse_iterator rend() const noexcept { return data_.rend(); }
 
-    const char* data() const noexcept { return data_.data(); }
+    constexpr const char* data() const noexcept { return data_.data(); }
 
     // element access
-    char operator[](size_type i) const { return data_[i]; }
-    char at(size_type i) const { return data_.at(i); }
+    constexpr char operator[](size_type i) const { return data_[i]; }
+    constexpr char at(size_type i) const { return data_.at(i); }
 
-    int compare(std::string_view s) const noexcept { return view().compare(s); }
+    constexpr int compare(std::string_view s) const noexcept { return view().compare(s); }
 
     // Defaulted three-way comparison and equality (member-wise on data_)
-    auto operator<=>(const LCString& other) const noexcept = default;
-    bool operator==(const LCString& other) const noexcept = default;
+    constexpr auto operator<=>(const LCString& other) const noexcept = default;
+    constexpr bool operator==(const LCString& other) const noexcept = default;
 
-    auto operator<=>(std::string_view b) const noexcept { return view() <=> b; }
-    bool operator==(std::string_view b) const noexcept { return view() == b; }
-    auto operator<=>(const char* b) const noexcept { return view() <=> std::string_view{b}; }
-    bool operator==(const char* b) const noexcept { return view() == std::string_view{b}; }
+    constexpr auto operator<=>(std::string_view b) const noexcept { return view() <=> b; }
+    constexpr bool operator==(std::string_view b) const noexcept { return view() == b; }
+    constexpr auto operator<=>(const char* b) const noexcept {
+        return view() <=> std::string_view{b};
+    }
+    constexpr bool operator==(const char* b) const noexcept {
+        return view() == std::string_view{b};
+    }
 
 private:
-    void makeLowerCase();
+    constexpr void makeLowerCase() noexcept {
+        std::ranges::transform(data_, data_.begin(),
+                               [](char c) { return static_cast<char>(std::tolower(c)); });
+    }
     std::string data_;
 };
+
+constexpr std::string_view format_as(const LCString& s) { return s.view(); }
 
 // Enable use of LCString in the serializers.
 namespace detail {
@@ -130,3 +142,8 @@ struct is_string<LCString, void> : std::true_type {};
 }  // namespace util::detail
 
 }  // namespace inviwo
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <typename Char>
+struct fmt::is_range<::inviwo::LCString, Char> : std::false_type {};
+#endif
