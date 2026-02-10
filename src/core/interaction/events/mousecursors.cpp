@@ -28,9 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/mousecursors.h>
-
 #include <inviwo/core/util/exception.h>
-#include <ostream>
 
 namespace inviwo {
 
@@ -78,7 +76,5 @@ std::string_view enumToStr(MouseCursor b) {
     throw Exception(SourceContext{}, "Found invalid MouseCursor enum value '{}'",
                     static_cast<int>(b));
 }
-
-std::ostream& operator<<(std::ostream& ss, MouseCursor c) { return ss << enumToStr(c); }
 
 }  // namespace inviwo

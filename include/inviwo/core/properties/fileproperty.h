@@ -225,10 +225,6 @@ public:
     virtual FileProperty& resetToDefaultState() override;
     virtual bool isDefaultState() const override;
 
-    friend std::ostream& operator<<(std::ostream& os, const FileProperty& prop) {
-        return os << prop.file_.value;
-    }
-
 private:
     ValueWrapper<std::filesystem::path> file_;
 };

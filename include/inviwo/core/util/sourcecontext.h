@@ -33,7 +33,6 @@
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string_view>
-#include <iosfwd>
 #include <source_location>
 #include <iterator>
 #include <fmt/format.h>
@@ -115,8 +114,6 @@ private:
     std::uint32_t line_;
     std::uint32_t column_;
 };
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, const SourceContext& ec);
 
 #define IVW_CONTEXT ::inviwo::SourceContext()
 #define IVW_CONTEXT_CUSTOM(source)                   \
