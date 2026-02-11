@@ -39,6 +39,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <mutex>
 
 #include <fmt/base.h>
 
@@ -51,19 +52,12 @@ enum class LogVerbosity : int { Info, Warn, Error, None };
 enum class LogAudience : int { User, Developer };
 enum class MessageBreakLevel : int { Off, Error, Warn, Info };
 
-IVW_CORE_API bool operator==(const LogLevel& lhs, const LogVerbosity& rhs);
-IVW_CORE_API bool operator!=(const LogLevel& lhs, const LogVerbosity& rhs);
-IVW_CORE_API bool operator<(const LogLevel& lhs, const LogVerbosity& rhs);
-IVW_CORE_API bool operator>(const LogLevel& lhs, const LogVerbosity& rhs);
-IVW_CORE_API bool operator<=(const LogLevel& lhs, const LogVerbosity& rhs);
-IVW_CORE_API bool operator>=(const LogLevel& lhs, const LogVerbosity& rhs);
-
-IVW_CORE_API bool operator==(const LogVerbosity& lhs, const LogLevel& rhs);
-IVW_CORE_API bool operator!=(const LogVerbosity& lhs, const LogLevel& rhs);
-IVW_CORE_API bool operator<(const LogVerbosity& lhs, const LogLevel& rhs);
-IVW_CORE_API bool operator>(const LogVerbosity& lhs, const LogLevel& rhs);
-IVW_CORE_API bool operator<=(const LogVerbosity& lhs, const LogLevel& rhs);
-IVW_CORE_API bool operator>=(const LogVerbosity& lhs, const LogLevel& rhs);
+constexpr bool operator==(const LogLevel& lhs, const LogVerbosity& rhs) {
+    return static_cast<LogVerbosity>(lhs) == rhs;
+}
+constexpr auto operator<=>(const LogLevel& lhs, const LogVerbosity& rhs) {
+    return static_cast<LogVerbosity>(lhs) <=> rhs;
+}
 
 IVW_CORE_API std::string_view enumToStr(LogLevel ll);
 IVW_CORE_API std::string_view enumToStr(LogAudience la);
@@ -127,8 +121,8 @@ public:
     void setVerbosity(LogVerbosity verbosity);
     LogVerbosity getVerbosity();
 
-    void setLocalVerbosity(LogVerbosity v);
-    LogVerbosity getLocalVerbosity() const;
+    static void setLocalVerbosity(LogVerbosity v);
+    static LogVerbosity getLocalVerbosity();
 
     /**
      * @brief Register logger for use. LogCentral does not take ownership
@@ -153,6 +147,7 @@ private:
     friend Singleton<LogCentral>;
     static LogCentral* instance_;
 
+    mutable std::mutex mutex_;
     LogVerbosity logVerbosity_;
 #include <warn/push>
 #include <warn/ignore/dll-interface>
