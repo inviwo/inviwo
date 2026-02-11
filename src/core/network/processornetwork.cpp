@@ -55,6 +55,7 @@ ProcessorNetwork::ProcessorNetwork(InviwoApplication* application)
     , ProcessorObserver()
     , PropertyOwnerObserver()
     , application_(application)
+    , evaluator_{nullptr}
     , linkEvaluator_(this) {}
 
 ProcessorNetwork::~ProcessorNetwork() {
@@ -665,6 +666,11 @@ bool ProcessorNetwork::isPropertyInNetwork(Property* prop) const {
 }
 
 InviwoApplication* ProcessorNetwork::getApplication() const { return application_; }
+
+ProcessorNetworkEvaluator* ProcessorNetwork::getEvaluator() const { return evaluator_; }
+void ProcessorNetwork::setEvaluator(ProcessorNetworkEvaluator* evaluator) {
+    evaluator_ = evaluator;
+}
 
 void ProcessorNetwork::assignIdentifierAndName(Processor& processor, std::string_view name) {
     if (processor.getIdentifier().empty()) {

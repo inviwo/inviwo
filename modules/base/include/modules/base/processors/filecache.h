@@ -82,7 +82,7 @@ void updateFilenameFilters(const DataReaderFactory& rf, const DataWriterFactory&
 
 class IVW_MODULE_BASE_API CacheBase : public Processor, public ProcessorNetworkEvaluationObserver {
 public:
-    explicit CacheBase(InviwoApplication* app);
+    explicit CacheBase();
     virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
     virtual void onProcessorNetworkEvaluationBegin() override;
     virtual void invalidate(InvalidationLevel invalidationLevel,
@@ -90,6 +90,8 @@ public:
 
     virtual bool hasCache(std::string_view key) = 0;
     virtual const std::string& loadedKey() const = 0;
+
+    virtual void setNetwork(ProcessorNetwork* network) override;
 
 protected:
     void writeXML() const;
@@ -250,7 +252,7 @@ const ProcessorInfo& FileCache<DataType, InportType, OutportType>::getProcessorI
 
 template <typename DataType, typename InportType, typename OutportType>
 FileCache<DataType, InportType, OutportType>::FileCache(InviwoApplication* app)
-    : CacheBase{app}
+    : CacheBase{}
     , inport_{"inport", "data to cache"_help}
     , outport_{"outport", "cached data"_help}
     , rw_{app}
