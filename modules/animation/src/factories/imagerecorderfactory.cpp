@@ -180,7 +180,7 @@ std::unique_ptr<Recorder> ImageRecorderFactory::create(const RecorderOptions& op
     const auto digits = std::max(fmt::formatted_size("{}", opts.expectedNumberOfFrames), size_t{4});
 
     auto format = fmt::format("{}{{:0{}}}.{}", baseName_.get(), digits,
-                              writer_.getSelectedValue().extension_);
+                              writer_.getSelectedValue().extension);
     replaceInString(format, "UPN", opts.sourceName);
 
     return std::make_unique<ImageRecorder>(app_, outputDirectory_.get(), format, std::move(writer));

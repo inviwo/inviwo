@@ -40,8 +40,9 @@ TransferFunctionLayerWriter::TransferFunctionLayerWriter(
     std::unique_ptr<DataWriterType<Layer>> layerWriter)
     : layerWriter_{std::move(layerWriter)} {
 
-    for (const auto& ext : layerWriter_->getExtensions()) {
-        addExtension({ext.extension_, fmt::format("TransferFunction to {}", ext.description_)});
+    for (const auto& [ext, desc] : layerWriter_->getExtensions()) {
+        addExtension(
+            {.extension = ext, .description = fmt::format("TransferFunction to {}", desc)});
     }
 }
 

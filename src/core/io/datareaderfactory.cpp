@@ -65,7 +65,7 @@ std::unique_ptr<DataReader> DataReaderFactory::create(const FileExtension& key) 
 
 std::unique_ptr<DataReader> DataReaderFactory::create(std::string_view key) const {
     for (auto& elem : map_) {
-        if (iCaseCmp(elem.first.extension_, key)) {
+        if (iCaseCmp(elem.first.extension, key)) {
             return std::unique_ptr<DataReader>(elem.second->clone());
         }
     }
@@ -74,7 +74,7 @@ std::unique_ptr<DataReader> DataReaderFactory::create(std::string_view key) cons
 
 bool DataReaderFactory::hasKey(std::string_view key) const {
     for (auto& elem : map_) {
-        if (iCaseCmp(elem.first.extension_, key)) return true;
+        if (iCaseCmp(elem.first.extension, key)) return true;
     }
     return false;
 }

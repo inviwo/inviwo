@@ -59,7 +59,7 @@
 #include <glm/vec2.hpp>  // for operator!=
 
 namespace inviwo {
-class FileExtension;
+struct FileExtension;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameTable::processorInfo_{

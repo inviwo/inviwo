@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/datastructures/lcstring.h>
 
-#include <inviwo/core/rendering/datavisualizer.h>
-#include <inviwo/core/util/document.h>
-
-namespace inviwo {
-
-class InviwoApplication;
-struct FileExtension;
-class Outport;
-class Processor;
-class ProcessorNetwork;
-
-class IVW_MODULE_BASE_API ImageToLayerVisualizer : public DataVisualizer {
-public:
-    ImageToLayerVisualizer(InviwoApplication* app);
-    virtual ~ImageToLayerVisualizer() = default;
-
-    virtual std::string getName() const override;
-    virtual Document getDescription() const override;
-    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
-    virtual bool isOutportSupported(const Outport* port) const override;
-
-    virtual bool hasSourceProcessor() const override;
-    virtual bool hasVisualizerNetwork() const override;
-
-    virtual std::pair<Processor*, Outport*> addSourceProcessor(
-        const std::filesystem::path& filename, ProcessorNetwork* network,
-        const ivec2& origin) const override;
-    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
-                                                         ProcessorNetwork* network) const override;
-    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-        const std::filesystem::path& filename, ProcessorNetwork* network,
-        const ivec2& origin) const override;
-};
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

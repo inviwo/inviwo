@@ -53,7 +53,7 @@
 namespace inviwo {
 
 class Event;
-class FileExtension;
+struct FileExtension;
 class Outport;
 class ProcessorWidget;
 struct PWObserver;

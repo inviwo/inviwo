@@ -38,6 +38,22 @@
 #include <fmt/ranges.h>
 #include <fmt/compile.h>
 
+// Workaround for FMT_COMPILE not being on when using clang-tidy
+// See https://github.com/fmtlib/fmt/blob/f99d53024782bf928b07839140862163f15ade5b/include/fmt/format.h#L4288-L4307
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define IVW_COMPILE_STRING(s)                                                  \
+    [] {                                                                       \
+        struct IVW_COMPILE_STRING : fmt::compiled_string {                     \
+            using char_type = char;                                            \
+            constexpr explicit operator fmt::basic_string_view<char>() const { \
+                return fmt::detail::compile_string_to_view<char>(s);           \
+            }                                                                  \
+        };                                                                     \
+        using IVW_STRING_VIEW = fmt::basic_string_view<char>;                  \
+        fmt::detail::ignore_unused(IVW_STRING_VIEW(IVW_COMPILE_STRING()));     \
+        return IVW_COMPILE_STRING();                                           \
+    }()
+
 namespace inviwo {
 
 template <size_t N>
@@ -112,7 +128,7 @@ namespace util {
 
 template <auto t>
 static constexpr auto toStaticString() {
-    constexpr auto format = FMT_COMPILE("{}");
+    constexpr auto format = IVW_COMPILE_STRING("{}");
     constexpr size_t size = fmt::formatted_size(format, t);
     StaticString<size> res;
     fmt::format_to(res.data(), format, t);
@@ -191,7 +207,7 @@ constexpr auto operator+(const StaticString<N1>& a, const char (&b)[N2]) {
     return StaticString{a, b};
 }
 
-StaticString() -> StaticString<0>;
+StaticString()->StaticString<0>;
 template <typename... Ts>
 StaticString(Ts&&... strs) -> StaticString<(detail::static_size<Ts> + ...)>;
 

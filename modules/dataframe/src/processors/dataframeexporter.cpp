@@ -102,8 +102,8 @@ DataFrameExporter::DataFrameExporter()
 
     exportFile_.setAcceptMode(AcceptMode::Save);
     exportFile_.onChange([this]() {
-        separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension().extension_ ==
-                                                    xmlExtension_.extension_);
+        separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension().extension ==
+                                                    xmlExtension_.extension);
     });
     exportButton_.onChange([&]() {
         if (dataFrame_.hasData()) {

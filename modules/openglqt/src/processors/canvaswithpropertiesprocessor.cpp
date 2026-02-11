@@ -65,7 +65,7 @@
 #include <glm/vec2.hpp>  // for operator!=
 
 namespace inviwo {
-class FileExtension;
+struct FileExtension;
 class Outport;
 
 struct PWObserver : ProcessorWidgetMetaDataObserver {

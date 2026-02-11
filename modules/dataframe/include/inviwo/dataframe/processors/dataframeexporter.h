@@ -49,7 +49,7 @@
 
 namespace inviwo {
 class DataFrame;
-class FileExtension;
+struct FileExtension;
 
 class IVW_MODULE_DATAFRAME_API DataFrameExporter : public Processor {
 public:

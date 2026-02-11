@@ -342,14 +342,19 @@ void exposeProperties(pybind11::module& m) {
 
     py::classh<FileExtension>(m, "FileExtension")
         .def(py::init<>())
-        .def(py::init<std::string, std::string>(), py::arg("ext"), py::arg("desc"))
+        .def(py::init([](std::string_view ext, std::string_view desc) {
+                 return FileExtension{.extension = LCString{ext}, .description = std::string{desc}};
+             }),
+             py::arg("ext"), py::arg("desc"))
         .def("toString", &FileExtension::toString)
         .def("empty", &FileExtension::empty)
         .def("matchesAll", &FileExtension::matchesAll)
         .def("matches", &FileExtension::matches)
         .def_static("all", &FileExtension::all)
-        .def_readwrite("extension", &FileExtension::extension_)
-        .def_readwrite("description", &FileExtension::description_);
+        .def_property(
+            "extension", [](const FileExtension& ext) { return ext.extension.view(); },
+            [](FileExtension& ext, std::string_view newExt) { ext.extension = newExt; })
+        .def_readwrite("description", &FileExtension::description);
 
     py::classh<FileProperty, Property> fileProperty(m, "FileProperty");
     fileProperty
@@ -400,7 +405,7 @@ void exposeProperties(pybind11::module& m) {
                          std::string_view value, std::string_view contentType,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new DirectoryProperty(identifier, displayName, std::move(help), value,
-                                              contentType, invalidationLevel, semantics);
+                                              contentType, invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value") = "",
              py::arg("contentType") = "default",
@@ -410,7 +415,7 @@ void exposeProperties(pybind11::module& m) {
                          std::string_view value, std::string_view contentType,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new DirectoryProperty(identifier, displayName, value, contentType,
-                                              invalidationLevel, semantics);
+                                              invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
              py::arg("contentType") = "default",
@@ -425,7 +430,7 @@ void exposeProperties(pybind11::module& m) {
                          bool value, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new BoolProperty(identifier, displayName, std::move(help), value,
-                                         invalidationLevel, semantics);
+                                         invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help") = Document{},
              py::arg("value") = false,
@@ -434,7 +439,7 @@ void exposeProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool value,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BoolProperty(identifier, displayName, value, invalidationLevel,
-                                         semantics);
+                                         std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = false,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -448,7 +453,8 @@ void exposeProperties(pybind11::module& m) {
     py::classh<ButtonProperty, Property>(m, "ButtonProperty")
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                 return new ButtonProperty(identifier, displayName, invalidationLevel, semantics);
+                 return new ButtonProperty(identifier, displayName, invalidationLevel,
+                                           std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -456,8 +462,9 @@ void exposeProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName, Document help,
                          std::function<void()> action, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
-                 return new ButtonProperty(identifier, displayName, std::move(help), action,
-                                           invalidationLevel, semantics);
+                 return new ButtonProperty(identifier, displayName, std::move(help),
+                                           std::move(action), invalidationLevel,
+                                           std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("action"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -465,8 +472,8 @@ void exposeProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          std::function<void()> action, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
-                 return new ButtonProperty(identifier, displayName, action, invalidationLevel,
-                                           semantics);
+                 return new ButtonProperty(identifier, displayName, std::move(action),
+                                           invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("action"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -481,7 +488,7 @@ void exposeProperties(pybind11::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonGroupProperty(identifier, displayName, invalidationLevel,
-                                                semantics);
+                                                std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -490,7 +497,8 @@ void exposeProperties(pybind11::module& m) {
                          std::vector<ButtonGroupProperty::Button> buttons,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonGroupProperty(identifier, displayName, std::move(help),
-                                                std::move(buttons), invalidationLevel, semantics);
+                                                std::move(buttons), invalidationLevel,
+                                                std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("buttons"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -499,7 +507,7 @@ void exposeProperties(pybind11::module& m) {
                          std::vector<ButtonGroupProperty::Button> buttons,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ButtonGroupProperty(identifier, displayName, std::move(buttons),
-                                                invalidationLevel, semantics);
+                                                invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("buttons"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,

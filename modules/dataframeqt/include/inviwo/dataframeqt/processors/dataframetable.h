@@ -51,7 +51,7 @@
 namespace inviwo {
 
 class DataFrameTableProcessorWidget;
-class FileExtension;
+struct FileExtension;
 class ProcessorWidget;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,

@@ -116,7 +116,9 @@ AssimpReader::AssimpReader()
         const aiImporterDesc* desc = importer.GetImporterInfo(i);
         for (std::string_view e :
              util::splitStringView(std::string_view(desc->mFileExtensions), ' ')) {
-            addExtension(FileExtension(e, util::trim(removeSubString(desc->mName, "Importer"))));
+            addExtension(
+                {.extension = LCString{e},
+                 .description = std::string{util::trim(removeSubString(desc->mName, "Importer"))}});
         }
     }
 

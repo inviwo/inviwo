@@ -32,11 +32,14 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/optionpropertytraits.h>
 #include <inviwo/core/util/hashcombine.h>
+#include <inviwo/core/datastructures/lcstring.h>
 
 #include <string>
 #include <string_view>
-#include <iosfwd>
 #include <filesystem>
+#include <algorithm>
+#include <cctype>
+#include <compare>
 
 #include <fmt/core.h>
 
@@ -45,17 +48,7 @@ namespace inviwo {
 class Serializer;
 class Deserializer;
 
-class IVW_CORE_API FileExtension {
-public:
-    FileExtension();
-    FileExtension(const FileExtension&) = default;
-    FileExtension(FileExtension&&) = default;
-    FileExtension& operator=(FileExtension&&) = default;
-    FileExtension& operator=(const FileExtension&) = default;
-
-    FileExtension(std::string_view extension, std::string_view description);
-    virtual ~FileExtension() = default;
-
+struct IVW_CORE_API FileExtension {
     /**
      * @brief extracts a FileExtension object from a string. This function assumes
      * that the extension is given within the right most parentheses.
@@ -90,18 +83,11 @@ public:
 
     static FileExtension all();
 
-    std::string extension_;  ///< File extension in lower case letters.
-    std::string description_;
+    LCString extension;  ///< File extension in lower case letters.
+    std::string description;
 
-    IVW_CORE_API friend std::ostream& operator<<(std::ostream& ss, const FileExtension& ext);
-
-    IVW_CORE_API friend bool operator==(const FileExtension&, const FileExtension&);
-    IVW_CORE_API friend bool operator!=(const FileExtension&, const FileExtension&);
-
-    IVW_CORE_API friend bool operator<(const FileExtension&, const FileExtension&);
-    IVW_CORE_API friend bool operator<=(const FileExtension&, const FileExtension&);
-    IVW_CORE_API friend bool operator>(const FileExtension&, const FileExtension&);
-    IVW_CORE_API friend bool operator>=(const FileExtension&, const FileExtension&);
+    bool operator==(const FileExtension&) const noexcept = default;
+    std::strong_ordering operator<=>(const FileExtension&) const noexcept;
 };
 
 template <>
@@ -117,8 +103,8 @@ template <>
 struct std::hash<inviwo::FileExtension> {
     size_t operator()(const inviwo::FileExtension& f) const {
         size_t h = 0;
-        inviwo::util::hash_combine(h, f.extension_);
-        inviwo::util::hash_combine(h, f.description_);
+        inviwo::util::hash_combine(h, f.extension.view());
+        inviwo::util::hash_combine(h, f.description);
         return h;
     }
 };
@@ -130,10 +116,11 @@ struct fmt::formatter<inviwo::FileExtension> : fmt::formatter<fmt::string_view> 
     auto format(const inviwo::FileExtension& ext, FormatContext& ctx) const {
         fmt::memory_buffer buff;
 
-        if (ext.extension_ == "*") {
-            fmt::format_to(std::back_inserter(buff), "{} (*)", ext.description_);
-        } else if (!ext.extension_.empty()) {
-            fmt::format_to(std::back_inserter(buff), "{} (*.{})", ext.description_, ext.extension_);
+        if (ext.extension == "*") {
+            fmt::format_to(std::back_inserter(buff), "{} (*)", ext.description);
+        } else if (!ext.extension.empty()) {
+            fmt::format_to(std::back_inserter(buff), "{} (*.{})", ext.description,
+                           ext.extension.view());
         }
 
         return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);

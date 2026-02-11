@@ -39,13 +39,6 @@
 
 namespace inviwo {
 
-FileExtension::FileExtension() : extension_(), description_() {}
-
-FileExtension::FileExtension(std::string_view extension, std::string_view description)
-    : extension_(
-          toLower(std::string{extension}))  // Make sure that the extension is given in lower case
-    , description_(description) {}
-
 FileExtension FileExtension::createFileExtensionFromString(std::string_view str) {
     // try to split extension string
     std::size_t extStart = str.find('(');
@@ -82,63 +75,45 @@ FileExtension FileExtension::createFileExtensionFromString(std::string_view str)
         ext = ext.substr(2);
     }
 
-    return {ext, desc};
+    return {.extension = LCString{ext}, .description = std::string{desc}};
 }
 
 std::string FileExtension::toString() const { return fmt::to_string(*this); }
 
-bool FileExtension::empty() const { return extension_.empty() && description_.empty(); }
+bool FileExtension::empty() const { return extension.empty() && description.empty(); }
 
-bool FileExtension::matchesAll() const { return extension_ == "*"; }
+bool FileExtension::matchesAll() const { return extension == "*"; }
 
 bool FileExtension::matches(const std::filesystem::path& path) const {
     if (empty()) {
         return false;
     }
-    if (extension_.empty()) {
+    if (extension.empty()) {
         return true;  // wildcard '*' matches everything
     }
-    return util::iCaseEndsWith(path.string(), extension_);
+    return util::iCaseEndsWith(path.string(), extension);
 }
 
 void FileExtension::serialize(Serializer& s) const {
-    s.serialize("extension", extension_);
-    s.serialize("description", description_);
+    s.serialize("extension", extension.view());
+    s.serialize("description", description);
 }
 
 void FileExtension::deserialize(Deserializer& d) {
-    d.deserialize("extension", extension_);
-    d.deserialize("description", description_);
+    d.deserialize("extension", extension);
+    d.deserialize("description", description);
 }
 
-bool operator==(const FileExtension& rhs, const FileExtension& lhs) {
-    return rhs.extension_ == lhs.extension_ && rhs.description_ == lhs.description_;
-}
-bool operator!=(const FileExtension& rhs, const FileExtension& lhs) { return !(rhs == lhs); }
-
-bool operator<(const FileExtension& a, const FileExtension& b) {
-    if (a == FileExtension::all() && b != FileExtension::all()) return true;
-    if (b == FileExtension::all() && a != FileExtension::all()) return false;
-    return std::tie(a.description_, a.extension_) < std::tie(b.description_, b.extension_);
-}
-
-bool operator>(const FileExtension& lhs, const FileExtension& rhs) { return operator<(rhs, lhs); }
-bool operator<=(const FileExtension& lhs, const FileExtension& rhs) { return !operator>(lhs, rhs); }
-bool operator>=(const FileExtension& lhs, const FileExtension& rhs) { return !operator<(lhs, rhs); }
-
-FileExtension FileExtension::all() { return FileExtension("*", "All Files"); }
-
-std::ostream& operator<<(std::ostream& ss, const FileExtension& ext) {
-    if (ext.extension_.empty()) {
-        return ss;
+std::strong_ordering FileExtension::operator<=>(const FileExtension& that) const noexcept {
+    if (*this == FileExtension::all() && that != FileExtension::all()) {
+        return std::strong_ordering::less;
     }
-    ss << ext.description_ << " ";
-    if (ext.extension_ == "*") {
-        ss << "(*)";
-    } else {
-        ss << "(*." << ext.extension_ << ")";
+    if (that == FileExtension::all() && *this != FileExtension::all()) {
+        return std::strong_ordering::greater;
     }
-    return ss;
+    return std::tie(description, extension) <=> std::tie(that.description, that.extension);
 }
+
+FileExtension FileExtension::all() { return {.extension = "*", .description = "All Files"}; }
 
 }  // namespace inviwo

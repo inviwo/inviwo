@@ -33,7 +33,7 @@
 #include <modules/json/json.h>
 
 namespace inviwo {
-class FileExtension;
+struct FileExtension;
 class FileProperty;
 
 /**
