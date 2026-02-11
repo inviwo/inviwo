@@ -1,11 +1,5 @@
 var NAVTREEINDEX26 =
 {
-"classinviwo_1_1animation_1_1PropertyTrack.html#a898dc90828556d2f3edb34017faa4d56":[4,0,1,2,64,3],
-"classinviwo_1_1animation_1_1PropertyTrack.html#aabc794f4756d0c4ab09618369a72be61":[2,0,0,0,63,0],
-"classinviwo_1_1animation_1_1PropertyTrack.html#aabc794f4756d0c4ab09618369a72be61":[4,0,1,2,64,0],
-"classinviwo_1_1animation_1_1PropertyTrack.html#aef56a224367dd524ea0787220821d91b":[2,0,0,0,63,4],
-"classinviwo_1_1animation_1_1PropertyTrack.html#aef56a224367dd524ea0787220821d91b":[4,0,1,2,64,4],
-"classinviwo_1_1animation_1_1PropertyTrack.html#af3e0564ab837511d4122fac607fcf50a":[2,0,0,0,63,1],
 "classinviwo_1_1animation_1_1PropertyTrack.html#af3e0564ab837511d4122fac607fcf50a":[4,0,1,2,64,1],
 "classinviwo_1_1animation_1_1PropertyTrackWidgetQt.html":[2,0,0,0,64],
 "classinviwo_1_1animation_1_1PropertyTrackWidgetQt.html":[4,0,1,2,65],
@@ -249,5 +243,11 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a1d17f70df7850dbfd64542e1af4904de":[2,0,0,15,10,6],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a1d17f70df7850dbfd64542e1af4904de":[4,0,1,22,11,6],
 "classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a30e4c241ad2f60a88124b4f3bc489d51":[2,0,0,15,10,1],
-"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a30e4c241ad2f60a88124b4f3bc489d51":[4,0,1,22,11,1]
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#a30e4c241ad2f60a88124b4f3bc489d51":[4,0,1,22,11,1],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#ac3bef1a79c2ddc439373362cf52d23a7":[2,0,0,15,10,7],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#ac3bef1a79c2ddc439373362cf52d23a7":[4,0,1,22,11,7],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#accb9f3e3c03396e7cf4a46c262740c14":[2,0,0,15,10,3],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#accb9f3e3c03396e7cf4a46c262740c14":[4,0,1,22,11,3],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#adfd6f9668bd1f2858e7ab9d1f7bd508b":[2,0,0,15,10,0],
+"classinviwo_1_1plot_1_1BoxSelectionInteractionHandler.html#adfd6f9668bd1f2858e7ab9d1f7bd508b":[4,0,1,22,11,0]
 };

@@ -98,7 +98,7 @@ var searchData=
   ['filecache_95',['FileCache',['../classinviwo_1_1FileCache.html',1,'inviwo']]],
   ['filedialog_96',['FileDialog',['../classinviwo_1_1FileDialog.html',1,'inviwo']]],
   ['fileexception_97',['FileException',['../classinviwo_1_1FileException.html',1,'inviwo']]],
-  ['fileextension_98',['FileExtension',['../classinviwo_1_1FileExtension.html',1,'inviwo']]],
+  ['fileextension_98',['FileExtension',['../structinviwo_1_1FileExtension.html',1,'inviwo']]],
   ['filelist_99',['FileList',['../classinviwo_1_1FileList.html',1,'inviwo']]],
   ['filelogger_100',['FileLogger',['../classinviwo_1_1FileLogger.html',1,'inviwo']]],
   ['fileobserver_101',['FileObserver',['../classinviwo_1_1FileObserver.html',1,'inviwo']]],

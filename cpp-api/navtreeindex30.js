@@ -1,11 +1,5 @@
 var NAVTREEINDEX30 =
 {
-"namespaceinviwo_1_1util.html#ab73ec645cb3206ba1ffd1d9bea0747ee":[2,0,0,20,228],
-"namespaceinviwo_1_1util.html#ab874e412b1a96d66859a3cb627d6d5ca":[2,0,0,20,316],
-"namespaceinviwo_1_1util.html#aba248938bdec0647ee6706ea2ece4c8c":[2,0,0,20,165],
-"namespaceinviwo_1_1util.html#ababf20580e98b848eaffd93c087fedb2":[2,0,0,20,288],
-"namespaceinviwo_1_1util.html#abb89ce7475c175642c1af64b4968977e":[2,0,0,20,146],
-"namespaceinviwo_1_1util.html#abdd152d8abef09fe85cd9d03d7e5d91d":[2,0,0,20,86],
 "namespaceinviwo_1_1util.html#abf9ff4b80212faa99dda24be3fd6639c":[2,0,0,20,83],
 "namespaceinviwo_1_1util.html#ac161982c151dab1c0f48df711facdd0d":[2,0,0,20,135],
 "namespaceinviwo_1_1util.html#ac1a7add893c040adf20aa7bfb32b6aa7":[2,0,0,20,287],
@@ -249,5 +243,11 @@ var NAVTREEINDEX30 =
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html":[2,0,0,240],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html":[4,0,1,249],
 "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01A_01_4_01_4.html":[2,0,0,243],
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01A_01_4_01_4.html":[4,0,1,252]
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01A_01_4_01_4.html":[4,0,1,252],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html":[2,0,0,242],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01const_01T_01_4_00_01A_01_4_01_4.html":[4,0,1,251],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[2,0,0,245],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,254],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[2,0,0,244],
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01const_01T_00_01D_01_4_00_01A_01_4_01_4.html":[4,0,1,253]
 };

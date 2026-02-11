@@ -70,7 +70,7 @@ var searchData=
   ['createcameraeyeoffsetproperty_67',['createCameraEyeOffsetProperty',['../namespaceinviwo_1_1util.html#a5e2a9a37232b9367cf8bc52093935b37',1,'inviwo::util']]],
   ['createcamerafovproperty_68',['createCameraFovProperty',['../namespaceinviwo_1_1util.html#ad1562123df97b5129796b73f231e1bd5',1,'inviwo::util']]],
   ['createcamerawidthproperty_69',['createCameraWidthProperty',['../namespaceinviwo_1_1util.html#a53cd42ede5eb2f1d94c2405c9f36c005',1,'inviwo::util']]],
-  ['createfileextensionfromstring_70',['createFileExtensionFromString',['../classinviwo_1_1FileExtension.html#aafe7d620f8cfcee9ad7db8caa70efefa',1,'inviwo::FileExtension']]],
+  ['createfileextensionfromstring_70',['createFileExtensionFromString',['../structinviwo_1_1FileExtension.html#aafe7d620f8cfcee9ad7db8caa70efefa',1,'inviwo::FileExtension']]],
   ['createglformatrenormalization_71',['createGLFormatRenormalization',['../namespaceinviwo_1_1utilgl.html#a3d09cbb3a0c406ef52827f62bcf965ae',1,'inviwo::utilgl']]],
   ['creategloutputconversion_72',['createGLOutputConversion',['../namespaceinviwo_1_1utilgl.html#a4769941605263491f479a0ab2981b82a',1,'inviwo::utilgl']]],
   ['createindexbuffer_73',['createIndexBuffer',['../classinviwo_1_1HalfEdges.html#ad97287d8420799a0baede4469c067bed',1,'inviwo::HalfEdges']]],

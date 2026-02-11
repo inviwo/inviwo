@@ -111,46 +111,60 @@ $(function(){initNavTree('classinviwo_1_1DataReaderFactory.html','','classinviwo
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c2532307081bf77c3c6f3d6d3cc042c" id="r_a1c2532307081bf77c3c6f3d6d3cc042c"><td class="memItemLeft"><a id="a1c2532307081bf77c3c6f3d6d3cc042c" name="a1c2532307081bf77c3c6f3d6d3cc042c"></a>
-virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;key) const override</td></tr>
+virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;key) const override</td></tr>
 <tr class="memitem:a72ccdf719018509f748904bf9fa5935d" id="r_a72ccdf719018509f748904bf9fa5935d"><td class="memItemLeft"><a id="a72ccdf719018509f748904bf9fa5935d" name="a72ccdf719018509f748904bf9fa5935d"></a>
 virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (std::string_view key) const override</td></tr>
+<tr class="memitem:aed14db250f5ba50bb1a14747360bdaca" id="r_aed14db250f5ba50bb1a14747360bdaca"><td class="memItemLeft"><a id="aed14db250f5ba50bb1a14747360bdaca" name="aed14db250f5ba50bb1a14747360bdaca"></a>
+&#160;</td><td class="memItemRight"><b>DataReaderFactory</b> (const DataReaderFactory &amp;)=delete</td></tr>
+<tr class="memitem:aef52bfc02d5fa8ca2b82c5d4afa5d25f" id="r_aef52bfc02d5fa8ca2b82c5d4afa5d25f"><td class="memItemLeft"><a id="aef52bfc02d5fa8ca2b82c5d4afa5d25f" name="aef52bfc02d5fa8ca2b82c5d4afa5d25f"></a>
+&#160;</td><td class="memItemRight"><b>DataReaderFactory</b> (DataReaderFactory &amp;&amp;)=delete</td></tr>
 <tr class="memitem:ac7d0ec38542431f0b8e74a785f0b34ef" id="r_ac7d0ec38542431f0b8e74a785f0b34ef"><td class="memTemplParams" colspan="2"><a id="ac7d0ec38542431f0b8e74a785f0b34ef" name="ac7d0ec38542431f0b8e74a785f0b34ef"></a>
 template&lt;typename T&gt; </td></tr>
-<tr class="memitem:ac7d0ec38542431f0b8e74a785f0b34ef template"><td class="memItemLeft">std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight"><b>getExtensionsForType</b> () const</td></tr>
+<tr class="memitem:ac7d0ec38542431f0b8e74a785f0b34ef template"><td class="memItemLeft">std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight"><b>getExtensionsForType</b> () const</td></tr>
 <tr class="memitem:aa79cf6044e00ba8d1a4b7fba9012c76b" id="r_aa79cf6044e00ba8d1a4b7fba9012c76b"><td class="memTemplParams" colspan="2"><a id="aa79cf6044e00ba8d1a4b7fba9012c76b" name="aa79cf6044e00ba8d1a4b7fba9012c76b"></a>
 template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:aa79cf6044e00ba8d1a4b7fba9012c76b template"><td class="memItemLeft">std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight"><b>getExtensionsForTypes</b> () const</td></tr>
+<tr class="memitem:aa79cf6044e00ba8d1a4b7fba9012c76b template"><td class="memItemLeft">std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &gt;&#160;</td><td class="memItemRight"><b>getExtensionsForTypes</b> () const</td></tr>
 <tr class="memitem:a44b42ee7bf9cdd9a1d03cc5bf32230b5" id="r_a44b42ee7bf9cdd9a1d03cc5bf32230b5"><td class="memTemplParams" colspan="2"><a id="a44b42ee7bf9cdd9a1d03cc5bf32230b5" name="a44b42ee7bf9cdd9a1d03cc5bf32230b5"></a>
 template&lt;typename... Ts&gt; </td></tr>
 <tr class="memitem:a44b42ee7bf9cdd9a1d03cc5bf32230b5 template"><td class="memItemLeft">auto&#160;</td><td class="memItemRight"><b>getExtensionsForTypesView</b> () const</td></tr>
-<tr class="memitem:a64820607d14707294b8915f82057eaed" id="r_a64820607d14707294b8915f82057eaed"><td class="memTemplParams" colspan="2"><a id="a64820607d14707294b8915f82057eaed" name="a64820607d14707294b8915f82057eaed"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a64820607d14707294b8915f82057eaed template"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight"><b>getReaderForTypeAndExtension</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext) const</td></tr>
 <tr class="memitem:a753bdf91797dc2c4d62d04ec317354d9" id="r_a753bdf91797dc2c4d62d04ec317354d9"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a753bdf91797dc2c4d62d04ec317354d9 template"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a753bdf91797dc2c4d62d04ec317354d9">getReaderForTypeAndExtension</a> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext, const std::filesystem::path &amp;fallbackFilePathOrExtension) const</td></tr>
+<tr class="memitem:a753bdf91797dc2c4d62d04ec317354d9 template"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a753bdf91797dc2c4d62d04ec317354d9">getReaderForTypeAndExtension</a> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext, const std::filesystem::path &amp;fallbackFilePathOrExtension) const</td></tr>
+<tr class="memitem:a222f1cca6a4de18288a3f32addbc4441" id="r_a222f1cca6a4de18288a3f32addbc4441"><td class="memTemplParams" colspan="2"><a id="a222f1cca6a4de18288a3f32addbc4441" name="a222f1cca6a4de18288a3f32addbc4441"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a222f1cca6a4de18288a3f32addbc4441 template"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight"><b>getReaderForTypeAndExtension</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;extension) const</td></tr>
+<tr class="memitem:a7c434e2e77f542fc211a32d9f595726a" id="r_a7c434e2e77f542fc211a32d9f595726a"><td class="memTemplParams" colspan="2"><a id="a7c434e2e77f542fc211a32d9f595726a" name="a7c434e2e77f542fc211a32d9f595726a"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a7c434e2e77f542fc211a32d9f595726a template"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight"><b>getReaderForTypeAndExtension</b> (const <a class="el" href="classinviwo_1_1LCString.html">LCString</a> &amp;extension) const</td></tr>
 <tr class="memitem:a5eaac382e009abf684e5c1da85641558" id="r_a5eaac382e009abf684e5c1da85641558"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a5eaac382e009abf684e5c1da85641558 template"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a5eaac382e009abf684e5c1da85641558">getReaderForTypeAndExtension</a> (const std::filesystem::path &amp;filePathOrExtension) const</td></tr>
 <tr class="memdesc:a5eaac382e009abf684e5c1da85641558"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reader matching the file extension of <a class="el" href="classinviwo_1_1DataReader.html" title="A abstract base class for all file readers.">DataReader</a> of type T. Does case insensitive comparison between the last part of filePathOrExtension and each registered extension. Does not check for "." before the extension, so it is valid to pass for example "png".  <br /></td></tr>
-<tr class="memitem:a554eae86640b29e5367c3afd4cb8235d" id="r_a554eae86640b29e5367c3afd4cb8235d"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a554eae86640b29e5367c3afd4cb8235d">hasKey</a> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;key) const override</td></tr>
+<tr class="memitem:a554eae86640b29e5367c3afd4cb8235d" id="r_a554eae86640b29e5367c3afd4cb8235d"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a554eae86640b29e5367c3afd4cb8235d">hasKey</a> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;key) const override</td></tr>
 <tr class="memitem:ac607c283832dae092b11ec7261336463" id="r_ac607c283832dae092b11ec7261336463"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#ac607c283832dae092b11ec7261336463">hasKey</a> (std::string_view key) const override</td></tr>
 <tr class="memitem:a0aca8ad167e257ba3dad6ae9ffe3befb" id="r_a0aca8ad167e257ba3dad6ae9ffe3befb"><td class="memTemplParams" colspan="2"><a id="a0aca8ad167e257ba3dad6ae9ffe3befb" name="a0aca8ad167e257ba3dad6ae9ffe3befb"></a>
 template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a0aca8ad167e257ba3dad6ae9ffe3befb template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><b>hasReaderForTypeAndExtension</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext) const</td></tr>
+<tr class="memitem:a0aca8ad167e257ba3dad6ae9ffe3befb template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><b>hasReaderForTypeAndExtension</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext) const</td></tr>
+<tr class="memitem:a17512bcb6c0d6edf8622ecfdc234c344" id="r_a17512bcb6c0d6edf8622ecfdc234c344"><td class="memTemplParams" colspan="2"><a id="a17512bcb6c0d6edf8622ecfdc234c344" name="a17512bcb6c0d6edf8622ecfdc234c344"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a17512bcb6c0d6edf8622ecfdc234c344 template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><b>hasReaderForTypeAndExtension</b> (const <a class="el" href="classinviwo_1_1LCString.html">LCString</a> &amp;extension) const</td></tr>
 <tr class="memitem:a9c6c0a920effcd7c76da0fcab63c7c92" id="r_a9c6c0a920effcd7c76da0fcab63c7c92"><td class="memTemplParams" colspan="2"><a id="a9c6c0a920effcd7c76da0fcab63c7c92" name="a9c6c0a920effcd7c76da0fcab63c7c92"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a9c6c0a920effcd7c76da0fcab63c7c92 template"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><b>hasReaderForTypeAndExtension</b> (const std::filesystem::path &amp;filePathOrExtension) const</td></tr>
+<tr class="memitem:a16948f2bf922da9ec9d0a3e8861bff9b" id="r_a16948f2bf922da9ec9d0a3e8861bff9b"><td class="memItemLeft"><a id="a16948f2bf922da9ec9d0a3e8861bff9b" name="a16948f2bf922da9ec9d0a3e8861bff9b"></a>
+DataReaderFactory &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const DataReaderFactory &amp;)=delete</td></tr>
+<tr class="memitem:acf973c24e48dcc9d0853198d0dccda6a" id="r_acf973c24e48dcc9d0853198d0dccda6a"><td class="memItemLeft"><a id="acf973c24e48dcc9d0853198d0dccda6a" name="acf973c24e48dcc9d0853198d0dccda6a"></a>
+DataReaderFactory &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (DataReaderFactory &amp;&amp;)=delete</td></tr>
 <tr class="memitem:a22b28ca984b8b29e56358580379331e2" id="r_a22b28ca984b8b29e56358580379331e2"><td class="memTemplParams" colspan="2"><a id="a22b28ca984b8b29e56358580379331e2" name="a22b28ca984b8b29e56358580379331e2"></a>
 template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a22b28ca984b8b29e56358580379331e2 template"><td class="memItemLeft">std::shared_ptr&lt; T &gt;&#160;</td><td class="memItemRight"><b>readDataForTypeAndExtension</b> (const std::filesystem::path &amp;filePath, std::optional&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; ext=std::nullopt) const</td></tr>
+<tr class="memitem:a22b28ca984b8b29e56358580379331e2 template"><td class="memItemLeft">std::shared_ptr&lt; T &gt;&#160;</td><td class="memItemRight"><b>readDataForTypeAndExtension</b> (const std::filesystem::path &amp;filePath, std::optional&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &gt; ext=std::nullopt) const</td></tr>
 <tr class="memitem:a15ee7dea2eabb16b545a264b02836643" id="r_a15ee7dea2eabb16b545a264b02836643"><td class="memItemLeft"><a id="a15ee7dea2eabb16b545a264b02836643" name="a15ee7dea2eabb16b545a264b02836643"></a>
 bool&#160;</td><td class="memItemRight"><b>registerObject</b> (<a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> *reader)</td></tr>
 <tr class="memitem:aafd2b02dba97ec295d0478e8e75d87dd" id="r_aafd2b02dba97ec295d0478e8e75d87dd"><td class="memItemLeft"><a id="aafd2b02dba97ec295d0478e8e75d87dd" name="aafd2b02dba97ec295d0478e8e75d87dd"></a>
 bool&#160;</td><td class="memItemRight"><b>unRegisterObject</b> (<a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> *reader)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; DataReader, const FileExtension &amp; &gt;</a></td></tr>
 <tr class="memitem:aa60830c46245ac6a6fa70496a300cae7 inherit pub_methods_classinviwo_1_1Factory" id="r_aa60830c46245ac6a6fa70496a300cae7"><td class="memItemLeft">
-virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;key, Args... args) const=0</td></tr>
+virtual std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>create</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;key, Args... args) const=0</td></tr>
 <tr class="memitem:a0285b382d1387e7445d5d082e2c11a78 inherit pub_methods_classinviwo_1_1Factory" id="r_a0285b382d1387e7445d5d082e2c11a78"><td class="memItemLeft">
-virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>createShared</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;key, Args... args) const</td></tr>
+virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> &gt;&#160;</td><td class="memItemRight"><b>createShared</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;key, Args... args) const</td></tr>
 <tr class="memitem:a7c4d0a52fe5899c4614a798f45d91df2 inherit pub_methods_classinviwo_1_1Factory" id="r_a7c4d0a52fe5899c4614a798f45d91df2"><td class="memItemLeft">
 Factory &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Factory &amp;)=delete</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Factory.html">inviwo::Factory&lt; DataReader, std::string_view &gt;</a></td></tr>
@@ -174,7 +188,7 @@ void&#160;</td><td class="memItemRight"><b>removeObserver</b> (<a class="el" hre
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a8b8687dada7dd9062c83dba7c334b92b" id="r_a8b8687dada7dd9062c83dba7c334b92b"><td class="memItemLeft"><a id="a8b8687dada7dd9062c83dba7c334b92b" name="a8b8687dada7dd9062c83dba7c334b92b"></a>
-std::map&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a>, <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> * &gt;&#160;</td><td class="memItemRight"><b>map_</b></td></tr>
+std::map&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a>, <a class="el" href="classinviwo_1_1DataReader.html">DataReader</a> * &gt;&#160;</td><td class="memItemRight"><b>map_</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -208,7 +222,7 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="memname">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a>&lt; T &gt; &gt; inviwo::DataReaderFactory::getReaderForTypeAndExtension </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>ext</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>ext</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -217,7 +231,7 @@ template&lt;typename T&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>First look for a reader using the <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> ext, and if no reader was found look for a reader using the fallbackFilePathOrExtension. This is often used with a file open dialog, where the dialog will have a selectedFileExtension that will be used as ext, and the fallbackFilePathOrExtension is taken from the file to be opened. This way any selected reader will have priority over the file extension. </p>
+<p>First look for a reader using the <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> ext, and if no reader was found look for a reader using the fallbackFilePathOrExtension. This is often used with a file open dialog, where the dialog will have a selectedFileExtension that will be used as ext, and the fallbackFilePathOrExtension is taken from the file to be opened. This way any selected reader will have priority over the file extension. </p>
 
 </div>
 </div>
@@ -261,7 +275,7 @@ template&lt;typename T&gt; </div>
         <tr>
           <td class="memname">virtual bool inviwo::DataReaderFactory::hasKey </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

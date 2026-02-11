@@ -1217,6 +1217,7 @@ var hierarchy =
     [ "inviwo::FactoryKeyType&lt; K &gt;", "structinviwo_1_1FactoryKeyType.html", null ],
     [ "inviwo::FactoryKeyType&lt; std::string_view &gt;", "structinviwo_1_1FactoryKeyType_3_01std_1_1string__view_01_4.html", null ],
     [ "std::false_type", null, [
+      [ "inviwo::util::detail::is_string< LCString, void >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01LCString_00_01void_01_4.html", null ],
       [ "inviwo::util::detail::is_string< T, std::void_t< typename T::value_type, typename T::traits_type, typename T::allocator_type > >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1value7755dbb39d4055ac2098ae9658d61cc2.html", null ],
       [ "inviwo::util::is_dereferenceable< T, std::void_t< decltype(*std::declval< T >())> >", "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html", null ],
       [ "inviwo::util::detail::is_string< T, Enable >", "structinviwo_1_1util_1_1detail_1_1is__string.html", [
@@ -1233,7 +1234,7 @@ var hierarchy =
       ] ],
       [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", null ]
     ] ],
-    [ "inviwo::FileExtension", "classinviwo_1_1FileExtension.html", null ],
+    [ "inviwo::FileExtension", "structinviwo_1_1FileExtension.html", null ],
     [ "inviwo::FileObserver", "classinviwo_1_1FileObserver.html", [
       [ "inviwo::FileShaderResource", "classinviwo_1_1FileShaderResource.html", null ],
       [ "inviwo::PythonProcessorFactoryObject", "classinviwo_1_1PythonProcessorFactoryObject.html", null ],
@@ -1637,6 +1638,7 @@ var hierarchy =
         [ "inviwo::glui::VBoxLayout", "classinviwo_1_1glui_1_1VBoxLayout.html", null ]
       ] ]
     ] ],
+    [ "inviwo::LCString", "classinviwo_1_1LCString.html", null ],
     [ "inviwo::LicenseInfo", "classinviwo_1_1LicenseInfo.html", null ],
     [ "inviwo::LightingConfig", "structinviwo_1_1LightingConfig.html", null ],
     [ "inviwo::LightingState", "structinviwo_1_1LightingState.html", null ],
@@ -3660,6 +3662,7 @@ var hierarchy =
     [ "inviwo::util::TransformIterator&lt; Transform, Iter &gt;", "structinviwo_1_1util_1_1TransformIterator.html", null ],
     [ "std::true_type", null, [
       [ "inviwo::dispatching::filter::All< Format >", "structinviwo_1_1dispatching_1_1filter_1_1All.html", null ],
+      [ "inviwo::util::detail::is_string< LCString, void >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01LCString_00_01void_01_4.html", null ],
       [ "inviwo::util::is_dereferenceable< T, std::void_t< decltype(*std::declval< T >())> >", "structinviwo_1_1util_1_1is__dereferenceable_3_01T_00_01std_1_1void__t_3_01decltype_07_5std_1_1dea79db0978b6be7e835bcf0aa2839bd26.html", null ]
     ] ],
     [ "Ts...", null, [

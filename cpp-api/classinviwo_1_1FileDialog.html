@@ -108,13 +108,13 @@ $(function(){initNavTree('classinviwo_1_1FileDialog.html','','classinviwo_1_1Fil
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7b9671d4e20124a5ceb97c55e0d1eb58" id="r_a7b9671d4e20124a5ceb97c55e0d1eb58"><td class="memItemLeft"><a id="a7b9671d4e20124a5ceb97c55e0d1eb58" name="a7b9671d4e20124a5ceb97c55e0d1eb58"></a>
-virtual void&#160;</td><td class="memItemRight"><b>addExtension</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;fileExt)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight"><b>addExtension</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;fileExt)=0</td></tr>
 <tr class="memitem:a80dc687f0b6453c98cf062a778b0414f" id="r_a80dc687f0b6453c98cf062a778b0414f"><td class="memItemLeft"><a id="a80dc687f0b6453c98cf062a778b0414f" name="a80dc687f0b6453c98cf062a778b0414f"></a>
 virtual void&#160;</td><td class="memItemRight"><b>addExtension</b> (std::string_view ext, std::string_view description)=0</td></tr>
 <tr class="memitem:a5071415efa3750dd6bfced5069d0c3b0" id="r_a5071415efa3750dd6bfced5069d0c3b0"><td class="memItemLeft"><a id="a5071415efa3750dd6bfced5069d0c3b0" name="a5071415efa3750dd6bfced5069d0c3b0"></a>
 virtual void&#160;</td><td class="memItemRight"><b>addExtension</b> (std::string_view extString)=0</td></tr>
 <tr class="memitem:a8ede4430f47b11ab3b8edabba008ac7c" id="r_a8ede4430f47b11ab3b8edabba008ac7c"><td class="memItemLeft"><a id="a8ede4430f47b11ab3b8edabba008ac7c" name="a8ede4430f47b11ab3b8edabba008ac7c"></a>
-virtual void&#160;</td><td class="memItemRight"><b>addExtensions</b> (const std::vector&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;extensions)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight"><b>addExtensions</b> (const std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;extensions)=0</td></tr>
 <tr class="memitem:a80d3abb996b6a5d24c923ef36bf07eac" id="r_a80d3abb996b6a5d24c923ef36bf07eac"><td class="memItemLeft"><a id="a80d3abb996b6a5d24c923ef36bf07eac" name="a80d3abb996b6a5d24c923ef36bf07eac"></a>
 virtual AcceptMode&#160;</td><td class="memItemRight"><b>getAcceptMode</b> () const =0</td></tr>
 <tr class="memitem:a5aabbdd7b927bcfbc1c1a3ab5c720014" id="r_a5aabbdd7b927bcfbc1c1a3ab5c720014"><td class="memItemLeft"><a id="a5aabbdd7b927bcfbc1c1a3ab5c720014" name="a5aabbdd7b927bcfbc1c1a3ab5c720014"></a>
@@ -124,7 +124,7 @@ virtual FileMode&#160;</td><td class="memItemRight"><b>getFileMode</b> () const 
 <tr class="memitem:aa7850f9ce9ba4423e4c3ea0c961da0ea" id="r_aa7850f9ce9ba4423e4c3ea0c961da0ea"><td class="memItemLeft"><a id="aa7850f9ce9ba4423e4c3ea0c961da0ea" name="aa7850f9ce9ba4423e4c3ea0c961da0ea"></a>
 std::filesystem::path&#160;</td><td class="memItemRight"><b>getSelectedFile</b> () const</td></tr>
 <tr class="memitem:a3a221196bc53b78804b92d9ae659b648" id="r_a3a221196bc53b78804b92d9ae659b648"><td class="memItemLeft"><a id="a3a221196bc53b78804b92d9ae659b648" name="a3a221196bc53b78804b92d9ae659b648"></a>
-virtual <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a>&#160;</td><td class="memItemRight"><b>getSelectedFileExtension</b> () const =0</td></tr>
+virtual <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a>&#160;</td><td class="memItemRight"><b>getSelectedFileExtension</b> () const =0</td></tr>
 <tr class="memitem:afe0315dc61f38a4bbad41af64686fda3" id="r_afe0315dc61f38a4bbad41af64686fda3"><td class="memItemLeft"><a id="afe0315dc61f38a4bbad41af64686fda3" name="afe0315dc61f38a4bbad41af64686fda3"></a>
 virtual std::vector&lt; std::filesystem::path &gt;&#160;</td><td class="memItemRight"><b>getSelectedFiles</b> () const =0</td></tr>
 <tr class="memitem:ac799ff3cd296d4b1e66f625eebad0ba0" id="r_ac799ff3cd296d4b1e66f625eebad0ba0"><td class="memItemLeft"><a id="ac799ff3cd296d4b1e66f625eebad0ba0" name="ac799ff3cd296d4b1e66f625eebad0ba0"></a>
@@ -138,7 +138,7 @@ virtual void&#160;</td><td class="memItemRight"><b>setContentType</b> (std::stri
 <tr class="memitem:ae8d724a3c897e8cdea7d0673136670ce" id="r_ae8d724a3c897e8cdea7d0673136670ce"><td class="memItemLeft"><a id="ae8d724a3c897e8cdea7d0673136670ce" name="ae8d724a3c897e8cdea7d0673136670ce"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setFileMode</b> (FileMode mode)=0</td></tr>
 <tr class="memitem:a88e79c361ff4bd708811443c9c74a7ee" id="r_a88e79c361ff4bd708811443c9c74a7ee"><td class="memItemLeft"><a id="a88e79c361ff4bd708811443c9c74a7ee" name="a88e79c361ff4bd708811443c9c74a7ee"></a>
-virtual void&#160;</td><td class="memItemRight"><b>setSelectedExtension</b> (const <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight"><b>setSelectedExtension</b> (const <a class="el" href="structinviwo_1_1FileExtension.html">FileExtension</a> &amp;ext)=0</td></tr>
 <tr class="memitem:a170878dbe3cb3d7aaa25e12e9ba5dc97" id="r_a170878dbe3cb3d7aaa25e12e9ba5dc97"><td class="memItemLeft"><a id="a170878dbe3cb3d7aaa25e12e9ba5dc97" name="a170878dbe3cb3d7aaa25e12e9ba5dc97"></a>
 virtual void&#160;</td><td class="memItemRight"><b>setTitle</b> (std::string_view title)=0</td></tr>
 <tr class="memitem:aa926eecce079a3eff5fddcd94d50ebc2" id="r_aa926eecce079a3eff5fddcd94d50ebc2"><td class="memItemLeft"><a id="aa926eecce079a3eff5fddcd94d50ebc2" name="aa926eecce079a3eff5fddcd94d50ebc2"></a>
