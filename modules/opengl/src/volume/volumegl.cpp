@@ -90,6 +90,12 @@ void VolumeGL::bindTexture(GLenum texUnit) const {
     glActiveTexture(GL_TEXTURE0);
 }
 
+void VolumeGL::bindImageTexture(GLenum texUnit, GLenum texNumber, GLenum MEM_ACCESS) const {
+    glActiveTexture(texUnit);
+    glBindImageTexture(texNumber, texture_->getID(), 0, GL_FALSE, 0, MEM_ACCESS, texture_->getInternalFormat());
+    glActiveTexture(GL_TEXTURE0);
+}
+
 void VolumeGL::unbindTexture() const { texture_->unbind(); }
 
 void VolumeGL::setDimensions(size3_t dimensions) { texture_->uploadAndResize(nullptr, dimensions); }
