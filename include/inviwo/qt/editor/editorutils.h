@@ -46,11 +46,10 @@ namespace inviwo::utilqt {
 IVW_QTEDITOR_API ivec2 findSpaceForProcessors(QPoint srcPos, const std::vector<Processor*>& added,
                                               const std::vector<Processor*>& current);
 
-IVW_QTEDITOR_API void addProcessorAndConnect(std::shared_ptr<Processor> processor,
+IVW_QTEDITOR_API void addProcessorAndConnect(const std::shared_ptr<Processor>& processor,
                                              ProcessorNetwork* net, Outport* outport);
 
-
-IVW_QTEDITOR_API void addProcessorAndConnect(std::shared_ptr<Processor> processor,
+IVW_QTEDITOR_API void addProcessorAndConnect(const std::shared_ptr<Processor>& processor,
                                              ProcessorNetwork* net, Processor* source);
 
 }  // namespace inviwo::utilqt

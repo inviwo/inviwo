@@ -50,11 +50,12 @@ public:
     using Type = ProcessorListModel::Node::Type;
     using Grouping = ProcessorListModel::Grouping;
 
-    ProcessorListFilter(ProcessorNetwork* net, QObject* parent = nullptr);
+    explicit ProcessorListFilter(QAbstractItemModel* model, ProcessorNetwork* net,
+                                 QObject* parent = nullptr);
 
     virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override;
 
-    void setCustomFilter(const QString filter);
+    void setCustomFilter(const QString& filter);
 
     Document description() const;
 

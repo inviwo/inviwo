@@ -1222,8 +1222,8 @@ QPointF NetworkEditor::snapToGrid(QPointF pos) {
     float ox = pos.x() > 0.0f ? 0.5f : -0.5f;
     float oy = pos.y() > 0.0f ? 0.5f : -0.5f;
 
-    result.setX((int(pos.x() / gridSpacing + ox)) * gridSpacing);
-    result.setY((int(pos.y() / gridSpacing + oy)) * gridSpacing);
+    result.setX((static_cast<int>(pos.x() / gridSpacing + ox)) * gridSpacing);
+    result.setY((static_cast<int>(pos.y() / gridSpacing + oy)) * gridSpacing);
     return result;
 }
 
@@ -1235,18 +1235,20 @@ void NetworkEditor::drawBackground(QPainter* painter, const QRectF& rect) {
     painter->save();
     painter->setWorldMatrixEnabled(true);
     painter->fillRect(rect, QColor(0x7d, 0x80, 0x83));
-    qreal left = int(rect.left()) - (int(rect.left()) % gridSpacing);
-    qreal top = int(rect.top()) - (int(rect.top()) % gridSpacing);
+    const qreal left =
+        static_cast<int>(rect.left()) - (static_cast<int>(rect.left()) % gridSpacing);
+    const qreal top = static_cast<int>(rect.top()) - (static_cast<int>(rect.top()) % gridSpacing);
     QVarLengthArray<QLineF, 100> linesX;
     painter->setPen(QColor(153, 153, 153));
 
-    for (qreal x = left; x < rect.right(); x += gridSpacing)
+    for (qreal x = left; x < rect.right(); x += gridSpacing) {
         linesX.append(QLineF(x, rect.top(), x, rect.bottom()));
-
+    }
     QVarLengthArray<QLineF, 100> linesY;
 
-    for (qreal y = top; y < rect.bottom(); y += gridSpacing)
+    for (qreal y = top; y < rect.bottom(); y += gridSpacing) {
         linesY.append(QLineF(rect.left(), y, rect.right(), y));
+    }
 
     painter->drawLines(linesX.data(), static_cast<int>(linesX.size()));
     painter->drawLines(linesY.data(), static_cast<int>(linesY.size()));

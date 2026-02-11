@@ -91,7 +91,7 @@ ivec2 findSpaceForProcessors(QPoint srcPos, const std::vector<Processor*>& added
     return offset;
 }
 
-void addProcessorAndConnect(std::shared_ptr<Processor> processor, ProcessorNetwork* net,
+void addProcessorAndConnect(const std::shared_ptr<Processor>& processor, ProcessorNetwork* net,
                             Outport* outport) {
 
     const auto srcPos = utilqt::toQPoint(util::getPosition(outport->getProcessor()));
@@ -108,7 +108,7 @@ void addProcessorAndConnect(std::shared_ptr<Processor> processor, ProcessorNetwo
     }
 }
 
-void addProcessorAndConnect(std::shared_ptr<Processor> processor, ProcessorNetwork* net,
+void addProcessorAndConnect(const std::shared_ptr<Processor>& processor, ProcessorNetwork* net,
                             Processor* source) {
 
     const auto srcPos = utilqt::toQPoint(util::getPosition(source));

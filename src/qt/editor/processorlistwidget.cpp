@@ -72,6 +72,9 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     : InviwoDockWidget(tr("Processors"), parent, "ProcessorTreeWidget")
     , app_{parent->getInviwoApplication()}
     , win_{parent}
+    , model_{new ProcessorListModel(this)}
+    , filter_{new ProcessorListFilter(model_, app_->getProcessorNetwork(), this)}
+    , view_{new ProcessorListView(filter_, this)}
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -125,10 +128,6 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     listViewLayout->addWidget(listView_);
     vLayout->addLayout(listViewLayout);
 
-    model_ = new ProcessorListModel(this);
-    filter_ = new ProcessorListFilter(app_->getProcessorNetwork(), this);
-    filter_->setSourceModel(model_);
-
     lineEdit_->setToolTip(utilqt::toQString(filter_->description()));
     connect(lineEdit_, &QLineEdit::textChanged, filter_,
             [this](const QString& str) { filter_->setCustomFilter(str); });
@@ -139,8 +138,6 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
         model_->setGrouping(grouping);
         filter_->sort(0);
     });
-
-    view_ = new ProcessorListView(filter_, this);
 
     QObject::connect(filter_, &QAbstractItemModel::modelReset, view_,
                      &ProcessorListView::expandAll);
@@ -209,7 +206,7 @@ void ProcessorListWidget::addSelectedProcessor() {
     }
 }
 
-std::shared_ptr<Processor> ProcessorListWidget::createProcessor(QString cid) {
+std::shared_ptr<Processor> ProcessorListWidget::createProcessor(const QString& cid) {
     // Make sure the default render context is active to make sure any FBOs etc created in
     // the processor belong to the default context.
     rendercontext::activateDefault();
@@ -259,7 +256,7 @@ void ProcessorListWidget::addProcessor(QString className) {
 
 void ProcessorListWidget::buildList() {
     std::vector<ProcessorListModel::Item> items;
-    auto docs = win_->getDocs();
+    const auto docs = win_->getDocs();
     for (auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
         for (auto& processor : inviwoModule.getProcessors()) {
             auto* help = docs->get(processor->getClassIdentifier());
@@ -285,8 +282,8 @@ void ProcessorListWidget::buildList() {
 }
 
 void ProcessorListWidget::onRegister(ProcessorFactoryObject* pfo) {
-    auto docs = win_->getDocs();
-    auto help = docs->get(pfo->getClassIdentifier());
+    const auto docs = win_->getDocs();
+    const auto* help = docs->get(pfo->getClassIdentifier());
 
     const auto moduleId =
         util::getProcessorModuleIdentifier(pfo->getClassIdentifier(), *app_).value_or("Unknown");
