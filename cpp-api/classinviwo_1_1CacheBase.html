@@ -120,8 +120,6 @@ $(function(){initNavTree('classinviwo_1_1CacheBase.html','','classinviwo_1_1Cach
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af7f1dfcf054961e3e3c7683c7e7963d1" id="r_af7f1dfcf054961e3e3c7683c7e7963d1"><td class="memItemLeft"><a id="af7f1dfcf054961e3e3c7683c7e7963d1" name="af7f1dfcf054961e3e3c7683c7e7963d1"></a>
-&#160;</td><td class="memItemRight"><b>CacheBase</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
 <tr class="memitem:abf418e6dd2dfc6bd759138221d2bf8c2" id="r_abf418e6dd2dfc6bd759138221d2bf8c2"><td class="memItemLeft"><a id="abf418e6dd2dfc6bd759138221d2bf8c2" name="abf418e6dd2dfc6bd759138221d2bf8c2"></a>
 virtual bool&#160;</td><td class="memItemRight"><b>hasCache</b> (std::string_view key)=0</td></tr>
 <tr class="memitem:a6c0a12f477e55c30244e7381a94f089a" id="r_a6c0a12f477e55c30244e7381a94f089a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6c0a12f477e55c30244e7381a94f089a">invalidate</a> (<a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel, <a class="el" href="classinviwo_1_1Property.html">Property</a> *modifiedProperty) override</td></tr>
@@ -129,6 +127,7 @@ virtual bool&#160;</td><td class="memItemRight"><b>hasCache</b> (std::string_vie
 <tr class="memitem:a79e8ec16f1c69f7a0b0eb9fd0bbcabd1" id="r_a79e8ec16f1c69f7a0b0eb9fd0bbcabd1"><td class="memItemLeft"><a id="a79e8ec16f1c69f7a0b0eb9fd0bbcabd1" name="a79e8ec16f1c69f7a0b0eb9fd0bbcabd1"></a>
 virtual const std::string &amp;&#160;</td><td class="memItemRight"><b>loadedKey</b> () const =0</td></tr>
 <tr class="memitem:ad58575c5f31f213b04aca771ef21142e" id="r_ad58575c5f31f213b04aca771ef21142e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad58575c5f31f213b04aca771ef21142e">onProcessorNetworkEvaluationBegin</a> () override</td></tr>
+<tr class="memitem:a819b9c46120987c1dad0101611ffd440" id="r_a819b9c46120987c1dad0101611ffd440"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a819b9c46120987c1dad0101611ffd440">setNetwork</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network) override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Processor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1Processor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a></td></tr>
 <tr class="memitem:a06088cebce8b3d454b56abf70458b62e inherit pub_methods_classinviwo_1_1Processor" id="r_a06088cebce8b3d454b56abf70458b62e"><td class="memItemLeft">
 virtual void&#160;</td><td class="memItemRight"><b>accept</b> (<a class="el" href="classinviwo_1_1NetworkVisitor.html">NetworkVisitor</a> &amp;visitor)</td></tr>
@@ -212,8 +211,6 @@ bool&#160;</td><td class="memItemRight"><b>hasProcessorWidget</b> () const</td><
 <tr class="memitem:a2513b9cef41e33490f50e8751f21ef46 inherit pub_methods_classinviwo_1_1Processor" id="r_a2513b9cef41e33490f50e8751f21ef46"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a2513b9cef41e33490f50e8751f21ef46">serialize</a> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const override</td></tr>
 <tr class="memitem:a95d35c34cb770108c90609f062d33940 inherit pub_methods_classinviwo_1_1Processor" id="r_a95d35c34cb770108c90609f062d33940"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a95d35c34cb770108c90609f062d33940">setDisplayName</a> (std::string_view displayName)</td></tr>
 <tr class="memitem:a84911c1af44e34f3aa57fababe2b545f inherit pub_methods_classinviwo_1_1Processor" id="r_a84911c1af44e34f3aa57fababe2b545f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a84911c1af44e34f3aa57fababe2b545f">setIdentifier</a> (std::string_view identifier)</td></tr>
-<tr class="memitem:a9ab6a20f0cb1face8839a8b1cfc416d5 inherit pub_methods_classinviwo_1_1Processor" id="r_a9ab6a20f0cb1face8839a8b1cfc416d5"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>setNetwork</b> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *network)</td></tr>
 <tr class="memitem:a459b8e1d22f5dd4ffa065e0d1830c18c inherit pub_methods_classinviwo_1_1Processor" id="r_a459b8e1d22f5dd4ffa065e0d1830c18c"><td class="memItemLeft">
 virtual void&#160;</td><td class="memItemRight"><b>setProcessorWidget</b> (std::unique_ptr&lt; <a class="el" href="classinviwo_1_1ProcessorWidget.html">ProcessorWidget</a> &gt; processorWidget)</td></tr>
 <tr class="memitem:a3b59c6bac28be62250911b9e1e006f1a inherit pub_methods_classinviwo_1_1Processor" id="r_a3b59c6bac28be62250911b9e1e006f1a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Processor.html#a3b59c6bac28be62250911b9e1e006f1a">setValid</a> () override</td></tr>
@@ -614,6 +611,33 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorNetworkEvaluationObserver.html">inviwo::ProcessorNetworkEvaluationObserver</a>.</p>
+
+</div>
+</div>
+<a id="a819b9c46120987c1dad0101611ffd440" name="a819b9c46120987c1dad0101611ffd440"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a819b9c46120987c1dad0101611ffd440">&#9670;&#160;</a></span>setNetwork()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CacheBase::setNetwork </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *</td>          <td class="paramname"><span class="paramname"><em>network</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
 
 </div>
 </div>
