@@ -68,6 +68,10 @@ public:
     using Type = ProcessorListModel::Node::Type;
 
     ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
+    ProcessorListWidget(const ProcessorListWidget&) = delete;
+    ProcessorListWidget& operator=(const ProcessorListWidget&) = delete;
+    ProcessorListWidget(ProcessorListWidget&&) = delete;
+    ProcessorListWidget& operator=(ProcessorListWidget&&) = delete;
     virtual ~ProcessorListWidget();
 
     void focusSearch(bool selectAll = true);
@@ -75,7 +79,7 @@ public:
     void addProcessor(QString className);
     void recordProcessorUse(const std::string& id);
 
-    std::shared_ptr<Processor> createProcessor(QString cid);
+    std::shared_ptr<Processor> createProcessor(const QString& cid);
 
     Grouping getGrouping() const;
 
@@ -87,7 +91,7 @@ protected:
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private:
-    virtual void onRegister(ProcessorFactoryObject* item) override;
+    virtual void onRegister(ProcessorFactoryObject* pfo) override;
     virtual void onUnRegister(ProcessorFactoryObject*) override;
 
     virtual void closeEvent(QCloseEvent* event) override;
@@ -98,7 +102,7 @@ private:
     ProcessorListModel* model_;
     ProcessorListFilter* filter_;
     ProcessorListView* view_;
-    
+
     QComboBox* listView_;
     QLineEdit* lineEdit_;
 

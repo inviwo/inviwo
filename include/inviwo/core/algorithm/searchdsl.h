@@ -113,6 +113,7 @@ public:
 
         return true;
     }
+    const std::string& getSearchString() const { return searchStr_; }
 
     bool match(const Ts&... things) const {
         for (const auto& [item, str, data] : current_) {

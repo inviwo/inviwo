@@ -38,7 +38,6 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
-
 #include <QMouseEvent>
 #include <QApplication>
 #include <QMenu>
@@ -79,9 +78,10 @@ void ProcessorListView::mousePressEvent(QMouseEvent* e) {
 
 void ProcessorListView::mouseMoveEvent(QMouseEvent* e) {
     if ((e->buttons() & Qt::LeftButton) && dragStartPosition_) {
-        if ((e->pos() - *dragStartPosition_).manhattanLength() < QApplication::startDragDistance())
+        if ((e->pos() - *dragStartPosition_).manhattanLength() <
+            QApplication::startDragDistance()) {
             return;
-
+        }
         using Role = ProcessorListModel::Role;
         using Type = ProcessorListModel::Node::Type;
 
@@ -92,7 +92,7 @@ void ProcessorListView::mouseMoveEvent(QMouseEvent* e) {
             auto id = utilqt::getData(index, Role::ClassIdentifier).toString();
             try {
                 if (auto p = processorTreeWidget_->createProcessor(id)) {
-                    auto drag = new ProcessorDragObject(this, std::move(p));
+                    auto* drag = new ProcessorDragObject(this, std::move(p));
                     drag->exec(Qt::MoveAction);
                 }
             } catch (const std::exception& e) {
@@ -125,7 +125,6 @@ void ProcessorListView::focusOutEvent(QFocusEvent* e) { QTreeView::focusOutEvent
 
 void ProcessorListView::showContextMenu(const QPoint& p) {
     using Role = ProcessorListModel::Role;
-    using Type = ProcessorListModel::Node::Type;
 
     auto index = indexAt(p);
     auto id = utilqt::getData(index, Role::ClassIdentifier).toString();
@@ -135,7 +134,7 @@ void ProcessorListView::showContextMenu(const QPoint& p) {
          (processorTreeWidget_->getGrouping() != ProcessorListModel::Grouping::MostUsed));
 
     QMenu menu(this);
-    auto addItem = menu.addAction("&Add Processor");
+    auto* addItem = menu.addAction("&Add Processor");
     addItem->setEnabled(!id.isEmpty());
     QObject::connect(addItem, &QAction::triggered, this,
                      [&, id]() { processorTreeWidget_->addProcessor(id); });
@@ -157,7 +156,7 @@ void ProcessorListView::showContextMenu(const QPoint& p) {
         expand(index);
     });
 
-    auto collapse = menu.addAction("&Collapse All Categories");
+    auto* collapse = menu.addAction("&Collapse All Categories");
     collapse->setEnabled(enableExpandCollapse);
     QObject::connect(collapse, &QAction::triggered, this, [&]() { collapseAll(); });
 
@@ -168,7 +167,7 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, std::shared_ptr<Proces
     : QDrag(source) {
     auto img = QPixmap::fromImage(utilqt::generateProcessorPreview(*processor, 1.0));
     setPixmap(img);
-    auto mime = new ProcessorMimeData(std::move(processor));
+    auto* mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);
     setHotSpot(QPoint(img.width() / 2, img.height() / 2));
 }

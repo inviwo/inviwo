@@ -46,13 +46,26 @@ void DataFrameSortFilterProxy::setManager(BrushingAndLinkingManager& manager) {
     manager_ = &manager;
 }
 
-void DataFrameSortFilterProxy::brushingUpdate() { invalidateFilter(); }
+void DataFrameSortFilterProxy::brushingUpdate() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
+    invalidateFilter();
+#else
+    beginFilterChange();
+    endFilterChange();
+#endif
+}
 
 void DataFrameSortFilterProxy::setFiltering(bool enable) {
     if (filtering_ == enable) return;
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
     filtering_ = enable;
     invalidateFilter();
+#else
+    beginFilterChange();
+    filtering_ = enable;
+    endFilterChange();
+#endif
 }
 
 bool DataFrameSortFilterProxy::getFiltering() const { return filtering_; }

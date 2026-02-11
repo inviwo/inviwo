@@ -34,12 +34,14 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 namespace {
 
 constexpr auto strMatch = [](std::string_view cont, std::string_view s) {
-    auto icomp = [](std::string::value_type l1, std::string::value_type r1) {
+    constexpr auto icomp = [](std::string_view::value_type l1, std::string_view::value_type r1) {
         return std::tolower(l1) == std::tolower(r1);
     };
     return std::search(cont.begin(), cont.end(), s.begin(), s.end(), icomp) != cont.end();
@@ -54,41 +56,67 @@ constexpr auto matcher = [](auto mptr) {
 
 }  // namespace
 
-ProcessorListFilter::ProcessorListFilter(ProcessorNetwork* net, QObject* parent)
+ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNetwork* net,
+                                         QObject* parent)
     : QSortFilterProxyModel(parent)
-    , dsl_{{{"identifier", "i", "processor class identifier", true,
-             matcher(&ProcessorInfo::classIdentifier)},
-            {"name", "n", "processor displayname", true, matcher(&ProcessorInfo::displayName)},
-            {"category", "c", "processor category", true, matcher(&ProcessorInfo::category)},
-            {"tags", "#", "processor tags", true,
-             [](std::string_view str, const std::any&, const Item& item) {
-                 for (const auto& tag : item.info.tags.tags_) {
-                     if (strMatch(tag.getString(), str)) return true;
-                 }
-                 return false;
-             }},
-            {"state", "", "processor category", false,
-             [](std::string_view str, const std::any&, const Item& item) {
-                 return strMatch(toString(item.info.codeState), str);
-             }},
-            {"module", "m", "processor module", false,
-             [](std::string_view str, const std::any&, const Item& item) {
-                 return strMatch(item.moduleId, str);
-             }},
-
-            {"pre", "p", "predecessor processor identifier", false,
-             [](std::string_view, const std::any& data, const Item& item) {
-                 auto* predecessor = std::any_cast<Processor*>(data);
-                 if (!predecessor) return false;
-                 return std::ranges::any_of(predecessor->getOutports(), [&](Outport* p) {
-                     return help::matchOutportToInports(p->getClassIdentifier(), item.help);
-                 });
-             },
-             [net](std::string_view processorId) -> std::any {
+    , dsl_{{{.name = "identifier",
+             .shortcut = "i",
+             .description = "processor class identifier",
+             .global = true,
+             .match = matcher(&ProcessorInfo::classIdentifier)},
+            {.name = "name",
+             .shortcut = "n",
+             .description = "processor displayname",
+             .global = true,
+             .match = matcher(&ProcessorInfo::displayName)},
+            {.name = "category",
+             .shortcut = "c",
+             .description = "processor category",
+             .global = true,
+             .match = matcher(&ProcessorInfo::category)},
+            {.name = "tags",
+             .shortcut = "#",
+             .description = "processor tags",
+             .global = true,
+             .match =
+                 [](std::string_view str, const std::any&, const Item& item) {
+                     for (const auto& tag : item.info.tags.tags_) {
+                         if (strMatch(tag.getString(), str)) return true;
+                     }
+                     return false;
+                 }},
+            {.name = "state",
+             .shortcut = "",
+             .description = "processor category",
+             .global = false,
+             .match =
+                 [](std::string_view str, const std::any&, const Item& item) {
+                     return strMatch(fmt::to_string(item.info.codeState), str);
+                 }},
+            {.name = "module",
+             .shortcut = "m",
+             .description = "processor module",
+             .global = false,
+             .match = [](std::string_view str, const std::any&,
+                         const Item& item) { return strMatch(item.moduleId, str); }},
+            {.name = "pre",
+             .shortcut = "p",
+             .description = "predecessor processor identifier",
+             .global = false,
+             .match =
+                 [](std::string_view, const std::any& data, const Item& item) {
+                     auto* predecessor = std::any_cast<Processor*>(data);
+                     if (!predecessor) return false;
+                     return std::ranges::any_of(predecessor->getOutports(), [&](Outport* p) {
+                         return help::matchOutportToInports(p->getClassIdentifier(), item.help);
+                     });
+                 },
+             .onToken = [net](std::string_view processorId) -> std::any {
                  return net->getProcessorByIdentifier(processorId);
              }}}} {
-
     setRecursiveFilteringEnabled(true);
+
+    setSourceModel(model);
 }
 
 bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const {
@@ -101,10 +129,19 @@ bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& so
     }
 };
 
-void ProcessorListFilter::setCustomFilter(const QString filter) {
+void ProcessorListFilter::setCustomFilter(const QString& filter) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
     if (dsl_.setSearchString(utilqt::fromQString(filter))) {
         invalidateFilter();
     }
+#else
+    const auto str = utilqt::fromQString(filter);
+    if (dsl_.getSearchString() != str) {
+        beginFilterChange();
+        dsl_.setSearchString(str);
+        endFilterChange();
+    }
+#endif
 }
 
 Document ProcessorListFilter::description() const {
