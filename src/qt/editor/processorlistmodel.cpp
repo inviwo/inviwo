@@ -70,12 +70,12 @@ ProcessorListModel::ProcessorListModel(QObject* parent)
 
 QModelIndex ProcessorListModel::index(int row, int column, const QModelIndex& parent) const {
     Node* parentNode = indexToNode(parent);
-    if (!parentNode) return QModelIndex();
+    if (!parentNode) return {};
 
     Node* childNode = parentNode->child(row);
     if (childNode) return createIndex(row, column, childNode);
 
-    return QModelIndex();
+    return {};
 }
 Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
     if (!index.isValid()) return Qt::NoItemFlags;
@@ -91,7 +91,7 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
     }
 }
 QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid()) return QVariant();
+    if (!index.isValid()) return {};
     auto* node = indexToNode(index);
 
     switch (node->type) {
@@ -155,8 +155,9 @@ QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
     }
     return {};
 }
-QVariant ProcessorListModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    return QVariant();
+QVariant ProcessorListModel::headerData(int /*section*/, Qt::Orientation /*orientation*/,
+                                        int /*role*/) const {
+    return {};
 }
 QModelIndex ProcessorListModel::parent(const QModelIndex& index) const {
 
@@ -173,9 +174,9 @@ QModelIndex ProcessorListModel::parent(const QModelIndex& index) const {
 }
 int ProcessorListModel::rowCount(const QModelIndex& parent) const {
     auto* node = indexToNode(parent);
-    return node ? static_cast<int>(node->size()) : 0;
+    return node ? node->size() : 0;
 }
-int ProcessorListModel::columnCount(const QModelIndex& parent) const { return 2; }
+int ProcessorListModel::columnCount(const QModelIndex&) const { return 2; }
 
 void ProcessorListModel::setItems(std::vector<Item> items) {
     beginResetModel();
@@ -297,7 +298,7 @@ void ProcessorListModel::build() {
 }
 
 bool ProcessorListModel::updateItem(std::string_view classIdentifier,
-                                    std::function<bool(Item&)> updater) {
+                                    const std::function<bool(Item&)>& updater) {
     auto it = classIdentifierToItem_.find(classIdentifier);
     if (it != classIdentifierToItem_.end()) {
         if (updater(*it->second)) {

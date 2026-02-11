@@ -45,7 +45,7 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API ProcessorListModel : public QAbstractItemModel {
 public:
-    enum class Role { Type = Qt::UserRole + 100, ClassIdentifier, Item, Sort };
+    enum class Role : int { Type = Qt::UserRole + 100, ClassIdentifier, Item, Sort };
     struct Item {
         ProcessorInfo info;
         help::HelpProcessor help;
@@ -55,7 +55,7 @@ public:
         size_t useCount;
     };
     struct Node {
-        enum class Type { Root, Group, Item };
+        enum class Type : std::uint8_t { Root, Group, Item };
         Type type = Type::Root;
         QString name;
         QVariant sort;
@@ -70,26 +70,35 @@ public:
         }
         int size() const { return static_cast<int>(children.size()); }
     };
-    enum class Grouping { Alphabetical, Categorical, CodeState, Module, LastUsed, MostUsed };
+    enum class Grouping : std::uint8_t {
+        Alphabetical,
+        Categorical,
+        CodeState,
+        Module,
+        LastUsed,
+        MostUsed
+    };
     Q_ENUM(Grouping);
 
     explicit ProcessorListModel(QObject* parent = nullptr);
+    ProcessorListModel(const ProcessorListModel&) = delete;
+    ProcessorListModel& operator=(const ProcessorListModel&) = delete;
+    ProcessorListModel(ProcessorListModel&&) = delete;
+    ProcessorListModel& operator=(ProcessorListModel&&) = delete;
     virtual ~ProcessorListModel() = default;
 
-    virtual QModelIndex index(int row, int column,
-                              const QModelIndex& parent = QModelIndex()) const override;
+    virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override;
     virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
     virtual QVariant data(const QModelIndex& index, int role) const override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role = Qt::DisplayRole) const override;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     virtual QModelIndex parent(const QModelIndex& index) const override;
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    virtual int rowCount(const QModelIndex& parent) const override;
+    virtual int columnCount(const QModelIndex& parent) const override;
 
     void setItems(std::vector<Item> items);
     void setGrouping(Grouping grouping);
 
-    bool updateItem(std::string_view classIdentifier, std::function<bool(Item&)> updater);
+    bool updateItem(std::string_view classIdentifier, const std::function<bool(Item&)>& updater);
     void addItem(Item item);
     void removeItem(std::string_view classIdentifier);
 

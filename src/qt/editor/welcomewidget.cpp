@@ -251,10 +251,19 @@ public:
         return dsl_.match(index);
     };
 
-    void setCustomFilter(const QString filter) {
+    void setCustomFilter(const QString& filter) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
         if (dsl_.setSearchString(utilqt::fromQString(filter))) {
             invalidateFilter();
         }
+#else
+        const auto str = utilqt::fromQString(filter);
+        if (dsl_.getSearchString() != str) {
+            beginFilterChange();
+            dsl_.setSearchString(str);
+            endFilterChange();
+        }
+#endif
     }
 
     Document description() const {

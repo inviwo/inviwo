@@ -1794,7 +1794,7 @@ void InviwoMainWindow::updateProcessorDocs() {
     connect(
         loader.get(), &ProcessorDocsLoader::done, this,
         [this](std::shared_ptr<help::ProcessorDocs> docs) {
-            this->docs_ = docs;
+            this->docs_ = std::move(docs);
             processorTreeWidget_->buildList();
         },
         Qt::QueuedConnection);

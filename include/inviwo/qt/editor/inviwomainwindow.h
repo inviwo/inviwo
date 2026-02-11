@@ -75,7 +75,7 @@ class EditorSettings;
 
 namespace help {
 class ProcessorDocs;
-}
+}  // namespace help
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow {
 public:
@@ -322,7 +322,7 @@ class IVW_QTEDITOR_API ProcessorDocsLoader
       public std::enable_shared_from_this<ProcessorDocsLoader> {
     Q_OBJECT
 public:
-    ProcessorDocsLoader(InviwoApplication* app);
+    explicit ProcessorDocsLoader(InviwoApplication* app);
     void operator()();
 
 signals:

@@ -50,6 +50,10 @@ class IVW_QTEDITOR_API ProcessorListView : public QTreeView {
 
 public:
     ProcessorListView(QAbstractItemModel* model, ProcessorListWidget* parent);
+    ProcessorListView(const ProcessorListView&) = delete;
+    ProcessorListView& operator=(const ProcessorListView&) = delete;
+    ProcessorListView(ProcessorListView&&) = delete;
+    ProcessorListView& operator=(ProcessorListView&&) = delete;
     virtual ~ProcessorListView() = default;
 
 protected:
