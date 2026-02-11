@@ -39,19 +39,20 @@
 #include <fmt/compile.h>
 
 // Workaround for FMT_COMPILE not being on when using clang-tidy
-// See https://github.com/fmtlib/fmt/blob/f99d53024782bf928b07839140862163f15ade5b/include/fmt/format.h#L4288-L4307
+// See
+// https://github.com/fmtlib/fmt/blob/f99d53024782bf928b07839140862163f15ade5b/include/fmt/format.h#L4288-L4307
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define IVW_COMPILE_STRING(s)                                                  \
-    [] {                                                                       \
-        struct IVW_COMPILE_STRING : fmt::compiled_string {                     \
-            using char_type = char;                                            \
-            constexpr explicit operator fmt::basic_string_view<char>() const { \
-                return fmt::detail::compile_string_to_view<char>(s);           \
-            }                                                                  \
-        };                                                                     \
-        using IVW_STRING_VIEW = fmt::basic_string_view<char>;                  \
-        fmt::detail::ignore_unused(IVW_STRING_VIEW(IVW_COMPILE_STRING()));     \
-        return IVW_COMPILE_STRING();                                           \
+#define IVW_COMPILE_STRING(s)                                                       \
+    [] {                                                                            \
+        struct IVW_COMPILE_STRING : fmt::compiled_string {                          \
+            using char_type = char;                                                 \
+            constexpr explicit operator fmt::basic_string_view<char_type>() const { \
+                return fmt::detail::compile_string_to_view<char_type>(s);           \
+            }                                                                       \
+        };                                                                          \
+        using IVW_STRING_VIEW = fmt::basic_string_view<char>;                       \
+        fmt::detail::ignore_unused(IVW_STRING_VIEW(IVW_COMPILE_STRING()));          \
+        return IVW_COMPILE_STRING();                                                \
     }()
 
 namespace inviwo {
