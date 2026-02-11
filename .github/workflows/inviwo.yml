@@ -89,10 +89,20 @@ jobs:
           # Run
           - system: 'macos'
             configuration: Release
-            run: './Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+            run: |
+              './Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+              if [ $? -nq 0 ]
+              then
+                lldb -o run -- ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
+              if
           - system: 'macos'
             configuration: Debug
-            run: './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+            run: |
+              './Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+              if [ $? -nq 0 ]
+              then
+                lldb -o run -- ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
+              if
 
           # Extra targets
           - system: 'windows'
