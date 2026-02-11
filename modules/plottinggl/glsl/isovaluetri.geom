@@ -27,6 +27,8 @@
  * 
  *********************************************************************************/
 
+#include "utils/structs.glsl"
+
 layout(points) in;
 layout(triangle_strip, max_vertices=18) out;
 
@@ -56,6 +58,8 @@ uniform mat4 trafo = mat4(1);
 uniform vec2 screenDim;
 uniform vec2 screenDimInv;
 
+uniform RangeConversionMap tfRange = RangeConversionMap(0.0, 1.0, 0.0);
+
 flat in int instanceID[];
 out vec4 color_;
 
@@ -64,17 +68,19 @@ vec4 convertScreenToNDC(vec2 v, float z) {
 }
 
 void emit(in vec2 pos, in vec4 color, float z) {
-    // gl_Position = trafo * vec4(pos * screenDimInv + vec2(position, 0), 0, 1);
     color_ = color;
     gl_Position = trafo * convertScreenToNDC(pos, z);
-    // gl_Position = trafo * vec4(pos * screenDimInv, 0, 1);
     EmitVertex();
 }
 
 void main() {
     const float sqrt3half = 0.8660254037844386;
 
-    float pos = isovalues.values[instanceID[0]] * screenDim.x;
+    float isoPosition = isovalues.values[instanceID[0]];
+    // renormalize position with respect to selected TF range
+    isoPosition = (isoPosition - tfRange.outputOffset) / tfRange.scale + tfRange.inputOffset;
+
+    float pos = isoPosition * screenDim.x;
     vec4 isocolor = vec4(isovalues.colors[instanceID[0]].rgb, 1.0);
 
     // render border of two triangles

@@ -29,55 +29,48 @@
 
 #include <modules/plottinggl/processors/colorscalelegend.h>
 
-#include <inviwo/core/algorithm/markdown.h>                           // for operator""_help
-#include <inviwo/core/datastructures/datamapper.h>                    // for DataMapper
-#include <inviwo/core/datastructures/unitsystem.h>                    // for Axis
-#include <inviwo/core/ports/datainport.h>                             // for DataInport
-#include <inviwo/core/ports/imageport.h>                              // for ImageInport, ImageO...
-#include <inviwo/core/ports/volumeport.h>                             // for VolumeInport
-#include <inviwo/core/processors/processor.h>                         // for Processor
-#include <inviwo/core/processors/processorinfo.h>                     // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                    // for CodeState, CodeStat...
-#include <inviwo/core/processors/processortags.h>                     // for Tags
-#include <inviwo/core/properties/boolproperty.h>                      // for BoolProperty
-#include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
-#include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty, Opt...
-#include <inviwo/core/properties/ordinalproperty.h>                   // for IntProperty, FloatP...
-#include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
-#include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
-#include <inviwo/core/util/defaultvalues.h>                           // for Defaultvalues
-#include <inviwo/core/util/glmvec.h>                                  // for ivec2, vec2, vec4
-#include <inviwo/core/util/staticstring.h>                            // for operator+
-#include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
-#include <modules/fontrendering/properties/fontproperty.h>            // for FontProperty
-#include <modules/opengl/inviwoopengl.h>                              // for GL_ALWAYS, GL_ONE
-#include <modules/opengl/openglutils.h>                               // for Activate, BlendMode...
-#include <modules/opengl/geometry/meshgl.h>                           // for MeshGL
-#include <modules/opengl/rendering/meshdrawergl.h>                    // for MeshDrawerGL::Dra...
-#include <modules/opengl/shader/shader.h>                             // for Shader
-#include <modules/opengl/shader/shaderutils.h>                        // for setUniforms
-#include <modules/opengl/texture/textureunit.h>                       // for TextureUnitContainer
-#include <modules/opengl/texture/textureutils.h>                      // for activateAndClearTarget
-#include <modules/plotting/datastructures/axissettings.h>             // for AxisSettings::Orien...
-#include <modules/plotting/datastructures/majorticksettings.h>        // for TickStyle, TickStyl...
-#include <modules/plotting/properties/axisproperty.h>                 // for AxisProperty
-#include <modules/plotting/properties/axisstyleproperty.h>            // for AxisStyleProperty
-#include <modules/plotting/properties/plottextproperty.h>             // for PlotTextProperty
-#include <modules/plotting/properties/tickproperty.h>                 // for MajorTickProperty
-#include <modules/plottinggl/utils/axisrenderer.h>                    // for AxisRenderer
+#include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
+#include <inviwo/core/datastructures/datamapper.h>              // for DataMapper
+#include <inviwo/core/datastructures/unitsystem.h>              // for Axis
+#include <inviwo/core/ports/datainport.h>                       // for DataInport
+#include <inviwo/core/ports/imageport.h>                        // for ImageInport, ImageO...
+#include <inviwo/core/ports/volumeport.h>                       // for VolumeInport
+#include <inviwo/core/processors/processor.h>                   // for Processor
+#include <inviwo/core/processors/processorinfo.h>               // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>              // for CodeState, CodeStat...
+#include <inviwo/core/processors/processortags.h>               // for Tags
+#include <inviwo/core/properties/boolproperty.h>                // for BoolProperty
+#include <inviwo/core/properties/compositeproperty.h>           // for CompositeProperty
+#include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>              // for OptionProperty, Opt...
+#include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty, FloatP...
+#include <inviwo/core/algorithm/linearmap.h>                    // for util::linearMapToNo...
+#include <inviwo/core/util/glmvec.h>                            // for ivec2, vec2, vec4
+#include <modules/fontrendering/properties/fontproperty.h>      // for FontProperty
+#include <modules/opengl/inviwoopengl.h>                        // for GL_ALWAYS, GL_ONE
+#include <modules/opengl/openglutils.h>                         // for Activate, BlendMode...
+#include <modules/opengl/geometry/meshgl.h>                     // for MeshGL
+#include <modules/opengl/rendering/meshdrawergl.h>              // for MeshDrawerGL::Dra...
+#include <modules/opengl/shader/shader.h>                       // for Shader
+#include <modules/opengl/shader/shaderutils.h>                  // for setUniforms
+#include <modules/opengl/texture/textureunit.h>                 // for TextureUnitContainer
+#include <modules/opengl/texture/textureutils.h>                // for activateAndClearTarget
+#include <modules/plotting/datastructures/axissettings.h>       // for AxisSettings::Orien...
+#include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyl...
+#include <modules/plotting/properties/axisproperty.h>           // for AxisProperty
+#include <modules/plotting/properties/axisstyleproperty.h>      // for AxisStyleProperty
+#include <modules/plotting/properties/plottextproperty.h>       // for PlotTextProperty
+#include <modules/plotting/properties/tickproperty.h>           // for MajorTickProperty
+#include <modules/plottinggl/utils/axisrenderer.h>              // for AxisRenderer
 
-#include <array>        // for array
-#include <cmath>        // for ceil
-#include <memory>       // for shared_ptr
-#include <type_traits>  // for remove_extent_t
+#include <cmath>   // for ceil
+#include <memory>  // for shared_ptr
 
-#include <fmt/core.h>    // for basic_string_view, arg
+#include <fmt/format.h>
 #include <glm/vec2.hpp>  // for operator+, operator-
 #include <glm/gtx/vec_swizzle.hpp>
 
-namespace inviwo {
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ColorScaleLegend::processorInfo_{
@@ -92,40 +85,60 @@ const ProcessorInfo ColorScaleLegend::processorInfo_{
 const ProcessorInfo& ColorScaleLegend::getProcessorInfo() const { return processorInfo_; }
 
 ColorScaleLegend::ColorScaleLegend()
-    : Processor()
-    , inport_("inport", "Input image"_help)
-    , volumeInport_("volumeInport", "Volume used for data range"_help)
-    , outport_("outport", "Output image"_help)
-    , enabled_(
-          "enabled", "Enabled",
-          "The color legend will be rendered if enabled. Otherwise the input image is passed through."_help,
-          true)
-    , isotfComposite_("isotfComposite", "TF & Isovalues",
-                      "The transfer function used in the legend."_help, &volumeInport_)
-    , positioning_("positioning", "Positioning & Size")
-    , legendPresets_(
-          "legendPresets", "Presets",
-          "Adjust the placement of the legend on the canvas according to the presets."_help,
-          buttons(), InvalidationLevel::Valid)
-    , position_("position", "Position",
-                "Sets the legend position in screen coordinates [0,1]."_help, vec2(0.5f, 0.0f),
-                {vec2(0.0f), ConstraintBehavior::Editable},
-                {vec2(1.0f), ConstraintBehavior::Editable})
-    , margin_("margin", "Margin (in pixels)",
+    : Processor{}
+    , inport_{"inport", "Input image"_help}
+    , volumeInport_{"volumeInport", "Volume used for data range"_help}
+    , outport_{"outport", "Output image"_help}
+    , enabled_{"enabled", "Enabled",
+               "The color legend will be rendered if enabled. Otherwise the input image is passed through."_help,
+               true}
+    , isotfComposite_{"isotfComposite", "TF & Isovalues",
+                      "The transfer function used in the legend."_help, &volumeInport_}
+    , overrideTFRange_{"overrideTFRange", "Override TF Range", ""_help, false}
+    , dataValueRange_{"dataValueRange", "Value Range",
+                      MinMaxPropertyState<double>{
+                          .valueMin = 0.0, .valueMax = 1.0, .increment = 0.0001}
+                          .set("Value range of the input data"_help)
+                          .setRange({std::numeric_limits<double>::lowest(),
+                                     std::numeric_limits<double>::max()})
+                          .set(PropertySemantics::Text)
+                          .set(ReadOnly::Yes)}
+    , customTFValueRange_{"customTFValueRange", "Custom TF Range",
+                          MinMaxPropertyState<double>{
+                              .valueMin = 0.0, .valueMax = 1.0, .increment = 0.0001}
+                              .set("Custom range overriding the range of the TF"_help)
+                              .setRange({std::numeric_limits<double>::lowest(),
+                                         std::numeric_limits<double>::max()})
+                              .set(PropertySemantics::Text)}
+    , positioning_{"positioning", "Positioning & Size"}
+    , legendPresets_{"legendPresets", "Presets",
+                     "Adjust the placement of the legend on the canvas according to the presets."_help,
+                     buttons(), InvalidationLevel::Valid}
+    , position_{"position",
+                "Position",
+                "Sets the legend position in screen coordinates [0,1]."_help,
+                vec2{0.5f, 0.0f},
+                {vec2{0.0f}, ConstraintBehavior::Editable},
+                {vec2{1.0f}, ConstraintBehavior::Editable}}
+    , margin_{"margin", "Margin (in pixels}",
               util::ordinalCount(10, 100).set(
-                  "Sets the legend margin to canvas borders in pixels."_help))
-    , legendSize_("legendSize", "Legend Size", "Sets the legend width and height in pixel."_help,
-                  vec2(200, 25), {vec2(10, 10), ConstraintBehavior::Editable},
-                  {vec2(2000, 500), ConstraintBehavior::Editable})
-    , axisStyle_("style", "Style")
+                  "Sets the legend margin to canvas borders in pixels."_help)}
+    , legendSize_{"legendSize",
+                  "Legend Size",
+                  "Sets the legend width and height in pixel."_help,
+                  vec2{200, 25},
+                  {vec2{10, 10}, ConstraintBehavior::Editable},
+                  {vec2{2000, 500}, ConstraintBehavior::Editable}}
+    , axisStyle_{"style", "Style"}
     , labelType_{"titleType",
                  "Title Type",
                  {{"string", "Title String", LabelType::String},
                   {"data", "Title From Data", LabelType::Data},
                   {"custom", "Custom Format (example '{n}{u: [}')", LabelType::Custom}},
                  0}
-    , title_("title", "Legend Title", "Legend")
-    , backgroundStyle_("backgroundStyle", "Background",
+    , title_{"title", "Legend Title", "Legend"}
+    , backgroundStyle_{"backgroundStyle",
+                       "Background",
                        "Background style when dealing with transparent transfer functions."_help,
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
                         {"checkerBoard", "Checkerboard", BackgroundStyle::CheckerBoard},
@@ -133,35 +146,41 @@ ColorScaleLegend::ColorScaleLegend()
                         {"ceckerboardOpaque", "Split checkerboard/Opaque",
                          BackgroundStyle::CheckerboardAndOpaque},
                         {"opaque", "Opaque TF (ignore alpha)", BackgroundStyle::Opaque}},
-                       0)
-    , checkerBoardSize_("checkerBoardSize", "Checkerboard Size",
-                        "Size of the checkerboard cells in pixel."_help, 5.0f,
-                        {1.0f, ConstraintBehavior::Editable}, {20.0f, ConstraintBehavior::Editable})
-    , bgColor_("backgroundColor", "Background Color",
-               util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f))
-                   .set("Color of the solid background."_help))
-    , borderWidth_("borderWidth", "Border Width",
-                   util::ordinalCount(2, 10).set("Border width of the legend in pixel."_help))
-    , isovalues_("isovalues", "Show Isovalues", "Indicate isovalues with small triangles"_help,
-                 true)
-    , triSize_("triSize", "Triangle Size (pixel)",
+                       0}
+    , checkerBoardSize_{"checkerBoardSize",
+                        "Checkerboard Size",
+                        "Size of the checkerboard cells in pixel."_help,
+                        5.0f,
+                        {1.0f, ConstraintBehavior::Editable},
+                        {20.0f, ConstraintBehavior::Editable}}
+    , bgColor_{"backgroundColor", "Background Color",
+               util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f})
+                   .set("Color of the solid background."_help)}
+    , borderWidth_{"borderWidth", "Border Width",
+                   util::ordinalCount(2, 10).set("Border width of the legend in pixel."_help)}
+    , isovalues_{"isovalues", "Show Isovalues", "Indicate isovalues with small triangles"_help,
+                 true}
+    , triSize_{"triSize", "Triangle Size (pixel)",
                util::ordinalLength(10.0f, 50.0f)
                    .setInc(0.5f)
-                   .set("Size of the isovalue indicators in pixel."_help))
-    , shader_("img_texturequad.vert", "legend.frag")
-    , isoValueShader_("isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No)
-    , axis_("axis", "Scale Axis")
-    , axisRenderer_(axis_)
-    , isovalueMesh_(DrawType::Points, ConnectivityType::None) {
+                   .set("Size of the isovalue indicators in pixel."_help)}
+    , shader_{"img_texturequad.vert", "legend.frag"}
+    , isoValueShader_{"isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No}
+    , axis_{"axis", "Scale Axis"}
+    , axisRenderer_{axis_}
+    , isovalueMesh_{DrawType::Points, ConnectivityType::None} {
 
     isovalueMesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                            util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
-    isovalueMesh_.addIndices(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
+                            util::makeBuffer(std::vector<vec2>{vec2{0.0f}}));
+    isovalueMesh_.addIndices(Mesh::MeshInfo{.dt = DrawType::Points, .ct = ConnectivityType::None},
                              util::makeIndexBuffer({0u}));
 
     inport_.setOptional(true);
     volumeInport_.setOptional(true);
     addPorts(inport_, volumeInport_, outport_);
+
+    overrideTFRange_.addProperties(dataValueRange_, customTFValueRange_);
+    overrideTFRange_.setCollapsed(true);
 
     // legend position
     positioning_.addProperties(legendPresets_, margin_, position_, legendSize_);
@@ -183,11 +202,11 @@ ColorScaleLegend::ColorScaleLegend()
                (style == BackgroundStyle::CheckerboardAndOpaque);
     });
     bgColor_.visibilityDependsOn(backgroundStyle_,
-                                 [&](auto p) { return p.get() == BackgroundStyle::SolidColor; });
+                                 [](auto& p) { return p.get() == BackgroundStyle::SolidColor; });
 
     axisStyle_.registerProperty(axis_);
 
-    addProperties(enabled_, isotfComposite_, positioning_, axisStyle_, axis_);
+    addProperties(enabled_, isotfComposite_, overrideTFRange_, positioning_, axisStyle_, axis_);
 
     // set initial axis parameters
     axis_.width_ = 0;
@@ -198,37 +217,11 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.majorTicks_.style_.set(plot::TickStyle::Outside);
     axis_.setCurrentStateAsDefault();
 
-    auto updateTitle = [this]() {
-        switch (labelType_.get()) {
-            case LabelType::String:
-                axis_.setCaption(title_.get());
-                break;
-            case LabelType::Data:
-                if (auto volume = volumeInport_.getData()) {
-                    axis_.setCaption(fmt::format("{}{: [}", volume->dataMap.valueAxis.name,
-                                                 volume->dataMap.valueAxis.unit));
-                } else {
-                    axis_.setCaption("?");
-                }
-                break;
-            case LabelType::Custom:
-                if (auto volume = volumeInport_.getData()) {
-                    axis_.setCaption(fmt::format(fmt::runtime(title_.get()),
-                                                 fmt::arg("n", volume->dataMap.valueAxis.name),
-                                                 fmt::arg("u", volume->dataMap.valueAxis.unit)));
-                } else {
-                    axis_.setCaption("?");
-                }
-                break;
-            default:
-                axis_.setCaption(title_.get());
-                break;
-        }
-    };
+    auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
 
-    volumeInport_.onChange(updateTitle);
-    labelType_.onChange(updateTitle);
-    title_.onChange(updateTitle);
+    volumeInport_.onChange(updateFunc);
+    labelType_.onChange(updateFunc);
+    title_.onChange(updateFunc);
 
     isoValueShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -299,26 +292,38 @@ void ColorScaleLegend::process() {
     }
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
 
-    // update the legend range if a volume is connected to inport
-    if (volumeInport_.isChanged() && volumeInport_.hasData()) {
-        axis_.setRange(volumeInport_.getData()->dataMap.valueRange);
-    } else if (!volumeInport_.isConnected()) {
-        axis_.setRange(vec2(0, 1));
+    // determine value range
+    dvec2 dataValueRange{0.0, 1.0};
+    if (volumeInport_.isConnected() && volumeInport_.hasData()) {
+        dataValueRange = volumeInport_.getData()->dataMap.valueRange;
     }
+
+    dvec2 tfRange{dataValueRange};
+    double tfScale = 1.0;
+    double tfOffset = 0.0;
+    if (overrideTFRange_.isChecked()) {
+        tfRange = customTFValueRange_.get();
+        tfScale = (tfRange[1] - tfRange[0]) / (dataValueRange[1] - dataValueRange[0]);
+        tfOffset = (tfRange[0] - dataValueRange[0]) / (dataValueRange[1] - dataValueRange[0]);
+    }
+    dataValueRange_.set(dataValueRange);
+    axis_.setRange(tfRange);
 
     const ivec2 dimensions = outport_.getDimensions();
     const auto [bottomLeft, legendSize, axisStart, axisEnd] = getPositions(dimensions);
 
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     TextureUnitContainer units;
-    utilgl::Activate<Shader> activate(&shader_);
+    const utilgl::Activate<Shader> activate(&shader_);
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::setUniforms(shader_, axis_.color_, borderWidth_, backgroundStyle_, checkerBoardSize_,
                         isotfComposite_);
     shader_.setUniform("legendOrientation",
                        (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) ? 0 : 1);
+    shader_.setUniform("tfRange.scale", static_cast<float>(tfScale));
+    shader_.setUniform("tfRange.outputOffset", static_cast<float>(tfOffset));
 
     if (backgroundStyle_ == BackgroundStyle::NoBackground) {
         shader_.setUniform("backgroundColor", vec4(0.0f));
@@ -329,14 +334,14 @@ void ColorScaleLegend::process() {
     const ivec4 view{bottomLeft - ivec2{borderWidth_}, legendSize + ivec2{borderWidth_ * 2}};
     shader_.setUniform("viewport", view);
     {
-        utilgl::ViewportState viewport(view);
+        const utilgl::ViewportState viewport(view);
         utilgl::singleDrawImagePlaneRect();
 
         if (!isotfComposite_.isovalues_.get().empty() && isovalues_) {
             isoValueShader_.activate();
 
-            MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
-                                            isovalueMesh_.getDefaultMeshInfo());
+            const MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
+                                                  isovalueMesh_.getDefaultMeshInfo());
 
             if (axis_.getOrientation() == AxisSettings::Orientation::Horizontal) {
                 isoValueShader_.setUniform("trafo", mat4(1.0f));
@@ -344,12 +349,14 @@ void ColorScaleLegend::process() {
                 isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.z, view.w));
             } else {
                 isoValueShader_.setUniform(
-                    "trafo", glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f)));
+                    "trafo", glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f)));
                 isoValueShader_.setUniform("screenDim", vec2(view.w, view.z));
                 isoValueShader_.setUniform("screenDimInv", 1.0f / vec2(view.w, view.z));
             }
             utilgl::setUniforms(isoValueShader_, isotfComposite_, borderWidth_, axis_.color_,
                                 triSize_);
+            isoValueShader_.setUniform("tfRange.scale", static_cast<float>(tfScale));
+            isoValueShader_.setUniform("tfRange.outputOffset", static_cast<float>(tfOffset));
             glDrawArraysInstanced(GL_POINTS, 0, 1,
                                   static_cast<GLsizei>(isotfComposite_.isovalues_.get().size()));
         }
@@ -361,26 +368,40 @@ void ColorScaleLegend::process() {
 }
 
 std::vector<ButtonGroupProperty::Button> ColorScaleLegend::buttons() {
-    return {
-        {{std::nullopt, ":svgicons/axis-inside-left.svg", "Legend on the left with inside labels",
-          [this] { setPlacement(Placement::InsideLeft); }},
-         {std::nullopt, ":svgicons/axis-inside-top.svg", "Legend on the top with inside labels",
-          [this] { setPlacement(Placement::InsideTop); }},
-         {std::nullopt, ":svgicons/axis-inside-right.svg", "Legend on the right with inside labels",
-          [this] { setPlacement(Placement::InsideRight); }},
-         {std::nullopt, ":svgicons/axis-inside-bottom.svg",
-          "Legend on the bottom with inside labels",
-          [this] { setPlacement(Placement::InsideBottom); }},
-         {std::nullopt, ":svgicons/axis-outside-left.svg", "Legend on the left with outside labels",
-          [this] { setPlacement(Placement::OutsideLeft); }},
-         {std::nullopt, ":svgicons/axis-outside-top.svg", "Legend on the top with outside labels",
-          [this] { setPlacement(Placement::OutsideTop); }},
-         {std::nullopt, ":svgicons/axis-outside-right.svg",
-          "Legend on the right with outside labels",
-          [this] { setPlacement(Placement::OutsideRight); }},
-         {std::nullopt, ":svgicons/axis-outside-bottom.svg",
-          "Legend on the bottom with outside labels",
-          [this] { setPlacement(Placement::OutsideBottom); }}}};
+    return {{
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-inside-left.svg",
+         .tooltip = "Legend on the left with inside labels",
+         .action = [this] { setPlacement(Placement::InsideLeft); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-inside-top.svg",
+         .tooltip = "Legend on the top with inside labels",
+         .action = [this] { setPlacement(Placement::InsideTop); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-inside-right.svg",
+         .tooltip = "Legend on the right with inside labels",
+         .action = [this] { setPlacement(Placement::InsideRight); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-inside-bottom.svg",
+         .tooltip = "Legend on the bottom with inside labels",
+         .action = [this] { setPlacement(Placement::InsideBottom); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-outside-left.svg",
+         .tooltip = "Legend on the left with outside labels",
+         .action = [this] { setPlacement(Placement::OutsideLeft); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-outside-top.svg",
+         .tooltip = "Legend on the top with outside labels",
+         .action = [this] { setPlacement(Placement::OutsideTop); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-outside-right.svg",
+         .tooltip = "Legend on the right with outside labels",
+         .action = [this] { setPlacement(Placement::OutsideRight); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/axis-outside-bottom.svg",
+         .tooltip = "Legend on the bottom with outside labels",
+         .action = [this] { setPlacement(Placement::OutsideBottom); }},
+    }};
 }
 
 void ColorScaleLegend::setPlacement(Placement placement) {
@@ -392,11 +413,6 @@ void ColorScaleLegend::setPlacement(Placement placement) {
     };
 
     switch (placement) {
-        case Placement::OutsideLeft:
-        default:
-            axis_.set(AxisProperty::Orientation::Vertical, true);
-            setPositions(vec2{0.0f, 0.5f}, vec2{1.0f, 0.0f});
-            break;
         case Placement::OutsideTop:
             axis_.set(AxisProperty::Orientation::Horizontal, true);
             setPositions(vec2{0.5f, 1.0f}, vec2{0.0f, -1.0f});
@@ -425,9 +441,40 @@ void ColorScaleLegend::setPlacement(Placement placement) {
             axis_.set(AxisProperty::Orientation::Horizontal, true);
             setPositions(vec2{0.5f, 0.0f}, vec2{0.0f, -1.0f});
             break;
+        case Placement::OutsideLeft:
+        default:
+            axis_.set(AxisProperty::Orientation::Vertical, true);
+            setPositions(vec2{0.0f, 0.5f}, vec2{1.0f, 0.0f});
+            break;
     }
 }
 
-}  // namespace plot
+void ColorScaleLegend::updateTitle(std::shared_ptr<const Volume> volume) {
+    switch (labelType_.get()) {
+        case LabelType::String:
+            axis_.setCaption(title_.get());
+            break;
+        case LabelType::Data:
+            if (volume) {
+                axis_.setCaption(fmt::format("{}{: [}", volume->dataMap.valueAxis.name,
+                                             volume->dataMap.valueAxis.unit));
+            } else {
+                axis_.setCaption("?");
+            }
+            break;
+        case LabelType::Custom:
+            if (volume) {
+                axis_.setCaption(fmt::format(fmt::runtime(title_.get()),
+                                             fmt::arg("n", volume->dataMap.valueAxis.name),
+                                             fmt::arg("u", volume->dataMap.valueAxis.unit)));
+            } else {
+                axis_.setCaption("?");
+            }
+            break;
+        default:
+            axis_.setCaption(title_.get());
+            break;
+    }
+}
 
-}  // namespace inviwo
+}  // namespace inviwo::plot
