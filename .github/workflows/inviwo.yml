@@ -93,6 +93,7 @@ jobs:
               ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
               if [ $? -nq 0 ]
               then
+                echo "Release run failed, trying with lldb"
                 lldb -o run -- ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
               if
           - system: 'macos'
@@ -101,6 +102,7 @@ jobs:
               ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
               if [ $? -nq 0 ]
               then
+                echo "Debug run failed, trying with lldb"
                 lldb -o run -- ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
               if
 
