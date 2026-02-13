@@ -30,6 +30,8 @@
 #include <modules/plottinggl/processors/colorscalelegend.h>
 
 #include <inviwo/core/algorithm/markdown.h>                     // for operator""_help
+#include <inviwo/core/common/inviwoapplication.h>               // for InviwoApplication
+#include <inviwo/core/common/inviwoapplicationutil.h>           // for getInviwoApplication
 #include <inviwo/core/datastructures/datamapper.h>              // for DataMapper
 #include <inviwo/core/datastructures/unitsystem.h>              // for Axis
 #include <inviwo/core/ports/datainport.h>                       // for DataInport
@@ -44,7 +46,10 @@
 #include <inviwo/core/properties/invalidationlevel.h>           // for InvalidationLevel
 #include <inviwo/core/properties/optionproperty.h>              // for OptionProperty, Opt...
 #include <inviwo/core/properties/ordinalproperty.h>             // for IntProperty, FloatP...
-#include <inviwo/core/algorithm/linearmap.h>                    // for util::linearMapToNo...
+#include <inviwo/core/properties/propertywidgetfactory.h>       // for PropertyWidgetFactory
+#include <inviwo/core/properties/propertyeditorwidget.h>        // for PropertyEditorWidget
+#include <inviwo/core/interaction/events/pickingevent.h>        // for PickingEvent
+#include <inviwo/core/interaction/events/mouseevent.h>          // for MouseEvent
 #include <inviwo/core/util/glmvec.h>                            // for ivec2, vec2, vec4
 #include <modules/fontrendering/properties/fontproperty.h>      // for FontProperty
 #include <modules/opengl/inviwoopengl.h>                        // for GL_ALWAYS, GL_ONE
@@ -71,6 +76,24 @@
 #include <glm/gtx/vec_swizzle.hpp>
 
 namespace inviwo::plot {
+
+namespace {
+
+PropertyWidgetFactory* getFactory(Property* prop) {
+    if (const auto* app = util::getInviwoApplication(prop)) {
+        return app->getPropertyWidgetFactory();
+    }
+    return nullptr;
+}
+
+std::unique_ptr<PropertyWidget> createPropertyWidget(Property* prop) {
+    if (const auto* factory = getFactory(prop)) {
+        return factory->create(prop);
+    }
+    return nullptr;
+}
+
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ColorScaleLegend::processorInfo_{
@@ -168,7 +191,8 @@ ColorScaleLegend::ColorScaleLegend()
     , isoValueShader_{"isovaluetri.vert", "isovaluetri.geom", "standard.frag", Shader::Build::No}
     , axis_{"axis", "Scale Axis"}
     , axisRenderer_{axis_}
-    , isovalueMesh_{DrawType::Points, ConnectivityType::None} {
+    , isovalueMesh_{DrawType::Points, ConnectivityType::None}
+    , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
 
     isovalueMesh_.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
                             util::makeBuffer(std::vector<vec2>{vec2{0.0f}}));
@@ -324,6 +348,7 @@ void ColorScaleLegend::process() {
                        (axis_.getOrientation() == AxisProperty::Orientation::Horizontal) ? 0 : 1);
     shader_.setUniform("tfRange.scale", static_cast<float>(tfScale));
     shader_.setUniform("tfRange.outputOffset", static_cast<float>(tfOffset));
+    shader_.setUniform("pickingId", static_cast<int>(picking_.getPickingId(0)));
 
     if (backgroundStyle_ == BackgroundStyle::NoBackground) {
         shader_.setUniform("backgroundColor", vec4(0.0f));
@@ -474,6 +499,27 @@ void ColorScaleLegend::updateTitle(std::shared_ptr<const Volume> volume) {
         default:
             axis_.setCaption(title_.get());
             break;
+    }
+}
+
+void ColorScaleLegend::handlePicking(PickingEvent* p) {
+    if (!tfPropertyWidget_) {
+        tfPropertyWidget_ = createPropertyWidget(&isotfComposite_);
+        if (!tfPropertyWidget_) return;
+    }
+
+    if (const auto* me = p->getEventAs<MouseEvent>()) {
+        if (p->getHoverState() & PickingHoverState::Enter) {
+            me->setMouseCursor(MouseCursor::PointingHand);
+        } else if (p->getHoverState() & PickingHoverState::Exit) {
+            me->setMouseCursor(MouseCursor::Arrow);
+        }
+    }
+
+    if (p->getPressState() & PickingPressState::Release &&
+        p->getPressItem() & PickingPressItem::Primary) {
+        tfPropertyWidget_->getEditorWidget()->setVisible(true);
+        p->setUsed(true);
     }
 }
 
