@@ -56,52 +56,79 @@ namespace inviwo {
 
 NetworkSearch::NetworkSearch(InviwoMainWindow* win)
     : QWidget(win)
-    , dsl_{{{"class", "c", "processor class identifier", true,
-             [](std::string_view s, const Processor& p) -> bool {
+    , dsl_{{{.name = "class",
+             .shortcut = "c",
+             .description = "processor class identifier",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  return find(p.getClassIdentifier(), s);
              }},
-            {"identifier", "i", "processor identifier", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "identifier",
+             .shortcut = "i",
+             .description = "processor identifier",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  return find(p.getIdentifier(), s);
              }},
-            {"name", "n", "processor display name", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "name",
+             .shortcut = "n",
+             .description = "processor display name",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  return find(p.getDisplayName(), s);
              }},
-            {"category", "", "processor category", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "category",
+             .shortcut = "",
+             .description = "processor category",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  return find(p.getCategory(), s);
              }},
-            {"tag", "t", "search processor tags", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "tag",
+             .shortcut = "t",
+             .description = "search processor tags",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  bool tag = false;
                  for (const auto& t : p.getTags().tags_) {
                      tag |= find(t.getString(), s);
                  }
                  return tag;
              }},
-            {"state", "s", "processor state", true,
-             [](std::string_view s, const Processor& p) -> bool {
-                 return find(toString(p.getCodeState()), s);
+            {.name = "state",
+             .shortcut = "s",
+             .description = "processor state",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
+                 return find(fmt::to_string(p.getCodeState()), s);
              }},
-            {"inport", "", "search inport class identifiers", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "inport",
+             .shortcut = "",
+             .description = "search inport class identifiers",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  bool inport = false;
                  for (const auto& pt : p.getInports()) {
                      inport |= find(pt->getClassIdentifier(), s);
                  }
                  return inport;
              }},
-            {"outport", "", "search outport class identifiers", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "outport",
+             .shortcut = "",
+             .description = "search outport class identifiers",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  bool outport = false;
                  for (const auto& pt : p.getOutports()) {
                      outport |= find(pt->getClassIdentifier(), s);
                  }
                  return outport;
              }},
-            {"port", "", "search port class identifiers", false,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "port",
+             .shortcut = "",
+             .description = "search port class identifiers",
+             .global = false,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  bool port = false;
                  for (const auto& pt : p.getOutports()) {
                      port |= find(pt->getClassIdentifier(), s);
@@ -111,23 +138,33 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  }
                  return port;
              }},
-            {"property", "p", "search property identifiers", true,
-             [](std::string_view s, const Processor& p) -> bool {
+            {.name = "property",
+             .shortcut = "p",
+             .description = "search property identifiers",
+             .global = true,
+             .match = [](std::string_view s, const std::any&, const Processor& p) -> bool {
                  bool property = false;
                  for (const auto& pr : p.getPropertiesRecursive()) {
                      property |= find(pr->getIdentifier(), s);
                  }
                  return property;
              }},
-            {"module", "m", "processor module", true,
-             [this](std::string_view s, const Processor& p) -> bool {
-                 auto moduleMap = getModuleMap(win_->getInviwoApplication());
-                 bool module = false;
+            {.name = "module",
+             .shortcut = "m",
+             .description = "processor module",
+             .global = false,
+             .match = [](std::string_view s, const std::any& anyData, const Processor& p) -> bool {
+                 const auto& moduleMap =
+                     std::any_cast<const std::unordered_map<std::string, std::string>&>(anyData);
+                 bool moduleMatch = false;
                  auto mit = moduleMap.find(p.getClassIdentifier());
                  if (mit != moduleMap.end()) {
-                     module |= find(mit->second, s);
+                     moduleMatch |= find(mit->second, s);
                  }
-                 return module;
+                 return moduleMatch;
+             },
+             .onToken = [this](std::string_view) -> std::any {
+                 return getModuleMap(win_->getInviwoApplication());
              }}}}
     , win_{win}
     , edit_{new QLineEdit(this)} {

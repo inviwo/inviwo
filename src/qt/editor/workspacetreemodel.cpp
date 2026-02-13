@@ -105,7 +105,9 @@ private:
 void WorkspaceInfoLoader::operator()() {
     try {
         auto annotations = std::make_shared<WorkspaceAnnotationsQt>(filename_, app_);
-        emit workspaceInfoLoaded(WorkspaceInfo{annotations});
+        app_->dispatchFrontAndForget([l = shared_from_this(), annotations] {
+            l->workspaceInfoLoaded(WorkspaceInfo{annotations});
+        });
     } catch (const Exception&) {
     }
 }

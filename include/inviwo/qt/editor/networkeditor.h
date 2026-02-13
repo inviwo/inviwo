@@ -161,6 +161,8 @@ public:
 
     static constexpr std::string_view name{"NetworkEditor"};
 
+    static constexpr int gridSpacing = 25;
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
@@ -169,7 +171,7 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
-    void propagateEventToSelectedProcessors(KeyboardEvent& pressKeyEvent);
+    void propagateEventToSelectedProcessorsAndSettings(KeyboardEvent& event);
 
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     void deleteAndKeepConnections(ProcessorGraphicsItem* processor);
@@ -182,9 +184,6 @@ protected:
                                const std::unordered_set<CompositeProcessor*>& selectedComposites);
     void addSequenceMenuItems(QMenu& menu, const std::vector<Processor*>& selectedProcessors,
                               const std::unordered_set<SequenceProcessor*>& selectedSequences);
-
-    static ivec2 findSpaceForProcessors(QPoint startPos, const std::vector<Processor*>& added,
-                                        const std::vector<Processor*>& current);
 
     void addCopyPasteMenuItems(QMenu& menu, const QList<QGraphicsItem*>& activeItems,
                                const ivec2& position);
@@ -279,7 +278,7 @@ private:
 
     InviwoMainWindow* mainWindow_;
     ProcessorNetwork* network_;
-    static const int gridSpacing_;
+
     bool backgroundVisible_;
 
     bool adjustSceneToChange_;

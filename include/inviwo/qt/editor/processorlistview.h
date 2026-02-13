@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,60 +26,56 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/dataframeqt/dataframesortfilterproxy.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingAndLinking...
-#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget
+#include <optional>
 
-class QModelIndex;
+#include <QModelIndex>
+#include <QTreeView>
+#include <QDrag>
+
+class QAbstractItemModel;
+class QMouseEvent;
+class QPoint;
+class QFocusEvent;
 
 namespace inviwo {
 
-DataFrameSortFilterProxy::DataFrameSortFilterProxy(QObject* parent)
-    : QSortFilterProxyModel(parent) {
-    setFilterRole(Roles::Filter);
-    setSortRole(Roles::Data);
-}
+class ProcessorListWidget;
+class Processor;
 
-void DataFrameSortFilterProxy::setManager(BrushingAndLinkingManager& manager) {
-    manager_ = &manager;
-}
+class IVW_QTEDITOR_API ProcessorListView : public QTreeView {
 
-void DataFrameSortFilterProxy::brushingUpdate() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
-    invalidateFilter();
-#else
-    beginFilterChange();
-    endFilterChange();
-#endif
-}
+public:
+    ProcessorListView(QAbstractItemModel* model, ProcessorListWidget* parent);
+    ProcessorListView(const ProcessorListView&) = delete;
+    ProcessorListView& operator=(const ProcessorListView&) = delete;
+    ProcessorListView(ProcessorListView&&) = delete;
+    ProcessorListView& operator=(ProcessorListView&&) = delete;
+    virtual ~ProcessorListView() = default;
 
-void DataFrameSortFilterProxy::setFiltering(bool enable) {
-    if (filtering_ == enable) return;
+protected:
+    static QModelIndex findFirstLeaf(QAbstractItemModel* model, QModelIndex parent = QModelIndex());
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
-    filtering_ = enable;
-    invalidateFilter();
-#else
-    beginFilterChange();
-    filtering_ = enable;
-    endFilterChange();
-#endif
-}
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
 
-bool DataFrameSortFilterProxy::getFiltering() const { return filtering_; }
+    virtual void focusInEvent(QFocusEvent* e) override;
+    virtual void focusOutEvent(QFocusEvent* e) override;
 
-bool DataFrameSortFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex&) const {
-    if (!filtering_ || !manager_) return true;
+private:
+    void showContextMenu(const QPoint& p);
 
-    return !manager_->isFiltered(sourceRow, BrushingTarget::Row);
-}
+    ProcessorListWidget* processorTreeWidget_;
+    std::optional<QPoint> dragStartPosition_;
+};
 
-bool DataFrameSortFilterProxy::filterAcceptsColumn(int sourceColumn, const QModelIndex&) const {
-    if (!filtering_ || !manager_) return true;
-
-    return !manager_->isFiltered(sourceColumn, BrushingTarget::Column);
-}
+class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
+public:
+    ProcessorDragObject(QWidget* source, std::shared_ptr<Processor> processor);
+};
 
 }  // namespace inviwo

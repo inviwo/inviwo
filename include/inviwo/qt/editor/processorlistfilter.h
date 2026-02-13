@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,60 +26,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/dataframeqt/dataframesortfilterproxy.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>      // for BrushingAndLinking...
-#include <modules/brushingandlinking/datastructures/brushingaction.h>  // for BrushingTarget
+#include <inviwo/core/algorithm/searchdsl.h>
+#include <inviwo/core/util/document.h>
 
-class QModelIndex;
+#include <inviwo/qt/editor/processorlistmodel.h>
+
+#include <QSortFilterProxyModel>
+#include <QModelIndex>
+#include <QString>
 
 namespace inviwo {
 
-DataFrameSortFilterProxy::DataFrameSortFilterProxy(QObject* parent)
-    : QSortFilterProxyModel(parent) {
-    setFilterRole(Roles::Filter);
-    setSortRole(Roles::Data);
-}
+class ProcessorNetwork;
 
-void DataFrameSortFilterProxy::setManager(BrushingAndLinkingManager& manager) {
-    manager_ = &manager;
-}
+class IVW_QTEDITOR_API ProcessorListFilter : public QSortFilterProxyModel {
+public:
+    using Item = ProcessorListModel::Item;
+    using Role = ProcessorListModel::Role;
+    using Type = ProcessorListModel::Node::Type;
+    using Grouping = ProcessorListModel::Grouping;
 
-void DataFrameSortFilterProxy::brushingUpdate() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
-    invalidateFilter();
-#else
-    beginFilterChange();
-    endFilterChange();
-#endif
-}
+    explicit ProcessorListFilter(QAbstractItemModel* model, ProcessorNetwork* net,
+                                 QObject* parent = nullptr);
 
-void DataFrameSortFilterProxy::setFiltering(bool enable) {
-    if (filtering_ == enable) return;
+    virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
-    filtering_ = enable;
-    invalidateFilter();
-#else
-    beginFilterChange();
-    filtering_ = enable;
-    endFilterChange();
-#endif
-}
+    void setCustomFilter(const QString& filter);
 
-bool DataFrameSortFilterProxy::getFiltering() const { return filtering_; }
+    Document description() const;
 
-bool DataFrameSortFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex&) const {
-    if (!filtering_ || !manager_) return true;
+    std::optional<std::string_view> currentStr(std::string_view name);
+    std::any currentData(std::string_view name);
 
-    return !manager_->isFiltered(sourceRow, BrushingTarget::Row);
-}
+    void setGrouping(Grouping grouping);
 
-bool DataFrameSortFilterProxy::filterAcceptsColumn(int sourceColumn, const QModelIndex&) const {
-    if (!filtering_ || !manager_) return true;
+    virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
 
-    return !manager_->isFiltered(sourceColumn, BrushingTarget::Column);
-}
+private:
+    Grouping grouping_;
+    SearchDSL<Item> dsl_;
+};
 
 }  // namespace inviwo
