@@ -40,7 +40,7 @@ namespace inviwo {
 
 class IVW_MODULE_WEBQT_API JavascriptPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
-    JavascriptPropertyWidgetQt(StringProperty* property);
+    explicit JavascriptPropertyWidgetQt(StringProperty* property);
     virtual ~JavascriptPropertyWidgetQt();
 
 protected:
@@ -49,7 +49,7 @@ protected:
 
 class IVW_MODULE_WEBQT_API JavascriptFilePropertyWidgetQt : public FilePropertyWidgetQt {
 public:
-    JavascriptFilePropertyWidgetQt(FileProperty* property);
+    explicit JavascriptFilePropertyWidgetQt(FileProperty* property);
     virtual ~JavascriptFilePropertyWidgetQt();
 
 protected:

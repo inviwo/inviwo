@@ -31,10 +31,8 @@
 
 #include <inviwo/core/properties/propertysemantics.h>             // for operator==, PropertySem...
 #include <inviwo/core/properties/stringproperty.h>                // for StringProperty
-#include <inviwo/core/util/assertion.h>                           // for IVW_ASSERT
 #include <modules/python3qt/properties/pythoneditordockwidget.h>  // for PythonEditorDockWidget
 #include <modules/qtwidgets/properties/stringpropertywidgetqt.h>  // for StringPropertyWidgetQt
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>      // for TextEditorDockWidget
 
 #include <memory>  // for make_unique, unique_ptr
 

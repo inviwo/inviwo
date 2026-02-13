@@ -29,16 +29,11 @@
 
 #include <inviwo/webqt/properties/javascriptpropertywidgetqt.h>
 #include <inviwo/core/properties/propertysemantics.h>  // for operator==, PropertySem...
-#include <inviwo/core/util/assertion.h>                // for IVW_ASSERT
 #include <inviwo/core/util/exception.h>
 #include <modules/qtwidgets/properties/texteditorwidgetqt.h>  // for TextEditorDockWidget
-#include <modules/qtwidgets/syntaxhighlighter.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/webqt/javascriptsyntaxhighlight.h>
-
-#include <QRegularExpression>
-#include <QTextCharFormat>
 
 namespace inviwo {
 

@@ -39,7 +39,7 @@ namespace inviwo {
 
 class IVW_MODULE_WEBQT_API HtmlPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
-    HtmlPropertyWidgetQt(StringProperty* property);
+    explicit HtmlPropertyWidgetQt(StringProperty* property);
     virtual ~HtmlPropertyWidgetQt();
 
 protected:
@@ -48,7 +48,7 @@ protected:
 
 class IVW_MODULE_WEBQT_API HtmlFilePropertyWidgetQt : public FilePropertyWidgetQt {
 public:
-    HtmlFilePropertyWidgetQt(FileProperty* property);
+    explicit HtmlFilePropertyWidgetQt(FileProperty* property);
     virtual ~HtmlFilePropertyWidgetQt();
 
 protected:

@@ -41,7 +41,7 @@ class StringProperty;
  */
 class IVW_MODULE_OPENGLQT_API GLSLPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
-    GLSLPropertyWidgetQt(StringProperty* property);
+    explicit GLSLPropertyWidgetQt(StringProperty* property);
     virtual ~GLSLPropertyWidgetQt();
 
 protected:

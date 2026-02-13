@@ -48,7 +48,7 @@ public:
     /**
      * The PropertyWidget will register it self with the property.
      */
-    PropertyWidget(Property* property);
+    explicit PropertyWidget(Property* property);
     PropertyWidget(const PropertyWidget&);
     PropertyWidget(PropertyWidget&&);
     PropertyWidget& operator=(const PropertyWidget&);
@@ -64,8 +64,15 @@ public:
      */
     virtual void updateFromProperty() = 0;
 
-    virtual PropertyEditorWidget* getEditorWidget() const;
-    virtual bool hasEditorWidget() const;
+    /**
+     * Override this function returning true if there can be a PropertyEditorWidget for this
+     * PropertyWidget.
+     */
+    virtual bool hasEditorWidget() const { return false; }
+    /**
+     * This function should return the editor widget if hasEditorWidget() returns true.
+     */
+    virtual PropertyEditorWidget* getEditorWidget() { return nullptr; }
     virtual Property* getProperty();
 
 protected:

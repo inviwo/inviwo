@@ -108,16 +108,21 @@ void StringPropertyWidgetQt::setPropertyValue() {
     property_->clearInitiatingWidget();
 }
 
-PropertyEditorWidget* StringPropertyWidgetQt::getEditorWidget() const { return editor_.get(); }
+bool StringPropertyWidgetQt::hasEditorWidget() const { return true; }
 
-bool StringPropertyWidgetQt::hasEditorWidget() const { return editor_ != nullptr; }
+PropertyEditorWidget* StringPropertyWidgetQt::getEditorWidget() {
+    if (!editor_) {
+        initEditor();
+    }
+    return editor_.get();
+}
 
 void StringPropertyWidgetQt::initEditor() {
     editor_ = std::make_unique<TextEditorDockWidget>(property_);
 }
 
 void StringPropertyWidgetQt::addEditor() {
-    auto edit = new QToolButton();
+    auto* edit = new QToolButton();
     edit->setIcon(QIcon(":/svgicons/edit.svg"));
     edit->setToolTip("Edit text");
     hWidgetLayout_->addWidget(edit);
@@ -129,7 +134,7 @@ void StringPropertyWidgetQt::addEditor() {
 }
 
 void StringPropertyWidgetQt::updateFromProperty() {
-    QSignalBlocker blocker(lineEdit_);
+    const QSignalBlocker blocker(lineEdit_);
     lineEdit_->setText(utilqt::toQString(property_->get()));
     lineEdit_->setCursorPosition(0);
 }

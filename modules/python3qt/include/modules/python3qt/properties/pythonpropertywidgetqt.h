@@ -41,7 +41,7 @@ class StringProperty;
  */
 class IVW_MODULE_PYTHON3QT_API PythonPropertyWidgetQt : public StringPropertyWidgetQt {
 public:
-    PythonPropertyWidgetQt(StringProperty* property);
+    explicit PythonPropertyWidgetQt(StringProperty* property);
     virtual ~PythonPropertyWidgetQt();
 
 protected:

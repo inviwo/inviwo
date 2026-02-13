@@ -46,12 +46,12 @@ class TFPushButton;
 
 class IVW_MODULE_QTWIDGETS_API IsoTFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    IsoTFPropertyWidgetQt(IsoTFProperty* property);
+    explicit IsoTFPropertyWidgetQt(IsoTFProperty* property);
     virtual ~IsoTFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
-    virtual TFPropertyDialog* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
+    virtual TFPropertyDialog* getEditorWidget() override;
 
     virtual void setReadOnly(bool readonly) override;
 
@@ -60,9 +60,10 @@ protected:
     IsoTFProperty* isoTfProperty() const;
 
 private:
+    void initEditor();
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;
-    mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
+    std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
 };
 
 }  // namespace inviwo

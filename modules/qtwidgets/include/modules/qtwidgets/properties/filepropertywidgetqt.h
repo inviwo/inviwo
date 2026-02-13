@@ -50,14 +50,14 @@ class PropertyEditorWidget;
 class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
                                                       public FileRequestable {
 public:
-    FilePropertyWidgetQt(FileProperty* property);
+    explicit FilePropertyWidgetQt(FileProperty* property);
     virtual ~FilePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
 
-    virtual PropertyEditorWidget* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
+    virtual PropertyEditorWidget* getEditorWidget() override;
 
 protected:
     virtual void dropEvent(QDropEvent*) override;
