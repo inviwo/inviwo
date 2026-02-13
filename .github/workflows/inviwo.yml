@@ -44,11 +44,10 @@ jobs:
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
             run: |
-              ./Release/inviwo-cli.exe --logconsole --quit
-              if [ $? -nq 0 ]
-              then
-                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/gflags.exe /i ./Release/inviwo-cli.exe +sls
-                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/cdb.exe -g -c q ./Release/inviwo-cli.exe
+              if ! ./Release/inviwo-cli.exe --logconsole --quit; then
+                echo "Run failed, trying with gflags and cdb"
+                C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/gflags.exe /i ./Release/inviwo-cli.exe +sls
+                C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/cdb.exe -g -c q ./Release/inviwo-cli.exe
               fi
           
           - system: macos
@@ -90,21 +89,21 @@ jobs:
           - system: 'macos'
             configuration: Release
             run: |
-              ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
-              if [ $? -nq 0 ]
-              then
+              if ! ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit; then
                 echo "Release run failed, trying with lldb"
-                lldb -o run -- ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
-              if
+                lldb -O "settings set auto-confirm true" -o run -o quit \
+                  -k "thread backtrace all" -k quit --batch -- \
+                  ./Release/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
+              fi
           - system: 'macos'
             configuration: Debug
             run: |
-              ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
-              if [ $? -nq 0 ]
-              then
+              if ! ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit; then
                 echo "Debug run failed, trying with lldb"
-                lldb -o run -- ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
-              if
+                lldb -O "settings set auto-confirm true" -o run -o quit \
+                  -k "thread backtrace all" -k quit --batch -- \
+                   ./Debug/inviwo.app/Contents/MacOS/inviwo --logconsole --quit
+              fi
 
           # Extra targets
           - system: 'windows'
