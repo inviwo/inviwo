@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttongroupproperty.h>
@@ -145,8 +144,8 @@ public:
     FloatVec4Property color_;
     FloatProperty width_;
     BoolProperty overrideRange_;
-    DoubleMinMaxProperty range_;
-    DoubleMinMaxProperty customRange_;
+    DoubleVec2Property range_;
+    DoubleVec2Property customRange_;
     FloatProperty scalingFactor_;
 
     BoolProperty mirrored_;
