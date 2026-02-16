@@ -41,7 +41,9 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
 public:
-    VolumeSliceToLayer();
+    enum class SlicePosition : unsigned char { CurrentSlice, Minimum, Centered, Maximum };
+
+    explicit VolumeSliceToLayer();
 
     virtual void process() override;
 
@@ -53,6 +55,7 @@ private:
     LayerOutport outport_;
 
     OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
+    OptionProperty<SlicePosition> slicePosition_;
     IntSizeTProperty sliceNumber_;
 };
 
