@@ -136,9 +136,18 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
                           "Offset between each axis and the data considering the Offset Scaling mode"_help)}
     , rangeMode_{"rangeMode", "Axis Range Mode", "Determines axis ranges"_help}
     , customRanges_{"customRanges", "Custom Ranges"}
-    , rangeXaxis_{"rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
-    , rangeYaxis_{"rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
-    , rangeZaxis_{"rangeZ", "Z Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
+    , rangeXaxis_("rangeX", "X Axis", "Custom range for the x axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , rangeYaxis_("rangeY", "Y Axis", "Custom range for the y axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , rangeZaxis_("rangeZ", "Z Axis", "Custom range for the z axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , visibility_{"visibility", "Axis Visibility",
                   "Visibility of all available axes (default: all axis start at the origin)"_help,
                   true}
@@ -176,10 +185,6 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
     , axisRenderers_{xAxis_, yAxis_, zAxis_}
     , propertyUpdate_{false}
     , getBoundingBox_{getBoundingBox ? std::optional{getBoundingBox} : std::nullopt} {
-
-    rangeXaxis_.setSemantics(PropertySemantics::Text);
-    rangeYaxis_.setSemantics(PropertySemantics::Text);
-    rangeZaxis_.setSemantics(PropertySemantics::Text);
 
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
@@ -247,7 +252,7 @@ Axis3DProcessorHelper::Axis3DProcessorHelper(std::function<std::optional<mat4>()
         property->minorTicks_.style_.set(TickStyle::Outside);
     }
 
-    auto linkAxisRanges = [this](const DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
+    auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
         auto func = [&]() {
             if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
                 const util::KeepTrueWhileInScope b(&propertyUpdate_);

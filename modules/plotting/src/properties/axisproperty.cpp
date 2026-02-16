@@ -49,19 +49,12 @@
 #include <modules/plotting/properties/tickproperty.h>
 #include <modules/plotting/utils/axisutils.h>
 
-#include <algorithm>
-#include <cstddef>
-#include <iterator>
 #include <limits>
 
-#include <fmt/core.h>
-#include <fmt/printf.h>
-#include <glm/vec2.hpp>
 #include <glm/gtx/vec_swizzle.hpp>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
 class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
@@ -71,7 +64,8 @@ std::string_view AxisProperty::getClassIdentifier() const { return classIdentifi
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName, Document help,
                            Orientation orientation, bool includeOrientationProperty,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : BoolCompositeProperty{identifier, displayName, help, true, invalidationLevel, semantics}
+    : BoolCompositeProperty{identifier, displayName,       std::move(help),
+                            true,       invalidationLevel, std::move(semantics)}
     , color_{"color", "Color",
              util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}
     , width_{"width", "Width", util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
@@ -79,23 +73,19 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     , range_{"range",
              "Axis Range",
              "Value range of the axis"_help,
-             0.0,
-             100.0,
-             -1.0e6,
-             1.0e6,
-             0.01,
-             0.0,
+             dvec2{0.0, 100.0},
+             {dvec2{std::numeric_limits<double>::lowest()}, ConstraintBehavior::Ignore},
+             {dvec2{std::numeric_limits<double>::max()}, ConstraintBehavior::Ignore},
+             dvec2{0.001},
              InvalidationLevel::InvalidOutput,
              PropertySemantics::Text}
     , customRange_{"customRange",
                    "Custom Range",
                    "Custom range overriding the range of the axis"_help,
-                   0.0,
-                   100.0,
-                   -1.0e6,
-                   1.0e6,
-                   0.01,
-                   0.0,
+                   dvec2{0.0, 100.0},
+                   {dvec2{std::numeric_limits<double>::lowest()}, ConstraintBehavior::Ignore},
+                   {dvec2{std::numeric_limits<double>::max()}, ConstraintBehavior::Ignore},
+                   dvec2{0.001},
                    InvalidationLevel::InvalidOutput,
                    PropertySemantics::Text}
     , scalingFactor_{"scalingFactor", "Scaling Factor",
@@ -248,13 +238,7 @@ AxisProperty& AxisProperty::setLabelFormat(std::string_view formatStr) {
 }
 
 AxisProperty& AxisProperty::setRange(const dvec2& range) {
-    NetworkLock lock(&range_);
-    if (range_.getRangeMin() > range.x) {
-        range_.setRangeMin(range.x);
-    }
-    if (range_.getRangeMax() < range.y) {
-        range_.setRangeMax(range.y);
-    }
+    const NetworkLock lock(&range_);
     range_.set(range);
 
     return *this;
@@ -392,6 +376,4 @@ std::vector<ButtonGroupProperty::Button> AxisProperty::buttons(bool hasOrientati
     return btns;
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

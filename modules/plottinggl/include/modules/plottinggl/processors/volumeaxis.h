@@ -38,16 +38,14 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/plottinggl/utils/axis3dprocessorhelper.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 /**
  * @brief Processor for rendering axis annotations next to a volume
  */
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
-    enum class CaptionType { String, Data, Custom };
+    enum class CaptionType : unsigned char { String, Data, Custom };
 
     VolumeAxis();
 
@@ -69,6 +67,4 @@ private:
     Axis3DProcessorHelper axisHelper_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot
