@@ -34,9 +34,9 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/glm.h>
-#include <modules/opengl/texture/textureutils.h>
 
 #include <fmt/core.h>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -72,9 +72,8 @@ std::array<AxisParams, 2> findAxisPositions(dvec3 viewDirection) {
     };
 
     const auto find = [&](const std::array<AI, 2>& axis) -> AxisParams {
-        const auto min = *std::max_element(axis.begin(), axis.end(), [&](const AI& a, const AI& b) {
-            return (dist(a) < dist(b));
-        });
+        const auto min = *std::ranges::max_element(
+            axis, [&](const AI& a, const AI& b) { return (dist(a) < dist(b)); });
 
         return {corners[min.idx[0]], corners[min.idx[1]], min.tickDir};
     };
@@ -111,8 +110,14 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
                           "Offset between each axis and the data considering the Offset Scaling mode"_help)}
     , rangeMode_{"rangeMode", "Axis Range Mode", "Determines axis ranges"_help}
     , customRanges_{"customRanges", "Custom Ranges"}
-    , rangeXaxis_{"rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
-    , rangeYaxis_{"rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max()}
+    , rangeXaxis_("rangeX", "X Axis", "Custom range for the x axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , rangeYaxis_("rangeY", "Y Axis", "Custom range for the y axis"_help, dvec2{0.0, 1.0},
+                  {dvec2{DataFloat32::lowest()}, ConstraintBehavior::Ignore},
+                  {dvec2{DataFloat32::max()}, ConstraintBehavior::Ignore}, dvec2{0.001},
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , visibility_{"visibility", "Axis Visibility",
                   "Visibility of all available axes (default: all axis start at the origin)"_help,
                   true}
@@ -139,9 +144,6 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
     , axisRenderers_{xAxis_, yAxis_}
     , propertyUpdate_{false} {
 
-    rangeXaxis_.setSemantics(PropertySemantics::Text);
-    rangeYaxis_.setSemantics(PropertySemantics::Text);
-
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
 
@@ -151,8 +153,8 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
         {"world", "Model & World Transform", AxisRangeMode::World},
         {"custom", "Custom", AxisRangeMode::Custom}};
     if (useDimsRange == DimsRangeMode::Yes) {
-        rangeOptions.insert(rangeOptions.begin(),
-                            {"dims", "Volume Dimensions (voxel)", AxisRangeMode::Dims});
+        rangeOptions.emplace(rangeOptions.begin(), "dims", "Volume Dimensions (voxel)",
+                             AxisRangeMode::Dims);
     }
     rangeMode_.replaceOptions(rangeOptions);
 
@@ -198,10 +200,10 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(std::function<std::optional<mat4>()
         property->minorTicks_.style_.set(TickStyle::Outside);
     }
 
-    auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {
+    auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
         auto func = [&]() {
             if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
-                util::KeepTrueWhileInScope b(&propertyUpdate_);
+                const util::KeepTrueWhileInScope b(&propertyUpdate_);
                 to.set(from.get());
             }
         };

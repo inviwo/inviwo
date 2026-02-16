@@ -36,7 +36,6 @@
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/marginproperty.h>
@@ -48,11 +47,6 @@
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
-#include <array>
-#include <functional>
-#include <string>
-#include <string_view>
-#include <vector>
 
 namespace inviwo {
 class Event;
@@ -67,7 +61,7 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTINGGL_API ImagePlotProcessor : public Processor {
 public:
-    enum class AxisRangeMode { ImageDims, ImageBasis, ImageBasisOffset, Custom };
+    enum class AxisRangeMode : unsigned char { ImageDims, ImageBasis, ImageBasisOffset, Custom };
 
     ImagePlotProcessor();
     virtual ~ImagePlotProcessor() = default;
@@ -105,8 +99,8 @@ private:
     OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
-    DoubleMinMaxProperty rangeXaxis_;
-    DoubleMinMaxProperty rangeYaxis_;
+    DoubleVec2Property rangeXaxis_;
+    DoubleVec2Property rangeYaxis_;
 
     AxisStyleProperty axisStyle_;
     AxisProperty xAxis_;
