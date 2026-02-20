@@ -149,9 +149,6 @@ void OrthographicAxis2D::process() {
     axis1_.setRange(dvec2{wStart.x, wEnd.x});
     axis2_.setRange(dvec2{wStart.y, wEnd.y});
 
-    axis1_.majorTicks_.tickDelta_.set(std::abs((wEnd.x - wStart.x) / 10.0));
-    axis2_.majorTicks_.tickDelta_.set(std::abs((wEnd.y - wStart.y) / 10.0));
-
     axis1_.captionSettings_.title_.set(
         fmt::format("{}{: [}", data->getAxis(0)->name, data->getAxis(0)->unit));
     axis2_.captionSettings_.title_.set(

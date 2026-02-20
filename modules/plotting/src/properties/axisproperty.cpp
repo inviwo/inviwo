@@ -45,17 +45,9 @@
 #include <modules/plotting/datastructures/axissettings.h>   // for AxisSettings::Orien...
 #include <modules/plotting/properties/plottextproperty.h>   // for PlotTextProperty
 #include <modules/plotting/properties/tickproperty.h>       // for MajorTickProperty
-#include <modules/plotting/utils/axisutils.h>               // for getMajorTickPositions
 
 #include <algorithm>  // for transform
-#include <cstddef>    // for size_t
-#include <iterator>   // for back_insert_iterator
 #include <limits>
-
-#include <fmt/core.h>    // for basic_string_view
-#include <fmt/printf.h>  // for sprintf
-#include <glm/vec2.hpp>  // for vec<>::(anonymous)
-#include <glm/gtx/vec_swizzle.hpp>
 
 namespace inviwo::plot {
 
@@ -101,6 +93,15 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
                 "Swaps the inside and outside of the axis. If not mirrored, the outside will be to "
                 "the right of the axis pointing from start point to end point."_help,
                 orientation == Orientation::Vertical}
+    , labelingAlgorithm_{"labeling",
+                         "Labeling Algorithm",
+                         {{"heckbert", "Heckbert", LabelingAlgorithm::Heckbert},
+                          {"matplotlib", "Matplotlib", LabelingAlgorithm::Matplotlib},
+                          {"extentedWilkinson", "Ext. Wilkinson",
+                           LabelingAlgorithm::ExtendedWilkinson},
+                          {"limits", "Limits only", LabelingAlgorithm::Limits},
+                          {"customOnly", "Custom labels only", LabelingAlgorithm::CustomOnly}},
+                         1}
     , captionSettings_{"caption", "Caption",
                        "Font and alignment settings for the axis caption"_help, true}
     , labelSettings_{"labels", "Axis Labels",
@@ -133,7 +134,8 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     minorTicks_.setCollapsed(true);
 
     addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
-                  mirrored_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+                  mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
+                  minorTicks_);
 
     if (includeOrientationProperty) {
         orientation_.emplace(std::string_view{"orientation"}, std::string_view{"Orientation"},
@@ -145,18 +147,11 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
         insertProperty(7, *orientation_);
     }
 
-    setCollapsed(true);
+    BoolCompositeProperty::setCollapsed(true);
     defaultAlignLabels();
 
     setCurrentStateAsDefault();
 
-    majorTicks_.onChange([this]() { updateLabels(); });
-    overrideRange_.onChange([this]() { updateLabels(); });
-    range_.onChange([this]() { updateLabels(); });
-    customRange_.onChange([this]() { updateLabels(); });
-    labelSettings_.title_.onChange([this]() { updateLabels(); });
-    // update label alignment to match current status
-    updateLabels();
 }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
@@ -181,27 +176,20 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , scalingFactor_{rhs.scalingFactor_}
     , mirrored_{rhs.mirrored_}
     , orientation_{rhs.orientation_}
+    , labelingAlgorithm_{rhs.labelingAlgorithm_}
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
-    , minorTicks_{rhs.minorTicks_}
     , alignment_{rhs.alignment_} {
 
     addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
-                  mirrored_, captionSettings_, labelSettings_, majorTicks_, minorTicks_);
+                  mirrored_, labelingAlgorithm_, captionSettings_, labelSettings_, majorTicks_,
+                  minorTicks_);
 
     // insert orientation property only if rhs owns one, too
     if (orientation_) {
         insertProperty(7, *orientation_);
     }
-
-    majorTicks_.onChange([this]() { updateLabels(); });
-    overrideRange_.onChange([this]() { updateLabels(); });
-    range_.onChange([this]() { updateLabels(); });
-    customRange_.onChange([this]() { updateLabels(); });
-    labelSettings_.title_.onChange([this]() { updateLabels(); });
-    // update label alignment to match current status
-    updateLabels();
 }
 
 AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
@@ -235,6 +223,16 @@ AxisProperty& AxisProperty::setCaption(std::string_view title) {
 }
 
 const std::string& AxisProperty::getCaption() const { return captionSettings_.title_.get(); }
+
+AxisProperty& AxisProperty::setLabelingAlgorithm(LabelingAlgorithm algorithm) {
+    labelingAlgorithm_.set(algorithm);
+    return *this;
+}
+
+AxisProperty& AxisProperty::setNumberOfTicks(int numTicks) {
+    majorTicks_.numberOfTicks_.set(numTicks);
+    return *this;
+}
 
 AxisProperty& AxisProperty::setLabelFormat(std::string_view formatStr) {
     labelSettings_.title_.set(formatStr);
@@ -283,14 +281,6 @@ AxisProperty& AxisProperty::setLineWidth(float width) {
     return *this;
 }
 
-void AxisProperty::updateLabels() {
-    const auto tickmarks = plot::getMajorTickPositions(majorTicks_, getRange());
-    categories_.clear();
-    const auto& format = labelSettings_.title_.get();
-    std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(categories_),
-                   [&](auto tick) { return fmt::sprintf(format, tick); });
-}
-
 bool AxisProperty::getAxisVisible() const { return isChecked(); }
 
 bool AxisProperty::getMirrored() const { return mirrored_.get(); }
@@ -319,7 +309,15 @@ AxisSettings::Orientation AxisProperty::getOrientation() const {
 
 const PlotTextSettings& AxisProperty::getCaptionSettings() const { return captionSettings_; }
 
-const std::vector<std::string>& AxisProperty::getLabels() const { return categories_; }
+LabelingAlgorithm AxisProperty::getLabelingAlgorithm() const { return labelingAlgorithm_; }
+
+std::string_view AxisProperty::getLabelFormatString() const { return labelSettings_.title_; }
+
+namespace {
+constexpr AxisLabels axisLabels{};
+}
+
+const AxisLabels& AxisProperty::getCustomLabels() const { return axisLabels; }
 
 const PlotTextSettings& AxisProperty::getLabelSettings() const { return labelSettings_; }
 

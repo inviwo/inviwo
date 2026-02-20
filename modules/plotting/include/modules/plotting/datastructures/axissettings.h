@@ -29,24 +29,29 @@
 #pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>  // for IVW_MODULE_PLOTTING_API
+#include <modules/plotting/algorithm/labeling.h>
 
 #include <inviwo/core/util/glmvec.h>  // for dvec2, vec4
 
+#include <string_view>
 #include <string>  // for string
 #include <vector>  // for vector
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
 class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
 
 class IVW_MODULE_PLOTTING_API AxisSettings {
 public:
-    enum class Orientation { Horizontal, Vertical };
+    enum class Orientation : unsigned char { Horizontal, Vertical };
 
     AxisSettings() = default;
+    AxisSettings(const AxisSettings&) = default;
+    AxisSettings(AxisSettings&&) = default;
+    AxisSettings& operator=(const AxisSettings&) = default;
+    AxisSettings& operator=(AxisSettings&&) = default;
     virtual ~AxisSettings() = default;
 
     virtual dvec2 getRange() const = 0;
@@ -65,7 +70,9 @@ public:
     virtual const PlotTextSettings& getCaptionSettings() const = 0;
 
     // labels showing numbers along axis
-    virtual const std::vector<std::string>& getLabels() const = 0;
+    virtual LabelingAlgorithm getLabelingAlgorithm() const = 0;
+    virtual std::string_view getLabelFormatString() const = 0;
+    virtual const AxisLabels& getCustomLabels() const = 0;
     virtual const PlotTextSettings& getLabelSettings() const = 0;
 
     virtual const MajorTickSettings& getMajorTicks() const = 0;
@@ -76,8 +83,5 @@ public:
 };
 
 IVW_MODULE_PLOTTING_API bool operator==(const AxisSettings& a, const AxisSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const AxisSettings& a, const AxisSettings& b);
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

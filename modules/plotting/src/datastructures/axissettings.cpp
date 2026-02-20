@@ -37,14 +37,14 @@
 #include <glm/vec2.hpp>  // for operator==
 #include <glm/vec4.hpp>  // for operator==
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 bool AxisSettings::isVertical() const { return getOrientation() == Orientation::Vertical; }
 
 bool operator==(const AxisSettings& a, const AxisSettings& b) {
-    return a.getCaption() == b.getCaption() && a.getLabels() == b.getLabels() &&
+    return a.getCaption() == b.getCaption() &&
+           a.getLabelingAlgorithm() == b.getLabelingAlgorithm() &&
+           a.getLabelFormatString() == b.getLabelFormatString() &&
            a.getAxisVisible() == b.getAxisVisible() && a.getMirrored() == b.getMirrored() &&
            a.getColor() == b.getColor() && a.getWidth() == b.getWidth() &&
            a.getRange() == b.getRange() && a.getOrientation() == b.getOrientation() &&
@@ -53,8 +53,4 @@ bool operator==(const AxisSettings& a, const AxisSettings& b) {
            a.getMinorTicks() == b.getMinorTicks();
 }
 
-bool operator!=(const AxisSettings& a, const AxisSettings& b) { return !(a == b); }
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

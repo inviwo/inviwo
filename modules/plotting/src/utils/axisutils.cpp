@@ -29,123 +29,107 @@
 
 #include <modules/plotting/utils/axisutils.h>
 
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, makeBuffer
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>       // for BufferRAMPrecision
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Conne...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::MeshInfo
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, vec2
-#include <inviwo/core/util/zip.h>                                       // for make_sequence
-#include <modules/plotting/datastructures/axissettings.h>               // for AxisSettings
-#include <modules/plotting/datastructures/majorticksettings.h>          // for MajorTickSettings
-#include <modules/plotting/datastructures/minorticksettings.h>          // for MinorTickSettings
-#include <modules/plotting/datastructures/plottextsettings.h>           // for PlotTextSettings
+#include <inviwo/core/datastructures/buffer/buffer.h>              // for Buffer, makeBuffer
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>  // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>      // for BufferType, Conne...
+#include <inviwo/core/datastructures/geometry/mesh.h>              // for Mesh, Mesh::MeshInfo
+#include <inviwo/core/util/glm.h>                                  // for vec3, vec4, vec2
+#include <inviwo/core/util/zip.h>                                  // for make_sequence
+#include <modules/plotting/datastructures/axissettings.h>          // for AxisSettings
+#include <modules/plotting/datastructures/majorticksettings.h>     // for MajorTickSettings
+#include <modules/plotting/datastructures/minorticksettings.h>     // for MinorTickSettings
+#include <modules/plotting/datastructures/plottextsettings.h>      // for PlotTextSettings
+#include <modules/plotting/algorithm/labeling.h>
 
-#include <stdlib.h>       // for abs
 #include <algorithm>      // for transform, fill, max
 #include <cmath>          // for floor, ceil, abs
 #include <cstdint>        // for uint32_t
 #include <numeric>        // for iota
-#include <sstream>        // for basic_stringbuf<>...
-#include <string>         // for operator==
-#include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
 
 #include "glm/gtx/scalar_multiplication.hpp"  // for operator*
 #include <glm/common.hpp>                     // for min, max, mix
 #include <glm/ext/scalar_constants.hpp>       // for epsilon
-#include <glm/fwd.hpp>                        // for vec2
 #include <glm/geometric.hpp>                  // for normalize, distance
 #include <glm/vec2.hpp>                       // for operator*, vec
 #include <glm/vec3.hpp>                       // for operator*, vec
-#include <glm/vec4.hpp>                       // for vec
 
-namespace inviwo {
+#include <fmt/printf.h>
 
-namespace plot {
+namespace inviwo::plot {
 
-namespace tickutil {
+AxisLabels getAxisLabels(LabelingAlgorithm algorithm, dvec2 range, int maxTicks,
+                         std::string_view labelFormat, const AxisLabels& customLabels) {
+    using enum LabelingAlgorithm;
 
-struct AxisTickRange {
-    double start;
-    double end;
-    double delta;
-
-    size_t numTicks;
-};
-
-AxisTickRange getMajorTickRange(const MajorTickSettings& ticks, dvec2 range, size_t maxTicks) {
-    // calculate number of major ticks
-    double startValue = range.x;
-    double endValue = range.y;
-
-    if (ticks.getTickDelta() <= 0.0) {
-        return {startValue, endValue, endValue - startValue, 2u};
+    // ensure a positive range for the label positioning algorithms, that is range max > range min
+    const bool flippedRange = range.x > range.y;
+    if (flippedRange) {
+        std::swap(range.x, range.y);
     }
 
-    if (!ticks.getRangeBasedTicks()) {
-        // the major ticks should appear at n * tickDelta and not based on axis range min
-        startValue = std::ceil((startValue - glm::epsilon<double>()) / ticks.getTickDelta()) *
-                     ticks.getTickDelta();
-        endValue = std::floor((endValue + glm::epsilon<double>()) / ticks.getTickDelta()) *
-                   ticks.getTickDelta();
-        endValue = std::max(startValue, endValue);
+    AxisLabels labels{};
+    switch (algorithm) {
+        case Heckbert:
+            labels = labelingHeckbert(range.x, range.y, maxTicks);
+            break;
+        case Matplotlib:
+            labels = labelingMatplotlib(range.x, range.y, maxTicks);
+            break;
+        case ExtendedWilkinson:
+            labels = labelingExtendedWilkinson(range.x, range.y, maxTicks);
+            break;
+        case Limits:
+            labels = labelingLimits(range.x, range.y);
+            break;
+        case CustomOnly:
+        default:
+            break;
     }
 
-    const auto axisLength = endValue - startValue;
-    // in case tickDelta is larger than the entire axis, adjust it to axis length
-    // in order to only draw first and last tick corresponding to axis range
-    double tickDelta = ticks.getTickDelta();
-
-    size_t numTicks = 0u;
-    if ((startValue - range.y > glm::epsilon<double>()) || (ticks.getTickDelta() <= 0.0)) {
-        numTicks = 0u;
-        endValue = startValue;
-    } else if (std::abs(axisLength) < glm::epsilon<double>()) {
-        // no difference between start and end tick, place only one tick
-        numTicks = 1u;
-    } else {
-        numTicks = static_cast<size_t>((axisLength + glm::epsilon<double>()) / tickDelta) + 1;
-        // adjust end value
-        endValue = startValue + (numTicks - 1) * tickDelta;
-        tickDelta = glm::min(ticks.getTickDelta(), axisLength);
+    if (flippedRange) {
+        std::ranges::reverse(labels.positions);
+        std::swap(labels.start, labels.stop);
+        labels.step *= -1.0;
     }
 
-    while (numTicks > maxTicks) {
-        numTicks /= 2;
-        tickDelta *= 2.0f;
+    // generate labels based on positions
+    if (labels.labels.size() != labels.positions.size()) {
+        labels.labels.clear();
+        labels.labels.reserve(labels.positions.size());
+        std::ranges::transform(labels.positions, std::back_inserter(labels.labels),
+                               [labelFormat](double pos) {
+                                   // TODO(martin.falk): switch from sprintf to fmt::format
+                                   return fmt::sprintf(labelFormat, pos);
+                               });
     }
 
-    return {startValue, endValue, tickDelta, numTicks};
+    // add custom labels, replace existing ones if possible
+    for (const auto&& [pos, label] :
+         std::ranges::zip_view(customLabels.positions, customLabels.labels)) {
+        if (auto it = std::ranges::find_if(
+                labels.positions, [&pos](double val) { return util::almostEqual(pos, val); });
+            it != labels.positions.end()) {
+            // found position, replace existing label with custom one
+            labels.labels[std::distance(labels.positions.begin(), it)] = label;
+        } else {
+            labels.positions.emplace_back(pos);
+            labels.labels.emplace_back(label);
+        }
+    }
+
+    return labels;
 }
 
-}  // namespace tickutil
-
-std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks, dvec2 range,
-                                          size_t maxTicks) {
-    if (ticks.getStyle() == TickStyle::None) {
-        return {};
-    }
-
-    // calculate number of major ticks
-    tickutil::AxisTickRange tickRange = tickutil::getMajorTickRange(ticks, range, maxTicks);
-
-    if (tickRange.numTicks == 0u) return {};
-
-    std::vector<double> tickPositions(tickRange.numTicks);
-    // compute tick positions
-    for (size_t i = 0u; i < tickRange.numTicks; ++i) {
-        tickPositions[i] = tickRange.start + tickRange.delta * static_cast<double>(i);
-    }
-    return tickPositions;
+AxisLabels getAxisLabels(const AxisSettings& settings) {
+    return getAxisLabels(settings.getLabelingAlgorithm(), settings.getRange(),
+                         settings.getMajorTicks().getNumberOfTicks(),
+                         settings.getLabelFormatString(), settings.getCustomLabels());
 }
 
-std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
-                                          const MajorTickSettings& majorTicks, dvec2 range,
-                                          size_t maxTicks) {
-    if ((ticks.getStyle() == TickStyle::None) || (ticks.getTickFrequency() < 2)) {
+std::vector<double> getMinorTicks(const MinorTickSettings& tickSettings,
+                                  const AxisLabels& axisTicks, dvec2 range) {
+    if ((tickSettings.getStyle() == TickStyle::None) || (tickSettings.getTickFrequency() < 2)) {
         // a tick frequency of 1 would draw the minor ticks directly on top of the major ticks
         return {};
     }
@@ -165,35 +149,31 @@ std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
     //    :..+....|....+....+....+....+....|....+....+...:
     //
 
-    // calculate number of major ticks
-    const auto majorTickRange = tickutil::getMajorTickRange(majorTicks, range, maxTicks);
-
     const auto minorTickDelta =
-        majorTickRange.delta / static_cast<double>(ticks.getTickFrequency());
+        axisTicks.step / static_cast<double>(tickSettings.getTickFrequency());
 
-    double startMinor = majorTickRange.start;
-    double stopMinor = majorTickRange.end;
+    double startMinor = axisTicks.start;
+    double stopMinor = axisTicks.stop;
 
-    size_t nextMajorTickIndex;
-    if (ticks.getFillAxis()) {
+    size_t nextMajorTickIndex = 0;
+    if (tickSettings.getFillAxis()) {
         // need to figure out first and last minor tick positions beyond major ticks
 
         // first minor tick
-        auto n = std::floor((majorTickRange.start - range.x) / minorTickDelta);
-        startMinor = majorTickRange.start - n * minorTickDelta;
+        auto n = std::floor((axisTicks.start - range.x) / minorTickDelta);
+        startMinor = axisTicks.start - n * minorTickDelta;
         // save index for later
         nextMajorTickIndex = static_cast<size_t>(n + 0.5);
-
         // last minor tick
-        n = std::floor((range.y - majorTickRange.end) / minorTickDelta);
+        n = std::floor((range.y - axisTicks.stop) / minorTickDelta);
 
-        stopMinor = majorTickRange.end + n * minorTickDelta;
+        stopMinor = axisTicks.stop + n * minorTickDelta;
     } else {
         // minor ticks are only filled in between major ticks
-        startMinor = majorTickRange.start + minorTickDelta;
-        stopMinor = majorTickRange.end - minorTickDelta;
+        startMinor = axisTicks.start + minorTickDelta;
+        stopMinor = axisTicks.stop - minorTickDelta;
 
-        nextMajorTickIndex = ticks.getTickFrequency() - 1u;
+        nextMajorTickIndex = static_cast<size_t>(tickSettings.getTickFrequency()) - 1u;
     }
 
     // Minor ticks fill the entire axis, except where a major tick is supposed to be.
@@ -210,13 +190,17 @@ std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
     for (size_t i = 0u; i < totalTicks; ++i) {
         if (i == nextMajorTickIndex) {
             // skip major tick positions
-            nextMajorTickIndex += ticks.getTickFrequency();
+            nextMajorTickIndex += static_cast<size_t>(tickSettings.getTickFrequency());
             continue;
         }
         tickPositions.push_back(startMinor + minorTickDelta * static_cast<double>(i));
     }
 
     return tickPositions;
+}
+
+std::vector<double> getMinorTicks(const AxisSettings& settings) {
+    return getMinorTicks(settings.getMinorTicks(), getAxisLabels(settings), settings.getRange());
 }
 
 std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dvec2 axisRange,
@@ -258,7 +242,7 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dv
     auto& vertices = posBuffer->getEditableRAMRepresentation()->getDataContainer();
     auto& colors = colBuffer->getEditableRAMRepresentation()->getDataContainer();
 
-    std::fill(colors.begin(), colors.end(), color);
+    std::ranges::fill(colors, color);
 
     for (size_t i = 0u; i < numTicks; ++i) {
         const vec3 pos(startPos + scaling * static_cast<float>(tickmarks[i] - axisRange.x));
@@ -271,16 +255,16 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dv
     mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
 
     std::vector<uint32_t> indices(numTicks * 2);
-    std::iota(indices.begin(), indices.end(), 0);
+    std::ranges::iota(indices, 0);
 
-    mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+    mesh->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},
                      inviwo::util::makeIndexBuffer(std::move(indices)));
 
     return mesh;
 }
 
-std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings, const vec2& startPos,
-                                       const vec2& endPos) {
+std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings, const AxisLabels& ticks,
+                                       const vec2& startPos, const vec2& endPos) {
     vec2 lowerLeft = glm::min(startPos, endPos);
     vec2 upperRight = glm::max(startPos, endPos);
 
@@ -317,110 +301,62 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings, const vec2&
     };
 
     {
-        const auto tickPositions = getMajorTickPositions(majorTicks, settings.getRange());
+        const auto& tickPositions = ticks.positions;
         if (!tickPositions.empty()) {
             const auto pos1 =
                 startPos + scaling * static_cast<float>(tickPositions.front() - axisRange.x);
             const vec2 pos2 =
                 startPos + scaling * static_cast<float>(tickPositions.back() - axisRange.x);
 
-            const auto ext1 =
+            const auto [start1, end1] =
                 getSize(pos1, tickDirection, majorTicks.getStyle(), settings.getMirrored());
-            const auto ext2 =
+            const auto [start2, end2] =
                 getSize(pos2, tickDirection, majorTicks.getStyle(), settings.getMirrored());
 
-            lowerLeft = glm::min(lowerLeft, ext1.first);
-            lowerLeft = glm::min(lowerLeft, ext1.second);
-            lowerLeft = glm::min(lowerLeft, ext2.first);
-            lowerLeft = glm::min(lowerLeft, ext2.second);
+            lowerLeft = glm::min(lowerLeft, start1);
+            lowerLeft = glm::min(lowerLeft, end1);
+            lowerLeft = glm::min(lowerLeft, start2);
+            lowerLeft = glm::min(lowerLeft, end2);
 
-            upperRight = glm::max(upperRight, ext1.first);
-            upperRight = glm::max(upperRight, ext1.second);
-            upperRight = glm::max(upperRight, ext2.first);
-            upperRight = glm::max(upperRight, ext2.second);
+            upperRight = glm::max(upperRight, start1);
+            upperRight = glm::max(upperRight, end1);
+            upperRight = glm::max(upperRight, start2);
+            upperRight = glm::max(upperRight, end2);
         }
     }
 
     {
         const auto tickPositions =
-            getMinorTickPositions(minorTicks, majorTicks, settings.getRange());
+            getMinorTicks(settings.getMinorTicks(), ticks, settings.getRange());
         if (!tickPositions.empty()) {
             const auto pos1 =
                 startPos + scaling * static_cast<float>(tickPositions.front() - axisRange.x);
             const vec2 pos2 =
                 startPos + scaling * static_cast<float>(tickPositions.back() - axisRange.x);
 
-            const auto ext1 =
+            const auto [start1, end1] =
                 getSize(pos1, tickDirection, minorTicks.getStyle(), settings.getMirrored());
-            const auto ext2 =
+            const auto [start2, end2] =
                 getSize(pos2, tickDirection, minorTicks.getStyle(), settings.getMirrored());
 
-            lowerLeft = glm::min(lowerLeft, ext1.first);
-            lowerLeft = glm::min(lowerLeft, ext1.second);
-            lowerLeft = glm::min(lowerLeft, ext2.first);
-            lowerLeft = glm::min(lowerLeft, ext2.second);
+            lowerLeft = glm::min(lowerLeft, start1);
+            lowerLeft = glm::min(lowerLeft, end1);
+            lowerLeft = glm::min(lowerLeft, start2);
+            lowerLeft = glm::min(lowerLeft, end2);
 
-            upperRight = glm::max(upperRight, ext1.first);
-            upperRight = glm::max(upperRight, ext1.second);
-            upperRight = glm::max(upperRight, ext2.first);
-            upperRight = glm::max(upperRight, ext2.second);
+            upperRight = glm::max(upperRight, start1);
+            upperRight = glm::max(upperRight, end1);
+            upperRight = glm::max(upperRight, start2);
+            upperRight = glm::max(upperRight, end2);
         }
     }
 
     return {lowerLeft, upperRight};
 }
 
-std::unique_ptr<Mesh> generateMajorTicksMesh(const AxisSettings& settings, const vec2& startPos,
-                                             const vec2& endPos) {
-    const auto& ticks = settings.getMajorTicks();
-    const auto tickPositions = getMajorTickPositions(ticks, settings.getRange());
-
-    const auto axisDir = glm::normalize(endPos - startPos);
-    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
-
-    return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
-                             vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
-                             ticks.getColor(), settings.getMirrored());
-}
-
-std::unique_ptr<Mesh> generateMinorTicksMesh(const AxisSettings& settings, const vec2& startPos,
-                                             const vec2& endPos) {
-    const auto& ticks = settings.getMinorTicks();
-    const auto tickPositions =
-        getMinorTickPositions(ticks, settings.getMajorTicks(), settings.getRange());
-
-    const auto axisDir = glm::normalize(endPos - startPos);
-    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
-
-    return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
-                             vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
-                             ticks.getColor(), settings.getMirrored());
-}
-
 std::unique_ptr<Mesh> generateAxisMesh(const vec2& startPos, const vec2& endPos, const vec4& color,
                                        const size_t& pickingId) {
     return generateAxisMesh3D(vec3(startPos, 0.0f), vec3(endPos, 0.0f), color, pickingId);
-}
-
-std::unique_ptr<Mesh> generateMajorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
-                                               const vec3& endPos, const vec3& tickDirection) {
-    const auto& ticks = settings.getMajorTicks();
-    const auto tickPositions = getMajorTickPositions(ticks, settings.getRange());
-
-    return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
-                             ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
-                             settings.getMirrored());
-}
-
-std::unique_ptr<Mesh> generateMinorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
-                                               const vec3& endPos, const vec3& tickDirection) {
-    const auto& ticks = settings.getMinorTicks();
-    const auto tickPositions =
-        getMinorTickPositions(ticks, settings.getMajorTicks(), settings.getRange());
-
-    return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
-                             ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
-                             settings.getMirrored());
 }
 
 std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPos,
@@ -438,7 +374,7 @@ std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPo
         auto pickingBuffer = util::makeBuffer<uint32_t>({id, id});
         m->addBuffer(BufferType::PickingAttrib, pickingBuffer);
     }
-    m->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+    m->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},
                   util::makeIndexBuffer({0, 1}));
 
     return m;
@@ -461,11 +397,10 @@ vec2 getAxisCaptionPosition(const AxisSettings& settings, const vec2& startPos,
            axisDir * settings.getCaptionSettings().getOffset().y;
 }
 
-std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& settings,
+std::vector<std::pair<double, vec2>> getLabelPositions(const AxisLabels& ticks,
+                                                       const AxisSettings& settings,
                                                        const vec2& startPos, const vec2& endPos) {
-    const auto tickmarks = getMajorTickPositions(settings);
-
-    if (tickmarks.empty()) {
+    if (ticks.positions.empty()) {
         return {};
     }
 
@@ -485,24 +420,23 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
     const auto axisRange = settings.getRange();
     const auto screenLength(glm::distance(endPos, startPos));
     const auto axisLength = axisRange.y - axisRange.x;
-    std::vector<std::pair<double, vec2>> labelPositions(tickmarks.size());
+    std::vector<std::pair<double, vec2>> labelPositions(ticks.positions.size());
 
     if (axisLength != 0.0) {
         const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
-        std::transform(
-            tickmarks.begin(), tickmarks.end(), labelPositions.begin(),
-            [&](double pos) -> std::pair<double, vec2> {
+        std::ranges::transform(
+            ticks.positions, labelPositions.begin(), [&](double pos) -> std::pair<double, vec2> {
                 return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
             });
 
     } else {
-        const auto denom = tickmarks.size() > 1 ? tickmarks.size() - 1 : 1.f;
+        const auto denom = ticks.positions.size() > 1 ? ticks.positions.size() - 1 : 1.f;
         const vec2 scaling(axisDir * static_cast<float>(screenLength / denom));
-        auto seq = util::make_sequence(size_t{0}, tickmarks.size(), size_t{1});
-        std::transform(tickmarks.begin(), tickmarks.end(), seq.begin(), labelPositions.begin(),
-                       [&](double pos, size_t i) -> std::pair<double, vec2> {
-                           return {pos, labelOrigin + scaling * static_cast<double>(i)};
-                       });
+        auto seq = util::make_sequence(size_t{0}, ticks.positions.size(), size_t{1});
+        std::ranges::transform(ticks.positions, seq, labelPositions.begin(),
+                               [&](double pos, size_t i) -> std::pair<double, vec2> {
+                                   return {pos, labelOrigin + scaling * static_cast<double>(i)};
+                               });
     }
     return labelPositions;
 }
@@ -521,12 +455,11 @@ vec3 getAxisCaptionPosition3D(const AxisSettings& settings, const vec3& startPos
            glm::normalize(endPos - startPos) * settings.getCaptionSettings().getOffset().y;
 }
 
-std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisSettings& settings,
+std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisLabels& ticks,
+                                                         const AxisSettings& settings,
                                                          const vec3& startPos, const vec3& endPos,
                                                          const vec3& tickDirection) {
-    const auto tickmarks = getMajorTickPositions(settings);
-
-    if (tickmarks.empty()) {
+    if (ticks.positions.empty()) {
         return {};
     }
 
@@ -548,15 +481,13 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisSettings& set
     const auto axisLength = axisRange.y - axisRange.x;
     const vec3 scaling(axisDir * static_cast<float>(worldLen / axisLength));
 
-    std::vector<std::pair<double, vec3>> labelPositions(tickmarks.size());
-    std::transform(tickmarks.begin(), tickmarks.end(), labelPositions.begin(),
-                   [&](double pos) -> std::pair<double, vec3> {
-                       return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
-                   });
+    std::vector<std::pair<double, vec3>> labelPositions(ticks.positions.size());
+    std::ranges::transform(
+        ticks.positions, labelPositions.begin(), [&](double pos) -> std::pair<double, vec3> {
+            return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
+        });
 
     return labelPositions;
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

@@ -35,13 +35,12 @@
 #include <modules/plotting/datastructures/majortickdata.h>  // for MajorTickData
 #include <modules/plotting/datastructures/minortickdata.h>  // for MinorTickData
 #include <modules/plotting/datastructures/plottextdata.h>   // for PlotTextData
+#include <modules/plotting/algorithm/labeling.h>
 
 #include <string>  // for string, basic_string
 #include <vector>  // for vector
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
@@ -49,7 +48,11 @@ class PlotTextSettings;
 class IVW_MODULE_PLOTTING_API AxisData : public AxisSettings {
 public:
     AxisData() = default;
-    AxisData(const AxisSettings& settings);
+    explicit AxisData(const AxisSettings& settings);
+    AxisData(const AxisData&) = default;
+    AxisData(AxisData&&) = default;
+    AxisData& operator=(const AxisData&) = default;
+    AxisData& operator=(AxisData&&) = default;
     virtual ~AxisData() = default;
 
     dvec2 range = dvec2{0.0, 100.0};
@@ -64,7 +67,9 @@ public:
     std::string caption;
     PlotTextData captionSettings;
 
-    std::vector<std::string> labels;
+    LabelingAlgorithm labelingAlgorithm;
+    std::string labelFormatString;
+    AxisLabels customLabels;
     PlotTextData labelSettings;
 
     MajorTickData majorTicks;
@@ -83,12 +88,13 @@ public:
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
 
-    virtual const std::vector<std::string>& getLabels() const override;
+    virtual LabelingAlgorithm getLabelingAlgorithm() const override;
+    virtual std::string_view getLabelFormatString() const override;
+    virtual const AxisLabels& getCustomLabels() const override;
     virtual const PlotTextSettings& getLabelSettings() const override;
 
     virtual const MajorTickSettings& getMajorTicks() const override;
     virtual const MinorTickSettings& getMinorTicks() const override;
 };
 
-}  // namespace plot
-}  // namespace inviwo
+}  // namespace inviwo::plot

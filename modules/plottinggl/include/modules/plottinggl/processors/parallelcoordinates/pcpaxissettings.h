@@ -102,8 +102,7 @@ public:
     virtual vec4 getColor() const override;
     virtual float getTickLength() const override;
     virtual float getTickWidth() const override;
-    virtual double getTickDelta() const override;
-    virtual bool getRangeBasedTicks() const override;
+    virtual int getNumberOfTicks() const override;
 
 private:
     PCPAxisSettings* settings_;
@@ -194,7 +193,9 @@ public:
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
 
-    virtual const std::vector<std::string>& getLabels() const override;
+    virtual LabelingAlgorithm getLabelingAlgorithm() const override;
+    virtual std::string_view getLabelFormatString() const override;
+    virtual const AxisLabels& getCustomLabels() const override;
     virtual const PlotTextSettings& getLabelSettings() const override;
 
     virtual const MajorTickSettings& getMajorTicks() const override;
@@ -211,11 +212,9 @@ public:
 
 private:
     void updateBrushing();
-    void updateLabels();
 
     std::string caption_;
-    std::vector<std::string> labels_;
-    std::shared_ptr<std::function<void()>> labelUpdateCallback_;
+    AxisLabels axisLabels_;
 
     PCPCaptionSettings captionSettings_;
     PCPLabelSettings labelSettings_;

@@ -3,6 +3,7 @@ ivw_module(Plotting)
 
 # Add header files
 set(HEADER_FILES
+    include/modules/plotting/algorithm/labeling.h
     include/modules/plotting/datastructures/axisdata.h
     include/modules/plotting/datastructures/axissettings.h
     include/modules/plotting/datastructures/boxselectionsettings.h
@@ -29,6 +30,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/labeling.cpp
     src/datastructures/axisdata.cpp
     src/datastructures/axissettings.cpp
     src/datastructures/boxselectionsettings.cpp

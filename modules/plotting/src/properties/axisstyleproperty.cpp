@@ -44,89 +44,111 @@
 
 #include <functional>  // for __base
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view AxisStyleProperty::getClassIdentifier() const { return classIdentifier; }
 
 AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(
-          identifier, displayName,
-          "Convenience property for updating/overriding multiple axes properties. "
-          "A property change will propagate to all the subproperties of the registered axes."_help,
-          invalidationLevel, semantics)
-    , fontFace_("fontFace", "Font Face", "Font face used for axis labels and captions"_help,
-                font::FontType::Label)
-    , fontSize_("fontSize", "Font Size",
+    : CompositeProperty{identifier, displayName,
+                        "Convenience property for updating/overriding multiple axes properties. "
+                        "A property change will propagate to all the subproperties of the registered axes."_help,
+                        invalidationLevel, semantics}
+    , fontFace_{"fontFace", "Font Face", "Font face used for axis labels and captions"_help,
+                font::FontType::Label}
+    , fontSize_{"fontSize", "Font Size",
                 util::ordinalCount(14, 144)
                     .set("Font size for both axis labels and captions"_help)
-                    .set(PropertySemantics("Fontsize")))
-    , color_("defaultcolor", "Color",
-             util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Default color of the axis"_help))
-    , lineWidth_("lineWidth", "Line Width",
-                 util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help))
-    , tickLength_(
-          "tickLength", "Tick Length",
-          util::ordinalLength(8.0f, 20.0f)
-              .set(
-                  "Length of major ticks. The length of minor tick will be set to 75% of this length"_help))
-    , labelFormat_("labelFormat", "Label Format",
+                    .set(PropertySemantics("Fontsize"))}
+    , color_{"defaultcolor", "Color",
+             util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Default color of the axis"_help)}
+    , lineWidth_{"lineWidth", "Line Width",
+                 util::ordinalLength(2.5f, 20.0f).set("Line width of the axis"_help)}
+    , tickLength_{"tickLength", "Tick Length",
+                  util::ordinalLength(8.0f, 20.0f)
+                      .set(
+                          "Length of major ticks. The length of minor tick will be set to 75% of this length"_help)}
+    , labelingAlgorithm_{"labeling",
+                         "Labeling Algorithm",
+                         {{"heckbert", "Heckbert", LabelingAlgorithm::Heckbert},
+                          {"matplotlib", "Matplotlib", LabelingAlgorithm::Matplotlib},
+                          {"extentedWilkinson", "Ext. Wilkinson",
+                           LabelingAlgorithm::ExtendedWilkinson},
+                          {"limits", "Limits only", LabelingAlgorithm::Limits},
+                          {"customOnly", "Custom labels only", LabelingAlgorithm::CustomOnly}},
+                         1}
+    , numberOfTicks_{
+          "numberOfTicks", "Max Number of Ticks",
+          util::ordinalCount(6, 20).setMin(2).set("Maximum number of labels/ticks."_help)}
+    , labelFormat_{"labelFormat", "Label Format",
                    "Formatting string for labels using the printf format specification."_help,
-                   "%.1f") {
+                   "%.1f"} {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     fontFace_.onChange([this]() {
-        NetworkLock lock(this);
-        for (auto a : axes_) {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
             a->setFontFace(fontFace_);
         }
     });
     fontSize_.onChange([this]() {
-        NetworkLock lock(this);
-        for (auto a : axes_) {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
             a->setFontSize(fontSize_);
         }
     });
     color_.onChange([this]() {
-        NetworkLock lock(this);
-        for (auto a : axes_) {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
             a->setColor(color_);
         }
     });
     lineWidth_.onChange([this]() {
-        NetworkLock lock(this);
-        for (auto a : axes_) {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
             a->setLineWidth(lineWidth_);
         }
     });
     tickLength_.onChange([this]() {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         const auto len = tickLength_.get();
-        for (auto a : axes_) {
+        for (auto* a : axes_) {
             a->setTickLength(len, 0.75f * len);
         }
     });
+    labelingAlgorithm_.onChange([this]() {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
+            a->setLabelingAlgorithm(labelingAlgorithm_);
+        }
+    });
+    numberOfTicks_.onChange([this]() {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
+            a->setNumberOfTicks(numberOfTicks_);
+        }
+    });
     labelFormat_.onChange([this]() {
-        NetworkLock lock(this);
-        for (auto a : axes_) {
+        const NetworkLock lock(this);
+        for (auto* a : axes_) {
             a->setLabelFormat(labelFormat_);
         }
     });
 }
 
 AxisStyleProperty::AxisStyleProperty(const AxisStyleProperty& rhs)
-    : CompositeProperty(rhs)
-    , fontFace_(rhs.fontFace_)
-    , fontSize_(rhs.fontSize_)
-    , color_(rhs.color_)
-    , lineWidth_(rhs.lineWidth_)
-    , tickLength_(rhs.tickLength_)
-    , labelFormat_(rhs.labelFormat_)
-    , axes_(rhs.axes_) {
+    : CompositeProperty{rhs}
+    , fontFace_{rhs.fontFace_}
+    , fontSize_{rhs.fontSize_}
+    , color_{rhs.color_}
+    , lineWidth_{rhs.lineWidth_}
+    , tickLength_{rhs.tickLength_}
+    , labelingAlgorithm_{rhs.labelingAlgorithm_}
+    , numberOfTicks_{rhs.numberOfTicks_}
+    , labelFormat_{rhs.labelFormat_}
+    , axes_{rhs.axes_} {
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
@@ -148,6 +170,4 @@ void AxisStyleProperty::unregisterProperty(AxisProperty& p) {
 
 void AxisStyleProperty::unregisterAll() { axes_.clear(); }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

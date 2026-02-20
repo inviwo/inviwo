@@ -32,16 +32,15 @@
 #include <inviwo/core/util/glmvec.h>                            // for vec4
 #include <modules/plotting/datastructures/majorticksettings.h>  // for MajorTickSettings, TickStyle
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
 MajorTickData::MajorTickData(const MajorTickSettings& s)
     : style{s.getStyle()}
     , color{s.getColor()}
     , tickLength{s.getTickLength()}
     , tickWidth{s.getTickWidth()}
-    , tickDelta{s.getTickDelta()}
-    , rangeBasedTicks{s.getRangeBasedTicks()} {}
+    , numberOfTicks{s.getNumberOfTicks()} {}
+
 TickStyle MajorTickData::getStyle() const { return style; }
 
 vec4 MajorTickData::getColor() const { return color; }
@@ -50,10 +49,6 @@ float MajorTickData::getTickLength() const { return tickLength; }
 
 float MajorTickData::getTickWidth() const { return tickWidth; }
 
-double MajorTickData::getTickDelta() const { return tickDelta; }
+int MajorTickData::getNumberOfTicks() const { return numberOfTicks; }
 
-bool MajorTickData::getRangeBasedTicks() const { return rangeBasedTicks; }
-
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot
