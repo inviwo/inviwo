@@ -33,6 +33,8 @@
 </style>
 </head>
 <body>
+<h2>2026-02-20 Improved labeling for 2D and 3D axes</h2>
+<p>Various algorithms for generating axis labels were implemented and can be found in <code class="notranslate">modules/plotting/algorithm/labeling.h</code>. Support was added for Heckbert's nice numbering, matplotlib's labeling algorithm, and the Extended Wilkinson algorithm by J. Talbot. These should produce "nice" labels given an optimal/maximum number of tick marks. In addition, there is also <code class="notranslate">LabelingAlgorithm::Limits</code> showing labels only for the minimum and maximum of the axis range and <code class="notranslate">LabelingAlgorithm::CustomOnly</code>, which only shows custom labels. The axis rendering and the associated settings have been refactored in that respect.</p>
 <h2>2025-12-18 Disable modules at runtime</h2>
 <p>A new environment variable to disable loading modules at runtime <code class="notranslate">INVIWO_DISABLE_MODULES</code> has been added.<br>
 It takes a semicolon separated list of lowercase module identifiers.</p>
