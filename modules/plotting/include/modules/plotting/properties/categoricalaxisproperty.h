@@ -98,7 +98,9 @@ public:
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
 
-    virtual const std::vector<std::string>& getLabels() const override;
+    virtual LabelingAlgorithm getLabelingAlgorithm() const override;
+    virtual std::string_view getLabelFormatString() const override;
+    virtual const AxisLabels& getCustomLabels() const override;
     virtual const PlotTextSettings& getLabelSettings() const override;
 
     virtual const MajorTickSettings& getMajorTicks() const override;
@@ -122,7 +124,7 @@ public:
     MinorTickData minorTicks_;
 
 private:
-    std::vector<std::string> categories_;
+    AxisLabels axisLabels_;
     void adjustAlignment();
 };
 
