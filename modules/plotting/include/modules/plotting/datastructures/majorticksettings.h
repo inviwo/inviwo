@@ -32,33 +32,31 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
-
-enum class TickStyle { None, Inside, Outside, Both };
+enum class TickStyle : unsigned char { None, Inside, Outside, Both };
 
 class IVW_MODULE_PLOTTING_API MajorTickSettings {
 public:
     MajorTickSettings() = default;
+    MajorTickSettings(const MajorTickSettings&) = default;
+    MajorTickSettings(MajorTickSettings&&) = default;
+    MajorTickSettings& operator=(const MajorTickSettings&) = default;
+    MajorTickSettings& operator=(MajorTickSettings&&) = default;
     virtual ~MajorTickSettings() = default;
 
     virtual TickStyle getStyle() const = 0;
     virtual vec4 getColor() const = 0;
     virtual float getTickLength() const = 0;
     virtual float getTickWidth() const = 0;
-    virtual double getTickDelta() const = 0;
-    virtual bool getRangeBasedTicks() const = 0;
+    virtual int getNumberOfTicks() const = 0;
 };
 
 IVW_MODULE_PLOTTING_API bool operator==(const MajorTickSettings& a, const MajorTickSettings& b);
-IVW_MODULE_PLOTTING_API bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b);
 
 /**
  * flip inside and outside direction of tick style \p s
  */
 IVW_MODULE_PLOTTING_API TickStyle flip(TickStyle s);
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

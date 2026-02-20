@@ -112,8 +112,6 @@ CategoricalAxisProperty::CategoricalAxisProperty(
     setCategories(std::move(categories));
 
     minorTicks_.style = TickStyle::None;
-    majorTicks_.tickDelta_.set(1.0);
-    majorTicks_.tickDelta_.setReadOnly(true);
 }
 
 CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& rhs)
@@ -143,11 +141,14 @@ CategoricalAxisProperty* CategoricalAxisProperty::clone() const {
 }
 
 const std::vector<std::string>& CategoricalAxisProperty::getCategories() const {
-    return categories_;
+    return axisLabels_.labels;
 }
 
 void CategoricalAxisProperty::setCategories(std::vector<std::string> categories) {
-    categories_ = std::move(categories);
+    axisLabels_.start = 0.0;
+    axisLabels_.stop = static_cast<double>(categories.size()) - 1.0;
+    axisLabels_.step = axisLabels_.stop - axisLabels_.start;
+    axisLabels_.labels = std::move(categories);
 }
 
 const std::string& CategoricalAxisProperty::getCaption() const {
@@ -180,9 +181,7 @@ float CategoricalAxisProperty::getWidth() const { return width_.get(); }
 
 float CategoricalAxisProperty::getScalingFactor() const { return scalingFactor_.get(); }
 
-dvec2 CategoricalAxisProperty::getRange() const {
-    return {0, static_cast<double>(categories_.size()) - 1.0};
-}
+dvec2 CategoricalAxisProperty::getRange() const { return {axisLabels_.start, axisLabels_.stop}; }
 
 AxisSettings::Orientation CategoricalAxisProperty::getOrientation() const {
     return orientation_.getSelectedValue();
@@ -192,7 +191,13 @@ const PlotTextSettings& CategoricalAxisProperty::getCaptionSettings() const {
     return captionSettings_;
 }
 
-const std::vector<std::string>& CategoricalAxisProperty::getLabels() const { return categories_; }
+LabelingAlgorithm CategoricalAxisProperty::getLabelingAlgorithm() const {
+    return LabelingAlgorithm::CustomOnly;
+}
+
+std::string_view CategoricalAxisProperty::getLabelFormatString() const { return {}; }
+
+const AxisLabels& CategoricalAxisProperty::getCustomLabels() const { return axisLabels_; }
 
 const PlotTextSettings& CategoricalAxisProperty::getLabelSettings() const { return labelSettings_; }
 

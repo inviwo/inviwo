@@ -52,7 +52,9 @@ AxisData::AxisData(const AxisSettings& s)
     , orientation{s.getOrientation()}
     , caption{s.getCaption()}
     , captionSettings{s.getCaptionSettings()}
-    , labels{s.getLabels()}
+    , labelingAlgorithm{s.getLabelingAlgorithm()}
+    , labelFormatString{s.getLabelFormatString()}
+    , customLabels{s.getCustomLabels()}
     , labelSettings{s.getLabelSettings()}
     , majorTicks{s.getMajorTicks()}
     , minorticks{s.getMinorTicks()} {}
@@ -75,7 +77,11 @@ const std::string& AxisData::getCaption() const { return caption; }
 
 const PlotTextSettings& AxisData::getCaptionSettings() const { return captionSettings; }
 
-const std::vector<std::string>& AxisData::getLabels() const { return labels; }
+LabelingAlgorithm AxisData::getLabelingAlgorithm() const { return labelingAlgorithm; }
+
+std::string_view AxisData::getLabelFormatString() const { return labelFormatString; }
+
+const AxisLabels& AxisData::getCustomLabels() const { return customLabels; }
 
 const PlotTextSettings& AxisData::getLabelSettings() const { return labelSettings; }
 
