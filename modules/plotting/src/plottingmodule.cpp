@@ -72,7 +72,7 @@ void convertDoubleMinMaxPropertyToVec2(TxElement* node) {
     node->SetAttribute("type", "DoubleVec2Property");
 
     using ET = std::underlying_type_t<ConstraintBehavior>;
-    std::string ct = fmt::to_string(static_cast<ET>(ConstraintBehavior::Ignore));
+    const std::string ct = fmt::to_string(static_cast<ET>(ConstraintBehavior::Ignore));
 
     TxElement minConstraint{"minConstraint"};
     minConstraint.AddAttribute("content", ct);

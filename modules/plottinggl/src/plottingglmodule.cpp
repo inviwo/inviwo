@@ -96,7 +96,7 @@ void convertDoubleMinMaxPropertyToVec2(TxElement* node) {
     node->SetAttribute("type", "DoubleVec2Property");
 
     using ET = std::underlying_type_t<ConstraintBehavior>;
-    std::string ct = fmt::to_string(static_cast<ET>(ConstraintBehavior::Ignore));
+    const std::string ct = fmt::to_string(static_cast<ET>(ConstraintBehavior::Ignore));
 
     TxElement minConstraint{"minConstraint"};
     minConstraint.AddAttribute("content", ct);
@@ -138,17 +138,17 @@ bool updateV0(TxElement* root) {
             return true;
         }
 
-        auto props = xml::getElement(node, "Properties");
-        if (auto tf = xml::getElement(node,
-                                      "Properties/Property&identifier=colors/Properties/"
-                                      "Property&identifier=tf")) {
+        auto* props = xml::getElement(node, "Properties");
+        if (auto* tf = xml::getElement(node,
+                                       "Properties/Property&identifier=colors/Properties/"
+                                       "Property&identifier=tf")) {
             props->InsertEndChild(*tf);
             res = true;
         }
 
-        if (auto color = xml::getElement(node,
-                                         "Properties/Property&identifier=colors/Properties/"
-                                         "Property&identifier=selectedColorAxis")) {
+        if (auto* color = xml::getElement(node,
+                                          "Properties/Property&identifier=colors/Properties/"
+                                          "Property&identifier=selectedColorAxis")) {
             props->InsertEndChild(*color);
             res = true;
         }
@@ -168,18 +168,18 @@ bool updateV1(TxElement* root) {
         const auto& type = node->GetAttribute("type");
         if (type != "org.inviwo.ParallelCoordinates") return true;
 
-        auto props = xml::getElement(node, "Properties");
+        auto* props = xml::getElement(node, "Properties");
         TxElement compNode{"Property"};
         compNode.SetAttribute("type", "org.inviwo.DataFrameColormapProperty");
         compNode.SetAttribute("identifier", "colormap");
 
         TxElement propNode{"Properties"};
         // Move old TF and selected color into new DataFrameColormapProperty
-        if (auto tf = xml::getElement(props, "Property&identifier=tf")) {
+        if (auto* tf = xml::getElement(props, "Property&identifier=tf")) {
             propNode.InsertEndChild(*tf);
         }
 
-        if (auto color = xml::getElement(props, "Property&identifier=selectedColorAxis")) {
+        if (auto* color = xml::getElement(props, "Property&identifier=selectedColorAxis")) {
             propNode.InsertEndChild(*color);
         }
 
@@ -204,6 +204,7 @@ bool updateV1(TxElement* root) {
     return res;
 }
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 bool updateV2(TxElement* root) {
     bool res = false;
     TraversingVersionConverter conv{[&res](TxElement* node) -> bool {
@@ -214,15 +215,15 @@ bool updateV2(TxElement* root) {
             return true;
         }
 
-        if (auto elem = xml::getElement(node, "Properties/Property&identifier=fontFace")) {
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=fontFace")) {
             elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
             res = true;
         }
-        if (auto elem = xml::getElement(node, "Properties/Property&identifier=fontFaceStats")) {
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=fontFaceStats")) {
             elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
             res = true;
         }
-        if (auto elem = xml::getElement(node, "Properties/Property&identifier=correlectionTF")) {
+        if (auto* elem = xml::getElement(node, "Properties/Property&identifier=correlectionTF")) {
             elem->SetAttribute("identifier", "correlationTF");
             res = true;
         }
@@ -231,10 +232,10 @@ bool updateV2(TxElement* root) {
         const std::string_view identifier =
             isScatterPlotProc ? "scatterplot" : "scatterPlotproperties";
 
-        if (auto plot = xml::getElement(
+        if (auto* plot = xml::getElement(
                 node, fmt::format("Properties/Property&identifier={}/Properties", identifier))) {
             // Rename color property
-            if (auto color = xml::getElement(plot, "Property&identifier=color")) {
+            if (auto* color = xml::getElement(plot, "Property&identifier=color")) {
                 color->SetAttribute("identifier", "defaultColor");
             }
 
@@ -245,29 +246,26 @@ bool updateV2(TxElement* root) {
                 compNode.SetAttribute("identifier", "showHighlighted");
 
                 TxElement propNode{"Properties"};
-                if (auto hovered = xml::getElement(plot, "Property&identifier=hovering")) {
+                if (auto* hovered = xml::getElement(plot, "Property&identifier=hovering")) {
                     hovered->SetAttribute("identifier", "checked");
                     hovered->SetAttribute("displayName", "");
                     propNode.InsertEndChild(*hovered);
                 }
                 // Change type of hover color to vec3, move to composite
-                if (auto highlightColor = xml::getElement(plot, "Property&identifier=hoverColor")) {
+                if (auto* highlightColor =
+                        xml::getElement(plot, "Property&identifier=hoverColor")) {
                     highlightColor->SetAttribute("type", "org.inviwo.FloatVec3Property");
                     highlightColor->SetAttribute("identifier", "highlightColor");
 
                     propNode.InsertEndChild(*highlightColor);
 
-                    if (auto value = xml::getElement(highlightColor, "value")) {
+                    if (const auto* value = xml::getElement(highlightColor, "value")) {
                         TxElement alphaNode{"Property"};
                         alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
                         alphaNode.SetAttribute("identifier", "highlightAlpha");
                         TxElement valueNode("value");
 
-                        if (const auto str = value->Attribute("w")) {
-                            valueNode.SetAttribute("content", *str);
-                        } else {
-                            valueNode.SetAttribute("content", "1.0");
-                        }
+                        valueNode.SetAttribute("content", value->Attribute("w").value_or("1.0"));
 
                         alphaNode.InsertEndChild(valueNode);
                         propNode.InsertEndChild(alphaNode);
@@ -284,23 +282,19 @@ bool updateV2(TxElement* root) {
                 compNode.SetAttribute("identifier", "showSelected");
 
                 TxElement propNode{"Properties"};
-                if (auto highlightColor =
+                if (auto* highlightColor =
                         xml::getElement(plot, "Property&identifier=selectionColor")) {
                     highlightColor->SetAttribute("type", "org.inviwo.FloatVec3Property");
                     highlightColor->SetAttribute("identifier", "highlightColor");
 
                     propNode.InsertEndChild(*highlightColor);
 
-                    if (auto value = xml::getElement(highlightColor, "value")) {
+                    if (const auto* value = xml::getElement(highlightColor, "value")) {
                         TxElement alphaNode{"Property"};
                         alphaNode.SetAttribute("type", "org.inviwo.FloatProperty");
                         alphaNode.SetAttribute("identifier", "selectionAlpha");
                         TxElement valueNode("value");
-                        if (const auto str = value->Attribute("w")) {
-                            valueNode.SetAttribute("content", *str);
-                        } else {
-                            valueNode.SetAttribute("content", "1.0");
-                        }
+                        valueNode.SetAttribute("content", value->Attribute("w").value_or("1.0"));
 
                         alphaNode.InsertEndChild(valueNode);
                         propNode.InsertEndChild(alphaNode);
@@ -316,6 +310,7 @@ bool updateV2(TxElement* root) {
     conv.convert(root);
     return res;
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 bool updateV3(TxElement* root) {
     bool res = false;
@@ -324,9 +319,9 @@ bool updateV3(TxElement* root) {
         if (node->GetAttribute("type") != "org.inviwo.ParallelCoordinates") {
             return true;
         }
-        if (auto elem = xml::getElement(node,
-                                        "Properties/Property&identifier=lines/Properties/"
-                                        "Property&identifier=blendMode/selectedIdentifier")) {
+        if (auto* elem = xml::getElement(node,
+                                         "Properties/Property&identifier=lines/Properties/"
+                                         "Property&identifier=blendMode/selectedIdentifier")) {
             if (elem->GetAttribute("content") == "subractive") {
                 elem->SetAttribute("content", "subtractive");
                 res = true;
@@ -338,6 +333,7 @@ bool updateV3(TxElement* root) {
     return res;
 }
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 bool updateV4(TxElement* root) {
     bool res = false;
     TraversingVersionConverter conv{[&res](TxElement* node) -> bool {
@@ -345,15 +341,15 @@ bool updateV4(TxElement* root) {
         if (node->GetAttribute("type") != "org.inviwo.AxisProperty") {
             return true;
         }
-        if (auto useDataRange =
+        if (auto* useDataRange =
                 xml::getElement(node, "Properties/Property&identifier=useDataRange")) {
 
             useDataRange->SetAttribute("identifier", "overrideRange");
-            if (auto elem = xml::getElement(useDataRange, "displayName")) {
+            if (auto* elem = xml::getElement(useDataRange, "displayName")) {
                 elem->SetAttribute("content", "Override Axis Range");
             }
             // flip checked state
-            if (auto value = xml::getElement(useDataRange, "value")) {
+            if (auto* value = xml::getElement(useDataRange, "value")) {
                 if (value->GetAttribute("content") == "0") {
                     value->SetAttribute("content", "1");
                 } else {
@@ -362,23 +358,16 @@ bool updateV4(TxElement* root) {
             }
             res = true;
         }
-        if (auto properties = xml::getElement(node, "Properties")) {
-            if (auto range = xml::getElement(properties, "Properties/Property&identifier=range")) {
-                if (auto value = xml::getElement(range, "value")) {
+        if (auto* properties = xml::getElement(node, "Properties")) {
+            if (auto* range = xml::getElement(properties, "Properties/Property&identifier=range")) {
+                if (const auto* value = xml::getElement(range, "value")) {
                     TxElement customRange{"Property"};
                     customRange.SetAttribute("type", "org.inviwo.DoubleMinMaxProperty");
                     customRange.SetAttribute("identifier", "customRange");
                     TxElement valueNode("value");
-                    if (const auto str = value->Attribute("x")) {
-                        valueNode.SetAttribute("x", *str);
-                    } else {
-                        valueNode.SetAttribute("x", "0.0");
-                    }
-                    if (const auto str = value->Attribute("y")) {
-                        valueNode.SetAttribute("y", *str);
-                    } else {
-                        valueNode.SetAttribute("y", "100.0");
-                    }
+                    valueNode.SetAttribute("x", value->Attribute("x").value_or("0.0"));
+                    valueNode.SetAttribute("y", value->Attribute("y").value_or("100.0"));
+
                     customRange.InsertEndChild(valueNode);
                     properties->InsertEndChild(customRange);
                     res = true;
@@ -390,6 +379,7 @@ bool updateV4(TxElement* root) {
     conv.convert(root);
     return res;
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 bool updateV5(TxElement* root) {
     bool res = false;
