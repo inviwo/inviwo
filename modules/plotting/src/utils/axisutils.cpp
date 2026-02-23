@@ -129,7 +129,9 @@ AxisLabels getAxisLabels(const AxisSettings& settings) {
 
 std::vector<double> getMinorTicks(const MinorTickSettings& tickSettings,
                                   const AxisLabels& axisTicks, dvec2 range) {
-    if ((tickSettings.getStyle() == TickStyle::None) || (tickSettings.getTickFrequency() < 2)) {
+    if ((tickSettings.getStyle() == TickStyle::None) ||
+        std::abs(axisTicks.step) < glm::epsilon<double>() ||
+        (tickSettings.getTickFrequency() < 2)) {
         // a tick frequency of 1 would draw the minor ticks directly on top of the major ticks
         return {};
     }
@@ -152,8 +154,8 @@ std::vector<double> getMinorTicks(const MinorTickSettings& tickSettings,
     const auto minorTickDelta =
         axisTicks.step / static_cast<double>(tickSettings.getTickFrequency());
 
-    double startMinor = axisTicks.start;
-    double stopMinor = axisTicks.stop;
+    double startMinor{};
+    double stopMinor{};
 
     size_t nextMajorTickIndex = 0;
     if (tickSettings.getFillAxis()) {
@@ -178,10 +180,8 @@ std::vector<double> getMinorTicks(const MinorTickSettings& tickSettings,
 
     // Minor ticks fill the entire axis, except where a major tick is supposed to be.
     const size_t totalTicks =
-        minorTickDelta > 0 ? static_cast<size_t>((stopMinor - startMinor + glm::epsilon<double>()) /
-                                                 minorTickDelta) +
-                                 1
-                           : 0;
+        1 + static_cast<size_t>((std::abs(stopMinor - startMinor) + glm::epsilon<double>()) /
+                                std::abs(minorTickDelta));
 
     std::vector<double> tickPositions;
     tickPositions.reserve(totalTicks);
