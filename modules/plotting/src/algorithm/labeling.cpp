@@ -175,6 +175,7 @@ double densityMax(int k, int m) {
 
 }  // namespace
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTicks,
                                      std::span<const double> Q) {
     // weights for simplicity, coverage, density, and legibility
@@ -270,6 +271,7 @@ AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTi
     labels.positions = linearRange(labels.start, labels.stop, labels.step);
     return labels;
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 // utility functions and structs for matplotlibs labeling
 //
