@@ -151,7 +151,6 @@ AxisProperty::AxisProperty(std::string_view identifier, std::string_view display
     defaultAlignLabels();
 
     setCurrentStateAsDefault();
-
 }
 
 AxisProperty::AxisProperty(std::string_view identifier, std::string_view displayName,
@@ -180,6 +179,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , captionSettings_{rhs.captionSettings_}
     , labelSettings_{rhs.labelSettings_}
     , majorTicks_{rhs.majorTicks_}
+    , minorTicks_{rhs.minorTicks_}
     , alignment_{rhs.alignment_} {
 
     addProperties(color_, width_, range_, overrideRange_, customRange_, alignment_, scalingFactor_,
@@ -315,7 +315,7 @@ std::string_view AxisProperty::getLabelFormatString() const { return labelSettin
 
 namespace {
 constexpr AxisLabels axisLabels{};
-}
+}  // namespace
 
 const AxisLabels& AxisProperty::getCustomLabels() const { return axisLabels; }
 

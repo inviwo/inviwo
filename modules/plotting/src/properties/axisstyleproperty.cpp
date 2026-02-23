@@ -54,7 +54,7 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
     : CompositeProperty{identifier, displayName,
                         "Convenience property for updating/overriding multiple axes properties. "
                         "A property change will propagate to all the subproperties of the registered axes."_help,
-                        invalidationLevel, semantics}
+                        invalidationLevel, std::move(semantics)}
     , fontFace_{"fontFace", "Font Face", "Font face used for axis labels and captions"_help,
                 font::FontType::Label}
     , fontSize_{"fontSize", "Font Size",
@@ -78,9 +78,9 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                           {"limits", "Limits only", LabelingAlgorithm::Limits},
                           {"customOnly", "Custom labels only", LabelingAlgorithm::CustomOnly}},
                          1}
-    , numberOfTicks_{
-          "numberOfTicks", "Max Number of Ticks",
-          util::ordinalCount(6, 20).setMin(2).set("Maximum number of labels/ticks."_help)}
+    , numberOfTicks_{"numberOfTicks", "Max Number of Ticks",
+                     util::ordinalCount(6, 20).setMin(2).set(
+                         "Maximum number of labels/ticks."_help)}
     , labelFormat_{"labelFormat", "Label Format",
                    "Formatting string for labels using the printf format specification."_help,
                    "%.1f"} {

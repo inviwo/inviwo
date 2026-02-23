@@ -211,7 +211,7 @@ void AxisRendererBase::renderAxis(Camera* camera, const AxisLabels& ticks, const
     auto drawMesh = [&](Mesh* mesh, float lineWidth, bool caps) {
         if (!mesh) return;
         mesh->setWorldMatrix(m);
-        auto* meshgl = mesh->getRepresentation<MeshGL>();
+        const auto* meshgl = mesh->getRepresentation<MeshGL>();
         lineShader.setUniform("lineWidth", lineWidth);
         MeshDrawerGL::DrawObject drawer(meshgl, mesh->getDefaultMeshInfo());
         utilgl::setShaderUniforms(lineShader, *mesh, "geometry");
