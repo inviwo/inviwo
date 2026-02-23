@@ -105,6 +105,10 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     , channel_("channel", "Render Channel", {{"Channel 1", "Channel 1", 0}}, 0)
     , sigma_{"sigma", "Sigma", 0.1, 0.0, 1.0}
     , numPoints_{"numPoints", "Number of points", 1, 1, 500}
+    , minValue_{"minValue"}
+    , maxValue_{"maxValue"}
+    , paddMax_{"maxPadd","Max Padd Box"_help}
+    , paddMin_{"minPadd", "Min padd Box"_help}
     , raycasting_("raycaster", "Raycasting")
     , isotfComposite_("isotfComposite", "TF & Isovalues", &volumePort_)
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
@@ -115,9 +119,8 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
 
   
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    addPort(orbitals_);
-    addPort(volumePort_, "VolumePortGroup");
-    addPort(layerPort_);
+    addPorts(orbitals_, layerPort_,minValue_,maxValue_,paddMax_,paddMin_);
+    addPort(volumePort_, "VolumePortGroup");    
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
@@ -178,7 +181,7 @@ GaussianVolumeRaycaster::GaussianVolumeRaycaster()
     addProperty(toggleShading_);
 }
 
-const ProcessorInfo GaussianVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GaussianVolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 void GaussianVolumeRaycaster::initializeResources() {
     utilgl::addDefines(shader_, raycasting_, isotfComposite_, camera_, lighting_,
@@ -248,6 +251,12 @@ void GaussianVolumeRaycaster::raycast(const Volume& volume) {
 
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_,sigma_,numPoints_,isotfComposite_);
+    shader_.setUniform("nPoints", static_cast<unsigned>(points.size()));
+    shader_.setUniform("minValue_", *minValue_.getData().get());
+    shader_.setUniform("maxValue_", *maxValue_.getData().get());
+    shader_.setUniform("minPadd_", *paddMin_.getData().get());
+    shader_.setUniform("maxPadd_", *paddMax_.getData().get());
+
 
     utilgl::singleDrawImagePlaneRect();
 

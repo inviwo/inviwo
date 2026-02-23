@@ -82,7 +82,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual void deserialize(Deserializer& d) override;
@@ -90,6 +90,8 @@ public:
 private:
     DataInport<std::vector<vec4>> points_;
     DataInport<std::vector<GaussianOrbital>> orbitals_;
+    DataInport<vec3> paddMax_;
+    DataInport<vec3> paddMin_;
     VolumeOutport outport_;
     OptionProperty<Type> type_;
     OptionProperty<DataFormatId> format_;
@@ -98,7 +100,8 @@ private:
     FloatProperty sigma_;
     IntProperty nPoints_;
     FloatProperty radii_;
-    
+    IntProperty seed_;
+    ButtonProperty reset_;
     VolumeInformationProperty information_;
     BasisProperty basis_;
     std::shared_ptr<Volume> loadedData_;

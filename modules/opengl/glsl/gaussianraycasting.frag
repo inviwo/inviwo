@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
+#include "utils/orbital.glsl"
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 #include "utils/sampler3d.glsl"
@@ -74,18 +74,17 @@ uniform int channel;
 
 uniform float sigma;
 
-uniform int numPoints;
+uniform int numPoints = 1;
 
-struct Orbital
-{
-    vec4 p;
-    vec3 coefs;
-};
+uniform uint nPoints = 1;
+
+uniform float maxValue_ = 1.0;
+uniform float minValue_ = 0.0;
 
 
-layout(std430, binding = 0) buffer GaussianBuffer {
-    Orbital data[]; // points is an array of GaussianOrbital
-};
+uniform vec3 minPadd_;
+uniform vec3 maxPadd_;
+
 
 #define M_PI 3.14159265359
 #define ERT_THRESHOLD 0.99  // threshold for early ray termination
@@ -114,31 +113,7 @@ int load() {
 }
 
 
-vec4 sumFunction(float sigma, vec3 samplePos, float tIncr){
-    vec4 result = vec4(0.0);
-    float sum = 0;
-    for(int i = 0; i < numPoints; ++i) {
-        
-        float s = sigma;
-        Orbital orb = data[i]; 
-        vec3 dr = orb.p.xyz - samplePos;
-        
-        float r2 = dot(dr,dr);
-        float A = 1.0 / (s*sqrt(2*M_PI));
-        float B = .5/(s*s);
-        float test = pow(abs(dr.x),orb.coefs.x)*pow(abs(dr.y),orb.coefs.y)*pow(abs(dr.z),orb.coefs.z)*10000;
-        float v = test*exp(-B*r2);
-        vec3 grad = -2*B*dr*v;
-        
 
-        result += vec4(grad, v);
-        
-
-
-    }
-    
-    return result;
-}
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 entryNormal) {
     vec4 result = vec4(0.0);
@@ -187,15 +162,12 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
         result = DRAW_BACKGROUND(result, t, tIncr, backgroundColor, bgTDepth, tDepth);
 #endif // BACKGROUND_AVAILABLE
         
-        vec4 res = sumFunction(sigma, samplePos, tIncr);
+        vec4 res = calcDensity(samplePos,nPoints,minPadd_,maxPadd_);
         //sum = res.w;
 
         vec3 gradient = normalize(res.xyz);
-
-
-        float normalizedValue = (res.w + volumeParameters.formatOffset) * (1.0 - volumeParameters.formatScaling);
-
-        color = applyTF(transferFunction, normalizedValue);
+        //(0.185 + res.w)/(0.37+0.18)
+        color = applyTF(transferFunction, getNormalisedDensity(res.w,minValue_,maxValue_));
 
         ShadingParameters shadingParams = shading(color.rgb, gradient, 
                                     (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz);

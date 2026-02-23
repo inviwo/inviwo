@@ -89,19 +89,26 @@ public:
     virtual void initializeResources() override;
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
     DataInport<std::vector<GaussianOrbital>> orbitals_;
     ImageOutport outport_;
     Shader shaderGaussian_;
+    Shader copyDepthShader_;
     IntSize2Property dimensions_;
     IntSize2Property groupSize_;
     FloatProperty sigma_;
+    IntProperty nSteps_;
+    DataInport<float> minValue_;
+    DataInport<float> maxValue_;    
+    DataInport<vec3> paddMin_;
+    DataInport<vec3> paddMax_;
     CameraProperty cam_;
     CameraTrackball trackball_;
     IsoTFProperty isotfComposite_;
+    ButtonProperty reset_;
 };
 
 }  // namespace inviwo

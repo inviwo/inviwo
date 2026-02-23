@@ -53,7 +53,7 @@ public:
     virtual void initializeResources() override;
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
@@ -62,10 +62,15 @@ private:
     DataInport<std::vector<vec4>> points_;
     DataInport<std::vector<GaussianOrbital>> orbitals_;
     VolumeOutport outport_;
+    DataOutport<float> minValue_;
+    DataOutport<float> maxValue_;
+    DataInport<vec3> paddMin_;
+    DataInport<vec3> paddMax_;
     Shader shaderGaussian_;
     IntSize3Property dimensions_;
     IntSize3Property groupSize_;
     FloatProperty sigma_;
+    ButtonProperty reset_;
     
     
 };

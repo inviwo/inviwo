@@ -88,7 +88,7 @@ public:
 
     // override to do member renaming.
     virtual void deserialize(Deserializer& d) override;
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
@@ -109,6 +109,10 @@ protected:
     OptionPropertyInt channel_;
 	FloatProperty sigma_;
     IntProperty numPoints_;
+    DataInport<float> minValue_;
+    DataInport<float> maxValue_;
+    DataInport<vec3> paddMax_;
+    DataInport<vec3> paddMin_;
     RaycastingProperty raycasting_;
     IsoTFProperty isotfComposite_;
 
