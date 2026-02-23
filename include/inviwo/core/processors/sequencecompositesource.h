@@ -60,6 +60,8 @@ public:
      * Inport to be used by the SequenceProcessor to put data into its sub network.
      */
     virtual Inport& getSuperInport() = 0;
+    virtual std::shared_ptr<Inport> getSuperInportShared() = 0;
+    virtual void setSuperInport(std::shared_ptr<Inport> inport) = 0;
 
     virtual size_t sequenceSize() const = 0;
     virtual void setSequenceIndex(size_t) = 0;
@@ -102,6 +104,8 @@ public:
      * Inport to be used by the SequenceProcessor to put data into its sub network.
      */
     virtual Inport& getSuperInport() override;
+    virtual std::shared_ptr<Inport> getSuperInportShared() override;
+    virtual void setSuperInport(std::shared_ptr<Inport> inport) override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -109,8 +113,8 @@ public:
     virtual void propagateEvent(Event* event, Outport* source) override;
 
     virtual size_t sequenceSize() const override {
-        if (superInport_.hasData()) {
-            return superInport_.getData()->size();
+        if (superInport_->hasData()) {
+            return superInport_->getData()->size();
         } else {
             return 0;
         }
@@ -123,7 +127,8 @@ public:
     }
 
 private:
-    InportSequenceType superInport_;  ///< To be added to SequenceProcessor, not itself
+    ///< To be added to SequenceProcessor, not itself
+    std::shared_ptr<InportSequenceType> superInport_;
     OutportType outport_;
     size_t sequenceIndex_ = 0;
 };
@@ -160,14 +165,16 @@ const ProcessorInfo& SequenceCompositeSource<InportSequenceType, OutportType>::g
 
 template <typename InportSequenceType, typename OutportType>
 SequenceCompositeSource<InportSequenceType, OutportType>::SequenceCompositeSource()
-    : SequenceCompositeSourceBase(), superInport_{"inport"}, outport_{"outport"} {
+    : SequenceCompositeSourceBase()
+    , superInport_{std::make_shared<InportSequenceType>("inport")}
+    , outport_{"outport"} {
     addPort(outport_);
-    addPortToGroup(&superInport_, "default");
+    addPortToGroup(superInport_.get(), "default");
 }
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::process() {
-    auto data = superInport_.getData();
+    auto data = superInport_->getData();
     if (sequenceIndex_ < data->size()) {
         outport_.setData((*data)[sequenceIndex_]);
     } else {
@@ -177,19 +184,37 @@ void SequenceCompositeSource<InportSequenceType, OutportType>::process() {
 
 template <typename InportSequenceType, typename OutportType>
 Inport& SequenceCompositeSource<InportSequenceType, OutportType>::getSuperInport() {
+    return *superInport_;
+}
+template <typename InportSequenceType, typename OutportType>
+std::shared_ptr<Inport>
+SequenceCompositeSource<InportSequenceType, OutportType>::getSuperInportShared() {
     return superInport_;
+}
+
+template <typename InportSequenceType, typename OutportType>
+void SequenceCompositeSource<InportSequenceType, OutportType>::setSuperInport(
+    std::shared_ptr<Inport> inport) {
+    if (auto typedInport = std::dynamic_pointer_cast<InportSequenceType>(inport)) {
+        removePortFromGroups(superInport_.get());
+        superInport_ = typedInport;
+        addPortToGroup(superInport_.get(), "default");
+    } else {
+        throw Exception(SourceContext{}, "Got port of type {}, expected {}",
+                        inport->getClassIdentifier(), superInport_->getClassIdentifier());
+    }
 }
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::serialize(Serializer& s) const {
     SequenceCompositeSourceBase::serialize(s);
-    s.serialize("SuperInport", superInport_);
+    s.serialize("SuperInport", *superInport_);
 }
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::deserialize(Deserializer& d) {
     SequenceCompositeSourceBase::deserialize(d);
-    d.deserialize("SuperInport", superInport_);
+    d.deserialize("SuperInport", *superInport_);
 }
 
 template <typename InportSequenceType, typename OutportType>
@@ -199,8 +224,8 @@ void SequenceCompositeSource<InportSequenceType, OutportType>::propagateEvent(Ev
     event->markAsVisited(this);
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
-    if (event->shouldPropagateTo(&superInport_, this, source)) {
-        superInport_.propagateEvent(event);
+    if (event->shouldPropagateTo(superInport_.get(), this, source)) {
+        superInport_->propagateEvent(event);
     }
 }
 
