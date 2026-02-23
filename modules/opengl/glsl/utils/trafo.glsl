@@ -24,53 +24,62 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+#ifndef IVW_TRAFO_GLSL
+#define IVW_TRAFO_GLSL
 
-uniform GeometryParameters geometry;
+mat4 rotate(vec3 axis, float angle) {
+  vec3 a = normalize(axis);
+  float s = sin(angle);
+  float c = cos(angle);
+  float oc = 1.0 - c;
 
-uniform float widthScaling = 1.0;
-uniform vec4 defaultColor = vec4(0.7, 0.7, 0.7, 1);
-uniform float defaultWidth = 0.1;
-uniform sampler2D metaColor;
+  return mat4(
+    oc*a.x*a.x + c,      oc*a.y*a.x + a.z*s,  oc*a.z*a.x - a.y*s,  0.0,
+    oc*a.x*a.y - a.z*s,  oc*a.y*a.y + c,      oc*a.z*a.y + a.x*s,  0.0,
+    oc*a.x*a.z + a.y*s,  oc*a.y*a.z - a.x*s,  oc*a.z*a.z + c,      0.0,
+    0.0,                 0.0,                 0.0,                 1.0
+  );
+}
 
-out LineVert {
-    vec4 color;
-    vec3 binormal;
-    float width;
-    flat uint pickID;
-} line;
+mat4 rotate(vec3 from, vec3 to) {
+    vec3 v1 = normalize(from);
+    vec3 w1 = normalize(to);
+    float cosTheta = dot(v1, w1);
 
- 
-void main() {
-#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
-    line.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    line.color = in_Color;
-#else
-    line.color = defaultColor;
-#endif
+    if (cosTheta > 1.0 - 1e-6) { // vectors are the same 
+        return mat4(1.0);
+    }
 
-    vec3 binormal = vec3(1, 0, 0);
-#if defined(HAS_NORMAL)
-    binormal = in_Normal;
-#endif
+    if (cosTheta < -1.0 + 1e-6) { // vectors are opposite
+        vec3 orthogonal = abs(v1.x) < 0.1 ? vec3(1, 0, 0) : vec3(0, 1, 0);
+        return rotate(cross(v1, orthogonal), 3.14159265);
+    }
 
-#if defined(FORCE_WIDTH)
-    line.width = defaultWidth * widthScaling;
-#else
-    line.width = length(binormal) * widthScaling;
-#endif
+    // General case
+    vec3 axis = cross(v1, w1);
+    float angle = acos(clamp(cosTheta, -1.0, 1.0));
+    return rotate(axis, angle);
+}
 
-    line.binormal = geometry.dataToWorldNormalMatrix * normalize(binormal);
+mat4 scale(vec3 scale) {
+  return mat4(
+    scale.x, 0.0, 0.0, 0.0,
+    0.0, scale.y, 0.0, 0.0,
+    0.0, 0.0, scale.z, 0.0,
+    0.0, 0.0, 0.0,     1.0
+  );
+}
 
-#if defined(HAS_PICKING)
-    line.pickID = in_Picking;
-#else 
-    line.pickID = 0;
-#endif
+mat4 translate(vec3 dist) {
+  return mat4(
+    1.0, 0.0, 0.0, dist.x,
+    0.0, 1.0, 0.0, dist.y,
+    0.0, 0.0, 1.0, dist.z,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
 
-    gl_Position = geometry.dataToWorld * vec4(in_Position, 1.0);
-}  
+#endif // IVW_TRAFO_GLSL

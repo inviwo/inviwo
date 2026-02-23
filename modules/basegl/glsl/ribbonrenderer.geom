@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,14 @@
  *
  *********************************************************************************/
 
-// Owned by the RibbonRenderer Processor
-
 #include "utils/structs.glsl"
+#include "utils/trafo.glsl"
 
 #if !defined(SUBDIVISIONS)
 #define SUBDIVISIONS 0
+#endif
+#if !defined(MAX_VERTICES_OUT)  // should be equal to 4 + SUBDIVISIONS * 2
+#define MAX_VERTICES_OUT 4
 #endif
 
 #if defined(HAS_ADJACENCY)
@@ -41,7 +43,7 @@ layout(lines_adjacency) in;
 layout(lines) in;
 #endif
 
-layout(triangle_strip, max_vertices = 4 + SUBDIVISIONS * 2) out;
+layout(triangle_strip, max_vertices = MAX_VERTICES_OUT) out;
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
@@ -82,21 +84,8 @@ void emit(in Vertex vertex, in uint pickID) {
     EmitVertex();
 }
 
-mat3 rotate(vec3 axis, float angle) {
-    vec3 a = normalize(axis);
-    float s = sin(angle);
-    float c = cos(angle);
-    float oc = 1.0 - c;
-
-    return mat3(
-        oc*a.x*a.x + c,      oc*a.y*a.x + a.z*s,  oc*a.z*a.x - a.y*s,
-        oc*a.x*a.y - a.z*s,  oc*a.y*a.y + c,      oc*a.z*a.y + a.x*s,
-        oc*a.x*a.z + a.y*s,  oc*a.y*a.z - a.x*s,  oc*a.z*a.z + c
-    );
-}
-
-// Determine the enclosed angle between vectors a and b so that a is rotated on top of b around 
-// the orthogonal axis, i.e. cross(a, b). 
+// Determine the enclosed angle between vectors a and b so that a is rotated on top of b around
+// the orthogonal axis, i.e. cross(a, b).
 float enclosedAngle(in vec3 a, in vec3 b, in vec3 normal) {
     float angle = acos(clamp(dot(a, b), -1, 1));
     return angle * sign(-dot(b, normal));
@@ -117,6 +106,24 @@ struct RibbonSegment {
     float rotationAngle;
 };
 
+float getTiltAngle(in int index1, in int index2, in int offset) {
+    vec3 tangent = vec3(gl_in[index2].gl_Position - gl_in[index1].gl_Position);
+    float dist = length(tangent);
+    tangent = normalize(tangent);
+
+    vec3 binormal[2] = vec3[2](normalize(inRibbon[index1].binormal),
+                               normalize(inRibbon[index2].binormal));
+    vec3 normal[2] = vec3[2](normalize(cross(binormal[0], tangent)),
+                             normalize(cross(binormal[1], tangent)));
+    binormal[0] = normalize(cross(tangent, normal[0]));
+    binormal[1] = normalize(cross(tangent, normal[1]));
+
+    float rotationAngle = enclosedAngle(binormal[0], binormal[1], normal[0]);
+    float width = (offset == 0 ? inRibbon[index1].width : inRibbon[index2].width);
+
+    return tiltAngle(rotationAngle, width, dist);
+}
+
 RibbonSegment createSegment(in int index1, in int index2) {
     RibbonSegment segment;
 
@@ -124,28 +131,19 @@ RibbonSegment createSegment(in int index1, in int index2) {
     segment.dist = length(tangent);
     segment.tangent = normalize(tangent);
 
+    segment.binormal = vec3[2](normalize(inRibbon[index1].binormal),
+                               normalize(inRibbon[index2].binormal));
 
-    segment.binormal[0] = normalize(inRibbon[index1].binormal);
-    segment.binormal[1] = normalize(inRibbon[index2].binormal);
+    segment.normal = vec3[2](normalize(cross(segment.binormal[0], segment.tangent)),
+                             normalize(cross(segment.binormal[1], segment.tangent)));
+    segment.binormal[0] = normalize(cross(segment.tangent, segment.normal[0]));
+    segment.binormal[1] = normalize(cross(segment.tangent, segment.normal[1]));
 
-    segment.normal[0] = normalize(cross(segment.binormal[0], segment.tangent));
-    segment.normal[1] = normalize(cross(segment.binormal[1], segment.tangent));
-    segment.binormal[0] = normalize(cross(tangent, segment.normal[0]));
-    segment.binormal[1] = normalize(cross(tangent, segment.normal[1]));
-
-    segment.width[0] = inRibbon[index1].width;
-    segment.width[1] = inRibbon[index2].width;
-
+    segment.width = float[2](inRibbon[index1].width, inRibbon[index2].width);
     segment.rotationAngle = enclosedAngle(segment.binormal[0], segment.binormal[1], segment.normal[0]);
-    // if (segment.rotationAngle > 1.5707963267948966) {
-    //     segment.binormal[1] *= -1.0;
-    //     segment.rotationAngle = 3.141592653589793 - segment.rotationAngle;
-    //     segment.normal[1] *= -1.0;
-    // }
 
-    segment.tiltAngle[0] = tiltAngle(segment.rotationAngle, segment.width[0], segment.dist);
-    segment.tiltAngle[1] = tiltAngle(segment.rotationAngle, segment.width[1], segment.dist);
-
+    segment.tiltAngle = float[2](tiltAngle(segment.rotationAngle, segment.width[0], segment.dist),
+                                 tiltAngle(segment.rotationAngle, segment.width[1], segment.dist));
     return segment;
 }
 
@@ -175,73 +173,42 @@ void main() {
 
     RibbonSegment segment = createSegment(index1, index2);
 
-    RibbonSegment previousSegment;
-    previousSegment.tiltAngle[1] = segment.tiltAngle[0];
-    previousSegment.binormal[1] = segment.binormal[0];
-    previousSegment.normal[1] = segment.normal[0];
-
 #if defined(HAS_ADJACENCY)
+    float previousTiltAngle = segment.tiltAngle[0];
     if (p1in != p0in) {
-        previousSegment = createSegment(0, 1);
+        previousTiltAngle = getTiltAngle(0, 1, 1);
     }
-#endif
-
-    RibbonSegment nextSegment;
-    nextSegment.tiltAngle[0] = segment.tiltAngle[1];
-    nextSegment.binormal[0] = segment.binormal[1];
-    nextSegment.normal[0] = segment.normal[1];
-#if defined(HAS_ADJACENCY)
+    float nextTiltAngle = segment.tiltAngle[1];
     if (p2in != p3in) {
-        RibbonSegment nextSegment = createSegment(2, 3);
+        nextTiltAngle = getTiltAngle(2, 3, 0);
     }
+    segment.tiltAngle[0] = mix(previousTiltAngle, segment.tiltAngle[0], 0.5);
+    segment.tiltAngle[1] = mix(segment.tiltAngle[1], nextTiltAngle, 0.5);
 #endif
-
-    segment.tiltAngle[0] = mix(previousSegment.tiltAngle[1], segment.tiltAngle[0], 0.5);
-    segment.tiltAngle[1] = mix(segment.tiltAngle[1], nextSegment.tiltAngle[0], 0.5);
 
     // TODO: consider tail and head pivot
 
 #if SUBDIVISIONS > 0
-    int subdivisions = SUBDIVISIONS;
-    
-    float delta = 1.0 / float(subdivisions + 1);
-    for (int i = 0; i <= subdivisions + 1; ++i) {
+    float delta = 1.0 / float(SUBDIVISIONS + 1);
+    for (int i = 0; i <= SUBDIVISIONS + 1; ++i) {
         float t = float(i) * delta;
 
         vec4 color = mix(color1, color2, t);
         float angle = mix(0, segment.rotationAngle, t);
 
-        vec3 binormal = rotate(segment.tangent, angle) * segment.binormal[0];        
+        vec3 binormal = mat3(rotate(segment.tangent, angle)) * segment.binormal[0];
         vec3 normal = cross(binormal, segment.tangent);
 
         float width = mix(segment.width[0], segment.width[1], t);
-        
+
         float tiltAngle = tiltAngle(segment.rotationAngle, width, segment.dist);
-        // tiltAngle = mix(segment.tiltAngle[0], segment.tiltAngle[1], t);
 
-        // tiltAngle = mix(segment.tiltAngle[0], tiltAngle, smoothstep(0.0, 0.5, t));
-        // tiltAngle = mix(tiltAngle, segment.tiltAngle[1], smoothstep(0.5, 1.0, t));
-        // tiltAngle = segment.tiltAngle[1];
-
-        // tiltAngle = mix(mix(segment.tiltAngle[0], tiltAngle, smoothstep(0.0, 0.5, t)),
-        //                 mix(tiltAngle, segment.tiltAngle[1], smoothstep(0.5, 1.0, t)),
-        //                 t > 0.5);
-        
-        // tiltAngle = 0.0;
-
-        vec3 leftNormal = rotate(binormal, tiltAngle) * normal;
-        vec3 rightNormal = rotate(binormal, -tiltAngle) * normal;
-
-        // leftNormal = normal;
-        // rightNormal = normal;
+        vec3 leftNormal = mat3(rotate(binormal, tiltAngle)) * normal;
+        vec3 rightNormal = mat3(rotate(binormal, -tiltAngle)) * normal;
 
         vec3 center = mix(p1in.xyz, p2in.xyz, t);
         vec3 left = center - binormal * width;
         vec3 right = center + binormal * width;
-
-        // color = vec4(abs(p1Binormal - p2Binormal), 1);
-        // color = vec4(vec3(abs(segment.tiltAngle[0])), 1);
-        // color = vec4(vec3(abs(tiltAngle)), 1);
 
         emit(createVertex(left, color, leftNormal, binormal, vec2(0, t)), inRibbon[index1].pickID);
         emit(createVertex(right, color, rightNormal, binormal, vec2(1, t)), inRibbon[index1].pickID);

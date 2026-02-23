@@ -132,60 +132,7 @@ namespace {
 constexpr std::string_view vertexShader = util::trim(R"(
 #include "utils/pickingutils.glsl"
 #include "utils/structs.glsl"
-
-mat4 rotate(vec3 axis, float angle) {
-  vec3 a = normalize(axis);
-  float s = sin(angle);
-  float c = cos(angle);
-  float oc = 1.0 - c;
-
-  return mat4(
-    oc*a.x*a.x + c,      oc*a.y*a.x + a.z*s,  oc*a.z*a.x - a.y*s,  0.0,
-    oc*a.x*a.y - a.z*s,  oc*a.y*a.y + c,      oc*a.z*a.y + a.x*s,  0.0,
-    oc*a.x*a.z + a.y*s,  oc*a.y*a.z - a.x*s,  oc*a.z*a.z + c,      0.0,
-    0.0,                 0.0,                 0.0,                 1.0
-  );
-}
-
-mat4 rotate(vec3 from, vec3 to) {
-    vec3 v1 = normalize(from);
-    vec3 w1 = normalize(to);
-    float cosTheta = dot(v1, w1);
-
-    if (cosTheta > 1.0 - 1e-6) { // vectors are the same 
-        return mat4(1.0);
-    }
-
-    if (cosTheta < -1.0 + 1e-6) { // vectors are opposite
-        vec3 orthogonal = abs(v1.x) < 0.1 ? vec3(1, 0, 0) : vec3(0, 1, 0);
-        return rotate(cross(v1, orthogonal),  3.14159265);
-    }
-
-    // General case
-    vec3 axis = cross(v1, w1);
-    float angle = acos(clamp(cosTheta, -1.0, 1.0));
-    return rotate(axis, angle);
-}
-
-
-mat4 scale(vec3 scale) {
-  return mat4(
-    scale.x, 0.0, 0.0, 0.0,
-    0.0, scale.y, 0.0, 0.0,
-    0.0, 0.0, scale.z, 0.0,
-    0.0, 0.0, 0.0,     1.0
-  );
-}
-
-mat4 translate(vec3 dist) {
-  return mat4(
-    1.0, 0.0, 0.0, dist.x,
-    0.0, 1.0, 0.0, dist.y,
-    0.0, 0.0, 1.0, dist.z,
-    0.0, 0.0, 0.0, 1.0
-  );
-}
-
+#include "utils/trafo.glsl"
 
 layout(location = 7) in uint in_PickId;
 

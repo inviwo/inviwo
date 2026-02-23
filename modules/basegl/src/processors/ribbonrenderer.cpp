@@ -118,6 +118,8 @@ void RibbonRenderer::configureShader(Shader& shader) const {
     utilgl::addDefines(shader, lighting_);
     shader[ShaderType::Geometry]->setShaderDefine("SUBDIVISIONS", true,
                                                   fmt::format("{}", subdivisions_));
+    shader[ShaderType::Geometry]->setShaderDefine("MAX_VERTICES_OUT", true,
+                                                  fmt::format("{}", 4 + subdivisions_ * 2));
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_WIDTH", forceWidth_);
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
     shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", useMetaColor_);

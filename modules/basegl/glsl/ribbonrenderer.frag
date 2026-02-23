@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2025 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-// Owned by the TubeRendering Processor
 
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
@@ -54,6 +52,4 @@ void main() {
 
     FragData0 = fragColor;
     PickingData = vec4(pickingIndexToColor(fragment.pickID), fragment.pickID == 0 ? 0.0 : 1.0);
-
-    // FragData0 = vec4(normal * 0.5 + 0.5, 1);
 }
