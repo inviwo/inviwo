@@ -37,8 +37,6 @@
 
 namespace inviwo {
 
-enum class CoordinatePlane { XY, XZ, YZ, ZY };
-
 enum class CartesianCoordinateAxis {
     X,  // Right
     Y,  // Up
