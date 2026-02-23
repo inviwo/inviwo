@@ -42,7 +42,7 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace py = pybind11;
 
@@ -55,12 +55,14 @@ void exposeDataMapper(py::module& m) {
         .def(py::init([](double multiplier, const Unit& unit) { return Unit(multiplier, unit); }),
              py::arg("multiplier"), py::arg("unit"))
         .def(
-            "to_string",
-            [](const Unit& unit, std::string_view format) {
+            "__format__",
+            [](const Unit& unit, std::string_view spec) {
+                const auto format = fmt::format("{{:{}}}", spec);
                 return fmt::format(fmt::runtime(format), unit);
             },
             py::arg("format") = "{}")
-        .def("__repr__", [](const Unit& unit) { return fmt::format("{}", unit); });
+        .def("__str__", [](const Unit& unit) { return fmt::to_string(unit); })
+        .def("__repr__", [](const Unit& unit) { return fmt::to_string(unit); });
 
     py::classh<Axis>(m, "Axis")
         .def(py::init<std::string, Unit>())
