@@ -49,7 +49,7 @@ MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, "Settings for major ticks along the axis"_help,
-                        invalidationLevel, semantics)
+                        invalidationLevel, std::move(semantics))
     , style_("style", "Style",
              {{"none", "None", TickStyle::None},
               {"inside", "Inside", TickStyle::Inside},
@@ -97,14 +97,17 @@ MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_vi
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName,
                         "Settings for minor ticks (shown between major ticks)"_help,
-                        invalidationLevel, semantics)
+                        invalidationLevel, std::move(semantics))
     , style_("style", "Style",
              {{"none", "None", TickStyle::None},
               {"inside", "Inside", TickStyle::Inside},
               {"outside", "Outside", TickStyle::Outside},
               {"both", "Both", TickStyle::Both}},
              2)
-    , fillAxis_("outsideMajorTicks", "Fill Entire Axis", true)
+    , fillAxis_("fillAxis", "Fill Entire Axis",
+                "Minor ticks will cover the entire axis range if true, otherwise they will only "
+                "appear in between major ticks."_help,
+                true)
     , color_("color", "Color",
              util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
     , tickLength_("tickLength", "Length",
