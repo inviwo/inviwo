@@ -63,8 +63,14 @@ VolumeSliceToLayer::VolumeSliceToLayer()
                       0)
     , slicePosition_{"slicePosition",
                      "Slice Positioning",
-                     "Defines where the extracted slice is positioned in relation to the curren slice axis"_help,
-                     {{"currentSlice", "Current Slice", SlicePosition::CurrentSlice},
+                     R"(Adjusts the model matrix of the resulting Layer such that it is positioned
+within the original volume and the slice is moved along the current slice axis to
+ * _Slice Position_ the current position of the slice, that is its index
+ * _Minimum Position_ the start of the slice axis, that is slice position 1
+ * _Centered_ the middle of the slice axis
+ * _Maximum Position_ the end of the slice axis
+                        )"_unindentHelp,
+                     {{"index", "Slice Position", SlicePosition::Index},
                       {"minimum", "Minimum Position", SlicePosition::Minimum},
                       {"centered", "Centered", SlicePosition::Centered},
                       {"maximum", "Maximum Position", SlicePosition::Maximum}}}
@@ -142,7 +148,7 @@ vec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
                 return vec3{0.5f};
             case Maximum:
                 return vec3{1.0f};
-            case CurrentSlice:
+            case Index:
             default:
                 return vec3{static_cast<float>(slice)} / vec3{dims - size3_t{1}};
         }

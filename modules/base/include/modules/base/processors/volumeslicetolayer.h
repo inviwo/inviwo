@@ -41,7 +41,7 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeSliceToLayer : public Processor {
 public:
-    enum class SlicePosition : unsigned char { CurrentSlice, Minimum, Centered, Maximum };
+    enum class SlicePosition : unsigned char { Index, Minimum, Centered, Maximum };
 
     explicit VolumeSliceToLayer();
 
