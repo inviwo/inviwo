@@ -255,7 +255,7 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dv
     mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
 
     std::vector<uint32_t> indices(numTicks * 2);
-    std::ranges::iota(indices, 0);
+    std::iota(indices.begin(), indices.end(), 0);
 
     mesh->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},
                      inviwo::util::makeIndexBuffer(std::move(indices)));
@@ -430,8 +430,9 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisLabels& ticks,
             });
 
     } else {
-        const auto denom = ticks.positions.size() > 1 ? ticks.positions.size() - 1 : 1.f;
-        const vec2 scaling(axisDir * static_cast<float>(screenLength / denom));
+        const auto denom =
+            ticks.positions.size() > 1 ? static_cast<float>(ticks.positions.size()) - 1.0f : 1.f;
+        const vec2 scaling{axisDir * screenLength / denom};
         auto seq = util::make_sequence(size_t{0}, ticks.positions.size(), size_t{1});
         std::ranges::transform(ticks.positions, seq, labelPositions.begin(),
                                [&](double pos, size_t i) -> std::pair<double, vec2> {
