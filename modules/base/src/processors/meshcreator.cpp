@@ -97,7 +97,7 @@ const ProcessorInfo MeshCreator::processorInfo_{"org.inviwo.MeshCreator",  // Cl
      * __Cylinder__,
      * __Arrow__,
      * __CoordAxes__,
-     * __Torus
+     * __Torus__
     )"_unindentHelp};
 
 const ProcessorInfo& MeshCreator::getProcessorInfo() const { return processorInfo_; }

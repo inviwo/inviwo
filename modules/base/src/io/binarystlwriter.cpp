@@ -92,16 +92,16 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
 
     if (pit == data->getBuffers().end()) {
-        throw DataWriterException("Error: could not find a position buffer");
+        throw DataWriterException("The mesh does not contain a position buffer");
     }
 
     const auto posBuffer = pit->second;
-    const auto posRam = posBuffer->getRepresentation<BufferRAM>();
+    const auto* posRam = posBuffer->getRepresentation<BufferRAM>();
     if (!posRam) {
-        throw DataWriterException("Error: could not find a position buffer ram");
+        throw DataWriterException("Could not access a RAM representation of the position buffer");
     }
     if (posRam->getDataFormat()->getComponents() != 3) {
-        throw DataWriterException("Error: Only 3 dimensional meshes are supported");
+        throw DataWriterException("Unsupported position buffer, only vec3 is supported");
     }
 
     const auto model = data->getModelMatrix();
@@ -171,6 +171,11 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
         }
 
         meshutil::forEachTriangle(inds.first, *inds.second, triangle);
+    }
+    if (floatdata.empty()) {
+        throw DataWriterException("Error: Only 3 dimensional meshes are supported");
+        log::error("Nothing to export, file not written");
+        return;
     }
 
     std::uint16_t attrib{0};
