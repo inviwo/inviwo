@@ -42,6 +42,15 @@
 
 namespace inviwo {
 
+struct IVW_CORE_API SequenceCompositeDataBase {
+    virtual ~SequenceCompositeDataBase() = default;
+};
+
+template <typename T>
+struct SequenceCompositeData : SequenceCompositeDataBase {
+    std::shared_ptr<T> data = std::make_shared<T>();
+};
+
 /**
  * Base class for all sink processors inside the sub network of a SequenceProcessor.
  * @see SequenceCompositeSink
@@ -62,7 +71,13 @@ public:
      * Outport to be used by the SequenceProcessor to get data from its sub network.
      */
     virtual Outport& getSuperOutport() = 0;
-    virtual void superProcessStart() = 0;
+    virtual std::shared_ptr<Outport> getSuperOutportShared() = 0;
+    virtual void setSuperOutport(std::shared_ptr<Outport> outport) = 0;
+
+    virtual std::shared_ptr<SequenceCompositeDataBase> getData() = 0;
+    virtual void setData(std::shared_ptr<SequenceCompositeDataBase> data) = 0;
+    virtual void newData() = 0;
+
     virtual void superProcessEnd() = 0;
 };
 
@@ -100,21 +115,26 @@ public:
      * Outport to be used by the SequenceProcessor to get data from its sub network.
      */
     virtual Outport& getSuperOutport() override;
+    virtual std::shared_ptr<Outport> getSuperOutportShared() override;
+    virtual void setSuperOutport(std::shared_ptr<Outport> outport) override;
+
+    virtual std::shared_ptr<SequenceCompositeDataBase> getData() override;
+    virtual void setData(std::shared_ptr<SequenceCompositeDataBase> data) override;
+    virtual void newData() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
 
-    virtual void superProcessStart() override {
-        sequenceData_ = std::make_shared<OutportSequenceData>();
-    }
-    virtual void superProcessEnd() override { superOutport_.setData(sequenceData_); }
+    virtual void superProcessEnd() override { superOutport_->setData(data_->data); }
 
 private:
-    std::shared_ptr<OutportSequenceData> sequenceData_;
+    std::shared_ptr<SequenceCompositeData<OutportSequenceData>> data_;
     InportType inport_;
-    OutportSequenceType superOutport_;  ///< To be added to SequenceProcessor, not itself
+
+    // To be added to SequenceProcessor, not itself
+    std::shared_ptr<OutportSequenceType> superOutport_;
 };
 
 template <typename InportType, typename OutportSequenceType>
@@ -148,40 +168,80 @@ const ProcessorInfo& SequenceCompositeSink<InportType, OutportSequenceType>::get
 }
 
 template <typename InportType, typename OutportSequenceType>
+SequenceCompositeSink<InportType, OutportSequenceType>::SequenceCompositeSink()
+    : SequenceCompositeSinkBase()
+    , data_{std::make_shared<SequenceCompositeData<OutportSequenceData>>()}
+    , inport_{"inport"}
+    , superOutport_{std::make_shared<OutportSequenceType>("outport")} {
+
+    addPort(inport_);
+    addPortToGroup(superOutport_.get(), "default");
+}
+
+template <typename InportType, typename OutportSequenceType>
 void SequenceCompositeSink<InportType, OutportSequenceType>::process() {
     if constexpr (std::is_same_v<InportType, ImageInport>) {
-        sequenceData_->push_back(std::shared_ptr<Image>{inport_.getData()->clone()});
+        data_->data->push_back(std::shared_ptr<Image>{inport_.getData()->clone()});
     } else {
-        sequenceData_->push_back(inport_.getData());
+        data_->data->push_back(inport_.getData());
     }
 }
 
 template <typename InportType, typename OutportSequenceType>
-SequenceCompositeSink<InportType, OutportSequenceType>::SequenceCompositeSink()
-    : SequenceCompositeSinkBase()
-    , sequenceData_{std::make_shared<OutportSequenceData>()}
-    , inport_{"inport"}
-    , superOutport_{"outport"} {
-
-    addPort(inport_);
-    addPortToGroup(&superOutport_, "default");
+Outport& SequenceCompositeSink<InportType, OutportSequenceType>::getSuperOutport() {
+    return *superOutport_;
 }
 
 template <typename InportType, typename OutportSequenceType>
-Outport& SequenceCompositeSink<InportType, OutportSequenceType>::getSuperOutport() {
+std::shared_ptr<Outport>
+SequenceCompositeSink<InportType, OutportSequenceType>::getSuperOutportShared() {
     return superOutport_;
+}
+
+template <typename InportType, typename OutportSequenceType>
+void SequenceCompositeSink<InportType, OutportSequenceType>::setSuperOutport(
+    std::shared_ptr<Outport> outport) {
+    if (auto typedOutport = std::dynamic_pointer_cast<OutportSequenceType>(outport)) {
+        removePortFromGroups(superOutport_.get());
+        superOutport_ = typedOutport;
+        addPortToGroup(superOutport_.get(), "default");
+    } else {
+        throw Exception(SourceContext{}, "Got port of type {}, expected {}",
+                        outport->getClassIdentifier(), superOutport_->getClassIdentifier());
+    }
+}
+template <typename InportType, typename OutportSequenceType>
+std::shared_ptr<SequenceCompositeDataBase>
+SequenceCompositeSink<InportType, OutportSequenceType>::getData() {
+    return data_;
+}
+
+template <typename InportType, typename OutportSequenceType>
+void SequenceCompositeSink<InportType, OutportSequenceType>::setData(
+    std::shared_ptr<SequenceCompositeDataBase> data) {
+    if (auto typedData =
+            std::dynamic_pointer_cast<SequenceCompositeData<OutportSequenceData>>(data)) {
+        data_ = typedData;
+    } else {
+        throw Exception(SourceContext{}, "Data of wrong type");
+    }
+}
+
+template <typename InportType, typename OutportSequenceType>
+void SequenceCompositeSink<InportType, OutportSequenceType>::newData() {
+    data_->data = std::make_shared<OutportSequenceData>();
 }
 
 template <typename InportType, typename OutportSequenceType>
 void SequenceCompositeSink<InportType, OutportSequenceType>::serialize(Serializer& s) const {
     SequenceCompositeSinkBase::serialize(s);
-    s.serialize("SuperOutport", superOutport_);
+    s.serialize("SuperOutport", *superOutport_);
 }
 
 template <typename InportType, typename OutportSequenceType>
 void SequenceCompositeSink<InportType, OutportSequenceType>::deserialize(Deserializer& d) {
     SequenceCompositeSinkBase::deserialize(d);
-    d.deserialize("SuperOutport", superOutport_);
+    d.deserialize("SuperOutport", *superOutport_);
 }
 
 }  // namespace inviwo
