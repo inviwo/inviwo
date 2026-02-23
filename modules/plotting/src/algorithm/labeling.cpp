@@ -31,6 +31,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/zip.h>
 
 #include <cmath>
 #include <ranges>
@@ -201,7 +202,7 @@ AxisLabels labelingExtendedWilkinson(double valueMin, double valueMax, int numTi
     int j = 1;
     AxisLabels labels{};
     while (j < maxAttempts) {
-        for (auto&& [qIndex, q] : std::ranges::enumerate_view(Q)) {
+        for (auto&& [qIndex, q] : util::enumerate(Q)) {
             std::array<double, 4> scores{simplicityMax(static_cast<int>(qIndex), Q.size(), j), 1.0,
                                          1.0, 1.0};
             if (weightedScore(scores) < bestScore) {
@@ -371,10 +372,14 @@ AxisLabels labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
         // Get first multiple of steps that are <= vMin
         auto vMinsFloored =
             steps | std::views::transform([vMin](double s) { return std::floor(vMin / s) * s; });
-        auto vMaxsFloored = std::views::zip_transform(
-            [nBins](auto v, auto s) { return v + s * nBins; }, vMinsFloored, steps);
-        auto largeStepsRounded = std::views::zip_transform(
-            [vMax](auto s, auto v) { return s && (v >= vMax); }, largeSteps, vMaxsFloored);
+        auto vMaxsFloored =
+            std::views::zip(vMinsFloored, steps) | std::views::transform([nBins](auto elem) {
+                return std::get<0>(elem) + std::get<1>(elem) * nBins;
+            });
+        auto largeStepsRounded =
+            std::views::zip(largeSteps, vMaxsFloored) | std::views::transform([vMax](auto elem) {
+                return std::get<0>(elem) && (std::get<1>(elem) >= vMax);
+            });
         if (auto it = std::ranges::find(largeStepsRounded, true); it != largeStepsRounded.end()) {
             iStep = static_cast<size_t>(std::distance(largeStepsRounded.begin(), it));
         }
@@ -404,11 +409,10 @@ AxisLabels labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
         const int high = edge.greaterEqual(vMax - bestVMin);
 
         // Create ticks and limit them to [vMin, vMax]
-        auto ticks = std::ranges::iota_view(low, high + 1) |
-                     std::views::transform([step, bestVMin](auto i) {
-                         return i * step + bestVMin;
-                     }) |
-                     std::views::filter([vMin, vMax](double t) { return t >= vMin && t <= vMax; });
+        auto ticks =
+            std::ranges::iota_view(low, high + 1) |
+            std::views::transform([step, bestVMin](auto i) { return i * step + bestVMin; }) |
+            std::views::filter([vMin, vMax](double t) { return t >= vMin && t <= vMax; });
         if (std::ranges::distance(ticks) >= minNTicks) {
             labels.start = ticks.front() + offset;
             labels.stop = ticks.back() + offset;
