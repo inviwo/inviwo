@@ -43,6 +43,8 @@ class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 class SequenceCompositeSinkBase;
 class SequenceCompositeSourceBase;
+class ResizeEvent;
+class Event;
 
 /**
  * @brief A processor that contains and manages a sub network and evaluates that sub network once
@@ -149,6 +151,14 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    struct NetEval {
+        std::unique_ptr<ProcessorNetwork> net;
+        std::unique_ptr<ProcessorNetworkEvaluator> eval;
+        std::vector<SequenceCompositeSinkBase*> sinks;
+        std::vector<SequenceCompositeSourceBase*> sources;
+    };
+    void createNetworkCopies(size_t count);
+
     // Keeps track of the sup/super property pairs.
     struct IVW_CORE_API PropertyHandler {
         PropertyHandler(SequenceProcessor& composite, Property* subProperty);
@@ -193,10 +203,10 @@ private:
 
     bool isProcessing_ = false;
     std::unordered_map<Property*, std::unique_ptr<PropertyHandler>> handlers_;
-    std::vector<SequenceCompositeSinkBase*> sinks_;
-    std::vector<SequenceCompositeSourceBase*> sources_;
-    std::unique_ptr<ProcessorNetwork> subNetwork_;
-    std::unique_ptr<ProcessorNetworkEvaluator> evaluator_;
+
+    NetEval sub_;
+    std::vector<NetEval> copies_;
+    std::unique_ptr<ResizeEvent> lastResize_;
 };
 
 }  // namespace inviwo
