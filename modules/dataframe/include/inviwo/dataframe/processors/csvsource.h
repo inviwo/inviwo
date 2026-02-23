@@ -48,6 +48,8 @@
 #include <inviwo/dataframe/properties/filterlistproperty.h>          // for FilterListProperty
 #include <inviwo/dataframe/util/filters.h>                           // for Filters
 
+
+
 #include <functional>   // for __base
 #include <memory>       // for shared_ptr
 #include <string>       // for operator==, operator+
@@ -102,7 +104,7 @@ private:
     StringProperty locale_;
     OptionProperty<CSVReader::EmptyField> emptyField_;
     ButtonProperty reloadData_;
-
+    
     ColumnMetaDataListProperty columns_;
     std::shared_ptr<DataFrame> loadedData_;
     std::string error_;

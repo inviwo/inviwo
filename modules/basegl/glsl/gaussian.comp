@@ -30,29 +30,19 @@
 
 //http://wili.cc/blog/opengl-cs.html
 
-
+#include "utils/orbital.glsl"
 writeonly layout(rgba32f) uniform image3D dest; // Output 3D texture
 
 uniform float sigma;  // Standard deviation for Gaussian
 uniform int zOffset;  // Uniform for the current z-slice being processed
 uniform ivec3 dims;
-uniform ivec3 workGroup;
+uniform uint numPoints = 1;
+uniform vec3 paddMin;
+uniform vec3 paddMax;
+
+layout (local_size_x = 32, local_size_y = 32, local_size_z = 1) in;  // Workgroup size
 
 
-
-layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;  // Workgroup size
-
-struct Orbital
-{
-    vec4 p;
-    vec3 coefs;
-};
-
-
-layout(std430, binding = 0) buffer List
-{
-    Orbital data[];  // Points data
-};
 
 #define M_PI 3.14159265359
 
@@ -60,39 +50,13 @@ void main() {
     // Get the current global invocation position
     ivec3 storePos = ivec3(gl_GlobalInvocationID.xyz);
     storePos.z = zOffset;
-    vec3 posFloat = vec3(storePos) / vec3(gl_NumWorkGroups * gl_WorkGroupSize);
+    vec3 posFloat = vec3(storePos) / vec3(gl_NumWorkGroups * gl_WorkGroupSize-1);
     // Modify the z position using zOffset (we will process one slice at a time)
-    posFloat.z = float(storePos.z)/dims.z;
+    posFloat.z = float(storePos.z)/(dims.z-1);
 
-    float density = 0.0;
-    int d;
-    // Loop over each point in the data buffer
-    for (uint i = 0; i < data.length(); ++i) {
-        Orbital orb = data[i];
+    
 
-        float s = sigma;//;*test.p.w;             
-        vec3 dr = orb.p.xyz - posFloat;
-        
-        float r2 = dot(dr,dr);
-        //float A = 1.0 / (s * sqrt(2 * M_PI));
-        float B = 0.5 / (s*s);
-        float A = pow(abs(dr.x), orb.coefs.x) * pow(abs(dr.y), orb.coefs.y) * pow(abs(dr.z), orb.coefs.z);
-        
-        density += A*exp(-B*r2);
-        
-    }
-
-
-    /*
-    if(storePos.z < 100) {
-        density = 0.0;    
-    } else if( storePos.z > 400) {
-        density = 1.0;
-    } else { 
-        density = data[0].coefs.w / 20;
-    }
-    */
-    density = density;
-    // Store the result in the output 3D texture at the position
+    float density = vec4(calcDensity(posFloat,numPoints,paddMin,paddMax)).w;
+    
     imageStore(dest, storePos, vec4(density, 0.0, 0.0, 0.0)); 
 }

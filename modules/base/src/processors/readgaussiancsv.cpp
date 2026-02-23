@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,57 +27,39 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/base/basemoduledefine.h>
-
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/base/properties/layerinformationproperty.h>
-#include <modules/base/properties/basisproperty.h>
-#include <inviwo/core/datastructures/gaussianorbital.h>
-#include <random>
-
-
+#include <modules/base/processors/readgaussiancsv.h>
 
 namespace inviwo {
 
-/**
- * \brief A processor to generate a noise image
- */
-
-
-class IVW_MODULE_BASE_API MyNoiseGeneratorColor : public Processor {
-public:
-    MyNoiseGeneratorColor();
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    
-    DataOutport<std::vector<vec4>> points_;    
-    DataOutport<std::vector<GaussianOrbital>> orbitals_;
-    DataOutport<vec3> minPadd_;
-    DataOutport<vec3> maxPadd_;
-    LayerOutport pointsLayer_;
-    MeshOutport mesh_;
-    
-    
-    IntSizeTProperty size_;           ///< Size of the output image.
-    FloatProperty radii_;
-    IntSizeTProperty seed_; 
-
-private:
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo ReadGaussianCSV::processorInfo_{
+    "org.inviwo.ReadGaussianCSV",  // Class identifier
+    "Read Gaussian CSV",        // Display name
+    "Undefined",                   // Category
+    CodeState::Experimental,       // Code state
+    Tags::None,                    // Tags
+    R"(<Explanation of how to use the processor.>)"_unindentHelp,
 };
+
+const ProcessorInfo& ReadGaussianCSV::getProcessorInfo() const { return processorInfo_; }
+
+ReadGaussianCSV::ReadGaussianCSV()
+    : Processor{} /*
+    , inport_{"inport", "<description of the inport data and any requirements on the data>"_help}
+    , outport_{"outport", "<description of the generated outport data>"_help}
+    , position_{"position",
+                "Position",
+                "<description of the property>"_help,
+                vec3(0.0f),
+                {vec3(-100.0f), ConstraintBehavior::Ignore},
+                {vec3(100.0f), ConstraintBehavior::Ignore}}*/ {
+
+    //addPorts(inport_, outport_);
+    //addProperties(position_);
+}
+
+void ReadGaussianCSV::process() {
+    // outport_.setData(std::make_shared<SomeOtherData>(position_.get()));
+}
 
 }  // namespace inviwo

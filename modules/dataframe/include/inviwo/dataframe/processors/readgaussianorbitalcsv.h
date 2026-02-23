@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2024 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,55 +29,41 @@
 
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-
-#include <inviwo/core/ports/layerport.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/base/properties/layerinformationproperty.h>
-#include <modules/base/properties/basisproperty.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <inviwo/dataframe/datastructures/dataframe.h>               // for DataFrame
+#include <inviwo/dataframe/io/csvreader.h>                           // for CSVReader::EmptyField
+#include <inviwo/dataframe/properties/columnmetadatalistproperty.h>  // for ColumnMetaDataListPr...
+#include <inviwo/dataframe/properties/filterlistproperty.h>          // for FilterListProperty
+#include <inviwo/dataframe/util/filters.h>                           // for Filters
+
 #include <inviwo/core/datastructures/gaussianorbital.h>
-#include <random>
-
-
-
+#include <vector>
+#include <tuple>
+#include <inviwo/core/properties/fileproperty.h>                     // for FileProperty
 namespace inviwo {
 
-/**
- * \brief A processor to generate a noise image
- */
-
-
-class IVW_MODULE_BASE_API MyNoiseGeneratorColor : public Processor {
+class IVW_MODULE_DATAFRAME_API ReadGaussianOrbitalCSV : public Processor {
 public:
-    MyNoiseGeneratorColor();
+    ReadGaussianOrbitalCSV(const std::filesystem::path& file);
 
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    
-    DataOutport<std::vector<vec4>> points_;    
-    DataOutport<std::vector<GaussianOrbital>> orbitals_;
-    DataOutport<vec3> minPadd_;
-    DataOutport<vec3> maxPadd_;
-    LayerOutport pointsLayer_;
-    MeshOutport mesh_;
-    
-    
-    IntSizeTProperty size_;           ///< Size of the output image.
-    FloatProperty radii_;
-    IntSizeTProperty seed_; 
-
 private:
+    FileProperty inputFile_;
+    FloatProperty paddValue_;
+    DataOutport<std::vector<GaussianOrbital>> orbitals_;
+    DataOutport<vec3> minVec_;
+    DataOutport<vec3> maxVec_;
+        //std::vector<double> orbitals_;
+    
 };
 
 }  // namespace inviwo

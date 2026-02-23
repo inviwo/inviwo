@@ -81,7 +81,7 @@ uniform int channel;
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth, vec3 entryNormal) {
 
-    return vec4{1,0,0,1};
+    
 
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;

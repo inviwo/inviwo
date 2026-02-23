@@ -26,6 +26,7 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/dataframetovector.h
     include/inviwo/dataframe/processors/filelist.h
     include/inviwo/dataframe/processors/imagetodataframe.h
+    include/inviwo/dataframe/processors/readgaussianorbitalcsv.h
     include/inviwo/dataframe/processors/syntheticdataframe.h
     include/inviwo/dataframe/processors/tffromdataframecolumn.h
     include/inviwo/dataframe/processors/volumesequencetodataframe.h
@@ -66,6 +67,7 @@ set(SOURCE_FILES
     src/processors/dataframetovector.cpp
     src/processors/filelist.cpp
     src/processors/imagetodataframe.cpp
+    src/processors/readgaussianorbitalcsv.cpp
     src/processors/syntheticdataframe.cpp
     src/processors/tffromdataframecolumn.cpp
     src/processors/volumesequencetodataframe.cpp

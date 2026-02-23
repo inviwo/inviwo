@@ -163,13 +163,14 @@ std::unique_ptr<Volume> makeMarchingCubeVolume(const size_t& index) {
 
 template <typename T = float>
 std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float sigma_,
-                                           std::vector<GaussianOrbital> const& points) {
+                                           std::vector<GaussianOrbital> const &points,
+                                           const vec3& maxPad, const vec3& minPad) {
     return generateVolume(size, mat3(1.0), [&](size3_t const& ind) {
 
         
         dvec3 x = dvec3(ind);
-        
-        x = x/dvec3(size);
+        x = x / dvec3(size - size3_t{1});
+        x = static_cast<dvec3>(minPad) + x * static_cast<dvec3>(maxPad - minPad);
         float s{sigma_};
 
         
@@ -194,20 +195,28 @@ std::unique_ptr<Volume> makeGaussianVolume(size3_t const& size, float sigma_,
         
         double density{0};
         
-        for (auto& orb : points) {
+        for (auto& pgto : points) {
             
-            dvec3 dr{orb.p.x - x.x, orb.p.y - x.y, orb.p.z - x.z};
-            s = sigma_;//orb.p.w;
+            dvec3 dr{pgto.p.x - x.x, pgto.p.y - x.y, pgto.p.z - x.z};
             double r2{glm::length2(dr)};
+            /* s = sigma_;  // orb.p.w;
+            
             double B{0.5 / (s * s)};
             //double A{1.0 / (s * sqrt(2 * M_PI))};
             
             //double A{pow(point.x, 1) * pow(point.y, 1) * pow(point.z, 1)};
             double A {pow(abs(dr.x), orb.coefs.x) * pow(abs(dr.y), orb.coefs.y) * pow(abs(dr.z), orb.coefs.z)};
             density += A*exp(-B*r2);
+            */
+            double fx { pow(abs(dr.x), pgto.coefs.x)};
+            double fy{pow(abs(dr.y), pgto.coefs.y)};
+            double fz{pow(abs(dr.z), pgto.coefs.z)};
+            double expVal { exp(-pgto.alpha * r2)};
+            density += pgto.m_Coeff * pgto.c_Coeff * pgto.N_ijk * fx * fy * fz * expVal;
+
         }
         
-        return glm_convert_normalized<T>(density);
+        return glm_convert_normalized<T>(density*density);
     });
 }
 

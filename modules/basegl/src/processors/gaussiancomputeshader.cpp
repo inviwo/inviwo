@@ -54,7 +54,7 @@ const ProcessorInfo GaussianComputeShader::processorInfo_{
     Tags::GL | Tag("Compute Shader"),    // Tags
     R"(Creating Gaussian Volume using Compute Shader)"_unindentHelp};
 
-const ProcessorInfo GaussianComputeShader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GaussianComputeShader::getProcessorInfo() const { return processorInfo_; }
 
 GaussianComputeShader::GaussianComputeShader()
     : Processor{}  //, volume_{"volume"}
@@ -62,13 +62,18 @@ GaussianComputeShader::GaussianComputeShader()
     , points_{"points", "Imported points"_help}
     , orbitals_{"orbitals", "Imported orbitals"_help}
     , outport_{"outport"}
+    , minValue_{"minValue"}
+    , maxValue_{"maxValue"}
+    , paddMin_{"paddMinValue", "padd Min Value"_help}
+    , paddMax_{"paddMaxValue", "padd Min Value"_help}
     , shaderGaussian_{{{ShaderType::Compute, "gaussian.comp"}}}
     , dimensions_("dimensions", "Dimensions", size3_t(64), size3_t(1), size3_t(512))
     , groupSize_("groupsize", "GroupSize", size3_t(16), size3_t(1), size3_t(32))
-    , sigma_("sigma", "Sigma", 1.0f, 0.0f, 10.0f) {
+    , sigma_("sigma", "Sigma", 1.0f, 0.0f, 10.0f)
+    , reset_{"Reset", "Reset", [&]() {}} {
 
-    addProperties(dimensions_, groupSize_, sigma_);
-    addPorts(points_,orbitals_, outport_);
+    addProperties(dimensions_, groupSize_, sigma_,reset_);
+    addPorts(points_, orbitals_, outport_, minValue_, maxValue_, paddMin_,paddMax_);
 
     shaderGaussian_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -105,9 +110,13 @@ void GaussianComputeShader::process() {
 
     size3_t dims = dimensions_;
     size3_t groupSize = groupSize_;
+    
+    
+    shaderGaussian_.setUniform("dest", unit.getUnitNumber());
     shaderGaussian_.setUniform("dims", ivec3(dims));
-    shaderGaussian_.setUniform("groupSize", ivec3(groupSize));
-
+    shaderGaussian_.setUniform("numPoints", static_cast<unsigned>(points.size()));
+    shaderGaussian_.setUniform("paddMin", *paddMin_.getData());
+    shaderGaussian_.setUniform("paddMax", *paddMax_.getData());
     GLuint buffHandle;
     glGenBuffers(1, &buffHandle);
     size_t bufferSize{points.size() * sizeof(GaussianOrbital)};
@@ -119,7 +128,7 @@ void GaussianComputeShader::process() {
     uvec3 numWorkGroups{(uvec3(dims) + uvec3(groupSize) - uvec3(1)) /
                         uvec3(groupSize)};  // Divide by work group size (e.g., 4)
     numWorkGroups.z = 1;
-    shaderGaussian_.setUniform("workGroup", numWorkGroups);
+    
     for (int z = 0; z < dims.z; ++z) {
         // Set the zOffset uniform to focus on the current z-slice
         shaderGaussian_.setUniform("zOffset", z);
@@ -143,16 +152,23 @@ void GaussianComputeShader::process() {
 
     auto* data = static_cast<const VolumeRAMPrecision<float>*>(vol->getRepresentation<VolumeRAM>())->getDataTyped();
     auto minmax = util::dataMinMax(data, glm::compMul(dims), IgnoreSpecialValues::Yes);
-    
+    auto min = glm::compMin(minmax.first);
+    auto max = glm::compMax(minmax.second);
     //auto minmax = util::dataMinMax(data, glm::compMul(dimensions), IgnoreSpecialValues::Yes);
     mat3 basis(1);
     /* vol->dataMap.dataRange = dvec2{0.0, minmax.second.x};
     vol->dataMap.valueRange = dvec2{0.0, minmax.second.x};*/
     vol->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
 
-    vol->dataMap.dataRange.x = glm::compMin(minmax.first);
-    vol->dataMap.dataRange.y = glm::compMax(minmax.second);
+    vol->dataMap.dataRange.x = min;
+    vol->dataMap.dataRange.y = max;
     vol->dataMap.valueRange = vol->dataMap.dataRange;
+
+    vol->setInterpolation(InterpolationType::Nearest);
+
+    minValue_.setData(static_cast<float>( min));
+    maxValue_.setData(static_cast<float>(max));
+    
     outport_.setData(vol);
 }
 

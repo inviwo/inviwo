@@ -47,6 +47,8 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include<inviwo/core/util/glmvec.h>
+
+              
 namespace inviwo {
 
 /**
@@ -56,25 +58,18 @@ namespace inviwo {
 class IVW_CORE_API alignas(16) GaussianOrbital{
 public:
     
-    GaussianOrbital();
-    GaussianOrbital(const vec4& p, const vec3& coefs);
-    GaussianOrbital(const GaussianOrbital& other);
-    GaussianOrbital(GaussianOrbital&& other) noexcept;
-
-    GaussianOrbital& operator=(GaussianOrbital& other);
-    GaussianOrbital& operator=(GaussianOrbital&& other) noexcept;
-    ~GaussianOrbital() = default;
-
+    
     vec4 p;
-    vec3 coefs;
+    ivec4 coefs;
+    float alpha, c_Coeff, N_ijk,m_Coeff;
 
-    //static constexpr uvec3 colorCode{188, 101, 101};
-    //static constexpr std::string_view classIdentifier{"org.inviwo.GaussianOrbital"};
-    //static constexpr std::string_view dataName{"GaussianOrbital"};
-    static const uvec3 colorCode;
-    static const std::string classIdentifier;
-    static const std::string dataName;
-
+    static constexpr uvec3 colorCode{235, 228, 23};
+    static constexpr std::string_view classIdentifier{"org.inviwo.GaussianOrbital"};
+    static constexpr std::string_view dataName{"GaussianOrbital"};
+    //static const uvec3 colorCode;
+    //static const std::string classIdentifier;
+    //static const std::string dataName;
+    
     
 };
 

@@ -39,7 +39,9 @@
 #include <modules/base/algorithm/randomutils.h>
 
 #include <bit>
-
+#include <fstream>
+#include <iterator>
+#include <istream>
 namespace inviwo {
 class Image;
 
@@ -68,12 +70,14 @@ const ProcessorInfo MyNoiseGeneratorColor::processorInfo_{
     )"_unindentHelp,
 };
 
-const ProcessorInfo MyNoiseGeneratorColor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MyNoiseGeneratorColor::getProcessorInfo() const { return processorInfo_; }
 
 MyNoiseGeneratorColor::MyNoiseGeneratorColor()
     : Processor()
     , points_{"points", "Generated points"_help}    
     , orbitals_("orbitals", "Generated orbitals"_help)
+    , minPadd_("minPadd", "min padd"_help)
+    , maxPadd_("maxPadd","max padd"_help)
     , pointsLayer_("pointsLayer", "Generated points image"_help)
     , mesh_("spheremesh", "Positions and radii"_help)
     , size_("size", "Size", "Size of the output image."_help, size_t(256),
@@ -86,10 +90,20 @@ MyNoiseGeneratorColor::MyNoiseGeneratorColor()
             {size_t(1), ConstraintBehavior::Editable},
             {size_t(1096), ConstraintBehavior::Editable}} {
 
-    addPorts(points_ ,orbitals_,pointsLayer_, mesh_);
+    addPorts(points_ ,orbitals_,pointsLayer_, mesh_,minPadd_,maxPadd_);
     addProperties(size_, radii_, seed_);
 }
 
+
+
+/* std::istream& operator>>(std::istream& is, Point& p) {
+    char comma;
+    return is >> p.x >> comma >> p.y >> comma >> p.z >> comma >> p.i >> comma >> p.j >> comma >>
+           p.k >> comma >> p.l >> comma >> p.alpha >> comma >> p.c_Coeff >> comma >> p.N_ijk >>
+           comma >> p.m_Coeff;
+}*/
+int foo()
+{ return 5; }
 void MyNoiseGeneratorColor::process() {
     
     
@@ -100,6 +114,11 @@ void MyNoiseGeneratorColor::process() {
     std::uniform_real_distribution<double> posDis(0.0, 1.0);
     std::uniform_real_distribution<double> radiiDis(0.1, 0.3);
     std::uniform_int_distribution<int> quantDis(0, 3);
+    std::uniform_real_distribution<double> alpha(0.01, 0.05);
+    std::uniform_real_distribution<double> c_Coeff(-0.2, 2.0);    
+    std::uniform_real_distribution<double> n_ijk(0.1, 300.0);
+    std::uniform_real_distribution<double> m_Coeff(-0.1, 0.1);
+
 
     std::transform(std::begin(data), std::end(data), std::begin(data), [&](const vec4& point) {
         return vec4{posDis(gen), posDis(gen), posDis(gen), radiiDis(gen) * radii_};
@@ -107,9 +126,12 @@ void MyNoiseGeneratorColor::process() {
 
     std::transform(std::begin(data), std::end(data), std::begin(data2),
                         [&](const vec4& point) {
-        vec3 coefs{quantDis(gen), quantDis(gen), quantDis(gen)};
-        GaussianOrbital orbital{point, coefs};
+        ivec4 coefs{quantDis(gen), quantDis(gen), quantDis(gen), quantDis(gen)};
+        double sigma{alpha(gen)};
+        GaussianOrbital orbital{point, coefs, 1.0 / (2.0 * sigma * sigma), M_SQRT1_2 * M_2_SQRTPI*1.0/sigma,
+                                1,     1};
         return orbital;
+        
     });
 
     std::vector<vec4> positions(data.size());
@@ -136,6 +158,10 @@ void MyNoiseGeneratorColor::process() {
     pointsLayer_.setData(std::make_shared<Layer>(ram));
 
     mesh_.setData(mesh);
+
+    minPadd_.setData(vec3(0, 0, 0));
+    maxPadd_.setData(vec3(1, 1, 1));
+
 }
 
 }  // namespace inviwo

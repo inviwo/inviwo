@@ -69,12 +69,14 @@ const ProcessorInfo GaussianVolumeCreator::processorInfo_{
     CodeState::Experimental,           // Code state
     Tags::CPU,                   // Tags
 };
-const ProcessorInfo GaussianVolumeCreator::getProcessorInfo() const { return processorInfo_; }
-
+//const ProcessorInfo GaussianVolumeCreator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& GaussianVolumeCreator::getProcessorInfo() const { return processorInfo_; }
 GaussianVolumeCreator::GaussianVolumeCreator()
     : Processor()
     , points_{"points", "Imported points"_help}
     , orbitals_{"orbitals", "Imported orbitals"_help}
+    , paddMax_{"paddBoxMax", "transfrom box max"_help}
+    , paddMin_{"paddBoxMin", "transfrom box min"_help}
     , outport_("volume")
     , type_{"type",
             "Type",
@@ -92,16 +94,24 @@ GaussianVolumeCreator::GaussianVolumeCreator()
                   return formats;
               }(),
               1}
-    , dimensions_("dimensions", "Dimensions", size3_t(10), size3_t(0), size3_t(512))
+    , dimensions_("dimensions", "Dimensions", size3_t(16), size3_t(0), size3_t(1024))
     , index_("index", "Index", 5, 0, 255)
     , information_("Information", "Data information")
     , basis_("Basis", "Basis and offset")
     , sigma_{"sigma", "Sigma", 0.1,0.0,5.0}
     , nPoints_{"nPoints","Points","Number of points"_help,size_t(256),{size_t(1), ConstraintBehavior::Editable},{size_t(1096), ConstraintBehavior::Editable}}
-    , radii_{"radii", "Radii", 1,0.0,100.0} {
-    addPorts(points_,orbitals_,outport_);
+    , radii_{"radii", "Radii", 1,0.0,100.0}
+    , seed_{"seed",
+            "Seed",
+            "Random seed."_help,
+            size_t(256),
+            {size_t(1), ConstraintBehavior::Editable},
+            {size_t(1096), ConstraintBehavior::Editable}}
+    ,reset_{"Reset", "Reset", [&]() {}}
+    {
+    addPorts(points_,orbitals_,paddMax_,paddMin_,outport_);
     
-    addProperties(type_, format_, dimensions_, index_, information_, basis_,sigma_,nPoints_,radii_);
+    addProperties(type_, format_, dimensions_, index_, information_, basis_,sigma_,nPoints_,radii_,seed_,reset_);
 
     information_.setChecked(true);
     information_.setCurrentStateAsDefault();
@@ -109,7 +119,10 @@ GaussianVolumeCreator::GaussianVolumeCreator()
 
 void GaussianVolumeCreator::process() {
     
-    if (util::any_of(util::ref<Property>(format_, type_, dimensions_, index_,sigma_,nPoints_,radii_),
+    
+    auto pressed = reset_.onChange([]() {});
+    
+    if (util::any_of(util::ref<Property>(format_, type_, dimensions_, index_,sigma_,nPoints_,radii_,seed_,reset_),
                      &Property::isModified)) {
         loadedData_ =
             dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
@@ -130,7 +143,8 @@ void GaussianVolumeCreator::process() {
                         case GaussianVolumeCreator::Type::Gaussian: {
                             
                             return std::shared_ptr<Volume>(util::makeGaussianVolume<T>(
-                                dimensions_.get(), sigma_.get(), *orbitals_.getData()));
+                                dimensions_.get(), sigma_.get(), *orbitals_.getData()
+                                    ,*paddMax_.getData(), *paddMin_.getData()));
 
                         }
                             
@@ -148,6 +162,7 @@ void GaussianVolumeCreator::process() {
     }
 
     auto volume = std::make_shared<Volume>(*loadedData_);
+    volume->setInterpolation(InterpolationType::Linear);
     
     basis_.updateEntity(*volume);
     information_.updateVolume(*volume);
