@@ -48,6 +48,42 @@ namespace py = pybind11;
 
 namespace inviwo {
 
+namespace {
+
+// see inviwo/core/datastructures/unitsystem.h
+constexpr const char* formatDoc = R"(The Units have a Format Specification Mini-Language
+
+spec         ::= [unit_spec][":" format_spec]
+
+format_spec ::= fmt standard format specifier
+
+unit_spec   ::= [space][braces][prefix][units]
+
+space       ::= " "
+braces      ::= "(" | "["
+prefix      ::= "p" | "P"
+units       ::= "si" | "ext" | "sys" | "all"
+
+Space:
+    " "     Add a leading space to the unit
+
+Braces:    By default no braces are added.
+    "("     Surround the unit in (unit)
+    "["     Surround the unit in [unit]
+
+Prefix:
+    "p"     Use SI prefixes (yocto to Yotta) to reduce any multiplier (default)
+    "P"     Don't use any prefixes
+
+Units:
+    "si"    Only use the basic SI unit and combination of those.
+    "ext"   Use unit from the SI, derived and extra groups.
+    "sys"   Use the systems currently selected set of unit groups (default)
+    "all"   Use all known unit groups.
+)";
+
+}
+
 void exposeDataMapper(py::module& m) {
 
     py::classh<Unit>(m, "Unit")
@@ -60,7 +96,7 @@ void exposeDataMapper(py::module& m) {
                 const auto format = fmt::format("{{:{}}}", spec);
                 return fmt::format(fmt::runtime(format), unit);
             },
-            py::arg("format") = "{}")
+            py::arg("format") = "{}", py::doc(formatDoc))
         .def("__str__", [](const Unit& unit) { return fmt::to_string(unit); })
         .def("__repr__", [](const Unit& unit) { return fmt::to_string(unit); });
 
