@@ -14,3 +14,4 @@ KeepEmptyLinesAtTheStartOfBlocks: true
 DerivePointerAlignment: false
 PointerAlignment: Left
 QualifierAlignment: Left
+ShortNamespaceLines: 0
