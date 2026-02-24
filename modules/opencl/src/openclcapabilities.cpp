@@ -182,7 +182,7 @@ void OpenCLCapabilities::printInfo() {
     try {
         __DEVICE_INFO_GENERAL(__CL_PRINT_DEVICE_INFO)
     } catch (cl::Error& e) {
-        LogInfoCustom("OpenCL", "Device does not have the following info: " << e.what());
+        log::error("Device does not have the following info: {}", e.what());
     }
 }
 
@@ -203,7 +203,7 @@ void OpenCLCapabilities::printDetailedInfo() {
                 }
             }
             stream << std::endl;
-            LogInfo(stream.str())
+            log::report(LogLevel::Info, stream.str());
         }
         formats.clear();
         {
@@ -218,10 +218,10 @@ void OpenCLCapabilities::printDetailedInfo() {
                     stream << ", ";
                 }
             }
-            LogInfo(stream.str())
+            log::report(LogLevel::Info, stream.str());
         }
     } catch (cl::Error& e) {
-        LogInfoCustom("OpenCL", "Device does not have the following info: " << e.what());
+        log::info("Device does not have the following info: {}", e.what());
     }
 }
 
@@ -240,7 +240,7 @@ void OpenCLCapabilities::printDeviceInfo(const cl::Device& device) {
         __PARAM_NAME_DEVICE_FISSION(__CL_PRINT_DEVICE_INFO)
 #endif
     } catch (cl::Error& e) {
-        LogInfoCustom("OpenCL", "Device does not have the following info: " << e.what());
+        log::info("Device does not have the following info: {}", e.what());
     }
 }
 

@@ -43,7 +43,7 @@ ScopedClockCL::~ScopedClockCL() {
                                   __FUNCTION__, __LINE__, message.str());
         // LogInfo("Exec time: " << profilingEvent->getElapsedTime() << " ms");
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
     delete profilingEvent_;
 }

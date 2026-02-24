@@ -163,7 +163,7 @@ void LayerCL::setDimensions(size2_t dimensions) {
         if (err.err() == CL_INVALID_IMAGE_DESCRIPTOR) {
             // OpenCL images with (0,0) sizes throws exception
             // Most likely during image port disconnection, so we probably want to ignore it.
-            LogError(getCLErrorString(err));
+            log::report(LogLevel::Error, getCLErrorString(err));
         } else {
             throw err;
         }

@@ -99,7 +99,7 @@ void BufferCL::download(void* data) const {
         OpenCL::getPtr()->getQueue().enqueueReadBuffer(*clBuffer_, true, 0,
                                                        getSize() * getSizeOfElement(), data);
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 }
 

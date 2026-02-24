@@ -34,6 +34,9 @@
 #include <modules/opengl/openglmodule.h>
 #include <modules/opencl/kernelowner.h>
 
+#include <fmt/std.h>
+
+
 namespace inviwo {
 
 KernelManager* KernelManager::instance_ = nullptr;
@@ -84,9 +87,8 @@ cl::Program* KernelManager::buildProgram(const std::filesystem::path& fileName,
                     std::pair<cl::Program*, cl::Kernel*>(program, new cl::Kernel(*kernelIt)));
             }
         } catch (cl::Error& err) {
-            LogError(absoluteFileName << " Failed to create kernels, Error:" << err.what() << "("
-                                      << err.err() << "), " << errorCodeToString(err.err())
-                                      << std::endl);
+            log::error("{} Failed to create kernels, Error: {} ({}) {}", absoluteFileName,
+                       err.what(), err.err(), errorCodeToString(err.err()));
         }
     } catch (cl::Error&) {
     }
@@ -114,7 +116,7 @@ cl::Kernel* KernelManager::getKernel(cl::Program* program, const std::string& ke
             return kernelIt->second;
         }
     }
-    LogError("Failed to find kernel:" << kernelName << std::endl);
+    log::error("Failed to find kernel: {}", kernelName);
     return nullptr;
 }
 
@@ -143,20 +145,18 @@ void KernelManager::fileChanged(const std::filesystem::path& fileName) {
         }
 
         try {
-            LogInfo(fileName.string() +
-                    " building program with defines: " + programIt->second.defines);
+            log::info("{} building program with defines: {}", fileName, programIt->second.defines);
             *program =
                 OpenCL::buildProgram(fileName, programIt->second.header, programIt->second.defines);
-            LogInfo(fileName.string() + " finished building program");
+            log::info("{} finished building program", fileName);
             std::vector<cl::Kernel> newKernels;
 
             try {
-                LogInfo(fileName.string() + " creating kernels");
+                log::info("{} creating kernels", fileName);
                 program->createKernels(&newKernels);
             } catch (cl::Error& err) {
-                LogError(fileName << " Failed to create kernels, error:" << err.what() << "("
-                                  << err.err() << "), " << errorCodeToString(err.err())
-                                  << std::endl);
+                log::error("{} Failed to create kernels, error: {} ({}) {}", fileName, err.what(),
+                           err.err(), errorCodeToString(err.err()));
                 throw err;
             }
 
@@ -192,8 +192,8 @@ void KernelManager::fileChanged(const std::filesystem::path& fileName) {
             }
 
         } catch (cl::Error& err) {
-            LogError(fileName << " Failed to create kernels, error:" << err.what() << "("
-                              << err.err() << "), " << errorCodeToString(err.err()) << std::endl);
+            log::error("{} Failed to create kernels, error: {} ({}) {}", fileName, err.what(),
+                       err.err(), errorCodeToString(err.err()));
         }
     }
 }

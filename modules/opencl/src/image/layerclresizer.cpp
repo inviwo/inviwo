@@ -60,14 +60,12 @@ void LayerCLResizer::resize(const cl::Image& src, const cl::Image& dst,
             &event);
         event.wait();
 #if IVW_PROFILING
-        LogInfoCustom("LayerCLResizer", "Image resizing from ("
-                                            << src.getImageInfo<CL_IMAGE_WIDTH>() << ", "
-                                            << src.getImageInfo<CL_IMAGE_HEIGHT>() << ") to ("
-                                            << resizeToDimension.x << ", " << resizeToDimension.y
-                                            << ") in " << event.getElapsedTime() << " ms");
+        log::info("Image resizing from ({}, {}) to ({}, {}) in {} ms",
+                  src.getImageInfo<CL_IMAGE_WIDTH>(), src.getImageInfo<CL_IMAGE_HEIGHT>(),
+                  resizeToDimension.x, resizeToDimension.y, event.getElapsedTime());
 #endif
     } catch (cl::Error& err) {
-        LogErrorCustom("LayerCLResizer", getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 }
 }  // namespace inviwo

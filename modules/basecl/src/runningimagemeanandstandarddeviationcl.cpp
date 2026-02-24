@@ -99,7 +99,7 @@ bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(
                 prevStandardDeviation, nextStandardDeviation, workGroupSize_, waitForEvents, event);
         }
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
         return false;
     }
     pingPongIndex_ = nextStdId;

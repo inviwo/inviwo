@@ -249,7 +249,7 @@ void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEle
         try {
             browserData.onRender(browserData.texture2D);
         } catch (const std::exception& e) {
-            LogErrorCustom("RenderHandlerGL", e.what());
+            log::exception(e);
         }
     }
 

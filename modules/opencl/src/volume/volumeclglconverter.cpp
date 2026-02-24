@@ -48,7 +48,7 @@ std::shared_ptr<VolumeRAM> VolumeCLGL2RAMConverter::createFrom(
         // queue.enqueueReadVolume(volumeCL->get(), true, glm::size3_t(0), glm::size3_t(dimensions,
         // 1), 0, 0, volumeRAM->getData());
     } else {
-        LogError("Invalid conversion or not implemented");
+        log::error("Invalid conversion or not implemented");
     }
 
     return destination;

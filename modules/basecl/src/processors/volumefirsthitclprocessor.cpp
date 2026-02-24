@@ -144,7 +144,7 @@ void VolumeFirstHitCLProcessor::firstHit(const cl::Image& volumeCL, const cl::Im
                                                           globalWorkGroupSize, localWorkGroupSize,
                                                           nullptr, profilingEvent);
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 }
 

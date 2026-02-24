@@ -146,30 +146,30 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
                 &waitFor, &events[1]);
         }
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 
 #if IVW_PROFILING
     try {
         if (supportsVolumeWrite_) {
             events[0].wait();
-            LogInfo("Exec time: " << events[0].getElapsedTime() << " ms");
+            log::info("Exec time: {} ms", events[0].getElapsedTime());
         } else {
             // Measure both computation and copy (only need to wait for copy)
             events[1].wait();
-            LogInfo("Exec time (computation, copy): "
-                    << events[0].getElapsedTime() << " + " << events[1].getElapsedTime() << " = "
-                    << events[0].getElapsedTime() + events[1].getElapsedTime() << " ms");
+            log::info("Exec time (computation, copy): {} + {} = {} ms", events[0].getElapsedTime(),
+                      events[1].getElapsedTime(),
+                      events[0].getElapsedTime() + events[1].getElapsedTime());
         }
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 #endif
 }
 
 void VolumeMaxCLProcessor::buildKernel() {
     std::stringstream defines;
-    std::string extensions = OpenCL::getPtr()->getDevice().getInfo<CL_DEVICE_EXTENSIONS>();
+    const std::string extensions = OpenCL::getPtr()->getDevice().getInfo<CL_DEVICE_EXTENSIONS>();
     if (extensions.find("cl_khr_3d_image_writes") != std::string::npos) {
         supportsVolumeWrite_ = true;
         defines << " -D SUPPORTS_VOLUME_WRITE ";

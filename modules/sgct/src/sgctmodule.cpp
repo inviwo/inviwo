@@ -96,7 +96,7 @@ private:
         };
 
         try {
-            LogInfoCustom("SGCTWrapper", "Start Engine");
+            log::info("Start Engine");
             const inviwo::util::OnScopeExit closeEngine{[]() { sgct::Engine::destroy(); }};
             sgct::Engine::create(cluster, callbacks, config);
 

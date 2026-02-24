@@ -42,7 +42,7 @@ namespace inviwo {
 NetworkSyncServer::NetworkSyncServer(ProcessorNetwork& net, const SGCTSettings* settings)
     : net_{net}, settings_{settings} {
     if (!net_.isEmpty()) {
-        throw Exception{IVW_CONTEXT,
+        throw Exception{SourceContext{},
                         "We expect the network to be empty when the server is created"};
     }
 
@@ -149,9 +149,7 @@ void NetworkSyncServer::collectPropertyChanges() {
         modified_.erase(std::unique(modified_.begin(), modified_.end()), modified_.end());
 
         std::transform(modified_.begin(), modified_.end(), std::back_inserter(pathAndProperties),
-                       [&](auto* p) {
-                           return PathAndProperty{getOwners(p), p};
-                       });
+                       [&](auto* p) { return PathAndProperty{getOwners(p), p}; });
         modified_.clear();
     }
 
@@ -209,7 +207,7 @@ void NetworkSyncServer::collectPropertyChanges() {
                    [](auto* p) { return p->getPath(); });
 
     if (settings_ && settings_->logModifiedProperties) {
-        LogInfo(fmt::format("Modfifed:\n\t{}", fmt::join(paths, "\n\t")));
+        log::info("Modfifed:\n\t{}", fmt::join(paths, "\n\t"));
     }
 
     Serializer s{""};

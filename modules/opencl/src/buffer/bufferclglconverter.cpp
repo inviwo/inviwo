@@ -43,7 +43,7 @@ std::shared_ptr<BufferRAM> BufferCLGL2RAMConverter::createFrom(
     if (destination) {
         src->download(destination->getData());
     } else {
-        LogError("Invalid conversion or not implemented");
+        throw Exception{SourceContext{}, "Invalid conversion or not implemented"};
     }
 
     return destination;

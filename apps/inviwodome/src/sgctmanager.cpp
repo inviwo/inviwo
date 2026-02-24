@@ -240,7 +240,7 @@ void SGCTManager::copy() {  // Copy inviwo output
             copyShader->deactivate();
         } else {
             auto ready = canvas->isReady();
-            LogInfo("Canvas has no data, ready: " << ready);
+            log::info("Canvas has no data, ready: {}", ready);
         }
     }
 }

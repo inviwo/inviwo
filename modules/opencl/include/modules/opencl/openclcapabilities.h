@@ -38,7 +38,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <iostream>
 #include <sstream>
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
 
 // This file contains macros and functions for printing OpenCL information.
@@ -393,19 +393,16 @@ inline std::string deviceInfoToString<cl_sampler>(cl_device_info, const cl_sampl
     F(cl_device_info, CL_DEVICE_BUILT_IN_KERNELS, STRING_CLASS)
 #endif  // #if defined(CL_VERSION_1_2)
 
-#define __CL_PRINT_DEVICE_INFO(token, param_name, T)                                           \
-    try {                                                                                      \
-        if (std::string(#T).compare("cl_bool") == 0) {                                         \
-            LogInfoCustom("OpenCLInfo",                                                        \
-                          #param_name << ": "                                                  \
-                                      << inviwo::deviceInfoToString(                           \
-                                             param_name, device.getInfo<param_name>(), true))  \
-        } else {                                                                               \
-            LogInfoCustom("OpenCLInfo",                                                        \
-                          #param_name << ": "                                                  \
-                                      << inviwo::deviceInfoToString(                           \
-                                             param_name, device.getInfo<param_name>(), false)) \
-        }                                                                                      \
-    } catch (cl::Error&) {                                                                     \
-        LogInfoCustom("OpenCLInfo", "Device info missing: " << #param_name);                   \
+#define __CL_PRINT_DEVICE_INFO(token, param_name, T)                                               \
+    try {                                                                                          \
+        if (std::string(#T).compare("cl_bool") == 0) {                                             \
+            log::info("{} : {}", #param_name,                                                      \
+                      inviwo::deviceInfoToString(param_name, device.getInfo<param_name>(), true)); \
+        } else {                                                                                   \
+            log::info(                                                                             \
+                "{} : {}", #param_name,                                                            \
+                inviwo::deviceInfoToString(param_name, device.getInfo<param_name>(), false));      \
+        }                                                                                          \
+    } catch (cl::Error&) {                                                                         \
+        log::info("Device info missing: {}", #param_name);                                         \
     }
