@@ -56,7 +56,7 @@ class PickingEvent;
 class IVW_MODULE_BASE_API MeshCreator : public Processor {
 public:
     MeshCreator();
-    ~MeshCreator();
+    ~MeshCreator() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -67,7 +67,7 @@ protected:
     virtual void process() override;
 
 private:
-    enum class MeshType {
+    enum class MeshType : unsigned char {
         Sphere,
         ColorSphere,
         CubeBasicMesh,
@@ -82,7 +82,9 @@ private:
         Arrow,
         CoordAxes,
         Torus,
-        SphereOpt
+        SphereOpt,
+        RotatingLine,
+        RotatingLineAdjacency,
     };
 
     void handlePicking(PickingEvent*);
@@ -96,9 +98,11 @@ private:
     FloatVec4Property color_;
     FloatProperty torusRadius1_;
     FloatProperty torusRadius2_;
+    FloatProperty rotationAngle_;
 
     FloatProperty meshScale_;  // Scale size of mesh
     IntVec2Property meshRes_;  // mesh resolution
+    IntProperty lineSegments_;
     OptionProperty<MeshType> meshType_;
     BoolProperty enablePicking_;
     PickingMapper picking_;

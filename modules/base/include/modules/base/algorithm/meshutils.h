@@ -50,9 +50,8 @@
 
 #include <glm/fwd.hpp>  // for vec3, vec4
 
-namespace inviwo {
+namespace inviwo::meshutil {
 
-namespace meshutil {
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> ellipse(
     const vec3& center, const vec3& majorAxis, const vec3& minorAxis,
     const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f), const float& radius = 0.001f,
@@ -76,6 +75,11 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> line(
     const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f), const float& width = 1.0f,
     const ivec2& res = ivec2(1));
 
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> rotatingLine(vec3 start, vec3 stop, float endAngle,
+                                                       vec4 color = vec4{1.0f, 0.0f, 0.0f, 1.0f},
+                                                       size_t segments = 1, float width = 1.0f,
+                                                       bool withAdjacency = true);
+
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> arrow(
     const vec3& start, const vec3& stop, const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
     const float& radius = 1.0f, const float& arrowfraction = 0.15f, const float& arrowRadius = 2.0f,
@@ -95,7 +99,6 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> square(const vec3& center, const 
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> cube(const mat4& orientation,
                                                     const vec4& color = vec4(1, 1, 1, 1));
-
 
 /**
  * Create a triangle mesh for a cube with 3x3 quads on each face.
@@ -348,6 +351,4 @@ void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
     }
 }
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

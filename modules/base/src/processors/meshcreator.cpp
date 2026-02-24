@@ -29,45 +29,37 @@
 
 #include <modules/base/processors/meshcreator.h>
 
-#include <inviwo/core/algorithm/boundingbox.h>                          // for boundingBox
-#include <inviwo/core/datastructures/buffer/buffer.h>                   // for Buffer, BufferBase
-#include <inviwo/core/datastructures/buffer/bufferram.h>                // for BufferRAMPrecision
-#include <inviwo/core/datastructures/camera/camera.h>                   // for mat4
-#include <inviwo/core/datastructures/geometry/geometrytype.h>           // for BufferType, Buffe...
-#include <inviwo/core/datastructures/geometry/mesh.h>                   // for Mesh, Mesh::Buffe...
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>      // for SimpleMeshCreator
-#include <inviwo/core/datastructures/representationconverter.h>         // for RepresentationCon...
-#include <inviwo/core/datastructures/representationconverterfactory.h>  // for RepresentationCon...
-#include <inviwo/core/interaction/events/interactionevent.h>            // for InteractionEvent
-#include <inviwo/core/interaction/events/mousebuttons.h>                // for MouseButton, Mous...
-#include <inviwo/core/interaction/events/mouseevent.h>                  // for MouseEvent
-#include <inviwo/core/interaction/events/pickingevent.h>                // for PickingEvent
-#include <inviwo/core/interaction/events/touchevent.h>                  // for TouchEvent, Touch...
-#include <inviwo/core/interaction/events/touchstate.h>                  // for TouchState, Touch...
-#include <inviwo/core/interaction/pickingmapper.h>                      // for PickingMapper
-#include <inviwo/core/interaction/pickingstate.h>                       // for PickingState, Pic...
-#include <inviwo/core/ports/meshport.h>                                 // for MeshOutport
-#include <inviwo/core/processors/processor.h>                           // for Processor
-#include <inviwo/core/processors/processorinfo.h>                       // for ProcessorInfo
-#include <inviwo/core/processors/processorstate.h>                      // for CodeState, CodeSt...
-#include <inviwo/core/processors/processortags.h>                       // for Tags, Tags::CPU
-#include <inviwo/core/properties/boolproperty.h>                        // for BoolProperty
-#include <inviwo/core/properties/cameraproperty.h>                      // for CameraProperty
-#include <inviwo/core/properties/invalidationlevel.h>                   // for InvalidationLevel
-#include <inviwo/core/properties/optionproperty.h>                      // for OptionProperty
-#include <inviwo/core/properties/ordinalproperty.h>                     // for FloatVec3Property
-#include <inviwo/core/properties/propertysemantics.h>                   // for PropertySemantics
-#include <inviwo/core/util/glmvec.h>                                    // for vec3, vec4, vec2
-#include <inviwo/core/util/staticstring.h>                              // for operator+
-#include <inviwo/core/util/utilities.h>                                 // for show, hide
-#include <modules/base/algorithm/meshutils.h>                           // for arrow, boundingBo...
-#include <modules/base/properties/basisproperty.h>                      // for BasisProperty
+#include <inviwo/core/algorithm/boundingbox.h>                      // for boundingBox
+#include <inviwo/core/datastructures/buffer/buffer.h>               // for Buffer, BufferBase
+#include <inviwo/core/datastructures/buffer/bufferram.h>            // for BufferRAMPrecision
+#include <inviwo/core/datastructures/geometry/geometrytype.h>       // for BufferType, Buffe...
+#include <inviwo/core/datastructures/geometry/mesh.h>               // for Mesh, Mesh::Buffe...
+#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>  // for SimpleMeshCreator
+#include <inviwo/core/interaction/events/mousebuttons.h>            // for MouseButton, Mous...
+#include <inviwo/core/interaction/events/mouseevent.h>              // for MouseEvent
+#include <inviwo/core/interaction/events/pickingevent.h>            // for PickingEvent
+#include <inviwo/core/interaction/events/touchevent.h>              // for TouchEvent, Touch...
+#include <inviwo/core/interaction/events/touchstate.h>              // for TouchState, Touch...
+#include <inviwo/core/interaction/pickingmapper.h>                  // for PickingMapper
+#include <inviwo/core/interaction/pickingstate.h>                   // for PickingState, Pic...
+#include <inviwo/core/ports/meshport.h>                             // for MeshOutport
+#include <inviwo/core/processors/processor.h>                       // for Processor
+#include <inviwo/core/processors/processorinfo.h>                   // for ProcessorInfo
+#include <inviwo/core/processors/processorstate.h>                  // for CodeState, CodeSt...
+#include <inviwo/core/processors/processortags.h>                   // for Tags, Tags::CPU
+#include <inviwo/core/properties/boolproperty.h>                    // for BoolProperty
+#include <inviwo/core/properties/cameraproperty.h>                  // for CameraProperty
+#include <inviwo/core/properties/invalidationlevel.h>               // for InvalidationLevel
+#include <inviwo/core/properties/optionproperty.h>                  // for OptionProperty
+#include <inviwo/core/properties/ordinalproperty.h>                 // for FloatVec3Property
+#include <inviwo/core/util/glmvec.h>                                // for vec3, vec4, vec2
+#include <inviwo/core/util/utilities.h>                             // for show, hide
+#include <modules/base/algorithm/meshutils.h>                       // for arrow, boundingBo...
+#include <modules/base/properties/basisproperty.h>                  // for BasisProperty
 
 #include <algorithm>      // for fill
 #include <cstdint>        // for uint32_t
-#include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
 
 #include <flags/flags.h>                 // for operator&, flags
 #include <glm/ext/matrix_transform.hpp>  // for scale, translate
@@ -77,53 +69,64 @@
 
 namespace inviwo {
 
-const ProcessorInfo MeshCreator::processorInfo_{"org.inviwo.MeshCreator",  // Class identifier
-                                                "Mesh Creator",            // Display name
-                                                "Mesh Creation",           // Category
-                                                CodeState::Stable,         // Code state
-                                                Tags::CPU,                 // Tags
-                                                R"(
+const ProcessorInfo MeshCreator::processorInfo_{
+    "org.inviwo.MeshCreator",  // Class identifier
+    "Mesh Creator",            // Display name
+    "Mesh Creation",           // Category
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
+    R"(
     Generate various meshes_
-     * __Sphere__,
-     * __ColorSphere__,
-     * __CubeBasicMesh__,
-     * __CubeSimpleMesh__,
-     * __CubeIndicator__,
-     * __LineCube__,
-     * __LineCubeAdjacency__,
-     * __Plane__,
-     * __Disk__,
-     * __Cone__,
-     * __Cylinder__,
-     * __Arrow__,
-     * __CoordAxes__,
+     * __Sphere__
+     * __ColorSphere__
+     * __CubeBasicMesh__
+     * __CubeSimpleMesh__
+     * __CubeIndicator__
+     * __LineCube__
+     * __LineCubeAdjacency__
+     * __Plane__
+     * __Disk__
+     * __Cone__
+     * __Cylinder__
+     * __Arrow__
+     * __CoordAxes__
      * __Torus__
-    )"_unindentHelp};
+     * __Sphere with Position__
+     * __Rotating Line__
+     * __Rotating Line with Adjacency__
+    )"_unindentHelp,
+};
 
 const ProcessorInfo& MeshCreator::getProcessorInfo() const { return processorInfo_; }
 
 MeshCreator::MeshCreator()
-    : Processor()
-    , outport_("outport", "The generated mesh"_help)
-    , position1_("position1", "Start Position",
+    : Processor{}
+    , outport_{"outport", "The generated mesh"_help}
+    , position1_{"position1", "Start Position",
                  util::ordinalSymmetricVector(vec3{0.0f}, vec3{50.f})
-                     .set("Start position of several mesh types"_help))
-    , position2_("position2", "Stop Position",
+                     .set("Start position of several mesh types"_help)}
+    , position2_{"position2", "Stop Position",
                  util::ordinalSymmetricVector(vec3{1.0f, 0.0f, 0.0f}, vec3{50.f})
-                     .set("Stop position of several mesh types"_help))
-    , basis_("Basis", "Basis and offset")
-    , normal_("normal", "Normal", "Normal direction for planes, etc."_help, vec3(0.0f, 0.0f, 1.0f),
-              {vec3(-50.0f), ConstraintBehavior::Editable},
-              {vec3(50.0f), ConstraintBehavior::Editable})
-    , color_("color", "Color",
-             util::ordinalColor(vec4(1.0f, 1.0f, 1.0f, 1.0f)).set("Color parameter"_help))
-    , torusRadius1_("torusRadius1_", "Torus Radius 1", 1.0f)
-    , torusRadius2_("torusRadius2_", "Torus Radius 2", 0.3f)
-    , meshScale_("scale", "Size scaling",
-                 util::ordinalScale(1.0f).set("Scale parameter for various mesh types"_help))
-    , meshRes_("res", "Mesh resolution",
+                     .set("Stop position of several mesh types"_help)}
+    , basis_{"Basis", "Basis and offset"}
+    , normal_{"normal", "Normal",
+              util::ordinalSymmetricVector(vec3{0.0f, 0.0f, 1.0f}, vec3{1.0f})
+                  .set("Normal direction for planes, etc."_help)}
+    , color_{"color", "Color",
+             util::ordinalColor(vec4(1.0f, 1.0f, 1.0f, 1.0f)).set("Color parameter"_help)}
+    , torusRadius1_{"torusRadius1_", "Torus Radius 1", 1.0f}
+    , torusRadius2_{"torusRadius2_", "Torus Radius 2", 0.3f}
+    , rotationAngle_{"rotationAngle", "Rotation Angle",
+                     util::ordinalSymmetricVector(0.0f, 180.0f)
+                         .set("Angle of the binormal at the end position of the line"_help)}
+    , meshScale_{"scale", "Size scaling",
+                 util::ordinalScale(1.0f).set("Scale parameter for various mesh types"_help)}
+    , meshRes_{"res", "Mesh resolution",
                util::ordinalCount(ivec2{16}).setMin(ivec2{1}).set(
-                   "Mesh resolution parameter for some meshes"_help))
+                   "Mesh resolution parameter for some meshes"_help)}
+    , lineSegments_{"lineSegments", "Line Segments",
+                    util::ordinalCount(16).setMin(1).set(
+                        "Number of segments used for some line meshes"_help)}
     , meshType_{"meshType",
                 "Mesh Type",
                 "The type of mesh to generate"_help,
@@ -132,8 +135,8 @@ MeshCreator::MeshCreator()
                  {"cube_basic_mesh", "Cube (Basic Mesh)", MeshType::CubeBasicMesh},
                  {"cube", "Cube (Simple Mesh)", MeshType::CubeSimpleMesh},
                  {"cubeIndicator", "Cube Indicator", MeshType::CubeIndicator},
-                 {"linecube", "Line cube", MeshType::LineCube},
-                 {"linecubeadjacency", "Line cube adjacency", MeshType::LineCubeAdjacency},
+                 {"linecube", "Line Cube", MeshType::LineCube},
+                 {"linecubeadjacency", "Line Cube Adjacency", MeshType::LineCubeAdjacency},
                  {"plane", "Plane", MeshType::Plane},
                  {"disk", "Disk", MeshType::Disk},
                  {"cone", "Cone", MeshType::Cone},
@@ -141,25 +144,29 @@ MeshCreator::MeshCreator()
                  {"arrow", "Arrow", MeshType::Arrow},
                  {"coordaxes", "Coordinate Indicator", MeshType::CoordAxes},
                  {"torus", "Torus", MeshType::Torus},
-                 {"sphereopt", "Sphere with Position", MeshType::SphereOpt}},
+                 {"sphereopt", "Sphere with Position", MeshType::SphereOpt},
+                 {"rotatingLine", "Rotating Line", MeshType::RotatingLine},
+                 {"rotatingLineAdjacency", "Rotating Line (Adjacency)",
+                  MeshType::RotatingLineAdjacency}},
                 0}
-    , enablePicking_("enablePicking", "Enable Picking", false)
-    , picking_(this, 1,
-               [&](PickingEvent* p) {
+    , enablePicking_{"enablePicking", "Enable Picking", false}
+    , picking_{this, 1,
+               [this](PickingEvent* p) {
                    if (enablePicking_) handlePicking(p);
-               })
-    , camera_("camera", "Camera", util::boundingBox(outport_))
+               }}
+    , camera_{"camera", "Camera", util::boundingBox(outport_)}
     , pickingUpdate_{[](PickingEvent*) {}} {
 
     addPort(outport_);
 
-    util::hide(position1_, position2_, normal_, basis_, color_, torusRadius1_, torusRadius2_);
+    util::hide(position1_, position2_, normal_, basis_, color_, torusRadius1_, torusRadius2_,
+               rotationAngle_, lineSegments_);
     util::show(meshScale_, meshRes_);
 
     meshType_.onChange([this]() {
         auto updateNone = [](PickingEvent*) {};
 
-        auto getDelta = [this](PickingEvent* p) {
+        auto getDelta = [this](const PickingEvent* p) {
             auto currNDC = p->getNDC();
             auto prevNDC = p->getPreviousNDC();
 
@@ -175,29 +182,25 @@ MeshCreator::MeshCreator()
             return (corrWorld - prevWorld);
         };
 
-        auto updatePosition1 = [this, getDelta](PickingEvent* p) {
+        auto updatePosition1 = [this, getDelta](const PickingEvent* p) {
             position1_.set(position1_.get() + getDelta(p));
         };
 
-        auto updatePosition1and2 = [this, getDelta](PickingEvent* p) {
+        auto updatePosition1and2 = [this, getDelta](const PickingEvent* p) {
             auto delta = getDelta(p);
             position1_.set(position1_.get() + delta);
             position2_.set(position2_.get() + delta);
         };
-        auto updateBasis = [this, getDelta](PickingEvent* p) {
+        auto updateBasis = [this, getDelta](const PickingEvent* p) {
             basis_.offset_.set(basis_.offset_.get() + getDelta(p));
         };
 
-        util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_,
-                   torusRadius1_, torusRadius2_);
+        util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, lineSegments_,
+                   color_, torusRadius1_, torusRadius2_, rotationAngle_);
 
         switch (meshType_.get()) {
-            case MeshType::Sphere: {
-                pickingUpdate_ = updateNone;
-                util::show(meshScale_, meshRes_);
-                break;
-            }
-            case MeshType::ColorSphere: {
+            case MeshType::ColorSphere:
+            case MeshType::CoordAxes: {
                 pickingUpdate_ = updatePosition1;
                 util::show(position1_, meshScale_);
                 break;
@@ -212,44 +215,23 @@ MeshCreator::MeshCreator()
                 util::show(position1_, position2_);
                 break;
             }
-            case MeshType::LineCube: {
-                pickingUpdate_ = updateBasis;
-                util::show(basis_, color_);
-                break;
-            }
+            case MeshType::LineCube:
             case MeshType::LineCubeAdjacency: {
                 pickingUpdate_ = updateBasis;
                 util::show(basis_, color_);
                 break;
             }
-            case MeshType::Plane: {
-                pickingUpdate_ = updatePosition1;
-                util::show(position1_, normal_, meshScale_, meshRes_, color_);
-                break;
-            }
+            case MeshType::Plane:
             case MeshType::Disk: {
                 pickingUpdate_ = updatePosition1;
                 util::show(position1_, normal_, meshScale_, meshRes_, color_);
                 break;
             }
-            case MeshType::Cone: {
-                pickingUpdate_ = updatePosition1and2;
-                util::show(position1_, position2_, meshScale_, meshRes_, color_);
-                break;
-            }
-            case MeshType::Cylinder: {
-                pickingUpdate_ = updatePosition1and2;
-                util::show(position1_, position2_, meshScale_, meshRes_, color_);
-                break;
-            }
+            case MeshType::Cone:
+            case MeshType::Cylinder:
             case MeshType::Arrow: {
                 pickingUpdate_ = updatePosition1and2;
                 util::show(position1_, position2_, meshScale_, meshRes_, color_);
-                break;
-            }
-            case MeshType::CoordAxes: {
-                pickingUpdate_ = updatePosition1;
-                util::show(position1_, meshScale_);
                 break;
             }
             case MeshType::Torus: {
@@ -262,6 +244,12 @@ MeshCreator::MeshCreator()
                 util::show(position1_, meshScale_, color_);
                 break;
             }
+            case MeshType::RotatingLine:
+            case MeshType::RotatingLineAdjacency:
+                util::show(position1_, position2_, rotationAngle_, meshScale_, lineSegments_,
+                           color_);
+                break;
+            case MeshType::Sphere:
             default: {
                 pickingUpdate_ = updateNone;
                 util::show(meshScale_, meshRes_);
@@ -270,24 +258,13 @@ MeshCreator::MeshCreator()
         }
     });
 
-    addProperty(meshType_);
-    addProperty(position1_);
-    addProperty(position2_);
-    addProperty(normal_);
-    addProperty(basis_);
-    addProperty(torusRadius1_);
-    addProperty(torusRadius2_);
-    addProperty(color_);
-    addProperty(meshScale_);
-    addProperty(meshRes_);
+    addProperties(meshType_, position1_, position2_, normal_, basis_, torusRadius1_, torusRadius2_,
+                  rotationAngle_, color_, meshScale_, meshRes_, lineSegments_, enablePicking_,
+                  camera_);
 
-    addProperty(enablePicking_);
-    addProperty(camera_);
     camera_.setInvalidationLevel(InvalidationLevel::Valid);
     camera_.setCollapsed(true);
 }
-
-MeshCreator::~MeshCreator() {}
 
 std::shared_ptr<Mesh> MeshCreator::createMesh() {
     switch (meshType_.get()) {
@@ -299,8 +276,8 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
         case MeshType::ColorSphere:
             return meshutil::colorsphere(position1_, meshScale_.get());
         case MeshType::CubeBasicMesh: {
-            vec3 posLLF = position1_;
-            vec3 posURB = position2_;
+            const vec3 posLLF = position1_;
+            const vec3 posURB = position2_;
 
             mat4 m = glm::translate(mat4(1.0f), posLLF);
             m = glm::scale(m, posURB - posLLF);
@@ -308,8 +285,8 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
             return meshutil::cube(m, color_.get());
         }
         case MeshType::CubeSimpleMesh: {
-            vec3 posLLF = position1_;
-            vec3 posURB = position2_;
+            const vec3 posLLF = position1_;
+            const vec3 posURB = position2_;
 
             return SimpleMeshCreator::rectangularPrism(posLLF, posURB, posLLF, posURB,
                                                        vec4(posLLF, 1.f), vec4(posURB, 1.f));
@@ -344,6 +321,12 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
                                    meshRes_, color_);
         case MeshType::SphereOpt:
             return meshutil::sphere(position1_, meshScale_, color_);
+        case MeshType::RotatingLine:
+            return meshutil::rotatingLine(position1_, position2_, rotationAngle_, color_,
+                                          lineSegments_, meshScale_, false);
+        case MeshType::RotatingLineAdjacency:
+            return meshutil::rotatingLine(position1_, position2_, rotationAngle_, color_,
+                                          lineSegments_, meshScale_, true);
         default:
             return SimpleMeshCreator::sphere(0.1f, meshRes_.get().x, meshRes_.get().y);
     }
@@ -351,7 +334,7 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
 
 void MeshCreator::handlePicking(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me = p->getEventAs<MouseEvent>();
+        const auto* me = p->getEventAs<MouseEvent>();
         if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
             pickingUpdate_(p);
             p->markAsUsed();
@@ -359,7 +342,7 @@ void MeshCreator::handlePicking(PickingEvent* p) {
     } else if (p->getState() == PickingState::Updated &&
                p->getEvent()->hash() == TouchEvent::chash()) {
 
-        auto te = p->getEventAs<TouchEvent>();
+        const auto* te = p->getEventAs<TouchEvent>();
         if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
             pickingUpdate_(p);
             p->markAsUsed();
@@ -376,7 +359,7 @@ void MeshCreator::process() {
             std::make_shared<BufferRAMPrecision<uint32_t>>(mesh->getBuffer(0)->getSize());
         auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
         auto& data = bufferRAM->getDataContainer();
-        std::fill(data.begin(), data.end(), static_cast<uint32_t>(picking_.getPickingId(0)));
+        std::ranges::fill(data, static_cast<uint32_t>(picking_.getPickingId(0)));
         mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib), pickBuffer);
     }
 

@@ -50,30 +50,26 @@
 #include <cstdlib>        // for abs
 #include <limits>         // for numeric_limits
 #include <memory>         // for shared_ptr, make_...
-#include <type_traits>    // for remove_extent_t
 #include <unordered_map>  // for unordered_map
-#include <unordered_set>  // for unordered_set
 #include <utility>        // for move
 #include <numbers>
 #include <ranges>
+#include <numeric>
 
-#include <glm/ext/matrix_transform.hpp>  // for rotate
-#include <glm/fwd.hpp>                   // for vec4, vec3, uint32_t
-#include <glm/geometric.hpp>             // for normalize, cross
-#include <glm/gtc/constants.hpp>         // for half_pi, quarter_pi
-#include <glm/gtx/rotate_vector.hpp>     // for rotate
-#include <glm/gtx/transform.hpp>         // for rotate
-#include <glm/mat3x3.hpp>                // for operator*, mat
-#include <glm/mat4x4.hpp>                // for operator*
-#include <glm/matrix.hpp>                // for inverse
-#include <glm/trigonometric.hpp>         // for cos, sin
-#include <glm/vec2.hpp>                  // for vec<>::(anonymous)
-#include <glm/vec3.hpp>                  // for operator*, operator+
-#include <glm/vec4.hpp>                  // for operator*, operator+
+#include <glm/fwd.hpp>                // for vec4, vec3, uint32_t
+#include <glm/geometric.hpp>          // for normalize, cross
+#include <glm/gtc/constants.hpp>      // for half_pi, quarter_pi
+#include <glm/gtx/rotate_vector.hpp>  // for rotate
+#include <glm/gtx/transform.hpp>      // for rotate
+#include <glm/mat3x3.hpp>             // for operator*, mat
+#include <glm/mat4x4.hpp>             // for operator*
+#include <glm/matrix.hpp>             // for inverse
+#include <glm/trigonometric.hpp>      // for cos, sin
+#include <glm/vec2.hpp>               // for vec<>::(anonymous)
+#include <glm/vec3.hpp>               // for operator*, operator+
+#include <glm/vec4.hpp>               // for operator*, operator+
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 namespace detail {
 
@@ -316,6 +312,46 @@ std::shared_ptr<BasicMesh> line(const vec3& start, const vec3& stop, const vec3&
         }
     }
 
+    return mesh;
+}
+
+std::shared_ptr<Mesh> rotatingLine(vec3 start, vec3 stop, float endAngle, vec4 color,
+                                   size_t segments, float width, bool withAdjacency) {
+    auto mesh = std::make_shared<Mesh>();
+
+    const float length = glm::length(stop - start);
+    const vec3 direction{1.0f, 0.0f, 0.0f};
+    mat4 m = glm::mat4_cast(glm::rotation(direction, glm::normalize(stop - start)));
+    m[3] = vec4{start, 1.0f};
+    mesh->setModelMatrix(m);
+
+    segments = std::max<size_t>(segments, 1);
+    const vec3 step{direction * length / static_cast<float>(segments)};
+    const float deltaAngle = glm::radians(endAngle) / static_cast<float>(segments);
+
+    auto positions =
+        std::views::iota(size_t{0}, segments + 1) |
+        std::views::transform([step](auto i) { return step * static_cast<float>(i); }) |
+        std::ranges::to<std::vector>();
+    auto normals = std::views::iota(size_t{0}, segments + 1) | std::views::transform([&](auto i) {
+                       const float angle = deltaAngle * static_cast<float>(i);
+                       return vec3{0.0f, std::cos(angle) * width, std::sin(angle) * width};
+                   }) |
+                   std::ranges::to<std::vector>();
+
+    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+    mesh->addBuffer(BufferType::NormalAttrib, util::makeBuffer(std::move(normals)));
+    mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::vector{segments + 1, color}));
+
+    const auto ct = withAdjacency ? ConnectivityType::StripAdjacency : ConnectivityType::Strip;
+    std::vector<std::uint32_t> indices(segments + 1);
+    std::iota(indices.begin(), indices.end(), 0);
+    if (withAdjacency) {
+        indices.insert(indices.begin(), 0);
+        indices.emplace_back(indices.back());
+    }
+    mesh->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ct},
+                     util::makeIndexBuffer(std::move(indices)));
     return mesh;
 }
 
@@ -989,6 +1025,4 @@ std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p
     return mesh;
 }
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil
