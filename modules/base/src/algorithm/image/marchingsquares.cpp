@@ -280,7 +280,8 @@ LineUpdate mergeLines(Intersection& intersection1, Intersection& intersection2, 
         // different start and end, append start to end
         if (intersection1.type == PointType::Start) {
             std::swap(edge1, edge2);
-            line2.insert(line2.end(), std::begin(line1), std::end(line1));
+            line2.insert(line2.end(), std::begin(line1), std::end(line1));            
+            std::swap(line1, line2);
         } else {
             line1.insert(line1.end(), std::begin(line2), std::end(line2));
         }
