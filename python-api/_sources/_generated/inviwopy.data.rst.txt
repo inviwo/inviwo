@@ -62,6 +62,7 @@ inviwopy.data
       BufferVec4UINT64
       BufferVec4UINT8
       Camera
+      CartesianCoordinateAxis
       ColoredMesh
       ConnectivityType
       DataMapper
