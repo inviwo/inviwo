@@ -59,17 +59,60 @@ constexpr vec3 D65WhitePoint{0.95047f, 1.0f, 1.08883f};
  * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
  *
  * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
- * @return RGBA color in [0 1]^3 range
+ * @return RGBA color in [0 1]^4 range
  * @throw Exception if string is malformed
  */
 IVW_CORE_API vec4 hex2rgba(std::string_view str);
+
+/**
+ * @brief convert from hexadecimal html color code to RGBA
+ *
+ * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
+ * hexcodes with a leading '#' and optional alpha value (single / double digit).
+ * In case of 3 respective 6 digits, alpha is implicitly set to 1.0.
+ *
+ * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
+ *
+ * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
+ * @return RGBA color in [0 255]^4 range
+ * @throw Exception if string is malformed
+ */
+IVW_CORE_API uvec4 hex2urgba(std::string_view str);
+
+/**
+ * @brief convert from hexadecimal html color code to RGBA
+ *
+ * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
+ * hexcodes with a leading '#' and optional ignored alpha value (single / double digit).
+ *
+ * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
+ *
+ * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
+ * @return RGBA color in [0 1]^3 range
+ * @throw Exception if string is malformed
+ */
+IVW_CORE_API vec3 hex2rgb(std::string_view str);
+
+/**
+ * @brief convert from hexadecimal html color code to RGBA
+ *
+ * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
+ * hexcodes with a leading '#' and optional ignored alpha value (single / double digit).
+ *
+ * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
+ *
+ * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
+ * @return RGBA color in [0 255]^3 range
+ * @throw Exception if string is malformed
+ */
+IVW_CORE_API uvec3 hex2urgb(std::string_view str);
 
 /**
  * @brief convert from rgba to 8-digit hexadecimal html color code
  *
  * RGBA is converted to a 8 digit hexadecimal html color code with leading '#'
  *
- * @param rgba   RGBA color in [0 1]^3 range
+ * @param rgba   RGBA color in [0 1]^4 range
  * @return html color code in the form of "#RRGGBBAA"
  */
 IVW_CORE_API std::string rgba2hex(const vec4& rgba);
@@ -83,6 +126,26 @@ IVW_CORE_API std::string rgba2hex(const vec4& rgba);
  * @return html color code in the form of "#RRGGBB"
  */
 IVW_CORE_API std::string rgb2hex(const vec3& rgb);
+
+/**
+ * @brief convert from rgba to 8-digit hexadecimal html color code
+ *
+ * RGBA is converted to a 8 digit hexadecimal html color code with leading '#'
+ *
+ * @param rgba   RGBA color in [0 255]^4 range
+ * @return html color code in the form of "#RRGGBBAA"
+ */
+IVW_CORE_API std::string rgba2hex(const uvec4& rgba);
+
+/**
+ * @brief convert from rgb to 6-digit hexadecimal html color code
+ *
+ * RGB is converted to a 6 digit hexadecimal html color code with leading '#'
+ *
+ * @param rgb   RGB color in [0 255]^3 range
+ * @return html color code in the form of "#RRGGBB"
+ */
+IVW_CORE_API std::string rgb2hex(const uvec3& rgb);
 
 /**
  * @brief Convert from HSV to RGB color.

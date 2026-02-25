@@ -38,8 +38,8 @@
 
 namespace inviwo::color {
 
-vec4 hex2rgba(std::string_view str) {
-    vec4 result;
+uvec4 hex2urgba(std::string_view str) {
+    uvec4 result;
 
     str = util::trim(str);
     if (!str.empty() && (str[0] == '#') && (str.length() <= 9)) {
@@ -67,10 +67,10 @@ vec4 hex2rgba(std::string_view str) {
         const auto* c = reinterpret_cast<const unsigned char*>(&v);
         switch (str.length()) {
             case 6:
-                result = vec4(c[2], c[1], c[0], 255) / 255.0f;
+                result = uvec4(c[2], c[1], c[0], 255);
                 break;
             case 8:
-                result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
+                result = uvec4(c[3], c[2], c[1], c[0]);
                 break;
             default:
                 throw Exception(SourceContext{}, R"(Invalid hex code "{}".)", str);
@@ -81,6 +81,12 @@ vec4 hex2rgba(std::string_view str) {
     return result;
 }
 
+uvec3 hex2urgb(std::string_view str) { return uvec3(hex2urgba(str)); }
+
+vec4 hex2rgba(std::string_view str) { return vec4(hex2urgba(str)) / 255.0f; }
+
+vec3 hex2rgb(std::string_view str) { return vec3(hex2urgb(str)) / 255.0f; }
+
 std::string rgba2hex(const vec4& rgba) {
     glm::u8vec4 color(rgba * 255.0f);
     return fmt::format("#{:02x}{:02x}{:02x}{:02x}", color.r, color.g, color.b, color.a);
@@ -89,6 +95,14 @@ std::string rgba2hex(const vec4& rgba) {
 std::string rgb2hex(const vec3& rgb) {
     glm::u8vec4 color(rgb * 255.0f, 0);
     return fmt::format("#{:02x}{:02x}{:02x}", color.r, color.g, color.b);
+}
+
+std::string rgba2hex(const uvec4& rgba) {
+    return fmt::format("#{:02x}{:02x}{:02x}{:02x}", rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+std::string rgb2hex(const uvec3& rgb) {
+    return fmt::format("#{:02x}{:02x}{:02x}", rgb.r, rgb.g, rgb.b);
 }
 
 vec3 hsl2rgb(const vec3& hsl) {

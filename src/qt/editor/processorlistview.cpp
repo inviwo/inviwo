@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/processorlistview.h>
 
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/zip.h>
 
 #include <inviwo/qt/editor/processorlistmodel.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
@@ -42,8 +43,119 @@
 #include <QApplication>
 #include <QMenu>
 #include <QHeaderView>
+#include <QStyledItemDelegate>
+#include <QPainter>
+#include <QPainterStateGuard>
+#include <QStyle>
+#include <QTextLayout>
 
 namespace inviwo {
+
+class ProcessorItemDelegate : public QStyledItemDelegate {
+    using QStyledItemDelegate::QStyledItemDelegate;
+    using Role = ProcessorListModel::Role;
+    using Item = ProcessorListModel::Item;
+
+    // Reimplementation of the paint method to draw inports and outports as colored rectangles on
+    // the processor items in the list view. See private impl at
+    // https://codebrowser.dev/qt6/qtbase/src/widgets/styles/qcommonstyle.cpp.html#2271
+    virtual void paint(QPainter* p, const QStyleOptionViewItem& option,
+                       const QModelIndex& index) const override {
+
+        QStyleOptionViewItem opt = option;
+        initStyleOption(&opt, index);
+
+        auto* widget = opt.widget;
+        auto* style = widget->style();
+
+        static constexpr auto portSize = QSize{6, 6};
+        static constexpr auto padding = 2;
+        static constexpr auto borderColor = QColor{40, 40, 40};
+        static constexpr auto step = QPoint{padding + portSize.width(), 0};
+        static constexpr auto inportOffset = QPoint{-padding - portSize.width(), padding};
+        static constexpr auto outportOffset =
+            QPoint{-padding - portSize.width(), -padding - portSize.height()};
+
+        QPainterStateGuard psg(p);
+        // the style calling this might want to clip, so respect any region already set
+        const QRegion clipRegion = p->hasClipping() ? (p->clipRegion() & opt.rect) : opt.rect;
+        p->setClipRegion(clipRegion);
+
+        const auto iconRect =
+            style->subElementRect(QStyle::SE_ItemViewItemDecoration, &opt, widget);
+        const auto textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &opt, widget);
+
+        // draw the background
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, p, widget);
+
+        if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
+            if (index.column() == 0) {
+                QPainterStateGuard psg2(p);
+                p->setPen(QPen(borderColor, 1.0f));
+
+                for (auto&& [i, port] :
+                     util::enumerate<int>(item->help.inports | std::views::reverse)) {
+                    p->setBrush(utilqt::toQColor(port.colorCode));
+                    p->drawRect(QRect(opt.rect.topRight() + inportOffset - i * step, portSize));
+                }
+
+                for (auto&& [i, port] : util::enumerate<int>(item->help.outports)) {
+                    p->setBrush(utilqt::toQColor(port.colorCode));
+                    p->drawRect(QRect(opt.rect.bottomRight() + outportOffset - i * step, portSize));
+                }
+            }
+        }
+
+        // draw the icon
+        const auto mode = [&]() {
+            if (!(opt.state & QStyle::State_Enabled)) {
+                return QIcon::Disabled;
+            } else if (opt.state & QStyle::State_Selected) {
+                return QIcon::Selected;
+            } else {
+                return QIcon::Normal;
+            }
+        }();
+        const auto state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+        opt.icon.paint(p, iconRect, opt.decorationAlignment, mode, state);
+
+        // draw the text
+        if (!opt.text.isEmpty()) {
+            QPalette::ColorGroup cg =
+                opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
+            if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active))
+                cg = QPalette::Inactive;
+
+            p->setPen(opt.palette.color(cg, (opt.state & QStyle::State_Selected)
+                                                ? QPalette::HighlightedText
+                                                : QPalette::Text));
+
+            const int textMargin =
+                style->pixelMetric(QStyle::PM_FocusFrameHMargin, nullptr, widget) + 1;
+
+            // remove width padding
+            QRect textMarginRect = textRect.adjusted(textMargin, 0, -textMargin, 0);
+
+            const auto elided =
+                opt.fontMetrics.elidedText(opt.text, opt.textElideMode, textMarginRect.width());
+            p->drawText(textMarginRect, opt.displayAlignment, elided);
+        }
+
+        // draw the focus rect
+        if (opt.state & QStyle::State_HasFocus) {
+            QStyleOptionFocusRect o;
+            o.QStyleOption::operator=(opt);
+            o.rect = style->subElementRect(QStyle::SE_ItemViewItemFocusRect, &opt, widget);
+            o.state |= QStyle::State_KeyboardFocusChange;
+            o.state |= QStyle::State_Item;
+            QPalette::ColorGroup cg =
+                (opt.state & QStyle::State_Enabled) ? QPalette::Normal : QPalette::Disabled;
+            o.backgroundColor = opt.palette.color(
+                cg, (opt.state & QStyle::State_Selected) ? QPalette::Highlight : QPalette::Window);
+            style->drawPrimitive(QStyle::PE_FrameFocusRect, &o, p, widget);
+        }
+    }
+};
 
 ProcessorListView::ProcessorListView(QAbstractItemModel* model, ProcessorListWidget* parent)
     : QTreeView(parent), processorTreeWidget_{parent} {
@@ -65,6 +177,8 @@ ProcessorListView::ProcessorListView(QAbstractItemModel* model, ProcessorListWid
     header()->setDefaultSectionSize(utilqt::emToPx(this, 4.0));
     expandAll();
     setUniformRowHeights(true);
+
+    setItemDelegate(new ProcessorItemDelegate(this));
 
     QObject::connect(this, &QTreeView::customContextMenuRequested, this,
                      &ProcessorListView::showContextMenu);

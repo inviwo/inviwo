@@ -117,6 +117,8 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     listView_->addItem("Module", QVariant::fromValue(Grouping::Module));
     listView_->addItem("Last Used", QVariant::fromValue(Grouping::LastUsed));
     listView_->addItem("Most Used", QVariant::fromValue(Grouping::MostUsed));
+    listView_->addItem("Inports", QVariant::fromValue(Grouping::Inports));
+    listView_->addItem("Outports", QVariant::fromValue(Grouping::Outports));
     listView_->setCurrentIndex(1);
     connect(listView_, &QComboBox::currentIndexChanged, this, [this](int index) {
         QSettings settings;
@@ -148,7 +150,7 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
 
     connect(view_->selectionModel(), &QItemSelectionModel::currentRowChanged, this,
             [this](const QModelIndex& current, const QModelIndex&) {
-                if (auto* item = utilqt::getData(current, Role::Item).value<Item*>()) {
+                if (const auto* item = utilqt::getData(current, Role::Item).value<const Item*>()) {
                     helpWidget_->showDocForClassName(item->info.classIdentifier);
                     if (!win_->tabifiedDockWidgets(this).contains(helpWidget_)) {
                         helpWidget_->raise();
@@ -182,6 +184,13 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
             static_cast<std::time_t>(it.value().toLongLong());
     }
     settings.endGroup();
+
+    {  // ensure that the grouping is applied to the model and filter
+        const auto grouping = listView_->currentData().value<Grouping>();
+        filter_->setGrouping(grouping);
+        model_->setGrouping(grouping);
+        filter_->sort(0);
+    }
 }
 
 ProcessorListWidget::~ProcessorListWidget() = default;

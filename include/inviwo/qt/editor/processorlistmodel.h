@@ -40,6 +40,7 @@
 #include <QVariant>
 
 #include <functional>
+#include <unordered_set>
 
 namespace inviwo {
 
@@ -59,7 +60,7 @@ public:
         Type type = Type::Root;
         QString name;
         QVariant sort;
-        Item* item = nullptr;
+        const Item* item = nullptr;
         Node* parent = nullptr;
         int row = 0;
         std::vector<std::unique_ptr<Node>> children;
@@ -76,7 +77,9 @@ public:
         CodeState,
         Module,
         LastUsed,
-        MostUsed
+        MostUsed,
+        Inports,
+        Outports
     };
     Q_ENUM(Grouping);
 
@@ -105,13 +108,17 @@ public:
 private:
     Node* indexToNode(const QModelIndex& index) const;
     const QIcon* getCodeStateIcon(CodeState state) const;
-    static std::pair<std::string, QVariant> categoryAndSort(const Item& item, Grouping grouping);
+    static void categoryAndSort(Grouping grouping, Item& item,
+                                StringMap<std::unordered_set<Item*>>& groups,
+                                StringMap<QVariant>& groupToSort
+
+    );
     void build();
 
     Grouping grouping_;
     std::vector<Item> items_;
     std::unique_ptr<Node> root_;
-    std::unordered_map<Item*, Node*> itemToNode_;
+    std::unordered_map<const Item*, Node*> itemToNode_;
     UnorderedStringMap<Item*> classIdentifierToItem_;
 
     QIcon iconStable_;

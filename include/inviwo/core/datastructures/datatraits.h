@@ -43,6 +43,12 @@
 
 namespace inviwo {
 
+struct IVW_CORE_API DataInfo {
+    std::string cid;
+    std::string name;
+    uvec3 color;
+};
+
 /**
  * @brief A traits class for getting information about a data object.
  * This provides a customization point if one wants to generate the information dynamically,
@@ -107,6 +113,13 @@ struct DataTraits {
 };
 
 namespace util {
+
+template <typename T>
+DataInfo dataInfoFor() {
+    return {.cid = std::string{DataTraits<T>::classIdentifier()},
+            .name = std::string{DataTraits<T>::dataName()},
+            .color = DataTraits<T>::colorCode()};
+}
 
 constexpr uvec3 getDataFormatColor(NumericType t, size_t comp, size_t size) {
     uvec3 color{};
