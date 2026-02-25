@@ -178,7 +178,8 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     }
     auto useTimes = settings.value("useTimes", QVariant(QMap<QString, QVariant>{})).toMap();
     for (auto it = useTimes.constBegin(); it != useTimes.constEnd(); ++it) {
-        useTimes_[utilqt::fromQString(it.key())] = std::time_t(it.value().toLongLong());
+        useTimes_[utilqt::fromQString(it.key())] =
+            static_cast<std::time_t>(it.value().toLongLong());
     }
     settings.endGroup();
 }
@@ -194,7 +195,7 @@ void ProcessorListWidget::focusSearch(bool selectAll) {
 void ProcessorListWidget::addSelectedProcessor() {
     QString id;
     auto indices = view_->selectionModel()->selectedIndexes();
-    if (indices.size() > 0) {
+    if (!indices.empty()) {
         id = utilqt::getData(indices[0], Role::ClassIdentifier).toString();
     }
 
@@ -231,7 +232,7 @@ void ProcessorListWidget::setPredecessorProcessor(std::string_view identifier) {
     lineEdit_->setText(utilqt::toQString(fmt::format("pre:{} ", identifier)));
 }
 
-void ProcessorListWidget::addProcessor(QString className) {
+void ProcessorListWidget::addProcessor(const QString& className) {
     // create processor, add it to processor network
     auto* network = app_->getProcessorNetwork();
     if (auto processor = createProcessor(className)) {
@@ -258,8 +259,8 @@ void ProcessorListWidget::buildList() {
     std::vector<ProcessorListModel::Item> items;
     const auto docs = win_->getDocs();
     for (auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
-        for (auto& processor : inviwoModule.getProcessors()) {
-            auto* help = docs->get(processor->getClassIdentifier());
+        for (const auto& processor : inviwoModule.getProcessors()) {
+            const auto* help = docs->get(processor->getClassIdentifier());
             items.emplace_back(ProcessorListModel::Item{
                 .info = processor->getProcessorInfo(),
                 .help = help ? *help : help::HelpProcessor{},

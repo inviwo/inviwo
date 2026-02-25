@@ -36,15 +36,13 @@
 
 #include <algorithm>
 
-namespace inviwo {
-
 namespace {
 
 constexpr auto strMatch = [](std::string_view cont, std::string_view s) {
     constexpr auto icomp = [](std::string_view::value_type l1, std::string_view::value_type r1) {
         return std::tolower(l1) == std::tolower(r1);
     };
-    return std::search(cont.begin(), cont.end(), s.begin(), s.end(), icomp) != cont.end();
+    return std::ranges::search(cont, s, icomp) != cont.end();
 };
 
 constexpr auto matcher = [](auto mptr) {
@@ -59,6 +57,7 @@ constexpr auto matcher = [](auto mptr) {
 ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNetwork* net,
                                          QObject* parent)
     : QSortFilterProxyModel(parent)
+    , grouping_{Grouping::Categorical}
     , dsl_{{{.name = "identifier",
              .shortcut = "i",
              .description = "processor class identifier",
@@ -80,10 +79,9 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
              .global = true,
              .match =
                  [](std::string_view str, const std::any&, const Item& item) {
-                     for (const auto& tag : item.info.tags.tags_) {
-                         if (strMatch(tag.getString(), str)) return true;
-                     }
-                     return false;
+                     return std::ranges::any_of(item.info.tags.tags_, [&](const auto& tag) {
+                         return strMatch(tag.getString(), str);
+                     });
                  }},
             {.name = "state",
              .shortcut = "",

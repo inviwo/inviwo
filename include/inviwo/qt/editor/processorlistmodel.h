@@ -45,7 +45,7 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API ProcessorListModel : public QAbstractItemModel {
 public:
-    enum class Role : int { Type = Qt::UserRole + 100, ClassIdentifier, Item, Sort };
+    enum class Role : std::uint16_t { Type = Qt::UserRole + 100, ClassIdentifier, Item, Sort };
     struct Item {
         ProcessorInfo info;
         help::HelpProcessor help;

@@ -76,7 +76,7 @@ public:
 
     void focusSearch(bool selectAll = true);
     void addSelectedProcessor();
-    void addProcessor(QString className);
+    void addProcessor(const QString& className);
     void recordProcessorUse(const std::string& id);
 
     std::shared_ptr<Processor> createProcessor(const QString& cid);
