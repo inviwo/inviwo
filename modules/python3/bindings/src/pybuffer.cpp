@@ -113,6 +113,11 @@ void exposeBuffer(pybind11::module& m) {
         .value("Data", BufferTarget::Data)
         .value("Index", BufferTarget::Index);
 
+    py::enum_<CartesianCoordinateAxis>(m, "CartesianCoordinateAxis")
+        .value("X", CartesianCoordinateAxis::X)
+        .value("Y", CartesianCoordinateAxis::Y)
+        .value("Z", CartesianCoordinateAxis::Z);
+
     py::enum_<DrawType>(m, "DrawType")
         .value("NotSpecified", DrawType::NotSpecified)
         .value("Points", DrawType::Points)
