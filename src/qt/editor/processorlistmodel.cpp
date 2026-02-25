@@ -83,7 +83,7 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
     auto* node = indexToNode(index);
     switch (node->type) {
         case Node::Type::Root:
-            return Qt::NoItemFlags;
+            [[fall_through]];
         case Node::Type::Group:
             return Qt::NoItemFlags;
         case Node::Type::Item:
