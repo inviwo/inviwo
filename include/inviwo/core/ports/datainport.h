@@ -80,6 +80,8 @@ public:
     virtual std::vector<std::pair<Outport*, std::shared_ptr<const T>>> getSourceVectorData() const;
 
     virtual bool hasData() const;
+
+    virtual DataInfo getDataInfo() const override;
 };
 
 template <typename T>
@@ -263,6 +265,11 @@ Document DataInport<T, N, Flat>::getInfo() const {
         doc.append("p", "Port has no data");
     }
     return doc;
+}
+
+template <typename T, size_t N, bool Flat>
+DataInfo DataInport<T, N, Flat>::getDataInfo() const {
+    return util::dataInfoFor<T>();
 }
 
 }  // namespace inviwo

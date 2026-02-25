@@ -48,6 +48,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
     virtual Document getInfo() const override;
+    virtual DataInfo getDataInfo() const override;
 
     pybind11::object getData() const;
 

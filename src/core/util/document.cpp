@@ -43,25 +43,28 @@ std::string& Document::Element::content() { return data_; }
 
 const std::string& Document::Element::content() const { return data_; }
 
-bool Document::Element::emptyTag() const {
-    return std::find(emptyTags_.begin(), emptyTags_.end(), data_) != emptyTags_.end();
-}
+bool Document::Element::emptyTag() const { return std::ranges::contains(emptyTags_, data_); }
 
-bool Document::Element::noIndent() const {
-    return std::find(noIndentTags_.begin(), noIndentTags_.end(), data_) != noIndentTags_.end();
-}
-
-const std::vector<std::string> Document::Element::noIndentTags_ = {"pre"};
-
-const std::vector<std::string> Document::Element::emptyTags_ = {
-    "area",   "base", "br",   "col",   "embed",  "hr",    "img", "input",
-    "keygen", "link", "meta", "param", "source", "track", "wbr"};
+bool Document::Element::noIndent() const { return std::ranges::contains(noIndentTags_, data_); }
 
 Document::ElementType Document::Element::type() const { return type_; }
 
 bool Document::Element::isText() const { return type_ == ElementType::Text; }
 
 bool Document::Element::isNode() const { return type_ == ElementType::Node; }
+
+Document::Element::Element() : type_{ElementType::Node}, data_{} {}
+
+Document::Element::Element(ElementType type, std::string_view content)
+    : type_{type}, data_{content} {}
+
+Document::Element::Element(std::string_view name, std::string_view content,
+                           const UnorderedStringMap<std::string>& attributes)
+    : type_{ElementType::Node}, data_{name}, attributes_{attributes} {
+    if (!content.empty()) {
+        children_.push_back(std::make_unique<Element>(ElementType::Text, content));
+    }
+}
 
 Document::Element::Element(const Element& rhs)
     : type_{rhs.type_}, children_{}, data_{rhs.data_}, attributes_{rhs.attributes_} {
@@ -78,31 +81,32 @@ Document::Element& Document::Element::operator=(const Element& that) {
     return *this;
 }
 
-Document::Element::Element(ElementType type, std::string_view content)
-    : type_{type}, data_{content} {}
-Document::Element::Element(std::string_view name, std::string_view content,
-                           const UnorderedStringMap<std::string>& attributes)
-    : type_{ElementType::Node}, data_{name}, attributes_{attributes} {
-    if (!content.empty()) {
-        children_.push_back(std::make_unique<Element>(ElementType::Text, content));
-    }
-}
-
 std::string& Document::Element::name() { return data_; }
 
 const std::string& Document::Element::name() const { return data_; }
 
 void Document::Element::serialize(Serializer& s) const {
-    s.serialize("type", type_, SerializationTarget::Attribute);
-    s.serialize("data", data_, SerializationTarget::Attribute);
-    s.serialize("children", children_);
-    s.serialize("attributes", attributes_);
+    if (type_ == ElementType::Text) {
+        s.serialize("text", data_, SerializationTarget::Attribute);
+    } else {
+        s.serialize("name", data_, SerializationTarget::Attribute);
+        s.serialize("children", children_);
+        s.serialize("attributes", attributes_);
+    }
 }
+
 void Document::Element::deserialize(Deserializer& d) {
-    d.deserialize("type", type_, SerializationTarget::Attribute);
-    d.deserialize("data", data_, SerializationTarget::Attribute);
-    d.deserialize("children", children_);
-    d.deserialize("attributes", attributes_);
+    if (auto text = d.attribute("text")) {
+        data_ = *text;
+        type_ = ElementType::Text;
+        children_.clear();
+        attributes_.clear();
+    } else {
+        type_ = ElementType::Node;
+        d.deserialize("name", data_, SerializationTarget::Attribute);
+        d.deserialize("children", children_);
+        d.deserialize("attributes", attributes_);
+    }
 }
 
 Document::PathComponent Document::PathComponent::first() {
@@ -319,8 +323,11 @@ std::string Document::str() const {
 
 Document::operator std::string() const { return str(); }
 
-void Document::serialize(Serializer& s) const { s.serialize("root", root_); }
-void Document::deserialize(Deserializer& d) { d.deserialize("root", root_); }
+void Document::serialize(Serializer& s) const { root_->serialize(s); }
+void Document::deserialize(Deserializer& d) {
+    static_assert(std::is_default_constructible_v<Document::Element>);
+    root_->deserialize(d);
+}
 
 std::ostream& operator<<(std::ostream& ss, const Document& doc) {
     using Element = Document::Element;

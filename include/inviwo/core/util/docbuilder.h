@@ -48,6 +48,8 @@ namespace help {
 struct IVW_CORE_API HelpInport {
     std::string classIdentifier;
     std::string displayName;
+    glm::uvec3 colorCode;
+    DataInfo data;
     Document help;
 
     void serialize(Serializer& s) const;
@@ -57,6 +59,8 @@ struct IVW_CORE_API HelpInport {
 struct IVW_CORE_API HelpOutport {
     std::string classIdentifier;
     std::string displayName;
+    glm::uvec3 colorCode;
+    DataInfo data;
     Document help;
 
     void serialize(Serializer& s) const;

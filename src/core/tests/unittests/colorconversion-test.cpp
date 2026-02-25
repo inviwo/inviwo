@@ -82,11 +82,11 @@ TEST(colorconversion, rgba2hexIdentity) {
 }
 
 TEST(colorconversion, rgb2hexIdentity) {
-    EXPECT_EQ("#aabbcc", rgb2hex(hex2rgba("#aabbcc")));
-    EXPECT_EQ("#0a0b0c", rgb2hex(hex2rgba("#0a0b0c")));
-    EXPECT_EQ("#c0b0a0", rgb2hex(hex2rgba("#c0b0a0")));
-    EXPECT_EQ("#000001", rgb2hex(hex2rgba("#000001")));
-    EXPECT_EQ("#100000", rgb2hex(hex2rgba("#100000")));
+    EXPECT_EQ("#aabbcc", rgb2hex(hex2rgb("#aabbcc")));
+    EXPECT_EQ("#0a0b0c", rgb2hex(hex2rgb("#0a0b0c")));
+    EXPECT_EQ("#c0b0a0", rgb2hex(hex2rgb("#c0b0a0")));
+    EXPECT_EQ("#000001", rgb2hex(hex2rgb("#000001")));
+    EXPECT_EQ("#100000", rgb2hex(hex2rgb("#100000")));
 }
 
 }  // namespace inviwo

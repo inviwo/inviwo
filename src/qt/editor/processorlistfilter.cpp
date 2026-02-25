@@ -35,6 +35,9 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <algorithm>
+#include <ranges>
+
+namespace inviwo {
 
 namespace {
 
@@ -42,7 +45,7 @@ constexpr auto strMatch = [](std::string_view cont, std::string_view s) {
     constexpr auto icomp = [](std::string_view::value_type l1, std::string_view::value_type r1) {
         return std::tolower(l1) == std::tolower(r1);
     };
-    return std::ranges::search(cont, s, icomp) != cont.end();
+    return !std::ranges::search(cont, s, icomp).empty();
 };
 
 constexpr auto matcher = [](auto mptr) {
@@ -79,7 +82,7 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
              .global = true,
              .match =
                  [](std::string_view str, const std::any&, const Item& item) {
-                     return std::ranges::any_of(item.info.tags.tags_, [&](const auto& tag) {
+                     return std::ranges::any_of(item.info.tags.tags_, [&](const Tag& tag) {
                          return strMatch(tag.getString(), str);
                      });
                  }},
@@ -119,7 +122,7 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
 
 bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const {
     auto index = sourceModel()->index(source_row, 0, source_parent);
-    if (auto* item = utilqt::getData(index, Role::Item).value<ProcessorListModel::Item*>()) {
+    if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
         if (!item->info.visible) return false;
         return dsl_.match(*item);
     } else {
@@ -164,8 +167,8 @@ void ProcessorListFilter::setGrouping(Grouping grouping) {
 std::any ProcessorListFilter::currentData(std::string_view name) { return dsl_.currentData(name); }
 
 bool ProcessorListFilter::lessThan(const QModelIndex& left, const QModelIndex& right) const {
-    const auto* a = utilqt::getData(left, Role::Item).value<ProcessorListModel::Item*>();
-    const auto* b = utilqt::getData(right, Role::Item).value<ProcessorListModel::Item*>();
+    const auto* a = utilqt::getData(left, Role::Item).value<const Item*>();
+    const auto* b = utilqt::getData(right, Role::Item).value<const Item*>();
 
     if (!a || !b) {
         const auto na = utilqt::getData(left, Role::Sort);
@@ -207,6 +210,10 @@ bool ProcessorListFilter::lessThan(const QModelIndex& left, const QModelIndex& r
             } else {
                 return iCaseLess(a->info.displayName, b->info.displayName);
             }
+        case Inports:
+            [[fallthrough]];
+        case Outports:
+            [[fallthrough]];
         default:
             return iCaseLess(a->info.displayName, b->info.displayName);
     }

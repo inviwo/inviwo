@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/docbuilder.h>
+#include <inviwo/core/util/colorconversion.h>
+
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -37,22 +39,46 @@ namespace help {
 void HelpInport::serialize(Serializer& s) const {
     s.serialize("classIdentifier", classIdentifier, SerializationTarget::Attribute);
     s.serialize("displayName", displayName, SerializationTarget::Attribute);
+    s.serialize("color", color::rgb2hex(colorCode), SerializationTarget::Attribute);
+    s.serialize("dataCid", data.cid, SerializationTarget::Attribute);
+    s.serialize("dataName", data.name, SerializationTarget::Attribute);
+    s.serialize("dataColor", color::rgb2hex(data.color), SerializationTarget::Attribute);
     s.serialize("help", help);
 }
 void HelpInport::deserialize(Deserializer& d) {
     d.deserialize("classIdentifier", classIdentifier, SerializationTarget::Attribute);
     d.deserialize("displayName", displayName, SerializationTarget::Attribute);
+    colorCode = d.attribute("color")
+                    .transform([](std::string_view s) { return color::hex2urgb(s); })
+                    .value_or(uvec3{0});
+    d.deserialize("dataCid", data.cid, SerializationTarget::Attribute);
+    d.deserialize("dataName", data.name, SerializationTarget::Attribute);
+    data.color = d.attribute("dataColor")
+                     .transform([](std::string_view s) { return color::hex2urgb(s); })
+                     .value_or(uvec3{0});
     d.deserialize("help", help);
 }
 
 void HelpOutport::serialize(Serializer& s) const {
     s.serialize("classIdentifier", classIdentifier, SerializationTarget::Attribute);
     s.serialize("displayName", displayName, SerializationTarget::Attribute);
+    s.serialize("color", color::rgb2hex(colorCode), SerializationTarget::Attribute);
+    s.serialize("dataCid", data.cid, SerializationTarget::Attribute);
+    s.serialize("dataName", data.name, SerializationTarget::Attribute);
+    s.serialize("dataColor", color::rgb2hex(data.color), SerializationTarget::Attribute);
     s.serialize("help", help);
 }
 void HelpOutport::deserialize(Deserializer& d) {
     d.deserialize("classIdentifier", classIdentifier, SerializationTarget::Attribute);
     d.deserialize("displayName", displayName, SerializationTarget::Attribute);
+    colorCode = d.attribute("color")
+                    .transform([](std::string_view s) { return uvec3{color::hex2urgba(s)}; })
+                    .value_or(uvec3{0});
+    d.deserialize("dataCid", data.cid, SerializationTarget::Attribute);
+    d.deserialize("dataName", data.name, SerializationTarget::Attribute);
+    data.color = d.attribute("dataColor")
+                     .transform([](std::string_view s) { return uvec3{color::hex2urgba(s)}; })
+                     .value_or(uvec3{0});
     d.deserialize("help", help);
 }
 
@@ -93,13 +119,15 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor) {
     std::vector<HelpInport> inports;
     for (auto inport : processor.getInports()) {
         inports.push_back(HelpInport{std::string{inport->getClassIdentifier()},
-                                     inport->getIdentifier(), inport->getHelp()});
+                                     inport->getIdentifier(), inport->getColorCode(),
+                                     inport->getDataInfo(), inport->getHelp()});
     }
 
     std::vector<HelpOutport> outports;
     for (auto outport : processor.getOutports()) {
         outports.push_back(HelpOutport{std::string{outport->getClassIdentifier()},
-                                       outport->getIdentifier(), outport->getHelp()});
+                                       outport->getIdentifier(), outport->getColorCode(),
+                                       outport->getDataInfo(), outport->getHelp()});
     }
 
     std::vector<HelpProperty> properties;

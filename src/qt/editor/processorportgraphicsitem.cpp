@@ -53,7 +53,7 @@ namespace inviwo {
 
 ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* parent,
                                                      const QPointF& pos, bool up, Port* port)
-    : EditorGraphicsItem(parent), processor_(parent), size_(9.0f), lineWidth_(1.0f) {
+    : EditorGraphicsItem(parent), processor_(parent) {
 
     setRect(-(0.5f * size_ + lineWidth_), -(0.5f * size_ + lineWidth_), size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
@@ -125,7 +125,7 @@ void ProcessorInportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    QColor borderColor(40, 40, 40);
+    static constexpr QColor borderColor(40, 40, 40);
 
     uvec3 color = inport_->getColorCode();
 
@@ -186,7 +186,7 @@ void ProcessorOutportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphics
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    QColor borderColor(40, 40, 40);
+    static constexpr QColor borderColor(40, 40, 40);
     uvec3 color = outport_->getColorCode();
 
     QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);

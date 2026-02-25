@@ -83,7 +83,7 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
     auto* node = indexToNode(index);
     switch (node->type) {
         case Node::Type::Root:
-            [[fall_through]];
+            [[fallthrough]];
         case Node::Type::Group:
             return Qt::NoItemFlags;
         case Node::Type::Item:
@@ -212,52 +212,95 @@ const QIcon* ProcessorListModel::getCodeStateIcon(CodeState state) const {
     }
 }
 
-std::pair<std::string, QVariant> ProcessorListModel::categoryAndSort(const Item& item,
-                                                                     Grouping grouping) {
+void ProcessorListModel::categoryAndSort(Grouping grouping, Item& item,
+                                         StringMap<std::unordered_set<Item*>>& groups,
+                                         StringMap<QVariant>& groupToSort) {
+
+    auto add = [&](auto&& group, auto&& sort) {
+        groups[group].insert(&item);
+        groupToSort[group] = sort;
+    };
+
     switch (grouping) {
         using enum Grouping;
         case Alphabetical:
-            return {item.info.displayName.substr(0, 1), item.info.displayName.front()};
+            add(item.info.displayName.substr(0, 1), item.info.displayName.front());
+            return;
         case Categorical:
-            return {item.info.category, utilqt::toQString(item.info.category)};
+            add(item.info.category, utilqt::toQString(item.info.category));
+            return;
         case CodeState:
-            return {toString(item.info.codeState), static_cast<int>(item.info.codeState)};
+            add(fmt::to_string(item.info.codeState), static_cast<int>(item.info.codeState));
+            return;
         case Module:
-            return {item.moduleId, utilqt::toQString(item.moduleId)};
+            add(item.moduleId, utilqt::toQString(item.moduleId));
+            return;
         case LastUsed: {
             if (item.lastUsed == 0) {
-                return {"Never", std::numeric_limits<int>::max()};
+                add("Never", std::numeric_limits<int>::max());
+                return;
             }
             const auto now = std::chrono::system_clock::now();
             const auto midnight = std::chrono::floor<std::chrono::days>(now);
             const auto use = std::chrono::system_clock::from_time_t(item.lastUsed);
 
             if (use > midnight) {
-                return {"Today", 24};
+                add("Today", 24);
+                return;
             } else if (use > midnight - std::chrono::days{1}) {
-                return {"Yesterday", 48};
+                add("Yesterday", 48);
+                return;
             } else if (use > midnight - std::chrono::weeks{1}) {
-                return {"This Week", 7 * 24};
+                add("This Week", 7 * 24);
+                return;
             } else if (use > midnight - std::chrono::months{1}) {
-                return {"This Month", 30 * 24};
+                add("This Month", 30 * 24);
+                return;
             } else if (use > midnight - std::chrono::years{1}) {
-                return {"This Year", 30 * 24};
+                add("This Year", 30 * 24);
+                return;
             } else {
-                return {"Older", 100 * 24};
+                add("Older", 100 * 24);
+                return;
             }
         }
         case MostUsed: {
             if (item.useCount == 0) {
-                return {"Never", 0};
+                add("Never", 0);
+                return;
             } else if (item.useCount < 10) {
-                return {"One or More times", -1};
+                add("One or More times", -1);
+                return;
             } else {
                 const auto tens = static_cast<int>(item.useCount / 10);
-                return {fmt::format("More than {} times", tens * 10), -(tens + 1)};
+                add(fmt::format("More than {} times", tens * 10), -(tens + 1));
+            };
+            return;
+        }
+
+        case Inports: {
+            if (item.help.inports.empty()) {
+                add("Source", QString{"Source"});
+                return;
             }
+            for (auto&& port : item.help.inports) {
+                add(port.data.name, utilqt::toQString(port.data.name));
+            }
+            return;
+        }
+        case Outports: {
+            if (item.help.inports.empty()) {
+                add("Sink", QString{"Sink"});
+                return;
+            }
+            for (auto&& port : item.help.outports) {
+                add(port.data.name, utilqt::toQString(port.data.name));
+            }
+            return;
         }
         default:
-            return {"Unknown", QVariant()};
+            add("Unknown", QVariant());
+            return;
     }
 }
 
@@ -265,12 +308,11 @@ void ProcessorListModel::build() {
     root_ = std::make_unique<Node>();
     itemToNode_.clear();
 
-    StringMap<std::vector<Item*>> groups;
+    StringMap<std::unordered_set<Item*>> groups;
     StringMap<QVariant> groupToSort;
+
     for (auto& item : items_) {
-        auto [group, sort] = categoryAndSort(item, grouping_);
-        groups[group].push_back(&item);
-        groupToSort[group] = sort;
+        categoryAndSort(grouping_, item, groups, groupToSort);
     }
 
     for (const auto& [group, items] : groups) {

@@ -57,14 +57,15 @@ public:
         friend Document;
         friend DocumentHandle;
 
+        Element();
+        Element(ElementType type, std::string_view content);
+        Element(std::string_view name, std::string_view content = "",
+                const UnorderedStringMap<std::string>& attributes = {});
+
         Element(const Element&);
         Element& operator=(const Element&);
         Element(Element&&) noexcept = default;
         Element& operator=(Element&&) = default;
-
-        Element(ElementType type, std::string_view content);
-        Element(std::string_view name, std::string_view content = "",
-                const UnorderedStringMap<std::string>& attributes = {});
 
         const std::string& name() const;
         std::string& name();
@@ -97,8 +98,11 @@ public:
         std::vector<std::unique_ptr<Element>> children_;
         std::string data_;
         UnorderedStringMap<std::string> attributes_;
-        static const std::vector<std::string> emptyTags_;
-        static const std::vector<std::string> noIndentTags_;
+
+        static constexpr auto emptyTags_ = std::to_array<std::string_view>(
+            {"area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta",
+             "param", "source", "track", "wbr"});
+        static constexpr auto noIndentTags_ = std::to_array<std::string_view>({"pre"});
     };
 
     using ElemVec = std::vector<std::unique_ptr<Element>>;

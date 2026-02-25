@@ -112,6 +112,7 @@
 #include <fmt/chrono.h>
 
 #include <algorithm>
+#include <memory_resource>
 
 namespace inviwo {
 
@@ -225,7 +226,21 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
         return es;
     }()}
     , menuEventFilter_{new MenuKeyboardEventFilter(this)}
-    , docs_{std::make_shared<help::ProcessorDocs>()}
+    , docs_{[]() {
+        auto docs = std::make_shared<help::ProcessorDocs>();
+        const auto docsPath = filesystem::getPath(PathType::Settings) / "processor_docs.xml";
+        if (std::filesystem::is_regular_file(docsPath)) {
+            std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+            Deserializer d{docsPath, "ProcessorDocs", &mbr};
+            try {
+                d.deserialize("ProcessorDocs", docs->map);
+            } catch (const std::exception& e) {
+                log::error("Error deserializing processor docs: {}", e.what());
+                docs->map.clear();
+            }
+        }
+        return docs;
+    }()}
     , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
     , toolsMenu_{new ToolsMenu(this)}
     , consoleWidget_{[this]() {
@@ -1796,10 +1811,20 @@ void InviwoMainWindow::updateProcessorDocs() {
         [this](std::shared_ptr<help::ProcessorDocs> docs) {
             this->docs_ = std::move(docs);
             processorTreeWidget_->buildList();
+            const auto docsPath = filesystem::getPath(PathType::Settings) / "processor_docs.xml";
+            std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+            Serializer s(docsPath, "ProcessorDocs", 0, &mbr);
+            s.serialize("ProcessorDocs", this->docs_->map);
+            s.writeFile();
         },
         Qt::QueuedConnection);
 
-    app_->dispatchPool([l = loader]() { (*l)(); });
+    if (docs_->map.empty()) {
+        app_->dispatchPool([l = loader]() { (*l)(); });
+    } else {
+        QTimer::singleShot(std::chrono::minutes{5}, Qt::VeryCoarseTimer, this,
+                           [this, loader]() { app_->dispatchPool([l = loader]() { (*l)(); }); });
+    }
 }
 
 }  // namespace inviwo
