@@ -149,6 +149,7 @@ VolumeRaycaster::VolumeRaycaster()
             if (channels == channel_.size()) return;
 
             std::vector<OptionPropertyIntOption> channelOptions;
+            channelOptions.reserve(channels);
             for (size_t i = 0; i < channels; i++) {
                 channelOptions.emplace_back(fmt::format("Channel {}", i + 1),
                                             fmt::format("Channel {}", i + 1), static_cast<int>(i));

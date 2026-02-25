@@ -125,7 +125,7 @@ class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
 public:
     LogTableModel();
 
-    enum class Role { Level = Qt::UserRole + 100 };
+    enum class Role : std::uint16_t { Level = Qt::UserRole + 100 };
 
     QString getName(LogTableModelEntry::ColumnID ind) const;
 
@@ -203,9 +203,24 @@ private:
     LevelFilter* levelFilter_;
     TextSelectionDelegate* textSelectionDelegate_;
 
-    std::array<Level, 3> levels = {{{LogLevel::Error, "Errors", "error", 0, nullptr, nullptr},
-                                    {LogLevel::Warn, "Warnings", "warning", 0, nullptr, nullptr},
-                                    {LogLevel::Info, "Info", "info", 0, nullptr, nullptr}}};
+    std::array<Level, 3> levels = {{{.level = LogLevel::Error,
+                                     .name = "Errors",
+                                     .icon = "error",
+                                     .count = 0,
+                                     .action = nullptr,
+                                     .label = nullptr},
+                                    {.level = LogLevel::Warn,
+                                     .name = "Warnings",
+                                     .icon = "warning",
+                                     .count = 0,
+                                     .action = nullptr,
+                                     .label = nullptr},
+                                    {.level = LogLevel::Info,
+                                     .name = "Info",
+                                     .icon = "info",
+                                     .count = 0,
+                                     .action = nullptr,
+                                     .label = nullptr}}};
 
     QLabel* threadPoolInfo_;
     QLineEdit* filterPattern_;

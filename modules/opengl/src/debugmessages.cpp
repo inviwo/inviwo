@@ -82,7 +82,7 @@ static void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, 
                                     severity, type, source, id);
     if (const auto rc = RenderContext::getPtr()) {
         const auto context = rc->activeContext();
-        fmt::format_to(std::back_inserter(error), "Context: {} ({})]", rc->getContextName(context),
+        fmt::format_to(std::back_inserter(error), "Context: {} ({})", rc->getContextName(context),
                        context);
     }
     fmt::format_to(std::back_inserter(error), "]");

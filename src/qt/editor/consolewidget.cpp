@@ -111,7 +111,7 @@ struct BackgroundJobs : QLabel, ProcessorNetworkObserver {
 };
 
 struct LevelFilter : QSortFilterProxyModel {
-    LevelFilter(QObject* parent) : QSortFilterProxyModel(parent) {}
+    explicit LevelFilter(QObject* parent) : QSortFilterProxyModel(parent) {}
 
     virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override {
         const auto index = sourceModel()->index(source_row, 0, source_parent);

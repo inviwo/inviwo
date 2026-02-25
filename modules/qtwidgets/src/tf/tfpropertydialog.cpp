@@ -179,7 +179,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             &TFPropertyDialog::changeVerticalZoom);
 
     zoomVSlider_->setTooltipFormat([range = verticalSliderRange_](int /*handle*/, int val) {
-        return fmt::to_string(1.0f - static_cast<float>(val) / range);
+        return fmt::to_string(1.0f - static_cast<float>(val) / static_cast<float>(range));
     });
 
     zoomHSlider_ = new RangeSliderQt(Qt::Horizontal, this, true);
@@ -190,7 +190,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             &TFPropertyDialog::changeHorizontalZoom);
 
     zoomHSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
-        return toString(static_cast<float>(val) / range);
+        return fmt::to_string(static_cast<float>(val) / static_cast<float>(range));
     });
 
     // set up color wheel

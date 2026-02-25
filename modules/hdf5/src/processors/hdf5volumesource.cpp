@@ -379,7 +379,7 @@ HDF5ToVolume::DimSelections::DimSelections(const std::string& identifier,
 
     char last = 'Z';
     for (size_t i = 0; i < maxRank_; ++i) {
-        std::string ind = fmt::to_string(static_cast<char>(last - maxRank + i + 1));
+        const auto ind = fmt::to_string(static_cast<char>(last - maxRank + i + 1));
         selection_.push_back(std::make_unique<DimSelection>("dim" + ind, ind));
         addProperty(selection_[i].get(), false);
     }
