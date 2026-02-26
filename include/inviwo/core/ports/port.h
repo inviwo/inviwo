@@ -40,7 +40,7 @@ namespace inviwo {
 
 class Processor;
 class Document;
-class DataInfo;
+struct DataInfo;
 
 /**
  * @defgroup ports Ports
