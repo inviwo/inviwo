@@ -37,6 +37,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <array>
 
 namespace inviwo {
 
