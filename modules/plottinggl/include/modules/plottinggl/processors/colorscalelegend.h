@@ -44,6 +44,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
 #include <inviwo/core/properties/stringproperty.h>         // for StringProperty
 #include <inviwo/core/properties/buttongroupproperty.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>       // for Mesh
 #include <inviwo/core/util/glmvec.h>                        // for ivec2
 #include <modules/opengl/rendering/texturequadrenderer.h>   // for TextureQuadRenderer
@@ -54,6 +55,11 @@
 
 #include <tuple>   // for tuple
 #include <vector>  // for operator!=, vector, operator==
+
+namespace inviwo {
+class PickingEvent;
+class PropertyWidget;
+}  // namespace inviwo
 
 namespace inviwo::plot {
 
@@ -95,6 +101,8 @@ private:
 
     void updateTitle(std::shared_ptr<const Volume> volume);
 
+    void handlePicking(PickingEvent* p);
+
     ImageInport inport_;
     VolumeInport volumeInport_;
     ImageOutport outport_;
@@ -134,6 +142,9 @@ private:
     AxisRenderer axisRenderer_;
 
     Mesh isovalueMesh_;
+    PickingMapper picking_;
+
+    std::unique_ptr<PropertyWidget> tfPropertyWidget_;
 };
 
 }  // namespace inviwo::plot

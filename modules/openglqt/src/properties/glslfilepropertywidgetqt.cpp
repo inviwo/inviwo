@@ -34,7 +34,6 @@
 #include <inviwo/core/util/assertion.h>                         // for IVW_ASSERT
 #include <modules/openglqt/properties/glsleditordockwidget.h>   // for GLSLEditorDockWidget
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>  // for FilePropertyWidgetQt
-#include <modules/qtwidgets/properties/texteditorwidgetqt.h>    // for TextEditorDockWidget
 
 #include <memory>  // for make_unique, unique_ptr
 

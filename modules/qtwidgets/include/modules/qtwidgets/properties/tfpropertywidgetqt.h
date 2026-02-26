@@ -57,8 +57,8 @@ public:
     virtual ~TFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
-    virtual TFPropertyDialog* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
+    virtual TFPropertyDialog* getEditorWidget() override;
 
     virtual void setReadOnly(bool readonly) override;
 
@@ -68,9 +68,10 @@ protected:
     TransferFunctionProperty* tfProperty() const;
 
 private:
+    void initEditor();
     EditableLabelQt* label_ = nullptr;
     TFPushButton* btnOpenTF_ = nullptr;
-    mutable std::unique_ptr<TFPropertyDialog> transferFunctionDialog_ = nullptr;
+    std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
 };
 
 class IVW_MODULE_QTWIDGETS_API TFPushButton : public IvwPushButton {

@@ -65,11 +65,11 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     hLayout->addWidget(btnOpenTF_);
 
     setLayout(hLayout);
-    updateFromProperty();
+    IsoValuePropertyWidgetQt::updateFromProperty();
 
     connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
         if (!tfDialog_) {
-            tfDialog_ = std::make_unique<TFPropertyDialog>(isoProperty());
+            initEditor();
             tfDialog_->setVisible(true);
         } else {
             tfDialog_->setVisible(!tfDialog_->isVisible());
@@ -85,9 +85,18 @@ IsoValueProperty* IsoValuePropertyWidgetQt::isoProperty() const {
     return static_cast<IsoValueProperty*>(property_);
 }
 
-TFPropertyDialog* IsoValuePropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
+bool IsoValuePropertyWidgetQt::hasEditorWidget() const { return true; }
 
-bool IsoValuePropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
+TFPropertyDialog* IsoValuePropertyWidgetQt::getEditorWidget() {
+    if (!tfDialog_) {
+        initEditor();
+    }
+    return tfDialog_.get();
+}
+
+void IsoValuePropertyWidgetQt::initEditor() {
+    tfDialog_ = std::make_unique<TFPropertyDialog>(isoProperty());
+}
 
 void IsoValuePropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
@@ -127,4 +136,5 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
 
     return menu;
 }
+
 }  // namespace inviwo

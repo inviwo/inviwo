@@ -50,13 +50,13 @@ class StringProperty;
  */
 class IVW_MODULE_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    StringPropertyWidgetQt(StringProperty* property);
+    explicit StringPropertyWidgetQt(StringProperty* property);
 
     virtual void updateFromProperty() override;
     void setPropertyValue();
 
-    virtual PropertyEditorWidget* getEditorWidget() const override;
     virtual bool hasEditorWidget() const override;
+    virtual PropertyEditorWidget* getEditorWidget() override;
 
 protected:
     virtual void initEditor();

@@ -41,7 +41,7 @@ class FileProperty;
  */
 class IVW_MODULE_OPENGLQT_API GLSLFilePropertyWidgetQt : public FilePropertyWidgetQt {
 public:
-    GLSLFilePropertyWidgetQt(FileProperty* property);
+    explicit GLSLFilePropertyWidgetQt(FileProperty* property);
     virtual ~GLSLFilePropertyWidgetQt();
 
 protected:

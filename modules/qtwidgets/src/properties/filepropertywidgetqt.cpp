@@ -201,9 +201,14 @@ bool FilePropertyWidgetQt::requestFile() {
     return !property_->get().empty();
 }
 
-PropertyEditorWidget* FilePropertyWidgetQt::getEditorWidget() const { return editor_.get(); }
+bool FilePropertyWidgetQt::hasEditorWidget() const { return true; }
 
-bool FilePropertyWidgetQt::hasEditorWidget() const { return editor_ != nullptr; }
+PropertyEditorWidget* FilePropertyWidgetQt::getEditorWidget() {
+    if (!editor_) {
+        initEditor();
+    }
+    return editor_.get();
+}
 
 void FilePropertyWidgetQt::updateFromProperty() {
     lineEdit_->setPath(property_->get());

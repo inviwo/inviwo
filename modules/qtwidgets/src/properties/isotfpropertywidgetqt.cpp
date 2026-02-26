@@ -68,11 +68,11 @@ IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
     hLayout->addWidget(btnOpenTF_);
 
     setLayout(hLayout);
-    updateFromProperty();
+    IsoTFPropertyWidgetQt::updateFromProperty();
 
     connect(btnOpenTF_, &IvwPushButton::clicked, [this, property]() {
         if (!tfDialog_) {
-            tfDialog_ = std::make_unique<TFPropertyDialog>(property);
+            initEditor();
             tfDialog_->setVisible(true);
         } else {
             tfDialog_->setVisible(!tfDialog_->isVisible());
@@ -94,9 +94,18 @@ IsoTFProperty* IsoTFPropertyWidgetQt::isoTfProperty() const {
 
 void IsoTFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-TFPropertyDialog* IsoTFPropertyWidgetQt::getEditorWidget() const { return tfDialog_.get(); }
+bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return true; }
 
-bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
+TFPropertyDialog* IsoTFPropertyWidgetQt::getEditorWidget() {
+    if (!tfDialog_) {
+        initEditor();
+    }
+    return tfDialog_.get();
+}
+
+void IsoTFPropertyWidgetQt::initEditor() {
+    tfDialog_ = std::make_unique<TFPropertyDialog>(isoTfProperty());
+}
 
 void IsoTFPropertyWidgetQt::setReadOnly(bool readonly) {
     // We only want to modify the label. The TF preview button needs to be enabled at all times.

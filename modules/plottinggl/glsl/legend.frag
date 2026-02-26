@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 uniform sampler2D transferFunction;
 
@@ -51,6 +52,8 @@ uniform vec4 backgroundColor = vec4(0.0, 0.0, 0.0, 1.0);
 uniform vec4 color = vec4(0, 0, 0, 1);
 uniform int borderWidth = 1;
 uniform ivec4 viewport = ivec4(0, 128, 128, 128);
+
+uniform int pickingId = 0;
 
 uniform RangeConversionMap tfRange = RangeConversionMap(0.0, 1.0, 0.0);
 
@@ -122,4 +125,5 @@ void main() {
     // set border flag if the fragment coord is within the border
     bool border = borderWidth > 0 && any(greaterThan(abs(centeredPos), outputDim * 0.5));
     FragData0 =  mix(finalColor, color, bvec4(border));
+    PickingData = vec4(pickingIndexToColor(pickingId), pickingId > 0? 1.0 : 0.0);
 }

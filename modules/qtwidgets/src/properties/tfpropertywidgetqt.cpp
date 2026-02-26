@@ -70,11 +70,11 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     hLayout->addWidget(label_);
 
     connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
-        if (!transferFunctionDialog_) {
-            transferFunctionDialog_ = std::make_unique<TFPropertyDialog>(tfProperty());
-            transferFunctionDialog_->setVisible(true);
+        if (!tfDialog_) {
+            initEditor();
+            tfDialog_->setVisible(true);
         } else {
-            transferFunctionDialog_->setVisible(!transferFunctionDialog_->isVisible());
+            tfDialog_->setVisible(!tfDialog_->isVisible());
         }
     });
 
@@ -93,7 +93,7 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
     }
 
     setLayout(hLayout);
-    updateFromProperty();
+    TFPropertyWidgetQt::updateFromProperty();
 
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
@@ -101,7 +101,7 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
 }
 
 TFPropertyWidgetQt::~TFPropertyWidgetQt() {
-    if (transferFunctionDialog_) transferFunctionDialog_->hide();
+    if (tfDialog_) tfDialog_->hide();
 }
 
 TransferFunctionProperty* TFPropertyWidgetQt::tfProperty() const {
@@ -110,11 +110,18 @@ TransferFunctionProperty* TFPropertyWidgetQt::tfProperty() const {
 
 void TFPropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProperty(); }
 
-TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() const {
-    return transferFunctionDialog_.get();
+bool TFPropertyWidgetQt::hasEditorWidget() const { return true; }
+
+TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() {
+    if (!tfDialog_) {
+        initEditor();
+    }
+    return tfDialog_.get();
 }
 
-bool TFPropertyWidgetQt::hasEditorWidget() const { return transferFunctionDialog_ != nullptr; }
+void TFPropertyWidgetQt::initEditor() {
+    tfDialog_ = std::make_unique<TFPropertyDialog>(tfProperty());
+}
 
 void TFPropertyWidgetQt::setReadOnly(bool readonly) {
     // We only want to modify the label. The TF preview button needs to be enabled at all times.

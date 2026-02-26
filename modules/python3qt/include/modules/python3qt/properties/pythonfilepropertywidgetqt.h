@@ -41,7 +41,7 @@ class FileProperty;
  */
 class IVW_MODULE_PYTHON3QT_API PythonFilePropertyWidgetQt : public FilePropertyWidgetQt {
 public:
-    PythonFilePropertyWidgetQt(FileProperty* property);
+    explicit PythonFilePropertyWidgetQt(FileProperty* property);
     virtual ~PythonFilePropertyWidgetQt();
 
 protected:
