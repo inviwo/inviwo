@@ -173,7 +173,7 @@ bool ProcessorListFilter::lessThan(const QModelIndex& left, const QModelIndex& r
     if (!a || !b) {
         const auto na = utilqt::getData(left, Role::Sort);
         const auto nb = utilqt::getData(right, Role::Sort);
-        return QVariant::compare(na, nb) < 0;
+        return QVariant::compare(na, nb) < 0;  // NOLINT(modernize-use-nullptr]
     }
 
     switch (grouping_) {

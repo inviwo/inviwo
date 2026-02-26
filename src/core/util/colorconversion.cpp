@@ -81,11 +81,11 @@ uvec4 hex2urgba(std::string_view str) {
     return result;
 }
 
-uvec3 hex2urgb(std::string_view str) { return uvec3(hex2urgba(str)); }
+uvec3 hex2urgb(std::string_view str) { return {hex2urgba(str)}; }
 
-vec4 hex2rgba(std::string_view str) { return vec4(hex2urgba(str)) / 255.0f; }
+vec4 hex2rgba(std::string_view str) { return vec4{hex2urgba(str)} / 255.0f; }
 
-vec3 hex2rgb(std::string_view str) { return vec3(hex2urgb(str)) / 255.0f; }
+vec3 hex2rgb(std::string_view str) { return vec3{hex2urgb(str)} / 255.0f; }
 
 std::string rgba2hex(const vec4& rgba) {
     glm::u8vec4 color(rgba * 255.0f);
