@@ -420,7 +420,7 @@ std::string toLocalizedString(T value) {
     std::ostringstream stream;
     stream.imbue(utilqt::getCurrentStdLocale());
     stream << value;
-    return stream.str();
+    return std::move(stream).str();
 }
 
 template <class T>

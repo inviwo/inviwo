@@ -42,44 +42,22 @@ namespace inviwo {
 
 namespace util {
 
-namespace detail {
-
-template <size_t N>
-struct PrintEventHelper;
-
-template <>
-struct PrintEventHelper<1> {
-    template <typename Arg>
-    static void print(std::ostream& os, Arg&& item) {
-        fmt::print(os, "{}", std::get<0>(item));
-    }
-};
-template <>
-struct PrintEventHelper<2> {
-    template <typename Arg>
-    static void print(std::ostream& os, Arg&& item) {
-        fmt::print(os, "{}: {:} ", std::get<0>(item), std::get<1>(item));
-    }
-};
-template <>
-struct PrintEventHelper<3> {
-    template <typename Arg>
-    static void print(std::ostream& os, Arg&& item) {
-        fmt::print(os, "{}: {:{}} ", std::get<0>(item), std::get<1>(item), std::get<2>(item));
-    }
-};
-
-}  // namespace detail
-
 template <typename... Args>
-void printEvent(std::ostream& os, const std::string& event, Args... args) {
-    fmt::print(os, "{:14} ", event);
-    util::for_each_argument(
-        [&os](auto&& item) {
-            detail::PrintEventHelper<std::tuple_size<
-                typename std::remove_reference<decltype(item)>::type>::value>::print(os, item);
-        },
-        args...);
+void printEvent(fmt::memory_buffer& buff, std::string_view event, const Args&... args) {
+    fmt::format_to(std::back_inserter(buff), "{:14} ", event);
+    (
+        [&]<typename T>(const T& arg) {
+            if constexpr (std::tuple_size_v<T> == 3) {
+                fmt::format_to(std::back_inserter(buff), "{}: {:{}} ", std::get<0>(arg),
+                               std::get<1>(arg), std::get<2>(arg));
+            } else if constexpr (std::tuple_size_v<T> == 2) {
+                fmt::format_to(std::back_inserter(buff), "{}: {:} ", std::get<0>(arg),
+                               std::get<1>(arg));
+            } else if constexpr (std::tuple_size_v<T> == 1) {
+                fmt::format_to(std::back_inserter(buff), "{}", std::get<0>(arg));
+            }
+        }(args),
+        ...);
 }
 
 }  // namespace util

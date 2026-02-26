@@ -104,7 +104,7 @@ void BufferCLGL::upload(const void* data, size_t sizeInBytes) {
         OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, sizeInBytes,
                                                         const_cast<void*>(data));
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
         throw err;
     }
 }
@@ -117,7 +117,7 @@ void BufferCLGL::download(void* data) const {
         OpenCL::getPtr()->getQueue().enqueueReadBuffer(*clBuffer_, true, 0,
                                                        getSize() * getSizeOfElement(), data);
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
         throw err;
     }
 }

@@ -39,14 +39,15 @@
 #include <inviwo/core/util/filesystem.h>
 #include <iostream>
 #include <sstream>
-#include <stdio.h>
 #include <fstream>
 #if !(WIN32 || __APPLE__)  // LINUX
 #include <GL/glx.h>        // glXCurrentContext()
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+
+#include <fmt/std.h>
 
 namespace cl {}
 
@@ -62,7 +63,7 @@ void OpenCL::initialize(bool glSharing) {
         cl::Platform::get(&platforms);
 
         if (platforms.size() == 0) {
-            throw OpenCLException("No OpenCL platforms found", IVW_CONTEXT);
+            throw OpenCLException(SourceContext{}, "No OpenCL platforms found");
         }
 
         cl::Platform platform;
@@ -146,9 +147,7 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
                     devices.emplace_back(d);
                 } catch (cl::Error& e) {
                     // Error getting device info, continue with other devices
-                    LogWarnCustom(
-                        "InviwoOpenCL",
-                        "Failed to get device info, skipping this device: (" << e.what() << ")");
+                    log::warn("Failed to get device info, skipping this device: ({})", e.what());
                 }
             }
 
@@ -185,7 +184,7 @@ void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::P
         // Houston, we have a problem
         if (status == CL_BUILD_ERROR) {
             std::string buildLog = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[i]);
-            LogErrorCustom("OpenCL", filename << " build error:" << std::endl << buildLog);
+            log::error("{} build error:\n{}", filename, buildLog);
         }
     }
 }
@@ -313,8 +312,9 @@ cl::Program OpenCL::buildProgram(const std::filesystem::path& fileName, const st
         std::string buildLog = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
 
         // Output log if it contains any info
-        if (buildLog.size() > 1)
-            LogInfoCustom("OpenCL", fileName << " build info:" << std::endl << buildLog);
+        if (buildLog.size() > 1) {
+            log::error("{} build error:\n{}", fileName, buildLog);
+        }
     } catch (cl::Error& e) {
         OpenCL::printBuildError(std::vector<cl::Device>(1, device), program, fileName);
         throw e;
@@ -375,7 +375,8 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
         if (glSharing) {
             properties = getGLSharingContextProperties();
             if (properties.empty()) {
-                LogWarn("Unable to find OpenGL context. Will create OpenCL without OpenGL sharing");
+                log::warn(
+                    "Unable to find OpenGL context. Will create OpenCL without OpenGL sharing");
             }
         }
 
@@ -387,20 +388,20 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             cl_int error = CL_SUCCESS;
             gpuContext_ = cl::Context(gpuDevice_, &properties[0], nullptr, nullptr, &error);
             if (error != CL_SUCCESS) {
-                throw OpenCLException("Error creating OpenCL context", IVW_CONTEXT);
+                throw OpenCLException(SourceContext{}, "Error creating OpenCL context");
             }
 
         } catch (cl::Error&) {
-            LogWarn("Unable to create OpenCL context. Trying to without OpenGL sharing");
+            log::warn("Unable to create OpenCL context. Trying to without OpenGL sharing");
             properties.clear();
             properties.insert(properties.end(), platformProperties.begin(),
                               platformProperties.end());
             cl_int error = CL_SUCCESS;
             gpuContext_ = cl::Context(gpuDevice_, &properties[0], nullptr, nullptr, &error);
             if (error != CL_SUCCESS) {
-                throw OpenCLException("Error creating OpenCL context", IVW_CONTEXT);
+                throw OpenCLException(SourceContext{}, "Error creating OpenCL context");
             }
-            LogInfo("Succeeded creating OpenCL without OpenGL sharing.");
+            log::info("Succeeded creating OpenCL without OpenGL sharing.");
         }
 
         cl_command_queue_properties queueProperties = 0;
@@ -425,18 +426,15 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             // Efficient cl/gl synchronization possible
         }
     } catch (cl::Error& err) {
-        LogError("Failed to set OpenCL device. " << err.what() << "(" << err.err() << "), "
-                                                 << errorCodeToString(err.err()) << std::endl);
+        log::error("Failed to set OpenCL device. {} ({}), {}", err.what(), err.err(),
+                   errorCodeToString(err.err()));
     }
 }
 
 void LogOpenCLError(cl_int err, const char* message) {
     if (err != CL_SUCCESS) {
-        std::ostringstream errorMessage;
-        errorMessage << "OpenCL Error " << err << ": " << errorCodeToString(err) << " "
-                     << getCLErrorResolveHint(err) << std::endl
-                     << message;
-        LogErrorCustom("OpenCL", errorMessage.str());
+        log::error("OpenCL Error {}: {} {}\n{}", err, errorCodeToString(err),
+                   getCLErrorResolveHint(err), message);
     }
 }
 

@@ -29,8 +29,4 @@
 
 #include <modules/opencl/openclformatexception.h>
 
-namespace inviwo {
-
-OpenCLFormatException::OpenCLFormatException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

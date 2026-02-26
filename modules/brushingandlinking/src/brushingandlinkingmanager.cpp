@@ -431,12 +431,12 @@ void BrushingAndLinkingManager::serialize(Serializer& s) const {
         if (auto bitset = std::get_if<BitSetTargets>(&targetmap)) {
             if (bitset->empty()) continue;
 
-            s.serialize(toString(action), *bitset, "selection", {},
+            s.serialize(fmt::to_string(action), *bitset, "selection", {},
                         [](BrushingTarget t) { return t.getString(); }, {});
         } else if (auto indexlist = std::get_if<IndexListTargets>(&targetmap)) {
             if (indexlist->empty()) continue;
 
-            s.serialize(toString(action), *indexlist, "selection", {},
+            s.serialize(fmt::to_string(action), *indexlist, "selection", {},
                         [](BrushingTarget t) { return t.getString(); }, {});
         }
     }

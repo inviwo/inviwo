@@ -239,7 +239,7 @@ void Background::process() {
             for (size_t i = 1; i < numColorLayers; ++i) {
                 TextureUnit texUnit;
                 imageGL->getColorLayerGL(i)->bindTexture(texUnit.getEnum());
-                shader_.setUniform("color" + toString<size_t>(i), texUnit.getUnitNumber());
+                shader_.setUniform(fmt::format("color{}", i), texUnit.getUnitNumber());
                 textureUnits.push_back(std::move(texUnit));
             }
         }

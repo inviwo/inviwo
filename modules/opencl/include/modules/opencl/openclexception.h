@@ -42,8 +42,7 @@ namespace inviwo {
  */
 class IVW_MODULE_OPENCL_API OpenCLException : public Exception {
 public:
-    OpenCLException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~OpenCLException() throw(){};
+    using Exception::Exception;
 };
 
 }  // namespace inviwo

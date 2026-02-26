@@ -70,7 +70,7 @@ std::shared_ptr<LayerRAM> LayerCL2RAMConverter::createFrom(
         // glm::size3_t(dimensions,
         // 1), 0, 0, layerRAM->getData());
     } else {
-        LogError("Invalid conversion or not implemented");
+        log::error("Invalid conversion or not implemented");
     }
 
     return destination;

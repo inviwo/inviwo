@@ -110,13 +110,13 @@ bool NetWorkCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
             return true;
         }
     } catch (json::exception& ex) {
-        LogError(ex.what());
+        log::exception(ex);
         reponse->Failure(0, ex.what());
     } catch (inviwo::Exception& ex) {
-        util::log(ex.getContext(), ex.getMessage(), LogLevel::Error);
+        log::exception(ex);
         reponse->Failure(0, ex.what());
     } catch (std::exception& ex) {
-        LogError(ex.what());
+        log::exception(ex);
         reponse->Failure(0, ex.what());
     }
     return true;
@@ -352,7 +352,7 @@ bool NetWorkCefSynchronizer::propertySubscribe(const json& j, CefRefPtr<CefBrows
         }
     } else {
         auto msg = fmt::format("Could not find property: {}", path);
-        LogWarn(msg);
+        log::report(LogLevel::Warn, msg);
         callback->Failure(0, msg);
     }
     return true;
@@ -365,7 +365,7 @@ bool NetWorkCefSynchronizer::propertyAction(const json& j, CefRefPtr<CefBrowser>
     const auto path = j.at("path").get<std::string_view>();
     auto* prop = findProperty(path);
     if (!prop) {
-        throw Exception(fmt::format("Could not find property: {}", path), IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Could not find property: {}", path);
     }
     // Use synchronized widget if it exists
     // to avoid recursive loop when setting the property

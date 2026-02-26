@@ -237,7 +237,7 @@ void StreamLinesDeprecated::process() {
 
     mesh->addVertices(vertices);
 
-    maxVelocity_.set(toString(maxVelocity));
+    maxVelocity_.set(fmt::to_string(maxVelocity));
 
     linesStripsMesh_.setData(mesh);
 

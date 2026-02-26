@@ -31,7 +31,6 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
 
-#include <sstream>
 #include <iostream>
 #include <iomanip>
 #include <chrono>
@@ -104,10 +103,10 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
             case LogLevel::Info:
                 break;
             case LogLevel::Warn:
-                os << yellow;
+                fmt::print(os, yellow);
                 break;
             case LogLevel::Error:
-                os << red;
+                fmt::print(os, red);
                 break;
             default:
                 break;
@@ -161,10 +160,10 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
             case LogLevel::Info:
                 break;
             case LogLevel::Warn:
-                os << reset;
+                fmt::print(os, reset);
                 break;
             case LogLevel::Error:
-                os << reset;
+                fmt::print(os, reset);
                 break;
             default:
                 break;

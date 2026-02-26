@@ -82,7 +82,6 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
 
     using Mat = glm::mat<Cols, Rows, T>;
 
-
     static_assert(std::is_standard_layout_v<Mat>, "has to be standard_layout");
     static_assert(std::is_trivially_copyable_v<Mat>, "has to be trivially_copyable");
     static_assert(pybind11::detail::is_pod_struct<Mat>::value, "has to be pod");
@@ -178,24 +177,7 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
                 return pybind11::array_t<T>(std::vector<size_t>{Rows, Cols}, glm::value_ptr(self));
             })
 
-        .def("__repr__",
-             [](Mat& m) {
-                 std::ostringstream oss;
-                 // oss << m; This fails for some reason on GCC 5.4
-
-                 oss << "[";
-                 for (int col = 0; col < Cols; col++) {
-                     oss << "[";
-                     for (int row = 0; row < Rows; row++) {
-                         if (row != 0) oss << " ";
-                         oss << m[col][row];
-                     }
-                     oss << "]";
-                 }
-                 oss << "]";
-
-                 return oss.str();
-             })
+        .def("__repr__", [](Mat& m) { return fmt::to_string(m); })
         .def_buffer([](Mat& mat) -> pybind11::buffer_info {
             return pybind11::buffer_info(
                 glm::value_ptr(mat),                      /* Pointer to buffer */

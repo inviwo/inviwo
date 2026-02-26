@@ -76,7 +76,7 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
     }
-    LogWarn(
+    log::warn(
         "This processor does not compute depth values. It act as an example on how to use OpenCL. "
         "Use OpenGL based Entry Exit Points processor, in module BaseGL, instead.");
 }
@@ -86,7 +86,7 @@ void EntryExitPointsCLProcessor::process() {
     if (!mesh) return;
 
     if (mesh->getNumberOfIndices() == 0) {
-        LogInfo("Unable to compute entry exit points for a mesh without indices");
+        log::info("Unable to compute entry exit points for a mesh without indices");
         return;
     }
     // Computes entry exit points in texture coordinates

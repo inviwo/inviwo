@@ -45,8 +45,8 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
-#include <sstream>
 #include <utility>
+#include <fmt/base.h>
 
 namespace inviwo {
 
@@ -159,9 +159,7 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def_readwrite("color", &TFPrimitiveData::color)
         .def("__repr__",
              [](const TFPrimitiveData& p) {
-                 std::ostringstream oss;
-                 oss << "TFPrimitiveData: [" << p.pos << ", " << color::rgba2hex(p.color) << "]";
-                 return oss.str();
+                 return fmt::format("TFPrimitiveData: [{}, {}]", p.pos, color::rgba2hex(p.color));
              })
         /// Comparisons
         .def(py::self == py::self)
@@ -188,10 +186,8 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
              [](TFPrimitive& ps, const dvec2& pos) { ps.setPositionAlpha(pos); })
         .def("__repr__",
              [](const TFPrimitive& ps) {
-                 std::ostringstream oss;
-                 oss << "<TFPrimitive: " << ps.getPosition() << ", "
-                     << color::rgba2hex(ps.getColor()) << ">";
-                 return oss.str();
+                 return fmt::format("<TFPrimitive: {}, {}>", ps.getPosition(),
+                                    color::rgba2hex(ps.getColor()));
              })
         /// Comparisons
         .def(py::self == py::self)
@@ -245,13 +241,14 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
 
         .def("remove", [](TFPrimitiveSet& ps, TFPrimitive& primitive) { ps.remove(primitive); })
         .def("__repr__", [](const TFPrimitiveSet& ps) {
-            std::ostringstream oss;
-            oss << "<TFPrimitiveSet:  " << ps.size() << " primitives";
+            std::string str;
+            fmt::format_to(std::back_inserter(str), "<TFPrimitiveSet: {} primitives", ps.size());
             for (const auto& p : ps) {
-                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
+                fmt::format_to(std::back_inserter(str), "\n    {}, {}", p.getPosition(),
+                               color::rgba2hex(p.getColor()));
             }
-            oss << ">";
-            return oss.str();
+            fmt::format_to(std::back_inserter(str), ">");
+            return str;
         });
 
     py::classh<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
@@ -281,13 +278,14 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def_static("save", &TransferFunction::save)
         .def_static("load", &TransferFunction::load)
         .def("__repr__", [](const TransferFunction& tf) {
-            std::ostringstream oss;
-            oss << "<TransferFunction:  " << tf.size() << " points";
+            std::string str;
+            fmt::format_to(std::back_inserter(str), "<TransferFunction: {} points", tf.size());
             for (const auto& p : tf) {
-                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
+                fmt::format_to(std::back_inserter(str), "\n    {}, {}", p.getPosition(),
+                               color::rgba2hex(p.getColor()));
             }
-            oss << ">";
-            return oss.str();
+            fmt::format_to(std::back_inserter(str), ">");
+            return str;
         });
 
     py::classh<IsoValueCollection, TFPrimitiveSet>(m, "IsoValueCollection")
@@ -305,13 +303,15 @@ void exposeTFPrimitiveSet(pybind11::module& m) {
         .def_static("save", &IsoValueCollection::save)
         .def_static("load", &IsoValueCollection::load)
         .def("__repr__", [](const IsoValueCollection& ivc) {
-            std::ostringstream oss;
-            oss << "<IsoValueCollection:  " << ivc.size() << " isovalues";
+            std::string str;
+            fmt::format_to(std::back_inserter(str), "<IsoValueCollection: {} isovalues",
+                           ivc.size());
             for (const auto& p : ivc) {
-                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
+                fmt::format_to(std::back_inserter(str), "\n    {}, {}", p.getPosition(),
+                               color::rgba2hex(p.getColor()));
             }
-            oss << ">";
-            return oss.str();
+            fmt::format_to(std::back_inserter(str), ">");
+            return str;
         });
 }
 

@@ -169,7 +169,7 @@ void TMIP::initShader(Shader& s, int samplers) {
     uniforms << "uniform VolumeParameters volumeParameters;";
 
     for (int i = 0; i < samplers; i++) {
-        std::string id = (i == 0) ? "" : toString(i);
+        const std::string id = (i == 0) ? "" : fmt::to_string(i);
         uniforms << "uniform sampler3D volume" << id << ";";
         sampling << "vec4 sample" << i << " = getVoxel(volume" << id
                  << ", volumeParameters, texCoord_.xyz);";
@@ -210,7 +210,7 @@ std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol,
     int i = 1;
     for (auto v = start; v != end; ++v) {
         if (i >= maxSamplers_) break;
-        std::string id = (i == 0) ? "" : toString(i);
+        const std::string id = (i == 0) ? "" : fmt::to_string(i);
         utilgl::bindAndSetUniforms(s, cont, *(v->get()), "volume" + id);
         i++;
     }

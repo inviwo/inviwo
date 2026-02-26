@@ -248,9 +248,9 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
 
                     if constexpr (std::is_same_v<Comp, unsigned char> ||
                                   std::is_same_v<Comp, char>) {
-                        pixelStrValues_[i].set(toString(ivec4{v}));
+                        pixelStrValues_[i].set(fmt::to_string(ivec4{v}));
                     } else {
-                        pixelStrValues_[i].set(toString(v));
+                        pixelStrValues_[i].set(fmt::to_string(v));
                     }
 
                     auto vf = util::glm_convert<glm::vec<4, float>>(v);

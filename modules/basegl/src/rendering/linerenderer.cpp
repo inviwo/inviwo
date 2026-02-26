@@ -79,7 +79,8 @@ std::vector<MeshShaderCache::Requirement> defaultRequirements(
                         : 0;
          },
          [](int mode, Shader& shader) {
-             shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
+             shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY",
+                                                           fmt::to_string(mode));
          }}};
 
     requirements.insert(requirements.end(), additional.begin(), additional.end());

@@ -43,6 +43,8 @@
 #include <type_traits>    // for __underlying_type_impl<>::type, under...
 #include <unordered_map>  // for unordered_map
 
+#include <fmt/base.h>
+
 namespace inviwo {
 
 namespace utilgl {
@@ -76,19 +78,15 @@ static void GLAPIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, 
     const auto type = debug::toType(etype);
     const auto severity = debug::toSeverity(eseverity);
 
-    std::stringstream ss;
-    ss << message << "\n";
-    ss << "[Severity: " << severity;
-    ss << ", Type: " << type;
-    ss << ", Source: " << source;
-    ss << ", Id: " << id;
+    std::string error = fmt::format("{}\n[Severity: {}. Type: {}, Source: {}, Id: {}", message,
+                                    severity, type, source, id);
     if (const auto rc = RenderContext::getPtr()) {
         const auto context = rc->activeContext();
-        ss << ", Context:  " << rc->getContextName(context) << " (" << context << ")";
+        fmt::format_to(std::back_inserter(error), "Context: {} ({})", rc->getContextName(context),
+                       context);
     }
-    ss << "]";
+    fmt::format_to(std::back_inserter(error), "]");
 
-    std::string error = ss.str();
     LogCentral::getPtr()->log("OpenGL Debug", toLogLevel(severity), LogAudience::Developer,
                               __FILE__, __FUNCTION__, __LINE__, error);
 

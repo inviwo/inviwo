@@ -31,16 +31,11 @@
 
 #include <png.h>
 
-#include <sstream>
+#include <fmt/format.h>
 
-namespace inviwo {
-
-namespace pngutil {
-std::string getLibPNGVesrion() {
-    std::ostringstream oss;
-    oss << PNG_LIBPNG_VER_MAJOR << "." << PNG_LIBPNG_VER_MINOR << "." << PNG_LIBPNG_VER_RELEASE;
-    return oss.str();
+namespace inviwo::pngutil {
+std::string getLibPNGVersion() {
+    return ::fmt::format("{}.{}.{}", PNG_LIBPNG_VER_MAJOR, PNG_LIBPNG_VER_MINOR,
+                         PNG_LIBPNG_VER_RELEASE);
 }
-
-}  // namespace pngutil
-}  // namespace inviwo
+}  // namespace inviwo::pngutil

@@ -66,8 +66,8 @@ void ResizeEvent::setPreviousSize(size2_t previousSize) { previousSize_ = previo
 
 uint64_t ResizeEvent::hash() const { return chash(); }
 
-void ResizeEvent::print(std::ostream& ss) const {
-    util::printEvent(ss, "ResizeEvent", std::make_pair("size", size_),
+void ResizeEvent::print(fmt::memory_buffer& buff) const {
+    util::printEvent(buff, "ResizeEvent", std::make_pair("size", size_),
                      std::make_pair("prev", previousSize_));
 }
 

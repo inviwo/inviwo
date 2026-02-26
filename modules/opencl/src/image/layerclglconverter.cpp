@@ -48,7 +48,7 @@ std::shared_ptr<LayerRAM> LayerCLGL2RAMConverter::createFrom(
         // queue.enqueueReadLayer(layerCL->getLayer(), true, glm::size3_t(0),
         // glm::size3_t(dimensions, 1), 0, 0, layerRAM->getData());
     } else {
-        LogError("Invalid conversion or not implemented");
+        log::error("Invalid conversion or not implemented");
     }
 
     return destination;

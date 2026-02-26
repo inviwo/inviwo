@@ -277,9 +277,9 @@ struct SGCTCallbacks {
             } catch (const inviwo::Exception& e) {
                 inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
             } catch (const std::exception& e) {
-                LogErrorCustom("main", e.what());
+                inviwo::log::exception(e);
             } catch (...) {
-                LogErrorCustom("main", "some unkown error");
+                inviwo::log::exception();
             }
         };
     }
@@ -293,10 +293,10 @@ struct SGCTCallbacks {
                 inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
                 return decltype(fun(std::forward<decltype(args)>(args)...)){};
             } catch (const std::exception& e) {
-                LogErrorCustom("main", e.what());
+                inviwo::log::exception(e);
                 return decltype(fun(std::forward<decltype(args)>(args)...)){};
             } catch (...) {
-                LogErrorCustom("main", "some unkown error");
+                inviwo::log::exception();
                 return decltype(fun(std::forward<decltype(args)>(args)...)){};
             }
         };
@@ -336,7 +336,7 @@ int main(int argc, char** argv) {
             });
 
         const inviwo::util::OnScopeExit closeEngine{[]() {
-            LogInfoCustom("Dome", "Stop Engine");
+            inviwo::log::info("Stop Engine");
             // Stop the engine after we clear the inviwo app.
             // The app will need the glfw context to be active to join
             // any background threads with a context.
@@ -366,7 +366,7 @@ int main(int argc, char** argv) {
         sgct::Engine::Callbacks callbacks;
         conf.configureSGCTCallbacks(callbacks);
 
-        LogInfoCustom("Dome", "Start Engine");
+        inviwo::log::info("Start Engine");
 
         sgct::Engine::create(cluster, callbacks, config);
         sgct::Engine::instance().exec();
@@ -375,10 +375,10 @@ int main(int argc, char** argv) {
         inviwo::util::log(e.getContext(), e.getMessage(), inviwo::LogLevel::Error);
         return EXIT_FAILURE;
     } catch (const std::exception& e) {
-        LogErrorCustom("main", e.what());
+        inviwo::log::exception(e);
         return EXIT_FAILURE;
     } catch (...) {
-        LogErrorCustom("main", "some other error");
+        inviwo::log::exception();
         return EXIT_FAILURE;
     }
 }

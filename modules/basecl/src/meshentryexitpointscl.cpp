@@ -102,7 +102,7 @@ void MeshEntryExitPointsCL::computeEntryExitPoints(
         OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
             *kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 }
 

@@ -49,8 +49,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
 
     switch (format) {
         case DataFormatId::NotSpecialized:
-            throw OpenCLFormatException("Unsupported data format: NOT_SPECIALIZED",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{},
+                                        "Unsupported data format: NOT_SPECIALIZED");
             break;
 
         case DataFormatId::Float32:
@@ -58,8 +58,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Float64:
-            throw OpenCLFormatException("Unsupported data format: FLOAT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: FLOAT64");
             break;
 
         case DataFormatId::Int8:
@@ -75,8 +74,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Int64:
-            throw OpenCLFormatException("Unsupported data format: INT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: INT64");
             break;
 
         case DataFormatId::UInt8:
@@ -92,8 +90,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::UInt64:
-            throw OpenCLFormatException("Unsupported data format: UINT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: UINT64");
             break;
 
         case DataFormatId::Vec2Float32:
@@ -101,8 +98,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Vec2Float64:
-            throw OpenCLFormatException("Unsupported data format: Vec2FLOAT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec2FLOAT64");
             break;
 
         case DataFormatId::Vec2Int8:
@@ -118,8 +114,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Vec2Int64:
-            throw OpenCLFormatException("Unsupported data format: Vec2INT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec2INT64");
             break;
 
         case DataFormatId::Vec2UInt8:
@@ -135,58 +130,47 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Vec2UInt64:
-            throw OpenCLFormatException("Unsupported data format: Vec2UINT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec2UINT64");
             break;
 
         case DataFormatId::Vec3Float32:
-            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT32",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3FLOAT32");
             break;
 
         case DataFormatId::Vec3Float64:
-            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3FLOAT64");
             break;
 
         case DataFormatId::Vec3Int8:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT8",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3INT8");
             break;
 
         case DataFormatId::Vec3Int16:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT16",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3INT16");
             break;
 
         case DataFormatId::Vec3Int32:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT32",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3INT32");
             break;
 
         case DataFormatId::Vec3Int64:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3INT64");
             break;
 
         case DataFormatId::Vec3UInt8:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT8",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3UINT8");
             break;
 
         case DataFormatId::Vec3UInt16:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT16",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3UINT16");
             break;
 
         case DataFormatId::Vec3UInt32:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT32",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3UINT32");
             break;
 
         case DataFormatId::Vec3UInt64:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec3UINT64");
             break;
 
         case DataFormatId::Vec4Float32:
@@ -194,8 +178,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Vec4Float64:
-            throw OpenCLFormatException("Unsupported data format: Vec4FLOAT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec4FLOAT64");
             break;
 
         case DataFormatId::Vec4Int8:
@@ -211,8 +194,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Vec4Int64:
-            throw OpenCLFormatException("Unsupported data format: Vec4INT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec4INT64");
             break;
 
         case DataFormatId::Vec4UInt8:
@@ -228,8 +210,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
             break;
 
         case DataFormatId::Vec4UInt64:
-            throw OpenCLFormatException("Unsupported data format: Vec4UINT64",
-                                        IVW_CONTEXT_CUSTOM("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException(SourceContext{}, "Unsupported data format: Vec4UINT64");
             break;
 
         case DataFormatId::NumberOfFormats:
@@ -333,12 +314,10 @@ const CLFormats::CLFormat& CLFormats::getCLFormat(DataFormatId id) const {
     if (CLFormatArray_[static_cast<int>(id)].valid) {
         return CLFormatArray_[static_cast<int>(id)];
     } else {
-        std::stringstream error;
-        error << "Format not supported by OpenCL. Data type: "
-              << CLFormatArray_[static_cast<int>(id)].format.image_channel_data_type
-              << " Channel order: "
-              << CLFormatArray_[static_cast<int>(id)].format.image_channel_order;
-        throw OpenCLFormatException(error.str(), IVW_CONTEXT);
+        throw OpenCLFormatException(
+            SourceContext{}, "Format not supported by OpenCL. Data type: {} Channel order: {}",
+            CLFormatArray_[static_cast<int>(id)].format.image_channel_data_type,
+            CLFormatArray_[static_cast<int>(id)].format.image_channel_order);
     }
 }
 

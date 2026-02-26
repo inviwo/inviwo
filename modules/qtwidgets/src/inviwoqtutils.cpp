@@ -428,7 +428,7 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
 
     const auto nLayers = image.getNumberOfColorLayers();
     for (size_t i = 0; i < nLayers; i++) {
-        addAction("Color Layer " + (nLayers > 1 ? toString(i) : ""), image.getColorLayer(i),
+        addAction("Color Layer " + (nLayers > 1 ? fmt::to_string(i) : ""), image.getColorLayer(i),
                   visibleLayer == LayerType::Color && visibleIndex == i);
     }
 

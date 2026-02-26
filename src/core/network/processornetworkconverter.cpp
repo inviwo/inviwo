@@ -383,7 +383,7 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
         std::string getNewRef() {
             std::string ref("ref0");
             for (int i = 1; std::find(ids_.begin(), ids_.end(), ref) != ids_.end(); ++i) {
-                ref = "ref" + toString(i);
+                ref = fmt::format("ref{}", i);
             }
             ids_.push_back(ref);
             return ref;

@@ -52,7 +52,7 @@ void RenderHandlerGL::updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t ne
     const auto id = browser->GetIdentifier();
     auto it = browserData_.find(id);
     if (it == browserData_.end()) {
-        throw Exception(IVW_CONTEXT, "Unexpected browser id {}", id);
+        throw Exception(SourceContext{},  "Unexpected browser id {}", id);
     }
 
     it->second.viewRect = newSize;
@@ -63,7 +63,7 @@ void RenderHandlerGL::updateCanvasSize(CefRefPtr<CefBrowser> browser, size2_t ne
     try {
         browserData.onRender(browserData.texture2D);
     } catch (const std::exception& e) {
-        LogErrorCustom("RenderHandlerGL", e.what());
+        log::exception(e);
     }
 }
 
@@ -188,7 +188,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     try {
         browserData.onRender(browserData.texture2D);
     } catch (const std::exception& e) {
-        LogErrorCustom("RenderHandlerGL", e.what());
+        log::exception(e);
     }
 }
 
@@ -249,7 +249,7 @@ void RenderHandlerGL::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEle
         try {
             browserData.onRender(browserData.texture2D);
         } catch (const std::exception& e) {
-            LogErrorCustom("RenderHandlerGL", e.what());
+            log::exception(e);
         }
     }
 

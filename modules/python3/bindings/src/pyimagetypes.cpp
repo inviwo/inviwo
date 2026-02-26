@@ -73,7 +73,7 @@ void exposeImageTypes(pybind11::module& m) {
                     [](int components) { return swizzlemasks::defaultColor(components); })
         .def_static("defaultData",
                     [](int components) { return swizzlemasks::defaultData(components); })
-        .def("__repr__", [](const SwizzleMask& self) { return toString(self); });
+        .def("__repr__", [](const SwizzleMask& self) { return fmt::to_string(self); });
 
     py::enum_<InterpolationType>(m, "InterpolationType")
         .value("Linear", InterpolationType::Linear)

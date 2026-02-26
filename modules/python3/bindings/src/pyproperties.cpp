@@ -242,13 +242,15 @@ void exposeProperties(pybind11::module& m) {
                  return tp.get().get();
              })
         .def("__repr__", [](const TransferFunctionProperty& tp) {
-            std::ostringstream oss;
-            oss << "<TransferFunctionProperty:  " << tp.get().size() << " TF points";
+            std::string str;
+            fmt::format_to(std::back_inserter(str), "<TransferFunctionProperty: {} TF points",
+                           tp.get().size());
             for (auto& p : tp.get()) {
-                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
+                fmt::format_to(std::back_inserter(str), "\n    {}, {}", p.getPosition(),
+                               color::rgba2hex(p.getColor()));
             }
-            oss << ">";
-            return oss.str();
+            fmt::format_to(std::back_inserter(str), ">");
+            return str;
         });
 
     py::classh<IsoValueProperty, Property>(m, "IsoValueProperty")

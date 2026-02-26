@@ -120,7 +120,7 @@ bool LayerCLGL::copyRepresentationsTo(LayerRepresentation* targetRep) const {
         glSync.aquireAllObjects();
         LayerCLResizer::resize(source->get(), target->get(), target->getDimensions());
     } catch (const cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
         return false;
     }
     return true;

@@ -34,7 +34,6 @@
 
 #include <flags/flags.h>
 #include <string_view>
-#include <iosfwd>
 #include <cstdint>
 #include <span>
 #include <string>

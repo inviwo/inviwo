@@ -343,13 +343,10 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
             if (!isIncluded(*x)) continue;
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
                 if (!isIncluded(*y)) continue;
-                auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
+                const auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
 
-                std::ostringstream oss;
-                oss << std::setprecision(2) << "corr ρ = " << res.corr << std::endl
-                    << "r² = " << res.r2;
-
-                auto tex = util::createTextTexture(textRenderer_, oss.str(), fontColor_);
+                const auto str = fmt::format("corr ρ = {:.2g}\nr² = {:.2g}", res.corr, res.r2);
+                auto tex = util::createTextTexture(textRenderer_, str, fontColor_);
                 statsTextures_.push_back(tex);
 
                 auto tex2 = std::make_shared<Texture2D>(size2_t(1, 1), GL_RGBA, GL_RGBA, GL_FLOAT,

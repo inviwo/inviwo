@@ -62,6 +62,7 @@ namespace inviwo {
 class MenuItem;
 class InviwoMainWindow;
 class InviwoEditMenu;
+class LevelFilter;
 
 class LogTableModelEntry {
 public:
@@ -124,6 +125,8 @@ class IVW_QTEDITOR_API LogTableModel : public QAbstractTableModel {
 public:
     LogTableModel();
 
+    enum class Role : std::uint16_t { Level = Qt::UserRole + 100 };
+
     QString getName(LogTableModelEntry::ColumnID ind) const;
 
     void clear();
@@ -157,6 +160,15 @@ public:
     QAction* getClearAction();
     QTableView* view() { return tableView_; }
 
+    struct Level {
+        LogLevel level;
+        std::string name;
+        std::string icon;
+        int count;
+        QAction* action;
+        QLabel* label;
+    };
+
 public slots:
     void updateIndicators(LogLevel level);
     void clear();
@@ -188,21 +200,27 @@ private:
     QTableView* tableView_;
     LogTableModel model_;
     QSortFilterProxyModel* filter_;
-    QSortFilterProxyModel* levelFilter_;
+    LevelFilter* levelFilter_;
     TextSelectionDelegate* textSelectionDelegate_;
 
-    struct Level {
-        LogLevel level;
-        std::string name;
-        std::string icon;
-        int count;
-        QAction* action;
-        QLabel* label;
-    };
-
-    std::array<Level, 3> levels = {{{LogLevel::Error, "Errors", "error", 0, nullptr, nullptr},
-                                    {LogLevel::Warn, "Warnings", "warning", 0, nullptr, nullptr},
-                                    {LogLevel::Info, "Info", "info", 0, nullptr, nullptr}}};
+    std::array<Level, 3> levels = {{{.level = LogLevel::Error,
+                                     .name = "Errors",
+                                     .icon = "error",
+                                     .count = 0,
+                                     .action = nullptr,
+                                     .label = nullptr},
+                                    {.level = LogLevel::Warn,
+                                     .name = "Warnings",
+                                     .icon = "warning",
+                                     .count = 0,
+                                     .action = nullptr,
+                                     .label = nullptr},
+                                    {.level = LogLevel::Info,
+                                     .name = "Info",
+                                     .icon = "info",
+                                     .count = 0,
+                                     .action = nullptr,
+                                     .label = nullptr}}};
 
     QLabel* threadPoolInfo_;
     QLineEdit* filterPattern_;
@@ -217,3 +235,4 @@ private:
 }  // namespace inviwo
 
 Q_DECLARE_METATYPE(inviwo::LogTableModelEntry)
+Q_DECLARE_METATYPE(inviwo::LogLevel);

@@ -84,14 +84,14 @@
 #include <unordered_set>  // for unordered_set
 #include <utility>        // for pair
 
-#include <fmt/core.h>    // for format_to, basic_...
+#include <fmt/format.h>  // for format_to, basic_...
 #include <glm/vec2.hpp>  // for vec<>::(anonymous)
 #include <glm/vec3.hpp>  // for vec<>::(anonymous)
 
 namespace {
 std::string idToString(const size_t& id) {
     if (id == 0) return "";
-    return inviwo::toString(id);
+    return fmt::to_string(id);
 }
 }  // namespace
 
@@ -176,8 +176,8 @@ VolumeCombiner::VolumeCombiner()
 
     addScale_.onChange([this]() {
         const size_t i = scales_.size();
-        auto p = std::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1), 1.0f,
-                                                 -2.f, 2.f, 0.01f);
+        auto p = std::make_unique<FloatProperty>(fmt::format("scale{}", i),
+                                                 fmt::format("s{}", i + 1), 1.0f, -2.f, 2.f, 0.01f);
         p->setSerializationMode(PropertySerializationMode::All);
         scales_.addProperty(p.release());
     });

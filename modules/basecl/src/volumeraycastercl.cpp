@@ -146,7 +146,7 @@ void VolumeRaycasterCL::samplingRate(float samplingRate) {
         try {
             kernel_->setArg(7, samplingRate);
         } catch (cl::Error& err) {
-            LogError(getCLErrorString(err));
+            log::report(LogLevel::Error, getCLErrorString(err));
         }
     }
 }
@@ -156,7 +156,7 @@ void VolumeRaycasterCL::outputOffset(ivec2 val) {
         try {
             kernel_->setArg(10, val);
         } catch (cl::Error& err) {
-            LogError(getCLErrorString(err));
+            log::report(LogLevel::Error, getCLErrorString(err));
         }
     }
 
@@ -168,7 +168,7 @@ void VolumeRaycasterCL::outputSize(ivec2 val) {
         try {
             kernel_->setArg(11, val);
         } catch (cl::Error& err) {
-            LogError(getCLErrorString(err));
+            log::report(LogLevel::Error, getCLErrorString(err));
         }
     }
 
@@ -202,7 +202,7 @@ void VolumeRaycasterCL::setLightingProperties(const utilcl::LightParameters& par
 
             kernel_->setArg(8, lightStruct_);
         } catch (cl::Error& err) {
-            LogError(getCLErrorString(err));
+            log::report(LogLevel::Error, getCLErrorString(err));
         }
     }
 }

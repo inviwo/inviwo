@@ -74,6 +74,8 @@ public:
     const std::any& data() const;
     void setData(std::any data);
 
+    virtual void print(fmt::memory_buffer& buff) const override;
+
 private:
     std::string id_;
     KeyModifiers modifiers_;

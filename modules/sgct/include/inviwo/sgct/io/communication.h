@@ -167,7 +167,7 @@ inline void decode(const std::vector<std::byte>& bytes, std::vector<SgctCommand>
                 break;
             }
             default: {
-                throw Exception(IVW_CONTEXT_CUSTOM("decode"), "Decode error");
+                throw Exception(SourceContext{}, "Decode error");
             }
         }
     }

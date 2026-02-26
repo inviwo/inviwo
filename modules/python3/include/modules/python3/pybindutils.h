@@ -83,14 +83,15 @@ void checkDataFormat(const DataFormatBase* format, const Vector<Dim, size_t>& di
     }
 
     if (static_cast<size_t>(data.ndim()) != expectedDimensions.size()) {
-        throw py::value_error("Invalid data rank, get: '" + toString(data.ndim()) +
-                              "' expected: '" + toString(expectedDimensions.size()) + "'");
+        throw py::value_error(fmt::format("Invalid data rank, got: '{}' expected: '{}'",
+                                          data.ndim(), expectedDimensions.size()));
     }
 
     for (size_t i = 0; i < expectedDimensions.size(); i++) {
-        if (static_cast<size_t>(data.shape(i)) != expectedDimensions[i]) {
-            throw py::value_error("Invalid data dimensions, got '" + toString(data.shape(i)) +
-                                  "' expected: '" + toString(expectedDimensions[i]) + "'");
+        if (static_cast<size_t>(data.shape(static_cast<int>(i))) != expectedDimensions[i]) {
+            throw py::value_error(fmt::format("Invalid data dimensions, got '{}' expected '{}'",
+                                              data.shape(static_cast<int>(i)),
+                                              expectedDimensions[i]));
         }
     }
 }

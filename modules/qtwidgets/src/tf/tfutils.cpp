@@ -392,7 +392,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu,
                 for (auto discrete : {true, false}) {
 
                     auto categoryMenu = presets->addMenu(utilqt::toQString(
-                        toString(category) + +(discrete ? " Discrete" : " Contiguous")));
+                        fmt::to_string(category) + +(discrete ? " Discrete" : " Contiguous")));
                     categoryMenu->setStyleSheet(
                         QString("QMenu { icon-size: %1px; }").arg(iconWidth));
 

@@ -28,9 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/formatconversion.h>
-#include <sstream>
 
 namespace inviwo {
+
+namespace {
+constexpr size_t byte_swap = 1024;
+}  // namespace
 
 size_t util::bytes_to_kilobytes(size_t bytes) { return bytes / byte_swap; }
 
@@ -40,23 +43,6 @@ size_t util::kilobytes_to_bytes(size_t bytes) { return bytes * byte_swap; }
 
 size_t util::megabytes_to_bytes(size_t bytes) { return bytes * byte_swap * byte_swap; }
 
-std::string util::formatBytesToString(size_t bytes) {
-    std::ostringstream stream;
-    stream.precision(2);
-    stream.setf(std::ios::fixed, std::ios::floatfield);
-
-    if (bytes > tera_byte_size)
-        stream << static_cast<float>(bytes / giga_byte_size) * byte_div << " TB";
-    else if (bytes > giga_byte_size)
-        stream << static_cast<float>(bytes / mega_byte_size) * byte_div << " GB";
-    else if (bytes > mega_byte_size)
-        stream << static_cast<float>(bytes / kilo_byte_size) * byte_div << " MB";
-    else if (bytes > kilo_byte_size)
-        stream << static_cast<float>(bytes) * byte_div << " KB";
-    else
-        stream << static_cast<float>(bytes) << " B";
-
-    return stream.str();
-}
+std::string util::formatBytesToString(size_t bytes) { return fmt::format("{}", ByteSize{bytes}); }
 
 }  // namespace inviwo

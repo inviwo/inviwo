@@ -303,7 +303,7 @@ struct DataTraits<DataFrame> {
 
         auto range = [](const Column* col) {
             if (col->getCustomRange()) {
-                return toString(*col->getCustomRange());
+                return fmt::to_string(*col->getCustomRange());
             } else {
                 return std::string("-");
             }

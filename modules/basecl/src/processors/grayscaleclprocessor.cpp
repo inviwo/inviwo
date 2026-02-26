@@ -101,7 +101,7 @@ void GrayscaleCLProcessor::process() {
                 *kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
         }
     } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        log::report(LogLevel::Error, getCLErrorString(err));
     }
 }
 

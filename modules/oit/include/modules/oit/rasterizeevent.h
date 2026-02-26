@@ -72,6 +72,8 @@ public:
 
     RasterizeHandle addInitializeShaderCallback(std::function<void()> callback) const;
 
+    virtual void print(fmt::memory_buffer& buff) const override;
+
 private:
     RasterizeEvent(const RasterizeEvent& rhs) = default;
     RasterizeEvent& operator=(const RasterizeEvent& that) = default;
