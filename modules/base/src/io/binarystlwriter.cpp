@@ -174,8 +174,6 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     }
     if (floatdata.empty()) {
         throw DataWriterException("Error: Only 3 dimensional meshes are supported");
-        log::error("Nothing to export, file not written");
-        return;
     }
 
     std::uint16_t attrib{0};
