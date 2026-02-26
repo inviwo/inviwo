@@ -65,7 +65,7 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         QStyleOptionViewItem opt = option;
         initStyleOption(&opt, index);
 
-        auto* widget = opt.widget;
+        const auto* widget = opt.widget;
         auto* style = widget->style();
 
         static constexpr auto portSize = QSize{6, 6};
@@ -76,7 +76,7 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         static constexpr auto outportOffset =
             QPoint{-padding - portSize.width(), -padding - portSize.height()};
 
-        QPainterStateGuard psg(p);
+        const QPainterStateGuard psg(p);
         // the style calling this might want to clip, so respect any region already set
         const QRegion clipRegion = p->hasClipping() ? (p->clipRegion() & opt.rect) : opt.rect;
         p->setClipRegion(clipRegion);
@@ -90,7 +90,7 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
 
         if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
             if (index.column() == 0) {
-                QPainterStateGuard psg2(p);
+                const QPainterStateGuard psg2(p);
                 p->setPen(QPen(borderColor, 1.0f));
 
                 for (auto&& [i, port] :
@@ -123,9 +123,9 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         if (!opt.text.isEmpty()) {
             QPalette::ColorGroup cg =
                 opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
-            if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active))
+            if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
                 cg = QPalette::Inactive;
-
+            }
             p->setPen(opt.palette.color(cg, (opt.state & QStyle::State_Selected)
                                                 ? QPalette::HighlightedText
                                                 : QPalette::Text));
@@ -134,11 +134,11 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
                 style->pixelMetric(QStyle::PM_FocusFrameHMargin, nullptr, widget) + 1;
 
             // remove width padding
-            QRect textMarginRect = textRect.adjusted(textMargin, 0, -textMargin, 0);
+            const QRect textMarginRect = textRect.adjusted(textMargin, 0, -textMargin, 0);
 
             const auto elided =
                 opt.fontMetrics.elidedText(opt.text, opt.textElideMode, textMarginRect.width());
-            p->drawText(textMarginRect, opt.displayAlignment, elided);
+            p->drawText(textMarginRect, static_cast<int>(opt.displayAlignment), elided);
         }
 
         // draw the focus rect
@@ -148,7 +148,7 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
             o.rect = style->subElementRect(QStyle::SE_ItemViewItemFocusRect, &opt, widget);
             o.state |= QStyle::State_KeyboardFocusChange;
             o.state |= QStyle::State_Item;
-            QPalette::ColorGroup cg =
+            const QPalette::ColorGroup cg =
                 (opt.state & QStyle::State_Enabled) ? QPalette::Normal : QPalette::Disabled;
             o.backgroundColor = opt.palette.color(
                 cg, (opt.state & QStyle::State_Selected) ? QPalette::Highlight : QPalette::Window);

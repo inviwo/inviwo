@@ -59,8 +59,8 @@ public:
 
         Element();
         Element(ElementType type, std::string_view content);
-        Element(std::string_view name, std::string_view content = "",
-                const UnorderedStringMap<std::string>& attributes = {});
+        explicit Element(std::string_view name, std::string_view content = "",
+                         const UnorderedStringMap<std::string>& attributes = {});
 
         Element(const Element&);
         Element& operator=(const Element&);
