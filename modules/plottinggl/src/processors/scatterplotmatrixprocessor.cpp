@@ -345,7 +345,7 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
                 if (!isIncluded(*y)) continue;
                 const auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
 
-                const auto str = fmt::format("corr ρ = {:.2f}\nr² = {:.2f}", res.corr, res.r2);
+                const auto str = fmt::format("corr ρ = {:.2g}\nr² = {:.2g}", res.corr, res.r2);
                 auto tex = util::createTextTexture(textRenderer_, str, fontColor_);
                 statsTextures_.push_back(tex);
 
