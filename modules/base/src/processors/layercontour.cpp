@@ -67,6 +67,9 @@ LayerContour::LayerContour()
 void LayerContour::process() {
     auto mesh = util::marchingSquares(inport_.getData()->getRepresentation<LayerRAM>(),
                                       isoValues_.get(), channel_);
+    // copy the layer axes to the first two axes since marchingSquares returns a vec2 mesh
+    mesh->axes[0] = inport_.getData()->axes[0];
+    mesh->axes[1] = inport_.getData()->axes[1];
     outport_.setData(mesh);
 }
 
