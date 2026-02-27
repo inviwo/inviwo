@@ -144,11 +144,10 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
         vLayout->addWidget(view);
 
         connect(tagModel_, &TagModel::dataChanged, this,
-                [&](const QModelIndex& topLeft, const QModelIndex& bottomRight,
+                [&](const QModelIndex& /*topLeft*/, const QModelIndex& /*bottomRight*/,
                     const QList<int>& roles) {
                     if (roles.contains(Qt::CheckStateRole)) {
                         filter_->setCheckedTags(tagModel_->checkedTags());
-
                     }
                 });
     }

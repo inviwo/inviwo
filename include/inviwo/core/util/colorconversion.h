@@ -69,7 +69,7 @@ IVW_CORE_API vec4 hex2rgba(std::string_view str);
  *
  * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
  * hexcodes with a leading '#' and optional alpha value (single / double digit).
- * In case of 3 respective 6 digits, alpha is implicitly set to 1.0.
+ * In case of 3 respective 6 digits, alpha is implicitly set to 255.
  *
  * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
  *
@@ -80,9 +80,9 @@ IVW_CORE_API vec4 hex2rgba(std::string_view str);
 IVW_CORE_API uvec4 hex2urgba(std::string_view str);
 
 /**
- * @brief convert from hexadecimal html color code to RGBA
+ * @brief convert from hexadecimal html color code to RGB
  *
- * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
+ * A hexadecimal html color code is converted to RGB. Supports both 3 and 6 digit
  * hexcodes with a leading '#' and optional ignored alpha value (single / double digit).
  *
  * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
@@ -96,7 +96,7 @@ IVW_CORE_API vec3 hex2rgb(std::string_view str);
 /**
  * @brief convert from hexadecimal html color code to RGBA
  *
- * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
+ * A hexadecimal html color code is converted to RGB. Supports both 3 and 6 digit
  * hexcodes with a leading '#' and optional ignored alpha value (single / double digit).
  *
  * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
