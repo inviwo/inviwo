@@ -1639,6 +1639,7 @@ var hierarchy =
       ] ]
     ] ],
     [ "inviwo::LCString", "classinviwo_1_1LCString.html", null ],
+    [ "inviwo::ConsoleWidget::Level", "structinviwo_1_1ConsoleWidget_1_1Level.html", null ],
     [ "inviwo::LicenseInfo", "classinviwo_1_1LicenseInfo.html", null ],
     [ "inviwo::LightingConfig", "structinviwo_1_1LightingConfig.html", null ],
     [ "inviwo::LightingState", "structinviwo_1_1LightingState.html", null ],
@@ -2712,10 +2713,6 @@ var hierarchy =
     [ "inviwo::PortTraits&lt; PythonOutport &gt;", "structinviwo_1_1PortTraits_3_01PythonOutport_01_4.html", null ],
     [ "inviwo::PortTraits&lt; RasterizationInport &gt;", "structinviwo_1_1PortTraits_3_01RasterizationInport_01_4.html", null ],
     [ "inviwo::PortTraits&lt; RasterizationOutport &gt;", "structinviwo_1_1PortTraits_3_01RasterizationOutport_01_4.html", null ],
-    [ "inviwo::util::detail::PrintEventHelper&lt; N &gt;", "structinviwo_1_1util_1_1detail_1_1PrintEventHelper.html", null ],
-    [ "inviwo::util::detail::PrintEventHelper&lt; 1 &gt;", "structinviwo_1_1util_1_1detail_1_1PrintEventHelper_3_011_01_4.html", null ],
-    [ "inviwo::util::detail::PrintEventHelper&lt; 2 &gt;", "structinviwo_1_1util_1_1detail_1_1PrintEventHelper_3_012_01_4.html", null ],
-    [ "inviwo::util::detail::PrintEventHelper&lt; 3 &gt;", "structinviwo_1_1util_1_1detail_1_1PrintEventHelper_3_013_01_4.html", null ],
     [ "inviwo::help::ProcessorDocs", "classinviwo_1_1help_1_1ProcessorDocs.html", null ],
     [ "inviwo::ProcessorFactoryObject", "classinviwo_1_1ProcessorFactoryObject.html", [
       [ "inviwo::CompositeProcessorFactoryObject", "classinviwo_1_1CompositeProcessorFactoryObject.html", null ],

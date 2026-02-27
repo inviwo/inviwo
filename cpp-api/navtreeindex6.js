@@ -1,5 +1,9 @@
 var NAVTREEINDEX6 =
 {
+"classinviwo_1_1FontRenderingModule.html#a8fedbb69245b37a1dfb110a64cd237fb":[4,0,1,363,1],
+"classinviwo_1_1FontSettings.html":[2,0,0,355],
+"classinviwo_1_1FontSettings.html":[4,0,1,364],
+"classinviwo_1_1FontSizePropertyWidgetQt.html":[2,0,0,356],
 "classinviwo_1_1FontSizePropertyWidgetQt.html":[4,0,1,365],
 "classinviwo_1_1FontSizePropertyWidgetQt.html#ac400d45c92fc7e00f0bcbdc875fd8f10":[2,0,0,356,0],
 "classinviwo_1_1FontSizePropertyWidgetQt.html#ac400d45c92fc7e00f0bcbdc875fd8f10":[4,0,1,365,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX6 =
 "classinviwo_1_1ImageColorMapping.html#a82dff1323603ead8d76d14b70b60aa97":[2,0,0,403,1],
 "classinviwo_1_1ImageColorMapping.html#a82dff1323603ead8d76d14b70b60aa97":[4,0,1,412,1],
 "classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[2,0,0,403,0],
-"classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[4,0,1,412,0],
-"classinviwo_1_1ImageCompositeProcessorGL.html":[2,0,0,404],
-"classinviwo_1_1ImageCompositeProcessorGL.html":[4,0,1,413],
-"classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[2,0,0,404,0],
-"classinviwo_1_1ImageCompositeProcessorGL.html#a4fceda1ae83712cdb003372a4da8d067":[4,0,1,413,0]
+"classinviwo_1_1ImageColorMapping.html#aa92d65d8d271b2962ba44cfc900f097e":[4,0,1,412,0]
 };

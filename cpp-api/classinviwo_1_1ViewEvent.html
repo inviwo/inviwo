@@ -123,7 +123,7 @@ Action&#160;</td><td class="memItemRight"><b>getAction</b> () const</td></tr>
 <tr class="memitem:ab271042abfdae1f6cf10f0564ae9230e" id="r_ab271042abfdae1f6cf10f0564ae9230e"><td class="memItemLeft">virtual uint64_t&#160;</td><td class="memItemRight"><a class="el" href="#ab271042abfdae1f6cf10f0564ae9230e">hash</a> () const override</td></tr>
 <tr class="memitem:a31c989df560d31411f51d5c35d42f8ff" id="r_a31c989df560d31411f51d5c35d42f8ff"><td class="memItemLeft"><a id="a31c989df560d31411f51d5c35d42f8ff" name="a31c989df560d31411f51d5c35d42f8ff"></a>
 ViewEvent &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const ViewEvent &amp;)=default</td></tr>
-<tr class="memitem:a06faa8e918b85b41b5341ffd498b0796" id="r_a06faa8e918b85b41b5341ffd498b0796"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a06faa8e918b85b41b5341ffd498b0796">print</a> (std::ostream &amp;ss) const override</td></tr>
+<tr class="memitem:a681a1c55cf1104514e09fac122dc455f" id="r_a681a1c55cf1104514e09fac122dc455f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a681a1c55cf1104514e09fac122dc455f">print</a> (fmt::memory_buffer &amp;buff) const override</td></tr>
 <tr class="memitem:a78484c0c60a8256ac65917d4fa19fc2b" id="r_a78484c0c60a8256ac65917d4fa19fc2b"><td class="memItemLeft"><a id="a78484c0c60a8256ac65917d4fa19fc2b" name="a78484c0c60a8256ac65917d4fa19fc2b"></a>
 &#160;</td><td class="memItemRight"><b>ViewEvent</b> (Action action=camerautil::Side::XNegative)</td></tr>
 <tr class="memitem:ac8d205352a42bfa403a95c88ddf0955e" id="r_ac8d205352a42bfa403a95c88ddf0955e"><td class="memItemLeft"><a id="ac8d205352a42bfa403a95c88ddf0955e" name="ac8d205352a42bfa403a95c88ddf0955e"></a>
@@ -217,8 +217,8 @@ Event &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Event &am
 
 </div>
 </div>
-<a id="a06faa8e918b85b41b5341ffd498b0796" name="a06faa8e918b85b41b5341ffd498b0796"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06faa8e918b85b41b5341ffd498b0796">&#9670;&#160;</a></span>print()</h2>
+<a id="a681a1c55cf1104514e09fac122dc455f" name="a681a1c55cf1104514e09fac122dc455f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a681a1c55cf1104514e09fac122dc455f">&#9670;&#160;</a></span>print()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +229,7 @@ Event &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Event &am
         <tr>
           <td class="memname">virtual void inviwo::ViewEvent::print </td>
           <td>(</td>
-          <td class="paramtype">std::ostream &amp;</td>          <td class="paramname"><span class="paramname"><em>ss</em></span></td><td>)</td>
+          <td class="paramtype">fmt::memory_buffer &amp;</td>          <td class="paramname"><span class="paramname"><em>buff</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -240,7 +240,7 @@ Event &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Event &am
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Event.html">inviwo::Event</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Event.html">inviwo::Event</a>.</p>
 
 </div>
 </div>

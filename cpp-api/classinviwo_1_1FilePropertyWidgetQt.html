@@ -114,7 +114,7 @@ $(function(){initNavTree('classinviwo_1_1FilePropertyWidgetQt.html','','classinv
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7607b0b321e54c1af2c3244662efe1e0" id="r_a7607b0b321e54c1af2c3244662efe1e0"><td class="memItemLeft"><a id="a7607b0b321e54c1af2c3244662efe1e0" name="a7607b0b321e54c1af2c3244662efe1e0"></a>
 &#160;</td><td class="memItemRight"><b>FilePropertyWidgetQt</b> (<a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a> *property)</td></tr>
-<tr class="memitem:a178d56f3c642f26f3e8b39c6a88f5ab4" id="r_a178d56f3c642f26f3e8b39c6a88f5ab4"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a178d56f3c642f26f3e8b39c6a88f5ab4">getEditorWidget</a> () const override</td></tr>
+<tr class="memitem:a164f7faaba28dbf6910e3675407cea1f" id="r_a164f7faaba28dbf6910e3675407cea1f"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a164f7faaba28dbf6910e3675407cea1f">getEditorWidget</a> () override</td></tr>
 <tr class="memitem:a834e0eebe708fbdb99f074b51426c834" id="r_a834e0eebe708fbdb99f074b51426c834"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a834e0eebe708fbdb99f074b51426c834">hasEditorWidget</a> () const override</td></tr>
 <tr class="memitem:a2726464a6878d953e6dea5e2a6e970bf" id="r_a2726464a6878d953e6dea5e2a6e970bf"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a2726464a6878d953e6dea5e2a6e970bf">requestFile</a> () override</td></tr>
 <tr class="memitem:aa4b601beeb2540a4ba64743711117525" id="r_aa4b601beeb2540a4ba64743711117525"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aa4b601beeb2540a4ba64743711117525">updateFromProperty</a> () override</td></tr>
@@ -254,8 +254,8 @@ static const int&#160;</td><td class="memItemRight"><b>spacing</b></td></tr>
 static const double&#160;</td><td class="memItemRight"><b>spacingEm</b></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a178d56f3c642f26f3e8b39c6a88f5ab4" name="a178d56f3c642f26f3e8b39c6a88f5ab4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a178d56f3c642f26f3e8b39c6a88f5ab4">&#9670;&#160;</a></span>getEditorWidget()</h2>
+<a id="a164f7faaba28dbf6910e3675407cea1f" name="a164f7faaba28dbf6910e3675407cea1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a164f7faaba28dbf6910e3675407cea1f">&#9670;&#160;</a></span>getEditorWidget()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -267,7 +267,7 @@ static const double&#160;</td><td class="memItemRight"><b>spacingEm</b></td></tr
           <td class="memname">virtual <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> * inviwo::FilePropertyWidgetQt::getEditorWidget </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
@@ -276,8 +276,9 @@ static const double&#160;</td><td class="memItemRight"><b>spacingEm</b></td></tr
   </tr>
 </table>
 </div><div class="memdoc">
+<p>This function should return the editor widget if <a class="el" href="#a834e0eebe708fbdb99f074b51426c834">hasEditorWidget()</a> returns true. </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidget.html">inviwo::PropertyWidget</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidget.html#a8c3ed523d25b0fbe4edb7d9c3cec2af7">inviwo::PropertyWidget</a>.</p>
 
 </div>
 </div>
@@ -303,8 +304,9 @@ static const double&#160;</td><td class="memItemRight"><b>spacingEm</b></td></tr
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Override this function returning true if there can be a <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> for this <a class="el" href="classinviwo_1_1PropertyWidget.html">PropertyWidget</a>. </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidget.html">inviwo::PropertyWidget</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyWidget.html#a705cf309257847a9fe8220097811e9a8">inviwo::PropertyWidget</a>.</p>
 
 </div>
 </div>

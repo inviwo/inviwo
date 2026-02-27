@@ -125,6 +125,7 @@ KeyModifiers&#160;</td><td class="memItemRight"><b>modifiers</b> () const</td></
 ContextMenuEvent &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const ContextMenuEvent &amp;that)=default</td></tr>
 <tr class="memitem:a531a97e54f7837de30590613dbc7e116" id="r_a531a97e54f7837de30590613dbc7e116"><td class="memItemLeft"><a id="a531a97e54f7837de30590613dbc7e116" name="a531a97e54f7837de30590613dbc7e116"></a>
 ContextMenuEvent &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (ContextMenuEvent &amp;&amp;)=default</td></tr>
+<tr class="memitem:a3d936cbc49adf761f54c12277f7512fe" id="r_a3d936cbc49adf761f54c12277f7512fe"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a3d936cbc49adf761f54c12277f7512fe">print</a> (fmt::memory_buffer &amp;buff) const override</td></tr>
 <tr class="memitem:a687be92196419625e5fc64d0f29bbf98" id="r_a687be92196419625e5fc64d0f29bbf98"><td class="memItemLeft"><a id="a687be92196419625e5fc64d0f29bbf98" name="a687be92196419625e5fc64d0f29bbf98"></a>
 void&#160;</td><td class="memItemRight"><b>setData</b> (std::any data)</td></tr>
 <tr class="memitem:a2186ae6b809e3edd82077905b3bed4b9" id="r_a2186ae6b809e3edd82077905b3bed4b9"><td class="memItemLeft"><a id="a2186ae6b809e3edd82077905b3bed4b9" name="a2186ae6b809e3edd82077905b3bed4b9"></a>
@@ -147,8 +148,6 @@ bool&#160;</td><td class="memItemRight"><b>hasVisitedProcessor</b> (<a class="el
 <tr class="memitem:ae07240a41f75f23f7b6e31b9be9385a3 inherit pub_methods_classinviwo_1_1Event" id="r_ae07240a41f75f23f7b6e31b9be9385a3"><td class="memItemLeft">
 void&#160;</td><td class="memItemRight"><b>markAsVisited</b> (Event &amp;)</td></tr>
 <tr class="memitem:af996a1173c55a70bf1d9f0bd8cbd1d14 inherit pub_methods_classinviwo_1_1Event" id="r_af996a1173c55a70bf1d9f0bd8cbd1d14"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#af996a1173c55a70bf1d9f0bd8cbd1d14">markAsVisited</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
-<tr class="memitem:accf5384a84361e1cbb5f39af9334db98 inherit pub_methods_classinviwo_1_1Event" id="r_accf5384a84361e1cbb5f39af9334db98"><td class="memItemLeft">
-virtual void&#160;</td><td class="memItemRight"><b>print</b> (std::ostream &amp;ss) const</td></tr>
 <tr class="memitem:a8a54a8f200562cddde2f8d944fac9406 inherit pub_methods_classinviwo_1_1Event" id="r_a8a54a8f200562cddde2f8d944fac9406"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#a8a54a8f200562cddde2f8d944fac9406">setUsed</a> (bool isUsed)</td></tr>
 <tr class="memitem:a4d9619ffb42945ef721584cff32719b5 inherit pub_methods_classinviwo_1_1Event" id="r_a4d9619ffb42945ef721584cff32719b5"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classinviwo_1_1Event.html#a4d9619ffb42945ef721584cff32719b5">shouldPropagateTo</a> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *inport, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *source)</td></tr>
 </table><table class="memberdecls">
@@ -227,6 +226,33 @@ Event &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Event &am
           <td class="memname">virtual uint64_t inviwo::ContextMenuEvent::hash </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classinviwo_1_1Event.html">inviwo::Event</a>.</p>
+
+</div>
+</div>
+<a id="a3d936cbc49adf761f54c12277f7512fe" name="a3d936cbc49adf761f54c12277f7512fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d936cbc49adf761f54c12277f7512fe">&#9670;&#160;</a></span>print()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::ContextMenuEvent::print </td>
+          <td>(</td>
+          <td class="paramtype">fmt::memory_buffer &amp;</td>          <td class="paramname"><span class="paramname"><em>buff</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>

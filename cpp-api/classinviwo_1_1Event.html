@@ -140,8 +140,8 @@ bool&#160;</td><td class="memItemRight"><b>hasVisitedProcessor</b> (<a class="el
 <tr class="memitem:ae07240a41f75f23f7b6e31b9be9385a3" id="r_ae07240a41f75f23f7b6e31b9be9385a3"><td class="memItemLeft"><a id="ae07240a41f75f23f7b6e31b9be9385a3" name="ae07240a41f75f23f7b6e31b9be9385a3"></a>
 void&#160;</td><td class="memItemRight"><b>markAsVisited</b> (Event &amp;)</td></tr>
 <tr class="memitem:af996a1173c55a70bf1d9f0bd8cbd1d14" id="r_af996a1173c55a70bf1d9f0bd8cbd1d14"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#af996a1173c55a70bf1d9f0bd8cbd1d14">markAsVisited</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
-<tr class="memitem:accf5384a84361e1cbb5f39af9334db98" id="r_accf5384a84361e1cbb5f39af9334db98"><td class="memItemLeft"><a id="accf5384a84361e1cbb5f39af9334db98" name="accf5384a84361e1cbb5f39af9334db98"></a>
-virtual void&#160;</td><td class="memItemRight"><b>print</b> (std::ostream &amp;ss) const</td></tr>
+<tr class="memitem:ac067b91597d76d6b341e8bc82df7427c" id="r_ac067b91597d76d6b341e8bc82df7427c"><td class="memItemLeft"><a id="ac067b91597d76d6b341e8bc82df7427c" name="ac067b91597d76d6b341e8bc82df7427c"></a>
+virtual void&#160;</td><td class="memItemRight"><b>print</b> (fmt::memory_buffer &amp;buff) const =0</td></tr>
 <tr class="memitem:a8a54a8f200562cddde2f8d944fac9406" id="r_a8a54a8f200562cddde2f8d944fac9406"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a8a54a8f200562cddde2f8d944fac9406">setUsed</a> (bool isUsed)</td></tr>
 <tr class="memitem:a4d9619ffb42945ef721584cff32719b5" id="r_a4d9619ffb42945ef721584cff32719b5"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a4d9619ffb42945ef721584cff32719b5">shouldPropagateTo</a> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *inport, <a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *source)</td></tr>
 </table><table class="memberdecls">
@@ -151,11 +151,6 @@ Protected Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight"><b>Event</b> (const Event &amp;rhs)=default</td></tr>
 <tr class="memitem:adea31e84a455afbdbbc16e2fea5b6c44" id="r_adea31e84a455afbdbbc16e2fea5b6c44"><td class="memItemLeft"><a id="adea31e84a455afbdbbc16e2fea5b6c44" name="adea31e84a455afbdbbc16e2fea5b6c44"></a>
 Event &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const Event &amp;that)=default</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a3fdf42dd4e76c4ac08d0d5aefcb23381" id="r_a3fdf42dd4e76c4ac08d0d5aefcb23381"><td class="memItemLeft"><a id="a3fdf42dd4e76c4ac08d0d5aefcb23381" name="a3fdf42dd4e76c4ac08d0d5aefcb23381"></a>
-std::ostream &amp;&#160;</td><td class="memItemRight"><b>operator&lt;&lt;</b> (std::ostream &amp;ss, const Event &amp;e)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Events are propagated upwards in the <a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> through ports of processors until they are marked as used or reach a SourceProcessor. </p>

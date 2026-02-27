@@ -123,12 +123,10 @@ $(function(){initNavTree('classinviwo_1_1PropertyWidget.html','','classinviwo_1_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a73d5b263c5e8e581bf1d090011ba7843" id="r_a73d5b263c5e8e581bf1d090011ba7843"><td class="memItemLeft"><a id="a73d5b263c5e8e581bf1d090011ba7843" name="a73d5b263c5e8e581bf1d090011ba7843"></a>
-virtual <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> *&#160;</td><td class="memItemRight"><b>getEditorWidget</b> () const</td></tr>
+<tr class="memitem:a8c3ed523d25b0fbe4edb7d9c3cec2af7" id="r_a8c3ed523d25b0fbe4edb7d9c3cec2af7"><td class="memItemLeft">virtual <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a8c3ed523d25b0fbe4edb7d9c3cec2af7">getEditorWidget</a> ()</td></tr>
 <tr class="memitem:adb9bf21f542bcf9522a98d9cf50c81a9" id="r_adb9bf21f542bcf9522a98d9cf50c81a9"><td class="memItemLeft"><a id="adb9bf21f542bcf9522a98d9cf50c81a9" name="adb9bf21f542bcf9522a98d9cf50c81a9"></a>
 virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight"><b>getProperty</b> ()</td></tr>
-<tr class="memitem:a705cf309257847a9fe8220097811e9a8" id="r_a705cf309257847a9fe8220097811e9a8"><td class="memItemLeft"><a id="a705cf309257847a9fe8220097811e9a8" name="a705cf309257847a9fe8220097811e9a8"></a>
-virtual bool&#160;</td><td class="memItemRight"><b>hasEditorWidget</b> () const</td></tr>
+<tr class="memitem:a705cf309257847a9fe8220097811e9a8" id="r_a705cf309257847a9fe8220097811e9a8"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="#a705cf309257847a9fe8220097811e9a8">hasEditorWidget</a> () const</td></tr>
 <tr class="memitem:a8c9e73a24e361e1196dfea32895074ee" id="r_a8c9e73a24e361e1196dfea32895074ee"><td class="memItemLeft"><a id="a8c9e73a24e361e1196dfea32895074ee" name="a8c9e73a24e361e1196dfea32895074ee"></a>
 PropertyWidget &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const PropertyWidget &amp;)</td></tr>
 <tr class="memitem:a3655b12ece152cac4d55dcfaedcf8410" id="r_a3655b12ece152cac4d55dcfaedcf8410"><td class="memItemLeft"><a id="a3655b12ece152cac4d55dcfaedcf8410" name="a3655b12ece152cac4d55dcfaedcf8410"></a>
@@ -154,6 +152,9 @@ Protected Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::PropertyWidget::PropertyWidget </td>
@@ -162,6 +163,11 @@ Protected Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>The <a class="el" href="classinviwo_1_1PropertyWidget.html">PropertyWidget</a> will register it self with the property. </p>
 
@@ -194,6 +200,62 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a8c3ed523d25b0fbe4edb7d9c3cec2af7" name="a8c3ed523d25b0fbe4edb7d9c3cec2af7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c3ed523d25b0fbe4edb7d9c3cec2af7">&#9670;&#160;</a></span>getEditorWidget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> * inviwo::PropertyWidget::getEditorWidget </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>This function should return the editor widget if <a class="el" href="#a705cf309257847a9fe8220097811e9a8">hasEditorWidget()</a> returns true. </p>
+
+<p>Reimplemented in <a class="el" href="classinviwo_1_1FilePropertyWidgetQt.html#a164f7faaba28dbf6910e3675407cea1f">inviwo::FilePropertyWidgetQt</a>, <a class="el" href="classinviwo_1_1IsoTFPropertyWidgetQt.html#af448e9f28e3e089a926e628aab2d67fe">inviwo::IsoTFPropertyWidgetQt</a>, <a class="el" href="classinviwo_1_1IsoValuePropertyWidgetQt.html#a8864490faab48105fc502e8f104999bc">inviwo::IsoValuePropertyWidgetQt</a>, <a class="el" href="classinviwo_1_1StringPropertyWidgetQt.html#ad28dc550974c207229cf1fc5552f87da">inviwo::StringPropertyWidgetQt</a>, and <a class="el" href="classinviwo_1_1TFPropertyWidgetQt.html#a29d43d4e453ba471cdbb30c8e9f64fdb">inviwo::TFPropertyWidgetQt</a>.</p>
+
+</div>
+</div>
+<a id="a705cf309257847a9fe8220097811e9a8" name="a705cf309257847a9fe8220097811e9a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705cf309257847a9fe8220097811e9a8">&#9670;&#160;</a></span>hasEditorWidget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool inviwo::PropertyWidget::hasEditorWidget </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Override this function returning true if there can be a <a class="el" href="classinviwo_1_1PropertyEditorWidget.html">PropertyEditorWidget</a> for this <a class="el" href="classinviwo_1_1PropertyWidget.html">PropertyWidget</a>. </p>
+
+<p>Reimplemented in <a class="el" href="classinviwo_1_1FilePropertyWidgetQt.html#a834e0eebe708fbdb99f074b51426c834">inviwo::FilePropertyWidgetQt</a>, <a class="el" href="classinviwo_1_1IsoTFPropertyWidgetQt.html#a88d387fd1f2399b917b71e627c0363d8">inviwo::IsoTFPropertyWidgetQt</a>, <a class="el" href="classinviwo_1_1IsoValuePropertyWidgetQt.html#a14f1881fba7b500a9b29192f3054d507">inviwo::IsoValuePropertyWidgetQt</a>, <a class="el" href="classinviwo_1_1StringPropertyWidgetQt.html#acbaf7144bcaa66742d42c91683d9cffd">inviwo::StringPropertyWidgetQt</a>, and <a class="el" href="classinviwo_1_1TFPropertyWidgetQt.html#abcba21fa498ef0457bc1febc86ff124d">inviwo::TFPropertyWidgetQt</a>.</p>
+
+</div>
+</div>
 <a id="a0cf4d6db22560aa9db3121f5c0a810e3" name="a0cf4d6db22560aa9db3121f5c0a810e3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0cf4d6db22560aa9db3121f5c0a810e3">&#9670;&#160;</a></span>updateFromProperty()</h2>
 

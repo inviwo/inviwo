@@ -58,7 +58,7 @@ var searchData=
   ['lcstring_55',['LCString',['../classinviwo_1_1LCString.html',1,'inviwo']]],
   ['leftjoin_56',['leftJoin',['../namespaceinviwo_1_1dataframe.html#af5e637a320fc025ccea907d04df49158',1,'inviwo::dataframe::leftJoin(const DataFrame &amp;left, const DataFrame &amp;right, const std::pair&lt; std::string, std::string &gt; &amp;keyColumns={&quot;index&quot;, &quot;index&quot;})'],['../namespaceinviwo_1_1dataframe.html#a2c8508ae29c8648359e53e581e54e646',1,'inviwo::dataframe::leftJoin(const DataFrame &amp;left, const DataFrame &amp;right, const std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; &amp;keyColumns)']]],
   ['length_57',['length',['../classinviwo_1_1StipplingSettings.html#a4923c3d3c9447af99b08b215de257227',1,'inviwo::StipplingSettings']]],
-  ['level_58',['Runtime Log Level',['../namespaceinviwo_1_1log.html#autotoc_md23',1,'']]],
+  ['level_58',['Level',['../structinviwo_1_1ConsoleWidget_1_1Level.html',1,'inviwo::ConsoleWidget::Level'],['../namespaceinviwo_1_1log.html#autotoc_md23',1,'Runtime Log Level']]],
   ['levels_5f_59',['levels_',['../classinviwo_1_1NoiseGenerator2D.html#aedba499b2ba29e607129fee991d1a7a0',1,'inviwo::NoiseGenerator2D']]],
   ['lic2d_60',['LIC2D',['../classinviwo_1_1LIC2D.html',1,'inviwo']]],
   ['lic3d_61',['LIC3D',['../classinviwo_1_1LIC3D.html',1,'inviwo']]],

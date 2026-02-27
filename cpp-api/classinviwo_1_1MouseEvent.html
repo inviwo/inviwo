@@ -117,7 +117,7 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight"><b>MouseEvent</b> (MouseButton <a class="el" href="#ac4da917bc47a9447eefa2f7c9ddd2191">button</a>=MouseButton::Left, MouseState <a class="el" href="#adb442a670044fcd978b3a7d415bd291e">state</a>=MouseState::Press, MouseButtons <a class="el" href="classinviwo_1_1MouseInteractionEvent.html#a09ed6b580f64781d85c79126a7e95831">buttonState</a>=MouseButtons(flags::empty), KeyModifiers modifiers=KeyModifiers(flags::empty), dvec2 normalizedPosition=dvec2(0), uvec2 <a class="el" href="classinviwo_1_1MouseInteractionEvent.html#ad1c2095c9f976a3a05680e5de983614f">canvasSize</a>=uvec2(0), double <a class="el" href="classinviwo_1_1MouseInteractionEvent.html#a4fa19308dd0ba08a171bc2e17bc848c7">depth</a>=1.0)</td></tr>
 <tr class="memitem:a8f54d339b5a0ee64ca3f6f24996529a0" id="r_a8f54d339b5a0ee64ca3f6f24996529a0"><td class="memItemLeft"><a id="a8f54d339b5a0ee64ca3f6f24996529a0" name="a8f54d339b5a0ee64ca3f6f24996529a0"></a>
 MouseEvent &amp;&#160;</td><td class="memItemRight"><b>operator=</b> (const MouseEvent &amp;that)=default</td></tr>
-<tr class="memitem:a370a1554314c30b226b8d862900cce6c" id="r_a370a1554314c30b226b8d862900cce6c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a370a1554314c30b226b8d862900cce6c">print</a> (std::ostream &amp;ss) const override</td></tr>
+<tr class="memitem:ab6f7483dfd819b8eb827410e46582174" id="r_ab6f7483dfd819b8eb827410e46582174"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ab6f7483dfd819b8eb827410e46582174">print</a> (fmt::memory_buffer &amp;buff) const override</td></tr>
 <tr class="memitem:a477267b363b2fdf23850dd2584ba887c" id="r_a477267b363b2fdf23850dd2584ba887c"><td class="memItemLeft"><a id="a477267b363b2fdf23850dd2584ba887c" name="a477267b363b2fdf23850dd2584ba887c"></a>
 void&#160;</td><td class="memItemRight"><b>setButton</b> (MouseButton <a class="el" href="#ac4da917bc47a9447eefa2f7c9ddd2191">button</a>)</td></tr>
 <tr class="memitem:a065ae75aea815955c461ef7cf98df073" id="r_a065ae75aea815955c461ef7cf98df073"><td class="memItemLeft"><a id="a065ae75aea815955c461ef7cf98df073" name="a065ae75aea815955c461ef7cf98df073"></a>
@@ -299,8 +299,8 @@ ToolTipCallback&#160;</td><td class="memItemRight"><b>tooltip_</b></td></tr>
 
 </div>
 </div>
-<a id="a370a1554314c30b226b8d862900cce6c" name="a370a1554314c30b226b8d862900cce6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a370a1554314c30b226b8d862900cce6c">&#9670;&#160;</a></span>print()</h2>
+<a id="ab6f7483dfd819b8eb827410e46582174" name="ab6f7483dfd819b8eb827410e46582174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6f7483dfd819b8eb827410e46582174">&#9670;&#160;</a></span>print()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -311,7 +311,7 @@ ToolTipCallback&#160;</td><td class="memItemRight"><b>tooltip_</b></td></tr>
         <tr>
           <td class="memname">virtual void inviwo::MouseEvent::print </td>
           <td>(</td>
-          <td class="paramtype">std::ostream &amp;</td>          <td class="paramname"><span class="paramname"><em>ss</em></span></td><td>)</td>
+          <td class="paramtype">fmt::memory_buffer &amp;</td>          <td class="paramname"><span class="paramname"><em>buff</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -322,7 +322,7 @@ ToolTipCallback&#160;</td><td class="memItemRight"><b>tooltip_</b></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Event.html">inviwo::Event</a>.</p>
+<p>Implements <a class="el" href="classinviwo_1_1Event.html">inviwo::Event</a>.</p>
 
 </div>
 </div>

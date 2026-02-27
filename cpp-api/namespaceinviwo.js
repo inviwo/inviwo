@@ -270,7 +270,7 @@ var namespaceinviwo =
     [ "ConnectionOutDragHelper", "classinviwo_1_1ConnectionOutDragHelper.html", null ],
     [ "ConnectionOutportDragGraphicsItem", "classinviwo_1_1ConnectionOutportDragGraphicsItem.html", null ],
     [ "ConsoleLogger", "classinviwo_1_1ConsoleLogger.html", null ],
-    [ "ConsoleWidget", "classinviwo_1_1ConsoleWidget.html", null ],
+    [ "ConsoleWidget", "classinviwo_1_1ConsoleWidget.html", "classinviwo_1_1ConsoleWidget" ],
     [ "ContextHolder", "classinviwo_1_1ContextHolder.html", null ],
     [ "ContextMenuAction", "structinviwo_1_1ContextMenuAction.html", null ],
     [ "ContextMenuEvent", "classinviwo_1_1ContextMenuEvent.html", "classinviwo_1_1ContextMenuEvent" ],
