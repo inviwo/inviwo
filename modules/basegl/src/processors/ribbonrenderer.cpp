@@ -62,7 +62,7 @@ RibbonRenderer::RibbonRenderer()
     , outport_{"outport", "Resulting image"_help}
     , ribbonProperties_{"ribbonProperties", "Ribbon Properties"}
     , subdivisions_{"subdivisions", "Subdivisions",
-                    util::ordinalCount(0, 20).set(InvalidationLevel::InvalidResources)}
+                    util::ordinalCount(0, 10).set(InvalidationLevel::InvalidResources)}
     , widthScaling_{"widthScaling", "Width Scaling", util::ordinalScale(1.0f, 2.0f).setInc(0.001f)}
     , forceWidth_{"forceWidth", "Force Width", false, InvalidationLevel::InvalidResources}
     , defaultWidth_{"defaultWidth", "Ribbon Width", util::ordinalScale(0.1f, 2.0f).setInc(0.0001f)}
@@ -119,7 +119,7 @@ void RibbonRenderer::configureShader(Shader& shader) const {
     shader[ShaderType::Geometry]->setShaderDefine("SUBDIVISIONS", true,
                                                   fmt::format("{}", subdivisions_));
     shader[ShaderType::Geometry]->setShaderDefine("MAX_VERTICES_OUT", true,
-                                                  fmt::format("{}", 4 + subdivisions_ * 2));
+                                                  fmt::format("{}", 6 + subdivisions_ * 6));
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_WIDTH", forceWidth_);
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
     shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", useMetaColor_);

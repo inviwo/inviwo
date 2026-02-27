@@ -33,8 +33,8 @@
 #if !defined(SUBDIVISIONS)
 #define SUBDIVISIONS 0
 #endif
-#if !defined(MAX_VERTICES_OUT)  // should be equal to 4 + SUBDIVISIONS * 2
-#define MAX_VERTICES_OUT 4
+#if !defined(MAX_VERTICES_OUT)  // should be equal to 6 + SUBDIVISIONS * 6
+#define MAX_VERTICES_OUT 6
 #endif
 
 #if defined(HAS_ADJACENCY)
@@ -190,6 +190,11 @@ void main() {
 
 #if SUBDIVISIONS > 0
     float delta = 1.0 / float(SUBDIVISIONS + 1);
+
+    Vertex prevLeft = Vertex(vec4(0), vec4(0), vec3(0), vec3(0), vec2(0));
+    Vertex prevRight = Vertex(vec4(0), vec4(0), vec3(0), vec3(0), vec2(0));
+    Vertex prevCenter = Vertex(vec4(0), vec4(0), vec3(0), vec3(0), vec2(0));
+    uint pickID = inRibbon[index1].pickID;
     for (int i = 0; i <= SUBDIVISIONS + 1; ++i) {
         float t = float(i) * delta;
 
@@ -210,8 +215,21 @@ void main() {
         vec3 left = center - binormal * width;
         vec3 right = center + binormal * width;
 
-        emit(createVertex(left, color, leftNormal, binormal, vec2(0, t)), inRibbon[index1].pickID);
-        emit(createVertex(right, color, rightNormal, binormal, vec2(1, t)), inRibbon[index1].pickID);
+        Vertex currentLeft = createVertex(left, color, leftNormal, binormal, vec2(0, t));
+        Vertex currentRight = createVertex(right, color, rightNormal, binormal, vec2(1, t));
+        Vertex currentCenter = createVertex(center, color, normal, binormal, vec2(0.5, t));
+        if (i > 0) {
+            emit(currentLeft, pickID);
+            emit(prevLeft, pickID);
+            emit(currentCenter, pickID);
+            emit(prevCenter, pickID);
+            emit(currentRight, pickID);
+            emit(prevRight, pickID);
+            EndPrimitive();
+        }
+        prevLeft = currentLeft;
+        prevRight = currentRight;
+        prevCenter = currentCenter;
     }
 #else
     vec3 offset1 = segment.binormal[0] * segment.width[0];
