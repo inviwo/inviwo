@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-TagModel::TagModel(Tags tags, QObject* parent) : QAbstractListModel(parent) {
+TagModel::TagModel(const Tags& tags, QObject* parent) : QAbstractListModel(parent) {
     for (const auto& t : tags.tags_) {
         tags_.push_back({t, utilqt::toQString(t.getString()), true});
     }
@@ -103,10 +103,10 @@ public:
         const bool checked = index.data(Qt::CheckStateRole) == Qt::Checked;
         const bool hovered = option.state & QStyle::State_MouseOver;
 
-        QColor bg = checked ? QColor(38, 86, 115) : QColor("#4f555b");
-        QColor fg = checked || hovered ? Qt::white : QColor("#9d9995");
+        const auto bg = checked ? QColor(38, 86, 115) : QColor("#4f555b");
+        const auto fg = checked || hovered ? Qt::white : QColor("#9d9995");
 
-        QRect r = option.rect.adjusted(2, 2, -2, -2);
+        const auto r = option.rect.adjusted(2, 2, -2, -2);
 
         painter->setBrush(bg);
         painter->setPen(QPen{hovered ? QColor(7, 55, 84) : QColor(30, 30, 30), 1.0f});
@@ -120,10 +120,9 @@ public:
     }
 
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override {
-        const QString text = index.data().toString();
-        QSize textSize = option.fontMetrics.size(Qt::TextSingleLine, text);
-        return QSize(textSize.width() + hPad * 2 + radius,
-                     textSize.height() + vPad * 2 + radius / 2);
+        const auto text = index.data().toString();
+        const auto textSize = option.fontMetrics.size(Qt::TextSingleLine, text);
+        return {textSize.width() + hPad * 2 + radius, textSize.height() + vPad * 2 + radius / 2};
     }
 };
 
@@ -144,21 +143,19 @@ PillListView::PillListView(QWidget* parent) : QListView(parent) {
     setFont(f);
 }
 
-int PillListView::heightForWidth(int width) const {
-    if (!model() || model()->rowCount() == 0) return 0;
+int PillListView::heightForWidth(int /*width*/) const {
 
     // Ask Qt to compute layout for this width
     const_cast<PillListView*>(this)->doItemsLayout();
-
-    QModelIndex last = model()->index(model()->rowCount() - 1, 0);
-    QRect r = visualRect(last);
+    const QModelIndex last = model()->index(model()->rowCount() - 1, 0);
+    const QRect r = visualRect(last);
 
     return r.bottom() + frameWidth() * 2 + spacing();
 }
 
 QSize PillListView::viewportSizeHint() const {
     // Ensures wrapping reacts to width changes
-    return QSize(viewport()->width(), heightForWidth(width()));
+    return {viewport()->width(), heightForWidth(width())};
 }
 
 }  // namespace inviwo

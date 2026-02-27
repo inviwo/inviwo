@@ -41,10 +41,14 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API TagModel : public QAbstractListModel {
 public:
-    explicit TagModel(Tags tags, QObject* parent = nullptr);
+    explicit TagModel(const Tags& tags, QObject* parent = nullptr);
+    TagModel(const TagModel&) = delete;
+    TagModel& operator=(const TagModel&) = delete;
+    TagModel(TagModel&&) = delete;
+    TagModel& operator=(TagModel&&) = delete;
     virtual ~TagModel() = default;
 
-    int rowCount(const QModelIndex& parent = {}) const override;
+    int rowCount(const QModelIndex& parent) const override;
     QVariant data(const QModelIndex& index, int role) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -63,6 +67,10 @@ private:
 class IVW_QTEDITOR_API PillListView : public QListView {
 public:
     explicit PillListView(QWidget* parent = nullptr);
+    PillListView(const PillListView&) = delete;
+    PillListView& operator=(const PillListView&) = delete;
+    PillListView(PillListView&&) = delete;
+    PillListView& operator=(PillListView&&) = delete;
     virtual ~PillListView() = default;
 
     bool hasHeightForWidth() const override { return true; }

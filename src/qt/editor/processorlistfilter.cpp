@@ -167,7 +167,7 @@ void ProcessorListFilter::setGrouping(Grouping grouping) {
     }
 }
 
-void ProcessorListFilter::setCheckedTags(Tags tags) {
+void ProcessorListFilter::setCheckedTags(const Tags& tags) {
     if (tags_ != tags) {
         beginFilterChange();
         tags_ = tags;
