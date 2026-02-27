@@ -359,9 +359,14 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
                            std::ranges::to<std::vector>();
 
         if (callback_) {
-            const auto sources = externalConnections | std::views::transform([&](NetworkEdge& e) {
-                                     return network_->getOutport(e.srcPath)->getProcessor();
+            const auto sources = externalConnections |
+                                 std::views::transform([&](NetworkEdge& e) -> Processor* {
+                                     if (const auto* outport = network_->getOutport(e.srcPath)) {
+                                         return outport->getProcessor();
+                                     }
+                                     return nullptr;
                                  }) |
+                                 std::views::filter([](auto* proc) { return proc != nullptr; }) |
                                  std::ranges::to<std::vector>();
 
             const ivec2 offset = callback_(addedProcessors_, sources);
@@ -426,7 +431,6 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
         for (auto* p : addedProcessors_) {
             AutoLinker::addLinks(*network_, *p, nullptr, addedProcessors_);
         }
-
     } catch (Exception& e) {
         log::exception(e);
     }
