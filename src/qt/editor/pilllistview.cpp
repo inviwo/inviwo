@@ -103,7 +103,7 @@ public:
         const bool checked = index.data(Qt::CheckStateRole) == Qt::Checked;
         const bool hovered = option.state & QStyle::State_MouseOver;
 
-        QColor bg = checked ? QColor("#1e70a8") : QColor("#4f555b");
+        QColor bg = checked ? QColor(38, 86, 115) : QColor("#4f555b");
         QColor fg = checked || hovered ? Qt::white : QColor("#9d9995");
 
         QRect r = option.rect.adjusted(2, 2, -2, -2);
