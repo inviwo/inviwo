@@ -1,0 +1,573 @@
+#Inviwo Python script
+
+import inviwopy
+
+import ivw.utils as inviwo_utils
+
+from inviwopy.glm import ivec2, size2_t
+
+import time
+
+import os
+
+import numpy as np
+
+import subprocess
+
+ 
+
+app = inviwopy.app
+
+network = app.network
+
+# --- configuration ---
+
+#windowRes = ivec2(512, 512)
+
+ 
+
+highRes = False
+
+resolutionScaling = 1
+
+referenceImage = "Reference_N_50000.tiff"
+
+if (highRes):
+
+    resolutionScaling = 4
+
+    referenceImage = "Reference_N_200000.tiff"
+
+ 
+
+isCPU = True
+
+allowedComputationTime = 2.5
+
+if (isCPU):
+
+    allowedComputationTime = 25 * resolutionScaling*resolutionScaling
+
+else:
+
+    allowedComputationTime = 25 * resolutionScaling*resolutionScaling
+
+ 
+
+def setBestParameters(isCPU, dataset, method):
+
+    possionTrackingN = network.BidirectionalVolumePathTracer.possionTrackingN
+
+    poissonUpperBoundMultiplier = network.BidirectionalVolumePathTracer.poissonUpperBoundMultiplier
+
+    russianRouletteTrackingK = network.BidirectionalVolumePathTracer.russianRouletteTrackingK
+
+    settings = {"bunny_cloud.dat": {
+
+    "CPU":{0:{}, 1:{}, 2:{'UB': 5.0}, 3:{'UB': 5.0, 'nIter': 125}, 4:{'UB': 3.0, 'nIter': 136}, 5:{'UB': 4.0, 'nIter': 136}, 6:{'UB': 4.5, 'N': 1, 'nIter': 118}, 7:{'UB': 4.5, 'N': 6, 'nIter': 121}, 8:{'k': 3, 'nIter': 115}},
+
+    "GPU":{0:{}, 1:{}, 2:{'UB': 6.0}, 3:{'UB': 6, 'nIter': 3226}, 4:{'UB': 6.0, 'nIter': 3210}, 5:{'UB': 5.5, 'nIter': 3242}, 6:{'UB': 5.0, 'N': 1, 'nIter': 3261}, 7:{'UB': 4.5, 'N': 1, 'nIter': 3318}, 8:{'k': 4, 'nIter': 3099}}},
+
+    "goldenlady.dat": {
+
+    "CPU":{0:{}, 1:{}, 2:{'UB': 3.5}, 3:{'UB': 3.5, 'nIter': 83}, 4:{'UB': 3.0, 'nIter': 85}, 5:{'UB': 3.5, 'nIter': 87}, 6:{'UB': 3.5, 'N': 1, 'nIter': 85}, 7:{'UB': 3.0, 'N': 10, 'nIter': 85}, 8:{'k': 6, 'nIter': 87}},
+
+    "GPU":{0:{}, 1:{}, 2:{'UB': 5.5}, 3:{'UB': 5.5, 'nIter': 3572}, 4:{'UB': 5.5, 'nIter': 3474}, 5:{'UB': 5.0, 'nIter': 3648}, 6:{'UB': 5.0, 'N': 9, 'nIter': 3602}, 7:{'UB': 3.5, 'N': 3, 'nIter': 3424}, 8:{'k': 9, 'nIter': 3660}}},
+
+    "smoke2.dat": {
+
+    "CPU":{0:{}, 1:{}, 2:{'UB': 6.0}, 3:{'UB': 6.0, 'nIter': 519}, 4:{'UB': 2.0, 'nIter': 562}, 5:{'UB': 5.0, 'nIter': 543}, 6:{'UB': 3.5, 'N': 1, 'nIter': 554}, 7:{'UB': 4.0, 'N': 17, 'nIter': 556}, 8:{'k': 8, 'nIter': 486}},
+
+    "GPU":{0:{}, 1:{}, 2:{'UB': 2.5}, 3:{'UB': 2.5, 'nIter': 13298}, 4:{'UB': 2.5, 'nIter': 12719}, 5:{'UB': 5.0, 'nIter': 12184}, 6:{'UB': 4.0, 'N': 5, 'nIter': 11144}, 7:{'UB': 5.5, 'N': 1, 'nIter': 10733}, 8:{'k': 11, 'nIter': 10130}}}}
+
+    cpuStr = "GPU"
+
+    if (isCPU): cpuStr = "CPU"
+
+ 
+
+    ub = settings[dataset][cpuStr][method].get('UB')
+
+    N = settings[dataset][cpuStr][method].get('N')
+
+    k = settings[dataset][cpuStr][method].get('k')
+
+    if ub: poissonUpperBoundMultiplier.value = ub
+
+    if N: possionTrackingN.value = N
+
+    else: possionTrackingN.value = 1
+
+    if k: russianRouletteTrackingK.value = k
+
+    else: russianRouletteTrackingK.value = 1
+
+    #poissonUpperBoundMultiplier.value = 3
+
+    return settings[dataset][cpuStr][method].get('nIter')
+
+   
+
+def imageCompare(refPath, compWithPath):
+
+    cmd = ['magick', 'compare', '-metric', 'RMSE', refPath, compWithPath, os.path.splitext(compWithPath)[0] + '.png']
+
+    proc = subprocess.run(args=cmd, encoding='utf-8', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    return proc.stderr
+
+def snapshotCanvases(outputdir, basename):
+
+    showOtherCanvases()
+
+    network.Canvas.snapshot('{}/{}.tiff'.format(outputdir, basename))
+
+    network.Canvas.snapshot('{}/{}.png'.format(outputdir, basename))
+
+    network.AbsDiff.snapshot('{}/AbsDiff_{}.tiff'.format(outputdir, basename))
+
+    network.Diff.snapshot('{}/Diff_{}.tiff'.format(outputdir, basename))
+
+    network.ColorMappedDifference.snapshot('{}/Diff_{}.png'.format(outputdir, basename))
+
+    network.Subset.snapshot('{}/Subset_{}.png'.format(outputdir, basename))
+
+    hideOtherCanvases()
+
+def testMethods(outputdir, dataset):
+
+   
+
+    iterate = network.BidirectionalVolumePathTracer.iterate
+
+    transmittanceMethod = network.BidirectionalVolumePathTracer.transmittanceMethod
+
+    possionTrackingN = network.BidirectionalVolumePathTracer.possionTrackingN
+
+    poissonUpperBoundMultiplier = network.BidirectionalVolumePathTracer.poissonUpperBoundMultiplier
+
+    print('Dataset,Method,upperBoundMultiplier,nIterations,N,executionTime (ms),RMSE')
+
+    for method in range(0, 9,1):
+
+       
+
+        transmittanceMethod.selectedIndex = method
+
+        nIterationsBest = setBestParameters(isCPU, dataset, method)
+
+ 
+
+        hideOtherCanvases()
+
+        inviwo_utils.update()
+
+        nIterations = 0
+
+        estimatedComputeTime = 0
+
+        start = time.perf_counter()
+
+        prevIterationTime = start
+
+        if nIterationsBest:
+
+            for i in range(nIterationsBest):
+
+                iterate.press()
+
+                nIterations += 1
+
+        else:
+
+            while ((time.perf_counter() - start)+0.5*estimatedComputeTime) < allowedComputationTime:
+
+                iterate.press()
+
+                #inviwo_utils.update() # Needed for canvas to update
+
+                estimatedComputeTime = time.perf_counter() - prevIterationTime
+
+                prevIterationTime = time.perf_counter()
+
+                nIterations += 1
+
+       
+
+        end = time.perf_counter()
+
+        elapsedTime = (end - start)/nIterations
+
+        #print(transmittanceMethod.selectedDisplayName + " (" + str(nIterations) + "): " + str(elapsedTime*1000) + " ms")
+
+        basename = transmittanceMethod.selectedDisplayName
+
+        snapshotCanvases(outputdir, basename)
+
+        rmse = imageCompare(outputdir + '/' + referenceImage, outputdir + "/" + basename + '.tiff').split()[0]
+
+        print('{},{},{},{},{},{},{}'.format(dataset, transmittanceMethod.selectedDisplayName, poissonUpperBoundMultiplier.value, nIterations, possionTrackingN.value, elapsedTime*1000, rmse))
+
+def testPoissonN(outputdir, dataset, Ns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], method = 7):
+
+    hideOtherCanvases()
+
+    iterate = network.BidirectionalVolumePathTracer.iterate
+
+    transmittanceMethod = network.BidirectionalVolumePathTracer.transmittanceMethod
+
+    poissonUpperBoundMultiplier = network.BidirectionalVolumePathTracer.poissonUpperBoundMultiplier
+
+    transmittanceMethod.selectedIndex = method
+
+    inviwo_utils.update()
+
+    #print('Dataset,Method,upperBoundMultiplier,nIterations,N,executionTime (ms),RMSE')
+
+    for N in Ns:
+
+        network.BidirectionalVolumePathTracer.possionTrackingN.value = N
+
+        inviwo_utils.update()
+
+        nIterations = 0
+
+        estimatedComputeTime = 0
+
+        start = time.perf_counter()
+
+        prevIterationTime = start
+
+        while ((time.perf_counter() - start)+0.5*estimatedComputeTime) < allowedComputationTime:
+
+        #for i in range(nSamples):
+
+            iterate.press()
+
+            #inviwo_utils.update() # Needed for canvas to update
+
+            estimatedComputeTime = time.perf_counter() - prevIterationTime
+
+            prevIterationTime = time.perf_counter()
+
+            nIterations += 1
+
+       
+
+        end = time.perf_counter()
+
+        elapsedTime = (end - start)/nIterations
+
+       
+
+        basename = transmittanceMethod.selectedDisplayName + "_" + str(N)
+
+        snapshotCanvases(outputdir + "/PoissonN", basename)
+
+        rmse = imageCompare(outputdir + '/' + referenceImage, outputdir + "/PoissonN/" + basename + '.tiff').split()[0]
+
+        print('{},{},{},{},{},{},{}'.format(dataset, transmittanceMethod.selectedDisplayName, poissonUpperBoundMultiplier.value, nIterations, N, elapsedTime*1000, rmse))
+
+def testUpperBoundMultiplier(outputdir, dataset, method = 4):
+
+    hideOtherCanvases()
+
+    iterate = network.BidirectionalVolumePathTracer.iterate
+
+    transmittanceMethod = network.BidirectionalVolumePathTracer.transmittanceMethod
+
+    poissonUpperBoundMultiplier = network.BidirectionalVolumePathTracer.poissonUpperBoundMultiplier
+
+    transmittanceMethod.selectedIndex = method
+
+    inviwo_utils.update()
+
+    #print('Dataset,Method,upperBoundMultiplier,nIterations,executionTime (ms),RMSE')
+
+    for upperBoundMultiplier in np.arange(1, 7.5, 0.5):
+
+        poissonUpperBoundMultiplier.value = upperBoundMultiplier
+
+        inviwo_utils.update()
+
+        nIterations = 0
+
+        estimatedComputeTime = 0
+
+        start = time.perf_counter()
+
+        prevIterationTime = start
+
+        while ((time.perf_counter() - start)+0.5*estimatedComputeTime) < allowedComputationTime:
+
+        #for i in range(nSamples):
+
+            iterate.press()
+
+            #inviwo_utils.update() # Needed for canvas to update
+
+            estimatedComputeTime = time.perf_counter() - prevIterationTime
+
+            prevIterationTime = time.perf_counter()
+
+            nIterations += 1
+
+       
+
+        end = time.perf_counter()
+
+        elapsedTime = (end - start)/nIterations
+
+       
+
+        basename = transmittanceMethod.selectedDisplayName + "_" + str(upperBoundMultiplier)
+
+        snapshotCanvases(outputdir + "/UpperBoundMultiplier", basename)
+
+        rmse = imageCompare(outputdir + '/' + referenceImage, outputdir + "/UpperBoundMultiplier/" + basename + '.tiff').split()[0]
+
+        print('{},{},{},{},{},{}'.format(dataset, transmittanceMethod.selectedDisplayName, poissonUpperBoundMultiplier.value, nIterations, elapsedTime*1000, rmse))
+
+def testRussianRouletteK(outputdir, dataset):
+
+    hideOtherCanvases()
+
+    iterate = network.BidirectionalVolumePathTracer.iterate
+
+    transmittanceMethod = network.BidirectionalVolumePathTracer.transmittanceMethod
+
+    russianRouletteTrackingK = network.BidirectionalVolumePathTracer.russianRouletteTrackingK
+
+    transmittanceMethod.selectedIndex = 8 # Russian roulette
+
+    print('Dataset,Method,nIterations,k,executionTime (ms),RMSE')
+
+    for K in range(1, 19):
+
+        russianRouletteTrackingK.value = K
+
+        inviwo_utils.update()
+
+        nIterations = 0
+
+        estimatedComputeTime = 0
+
+        start = time.perf_counter()
+
+        prevIterationTime = start
+
+        while ((time.perf_counter() - start)+0.5*estimatedComputeTime) < allowedComputationTime:
+
+        #for i in range(nSamples):
+
+            iterate.press()
+
+            #inviwo_utils.update() # Needed for canvas to update
+
+            estimatedComputeTime = time.perf_counter() - prevIterationTime
+
+            prevIterationTime = time.perf_counter()
+
+            nIterations += 1
+
+       
+
+        end = time.perf_counter()
+
+        elapsedTime = (end - start)/nIterations
+
+        #print(transmittanceMethod.selectedDisplayName + " (" + str(nIterations) + "), k=" + str(N) + ": " + str(elapsedTime*1000) + " ms")
+
+        basename = transmittanceMethod.selectedDisplayName + "_" + str(K)
+
+        snapshotCanvases(outputdir + "/RussianRouletteK", basename)
+
+        rmse = imageCompare(outputdir + '/' + referenceImage, outputdir + "/RussianRouletteK/" + basename + '.tiff').split()[0]
+
+        print('{},{},{},{},{},{}'.format(dataset, transmittanceMethod.selectedDisplayName, nIterations, K, elapsedTime*1000, rmse))
+
+def generateReference(outputdir):
+
+    hideOtherCanvases()
+
+    iterate = network.BidirectionalVolumePathTracer.iterate
+
+    transmittanceMethod = network.BidirectionalVolumePathTracer.transmittanceMethod
+
+    transmittanceMethod.selectedIndex = 1
+
+    allowedComputeTime = 60
+
+    nIterations = 0
+
+    nSamples = 50000
+
+    estimatedComputeTime = 0
+
+    start = time.perf_counter()
+
+    prevIterationTime = start
+
+    #while ((time.perf_counter() - start)+0.5*estimatedComputeTime) < allowedComputeTime:
+
+    for i in range(nSamples):
+
+        iterate.press()
+
+        #inviwo_utils.update() # Needed for canvas to update
+
+        estimatedComputeTime = time.perf_counter() - prevIterationTime
+
+        prevIterationTime = time.perf_counter()
+
+        nIterations += 1
+
+       
+
+    end = time.perf_counter()
+
+    elapsedTime = (end - start)/nIterations
+
+    print(transmittanceMethod.selectedDisplayName + " (" + str(nIterations) + "): " + str(elapsedTime*1000) + " ms")
+
+    basename = "Reference_N_" + str(nIterations)
+
+    snapshotCanvases(outputdir, basename)
+
+ 
+
+def hideOtherCanvases():
+
+    visibility = False
+
+    network.Canvas.widget.visibility = visibility
+
+    network.AbsDiff.widget.visibility = visibility
+
+    network.Diff.widget.visibility = visibility
+
+    network.ColorMappedDifference.widget.visibility = visibility
+
+    network.Subset.widget.visibility = visibility
+
+def showOtherCanvases():
+
+    visibility = True
+
+    network.Canvas.widget.visibility = visibility
+
+    network.AbsDiff.widget.visibility = visibility
+
+    network.Diff.widget.visibility = visibility
+
+    network.ColorMappedDifference.widget.visibility = visibility
+
+    network.Subset.widget.visibility = visibility
+
+ 
+
+def runTests():
+
+    dataset = os.path.basename(network.VolumeSource.filename.value)
+
+    outputdir = '/Users/danieljonsson/Documents/src/Transmittance/' + dataset
+
+    outputdir = 'C:/Users/danjo37/Documents/inviwo/vistinct/modules/volumepathtracingcl/data/workspaces/TransmittanceEvaluation/' + dataset
+
+    #outputdir = 'C:/Users/danjo/Documents/inviwo/vistinct/modules/volumepathtracingcl/data/workspaces/TransmittanceEvaluation/' + dataset
+
+    network.ImageSource.imageFileName = outputdir + '/Reference.tiff'
+
+    network.BidirectionalVolumePathTracer.enableRefinement.value = 0
+
+ 
+
+    #generateReference(outputdir)
+
+    testMethods(outputdir, dataset)
+
+    #print('Dataset,Method,upperBoundMultiplier,nIterations,executionTime (ms),RMSE')
+
+    #testUpperBoundMultiplier(outputdir, dataset, method = 2)
+
+    #testUpperBoundMultiplier(outputdir, dataset, method = 4)
+
+    #testUpperBoundMultiplier(outputdir, dataset, method = 5)
+
+    #testPoissonN(outputdir, dataset, method = 6)    
+
+    #testPoissonN(outputdir, dataset, method = 7)
+
+    #testRussianRouletteK(outputdir, dataset)
+
+    #print('Dataset,Method,upperBoundMultiplier,nIterations,N,executionTime (ms),RMSE')
+
+    #poissonUpperBoundMultiplier = network.BidirectionalVolumePathTracer.poissonUpperBoundMultiplier
+
+    #for method in [6, 7]:
+
+    #    for upperBoundMultiplier in np.arange(1, 6.5, 0.5):
+
+    #        poissonUpperBoundMultiplier.value = upperBoundMultiplier
+
+    #        testPoissonN(outputdir = outputdir, dataset = dataset, method = method)
+
+ 
+
+workspaces = ["transmittanceEvaluationBunny_cloud", "transmittanceEvaluationGoldenLady", "transmittanceEvaluationSmoke"]
+
+#workspaces = ["transmittanceEvaluationGoldenLady"]
+
+if (isCPU):
+
+    workspaces = ["transmittanceEvaluationGoldenLadyCPU"]
+
+    workspaces = ["transmittanceEvaluationBunny_cloudCPU", "transmittanceEvaluationGoldenLadyCPU", "transmittanceEvaluationSmokeCPU"]
+
+ 
+
+workspacedir = app.getModuleByIdentifier("VolumePathTracingCL").getPath(inviwopy.ModulePath.Workspaces)
+
+for ws in workspaces:
+
+    network.load(workspacedir + "/" +  ws + ".inv")
+
+   
+
+    inviwo_utils.update()
+
+    #network.Canvas.widget.visibility = True
+
+    #network.ImageExport.imageSize.value = size2_t(2048, 2048)
+
+    if (resolutionScaling > 1):
+
+        network.Canvas.widget.visibility = True
+
+        network.Canvas.inputSize.enableCustomInputDimensions.value = True
+
+        network.Canvas.inputSize.aspectRatioScaling.value = resolutionScaling
+
+        network.Subset.widget.visibility = True
+
+        network.Subset.inputSize.dimensions.value = size2_t(resolutionScaling)*size2_t(32, 32)
+
+    else:
+
+        network.Subset.widget.visibility = True
+
+        network.Subset.inputSize.dimensions.value = size2_t(32, 32)
+
+    network.Subset.widget.visibility = False
+
+    network.Canvas.widget.visibility = False
+
+    #inviwo_utils.update()
+
+    #network.ImageSubset.rangeX.value = size2_t(2)*network.ImageSubset.rangeX.value
+
+    #network.ImageSubset.rangeY.value = size2_t(2)*network.ImageSubset.rangeY.value
+
+   
+
+    runTests()
