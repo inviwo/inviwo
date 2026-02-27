@@ -12,6 +12,8 @@
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
         "IVW_PACKAGE_EMBED_PYTHON": "OFF",
 
+        "IVW_PACKAGE_HEADERS":              { "type": "BOOL", "value": "OFF"},
+
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},
