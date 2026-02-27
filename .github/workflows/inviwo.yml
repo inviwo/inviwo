@@ -23,6 +23,9 @@ env:
 
   # QT_DEBUG_PLUGINS: 1    # print qt plugin debug info
 
+  # Windows code signing - automatically enabled when signing secrets are configured
+  # Required secrets: WINDOWS_SIGNING_CERT (base64-encoded PFX), WINDOWS_SIGNING_CERT_PASSWORD
+
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
 
@@ -170,6 +173,58 @@ jobs:
         cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
+
+    - name: "Sign Windows Binaries"
+      if: matrix.system == 'windows' && matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
+      shell: pwsh
+      env:
+        WINDOWS_SIGNING_CERT: ${{ secrets.WINDOWS_SIGNING_CERT }}
+        WINDOWS_SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
+      run: |
+        # Sign the installer after CPack has created it (package target runs during Build step)
+        # List files in build directory for debugging
+        Write-Host "Looking for installer in build directory..."
+        Get-ChildItem -Path "build" -Filter "*.exe" | ForEach-Object { Write-Host "  Found: $($_.Name)" }
+        
+        $installer = Get-ChildItem -Path "build" -Filter "inviwo-*.exe" | Select-Object -First 1
+        if (-not $installer) {
+          Write-Host "::warning::No installer found. Make sure the 'package' target was built successfully."
+          exit 0  # Don't fail the build, just skip signing
+        }
+        
+        Write-Host "Signing installer: $($installer.FullName)"
+        
+        if ($env:WINDOWS_SIGNING_CERT) {
+          # Use SignTool with PFX certificate
+          Write-Host "Using SignTool with PFX certificate"
+          # Import certificate to Windows certificate store for more secure signing
+          $certBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERT)
+          $certPath = Join-Path $env:RUNNER_TEMP "cert.pfx"
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
+          
+          # Import to certificate store with password (more secure than command line)
+          $securePassword = ConvertTo-SecureString -String $env:WINDOWS_SIGNING_CERT_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePassword
+          $thumbprint = $cert.Thumbprint
+          
+          # Sign using certificate thumbprint (no password on command line)
+          & signtool sign /sha1 $thumbprint `
+            /tr http://timestamp.digicert.com /td sha256 /fd sha256 /v `
+            $installer.FullName
+          $signResult = $LASTEXITCODE
+          
+          # Cleanup - remove certificate from store and temp file
+          Remove-Item -Path "Cert:\CurrentUser\My\$thumbprint" -Force
+          Remove-Item $certPath -Force
+          
+          if ($signResult -ne 0) {
+            Write-Host "::error::SignTool signing failed"
+            exit 1
+          }
+          Write-Host "Code signing completed successfully"
+        } else {
+          Write-Host "::notice::No signing credentials configured - skipping code signing"
+        }
 
     - name: "Run"
       shell: bash
