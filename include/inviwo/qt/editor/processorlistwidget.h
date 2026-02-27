@@ -37,6 +37,7 @@
 #include <inviwo/qt/editor/processorlistmodel.h>
 #include <inviwo/qt/editor/processorlistfilter.h>
 #include <inviwo/qt/editor/processorlistview.h>
+#include <inviwo/qt/editor/pilllistview.h>
 
 #include <optional>
 
@@ -100,6 +101,7 @@ private:
     InviwoMainWindow* win_;
 
     ProcessorListModel* model_;
+    TagModel* tagModel_;
     ProcessorListFilter* filter_;
     ProcessorListView* view_;
 
