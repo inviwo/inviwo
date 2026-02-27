@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,56 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <inviwo/core/processors/processortags.h>
 
-#include <inviwo/core/ports/porttraits.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/util/glmvec.h>
+#include <QAbstractListModel>
+#include <QListView>
+
+#include <vector>
 
 namespace inviwo {
 
-#include <warn/push>
-#include <warn/ignore/attributes>
-class IVW_MODULE_PYTHON3_API PythonOutport : public Outport {
+class IVW_QTEDITOR_API TagModel : public QAbstractListModel {
 public:
-    PythonOutport(std::string_view identifier, Document help = {});
-    virtual ~PythonOutport() = default;
+    explicit TagModel(const Tags& tags, QObject* parent = nullptr);
+    TagModel(const TagModel&) = delete;
+    TagModel& operator=(const TagModel&) = delete;
+    TagModel(TagModel&&) = delete;
+    TagModel& operator=(TagModel&&) = delete;
+    virtual ~TagModel() = default;
 
-    virtual std::string_view getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
-    virtual Document getInfo() const override;
-    virtual DataInfo getDataInfo() const override;
+    int rowCount(const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-    pybind11::object getData() const;
-
-    virtual void clear() override;
-
-    virtual void setData(pybind11::object data);
-
-    virtual bool hasData() const override;
+    Tags checkedTags() const;
 
 private:
-    pybind11::object data_;
+    struct Item {
+        Tag tag;
+        QString text;
+        bool checked = false;
+    };
+    std::vector<Item> tags_;
 };
-#include <warn/pop>
 
-template <>
-struct PortTraits<PythonOutport> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.pythonoutport"; }
+class IVW_QTEDITOR_API PillListView : public QListView {
+public:
+    explicit PillListView(QWidget* parent = nullptr);
+    PillListView(const PillListView&) = delete;
+    PillListView& operator=(const PillListView&) = delete;
+    PillListView(PillListView&&) = delete;
+    PillListView& operator=(PillListView&&) = delete;
+    virtual ~PillListView() = default;
+
+    bool hasHeightForWidth() const override { return true; }
+    int heightForWidth(int width) const override;
+
+protected:
+    QSize viewportSizeHint() const override;
 };
-
-inline std::string_view PythonOutport::getClassIdentifier() const {
-    return PortTraits<PythonOutport>::classIdentifier();
-}
 
 }  // namespace inviwo

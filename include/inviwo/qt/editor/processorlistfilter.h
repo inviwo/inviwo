@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022-2026 Inviwo Foundation
+ * Copyright (c) 2026 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,48 +28,51 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <pybind11/pybind11.h>  // IWYU pragma: keep
+#include <inviwo/core/algorithm/searchdsl.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/processors/processortags.h>
 
-#include <inviwo/core/ports/porttraits.h>
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/qt/editor/processorlistmodel.h>
+
+#include <QSortFilterProxyModel>
+#include <QModelIndex>
+#include <QString>
 
 namespace inviwo {
 
-#include <warn/push>
-#include <warn/ignore/attributes>
-class IVW_MODULE_PYTHON3_API PythonOutport : public Outport {
+class ProcessorNetwork;
+
+class IVW_QTEDITOR_API ProcessorListFilter : public QSortFilterProxyModel {
 public:
-    PythonOutport(std::string_view identifier, Document help = {});
-    virtual ~PythonOutport() = default;
+    using Item = ProcessorListModel::Item;
+    using Role = ProcessorListModel::Role;
+    using Type = ProcessorListModel::Node::Type;
+    using Grouping = ProcessorListModel::Grouping;
 
-    virtual std::string_view getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override { return uvec3{12, 240, 153}; }
-    virtual Document getInfo() const override;
-    virtual DataInfo getDataInfo() const override;
+    explicit ProcessorListFilter(QAbstractItemModel* model, ProcessorNetwork* net,
+                                 QObject* parent = nullptr);
 
-    pybind11::object getData() const;
+    virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override;
 
-    virtual void clear() override;
+    void setCustomFilter(const QString& filter);
 
-    virtual void setData(pybind11::object data);
+    Document description() const;
 
-    virtual bool hasData() const override;
+    std::optional<std::string_view> currentStr(std::string_view name);
+    std::any currentData(std::string_view name);
+
+    void setGrouping(Grouping grouping);
+
+    virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
+
+    void setCheckedTags(const Tags& tags);
 
 private:
-    pybind11::object data_;
+    Grouping grouping_;
+    Tags tags_;
+    SearchDSL<Item> dsl_;
 };
-#include <warn/pop>
-
-template <>
-struct PortTraits<PythonOutport> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.pythonoutport"; }
-};
-
-inline std::string_view PythonOutport::getClassIdentifier() const {
-    return PortTraits<PythonOutport>::classIdentifier();
-}
 
 }  // namespace inviwo

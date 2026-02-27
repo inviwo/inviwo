@@ -61,6 +61,10 @@ WebBrowserBase::WebBrowserBase(InviwoApplication* app, Processor& processor, Ima
     , url_{url}
     , onLoadingChanged_{onLoadingChanged} {
 
+    if (!CefCurrentlyOn(TID_UI)) {
+        throw Exception("Can only create a CefBrowser on the GUI thread");
+    }
+
     // Setup CEF browser
     auto [windowInfo, browserSettings] = cefutil::getDefaultBrowserSettings();
     auto browserClient = util::getModuleByTypeOrThrow<WebBrowserModule>(app).getBrowserClient();

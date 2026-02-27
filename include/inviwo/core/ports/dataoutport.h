@@ -91,6 +91,8 @@ public:
 
     virtual bool hasData() const override;
 
+    virtual DataInfo getDataInfo() const override;
+
 protected:
     std::shared_ptr<const T> data_;
 };
@@ -193,6 +195,11 @@ Document DataOutport<T>::getInfo() const {
         doc.append("p", "Port has no data");
     }
     return doc;
+}
+
+template <typename T>
+DataInfo DataOutport<T>::getDataInfo() const {
+    return util::dataInfoFor<T>();
 }
 
 }  // namespace inviwo

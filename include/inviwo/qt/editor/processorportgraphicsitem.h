@@ -81,8 +81,8 @@ protected:
     std::vector<ConnectionGraphicsItem*> connections_;
     ProcessorGraphicsItem* processor_;
     ProcessorPortConnectionIndicator* connectionIndicator_;
-    float size_;
-    float lineWidth_;
+    static constexpr float size_{9.0f};
+    static constexpr float lineWidth_{1.0f};
 };
 
 class IVW_QTEDITOR_API ProcessorInportGraphicsItem : public ProcessorPortGraphicsItem {

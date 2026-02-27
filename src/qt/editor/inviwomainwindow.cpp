@@ -54,6 +54,7 @@
 #include <inviwo/core/processors/compositeprocessorutils.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/exporter.h>
+#include <inviwo/core/processors/processordocs.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/util/timer.h>
 
@@ -111,6 +112,7 @@
 #include <fmt/chrono.h>
 
 #include <algorithm>
+#include <memory_resource>
 
 namespace inviwo {
 
@@ -224,6 +226,21 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
         return es;
     }()}
     , menuEventFilter_{new MenuKeyboardEventFilter(this)}
+    , docs_{[]() {
+        auto docs = std::make_shared<help::ProcessorDocs>();
+        const auto docsPath = filesystem::getPath(PathType::Settings) / "processor_docs.xml";
+        if (std::filesystem::is_regular_file(docsPath)) {
+            std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+            try {
+                Deserializer d{docsPath, "ProcessorDocs", &mbr};
+                d.deserialize("ProcessorDocs", docs->map);
+            } catch (const std::exception& e) {
+                log::error("Error deserializing processor docs: {}", e.what());
+                docs->map.clear();
+            }
+        }
+        return docs;
+    }()}
     , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
     , toolsMenu_{new ToolsMenu(this)}
     , consoleWidget_{[this]() {
@@ -385,7 +402,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     helpWidget_->setVisible(true);
     helpWidget_->loadState();
 
-    processorTreeWidget_ = new ProcessorTreeWidget(this, helpWidget_);
+    processorTreeWidget_ = new ProcessorListWidget(this, helpWidget_);
     addDockWidget(Qt::LeftDockWidgetArea, processorTreeWidget_);
     processorTreeWidget_->setVisible(true);
     processorTreeWidget_->loadState();
@@ -428,6 +445,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
         if (!resetWindowState_.isSet()) {
             loadWindowState();
         }
+
+        updateProcessorDocs();
     });
 
     moduleUnloadCallback_ =
@@ -1645,7 +1664,7 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
 
 SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settings_; }
 
-ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
+ProcessorListWidget* InviwoMainWindow::getProcessorTreeWidget() const {
     return processorTreeWidget_;
 }
 
@@ -1668,6 +1687,8 @@ EditorSettings* InviwoMainWindow::getEditorSettings() const { return editorSetti
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
 ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }
+
+std::shared_ptr<help::ProcessorDocs> InviwoMainWindow::getDocs() const { return docs_; }
 
 void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { dragMoveEvent(event); }
 
@@ -1773,6 +1794,37 @@ void InviwoMainWindow::VisibleWidgets::show() {
     }
     processors.clear();
     dockwidgets.clear();
+}
+
+ProcessorDocsLoader::ProcessorDocsLoader(InviwoApplication* app) : app_{app} {}
+
+void ProcessorDocsLoader::operator()() {
+    auto docs =
+        std::make_shared<help::ProcessorDocs>(help::generateDocs(*app_->getProcessorFactory()));
+    app_->dispatchFrontAndForget([l = shared_from_this(), docs] { l->done(docs); });
+}
+
+void InviwoMainWindow::updateProcessorDocs() {
+    auto loader = std::make_shared<ProcessorDocsLoader>(app_);
+    connect(
+        loader.get(), &ProcessorDocsLoader::done, this,
+        [this](std::shared_ptr<help::ProcessorDocs> docs) {
+            this->docs_ = std::move(docs);
+            processorTreeWidget_->buildList();
+            const auto docsPath = filesystem::getPath(PathType::Settings) / "processor_docs.xml";
+            std::pmr::monotonic_buffer_resource mbr{1024 * 32};
+            Serializer s(docsPath, "ProcessorDocs", 0, &mbr);
+            s.serialize("ProcessorDocs", this->docs_->map);
+            s.writeFile();
+        },
+        Qt::QueuedConnection);
+
+    if (docs_->map.empty()) {
+        app_->dispatchPool([l = loader]() { (*l)(); });
+    } else {
+        QTimer::singleShot(std::chrono::minutes{5}, Qt::VeryCoarseTimer, this,
+                           [this, loader]() { app_->dispatchPool([l = loader]() { (*l)(); }); });
+    }
 }
 
 }  // namespace inviwo

@@ -122,7 +122,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
         const auto pos = performMapping ? util::linearMapFromNormalized(p.getPosition(), range)
                                         : p.getPosition();
         fmt::format_to(std::back_inserter(str), "{} {} {}\n", pos, p.getAlpha(),
-                       color::rgb2hex(p.getColor()));
+                       color::rgb2hex(vec3(p.getColor())));
     });
 
     const QString newContents(utilqt::toQString(str));

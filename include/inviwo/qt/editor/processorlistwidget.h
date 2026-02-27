@@ -33,7 +33,11 @@
 #include <modules/qtwidgets/inviwodockwidget.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorfactory.h>
-#include <inviwo/core/algorithm/searchdsl.h>
+
+#include <inviwo/qt/editor/processorlistmodel.h>
+#include <inviwo/qt/editor/processorlistfilter.h>
+#include <inviwo/qt/editor/processorlistview.h>
+#include <inviwo/qt/editor/pilllistview.h>
 
 #include <optional>
 
@@ -43,7 +47,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMouseEvent>
-#include <QTreeWidget>
+#include <QTreeView>
 #include <QDrag>
 #include <QString>
 #include <warn/pop>
@@ -53,83 +57,58 @@ namespace inviwo {
 class HelpWidget;
 class InviwoMainWindow;
 class InviwoApplication;
-class ProcessorTreeWidget;
+class ProcessorListWidget;
 class Processor;
 
-class IVW_QTEDITOR_API ProcessorTree : public QTreeWidget {
-
-public:
-    ProcessorTree(ProcessorTreeWidget* parent);
-    ~ProcessorTree() = default;
-
-    static const int identifierRole;
-    static const int sortRole;
-    static const int viewRole;
-    static const int typeRole;
-    enum ItemType { GroupType, ProcessoorType };
-
-protected:
-    virtual void mousePressEvent(QMouseEvent* e) override;
-    virtual void mouseMoveEvent(QMouseEvent* e) override;
-    virtual void mouseReleaseEvent(QMouseEvent* e) override;
-
-private:
-    void showContextMenu(const QPoint& p);
-
-    ProcessorTreeWidget* processorTreeWidget_;
-    std::optional<QPoint> dragStartPosition_;
-};
-
-class IVW_QTEDITOR_API ProcessorTreeItem : public QTreeWidgetItem {
-    using QTreeWidgetItem::QTreeWidgetItem;
-    virtual bool operator<(const QTreeWidgetItem& other) const;
-};
-
-class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget,
+class IVW_QTEDITOR_API ProcessorListWidget : public InviwoDockWidget,
                                              public FactoryObserver<ProcessorFactoryObject> {
 public:
-    enum class Grouping { Alphabetical, Categorical, CodeState, Module, LastUsed, MostUsed };
-    Q_ENUM(Grouping);
+    using Grouping = ProcessorListModel::Grouping;
+    using Item = ProcessorListModel::Item;
+    using Role = ProcessorListModel::Role;
+    using Type = ProcessorListModel::Node::Type;
 
-    ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
-    ~ProcessorTreeWidget();
+    ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
+    ProcessorListWidget(const ProcessorListWidget&) = delete;
+    ProcessorListWidget& operator=(const ProcessorListWidget&) = delete;
+    ProcessorListWidget(ProcessorListWidget&&) = delete;
+    ProcessorListWidget& operator=(ProcessorListWidget&&) = delete;
+    virtual ~ProcessorListWidget();
 
-    void focusSearch();
+    void focusSearch(bool selectAll = true);
     void addSelectedProcessor();
-    void addProcessor(QString className);
-    void addProcessorsToTree();
+    void addProcessor(const QString& className);
     void recordProcessorUse(const std::string& id);
 
-    std::shared_ptr<Processor> createProcessor(QString cid);
+    std::shared_ptr<Processor> createProcessor(const QString& cid);
 
     Grouping getGrouping() const;
+
+    void setPredecessorProcessor(std::string_view identifier);
+
+    void buildList();
 
 protected:
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private:
-    void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-
-    void extractInfoAndAddProcessor(ProcessorFactoryObject* processor, InviwoModule* elem);
-    QTreeWidgetItem* addToplevelItemTo(QString title, const std::string& desc);
-
-    virtual void onRegister(ProcessorFactoryObject* item) override;
+    virtual void onRegister(ProcessorFactoryObject* pfo) override;
     virtual void onUnRegister(ProcessorFactoryObject*) override;
 
     virtual void closeEvent(QCloseEvent* event) override;
 
     InviwoApplication* app_;
-    ProcessorTree* processorTree_;
+    InviwoMainWindow* win_;
+
+    ProcessorListModel* model_;
+    TagModel* tagModel_;
+    ProcessorListFilter* filter_;
+    ProcessorListView* view_;
+
     QComboBox* listView_;
     QLineEdit* lineEdit_;
-    SearchDSL<ProcessorFactoryObject, InviwoModule> dsl_;
 
     QPoint dragStartPosition_;
-
-    QIcon iconStable_;
-    QIcon iconExperimental_;
-    QIcon iconBroken_;
-    QIcon iconDeprecated_;
 
     HelpWidget* helpWidget_;
 
@@ -140,11 +119,6 @@ private:
     std::shared_ptr<std::function<void()>> onModulesDidRegister_;
     // Called before modules have been unregistered
     std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
-};
-
-class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
-public:
-    ProcessorDragObject(QWidget* source, std::shared_ptr<Processor> processor);
 };
 
 }  // namespace inviwo

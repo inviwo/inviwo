@@ -30,6 +30,7 @@
 #include <modules/python3/pythonoutport.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/docutils.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
 
@@ -71,5 +72,11 @@ void PythonOutport::clear() { data_ = pybind11::object{}; }
 void PythonOutport::setData(pybind11::object data) { data_ = data; }
 
 bool PythonOutport::hasData() const { return !data_.is_none(); }
+
+DataInfo PythonOutport::getDataInfo() const {
+    return {.cid = "org.inviwo.python.object",
+            .name = "Python Object",
+            .color = uvec3{12, 240, 153}};
+}
 
 }  // namespace inviwo
