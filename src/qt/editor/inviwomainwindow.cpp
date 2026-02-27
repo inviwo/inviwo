@@ -231,8 +231,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
         const auto docsPath = filesystem::getPath(PathType::Settings) / "processor_docs.xml";
         if (std::filesystem::is_regular_file(docsPath)) {
             std::pmr::monotonic_buffer_resource mbr{1024 * 32};
-            Deserializer d{docsPath, "ProcessorDocs", &mbr};
             try {
+                Deserializer d{docsPath, "ProcessorDocs", &mbr};
                 d.deserialize("ProcessorDocs", docs->map);
             } catch (const std::exception& e) {
                 log::error("Error deserializing processor docs: {}", e.what());

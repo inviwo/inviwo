@@ -45,6 +45,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networksearch.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/pilllistview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorerroritem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlinkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlistfilter.h
@@ -95,6 +96,7 @@ set(SOURCE_FILES
     networkeditor.cpp
     networkeditorview.cpp
     networksearch.cpp
+    pilllistview.cpp
     processordraghelper.cpp
     processorerroritem.cpp
     processorgraphicsitem.cpp

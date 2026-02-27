@@ -47,9 +47,8 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/qt/editor/lineediteventfilter.h>
 #include <inviwo/qt/editor/editorutils.h>
+#include <inviwo/qt/editor/pilllistview.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
 #include <QApplication>
 #include <QLayout>
 #include <QLabel>
@@ -61,10 +60,15 @@
 #include <QSettings>
 #include <QVariant>
 #include <QString>
+#include <QSortFilterProxyModel>
+#include <QToolButton>
+
+#include <QStyledItemDelegate>
+#include <QPainter>
+#include <QListView>
+
 #include <chrono>
 #include <ctime>
-#include <QSortFilterProxyModel>
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -73,6 +77,8 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     , app_{parent->getInviwoApplication()}
     , win_{parent}
     , model_{new ProcessorListModel(this)}
+    , tagModel_{new TagModel(Tags::CPU | Tags::GL | Tags::CL | Tags::PY | Tag{"VTK"} | Tag{"TTK"},
+                             this)}
     , filter_{new ProcessorListFilter(model_, app_->getProcessorNetwork(), this)}
     , view_{new ProcessorListView(filter_, this)}
     , helpWidget_{helpWidget} {
@@ -129,6 +135,23 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     listView_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     listViewLayout->addWidget(listView_);
     vLayout->addLayout(listViewLayout);
+
+    {
+        auto* view = new PillListView(this);
+        view->setModel(tagModel_);
+        connect(tagModel_, &QAbstractItemModel::rowsInserted, view, &QWidget::updateGeometry);
+        connect(tagModel_, &QAbstractItemModel::rowsRemoved, view, &QWidget::updateGeometry);
+        vLayout->addWidget(view);
+
+        connect(tagModel_, &TagModel::dataChanged, this,
+                [&](const QModelIndex& topLeft, const QModelIndex& bottomRight,
+                    const QList<int>& roles) {
+                    if (roles.contains(Qt::CheckStateRole)) {
+                        filter_->setCheckedTags(tagModel_->checkedTags());
+
+                    }
+                });
+    }
 
     lineEdit_->setToolTip(utilqt::toQString(filter_->description()));
     connect(lineEdit_, &QLineEdit::textChanged, filter_,

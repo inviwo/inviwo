@@ -30,49 +30,46 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
-#include <inviwo/core/algorithm/searchdsl.h>
-#include <inviwo/core/util/document.h>
 #include <inviwo/core/processors/processortags.h>
 
-#include <inviwo/qt/editor/processorlistmodel.h>
+#include <QAbstractListModel>
+#include <QListView>
 
-#include <QSortFilterProxyModel>
-#include <QModelIndex>
-#include <QString>
+#include <vector>
 
 namespace inviwo {
 
-class ProcessorNetwork;
-
-class IVW_QTEDITOR_API ProcessorListFilter : public QSortFilterProxyModel {
+class IVW_QTEDITOR_API TagModel : public QAbstractListModel {
 public:
-    using Item = ProcessorListModel::Item;
-    using Role = ProcessorListModel::Role;
-    using Type = ProcessorListModel::Node::Type;
-    using Grouping = ProcessorListModel::Grouping;
+    explicit TagModel(Tags tags, QObject* parent = nullptr);
+    virtual ~TagModel() = default;
 
-    explicit ProcessorListFilter(QAbstractItemModel* model, ProcessorNetwork* net,
-                                 QObject* parent = nullptr);
+    int rowCount(const QModelIndex& parent = {}) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-    virtual bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override;
-
-    void setCustomFilter(const QString& filter);
-
-    Document description() const;
-
-    std::optional<std::string_view> currentStr(std::string_view name);
-    std::any currentData(std::string_view name);
-
-    void setGrouping(Grouping grouping);
-
-    virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
-
-    void setCheckedTags(Tags tags);
+    Tags checkedTags() const;
 
 private:
-    Grouping grouping_;
-    Tags tags_;
-    SearchDSL<Item> dsl_;
+    struct Item {
+        Tag tag;
+        QString text;
+        bool checked = false;
+    };
+    std::vector<Item> tags_;
+};
+
+class IVW_QTEDITOR_API PillListView : public QListView {
+public:
+    explicit PillListView(QWidget* parent = nullptr);
+    virtual ~PillListView() = default;
+
+    bool hasHeightForWidth() const override { return true; }
+    int heightForWidth(int width) const override;
+
+protected:
+    QSize viewportSizeHint() const override;
 };
 
 }  // namespace inviwo

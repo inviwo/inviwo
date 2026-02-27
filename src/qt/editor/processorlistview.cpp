@@ -56,6 +56,13 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
     using Role = ProcessorListModel::Role;
     using Item = ProcessorListModel::Item;
 
+    virtual QSize sizeHint(const QStyleOptionViewItem& option,
+                           const QModelIndex& index) const override {
+        QSize size = QStyledItemDelegate::sizeHint(option, index);
+        size.setHeight(20);
+        return size;
+    }
+
     // Reimplementation of the paint method to draw inports and outports as colored rectangles on
     // the processor items in the list view. See private impl at
     // https://codebrowser.dev/qt6/qtbase/src/widgets/styles/qcommonstyle.cpp.html#2271
@@ -68,56 +75,79 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         const auto* widget = opt.widget;
         auto* style = widget->style();
 
-        static constexpr auto portSize = QSize{6, 6};
+        static constexpr auto portSize = QSize{5, 5};
         static constexpr auto padding = 2;
-        static constexpr auto borderColor = QColor{40, 40, 40};
+        static constexpr auto borderColor = QColor{30, 30, 30};
         static constexpr auto step = QPoint{padding + portSize.width(), 0};
-        static constexpr auto inportOffset = QPoint{-padding - portSize.width(), padding};
-        static constexpr auto outportOffset =
-            QPoint{-padding - portSize.width(), -padding - portSize.height()};
+        static constexpr auto inportOffset = QPoint{3 * padding, 1};
+        static constexpr auto outportOffset = QPoint{3 * padding, -1 - portSize.height()};
 
         const QPainterStateGuard psg(p);
         // the style calling this might want to clip, so respect any region already set
         const QRegion clipRegion = p->hasClipping() ? (p->clipRegion() & opt.rect) : opt.rect;
         p->setClipRegion(clipRegion);
 
-        const auto iconRect =
-            style->subElementRect(QStyle::SE_ItemViewItemDecoration, &opt, widget);
-        const auto textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &opt, widget);
+        // const auto iconRect =
+        //     style->subElementRect(QStyle::SE_ItemViewItemDecoration, &opt, widget);
+        // const auto textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &opt, widget);
+
+        auto textRect = opt.rect.adjusted(32, 2, -2, -2);
+        auto iconRect = opt.rect.adjusted(2, 4, -2, -4);
+        iconRect.setWidth(28);
 
         // draw the background
         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, p, widget);
 
         if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
-            if (index.column() == 0) {
-                const QPainterStateGuard psg2(p);
-                p->setPen(QPen(borderColor, 1.0f));
+            const QPainterStateGuard psg2(p);
 
-                for (auto&& [i, port] :
-                     util::enumerate<int>(item->help.inports | std::views::reverse)) {
-                    p->setBrush(utilqt::toQColor(port.colorCode));
-                    p->drawRect(QRect(opt.rect.topRight() + inportOffset - i * step, portSize));
-                }
-
-                for (auto&& [i, port] : util::enumerate<int>(item->help.outports)) {
-                    p->setBrush(utilqt::toQColor(port.colorCode));
-                    p->drawRect(QRect(opt.rect.bottomRight() + outportOffset - i * step, portSize));
-                }
+            switch (item->info.codeState) {
+                case CodeState::Stable:
+                    p->setBrush(QColor(38, 86, 115));
+                    break;
+                case CodeState::Experimental:
+                    p->setBrush(QColor(115, 107, 39));
+                    break;
+                case CodeState::Deprecated:
+                    p->setBrush(QColor(77, 77, 77));
+                    break;
+                case CodeState::Broken:
+                    p->setBrush(QColor(115, 107, 39));
+                    break;
             }
+            p->setPen(QPen(borderColor, 1.5f));
+            p->drawRoundedRect(iconRect, 4.0, 4.0);
+
+            auto platformTags = util::getPlatformTags(item->info.tags);
+            auto tag = platformTags.tags_.empty() ? Tags::CPU : platformTags.tags_.front();
+
+            QPalette::ColorGroup cg =
+                opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
+            if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active)) {
+                cg = QPalette::Inactive;
+            }
+            // p->setPen(opt.palette.color(cg, (opt.state & QStyle::State_Selected)
+            //                                     ? QPalette::HighlightedText
+            //                                     : QPalette::Text));
+            p->setPen(opt.palette.color(cg, QPalette::HighlightedText));
+            // Make the painter draw a bold font
+            p->setFont(QFont(opt.font.family(), opt.font.pointSize() - 4, QFont::Bold));
+            p->drawText(iconRect, Qt::AlignCenter, utilqt::toQString(tag.getString()));
+
+            p->setPen(QPen(borderColor, 1.0f));
+            for (auto&& [i, port] : util::enumerate<int>(item->help.inports)) {
+                p->setBrush(utilqt::toQColor(port.colorCode));
+                p->drawRect(QRect(opt.rect.topLeft() + inportOffset + i * step, portSize));
+            }
+
+            for (auto&& [i, port] : util::enumerate<int>(item->help.outports)) {
+                p->setBrush(utilqt::toQColor(port.colorCode));
+                p->drawRect(QRect(opt.rect.bottomLeft() + outportOffset + i * step, portSize));
+            }
+
+        } else {
+            textRect = opt.rect.adjusted(padding, padding, -padding, -padding);
         }
-
-        // draw the icon
-        const auto mode = [&]() {
-            if (!(opt.state & QStyle::State_Enabled)) {
-                return QIcon::Disabled;
-            } else if (opt.state & QStyle::State_Selected) {
-                return QIcon::Selected;
-            } else {
-                return QIcon::Normal;
-            }
-        }();
-        const auto state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-        opt.icon.paint(p, iconRect, opt.decorationAlignment, mode, state);
 
         // draw the text
         if (!opt.text.isEmpty()) {
@@ -169,11 +199,10 @@ ProcessorListView::ProcessorListView(QAbstractItemModel* model, ProcessorListWid
     setSelectionBehavior(QAbstractItemView::SelectRows);
 
     setHeaderHidden(true);
-    setIndentation(utilqt::emToPx(this, 1.0));
+    setIndentation(utilqt::emToPx(this, 0.6));
     setAnimated(true);
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(0, QHeaderView::Stretch);
-    header()->setSectionResizeMode(1, QHeaderView::Fixed);
     header()->setDefaultSectionSize(utilqt::emToPx(this, 4.0));
     expandAll();
     setUniformRowHeights(true);

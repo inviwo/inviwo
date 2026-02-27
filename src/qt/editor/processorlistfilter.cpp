@@ -61,6 +61,7 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
                                          QObject* parent)
     : QSortFilterProxyModel(parent)
     , grouping_{Grouping::Categorical}
+    , tags_{Tags::CPU | Tags::GL | Tags::CL | Tags::PY | Tag{"VTK"} | Tag{"TTK"}}
     , dsl_{{{.name = "identifier",
              .shortcut = "i",
              .description = "processor class identifier",
@@ -124,6 +125,8 @@ bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& so
     auto index = sourceModel()->index(source_row, 0, source_parent);
     if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
         if (!item->info.visible) return false;
+        if (item->info.tags.getMatches(tags_) == 0) return false;
+
         return dsl_.match(*item);
     } else {
         return false;
@@ -161,6 +164,14 @@ std::optional<std::string_view> ProcessorListFilter::currentStr(std::string_view
 void ProcessorListFilter::setGrouping(Grouping grouping) {
     if (grouping_ != grouping) {
         grouping_ = grouping;
+    }
+}
+
+void ProcessorListFilter::setCheckedTags(Tags tags) {
+    if (tags_ != tags) {
+        beginFilterChange();
+        tags_ = tags;
+        endFilterChange();
     }
 }
 

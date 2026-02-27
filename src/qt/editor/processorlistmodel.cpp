@@ -101,10 +101,7 @@ QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
         case Node::Type::Group:
             switch (role) {
                 case Qt::DisplayRole:
-                    if (index.column() == 0) {
-                        return node->name;
-                    }
-                    return {};
+                    return node->name;
                 case Qt::ToolTipRole:
                     return {};
                 case static_cast<int>(Role::Type):
@@ -117,30 +114,7 @@ QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
         case Node::Type::Item:
             switch (role) {
                 case Qt::DisplayRole:
-                    switch (index.column()) {
-                        case 0:
-                            return node->name;
-                        case 1: {
-                            auto platformTags = util::getPlatformTags(node->item->info.tags);
-                            return utilqt::toQString(platformTags.getString());
-                        }
-                        default:
-                            break;
-                    }
                     return node->name;
-                case Qt::DecorationRole:
-                    if (index.column() == 0) {
-                        return *getCodeStateIcon(node->item->info.codeState);
-                    }
-                    return {};
-                case Qt::FontRole: {
-                    if (index.column() == 1) {
-                        QFont font;
-                        font.setWeight(QFont::Bold);
-                        return font;
-                    }
-                    return {};
-                }
                 case Qt::ToolTipRole:
                     return utilqt::toQString(tooltip(*node->item).str());
                 case static_cast<int>(Role::Type):
@@ -176,7 +150,7 @@ int ProcessorListModel::rowCount(const QModelIndex& parent) const {
     auto* node = indexToNode(parent);
     return node ? node->size() : 0;
 }
-int ProcessorListModel::columnCount(const QModelIndex&) const { return 2; }
+int ProcessorListModel::columnCount(const QModelIndex&) const { return 1; }
 
 void ProcessorListModel::setItems(std::vector<Item> items) {
     beginResetModel();
