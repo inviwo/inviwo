@@ -30,10 +30,8 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -42,19 +40,17 @@
 #include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API Axis2DProcessorHelper {
 public:
-    enum class AxisRangeMode { Dims, Basis, BasisOffset, World, Custom };
-    enum class OffsetScaling { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
+    enum class AxisRangeMode : unsigned char { Dims, Basis, BasisOffset, World, Custom };
+    enum class OffsetScaling : unsigned char { None, MinExtent, MaxExtent, MeanExtent, Diagonal };
 
-    enum class DimsRangeMode { No, Yes };
+    enum class DimsRangeMode : unsigned char { No, Yes };
 
-    Axis2DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
-                          DimsRangeMode useDimsRange = DimsRangeMode::No);
+    explicit Axis2DProcessorHelper(std::function<std::optional<mat4>()> getBoundingBox,
+                                   DimsRangeMode useDimsRange = DimsRangeMode::No);
 
     void renderAxes(size2_t outputDims, const SpatialEntity& entity);
 
@@ -76,8 +72,8 @@ public:
     OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
-    DoubleMinMaxProperty rangeXaxis_;
-    DoubleMinMaxProperty rangeYaxis_;
+    DoubleVec2Property rangeXaxis_;
+    DoubleVec2Property rangeYaxis_;
 
     BoolCompositeProperty visibility_;
     OptionPropertyString presets_;
@@ -96,6 +92,4 @@ protected:
     bool propertyUpdate_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

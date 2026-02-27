@@ -39,9 +39,7 @@
 #include <inviwo/core/util/staticstring.h>                      // for operator+
 #include <modules/plotting/datastructures/majorticksettings.h>  // for TickStyle, TickStyle::Both
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view MajorTickProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -51,7 +49,7 @@ MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, "Settings for major ticks along the axis"_help,
-                        invalidationLevel, semantics)
+                        invalidationLevel, std::move(semantics))
     , style_("style", "Style",
              {{"none", "None", TickStyle::None},
               {"inside", "Inside", TickStyle::Inside},
@@ -64,17 +62,11 @@ MajorTickProperty::MajorTickProperty(std::string_view identifier, std::string_vi
                   util::ordinalLength(8.0f, 20.0f).set("Length of the ticks"_help))
     , tickWidth_("tickWidth", "Width",
                  util::ordinalLength(2.5f, 20.0f).set("Line width of the ticks"_help))
-    , tickDelta_("tickDelta", "Delta",
-                 util::ordinalLength(0.0, 100.0)
-                     .set("Spacing between two major ticks. In case the delta is larger than the "
-                          "axis range, no major ticks will be shown."_help))
-    , rangeBasedTicks_("rangeBasedTicks", "Based on Axis Range",
-                       "By default (false), the major ticks appear at n * tickDelta and are "
-                       "zero-based. If true, major ticks are start at the minimum axis range "
-                       "(min + n * tickDelta)."_help,
-                       false) {
+    , numberOfTicks_(
+          "numberOfTicks", "Max Number of Ticks",
+          util::ordinalCount(6, 20).setMin(2).set("Maximum number of labels/ticks."_help)) {
 
-    addProperties(style_, color_, tickLength_, tickWidth_, tickDelta_, rangeBasedTicks_);
+    addProperties(style_, color_, tickLength_, tickWidth_, numberOfTicks_);
 }
 
 MajorTickProperty::MajorTickProperty(const MajorTickProperty& rhs)
@@ -83,10 +75,9 @@ MajorTickProperty::MajorTickProperty(const MajorTickProperty& rhs)
     , color_(rhs.color_)
     , tickLength_(rhs.tickLength_)
     , tickWidth_(rhs.tickWidth_)
-    , tickDelta_(rhs.tickDelta_)
-    , rangeBasedTicks_(rhs.rangeBasedTicks_) {
+    , numberOfTicks_(rhs.numberOfTicks_) {
 
-    addProperties(style_, color_, tickLength_, tickWidth_, tickDelta_, rangeBasedTicks_);
+    addProperties(style_, color_, tickLength_, tickWidth_, numberOfTicks_);
 }
 
 MajorTickProperty* MajorTickProperty::clone() const { return new MajorTickProperty(*this); }
@@ -99,23 +90,24 @@ float MajorTickProperty::getTickLength() const { return tickLength_.get(); }
 
 float MajorTickProperty::getTickWidth() const { return tickWidth_.get(); }
 
-double MajorTickProperty::getTickDelta() const { return tickDelta_.get(); }
-
-bool MajorTickProperty::getRangeBasedTicks() const { return rangeBasedTicks_.get(); }
+int MajorTickProperty::getNumberOfTicks() const { return numberOfTicks_.get(); }
 
 MinorTickProperty::MinorTickProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName,
                         "Settings for minor ticks (shown between major ticks)"_help,
-                        invalidationLevel, semantics)
+                        invalidationLevel, std::move(semantics))
     , style_("style", "Style",
              {{"none", "None", TickStyle::None},
               {"inside", "Inside", TickStyle::Inside},
               {"outside", "Outside", TickStyle::Outside},
               {"both", "Both", TickStyle::Both}},
              2)
-    , fillAxis_("outsideMajorTicks", "Fill Entire Axis", true)
+    , fillAxis_("fillAxis", "Fill Entire Axis",
+                "Minor ticks will cover the entire axis range if true, otherwise they will only "
+                "appear in between major ticks."_help,
+                true)
     , color_("color", "Color",
              util::ordinalColor(vec4(0.0f, 0.0f, 0.0f, 1.0f)).set("Color of the ticks"_help))
     , tickLength_("tickLength", "Length",
@@ -153,6 +145,4 @@ float MinorTickProperty::getTickWidth() const { return tickWidth_.get(); }
 
 int MinorTickProperty::getTickFrequency() const { return tickFrequency_.get(); }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

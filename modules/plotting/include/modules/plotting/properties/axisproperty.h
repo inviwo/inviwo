@@ -34,26 +34,23 @@
 #include <inviwo/core/properties/boolcompositeproperty.h>  // for BoolCompositeProperty
 #include <inviwo/core/properties/boolproperty.h>           // for BoolProperty
 #include <inviwo/core/properties/invalidationlevel.h>      // for InvalidationLevel, Invalidatio...
-#include <inviwo/core/properties/minmaxproperty.h>         // for DoubleMinMaxProperty
 #include <inviwo/core/properties/optionproperty.h>         // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>        // for FloatProperty, FloatVec4Property
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>      // for PropertySemantics, PropertySem...
 #include <inviwo/core/util/glmvec.h>                       // for dvec2, vec4
-#include <inviwo/core/util/staticstring.h>                 // for operator+
 #include <modules/plotting/datastructures/axissettings.h>  // for AxisSettings::Orientation, Axi...
 #include <modules/plotting/properties/plottextproperty.h>  // for PlotTextProperty
 #include <modules/plotting/properties/tickproperty.h>      // for MajorTickProperty, MinorTickPr...
+#include <modules/plotting/algorithm/labeling.h>
 
-#include <functional>   // for __base
 #include <string>       // for operator==, string, operator+
 #include <string_view>  // for operator==, string_view
 #include <vector>       // for operator!=, vector, operator==
 #include <optional>
 
-namespace inviwo {
+namespace inviwo::plot {
 
-namespace plot {
 class MajorTickSettings;
 class MinorTickSettings;
 class PlotTextSettings;
@@ -91,6 +88,10 @@ public:
     void set(Orientation orientation, bool mirrored);
 
     virtual AxisProperty& setCaption(std::string_view title);
+
+    AxisProperty& setLabelingAlgorithm(LabelingAlgorithm algorithm);
+
+    AxisProperty& setNumberOfTicks(int numTicks);
 
     AxisProperty& setLabelFormat(std::string_view formatStr);
     /**
@@ -135,7 +136,9 @@ public:
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
 
-    virtual const std::vector<std::string>& getLabels() const override;
+    virtual LabelingAlgorithm getLabelingAlgorithm() const override;
+    virtual std::string_view getLabelFormatString() const override;
+    virtual const AxisLabels& getCustomLabels() const override;
     virtual const PlotTextSettings& getLabelSettings() const override;
 
     virtual const MajorTickSettings& getMajorTicks() const override;
@@ -145,12 +148,13 @@ public:
     FloatVec4Property color_;
     FloatProperty width_;
     BoolProperty overrideRange_;
-    DoubleMinMaxProperty range_;
-    DoubleMinMaxProperty customRange_;
+    DoubleVec2Property range_;
+    DoubleVec2Property customRange_;
     FloatProperty scalingFactor_;
 
     BoolProperty mirrored_;
     std::optional<OptionProperty<Orientation>> orientation_;
+    OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
 
     // caption besides axis
     PlotTextProperty captionSettings_;
@@ -160,14 +164,12 @@ public:
 
     MajorTickProperty majorTicks_;
     MinorTickProperty minorTicks_;
+    // StringProperty config_;
 
 private:
-    virtual void updateLabels();
     std::vector<ButtonGroupProperty::Button> buttons(bool hasOrientation);
 
     ButtonGroupProperty alignment_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

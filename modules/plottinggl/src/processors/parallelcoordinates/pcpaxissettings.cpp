@@ -73,8 +73,8 @@ namespace plot {
 class MinorTickSettings;
 class PlotTextSettings;
 
-namespace detail {
-enum class FilterResult { Upper, Lower, None };
+namespace {
+enum class FilterResult : unsigned char { Upper, Lower, None };
 /**
  * Helper for brushing data
  * @param value to filter
@@ -93,7 +93,7 @@ FilterResult filterValue(const double& value, const dvec2& range) {
     return FilterResult::None;
 }
 
-}  // namespace detail
+}  // namespace
 
 std::string_view PCPAxisSettings::getClassIdentifier() const { return classIdentifier; }
 
@@ -116,7 +116,6 @@ PCPAxisSettings::PCPAxisSettings(std::string_view identifier, std::string_view d
     invertRange.setSerializationMode(PropertySerializationMode::All);
 
     range.onRangeChange([this]() {
-        updateLabels();
         if (pcp_) pcp_->updateAxisRange(*this);
     });
 
@@ -139,7 +138,6 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     addProperties(range, invertRange);
 
     range.onRangeChange([this]() {
-        updateLabels();
         if (pcp_) pcp_->updateAxisRange(*this);
     });
 
@@ -186,6 +184,15 @@ void PCPAxisSettings::update(std::shared_ptr<const DataFrame> frame) {
             }
         });
 
+    if (catCol_) {
+        axisLabels_.start = 0.0;
+        axisLabels_.stop = static_cast<double>(catCol_->getCategories().size()) - 1.0;
+        axisLabels_.step = 1.0;
+        axisLabels_.positions =
+            plot::linearRange(axisLabels_.start, axisLabels_.stop, axisLabels_.step);
+        axisLabels_.labels = catCol_->getCategories();
+    }
+
     range.propertyModified();
 }
 
@@ -224,12 +231,7 @@ void PCPAxisSettings::moveHandle(bool upper, double mouseY) {
     range.set(newRange);
 }
 
-void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
-    pcp_ = pcp;
-
-    labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped([this]() { updateLabels(); });
-    updateLabels();
-}
+void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) { pcp_ = pcp; }
 
 void PCPAxisSettings::updateBrushing() {
     if (!col_) return;
@@ -245,31 +247,20 @@ void PCPAxisSettings::updateBrushing() {
     brushed_.resize(nRows, false);
 
     for (size_t i = 0; i < nRows; i++) {
-        const auto filtered = detail::filterValue(at(i), rangeTmp);
-        if (filtered == detail::FilterResult::None) {
+        const auto filtered = filterValue(at(i), rangeTmp);
+        if (filtered == FilterResult::None) {
             brushed_[i] = false;
             continue;
         }
         brushed_[i] = true;
-        if (filtered == detail::FilterResult::Upper) upperBrushed_ = true;
-        if (filtered == detail::FilterResult::Lower) lowerBrushed_ = true;
+        if (filtered == FilterResult::Upper) upperBrushed_ = true;
+        if (filtered == FilterResult::Lower) lowerBrushed_ = true;
     }
-}
-
-void PCPAxisSettings::updateLabels() {
-    if (!pcp_) return;
-
-    const auto tickmarks = plot::getMajorTickPositions(major_, range.getRange());
-    const auto& format = pcp_->labelFormat_.get();
-
-    labels_.clear();
-    std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
-                   [&](auto tick) { return fmt::sprintf(format, tick); });
 }
 
 dvec2 PCPAxisSettings::getRange() const {
     if (catCol_) {
-        return {0.0, static_cast<double>(catCol_->getCategories().size()) - 1.0};
+        return {axisLabels_.start, axisLabels_.stop};
     } else {
         return {range.getRangeMin(), range.getRangeMax()};
     }
@@ -305,15 +296,45 @@ float PCPAxisSettings::getWidth() const {
 }
 
 float PCPAxisSettings::getScalingFactor() const { return 1.0f; }
+
 AxisSettings::Orientation PCPAxisSettings::getOrientation() const { return Orientation::Vertical; }
+
 const std::string& PCPAxisSettings::getCaption() const { return caption_; }
+
 const PlotTextSettings& PCPAxisSettings::getCaptionSettings() const { return captionSettings_; }
-const std::vector<std::string>& PCPAxisSettings::getLabels() const {
-    return catCol_ ? catCol_->getCategories() : labels_;
+
+LabelingAlgorithm PCPAxisSettings::getLabelingAlgorithm() const {
+    if (catCol_) {
+        return LabelingAlgorithm::CustomOnly;
+    } else {
+        return defaultLabeling;
+    }
+}
+
+std::string_view PCPAxisSettings::getLabelFormatString() const {
+    if (pcp_) {
+        return pcp_->labelFormat_;
+    } else {
+        return "%.1f";
+    }
+}
+
+namespace {
+constexpr AxisLabels noLabels{};
+}  // namespace
+
+const AxisLabels& PCPAxisSettings::getCustomLabels() const {
+    if (catCol_) {
+        return axisLabels_;
+    } else {
+        return noLabels;
+    }
 }
 
 const PlotTextSettings& PCPAxisSettings::getLabelSettings() const { return labelSettings_; }
+
 const MajorTickSettings& PCPAxisSettings::getMajorTicks() const { return major_; }
+
 const MinorTickSettings& PCPAxisSettings::getMinorTicks() const { return minor_; }
 
 bool PCPCaptionSettings::isEnabled() const {
@@ -348,8 +369,7 @@ TickStyle PCPMajorTickSettings::getStyle() const { return TickStyle::Both; }
 vec4 PCPMajorTickSettings::getColor() const { return settings_->getColor(); }
 float PCPMajorTickSettings::getTickLength() const { return settings_->pcp_->axisSize_ * 2.0f; }
 float PCPMajorTickSettings::getTickWidth() const { return settings_->getWidth(); }
-double PCPMajorTickSettings::getTickDelta() const { return settings_->catCol_ ? 1.0 : 0.0; }
-bool PCPMajorTickSettings::getRangeBasedTicks() const { return false; }
+int PCPMajorTickSettings::getNumberOfTicks() const { return 10; }
 
 TickStyle PCPMinorTickSettings::getStyle() const { return TickStyle::None; }
 bool PCPMinorTickSettings::getFillAxis() const { return false; }

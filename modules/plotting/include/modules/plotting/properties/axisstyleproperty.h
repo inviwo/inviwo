@@ -33,18 +33,18 @@
 #include <inviwo/core/properties/compositeproperty.h>                 // for CompositeProperty
 #include <inviwo/core/properties/invalidationlevel.h>                 // for InvalidationLevel
 #include <inviwo/core/properties/ordinalproperty.h>                   // for FloatProperty, Floa...
+#include <inviwo/core/properties/optionproperty.h>                    // for OptionProperty
 #include <inviwo/core/properties/propertysemantics.h>                 // for PropertySemantics
 #include <inviwo/core/properties/stringproperty.h>                    // for StringProperty
 #include <modules/fontrendering/properties/fontfaceoptionproperty.h>  // for FontFaceOptionProperty
+#include <modules/plotting/algorithm/labeling.h>
 
 #include <string>       // for string
 #include <string_view>  // for string_view
 #include <tuple>        // for tie
 #include <vector>       // for vector
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 class AxisProperty;
 
 /**
@@ -74,16 +74,20 @@ public:
     FloatVec4Property color_;
     FloatProperty lineWidth_;
     FloatProperty tickLength_;
+    OptionProperty<LabelingAlgorithm> labelingAlgorithm_;
+    IntProperty numberOfTicks_;
     StringProperty labelFormat_;
 
 private:
     std::vector<AxisProperty*> axes_;
 
     auto props() {
-        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelFormat_);
+        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelingAlgorithm_,
+                        numberOfTicks_, labelFormat_);
     }
     auto props() const {
-        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelFormat_);
+        return std::tie(fontFace_, fontSize_, color_, lineWidth_, tickLength_, labelingAlgorithm_,
+                        numberOfTicks_, labelFormat_);
     }
 };
 
@@ -92,6 +96,4 @@ void AxisStyleProperty::registerProperties(Ts&... properties) {
     (registerProperty(properties), ...);
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

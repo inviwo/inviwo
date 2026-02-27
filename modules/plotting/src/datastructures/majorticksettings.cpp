@@ -33,30 +33,26 @@
 
 #include <glm/vec4.hpp>  // for operator==
 
-namespace inviwo {
-namespace plot {
+namespace inviwo::plot {
 
 bool operator==(const MajorTickSettings& a, const MajorTickSettings& b) {
     return a.getStyle() == b.getStyle() && a.getColor() == b.getColor() &&
            a.getTickLength() == b.getTickLength() && a.getTickWidth() == b.getTickWidth() &&
-           a.getTickDelta() == b.getTickDelta() && a.getRangeBasedTicks() == b.getRangeBasedTicks();
+           a.getNumberOfTicks() == b.getNumberOfTicks();
 }
 
-bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b) { return !(a == b); }
-
 TickStyle flip(TickStyle s) {
+    using enum TickStyle;
     switch (s) {
-        case TickStyle::Inside:
-            return TickStyle::Outside;
-        case TickStyle::Outside:
-            return TickStyle::Inside;
-        case TickStyle::None:
-        case TickStyle::Both:
+        case Inside:
+            return Outside;
+        case Outside:
+            return Inside;
+        case None:
+        case Both:
         default:
             return s;
     }
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

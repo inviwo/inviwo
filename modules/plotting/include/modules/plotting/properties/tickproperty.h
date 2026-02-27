@@ -47,9 +47,7 @@
 #include <string_view>  // for operator==, string_view
 #include <vector>       // for operator!=, vector, opera...
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings,
                                                   public CompositeProperty {
@@ -68,16 +66,14 @@ public:
     FloatVec4Property color_;
     FloatProperty tickLength_;
     FloatProperty tickWidth_;
-    DoubleProperty tickDelta_;
-    BoolProperty rangeBasedTicks_;
+    IntProperty numberOfTicks_;
 
     // Inherited via MajorTickSettings
     virtual TickStyle getStyle() const override;
     virtual vec4 getColor() const override;
     virtual float getTickLength() const override;
     virtual float getTickWidth() const override;
-    virtual double getTickDelta() const override;
-    virtual bool getRangeBasedTicks() const override;
+    virtual int getNumberOfTicks() const override;
 };
 
 class IVW_MODULE_PLOTTING_API MinorTickProperty : public MinorTickSettings,
@@ -109,6 +105,4 @@ public:
     virtual int getTickFrequency() const override;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

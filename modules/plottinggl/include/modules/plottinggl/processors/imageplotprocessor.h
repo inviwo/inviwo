@@ -36,7 +36,6 @@
 #include <inviwo/core/processors/processorinfo.h>           // for ProcessorInfo
 #include <inviwo/core/properties/boolproperty.h>            // for BoolProperty
 #include <inviwo/core/properties/compositeproperty.h>       // for CompositeProperty
-#include <inviwo/core/properties/minmaxproperty.h>          // for DoubleMinMaxProperty
 #include <inviwo/core/properties/optionproperty.h>          // for OptionProperty
 #include <inviwo/core/properties/ordinalproperty.h>         // for FloatProperty
 #include <inviwo/core/properties/marginproperty.h>          // for MarginProperty
@@ -67,7 +66,7 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTINGGL_API ImagePlotProcessor : public Processor {
 public:
-    enum class AxisRangeMode { ImageDims, ImageBasis, ImageBasisOffset, Custom };
+    enum class AxisRangeMode : unsigned char { ImageDims, ImageBasis, ImageBasisOffset, Custom };
 
     ImagePlotProcessor();
     virtual ~ImagePlotProcessor() = default;
@@ -105,8 +104,8 @@ private:
     OptionProperty<AxisRangeMode> rangeMode_;
 
     CompositeProperty customRanges_;
-    DoubleMinMaxProperty rangeXaxis_;
-    DoubleMinMaxProperty rangeYaxis_;
+    DoubleVec2Property rangeXaxis_;
+    DoubleVec2Property rangeYaxis_;
 
     AxisStyleProperty axisStyle_;
     AxisProperty xAxis_;
