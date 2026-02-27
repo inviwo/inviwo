@@ -59,7 +59,7 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
     virtual QSize sizeHint(const QStyleOptionViewItem& option,
                            const QModelIndex& index) const override {
         QSize size = QStyledItemDelegate::sizeHint(option, index);
-        size.setHeight(20);
+        // size.setHeight(28);
         return size;
     }
 
@@ -75,24 +75,22 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
         const auto* widget = opt.widget;
         auto* style = widget->style();
 
-        static constexpr auto portSize = QSize{5, 5};
+        static constexpr auto portSize = QSize{6, 6};
         static constexpr auto padding = 2;
         static constexpr auto borderColor = QColor{30, 30, 30};
-        static constexpr auto step = QPoint{padding + portSize.width(), 0};
-        static constexpr auto inportOffset = QPoint{3 * padding, 1};
-        static constexpr auto outportOffset = QPoint{3 * padding, -1 - portSize.height()};
+        static constexpr auto step = -QPoint{padding + portSize.width(), 0};
+        const auto inportOffset =
+            opt.rect.topRight() + QPoint{-padding - portSize.height(), padding};
+        const auto outportOffset = opt.rect.bottomRight() + QPoint{-padding - portSize.height(),
+                                                                   -padding - portSize.height()};
 
         const QPainterStateGuard psg(p);
         // the style calling this might want to clip, so respect any region already set
         const QRegion clipRegion = p->hasClipping() ? (p->clipRegion() & opt.rect) : opt.rect;
         p->setClipRegion(clipRegion);
 
-        // const auto iconRect =
-        //     style->subElementRect(QStyle::SE_ItemViewItemDecoration, &opt, widget);
-        // const auto textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &opt, widget);
-
         auto textRect = opt.rect.adjusted(32, 2, -2, -2);
-        auto iconRect = opt.rect.adjusted(2, 4, -2, -4);
+        auto iconRect = opt.rect.adjusted(2, 2, -2, -2);
         iconRect.setWidth(28);
 
         // draw the background
@@ -106,17 +104,17 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
                     p->setBrush(QColor(38, 86, 115));
                     break;
                 case CodeState::Experimental:
-                    p->setBrush(QColor(115, 107, 39));
+                    p->setBrush(QColor(141, 92, 21));
                     break;
                 case CodeState::Deprecated:
-                    p->setBrush(QColor(77, 77, 77));
+                    p->setBrush(QColor(77, 77, 80));
                     break;
                 case CodeState::Broken:
                     p->setBrush(QColor(115, 107, 39));
                     break;
             }
-            p->setPen(QPen(borderColor, 1.5f));
-            p->drawRoundedRect(iconRect, 4.0, 4.0);
+            p->setPen(QPen(borderColor, 1.0f));
+            p->drawRoundedRect(iconRect, 8.0, 8.0);
 
             auto platformTags = util::getPlatformTags(item->info.tags);
             auto tag = platformTags.tags_.empty() ? Tags::CPU : platformTags.tags_.front();
@@ -135,14 +133,16 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
             p->drawText(iconRect, Qt::AlignCenter, utilqt::toQString(tag.getString()));
 
             p->setPen(QPen(borderColor, 1.0f));
-            for (auto&& [i, port] : util::enumerate<int>(item->help.inports)) {
+            for (auto&& [i, port] :
+                 util::enumerate<int>(item->help.inports | std::views::reverse)) {
                 p->setBrush(utilqt::toQColor(port.colorCode));
-                p->drawRect(QRect(opt.rect.topLeft() + inportOffset + i * step, portSize));
+                p->drawRect(QRect(inportOffset + i * step, portSize));
             }
 
-            for (auto&& [i, port] : util::enumerate<int>(item->help.outports)) {
+            for (auto&& [i, port] :
+                 util::enumerate<int>(item->help.outports | std::views::reverse)) {
                 p->setBrush(utilqt::toQColor(port.colorCode));
-                p->drawRect(QRect(opt.rect.bottomLeft() + outportOffset + i * step, portSize));
+                p->drawRect(QRect(outportOffset + i * step, portSize));
             }
 
         } else {
@@ -159,6 +159,8 @@ class ProcessorItemDelegate : public QStyledItemDelegate {
             p->setPen(opt.palette.color(cg, (opt.state & QStyle::State_Selected)
                                                 ? QPalette::HighlightedText
                                                 : QPalette::Text));
+
+            // p->setFont(QFont(opt.font.family(), opt.font.pointSize() + 2, QFont::Bold));
 
             const int textMargin =
                 style->pixelMetric(QStyle::PM_FocusFrameHMargin, nullptr, widget) + 1;
@@ -258,6 +260,9 @@ QModelIndex ProcessorListView::findFirstLeaf(QAbstractItemModel* model, QModelIn
 
 void ProcessorListView::focusInEvent(QFocusEvent* e) {
     QTreeView::focusInEvent(e);
+
+    if (e->reason() == Qt::MouseFocusReason) return;
+
     auto firstLeaf = findFirstLeaf(model());
     if (firstLeaf.isValid()) {
         selectionModel()->setCurrentIndex(firstLeaf, QItemSelectionModel::ClearAndSelect);
